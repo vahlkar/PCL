@@ -189,9 +189,9 @@ void FilterConfigDialog::SendUpdatedProperties()
 {
    for ( int i = 0, n = FilterNames_TreeBox.NumberOfColumns(); i < n; ++i )
       INDIClient::TheClient()->SendNewPropertyItem( m_device,
-            "FILTER_NAME",
+            WHEEL_SLOT_NAME_PROPERTY_NAME,
             "INDI_TEXT",
-            "FILTER_SLOT_NAME_" + String( i+1 ), FilterNames_TreeBox.Child(i)->Text( 1 ) );
+            "SLOT_NAME_" + String( i+1 ), FilterNames_TreeBox.Child(i)->Text( 1 ) );
 }
 
 // ----------------------------------------------------------------------------
