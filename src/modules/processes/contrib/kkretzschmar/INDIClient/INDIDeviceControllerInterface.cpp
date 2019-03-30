@@ -925,6 +925,11 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
             }
 
             INDIClient::TheClient()->disconnectServer();
+            if ( !INDIClient::TheClient()->IsServerConnected() )
+            {
+               INDIClient::DestroyClient();
+               GUI->ServerMessage_Label.SetText( "Successfully disconnected from server." );
+            }
          }
 
       IsoString hostName8 = GUI->HostName_Edit.Text().Trimmed().ToUTF8();

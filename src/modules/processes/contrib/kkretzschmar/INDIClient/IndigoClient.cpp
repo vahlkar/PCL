@@ -67,6 +67,7 @@ IndigoClient::IndigoClient(const char* clientName, const char* host, int32_t por
    strncpy(m_indigoClient.name, clientName, strlen(clientName));
    m_indigoClient.client_context =  reinterpret_cast<void*>(this);
    indigo_start();
+   //indigo_set_log_level(INDIGO_LOG_INFO);
    indigo_attach_client(&m_indigoClient);
 }
 
@@ -82,7 +83,7 @@ IndigoClient::~IndigoClient() {
 bool IndigoClient::connectServer(std::ostream &errMessage) {
    indigo_server_entry* serverEntry = nullptr;
    indigo_result rc = indigo_connect_server(m_serverHost.c_str(), m_serverHost.c_str(), m_port, &serverEntry);
-   if (rc != INDIGO_OK) {
+   if (rc != INDIGO_OK && rc != INDIGO_DUPLICATED) {
       errMessage <<"Internal error: Server connection failed: rc = "<<rc<<" -- "<<__FILE__<<":"<<__LINE__;
       return false;
    }
@@ -96,7 +97,8 @@ bool IndigoClient::disconnectServer() {
       if (rc != INDIGO_OK){
          return false;
       }
-      while (server->thread_started) {
+      while (server->thread_started) { // check for abort flag
+            // do process events via hook
       }
    }
    return true;

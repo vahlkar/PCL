@@ -84,7 +84,7 @@ String NumberProperty::getElementValue( size_type i ) const {
 }
 String NumberProperty::getElementTarget( size_type i ) const {
     CHECK_INDEX_THROWS( m_property->count );
-    return m_property->items[i].number.target;
+    return IsoString(static_cast<double>(m_property->items[i].number.target));
 }
 String NumberProperty::getElementMinValue( size_type i ) const {
     CHECK_INDEX_THROWS( m_property->count );

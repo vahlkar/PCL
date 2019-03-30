@@ -2384,19 +2384,19 @@ void INDIMountInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
          // load configuration on server
          INDIClient::TheClient()->SendNewPropertyItem( m_device, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON");
 
-         if ( INDIClient::TheClient()->GetPropertyItem( m_device, "TARGET_EOD_COORD", "RA", item, false/*formatted*/ ) )
+         if ( INDIClient::TheClient()->GetPropertyTargetItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, item, false/*formatted*/ ) )
          {
             int dum, h, m; double s;
-            DecimalToSexagesimal( dum, h, m, s, item.PropertyValue.ToDouble() );
+            DecimalToSexagesimal( dum, h, m, s, item.PropertyTarget.ToDouble() );
             GUI->TargetRA_H_SpinBox.SetValue( h );
             GUI->TargetRA_M_SpinBox.SetValue( m );
             GUI->TargetRA_S_NumericEdit.SetValue( s );
          }
 
-         if ( INDIClient::TheClient()->GetPropertyItem( m_device, "TARGET_EOD_COORD", "DEC", item, false/*formatted*/ ) )
+         if ( INDIClient::TheClient()->GetPropertyTargetItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, item, false/*formatted*/ ) )
          {
             int sign, d, m; double s;
-            DecimalToSexagesimal( sign, d, m, s, item.PropertyValue.ToDouble() );
+            DecimalToSexagesimal( sign, d, m, s, item.PropertyTarget.ToDouble() );
             GUI->TargetDec_H_SpinBox.SetValue( d );
             GUI->TargetDec_M_SpinBox.SetValue( m );
             GUI->TargetDec_S_NumericEdit.SetValue( s );
