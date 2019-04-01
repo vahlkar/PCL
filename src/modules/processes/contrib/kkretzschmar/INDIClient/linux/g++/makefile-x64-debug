@@ -3,7 +3,7 @@
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
 # Generated on .... 2019-01-07T18:48:53.982Z
-# Project id ...... NDIClient
+# Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Linux/g++
 # Configuration ... Debug/x64
@@ -21,7 +21,7 @@
 OBJ_DIR="$(PCLSRCDIR)/modules/processes/contrib/kkretzschmar/INDIClient/linux/g++/x64/Debug"
 
 .PHONY: all
-all: $(OBJ_DIR)/NDIClient-pxm.so $(OBJ_DIR)/libPixInsightINDIclient-pxi.a
+all: $(OBJ_DIR)/INDIClient-pxm.so $(OBJ_DIR)/libPixInsightINDIclient-pxi.a
 
 #
 # Source files
@@ -102,22 +102,22 @@ $(OBJ_DIR)/libPixInsightINDIclient-pxi.a: $(OBJ_FILES)
 	ar r $(OBJ_DIR)/libPixInsightINDIclient-pxi.a $(OBJ_FILES) 
 	cp $(OBJ_DIR)/libPixInsightINDIclient-pxi.a $(PCLBINDIR64)
 
-$(OBJ_DIR)/NDIClient-pxm.so: $(OBJ_FILES)
-	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags    -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -L"/home/klaus/data/Cpp/indigo/build/lib/x64" -o $(OBJ_DIR)/NDIClient-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -l/home/klaus/data/Cpp/indigo/build/lib/libindigo.a
+$(OBJ_DIR)/INDIClient-pxm.so: $(OBJ_FILES)
+	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags    -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -L"$(INDIGODIR)/build/lib/x64" -o $(OBJ_DIR)/INDIClient-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -l$(INDIGODIR)/build/lib/libindigo.a
 	$(MAKE) -f ./makefile-x64-debug --no-print-directory post-build
 
 .PHONY: clean
 clean:
-	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/NDIClient-pxm.so
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/INDIClient-pxm.so
 
 .PHONY: post-build
 post-build:
-	cp $(OBJ_DIR)/NDIClient-pxm.so $(PCLBINDIR64)
+	cp $(OBJ_DIR)/INDIClient-pxm.so $(PCLBINDIR64)
 
 
 
 ./x64/Debug/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -DINDIGO_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"/home/klaus/data/Cpp/indigo/indigo_libs" -O0 -g -fnon-call-exceptions -std=c++11 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -DINDIGO_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(INDIGODIR)/indigo_libs" -O0 -g -fnon-call-exceptions -std=c++11 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 
 
