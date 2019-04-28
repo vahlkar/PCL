@@ -1538,6 +1538,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountDeviceConfig_ToolButton.SetIcon( w.ScaledResource( ":/icons/wrench.png" ) );
    MountDeviceConfig_ToolButton.SetScaledFixedSize( 22, 22 );
    MountDeviceConfig_ToolButton.SetToolTip( "<p>Configure INDI mount device</p>" );
+
    MountDeviceConfig_ToolButton.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
 
    MountDevice_Combo.OnItemSelected( (ComboBox::item_event_handler)&INDIMountInterface::e_ItemSelected, w );
@@ -1796,7 +1797,6 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountSync_Button.SetStyleSheet( buttonStyleSheet1 );
    MountSync_Button.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
 
-   MountPark_Button.SetText( "Park" );
    MountPark_Button.SetIcon( w.ScaledResource( ":/icons/move-center.png" ) );
    MountPark_Button.SetStyleSheet( buttonStyleSheet1 );
    MountPark_Button.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
@@ -2120,6 +2120,14 @@ __device_found:
       else
          m_utcOffset = 0;
 
+      if ( indi->GetPropertyItem( m_device, MOUNT_PARK_PROPERTY_NAME, MOUNT_PARK_PARKED_ITEM_NAME, mountProp, false/*formatted*/ ) )
+          if ( mountProp.PropertyValue == "ON" )
+          {
+            GUI->MountPark_Button.SetText("Unpark");
+          } else
+          {
+            GUI->MountPark_Button.SetText("Park");
+          }
 
       if ( indi->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_APERTURE", mountProp, false/*formatted*/ ) )
          m_telescopeAperture = mountProp.PropertyValue.ToDouble();
@@ -2280,7 +2288,13 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
    }
    else if ( sender == GUI->MountPark_Button )
    {
-      INDIMountInterfaceExecution( this ).Perform( IMCCommand::ParkDefault );
+      if (GUI->MountPark_Button.Text() == "Park")
+      {
+        INDIMountInterfaceExecution( this ).Perform( IMCCommand::ParkDefault );
+      } else
+      {
+        INDIMountInterfaceExecution( this ).Perform( IMCCommand::Unpark );
+      }
    }
    else if ( sender == GUI->MountGoToCancel_Button )
    {
@@ -2555,8 +2569,6 @@ void INDIMountInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
             GUI->MountTargetDECIsSouth_CheckBox.SetChecked( sign < 0 );
          }
 
-         // unpark mount
-         INDIMountInterfaceExecution( this ).Perform( IMCCommand::Unpark );
       }
    }
    else if ( sender == GUI->SlewSpeed_ComboBox )
