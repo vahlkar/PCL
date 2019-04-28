@@ -101,7 +101,7 @@ bool INDIClient::GetPropertyItem( const String& device, const String& property, 
    ExclConstPropertyList y = PropertyList();
    const INDIPropertyListItemArray& properties( y );
 
-   for ( auto item : properties )
+   for ( auto item : properties ) {
       if ( item.Device == device && item.Property == property && item.Element == element )
       {
          result.Device = device;
@@ -116,6 +116,7 @@ bool INDIClient::GetPropertyItem( const String& device, const String& property, 
          result.PropertyState = item.PropertyState;
          return true;
       }
+   }
 
    return false;
 }
@@ -307,7 +308,7 @@ bool INDIClient::SendNewPropertyItem( const INDINewPropertyItem& newItem, bool a
                   case INDIGO_ALERT_STATE:
                      throw String( "Failure to send '"
                            + newItem.Device + '.' + newItem.Property + '.' + elementValue.Element
-                           + "' property newItem. Message from INDI server: " + CurrentServerMessage() );
+                           + "' property newItem. Message from INDI server: " + CurrentServerMessage().m_message );
                   default:
                      break;
                   }
@@ -365,7 +366,7 @@ void INDIClient::registerNewDeviceCallback() {
 
       INDIDeviceListItem deviceListItem;
       deviceListItem.DeviceName = deviceName.c_str();
-      deviceListItem.DeviceLabel =  deviceName.c_str();
+      //deviceListItem.DeviceLabel =  deviceName.c_str();
       devices << deviceListItem;
 
       {
@@ -463,10 +464,11 @@ void INDIClient::registerNewBlobCallback() {
 }
 
 void INDIClient::registerGetMessageCallback() {
-   m_indigoClient.newMessage = [this] (const char* message) {
+   m_indigoClient.newMessage = [this] (const char* message, int severity) {
       CHECK_POINTER( message );
       volatile AutoLock lock( m_mutex );
-      m_currentServerMessage = message;
+      m_currentServerMessage.m_message = message;
+      m_currentServerMessage.m_messageSeverity = severity;
 
    };
 }

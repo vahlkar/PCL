@@ -502,6 +502,7 @@ AlignmentModel* AlignmentModel::Create( const String& fileName )
    return result;
 }
 
+
 // ----------------------------------------------------------------------------
 
 static const double scaleArcmin = 60.0;

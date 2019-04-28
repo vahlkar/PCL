@@ -36,6 +36,7 @@
 # Makefiles/Project files by other systems
 .idea
 CMakeLists.txt
+PCL.*
 # Folders
 host
 __private

@@ -323,8 +323,10 @@ public:
 
    MountConfigDialog( const String& deviceName,
                       double geoLat, double geoLong, double geoHeight,
-                      double telescopeAperture, double teslescopeFocalLenght );
+                      String utcTime, double utcOffset );
 private:
+
+   Timer UpdateUtc_Timer;
 
    String m_device;
 
@@ -340,11 +342,25 @@ private:
       SpinBox           Longitude_M_SpinBox;
       NumericEdit       Longitude_S_NumericEdit;
       CheckBox          LongitudeIsWest_CheckBox;
+   HorizontalSizer   Date_Sizer;
+      Label             Date_Label;
+      SpinBox           Date_Day_SpinBox;
+      SpinBox           Date_Month_SpinBox;
+      SpinBox           Date_Year_SpinBox;
+      PushButton        GetHostDateTime_PushButton;
+   HorizontalSizer   UtcTime_Sizer;
+      Label             UtcTime_Label;
+      SpinBox           UtcTime_H_SpinBox;
+      SpinBox           UtcTime_M_SpinBox;
+      NumericEdit       UtcTime_S_NumericEdit;
+
    NumericEdit       Height_NumericEdit;
    NumericEdit       TelescopeAperture_NumericEdit;
    NumericEdit       TelescopeFocalLength_NumericEdit;
 
    void SendUpdatedProperties();
+   void e_Timer( Timer& sender );
+   void e_Click( Button& sender, bool checked );
 };
 
 // ----------------------------------------------------------------------------
@@ -387,6 +403,16 @@ public:
    double GeographicHeight() const
    {
       return m_geoHeight;
+   }
+
+   const String& UtcTime() const
+   {
+       return m_utcTime;
+   }
+
+   double UtcOffset() const
+   {
+       return m_utcOffset;
    }
 
    int TelescopeAperture() const
@@ -544,6 +570,8 @@ private:
    double   m_geoLatitude          = 0;
    double   m_geoLongitude         = 0;
    double   m_geoHeight            = 0;
+   String   m_utcTime;
+   double   m_utcOffset            = 0;
    int      m_telescopeAperture    = 0;
    int      m_telescopeFocalLength = 0;
    pcl_enum m_pierSide             = IMCPierSide::Default;

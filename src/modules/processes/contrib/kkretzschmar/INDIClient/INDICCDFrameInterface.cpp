@@ -187,7 +187,7 @@ FilterConfigDialog::FilterConfigDialog( const String& deviceName ) :
 
 void FilterConfigDialog::SendUpdatedProperties()
 {
-   for ( int i = 0, n = FilterNames_TreeBox.NumberOfColumns(); i < n; ++i )
+   for ( int i = 0, n = FilterNames_TreeBox.NumberOfChildren() ; i < n; ++i )
       INDIClient::TheClient()->SendNewPropertyItem( m_device,
             WHEEL_SLOT_NAME_PROPERTY_NAME,
             "INDI_TEXT",
@@ -1306,8 +1306,7 @@ void INDICCDFrameInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
    }
    else if ( sender == GUI->CCDFilter_Combo )
    {
-   String externalFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText(GUI->ExternalFilterDevice_Combo.CurrentItem());
-      indi->MaybeSendNewPropertyItem( externalFilterWheelDeviceName != String("<No filter wheel>") ? externalFilterWheelDeviceName : m_device, WHEEL_SLOT_PROPERTY_NAME, "INDI_NUMBER",
+      indi->MaybeSendNewPropertyItem( CurrentFilterWheelDeviceName(), WHEEL_SLOT_PROPERTY_NAME, "INDI_NUMBER",
                                     WHEEL_SLOT_ITEM_NAME, itemIndex+1, true/*async*/ );
    }
    else if ( sender == GUI->UploadMode_Combo )
@@ -1542,12 +1541,12 @@ void INDICCDFrameInterface::e_Click( Button& sender, bool checked )
          m_execution->Abort();
    } else if (sender == GUI->FilterConfig_ToolButton) {
 
-      FilterConfigDialog ccdConfig(CurrentDeviceName());
+      FilterConfigDialog filterWheelConfig(CurrentFilterWheelDeviceName());
       for (size_t index=0; index < (size_t) GUI->CCDFilter_Combo.NumberOfItems(); index++){
-         ccdConfig.addFilterName(index+1,GUI->CCDFilter_Combo.ItemText(index));
+         filterWheelConfig.addFilterName(index+1,GUI->CCDFilter_Combo.ItemText(index));
       }
-      ccdConfig.adjustTreeColumns();
-      if (ccdConfig.Execute() && INDIClient::HasClient()) {
+      filterWheelConfig.adjustTreeColumns();
+      if (filterWheelConfig.Execute() && INDIClient::HasClient()) {
 
       }
    }

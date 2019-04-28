@@ -623,19 +623,20 @@ void INDIMountInstance::GetPierSide() {
    INDIPropertyListItem item;
    static const char* indiPierSides[] = { MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, MOUNT_SIDE_OF_PIER_EAST_ITEM_NAME };
    for ( size_type i = 0; i < ItemsInArray( indiPierSides ); ++i )
-      if ( indi->GetPropertyItem( p_deviceName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, indiPierSides[i], item ) )
+      if ( indi->GetPropertyItem( p_deviceName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, indiPierSides[i], item ) ) {
          if ( item.PropertyValue == "ON" )
          {
             p_pierSide = i;
             break;
          }
+      }
       else
-         {
-            // pier side fallback
-            // If the INDI mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
-            double hourAngle = AlignmentModel::RangeShiftHourAngle(o_currentLST - o_currentRA);
-            p_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
-         }
+      {
+         // pier side fallback
+         // If the INDI mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
+         double hourAngle = AlignmentModel::RangeShiftHourAngle(o_currentLST - o_currentRA);
+         p_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
+      }
 
 }
 
@@ -930,7 +931,7 @@ void AbstractINDIMountExecution::Perform()
             case IMCAlignmentMethod::None:
             {
                try {
-                  AutoPointer<AlignmentModel> aModel = AlignmentModel::Create(m_instance.p_alignmentFile);
+
                   SyncDataPoint syncPoint;
                   syncPoint.creationTime      = TimePoint::Now();
                   syncPoint.localSiderialTime = m_instance.o_currentLST;
@@ -939,14 +940,20 @@ void AbstractINDIMountExecution::Perform()
                   syncPoint.telecopeRA        = m_instance.o_currentRA;
                   syncPoint.telecopeDEC       = m_instance.o_currentDec;
                   syncPoint.pierSide          = m_instance.p_pierSide;
-                  aModel->AddSyncDataPoint(syncPoint);
-                  aModel->WriteObject(m_instance.p_alignmentFile);
-               } catch (...) {
+
+                  if (File::Exists(m_instance.p_alignmentFile)) {
+                    AutoPointer<AlignmentModel> aModel = AlignmentModel::Create(m_instance.p_alignmentFile);
+                    aModel->AddSyncDataPoint(syncPoint);
+                    aModel->WriteObject(m_instance.p_alignmentFile);
+                  } else {
+                    AutoPointer<AlignmentModel> aModel = GeneralAnalyticalPointingModel::Create(m_instance.o_geographicLatitude, m_instance.p_alignmentConfig, CHECK_BIT(m_instance.p_alignmentConfig, 0));
+                    aModel->AddSyncDataPoint(syncPoint);
+                    aModel->WriteObject(m_instance.p_alignmentFile);
+                  }
+                } catch (...) {
                   EndMountEvent();
                   throw;
                }
-
-            	break;
             }
             break;
             default:

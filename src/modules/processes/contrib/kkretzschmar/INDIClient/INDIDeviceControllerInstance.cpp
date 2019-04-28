@@ -128,7 +128,7 @@ bool INDIDeviceControllerInstance::CanExecuteGlobal( String& whyNot ) const
 static void GetNewPropertyListItemParametersFromKey( const INDINewPropertyListItem& listItem, INDINewPropertyItem& item )
 {
    StringList items;
-   listItem.PropertyKey.Break( items, '/', true/*trim*/, listItem.PropertyKey.StartsWith( '/' ) ? 1 : 0 );
+   listItem.PropertyKey.Break( items, '/', false/*trim*/, listItem.PropertyKey.StartsWith( '/' ) ? 1 : 0 );
    if ( items.Length() == 3 )
       if ( !items[0].IsEmpty() && !items[1].IsEmpty() && !items[2].IsEmpty() )
       {

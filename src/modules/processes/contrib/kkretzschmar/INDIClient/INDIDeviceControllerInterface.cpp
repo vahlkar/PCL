@@ -1090,8 +1090,17 @@ void INDIDeviceControllerInterface::e_NodeSelectionUpdated( TreeBox& sender )
 void INDIDeviceControllerInterface::e_Timer( Timer& sender )
 {
    UpdateDeviceLists();
-   if ( INDIClient::HasClient() )
-      GUI->ServerMessage_Label.SetText( INDIClient::TheClient()->CurrentServerMessage() );
+   if ( INDIClient::HasClient() ) {
+      String message;
+      if (INDIClient::TheClient()->CurrentServerMessage().m_messageSeverity == INDIGO_ALERT_STATE) {
+        message = String().Format("Latest INDI server log entry: ERROR: %s", INDIClient::TheClient()->CurrentServerMessage().m_message.To7BitASCII().c_str() );
+      } else {
+        message = String().Format("Latest INDI server log entry: %s", INDIClient::TheClient()->CurrentServerMessage().m_message.To7BitASCII().c_str() );
+
+      }
+
+      GUI->ServerMessage_Label.SetText( message );
+   }
 }
 
 // ----------------------------------------------------------------------------

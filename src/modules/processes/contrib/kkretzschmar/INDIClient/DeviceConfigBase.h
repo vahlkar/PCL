@@ -147,7 +147,7 @@ protected:
       if ( sender == SaveConfig_Button )
       {
          SendUpdatedProperties();
-         INDIClient::TheClient()->SendNewPropertyItem( m_device, "CONFIG_PROCESS", "INDI_SWITCH", "CONFIG_SAVE", "ON" );
+         INDIClient::TheClient()->SendNewPropertyItem( m_device, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_SAVE_ITEM_NAME, "ON" );
          Ok();
       }
    }

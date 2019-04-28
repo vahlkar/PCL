@@ -163,6 +163,11 @@ class INDIClient
 {
 public:
 
+    struct ServerMessage {
+        String m_message;
+        int    m_messageSeverity = 0;
+    };
+
    INDIClient( const IsoString& hostName = "localhost", uint32 port = 7624 ): m_indigoClient("PixInsight", hostName.c_str(), port), m_serverHost(hostName), m_serverPort(port) {
 
       // register Indigo callbacks
@@ -319,7 +324,7 @@ public:
              SendNewPropertyItem( device, property, type, element1, value1, element2, value2, async );
    }
 
-   String CurrentServerMessage() const
+   ServerMessage CurrentServerMessage() const
    {
       volatile AutoLock lock( m_mutex );
       return m_currentServerMessage;
@@ -328,7 +333,8 @@ public:
    void ClearCurrentServerMessage()
    {
       volatile AutoLock lock( m_mutex );
-      m_currentServerMessage.Clear();
+      m_currentServerMessage.m_message.Clear();
+      m_currentServerMessage.m_messageSeverity = 0;
    }
 
    String DownloadedImagePath() const
@@ -420,7 +426,7 @@ private:
    INDIPropertyListItemArray m_propertyList;
    mutable Mutex             m_propertyListMutex;
    String                    m_downloadedImagePath;
-   String                    m_currentServerMessage;
+   ServerMessage             m_currentServerMessage;
    int                       m_verbosity = 1;
    bool                      m_serverConnectionChanged = false;
    INDIDeviceListItemArray   m_createdDevices;

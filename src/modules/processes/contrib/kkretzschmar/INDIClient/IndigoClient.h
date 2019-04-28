@@ -106,7 +106,7 @@ public:
    std::function<void(indigo_property*)> newText = [] (indigo_property*){};
    std::function<void(indigo_property*)> newLight = [] (indigo_property*){};
    std::function<void(indigo_property*)> newBlob = [] (indigo_property*){};
-   std::function<void(const char*)> newMessage = [] (const char*){};
+   std::function<void(const char*, int)> newMessage = [] (const char*, int severity){};
  private:
    indigo_server_entry* getServerEntry(const char* host, int32_t port) const;
    static indigo_result clientAttach(indigo_client *client);

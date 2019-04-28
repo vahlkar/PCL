@@ -329,7 +329,7 @@ void INDICCDFrameInstance::SendDeviceProperties( bool async ) const
       indi->MaybeSendNewPropertyItem( p_deviceName, CCD_BIN_PROPERTY_NAME, "INDI_NUMBER", CCD_BIN_HORIZONTAL_ITEM_NAME, p_binningX, CCD_BIN_VERTICAL_ITEM_NAME, p_binningY,async );
 
    if ( p_filterSlot > 0 )
-      indi->MaybeSendNewPropertyItem( p_extFilterWheelDeviceName != TheICFExternalFilterWheelDeviceNameParameter->DefaultValue()  ? p_extFilterWheelDeviceName : p_deviceName, "FILTER_SLOT", "INDI_NUMBER", "FILTER_SLOT_VALUE", p_filterSlot, async );
+      indi->MaybeSendNewPropertyItem( p_extFilterWheelDeviceName != TheICFExternalFilterWheelDeviceNameParameter->DefaultValue()  ? p_extFilterWheelDeviceName : p_deviceName, WHEEL_SLOT_PROPERTY_NAME, "INDI_NUMBER", WHEEL_SLOT_ITEM_NAME, p_filterSlot, async );
 }
 
 // ----------------------------------------------------------------------------
@@ -485,9 +485,13 @@ private:
       // Print latest INDI server message
       if ( INDIClient::TheClient()->Verbosity() > 1 )
       {
-         String message = INDIClient::TheClient()->CurrentServerMessage();
-         if ( !message.IsEmpty() )
-         {
+         String message = INDIClient::TheClient()->CurrentServerMessage().m_message;
+         if ( !message.IsEmpty() && INDIClient::TheClient()->CurrentServerMessage().m_messageSeverity == INDIGO_ALERT_STATE ) {
+             m_console.CriticalLn( "<end><cbr><br>* Latest INDI server log entry: ERROR: " );
+             m_console.CriticalLn( message );
+             m_console.WriteLn();
+         }
+         else {
             m_console.NoteLn( "<end><cbr><br>* Latest INDI server log entry:" );
             m_console.NoteLn( message );
             m_console.WriteLn();
@@ -1205,7 +1209,7 @@ void AbstractINDICCDFrameExecution::Perform()
                      // If not already available, try to get the local
                      // sidereal time.
                      if ( !data.localSiderealTime.IsDefined() )
-                        if ( indi->GetPropertyItem( telescopeName, "TIME_LST", "LST", item, false/*formatted*/ ) )
+                        if ( indi->GetPropertyItem( telescopeName, MOUNT_LST_TIME_PROPERTY_NAME, MOUNT_LST_TIME_ITEM_NAME, item, false/*formatted*/ ) )
                         {
                            data.localSiderealTime = item.PropertyValue.ToDouble();
                            IsoString lstSexagesimal = IsoString::ToSexagesimal( data.localSiderealTime(),
@@ -1218,7 +1222,7 @@ void AbstractINDICCDFrameExecution::Perform()
                         // If not already available, try to get the telescope
                         // pier side from standard device properties.
                         if ( !data.focalLength.IsDefined() )
-                           if ( indi->GetPropertyItem( telescopeName, "TELESCOPE_PIER_SIDE", "PIER_WEST", item) )
+                           if ( indi->GetPropertyItem( telescopeName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, item) )
                            {
                               if (item.PropertyValue == "ON" )
                               {
@@ -1301,7 +1305,7 @@ void AbstractINDICCDFrameExecution::Perform()
                            {
                               k.value = '\'' + IsoString::ToSexagesimal( data.dec(),
                                                    DecConversionOptions( 2/*precision*/, 0/*width*/ ) ) + '\'';
-                              k.comment = "Declination ascension of the center of the image";
+                              k.comment = "Declination of the center of the image";
                            }
                            else if ( k.name == "EQUINOX" )
                            {

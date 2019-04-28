@@ -971,9 +971,9 @@ void AlignmentConfigDialog::e_PageSelected( TabBox& sender, int tabIndex )
 
 // ----------------------------------------------------------------------------
 
-MountConfigDialog::MountConfigDialog( const String& deviceName,
+MountConfigDialog::MountConfigDialog(const String& deviceName,
                                       double geoLat, double geoLong, double geoHeight,
-                                      double telescopeAperture, double telescopeFocalLength ) :
+                                      String utcTime, double utcOffset ) :
    ConfigDialogBase( deviceName ),
    m_device( deviceName )
 {
@@ -1064,9 +1064,82 @@ MountConfigDialog::MountConfigDialog( const String& deviceName,
    Height_NumericEdit.label.SetFixedWidth( labelWidth1 );
    Height_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Height_NumericEdit.sizer.AddStretch();
-   Height_NumericEdit.SetValue( s3 );
+   Height_NumericEdit.SetValue( geoHeight );
 
-   TelescopeAperture_NumericEdit.label.SetText( "Telescope aperture:" );
+   double dayFraction;
+   double timeZone;
+   int year, month, day;
+   utcTime.TryParseISO8601DateTime(year, month, day, dayFraction, timeZone );
+
+   Date_Label.SetText( "Date:" );
+   Date_Label.SetToolTip( "<p>Current date</p>" );
+   Date_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Date_Label.SetFixedWidth( labelWidth1 );
+
+   Date_Day_SpinBox.SetRange( 0, 31 );
+   Date_Day_SpinBox.SetFixedWidth( editWidth1 );
+   Date_Day_SpinBox.SetValue( day );
+
+   Date_Month_SpinBox.SetRange( 0, 12 );
+   Date_Month_SpinBox.SetFixedWidth( editWidth1 );
+   Date_Month_SpinBox.SetValue( month );
+
+   Date_Year_SpinBox.SetRange( 0, 9999 );
+   Date_Year_SpinBox.SetFixedWidth( editWidth1 );
+   Date_Year_SpinBox.SetValue( year );
+
+
+   GetHostDateTime_PushButton.SetText( "Get" );
+   GetHostDateTime_PushButton.SetToolTip( "<p>Get date and utc time from the host where the Indigo server is running on.</p>" );
+   GetHostDateTime_PushButton.OnClick( (Button::click_event_handler)&MountConfigDialog::e_Click, *this );
+
+   Date_Sizer.SetSpacing( 4 );
+   Date_Sizer.Add( Date_Label );
+   Date_Sizer.Add( Date_Day_SpinBox );
+   Date_Sizer.Add( Date_Month_SpinBox );
+   Date_Sizer.Add( Date_Year_SpinBox );
+   Date_Sizer.Add( GetHostDateTime_PushButton );
+   Date_Sizer.AddStretch();
+
+
+   DecimalToSexagesimal( sign, s1, s2, s3, dayFraction * 24 );
+
+   UtcTime_Label.SetText( "UTC time:" );
+   UtcTime_Label.SetToolTip( "<p>Current UTC time</p>" );
+   UtcTime_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   UtcTime_Label.SetFixedWidth( labelWidth1 );
+
+   UtcTime_H_SpinBox.SetRange( 0, 180 );
+   UtcTime_H_SpinBox.SetFixedWidth( editWidth1 );
+   UtcTime_H_SpinBox.SetValue( s1 );
+
+   UtcTime_M_SpinBox.SetRange( 0, 59 );
+   UtcTime_M_SpinBox.SetFixedWidth( editWidth1 );
+   UtcTime_M_SpinBox.SetValue( s2 );
+
+   UtcTime_S_NumericEdit.SetReal();
+   UtcTime_S_NumericEdit.SetPrecision( 2 );
+   UtcTime_S_NumericEdit.EnableFixedPrecision();
+   UtcTime_S_NumericEdit.SetRange( 0, 59.99 );
+   UtcTime_S_NumericEdit.label.Hide();
+   UtcTime_S_NumericEdit.edit.SetFixedWidth( editWidth2 );
+   UtcTime_S_NumericEdit.SetValue( s3);
+
+   UtcTime_Sizer.SetSpacing( 4 );
+   UtcTime_Sizer.Add( UtcTime_Label );
+   UtcTime_Sizer.Add( UtcTime_H_SpinBox );
+   UtcTime_Sizer.Add( UtcTime_M_SpinBox );
+   UtcTime_Sizer.Add( UtcTime_S_NumericEdit );
+   UtcTime_Sizer.AddStretch();
+
+   UpdateUtc_Timer.SetInterval( 1 );
+   UpdateUtc_Timer.SetPeriodic( true );
+   UpdateUtc_Timer.OnTimer( (Timer::timer_event_handler)&MountConfigDialog::e_Timer, *this );
+   UpdateUtc_Timer.Start();
+
+
+
+   /*TelescopeAperture_NumericEdit.label.SetText( "Telescope aperture:" );
    TelescopeAperture_NumericEdit.label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    TelescopeAperture_NumericEdit.label.SetToolTip( "<p>Telescope's aperture in millimeters.</p>" );
    TelescopeAperture_NumericEdit.label.SetFixedWidth( labelWidth1 );
@@ -1085,14 +1158,15 @@ MountConfigDialog::MountConfigDialog( const String& deviceName,
    TelescopeFocalLength_NumericEdit.edit.SetFixedWidth( editWidth2 );
    TelescopeFocalLength_NumericEdit.sizer.AddStretch();
    TelescopeFocalLength_NumericEdit.SetValue( telescopeFocalLength );
-
+    */
    Global_Sizer.SetSpacing( 8 );
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.Add( Latitude_Sizer );
    Global_Sizer.Add( Longitude_Sizer );
    Global_Sizer.Add( Height_NumericEdit );
-   Global_Sizer.Add( TelescopeAperture_NumericEdit );
-   Global_Sizer.Add( TelescopeFocalLength_NumericEdit );
+   Global_Sizer.Add( Date_Sizer );
+   Global_Sizer.Add( UtcTime_Sizer );
+   //Global_Sizer.Add( TelescopeFocalLength_NumericEdit );
 
    AddBaseControls();
 }
@@ -1111,19 +1185,79 @@ void MountConfigDialog::SendUpdatedProperties()
 
    INDIClient::TheClient()->SendNewPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, "INDI_NUMBER", GEOGRAPHIC_COORDINATES_LONGITUDE_ITEM_NAME, longitude );
 
-   INDIClient::TheClient()->SendNewPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, "INDI_NUMBER", GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, Height_NumericEdit.Value() );
+   INDIPropertyListItem mountProp;
+   if (INDIClient::TheClient()->GetPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, mountProp, false/*formatted*/ ))
+   {
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, "INDI_NUMBER", GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, Height_NumericEdit.Value() );
+   }
+   if (INDIClient::TheClient()->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_TIME_ITEM_NAME, mountProp, false/*formatted*/ ))
+   {
+      double newUtcTime = SexagesimalToDecimal(  +1, UtcTime_H_SpinBox.Value(), UtcTime_M_SpinBox.Value(), UtcTime_S_NumericEdit.Value() );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, "INDI_NUMBER", UTC_TIME_ITEM_NAME, newUtcTime );
+   }
+
 
    // sending telescope info in bulk request
-   INDINewPropertyItem newPropertyItem( m_device, "TELESCOPE_INFO", "INDI_NUMBER" );
+   /*INDINewPropertyItem newPropertyItem( m_device, "TELESCOPE_INFO", "INDI_NUMBER" );
    newPropertyItem.ElementValues << ElementValue( "TELESCOPE_APERTURE", TelescopeAperture_NumericEdit.Value() );
    newPropertyItem.ElementValues << ElementValue( "TELESCOPE_FOCAL_LENGTH", TelescopeFocalLength_NumericEdit.Value() );
    newPropertyItem.ElementValues << ElementValue( "GUIDER_APERTURE", 10 );
    newPropertyItem.ElementValues << ElementValue( "GUIDER_FOCAL_LENGTH", 100 );
 
-   INDIClient::TheClient()->SendNewPropertyItem( newPropertyItem );
+   INDIClient::TheClient()->SendNewPropertyItem( newPropertyItem );*/
 }
 
 // ----------------------------------------------------------------------------
+
+void MountConfigDialog::e_Click( Button& sender, bool checked )
+{
+    if (sender == GetHostDateTime_PushButton)
+    {
+        INDIPropertyListItem mountProp;
+        if (INDIClient::TheClient()->GetPropertyItem( m_device, MOUNT_SET_HOST_TIME_PROPERTY_NAME, MOUNT_SET_HOST_TIME_ITEM_NAME, mountProp, false/*formatted*/ ))
+        {
+           INDIClient::TheClient()->MaybeSendNewPropertyItem( m_device, MOUNT_SET_HOST_TIME_PROPERTY_NAME, "INDI_SWITCH", MOUNT_SET_HOST_TIME_ITEM_NAME, "ON", true/*async*/ );
+        }
+    }
+}
+
+void MountConfigDialog::e_Timer( Timer& sender )
+{
+   if ( sender == UpdateUtc_Timer )
+   {
+     INDIPropertyListItem mountProp;
+     if (INDIClient::TheClient()->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_TIME_ITEM_NAME, mountProp, false/*formatted*/ ))
+     {
+       double dayFraction;
+       double timeZone;
+       int year, month, day;
+       mountProp.PropertyValue.TryParseISO8601DateTime(year, month, day, dayFraction, timeZone );
+       Date_Day_SpinBox.SetValue( day );
+       Date_Month_SpinBox.SetValue( month );
+       Date_Year_SpinBox.SetValue( year );
+
+       int sign, hour, minutes;
+       double seconds;
+       DecimalToSexagesimal( sign, hour, minutes, seconds, dayFraction * 24 );
+       UtcTime_H_SpinBox.SetValue( hour );
+       UtcTime_M_SpinBox.SetValue( minutes );
+       UtcTime_S_NumericEdit.SetValue( seconds );
+
+     } else {
+         Date_Label.Disable();
+         Date_Day_SpinBox.Disable();
+         Date_Month_SpinBox.Disable();
+         Date_Year_SpinBox.Disable();
+         UtcTime_Label.Disable();
+         UtcTime_H_SpinBox.Disable();
+         UtcTime_M_SpinBox.Disable();
+         UtcTime_S_NumericEdit.Disable();
+         GetHostDateTime_PushButton.Disable();
+     }
+   }
+}
+
+
 // ----------------------------------------------------------------------------
 
 INDIMountInterface::INDIMountInterface()
@@ -1892,11 +2026,20 @@ __device_found:
       INDIClient* indi = INDIClient::TheClient();
       INDIPropertyListItem mountProp;
 
-      double time_lst = LocalApparentSiderialTime(GeographicLongitude()); // needed for pier side fallback
-         GUI->LST_Value_Label.SetText( String::ToSexagesimal( time_lst,
-                                 SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, false/*sign*/, 3/*width*/ ) ) );
+      double time_lst = 0;
+      if (indi->GetPropertyItem( m_device, MOUNT_LST_TIME_PROPERTY_NAME, MOUNT_LST_TIME_ITEM_NAME, mountProp, false/*formatted*/ ))
+      {
+        time_lst = mountProp.PropertyValue.ToDouble();
+      }
+      else
+      {
+        time_lst =  LocalApparentSiderialTime(GeographicLongitude());
+      }
+      GUI->LST_Value_Label.SetText( String::ToSexagesimal( time_lst,
+                              SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, false/*sign*/, 3/*width*/ ) ) );
 
-      double coord_ra = 0;// needed for pier side fallback
+
+      double coord_ra = 0;
       if ( indi->GetPropertyItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, mountProp, false/*formatted*/ ) )
       {
          GUI->RA_Value_Label.SetText( String::ToSexagesimal( mountProp.PropertyValue.ToDouble(),
@@ -1968,6 +2111,15 @@ __device_found:
          m_geoHeight = mountProp.PropertyValue.ToDouble();
       else
          m_geoHeight = 0;
+
+      if ( indi->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_TIME_ITEM_NAME, mountProp, false/*formatted*/ ) )
+         m_utcTime = mountProp.PropertyValue;
+
+      if ( indi->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_OFFSET_ITEM_NAME, mountProp, false/*formatted*/ ) )
+         m_utcOffset = mountProp.PropertyValue.ToDouble();
+      else
+         m_utcOffset = 0;
+
 
       if ( indi->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_APERTURE", mountProp, false/*formatted*/ ) )
          m_telescopeAperture = mountProp.PropertyValue.ToDouble();
@@ -2265,8 +2417,8 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
                                      GeographicLatitude(),
                                      GeographicLongitude(),
                                      GeographicHeight(),
-                                     TelescopeAperture(),
-                                     TelescopeFocalLength() );
+                                     UtcTime(),
+                                     UtcOffset() );
       if ( mountConfig.Execute() && INDIClient::HasClient() )
       {
          // ### TODO?

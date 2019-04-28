@@ -118,6 +118,12 @@ public:
 	   return m_device;
    }
 
+   const String CurrentFilterWheelDeviceName() const
+   {
+       String externalFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText(GUI->ExternalFilterDevice_Combo.CurrentItem());
+       return externalFilterWheelDeviceName != String("<No filter wheel>") ? externalFilterWheelDeviceName : m_device;
+   }
+
 private:
 
    String                          m_device;

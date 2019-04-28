@@ -123,6 +123,7 @@ bool IndigoClient::serverIsConnected(std::ostream& errMessage) const {
    return rc == INDIGO_OK;
  }
 
+
  bool IndigoClient::sendNewNumberProperty(char* deviceName,  const char* propertyName, size_t numOfItems, const char** items, const double* values) {
     indigo_property *property = indigo_init_number_property(NULL, deviceName, propertyName, NULL, NULL, static_cast<indigo_property_state>(0), static_cast<indigo_property_perm>(0), numOfItems);
     for (size_t i = 0; i < numOfItems; i++)
@@ -213,6 +214,9 @@ indigo_result IndigoClient::updateProperty(indigo_client *client, indigo_device 
    if (property == nullptr) {
       return INDIGO_FAILED;
    }
+   if ( message != nullptr) {
+       indigoClient->newMessage(message, property->state);
+   }
    if (property->type == INDIGO_SWITCH_VECTOR) {
       indigoClient->newSwitch(property);
    } else if (property->type == INDIGO_NUMBER_VECTOR){
@@ -234,7 +238,7 @@ indigo_result IndigoClient::updateProperty(indigo_client *client, indigo_device 
 indigo_result IndigoClient::getMessage(indigo_client *client, indigo_device *device, const char *message) {
    IndigoClient* indigoClient = reinterpret_cast<IndigoClient*>(client->client_context);
    if (message != nullptr) {
-      indigoClient->newMessage(message);
+      indigoClient->newMessage(message, INDIGO_OK_STATE);
       return INDIGO_OK;
    }
    return INDIGO_FAILED;
