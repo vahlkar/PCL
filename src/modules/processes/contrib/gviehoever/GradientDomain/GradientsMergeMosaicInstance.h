@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard GradientDomain Process Module Version 00.06.04.0240
+// Standard GradientDomain Process Module Version 00.06.04.0246
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaicInstance.h - Released 2019-01-21T12:06:42Z
+// GradientsMergeMosaicInstance.h - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -113,4 +113,4 @@ namespace pcl
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaicInstance.h - Released 2019-01-21T12:06:42Z
+// EOF GradientsMergeMosaicInstance.h - Released 2019-04-30T16:31:10Z

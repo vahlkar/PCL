@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2019-01-21T12:06:07Z
+// pcl/Vector.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -957,7 +957,7 @@ public:
 
    /*!
     * Returns the value of the smallest vector component.
-    * For empty vectors, this function returns zero.
+    * For empty vectors, this function returns zero conventionally.
     */
    component MinComponent() const
    {
@@ -968,13 +968,57 @@ public:
 
    /*!
     * Returns the value of the largest vector component.
-    * For empty vectors, this function returns zero.
+    * For empty vectors, this function returns zero conventionally.
     */
    component MaxComponent() const
    {
       if ( m_data->Length() > 0 )
          return *pcl::MaxItem( m_data->Begin(), m_data->End() );
       return component( 0 );
+   }
+
+   /*!
+    * Returns the \a kth order statistic of the sample in this vector.
+    *
+    * Before selecting the specified vector component, this function ensures
+    * that this instance uniquely references its vector data, generating a
+    * duplicate if necessary.
+    *
+    * The specified index \a k must be valid, that is, it must be in the range
+    * [0,Length()-1]. If a value of \a k outside the valid range is specified,
+    * or equivalently, if this function is called for an empty vector, this
+    * member function will invoke undefined behavior.
+    *
+    * \note This function uses a \e destructive selection algorithm: it alters
+    * the order in the sequence of vector components. For a nondestructive
+    * version, see the const version of this member function.
+    */
+   component OrderStatistic( int k )
+   {
+      PCL_PRECONDITION( !IsEmpty() )
+      PCL_PRECONDITION( k >= 0 && k < m_data->Length() )
+      EnsureUnique();
+      return *pcl::Select( m_data->Begin(), m_data->End(), k );
+   }
+
+   /*!
+    * Returns the \a kth order statistic of the sample in this vector, without
+    * modifying this instance.
+    *
+    * The specified index \a k must be valid, that is, it must be in the range
+    * [0,Length()-1]. If a value of \a k outside the valid range is specified,
+    * or equivalently, if this function is called for an empty vector, this
+    * member function will invoke undefined behavior.
+    *
+    * This is a \e nondestructive selection routine that doesn't modify the
+    * order of existing vector components. To achieve that goal, this routine
+    * simply generates a temporary working vector as a copy of this object,
+    * then calls its OrderStatistic() member function to obtain the function's
+    * return value.
+    */
+   component OrderStatistic( int k ) const
+   {
+      return GenericVector( *this ).OrderStatistic( k );
    }
 
    /*!
@@ -1081,14 +1125,14 @@ public:
    /*!
     * Returns the median of the values in this vector.
     *
-    * For vectors of length < 2, this function returns zero.
+    * For vectors of length < 2, this function returns zero conventionally.
     *
     * Before computing the median, this function ensures that this instance
     * uniquely references its vector data, generating a duplicate if necessary.
     *
     * \note This is a \e destructive median calculation algorithm: it alters
     * the order in the sequence of vector components. For a nondestructive
-    * version, see the immutable version of this member function.
+    * version, see the const version of this member function.
     */
    double Median()
    {
@@ -1100,7 +1144,7 @@ public:
     * Returns the median of the values in this vector, without modifying this
     * instance.
     *
-    * For vectors of length < 2, this function returns zero.
+    * For vectors of length < 2, this function returns zero conventionally.
     *
     * This is a \e nondestructive median calculation routine that doesn't
     * modify the order of existing vector components. To achieve that goal,
@@ -2080,7 +2124,7 @@ template <typename T> inline
 GenericVector<T> operator +( GenericVector<T>&& A, const GenericVector<T>& B )
 {
    A += B;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2094,7 +2138,7 @@ template <typename T> inline
 GenericVector<T> operator +( const GenericVector<T>& A, GenericVector<T>&& B )
 {
    B += A;
-   return B;
+   return std::move( B );
 }
 
 /*!
@@ -2109,7 +2153,7 @@ template <typename T> inline
 GenericVector<T> operator +( GenericVector<T>&& A, GenericVector<T>&& B )
 {
    A += B;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2134,7 +2178,7 @@ template <typename T> inline
 GenericVector<T> operator +( GenericVector<T>&& A, const T& x )
 {
    A += x;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2161,7 +2205,7 @@ template <typename T> inline
 GenericVector<T> operator +( const T& x, GenericVector<T>&& A )
 {
    A += x;
-   return A;
+   return std::move( A );
 }
 
 // ----------------------------------------------------------------------------
@@ -2198,7 +2242,7 @@ template <typename T> inline
 GenericVector<T> operator -( GenericVector<T>&& A, const GenericVector<T>& B )
 {
    A -= B;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2217,7 +2261,7 @@ GenericVector<T> operator -( const GenericVector<T>& A, GenericVector<T>&& B )
    typename GenericVector<T>::const_iterator a = A.Begin();
    for ( typename GenericVector<T>::iterator b = B.Begin(), b1 = B.End(); b < b1; ++a, ++b )
       *b = *a - *b;
-   return B;
+   return std::move( B );
 }
 
 /*!
@@ -2232,7 +2276,7 @@ template <typename T> inline
 GenericVector<T> operator -( GenericVector<T>&& A, GenericVector<T>&& B )
 {
    A -= B;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2258,7 +2302,7 @@ template <typename T> inline
 GenericVector<T> operator -( GenericVector<T>&& A, const T& x )
 {
    A -= x;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2293,7 +2337,7 @@ GenericVector<T> operator -( const T& x, GenericVector<T>&& A )
 {
    for ( typename GenericVector<T>::iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
       *a = x - *a;
-   return A;
+   return std::move( A );
 }
 
 // ----------------------------------------------------------------------------
@@ -2329,7 +2373,7 @@ GenericVector<T> operator ^( GenericVector<T>&& A, const GenericVector<T>& B )
      z = A[0]*B[1] - A[1]*B[0];
    typename GenericVector<T>::iterator a = A.Begin();
    a[0] = x; a[1] = y; a[2] = z;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2347,7 +2391,7 @@ GenericVector<T> operator ^( const GenericVector<T>& A, GenericVector<T>&& B )
      z = A[0]*B[1] - A[1]*B[0];
    typename GenericVector<T>::iterator b = B.Begin();
    b[0] = x; b[1] = y; b[2] = z;
-   return B;
+   return std::move( B );
 }
 
 /*!
@@ -2366,7 +2410,7 @@ GenericVector<T> operator ^( GenericVector<T>&& A, GenericVector<T>&& B )
      z = A[0]*B[1] - A[1]*B[0];
    typename GenericVector<T>::iterator a = A.Begin();
    a[0] = x; a[1] = y; a[2] = z;
-   return A;
+   return std::move( A );
 }
 
 // ----------------------------------------------------------------------------
@@ -2412,7 +2456,7 @@ template <typename T> inline
 GenericVector<T> operator *( GenericVector<T>&& A, const T& x )
 {
    A *= x;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2439,7 +2483,7 @@ template <typename T> inline
 GenericVector<T> operator *( const T& x, GenericVector<T>&& A )
 {
    A *= x;
-   return A;
+   return std::move( A );
 }
 
 // ----------------------------------------------------------------------------
@@ -2467,7 +2511,7 @@ template <typename T> inline
 GenericVector<T> operator /( GenericVector<T>&& A, const T& x )
 {
    A /= x;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2500,7 +2544,7 @@ GenericVector<T> operator /( const T& x, GenericVector<T>&& A )
 {
    for ( typename GenericVector<T>::iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
       *a = x / *a;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2556,7 +2600,7 @@ template <typename T> inline
 GenericVector<T> operator ^( GenericVector<T>&& A, const T& x )
 {
    A ^= x;
-   return A;
+   return std::move( A );
 }
 
 /*!
@@ -2589,7 +2633,7 @@ GenericVector<T> operator ^( const T& x, GenericVector<T>&& A )
 {
    for ( typename GenericVector<T>::iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
       *a = pcl::Pow( x, *a );
-   return A;
+   return std::move( A );
 }
 
 // ----------------------------------------------------------------------------
@@ -2817,4 +2861,4 @@ typedef F80Vector                   LDVector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Vector.h - Released 2019-04-30T16:30:41Z

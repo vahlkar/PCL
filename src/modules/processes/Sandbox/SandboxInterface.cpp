@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Sandbox Process Module Version 01.00.02.0286
+// Standard Sandbox Process Module Version 01.00.02.0292
 // ----------------------------------------------------------------------------
-// SandboxInterface.cpp - Released 2019-01-21T12:06:42Z
+// SandboxInterface.cpp - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -331,4 +331,4 @@ SandboxInterface::GUIData::GUIData( SandboxInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SandboxInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF SandboxInterface.cpp - Released 2019-04-30T16:31:10Z

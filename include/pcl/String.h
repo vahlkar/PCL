@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/String.h - Released 2019-01-21T12:06:07Z
+// pcl/String.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -7608,7 +7608,7 @@ inline IsoString operator +( IsoString::string_base&& s1, const IsoString::strin
 inline IsoString operator +( IsoString&& s1, const IsoString::string_base& s2 )
 {
    s1.Append( s2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -7630,7 +7630,7 @@ inline IsoString operator +( const IsoString::string_base& s1, IsoString::string
 inline IsoString operator +( const IsoString::string_base& s1, IsoString&& s2 )
 {
    s2.Prepend( s1 );
-   return s2;
+   return std::move( s2 );
 }
 
 /*!
@@ -7652,7 +7652,7 @@ inline IsoString operator +( IsoString::string_base&& s1, IsoString::string_base
 inline IsoString operator +( IsoString&& s1, IsoString::string_base&& s2 )
 {
    s1.Append( s2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -7674,7 +7674,7 @@ inline IsoString operator +( IsoString::string_base&& s1, IsoString&& s2 )
 inline IsoString operator +( IsoString&& s1, IsoString&& s2 )
 {
    s1.Append( s2 );
-   return s1;
+   return std::move( s1 );
 }
 
 // ----------------------------------------------------------------------------
@@ -7710,7 +7710,7 @@ inline IsoString operator +( IsoString::string_base&& s1, IsoString::const_c_str
 inline IsoString operator +( IsoString&& s1, IsoString::const_c_string t2 )
 {
    s1.Append( t2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -7744,7 +7744,7 @@ inline IsoString operator +( IsoString::const_c_string t1, IsoString::string_bas
 inline IsoString operator +( IsoString::const_c_string t1, IsoString&& s2 )
 {
    s2.Prepend( t1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -7780,7 +7780,7 @@ inline IsoString operator +( IsoString::string_base&& s1, IsoString::char_type c
 inline IsoString operator +( IsoString&& s1, IsoString::char_type c2 )
 {
    s1.Append( c2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -7814,7 +7814,7 @@ inline IsoString operator +( IsoString::char_type c1, IsoString::string_base&& s
 inline IsoString operator +( IsoString::char_type c1, IsoString&& s2 )
 {
    s2.Prepend( c1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12057,7 +12057,7 @@ inline String operator +( String::string_base&& s1, const String::string_base& s
 inline String operator +( String&& s1, const String::string_base& s2 )
 {
    s1.Append( s2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12079,7 +12079,7 @@ inline String operator +( const String::string_base& s1, String::string_base&& s
 inline String operator +( const String::string_base& s1, String&& s2 )
 {
    s2.Prepend( s1 );
-   return s2;
+   return std::move( s2 );
 }
 
 /*!
@@ -12101,7 +12101,7 @@ inline String operator +( String::string_base&& s1, String::string_base&& s2 )
 inline String operator +( String&& s1, String::string_base&& s2 )
 {
    s1.Append( s2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12123,7 +12123,7 @@ inline String operator +( String::string_base&& s1, String&& s2 )
 inline String operator +( String&& s1, String&& s2 )
 {
    s1.Append( s2 );
-   return s1;
+   return std::move( s1 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12159,7 +12159,7 @@ inline String operator +( String::string_base&& s1, String::const_iterator t2 )
 inline String operator +( String&& s1, String::const_iterator t2 )
 {
    s1.Append( t2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12193,7 +12193,7 @@ inline String operator +( String::const_iterator t1, String::string_base&& s2 )
 inline String operator +( String::const_iterator t1, String&& s2 )
 {
    s2.Prepend( t1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12229,7 +12229,7 @@ inline String operator +( String::string_base&& s1, String::char_type c2 )
 inline String operator +( String&& s1, String::char_type c2 )
 {
    s1.Append( c2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12263,7 +12263,7 @@ inline String operator +( String::char_type c1, String::string_base&& s2 )
 inline String operator +( String::char_type c1, String&& s2 )
 {
    s2.Prepend( c1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12300,7 +12300,7 @@ inline String operator +( String::string_base&& s1, const char16_t* t2 )
 inline String operator +( String&& s1, const char16_t* t2 )
 {
    s1.Append( t2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12335,7 +12335,7 @@ inline String operator +( const char16_t* t1, String::string_base&& s2 )
 inline String operator +( const char16_t* t1, String&& s2 )
 {
    s2.Prepend( t1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12372,7 +12372,7 @@ inline String operator +( String::string_base&& s1, char16_t c2 )
 inline String operator +( String&& s1, char16_t c2 )
 {
    s1.Append( c2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12407,7 +12407,7 @@ inline String operator +( char16_t c1, String::string_base&& s2 )
 inline String operator +( char16_t c1, String&& s2 )
 {
    s2.Prepend( c1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12444,7 +12444,7 @@ inline String operator +( String::string_base&& s1, const wchar_t* t2 )
 inline String operator +( String&& s1, const wchar_t* t2 )
 {
    s1.Append( t2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12479,7 +12479,7 @@ inline String operator +( const wchar_t* t1, String::string_base&& s2 )
 inline String operator +( const wchar_t* t1, String&& s2 )
 {
    s2.Prepend( t1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12516,7 +12516,7 @@ inline String operator +( String::string_base&& s1, wchar_t c2 )
 inline String operator +( String&& s1, wchar_t c2 )
 {
    s1.Append( c2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12551,7 +12551,7 @@ inline String operator +( wchar_t c1, String::string_base&& s2 )
 inline String operator +( wchar_t c1, String&& s2 )
 {
    s2.Prepend( c1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12588,7 +12588,7 @@ inline String operator +( String::string_base&& s1, const String::string8_base& 
 inline String operator +( String&& s1, const String::string8_base& s2 )
 {
    s1.Append( s2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12623,7 +12623,7 @@ inline String operator +( const String::string8_base& s1, String::string_base&& 
 inline String operator +( const String::string8_base& s1, String&& s2 )
 {
    s2.Prepend( s1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12660,7 +12660,7 @@ inline String operator +( String::string_base&& s1, String::const_c_string8 t2 )
 inline String operator +( String&& s1, String::const_c_string8 t2 )
 {
    s1.Append( t2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12695,7 +12695,7 @@ inline String operator +( String::const_c_string8 t1, String::string_base&& s2 )
 inline String operator +( String::const_c_string8 t1, String&& s2 )
 {
    s2.Prepend( t1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -12731,7 +12731,7 @@ inline String operator +( String::string_base&& s1, String::char8_type c2 )
 inline String operator +( String&& s1, String::char8_type c2 )
 {
    s1.Append( c2 );
-   return s1;
+   return std::move( s1 );
 }
 
 /*!
@@ -12765,7 +12765,7 @@ inline String operator +( String::char8_type c1, String::string_base&& s2 )
 inline String operator +( String::char8_type c1, String&& s2 )
 {
    s2.Prepend( c1 );
-   return s2;
+   return std::move( s2 );
 }
 
 // ----------------------------------------------------------------------------
@@ -13682,4 +13682,4 @@ inline std::ostream& operator <<( std::ostream& o, const String& s )
 #endif   // __PCL_String_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/String.h - Released 2019-04-30T16:30:41Z

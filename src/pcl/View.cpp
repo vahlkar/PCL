@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/View.cpp - Released 2019-01-21T12:06:21Z
+// pcl/View.cpp - Released 2019-04-30T16:30:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -153,18 +153,18 @@ void View::Rename( const IsoString& newId )
 
 bool View::CanRead() const
 {
-   api_bool r = api_false, w = api_false;
-   (*API->View->GetViewLocks)( handle, &r, &w );
-   return r != api_false;
+   api_bool rd = api_false, wr = api_false;
+   (*API->View->GetViewLocks)( handle, &rd, &wr );
+   return rd != api_false;
 }
 
 // ----------------------------------------------------------------------------
 
 bool View::CanWrite() const
 {
-   api_bool r = api_false, w = api_false;
-   (*API->View->GetViewLocks)( handle, &r, &w );
-   return w != api_false;
+   api_bool rd = api_false, wr = api_false;
+   (*API->View->GetViewLocks)( handle, &rd, &wr );
+   return wr != api_false;
 }
 
 // ----------------------------------------------------------------------------
@@ -174,20 +174,20 @@ void View::Lock( bool notify ) const
    if ( !Thread::IsRootThread() )
       throw Error( "Only the root thread can lock a view: " + FullId() );
 
-   api_bool r = api_false, w = api_false;
-   (*API->View->GetViewLocks)( handle, &r, &w );
+   api_bool rd = api_false, wr = api_false;
+   (*API->View->GetViewLocks)( handle, &rd, &wr );
+   if ( wr == api_false )
+      if ( rd == api_false )
+         throw Error( "The view is already locked for read/write operations: " + FullId() );
 
-   if ( w == api_false || r == api_false )
-      throw Error( "The view is locked for read/write operations: " + FullId() );
-
-   (*API->View->LockView)( handle, true, true, notify );
+   (*API->View->LockView)( handle, rd, wr, notify );
 }
 
 // ----------------------------------------------------------------------------
 
 void View::Unlock( bool notify ) const
 {
-   (*API->View->UnlockView)( handle, true, true, notify );
+   (*API->View->UnlockView)( handle, true/*read*/, true/*write*/, notify );
 }
 
 // ----------------------------------------------------------------------------
@@ -197,27 +197,26 @@ void View::LockForWrite( bool notify ) const
    if ( !Thread::IsRootThread() )
       throw Error( "Only the root thread can lock a view: " + FullId() );
 
-   api_bool r = api_false, w = api_false;
-   (*API->View->GetViewLocks)( handle, &r, &w );
+   api_bool rd = api_false, wr = api_false;
+   (*API->View->GetViewLocks)( handle, &rd, &wr );
+   if ( wr == api_false )
+      throw Error( "The view is already locked for write operations: " + FullId() );
 
-   if ( w == api_false )
-      throw Error( "The view is locked for write operations: " + FullId() );
-
-   (*API->View->LockView)( handle, false, true, notify );
+   (*API->View->LockView)( handle, false/*read*/, true/*write*/, notify );
 }
 
 // ----------------------------------------------------------------------------
 
 void View::UnlockForWrite( bool notify ) const
 {
-   (*API->View->UnlockView)( handle, false, true, notify );
+   (*API->View->UnlockView)( handle, false/*read*/, true/*write*/, notify );
 }
 
 // ----------------------------------------------------------------------------
 
 void View::UnlockForRead( bool notify ) const
 {
-   (*API->View->UnlockView)( handle, true, false, notify );
+   (*API->View->UnlockView)( handle, true/*read*/, false/*write*/, notify );
 }
 
 // ----------------------------------------------------------------------------
@@ -227,13 +226,12 @@ void View::RelockForRead( bool notify ) const
    if ( !Thread::IsRootThread() )
       throw Error( "Only the root thread can lock a view: " + FullId() );
 
-   api_bool r = api_false, w = api_false;
-   (*API->View->GetViewLocks)( handle, &r, &w );
+   api_bool rd = api_false, wr = api_false;
+   (*API->View->GetViewLocks)( handle, &rd, &wr );
+   if ( rd == api_false )
+      throw Error( "The view is already locked for read operations: " + FullId() );
 
-   if ( r == api_false )
-      throw Error( "The view is locked for read operations: " + FullId() );
-
-   (*API->View->LockView)( handle, true, false, notify );
+   (*API->View->LockView)( handle, true/*read*/, false/*write*/, notify );
 }
 
 // ----------------------------------------------------------------------------
@@ -575,4 +573,4 @@ Array<View> View::AllPreviews()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/View.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/View.cpp - Released 2019-04-30T16:30:49Z

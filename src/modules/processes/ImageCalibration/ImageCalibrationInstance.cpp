@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 01.04.01.0362
+// Standard ImageCalibration Process Module Version 01.04.01.0368
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// ImageCalibrationInstance.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -2801,4 +2801,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF ImageCalibrationInstance.cpp - Released 2019-04-30T16:31:09Z

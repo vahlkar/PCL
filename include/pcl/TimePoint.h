@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.h - Released 2019-01-21T12:06:07Z
+// pcl/TimePoint.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1188,4 +1188,4 @@ inline TimePoint operator -( const TimePoint& t, double d )
 #endif   // __PCL_TimePoint_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/TimePoint.h - Released 2019-04-30T16:30:41Z

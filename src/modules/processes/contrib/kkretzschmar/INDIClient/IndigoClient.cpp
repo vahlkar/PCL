@@ -1,12 +1,12 @@
 //     ____   ______ __
-//    / __  / ____// /
+//    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     ____//_____/   PCL
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard  Process Module Version
+// Standard INDIClient Process Module Version 01.01.00.0244
 // ----------------------------------------------------------------------------
-// : - Released 08.12.2018
+// IndigoClient.cpp - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -267,3 +267,6 @@ bool IndigoClient::disconnectDevice(const std::string& deviceName)  {
    indigo_result rc = indigo_device_disconnect(&m_indigoClient, const_cast<char*>(deviceName.c_str()));
    return rc == INDIGO_OK;
 }
+
+// ----------------------------------------------------------------------------
+// EOF IndigoClient.cpp - Released 2019-04-30T16:31:10Z

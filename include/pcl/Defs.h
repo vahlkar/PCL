@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/Defs.h - Released 2019-01-21T12:06:07Z
+// pcl/Defs.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -65,7 +65,7 @@
  *       Reference Documentation
  *    </h2>
  *    <p>
- *       <strong>Copyright (c) 2003-2018, The PixInsight Development Team.
+ *       <strong>Copyright (c) 2003-2019, The PixInsight Development Team.
  *       All Rights Reserved</strong>
  *    </p>
  * </div>
@@ -331,6 +331,14 @@
 #  define PCL_WARNINGS_DISABLE_SIZE_T_TO_INT_LOSS \
       __pragma(warning( disable: 4267 ))
 #endif
+
+/*
+ * Disable unused variable warnings. This solution is portable for all
+ * compilers supporting C++11 or newer. The function call should be optimized
+ * away by any reasonable compiler (including MSVC :).
+ */
+template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
+#define PCL_UNUSED( x ) __pcl_unused__( x );
 
 /*
  * On Windows/MSVC++, _CRT_RAND_S must be #defined for rand_s() to work:
@@ -1129,4 +1137,4 @@ typedef int64                 fsize_type;
 #endif   // __PCL_Defs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Defs.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Defs.h - Released 2019-04-30T16:30:41Z

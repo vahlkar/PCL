@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2019-01-21T12:06:07Z
+// pcl/AstrometricMetadata.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -121,12 +121,14 @@ public:
    {
       String referenceMatrix;
       String wcsTransformationType;
+      String controlPoints;
+      String splineLengths;
       String projectionName;
       String projectionOrigin;
       String resolution;
       String rotation;
-      String transformationErrors;
       String observationDate;
+      String observerLocation;
       String focalDistance;
       String pixelSize;
       String fieldOfView;
@@ -151,10 +153,13 @@ public:
       m_transformWI( x.m_transformWI->Clone() ),
       m_width( x.m_width ),
       m_height( x.m_height ),
-      m_xpixsz( x.m_xpixsz ),
-      m_dateobs( x.m_dateobs ),
+      m_pixelSize( x.m_pixelSize ),
+      m_obsDate( x.m_obsDate ),
+      m_geoLongitude( x.m_geoLongitude ),
+      m_geoLatitude( x.m_geoLatitude ),
+      m_geoHeight( x.m_geoHeight ),
       m_resolution( x.m_resolution ),
-      m_focal( x.m_focal ),
+      m_focalLength( x.m_focalLength ),
       m_useFocal( x.m_useFocal )
    {
    }
@@ -214,15 +219,18 @@ public:
     */
    AstrometricMetadata& operator =( const AstrometricMetadata& x )
    {
-      m_projection  = x.m_projection->Clone();
-      m_transformWI = x.m_transformWI->Clone();
-      m_width       = x.m_width;
-      m_height      = x.m_height;
-      m_xpixsz      = x.m_xpixsz;
-      m_dateobs     = x.m_dateobs;
-      m_resolution  = x.m_resolution;
-      m_focal       = x.m_focal;
-      m_useFocal    = x.m_useFocal;
+      m_projection   = x.m_projection->Clone();
+      m_transformWI  = x.m_transformWI->Clone();
+      m_width        = x.m_width;
+      m_height       = x.m_height;
+      m_pixelSize    = x.m_pixelSize;
+      m_obsDate      = x.m_obsDate;
+      m_geoLongitude = x.m_geoLongitude;
+      m_geoLatitude  = x.m_geoLatitude;
+      m_geoHeight    = x.m_geoHeight;
+      m_resolution   = x.m_resolution;
+      m_focalLength  = x.m_focalLength;
+      m_useFocal     = x.m_useFocal;
       return *this;
    }
 
@@ -242,23 +250,37 @@ public:
 
    /*!
     * Checks that this astrometric solution is valid and can perform coherent
-    * coordinate transformations, and returns the transformation errors
-    * observed at the center of the image.
+    * coordinate transformations, and returns the reprojection errors
+    * measured at the center and the four corners of the image.
     *
-    * \param[out] ex    Error on the X axis in pixels.
+    * \param[out] centerErrors      Reprojection errors at the geometric center
+    *                               of the image, or (Width()/2,Height()/2)
+    *                               image coordinates.
     *
-    * \param[out] ey    Error on the Y axis in pixels.
+    * \param[out] topLeftErrors     Reprojection errors at (0,0) image
+    *                               coordinates.
     *
-    * This routine performs two successive coordinate transformations, from
+    * \param[out] topRightErrors    Reprojection errors at (Width(),0) image
+    *                               coordinates.
+    *
+    * \param[out] bottomLeftErrors  Reprojection errors at (0,Height()) image
+    *                               coordinates.
+    *
+    * \param[out] bottomRightErrors Reprojection errors at (Width(),Height())
+    *                               image coordinates.
+    *
+    * This routine performs five successive coordinate transformations, from
     * image to celestial and from celestial to image coordinates, computed for
-    * the geometric center of the image. The reported values in the specified
-    * \a ex and \a ey variables are the differences between the initial and
-    * final image coordinates in pixels.
+    * the four corners and the geometric center of the image. The reported
+    * values in the specified point variables are the differences between the
+    * initial and final image coordinates, on the X and Y axes, in pixels.
     *
     * This function throws an Error exception if the solution has not been
     * initialized, or if it cannot perform valid coordinate transformations.
     */
-   void Verify( double& ex, double& ey ) const;
+   void Verify( DPoint& centerErrors,
+                DPoint& topLeftErrors, DPoint& topRightErrors,
+                DPoint& bottomLeftErrors, DPoint& bottomRightErrors ) const;
 
    /*!
     * Checks that this astrometric solution is valid and can perform coherent
@@ -269,9 +291,10 @@ public:
     *
     * This routine performs two successive coordinate transformations, from
     * image to celestial and from celestial to image coordinates, computed for
-    * the geometric center of the image. If the difference between the initial
-    * and final image coordinates is larger than the specified tolerance in
-    * pixels, for one or both axes, an Error exception is thrown.
+    * the geometric center of the image. If the absolute value of the
+    * difference between the initial and final image coordinates is greater
+    * than the specified tolerance in pixels, for one or both axes, an Error
+    * exception is thrown.
     *
     * This function also throws an Error exception if the solution has not been
     * initialized, or if it cannot perform valid coordinate transformations.
@@ -368,7 +391,7 @@ public:
     */
    double ResolutionFromFocal( double focal ) const
    {
-      return (focal > 0) ? m_xpixsz.OrElse( 0 )/focal * 0.18/Const<double>::pi() : 0.0;
+      return (focal > 0) ? m_pixelSize.OrElse( 0 )/focal * 0.18/Const<double>::pi() : 0.0;
    }
 
    /*!
@@ -404,19 +427,92 @@ public:
    }
 
    /*!
-    * Returns the Julian date of the observation.
+    * Returns the Julian date of the observation, if available. When defined,
+    * the returned value should be in the UTC timescale.
     */
-   Optional<double> DateObs() const
+   Optional<double> ObservationDate() const
    {
-      return m_dateobs;
+      return m_obsDate;
    }
 
    /*!
-    * Sets the Julian date of the observation.
+    * Sets the Julian date of the observation. The specified \a dateObsJD value
+    * should be in the UTC timescale.
     */
-   void SetDateObs( double dateObsJD )
+   void SetObservationDate( double dateObsJD )
    {
-      m_dateobs = dateObsJD;
+      m_obsDate = dateObsJD;
+   }
+
+   /*!
+    * Returns the geodetic longitude of the observation location, if available.
+    * The returned value is expressed in degrees in the range (-180,+180],
+    * reckoned positive eastward of the reference meridian.
+    */
+   Optional<double> LocationLongitude() const
+   {
+      return m_geoLongitude;
+   }
+
+   /*!
+    * Sets the geodetic longitude of the observation location. The specified
+    * \a longitude must be expressed in degrees and can be either in the range
+    * [0,360] or [-180,+180], reckoned positive eastward.
+    *
+    * If a value out of the valid range is specified, this function will throw
+    * an Error exception.
+    */
+   void SetLocationLongitude( double longitude )
+   {
+      if ( longitude > 180 )
+         longitude -= 360;
+      else if ( longitude <= -180 )
+         longitude += 360;
+      if ( longitude < -180 || longitude > +180 )
+         throw Error( "AstrometricMetadata::SetLocationLongitude(): Geographic longitude out of range." );
+      m_geoLongitude = longitude;
+   }
+
+   /*!
+    * Returns the geodetic latitude of the observation location, if available.
+    * The returned value is expressed in degrees in the range [-90,+90],
+    * reckoned positive north of the equator.
+    */
+   Optional<double> LocationLatitude() const
+   {
+      return m_geoLatitude;
+   }
+
+   /*!
+    * Sets the geodetic latitude of the observation location. The specified
+    * \a latitude must be expressed in degrees and must be in the range
+    * [-90,+90], reckoned positive north of the equator.
+    *
+    * If a value out of the valid range is specified, this function will throw
+    * an Error exception.
+    */
+   void SetLocationLatitude( double latitude )
+   {
+      if ( latitude < -90 || latitude > +90 )
+         throw Error( "AstrometricMetadata::SetLocationLatitude(): Geographic latitude out of range." );
+      m_geoLatitude = latitude;
+   }
+
+   /*!
+    * Returns the geodetic height of the observation location in meters, if
+    * available.
+    */
+   Optional<double> LocationHeight() const
+   {
+      return m_geoHeight;
+   }
+
+   /*!
+    * Sets the geodetic height of the observation location in meters.
+    */
+   void SetLocationHeight( double height )
+   {
+      m_geoHeight = height;
    }
 
    /*!
@@ -424,7 +520,7 @@ public:
     */
    Optional<double> PixelSize() const
    {
-      return m_xpixsz;
+      return m_pixelSize;
    }
 
    /*!
@@ -433,9 +529,9 @@ public:
     */
    void SetPixelSize( double pixelSize )
    {
-      m_xpixsz = pixelSize;
+      m_pixelSize = pixelSize;
       m_useFocal = false;
-      m_focal = FocalFromResolution( m_resolution );
+      m_focalLength = FocalFromResolution( m_resolution );
    }
 
    /*!
@@ -536,8 +632,9 @@ public:
 
    /*!
     * Updates the specified \a keywords array with basic astrometric FITS
-    * header keywords: FOCALLEN, XPIXSZ, YPIXSZ, and the nonstandard but
-    * customary keywords OBJCTRA and OBJCTDEC.
+    * header keywords: DATE-OBS, FOCALLEN, XPIXSZ, YPIXSZ, and the nonstandard
+    * but customary keywords OBJCTRA, OBJCTDEC, LONG-OBS, LAT-OBS, and ALT-OBS.
+    * Keywords are updated when the corresponding metadata items are available.
     */
    void UpdateBasicKeywords( FITSKeywordArray& keywords ) const;
 
@@ -572,8 +669,16 @@ public:
     * \c Observation:Center:X \n
     * \c Observation:Center:Y \n
     *
+    * The following properties will be created or redefined if the
+    * corresponding data items are available, or removed otherwise:
+    *
+    * \c Observation:Time:Start
+    * \c Observation:Location:Longitude
+    * \c Observation:Location:Latitude
+    * \c Observation:Location:Elevation
+    *
     * In addition, the following nonstandard property, used by platform image
-    * plate solving scripts, will be created, redefined or removed:
+    * plate solving scripts, will be created, redefined, or removed:
     *
     * \c Transformation_ImageToProjection
     */
@@ -604,17 +709,20 @@ private:
 
    AutoPointer<ProjectionBase>      m_projection;
    AutoPointer<WorldTransformation> m_transformWI;
-   int                              m_width = 0;
-   int                              m_height = 0;
-   Optional<double>                 m_xpixsz;
-   Optional<double>                 m_dateobs;
+   int                              m_width = 0;      // px
+   int                              m_height = 0;     // px
+   Optional<double>                 m_pixelSize;      // um
+   Optional<double>                 m_obsDate;        // JD
+   Optional<double>                 m_geoLongitude;   // deg
+   Optional<double>                 m_geoLatitude;    // deg
+   Optional<double>                 m_geoHeight;      // m
    double                           m_resolution = 0; // deg/px
-   Optional<double>                 m_focal;          // mm
+   Optional<double>                 m_focalLength;    // mm
    bool                             m_useFocal = false;
    mutable
    AutoPointer<DescriptionItems>    m_description;
 
-   WCSKeywords GetWCSvalues() const;
+   WCSKeywords ComputeWCSKeywords() const;
    void UpdateDescription() const;
 };
 
@@ -623,4 +731,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/AstrometricMetadata.h - Released 2019-04-30T16:30:41Z

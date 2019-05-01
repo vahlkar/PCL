@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0405
+// Standard Global Process Module Version 01.02.08.0411
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2019-01-21T12:06:41Z
+// PreferencesParameters.h - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -255,57 +255,59 @@ DECLARE_STRING_METAPARAMETER  ( Application, cipITRSDataFile,                   
 
 // ----------------------------------------------------------------------------
 
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  maximizeAtStartup,                true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fullScreenAtStartup,              false )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  showSplashAtStartup,              true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  checkForUpdatesAtStartup,         true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  confirmProgramTermination,        false )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  acceptDroppedFiles,               true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  doubleClickLaunchesOpenDialog,    true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  hoverableAutoHideWindows,         true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  desktopSettingsAware,             true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  nativeMenuBar,                    true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  capitalizedMenuBars,              true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  maximizeAtStartup,                   true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fullScreenAtStartup,                 false )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  showSplashAtStartup,                 true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  checkForUpdatesAtStartup,            true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  confirmProgramTermination,           false )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  acceptDroppedFiles,                  true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  doubleClickLaunchesOpenDialog,       true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  hoverableAutoHideWindows,            true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  desktopSettingsAware,                true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  nativeMenuBar,                       true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  capitalizedMenuBars,                 true )
 #ifdef __PCL_MACOSX
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  windowButtonsOnTheLeft,           true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  windowButtonsOnTheLeft,              true )
 #else
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  windowButtonsOnTheLeft,           false )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  windowButtonsOnTheLeft,              false )
 #endif
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  translucentWindows,               true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  translucentChildWindows,          true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeWindows,                      true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeAutoHideWindows,              true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  translucentAutoHideWindows,       true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeWorkspaces,                   true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeMenu,                         true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeToolTip,                      true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  explodeIcons,                     true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  implodeIcons,                     true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateWindows,                   true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateMenu,                      true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateCombo,                     true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateToolTip,                   true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateToolBox,                   true )
-DECLARE_INT32_METAPARAMETER   ( MainWindow,  maxRecentFiles,                   32, 2, 128 )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  showRecentlyUsed,                 true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  showMostUsed,                     true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  showFavorites,                    true )
-DECLARE_INT32_METAPARAMETER   ( MainWindow,  maxUsageListLength,               12, 0, 64 )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  expandRecentlyUsedAtStartup,      true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  expandMostUsedAtStartup,          true )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  expandFavoritesAtStartup,         false )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  openURLsWithInternalBrowser,      true )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile01,                  "ripley-default-01.svg" )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile02,                  "ripley-default-02.svg" )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile03,                  "ripley-default-03.svg" )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile04,                  "ripley-default-04.svg" )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile05,                  "ripley-default-05.svg" )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile06,                  "ripley-default-06.svg" )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile07,                  "ripley-default-07.svg" )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile08,                  "ripley-default-08.svg" )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile09,                  "ripley-default-09.svg" )
-DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile10,                  "ripley-default-10.svg" )
-DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  useWallpapers,                    true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  translucentWindows,                  true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  translucentChildWindows,             true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeWindows,                         true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeAutoHideWindows,                 true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  translucentAutoHideWindows,          true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeWorkspaces,                      true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeMenu,                            true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  fadeToolTip,                         true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  explodeIcons,                        true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  implodeIcons,                        true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateWindows,                      true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateMenu,                         true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateCombo,                        true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateToolTip,                      true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  animateToolBox,                      true )
+DECLARE_INT32_METAPARAMETER   ( MainWindow,  maxRecentFiles,                      32, 2, 128 )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  showRecentlyUsed,                    true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  showMostUsed,                        true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  showFavorites,                       true )
+DECLARE_INT32_METAPARAMETER   ( MainWindow,  maxUsageListLength,                  12, 0, 64 )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  expandRecentlyUsedAtStartup,         true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  expandMostUsedAtStartup,             true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  expandFavoritesAtStartup,            false )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  openURLsWithInternalBrowser,         true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  openResourcesOnNewWebBrowserWindows, true )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  privateWebBrowsingMode,              false )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile01,                     "ripley-default-01.svg" )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile02,                     "ripley-default-02.svg" )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile03,                     "ripley-default-03.svg" )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile04,                     "ripley-default-04.svg" )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile05,                     "ripley-default-05.svg" )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile06,                     "ripley-default-06.svg" )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile07,                     "ripley-default-07.svg" )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile08,                     "ripley-default-08.svg" )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile09,                     "ripley-default-09.svg" )
+DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile10,                     "ripley-default-10.svg" )
+DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  useWallpapers,                       true )
 
 // ----------------------------------------------------------------------------
 
@@ -344,6 +346,7 @@ DECLARE_TABLE_METAPARAMETER   ( ImageWindow, swapDirectories )
 DECLARE_ROW_STRING_METAPARAMETER( ImageWindow, swapDirectory,                  String() )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, swapCompression,                  false )
 DECLARE_STRING_METAPARAMETER  ( ImageWindow, downloadsDirectory,               String() )
+DECLARE_STRING_METAPARAMETER  ( ImageWindow, proxyURL,                         String() )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, followDownloadLocations,          false )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, verboseNetworkOperations,         false )
 DECLARE_BOOLEAN_METAPARAMETER ( ImageWindow, showCaptionCurrentChannels,       true )
@@ -398,4 +401,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2019-01-21T12:06:41Z
+// EOF PreferencesParameters.h - Released 2019-04-30T16:31:09Z

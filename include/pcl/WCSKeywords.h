@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/WCSKeywords.h - Released 2019-01-21T12:06:07Z
+// pcl/WCSKeywords.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -90,6 +90,10 @@ public:
 
    Optional<double> objctra;   //!< Right ascension coordinate of the center of the image in degrees.
    Optional<double> objctdec;  //!< Declination coordinate of the center of the image in degrees.
+   Optional<double> dateobs;   //!< Observation time as a Julian day number, UTC timescale.
+   Optional<double> longobs;   //!< Geodetic longitude of the observation location in degrees. Reckoned positive east of the reference meridian.
+   Optional<double> latobs;    //!< Geodetic latitude of the observation location in degrees. Reckoned positive north of the equator.
+   Optional<double> altobs;    //!< Geodetic height of the observation location in meters.
    Optional<double> focallen;  //!< Focal length in millimeters.
    Optional<double> xpixsz;    //!< Pixel size in micrometers.
    Optional<double> crval1;    //!< WCS coordinate at the reference pixel, X axis.
@@ -110,7 +114,6 @@ public:
    Optional<double> pv1_2;     //!< Native latitude of the reference point in degrees.
    Optional<double> lonpole;   //!< Native longitude of the pole of the coordinate system in degrees.
    Optional<double> latpole;   //!< Native latitude of the pole of the coordinate system in degrees.
-   Optional<double> dateobs;   //!< Observation time as a Julian day number.
    IsoString        refSpline; //!< If present, the astrometric solution uses 2-D surface splines (aka <em>thin plates</em>) instead of WCS polynomials.
 
    /*!
@@ -153,4 +156,4 @@ public:
 #endif   // __PCL_WCSKeywords_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WCSKeywords.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/WCSKeywords.h - Released 2019-04-30T16:30:41Z

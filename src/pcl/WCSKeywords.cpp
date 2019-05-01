@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/WCSKeywords.cpp - Released 2019-01-21T12:06:21Z
+// pcl/WCSKeywords.cpp - Released 2019-04-30T16:30:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -68,7 +68,7 @@ void WCSKeywords::Read( const FITSKeywordArray& keywords )
    {
       IsoString svalue = key.StripValueDelimiters();
       double nvalue;
-      if ( key.name == "OBJCTRA" )
+      if ( key.name == "OBJCTRA" || key.name == "RA" )
       {
          if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
             if ( nvalue >= 0 )
@@ -82,12 +82,43 @@ void WCSKeywords::Read( const FITSKeywordArray& keywords )
                }
             }
       }
-      else if ( key.name == "OBJCTDEC" )
+      else if ( key.name == "OBJCTDEC" || key.name == "DEC" )
       {
          if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
             if ( nvalue >= -90 )
                if ( nvalue <= +90 )
                   objctdec = nvalue;
+      }
+      else if ( key.name == "DATE-OBS" )
+      {
+         TimePoint t;
+         if ( TimePoint::TryFromString( t, svalue ) )
+            dateobs = t.JD();
+      }
+      else if ( key.name == "LONG-OBS" || key.name == "SITELONG" )
+      {
+         if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
+         {
+            if ( nvalue > 180 )
+               nvalue -= 360;
+            else if ( nvalue <= -180 )
+               nvalue += 360;
+            if ( nvalue >= -180 )
+               if ( nvalue <= 180 )
+                  longobs = nvalue;
+         }
+      }
+      else if ( key.name == "LAT-OBS" || key.name == "SITELAT" )
+      {
+         if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
+            if ( nvalue >= -90 )
+               if ( nvalue <= +90 )
+                  latobs = nvalue;
+      }
+      else if ( key.name == "ALT-OBS" || key.name == "SITEELEV" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            altobs = nvalue;
       }
       else if ( key.name == "FOCALLEN" )
       {
@@ -98,12 +129,6 @@ void WCSKeywords::Read( const FITSKeywordArray& keywords )
       {
          if ( svalue.TryToDouble( nvalue ) )
             xpixsz = nvalue;
-      }
-      else if ( key.name == "DATE-OBS" )
-      {
-         TimePoint t;
-         if ( TimePoint::TryFromString( t, svalue ) )
-            dateobs = t.JD();
       }
       else if ( key.name == "CTYPE1" )
       {
@@ -244,4 +269,4 @@ bool WCSKeywords::ExtractWorldTransformation( LinearTransformation& transIW, int
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WCSKeywords.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/WCSKeywords.cpp - Released 2019-04-30T16:30:49Z

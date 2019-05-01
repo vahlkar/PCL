@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard NoOperation Process Module Version 01.00.00.0344
+// Standard NoOperation Process Module Version 01.00.00.0350
 // ----------------------------------------------------------------------------
-// NoOperationProcess.cpp - Released 2019-01-21T12:06:42Z
+// NoOperationProcess.cpp - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -153,4 +153,4 @@ ProcessImplementation* NoOperationProcess::Clone( const ProcessImplementation& p
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationProcess.cpp - Released 2019-01-21T12:06:42Z
+// EOF NoOperationProcess.cpp - Released 2019-04-30T16:31:10Z

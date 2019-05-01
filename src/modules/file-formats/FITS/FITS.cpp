@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0433
+// Standard FITS File Format Module Version 01.01.05.0439
 // ----------------------------------------------------------------------------
-// FITS.cpp - Released 2019-01-21T12:06:31Z
+// FITS.cpp - Released 2019-04-30T16:31:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -745,8 +745,9 @@ void FITSReader::Open( const String& filePath )
             {
                image.id = k.StripValueDelimiters();
                // Don't load thumbnail image extensions as publicly visible images.
-               if ( image.id == hdus[0].thumbExtName )
-                  nonImageExtension = true;
+               if ( !hdus.IsEmpty() )
+                  if ( image.id == hdus[0].thumbExtName )
+                     nonImageExtension = true;
             }
             else if ( !k.name.CompareIC( "EXPTIME" ) || !k.name.CompareIC( "EXPOSURE" ) )
             {
@@ -2707,4 +2708,4 @@ void FITSWriter::WriteExtensionHDU( const FITSExtensionData& ext )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITS.cpp - Released 2019-01-21T12:06:31Z
+// EOF FITS.cpp - Released 2019-04-30T16:31:00Z

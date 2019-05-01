@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard JPEG File Format Module Version 01.00.04.0368
+// Standard JPEG File Format Module Version 01.00.04.0374
 // ----------------------------------------------------------------------------
-// JPEGModule.cpp - Released 2019-01-21T12:06:31Z
+// JPEGModule.cpp - Released 2019-04-30T16:31:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -53,12 +53,12 @@
 #define MODULE_VERSION_MAJOR     01
 #define MODULE_VERSION_MINOR     00
 #define MODULE_VERSION_REVISION  04
-#define MODULE_VERSION_BUILD     0368
+#define MODULE_VERSION_BUILD     0374
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     4
+#define MODULE_RELEASE_DAY       30
 
 #include "JPEGModule.h"
 #include "JPEGFormat.h"
@@ -149,4 +149,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF JPEGModule.cpp - Released 2019-01-21T12:06:31Z
+// EOF JPEGModule.cpp - Released 2019-04-30T16:31:00Z

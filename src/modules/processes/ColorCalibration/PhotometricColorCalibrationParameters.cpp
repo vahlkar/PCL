@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.03.0336
+// Standard ColorCalibration Process Module Version 01.03.04.0344
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.cpp - Released 2019-01-21T12:06:41Z
+// PhotometricColorCalibrationParameters.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -717,7 +717,7 @@ IsoString PCCSolverSplineSmoothing::Id() const
 
 int PCCSolverSplineSmoothing::Precision() const
 {
-   return 2;
+   return 3;
 }
 
 double PCCSolverSplineSmoothing::MinimumValue() const
@@ -732,7 +732,7 @@ double PCCSolverSplineSmoothing::MaximumValue() const
 
 double PCCSolverSplineSmoothing::DefaultValue() const
 {
-   return 0.05;
+   return 0.025;
 }
 
 // ----------------------------------------------------------------------------
@@ -1254,4 +1254,4 @@ double PCCBackgroundROIY1::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.cpp - Released 2019-01-21T12:06:41Z
+// EOF PhotometricColorCalibrationParameters.cpp - Released 2019-04-30T16:31:09Z

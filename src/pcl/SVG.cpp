@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/SVG.cpp - Released 2019-01-21T12:06:21Z
+// pcl/SVG.cpp - Released 2019-04-30T16:30:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -261,4 +261,4 @@ void* SVG::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SVG.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/SVG.cpp - Released 2019-04-30T16:30:49Z

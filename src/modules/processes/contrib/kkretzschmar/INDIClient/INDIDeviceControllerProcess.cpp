@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 01.01.00.0238
+// Standard INDIClient Process Module Version 01.01.00.0244
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerProcess.cpp - Released 2019-01-21T12:06:42Z
+// INDIDeviceControllerProcess.cpp - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2018 Klaus Kretzschmar
+// Copyright (c) 2014-2019 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -198,4 +198,4 @@ int INDIDeviceControllerProcess::ProcessCommandLine( const StringList& argv ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerProcess.cpp - Released 2019-01-21T12:06:42Z
+// EOF INDIDeviceControllerProcess.cpp - Released 2019-04-30T16:31:10Z

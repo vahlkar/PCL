@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2019-01-21T12:06:07Z
+// pcl/GlobalSettings.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -182,6 +182,8 @@ namespace GlobalVariableType
  * <tr><td>MainWindow/MaximizeAtStartup</td><td></td></tr>
  * <tr><td>MainWindow/NativeMenuBar</td><td></td></tr>
  * <tr><td>MainWindow/OpenURLsWithInternalBrowser</td><td></td></tr>
+ * <tr><td>MainWindow/OpenResourcesOnNewWebBrowserWindows</td><td></td></tr>
+ * <tr><td>MainWindow/PrivateWebBrowsingMode</td><td></td></tr>
  * <tr><td>MainWindow/ShowFavorites</td><td></td></tr>
  * <tr><td>MainWindow/ShowMostUsed</td><td></td></tr>
  * <tr><td>MainWindow/ShowRecentlyUsed</td><td></td></tr>
@@ -332,6 +334,7 @@ namespace GlobalVariableType
  * <tr><td>ImageWindow/DownloadsDirectory</td><td>Full path to the core downloads directory.</td></tr>
  * <tr><td>ImageWindow/NewImageCaption</td><td>Window title token for signaling newly created images.</td></tr>
  * <tr><td>ImageWindow/Prefix</td><td>Prefix used for automatically generated image identifiers.</td></tr>
+ * <tr><td>ImageWindow/ProxyURL</td><td>The proxy that will be used for core network operations.</td></tr>
  * <tr><td>MainWindow/WallpaperFile01</td><td>Core workspace wallpaper file #1.</td></tr>
  * <tr><td>MainWindow/WallpaperFile02</td><td>Core workspace wallpaper file #2.</td></tr>
  * <tr><td>MainWindow/WallpaperFile03</td><td>Core workspace wallpaper file #3.</td></tr>
@@ -506,4 +509,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/GlobalSettings.h - Released 2019-04-30T16:30:41Z

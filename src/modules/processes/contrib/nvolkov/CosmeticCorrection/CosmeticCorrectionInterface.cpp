@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard CosmeticCorrection Process Module Version 01.02.05.0226
+// Standard CosmeticCorrection Process Module Version 01.02.05.0232
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInterface.cpp - Released 2019-01-21T12:06:42Z
+// CosmeticCorrectionInterface.cpp - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -90,10 +90,10 @@ static uint16 s_hotBad;
 static uint16 s_coldBad;
 
 // ----------------------------------------------------------------------------
-CosmeticCorrectionInterface* TheCosmeticCorrectionInterface = 0;
+CosmeticCorrectionInterface* TheCosmeticCorrectionInterface = nullptr;
 
 CosmeticCorrectionInterface::CosmeticCorrectionInterface() : ProcessInterface(), instance( TheCosmeticCorrectionProcess ),
-GUI( 0 )
+   GUI( nullptr )
 {
    m_md = 0;
    m_Mean = 0.5;
@@ -107,7 +107,8 @@ GUI( 0 )
 
 CosmeticCorrectionInterface::~CosmeticCorrectionInterface()
 {
-   if ( GUI != 0 ) delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
 
 IsoString CosmeticCorrectionInterface::Id() const
@@ -139,7 +140,7 @@ void CosmeticCorrectionInterface::ResetInstance()
 
 bool CosmeticCorrectionInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "CosmeticCorrection" );
@@ -181,9 +182,9 @@ bool CosmeticCorrectionInterface::ImportProcess( const ProcessImplementation& p 
    m_MinSlider = 0;
    m_MaxSlider = 65535;
 
-   if ( m_md != 0 )
+   if ( m_md != nullptr )
    {
-      delete m_md, m_md = 0;
+      delete m_md, m_md = nullptr;
       m_H.Clear();
    }
 
@@ -2671,4 +2672,4 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF CosmeticCorrectionInterface.cpp - Released 2019-04-30T16:31:10Z

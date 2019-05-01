@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/Point.h - Released 2019-01-21T12:06:07Z
+// pcl/Point.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -207,20 +207,40 @@ public:
 #endif
 
    /*!
+    * Returns the square of the Euclidian distance between this point and
+    * another point \a p in the plane.
+    *
+    * The Euclidian distance between two points p and q is the length of the
+    * straight line between both points: Sqrt( (p.x - q.x)^2 + (p.y - q.y)^2 ).
+    *
+    * This function returns just the radicand (p.x - q.x)^2 + (p.y - q.y)^2.
+    * This is useful because saves calculation of a square root, which is
+    * unnecessary in some practical cases. One of them is ordering of
+    * distances: Sqrt(A) < Sqrt(B) implies A < B.
+    *
+    * \sa DistanceTo(), ManhattanDistanceTo()
+    */
+   template <typename T1>
+   double SquaredDistanceTo( const GenericPoint<T1>& p ) const
+   {
+      double dx = double( p.x ) - double( x );
+      double dy = double( p.y ) - double( y );
+      return dx*dx + dy*dy;
+   }
+
+   /*!
     * Returns the Euclidian distance between this point and another point \a p
     * in the plane.
     *
     * The Euclidian distance between two points p and q is the length of the
     * straight line between both points: Sqrt( (p.x - q.x)^2 + (p.y - q.y)^2 ).
     *
-    * \sa ManhattanDistanceTo()
+    * \sa SquaredDistanceTo(), ManhattanDistanceTo()
     */
    template <typename T1>
    double DistanceTo( const GenericPoint<T1>& p ) const
    {
-      double dx = double( p.x ) - double( x );
-      double dy = double( p.y ) - double( y );
-      return pcl::Sqrt( dx*dx + dy*dy );
+      return pcl::Sqrt( SquaredDistanceTo( p ) );
    }
 
    /*!
@@ -1347,4 +1367,4 @@ typedef F64Point                    DPoint;
 #endif  // __PCL_Point_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Point.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Point.h - Released 2019-04-30T16:30:41Z

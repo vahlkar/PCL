@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Fourier Process Module Version 01.00.04.0266
+// Standard Fourier Process Module Version 01.00.04.0272
 // ----------------------------------------------------------------------------
-// InverseFourierTransformInterface.h - Released 2019-01-21T12:06:41Z
+// InverseFourierTransformInterface.h - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -138,4 +138,4 @@ extern InverseFourierTransformInterface* TheInverseFourierTransformInterface;
 #endif   // __InverseFourierTransformInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformInterface.h - Released 2019-01-21T12:06:41Z
+// EOF InverseFourierTransformInterface.h - Released 2019-04-30T16:31:09Z

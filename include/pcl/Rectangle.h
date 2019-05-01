@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/Rectangle.h - Released 2019-01-21T12:06:07Z
+// pcl/Rectangle.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -528,12 +528,28 @@ public:
    }
 
    /*!
+    * A synonym for LeftTop().
+    */
+   point TopLeft() const
+   {
+      return LeftTop();
+   }
+
+   /*!
     * Returns a point with the coordinates of the upper right (right-top)
     * corner of this rectangle.
     */
    point RightTop() const
    {
       return point( pcl::Max( x0, x1 ), pcl::Min( y0, y1 ) );
+   }
+
+   /*!
+    * A synonym for RightTop().
+    */
+   point TopRight() const
+   {
+      return RightTop();
    }
 
    /*!
@@ -546,6 +562,14 @@ public:
    }
 
    /*!
+    * A synonym for LeftBottom().
+    */
+   point BottomLeft() const
+   {
+      return LeftBottom();
+   }
+
+   /*!
     * Returns a point with the coordinates of the lower right (right-bottom)
     * corner of this rectangle.
     */
@@ -555,11 +579,51 @@ public:
    }
 
    /*!
+    * A synonym for RightBottom().
+    */
+   point BottomRight() const
+   {
+      return RightBottom();
+   }
+
+   /*!
     * Returns a point with the coordinates of the center of this rectangle.
     */
    point Center() const
    {
       return point( (x0 + x1)/2, (y0 + y1)/2 );
+   }
+
+   /*!
+    * Returns the upper middle (center-top) point of this rectangle.
+    */
+   point CenterTop() const
+   {
+      return point( (x0 + x1)/2, pcl::Min( y0, y1 ) );
+   }
+
+   /*!
+    * Returns the lower middle (center-bottom) point of this rectangle.
+    */
+   point CenterBottom() const
+   {
+      return point( (x0 + x1)/2, pcl::Min( y0, y1 ) );
+   }
+
+   /*!
+    * Returns the left middle (center-left) point of this rectangle.
+    */
+   point CenterLeft() const
+   {
+      return point( pcl::Min( x0, x1 ), (y0 + y1)/2 );
+   }
+
+   /*!
+    * Returns the right middle (center-right) point of this rectangle.
+    */
+   point CenterRight() const
+   {
+      return point( pcl::Min( x0, x1 ), (y0 + y1)/2 );
    }
 
    /*!
@@ -825,6 +889,33 @@ public:
 #endif
 
    /*!
+    * Returns true iff this rectangle includes a point specified by its
+    * separate \a x and \a y coordinates.
+    *
+    * This function assumes an ordered rectangle, that is, it requires that the
+    * conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise this function will
+    * return a wrong result.
+    */
+   template <typename T1>
+   bool IncludesFast( T1 x, T1 y ) const
+   {
+      return x >= x0 && y >= y0 && x <= x1 && y <= y1;
+   }
+
+   /*!
+    * Returns true iff this rectangle includes a point \a p.
+    *
+    * This function assumes an ordered rectangle, that is, it requires that the
+    * conditions x0 &le; x1 and y0 &le; y1 hold. Otherwise this function will
+    * return a wrong result.
+    */
+   template <typename T1>
+   bool IncludesFast( const pcl::GenericPoint<T1>& p ) const
+   {
+      return IncludesFast( p.x, p.y );
+   }
+
+   /*!
     * Returns true iff this rectangle intersects a rectangle specified by its
     * individual coordinates.
     *
@@ -857,6 +948,43 @@ public:
       return Intersects( r.left(), r.top(), r.right()+1, r.bottom()+1 );
    }
 #endif
+
+   /*!
+    * Returns true iff this rectangle intersects a rectangle specified by its
+    * individual coordinates.
+    *
+    * \param left,top      Upper left corner coordinates of a rectangle to test
+    *             for intersection.
+    *
+    * \param right,bottom  Lower right corner coordinates of a rectangle to test
+    *             for intersection.
+    *
+    * For a valid result, this function assumes the following conditions:
+    *
+    * \li The specified set \a left, \a top, \a right and \a bottom must define
+    * an ordered rectangle, that is, the conditions \a left &le; \a right and
+    * \a top &le; \a bottom must hold.
+    *
+    * \li This rectangle must be ordered, that is, the conditions x0 &le; x1
+    * and y0 &le; y1 must hold.
+    */
+   template <typename T1>
+   bool IntersectsFast( T1 left, T1 top, T1 right, T1 bottom ) const
+   {
+      return right >= x0 && left <= x1 && bottom >= y0 && top <= y1;
+   }
+
+   /*!
+    * Returns true iff this rectangle intersects a rectangle \a r.
+    *
+    * To give a valid result, this function assumes that both this and the
+    * specified object \a r are ordered rectangles.
+    */
+   template <typename T1>
+   bool IntersectsFast( const pcl::GenericRectangle<T1>& r ) const
+   {
+      return IntersectsFast( r.x0, r.y0, r.x1, r.y1 );
+   }
 
    /*!
     * Causes this rectangle to include a given rectangle \a r, by adjusting its
@@ -2718,4 +2846,4 @@ typedef F64Rect                     DRect;
 #endif  // __PCL_Rectangle_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rectangle.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Rectangle.h - Released 2019-04-30T16:30:41Z

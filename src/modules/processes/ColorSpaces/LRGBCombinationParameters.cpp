@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0374
+// Standard ColorSpaces Process Module Version 01.01.00.0380
 // ----------------------------------------------------------------------------
-// LRGBCombinationParameters.cpp - Released 2019-01-21T12:06:41Z
+// LRGBCombinationParameters.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -288,4 +288,4 @@ double LRGBLayersProtected::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationParameters.cpp - Released 2019-01-21T12:06:41Z
+// EOF LRGBCombinationParameters.cpp - Released 2019-04-30T16:31:09Z

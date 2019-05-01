@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0433
+// Standard FITS File Format Module Version 01.01.05.0439
 // ----------------------------------------------------------------------------
-// FITSInstance.cpp - Released 2019-01-21T12:06:31Z
+// FITSInstance.cpp - Released 2019-04-30T16:31:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -974,4 +974,4 @@ void FITSInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.cpp - Released 2019-01-21T12:06:31Z
+// EOF FITSInstance.cpp - Released 2019-04-30T16:31:00Z

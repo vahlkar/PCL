@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/KDTree.h - Released 2019-01-21T12:06:07Z
+// pcl/KDTree.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -144,10 +144,7 @@ public:
    /*!
     * Constructs an empty K-d tree.
     */
-   KDTree() :
-      m_root( nullptr ), m_dimension( 0 ), m_bucketCapacity( 0 ), m_length( 0 )
-   {
-   }
+   KDTree() = default;
 
    /*!
     * Constructs a K-d tree and builds it for the specified list of \a points.
@@ -167,8 +164,7 @@ public:
     * empty K-d tree. If the dimension of the point space is less than one, an
     * Error exception is thrown.
     */
-   KDTree( const point_list& points, int bucketCapacity = 16 ) :
-      m_root( nullptr ), m_dimension( 0 ), m_bucketCapacity( 0 ), m_length( 0 )
+   KDTree( const point_list& points, int bucketCapacity = 16 )
    {
       Build( points, bucketCapacity );
    }
@@ -192,11 +188,24 @@ public:
     * empty K-d tree. If the dimension of the point space is less than one, an
     * Error exception is thrown.
     */
-   KDTree( const point_list& points, int dimension, int bucketCapacity ) :
-      m_root( nullptr ), m_dimension( 0 ), m_bucketCapacity( 0 ), m_length( 0 )
+   KDTree( const point_list& points, int dimension, int bucketCapacity )
    {
       Build( points, dimension, bucketCapacity );
    }
+
+   /*!
+    * Copy constructor. Copy construction is disabled because this class uses
+    * internal data structures that cannot be copy-constructed. However,
+    * %KDTree implements move construction and move assignment.
+    */
+   KDTree( const KDTree& ) = delete;
+
+   /*!
+    * Copy assignment operator. Copy assignment is disabled because this class
+    * uses internal data structures that cannot be copy-assigned. However,
+    * %KDTree implements move assignment and move construction.
+    */
+   KDTree& operator =( const KDTree& ) = delete;
 
    /*!
     * Move constructor.
@@ -214,13 +223,16 @@ public:
     */
    KDTree& operator =( KDTree&& x )
    {
-      DestroyTree( m_root );
-      m_root = x.m_root;
-      m_dimension = x.m_dimension;
-      m_bucketCapacity = x.m_bucketCapacity;
-      m_length = x.m_length;
-      x.m_root = nullptr;
-      x.m_length = 0;
+      if ( &x != this )
+      {
+         DestroyTree( m_root );
+         m_root = x.m_root;
+         m_dimension = x.m_dimension;
+         m_bucketCapacity = x.m_bucketCapacity;
+         m_length = x.m_length;
+         x.m_root = nullptr;
+         x.m_length = 0;
+      }
       return *this;
    }
 
@@ -271,7 +283,7 @@ public:
       {
          m_dimension = points[0].Length();
          if ( m_dimension < 1 )
-            throw Error( "Invalid point space dimension in KDTree::Build()" );
+            throw Error( "KDTree::Build(): Invalid point space dimension." );
          m_root = BuildTree( points, 0 );
       }
    }
@@ -303,7 +315,7 @@ public:
       Clear();
       m_bucketCapacity = Max( 1, bucketCapacity );
       if ( (m_dimension = dimension) < 1 )
-         throw Error( "Invalid point space dimension in KDTree::Build()" );
+         throw Error( "KDTree::Build(): Invalid point space dimension." );
       m_root = BuildTree( points, 0 );
    }
 
@@ -425,11 +437,11 @@ private:
 
    struct Node
    {
-      double split;  // position of this node's splitting hyperplane
-      Node*  left;   // child points at coordinates <= split
-      Node*  right;  // child points at coordinates > split
+      double split = 0;       // position of this node's splitting hyperplane
+      Node*  left = nullptr;  // child points at coordinates <= split
+      Node*  right = nullptr; // child points at coordinates > split
 
-      Node( double s = 0 ) : split( s ), left( nullptr ), right( nullptr )
+      Node( double s = 0 ) : split( s )
       {
       }
 
@@ -443,15 +455,21 @@ private:
    {
       point_list points;
 
-      LeafNode( const point_list& p ) : Node(), points( p )
+      LeafNode( const point_list& p ) : points( p )
       {
       }
    };
 
-   Node*     m_root;
-   int       m_dimension;
-   int       m_bucketCapacity;
-   size_type m_length;
+   Node*     m_root = nullptr;
+   int       m_dimension = 0;
+   int       m_bucketCapacity = 0;
+   size_type m_length = 0;
+
+   LeafNode* NewLeafNode( const point_list& points )
+   {
+      m_length += points.Length();
+      return new LeafNode( points );
+   }
 
    Node* BuildTree( const point_list& points, int depth )
    {
@@ -459,10 +477,7 @@ private:
          return nullptr;
 
       if ( points.Length() <= size_type( m_bucketCapacity ) )
-      {
-         m_length += points.Length();
-         return new LeafNode( points );
-      }
+         return NewLeafNode( points );
 
       int index = depth % m_dimension;
 
@@ -480,17 +495,18 @@ private:
       if ( left.IsEmpty() || right.IsEmpty() )
       {
          delete node;
-         return nullptr;
+         return NewLeafNode( points );
       }
 
       node->left  = BuildTree( left, depth+1 );
       node->right = BuildTree( right, depth+1 );
 
-      // Don't propagate degeneracies.
+      // Further degeneracies cannot happen in theory, but let's prevent them
+      // for extra safety.
       if ( node->IsLeaf() )
       {
          delete node;
-         return nullptr;
+         return NewLeafNode( points );
       }
 
       return node;
@@ -584,4 +600,4 @@ private:
 #endif   // __PCL_KDTree_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/KDTree.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/KDTree.h - Released 2019-04-30T16:30:41Z

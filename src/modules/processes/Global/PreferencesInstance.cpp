@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0405
+// Standard Global Process Module Version 01.02.08.0411
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2019-01-21T12:06:41Z
+// PreferencesInstance.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -177,6 +177,8 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/ExpandMostUsedAtStartup",              mainWindow.expandMostUsedAtStartup );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/ExpandFavoritesAtStartup",             mainWindow.expandFavoritesAtStartup );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/OpenURLsWithInternalBrowser",          mainWindow.openURLsWithInternalBrowser );
+      PixInsightSettings::SetGlobalFlag    ( "MainWindow/OpenResourcesOnNewWebBrowserWindows",  mainWindow.openResourcesOnNewWebBrowserWindows );
+      PixInsightSettings::SetGlobalFlag    ( "MainWindow/PrivateWebBrowsingMode",               mainWindow.privateWebBrowsingMode );
       PixInsightSettings::SetGlobalString  ( "MainWindow/WallpaperFile01",                      mainWindow.wallpaperFile01 );
       PixInsightSettings::SetGlobalString  ( "MainWindow/WallpaperFile02",                      mainWindow.wallpaperFile02 );
       PixInsightSettings::SetGlobalString  ( "MainWindow/WallpaperFile03",                      mainWindow.wallpaperFile03 );
@@ -218,6 +220,7 @@ bool PreferencesInstance::ExecuteGlobal()
       //ImageWindow::SetSwapDirectories( imageWindow.swapDirectories);
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/SwapCompression",                     imageWindow.swapCompression );
       PixInsightSettings::SetGlobalString  ( "ImageWindow/DownloadsDirectory",                  imageWindow.downloadsDirectory );
+      PixInsightSettings::SetGlobalString  ( "ImageWindow/ProxyURL",                            imageWindow.proxyURL );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/FollowDownloadLocations",             imageWindow.followDownloadLocations );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/VerboseNetworkOperations",            imageWindow.verboseNetworkOperations );
       PixInsightSettings::SetGlobalFlag    ( "ImageWindow/ShowCaptionCurrentChannels",          imageWindow.showCaptionCurrentChannels );
@@ -409,6 +412,10 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return &mainWindow.expandFavoritesAtStartup;
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, openURLsWithInternalBrowser ) )
       return &mainWindow.openURLsWithInternalBrowser;
+   if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, openResourcesOnNewWebBrowserWindows ) )
+      return &mainWindow.openResourcesOnNewWebBrowserWindows;
+   if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, privateWebBrowsingMode ) )
+      return &mainWindow.privateWebBrowsingMode;
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile01 ) )
       return mainWindow.wallpaperFile01.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile02 ) )
@@ -488,6 +495,8 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return &imageWindow.swapCompression;
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, downloadsDirectory ) )
       return imageWindow.downloadsDirectory.Begin();
+   if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, proxyURL ) )
+      return imageWindow.proxyURL.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, followDownloadLocations ) )
       return &imageWindow.followDownloadLocations;
    if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, verboseNetworkOperations ) )
@@ -691,6 +700,8 @@ void PreferencesInstance::LoadDefaultSettings()
    mainWindow.expandMostUsedAtStartup           =         METAPARAMETER_INSTANCE_ID( MainWindow, expandMostUsedAtStartup           )->DefaultValue();
    mainWindow.expandFavoritesAtStartup          =         METAPARAMETER_INSTANCE_ID( MainWindow, expandFavoritesAtStartup          )->DefaultValue();
    mainWindow.openURLsWithInternalBrowser       =         METAPARAMETER_INSTANCE_ID( MainWindow, openURLsWithInternalBrowser       )->DefaultValue();
+   mainWindow.openResourcesOnNewWebBrowserWindows =       METAPARAMETER_INSTANCE_ID( MainWindow, openResourcesOnNewWebBrowserWindows )->DefaultValue();
+   mainWindow.privateWebBrowsingMode            =         METAPARAMETER_INSTANCE_ID( MainWindow, privateWebBrowsingMode            )->DefaultValue();
    mainWindow.wallpaperFile01                   =         METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile01                   )->DefaultValue();
    mainWindow.wallpaperFile02                   =         METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile02                   )->DefaultValue();
    mainWindow.wallpaperFile03                   =         METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile03                   )->DefaultValue();
@@ -732,6 +743,7 @@ void PreferencesInstance::LoadDefaultSettings()
    imageWindow.swapDirectories.Add(                File::SystemCacheDirectory() );
    imageWindow.swapCompression                  =         METAPARAMETER_INSTANCE_ID( ImageWindow, swapCompression                  )->DefaultValue();
    imageWindow.downloadsDirectory               =  File::SystemTempDirectory();
+   imageWindow.proxyURL.Clear();
    imageWindow.followDownloadLocations          =         METAPARAMETER_INSTANCE_ID( ImageWindow, followDownloadLocations          )->DefaultValue();
    imageWindow.verboseNetworkOperations         =         METAPARAMETER_INSTANCE_ID( ImageWindow, verboseNetworkOperations         )->DefaultValue();
    imageWindow.showCaptionCurrentChannels       =         METAPARAMETER_INSTANCE_ID( ImageWindow, showCaptionCurrentChannels       )->DefaultValue();
@@ -845,6 +857,8 @@ void PreferencesInstance::LoadCurrentSettings()
    mainWindow.expandMostUsedAtStartup           = PixInsightSettings::GlobalFlag    ( "MainWindow/ExpandMostUsedAtStartup" );
    mainWindow.expandFavoritesAtStartup          = PixInsightSettings::GlobalFlag    ( "MainWindow/ExpandFavoritesAtStartup" );
    mainWindow.openURLsWithInternalBrowser       = PixInsightSettings::GlobalFlag    ( "MainWindow/OpenURLsWithInternalBrowser" );
+   mainWindow.openResourcesOnNewWebBrowserWindows = PixInsightSettings::GlobalFlag  ( "MainWindow/OpenResourcesOnNewWebBrowserWindows" );
+   mainWindow.privateWebBrowsingMode            = PixInsightSettings::GlobalFlag    ( "MainWindow/PrivateWebBrowsingMode" );
    mainWindow.wallpaperFile01                   = PixInsightSettings::GlobalString  ( "MainWindow/WallpaperFile01" );
    mainWindow.wallpaperFile02                   = PixInsightSettings::GlobalString  ( "MainWindow/WallpaperFile02" );
    mainWindow.wallpaperFile03                   = PixInsightSettings::GlobalString  ( "MainWindow/WallpaperFile03" );
@@ -885,6 +899,7 @@ void PreferencesInstance::LoadCurrentSettings()
    imageWindow.swapDirectories                  = ImageWindow::SwapDirectories();
    imageWindow.swapCompression                  = PixInsightSettings::GlobalFlag    ( "ImageWindow/SwapCompression" );
    imageWindow.downloadsDirectory               = PixInsightSettings::GlobalString  ( "ImageWindow/DownloadsDirectory" );
+   imageWindow.proxyURL                         = PixInsightSettings::GlobalString  ( "ImageWindow/ProxyURL" );
    imageWindow.followDownloadLocations          = PixInsightSettings::GlobalFlag    ( "ImageWindow/FollowDownloadLocations" );
    imageWindow.verboseNetworkOperations         = PixInsightSettings::GlobalFlag    ( "ImageWindow/VerboseNetworkOperations" );
    imageWindow.showCaptionCurrentChannels       = PixInsightSettings::GlobalFlag    ( "ImageWindow/ShowCaptionCurrentChannels" );
@@ -1009,6 +1024,8 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
       s = &imageWindow.defaultFileExtension;
    else if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, downloadsDirectory ) )
       s = &imageWindow.downloadsDirectory;
+   else if ( p == METAPARAMETER_INSTANCE_ID( ImageWindow, proxyURL ) )
+      s = &imageWindow.proxyURL;
 
    else if ( p == METAPARAMETER_INSTANCE_ID( Identifiers, workspacePrefix ) )
       s = &identifiers.workspacePrefix;
@@ -1042,4 +1059,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF PreferencesInstance.cpp - Released 2019-04-30T16:31:09Z

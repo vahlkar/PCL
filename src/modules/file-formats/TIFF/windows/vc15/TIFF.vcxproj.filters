@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.110
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:32.637Z
+# Generated on .... 2019-04-30T16:35:32.071Z
 # Project id ...... TIFF
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -20,10 +20,10 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>5b1d02fd-14a0-4712-89f2-452beedad632</UniqueIdentifier>
+      <UniqueIdentifier>82af3b9f-c215-4c18-8403-ad51874e0e2c</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>8b3e64f3-d8dc-4b03-95a8-9f570889429a</UniqueIdentifier>
+      <UniqueIdentifier>2410b254-69b3-4488-b4a0-4fb55e53f29f</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

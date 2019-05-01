@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.03.0336
+// Standard ColorCalibration Process Module Version 01.03.04.0344
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2019-01-21T12:06:41Z
+// PhotometricColorCalibrationInterface.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -1817,7 +1817,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    SplineSmoothing_NumericControl.label.SetText( "Spline smoothing:" );
    SplineSmoothing_NumericControl.label.SetFixedWidth( labelWidth1 );
-   SplineSmoothing_NumericControl.slider.SetRange( 0, 50 );
+   SplineSmoothing_NumericControl.slider.SetRange( 0, 1000 );
    SplineSmoothing_NumericControl.slider.SetScaledMinWidth( 250 );
    SplineSmoothing_NumericControl.SetReal();
    SplineSmoothing_NumericControl.SetRange( ThePCCSolverSplineSmoothingParameter->MinimumValue(), ThePCCSolverSplineSmoothingParameter->MaximumValue() );
@@ -2251,4 +2251,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2019-04-30T16:31:09Z

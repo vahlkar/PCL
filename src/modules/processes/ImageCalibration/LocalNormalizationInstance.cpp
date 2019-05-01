@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 01.04.01.0362
+// Standard ImageCalibration Process Module Version 01.04.01.0368
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2019-01-21T12:06:41Z
+// LocalNormalizationInstance.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -61,6 +61,7 @@
 #include <pcl/ExternalProcess.h>
 #include <pcl/GaussianFilter.h>
 #include <pcl/GlobalSettings.h>
+#include <pcl/GridInterpolation.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/LocalNormalizationData.h>
 #include <pcl/MessageBox.h>
@@ -239,7 +240,7 @@ public:
 
    typedef ShepardInterpolation<double>   background_interpolation;
 
-   typedef GridShepardInterpolation       background_model;
+   typedef GridInterpolation              background_model;
 
    typedef Array<background_model>        background_models;
 
@@ -1899,4 +1900,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF LocalNormalizationInstance.cpp - Released 2019-04-30T16:31:09Z

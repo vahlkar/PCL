@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.03.0336
+// Standard ColorCalibration Process Module Version 01.03.04.0344
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationProcess.cpp - Released 2019-01-21T12:06:41Z
+// BackgroundNeutralizationProcess.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -254,4 +254,4 @@ int BackgroundNeutralizationProcess::ProcessCommandLine( const StringList& argv 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationProcess.cpp - Released 2019-01-21T12:06:41Z
+// EOF BackgroundNeutralizationProcess.cpp - Released 2019-04-30T16:31:09Z

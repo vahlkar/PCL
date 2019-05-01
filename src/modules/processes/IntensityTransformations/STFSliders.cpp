@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 01.07.01.0430
+// Standard IntensityTransformations Process Module Version 01.07.01.0436
 // ----------------------------------------------------------------------------
-// STFSliders.cpp - Released 2019-01-21T12:06:41Z
+// STFSliders.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -433,4 +433,4 @@ void STFSliders::__MouseWheel( Control& sender, const pcl::Point& pos, int delta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF STFSliders.cpp - Released 2019-01-21T12:06:41Z
+// EOF STFSliders.cpp - Released 2019-04-30T16:31:09Z

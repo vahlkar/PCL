@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0404
+// Standard Geometry Process Module Version 01.02.02.0410
 // ----------------------------------------------------------------------------
-// FastRotationInterface.cpp - Released 2019-01-21T12:06:41Z
+// FastRotationInterface.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -251,4 +251,4 @@ FastRotationInterface::GUIData::GUIData( FastRotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF FastRotationInterface.cpp - Released 2019-04-30T16:31:09Z

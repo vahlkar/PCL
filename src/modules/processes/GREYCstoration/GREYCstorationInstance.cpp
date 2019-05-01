@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard GREYCstoration Process Module Version 01.00.02.0347
+// Standard GREYCstoration Process Module Version 01.00.02.0353
 // ----------------------------------------------------------------------------
-// GREYCstorationInstance.cpp - Released 2019-01-21T12:06:41Z
+// GREYCstorationInstance.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -623,4 +623,4 @@ void* GREYCstorationInstance::LockParameter( const MetaParameter* p, size_type/*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF GREYCstorationInstance.cpp - Released 2019-04-30T16:31:09Z

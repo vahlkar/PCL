@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/File.h - Released 2019-01-21T12:06:07Z
+// pcl/File.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -615,9 +615,7 @@ public:
       /*!
        * Constructs an inactive %File::Find object.
        */
-      Find() : m_handle( nullptr )
-      {
-      }
+      Find() = default;
 
       /*!
        * Constructs a %File::Find object and starts a new directory search
@@ -626,7 +624,7 @@ public:
        * The specified \a path can include wildcards to define a pattern to
        * search for a set of directory items.
        */
-      Find( const String& path ) : m_handle( nullptr )
+      Find( const String& path )
       {
          Begin( path );
       }
@@ -695,7 +693,7 @@ public:
       String       m_searchDir;
       String       m_searchName;
 #endif
-      void*        m_handle;
+      void*        m_handle = nullptr;
    };
 
    /*!
@@ -2296,4 +2294,4 @@ protected:
 #endif   // __PCL_File_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/File.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/File.h - Released 2019-04-30T16:30:41Z

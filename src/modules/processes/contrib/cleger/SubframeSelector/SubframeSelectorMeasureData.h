@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 01.04.02.0025
+// Standard SubframeSelector Process Module Version 01.04.04.0035
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.h - Released 2019-01-21T12:06:42Z
+// SubframeSelectorMeasureData.h - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -623,4 +623,4 @@ private:
 #endif   // __SubframeSelectorMeasureData_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.h - Released 2019-01-21T12:06:42Z
+// EOF SubframeSelectorMeasureData.h - Released 2019-04-30T16:31:10Z

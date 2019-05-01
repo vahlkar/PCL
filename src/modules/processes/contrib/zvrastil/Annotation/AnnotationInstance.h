@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Annotation Process Module Version 01.00.00.0239
+// Standard Annotation Process Module Version 01.00.00.0245
 // ----------------------------------------------------------------------------
-// AnnotationInstance.h - Released 2019-01-21T12:06:42Z
+// AnnotationInstance.h - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -111,4 +111,4 @@ private:
 #endif   // __AnnotationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInstance.h - Released 2019-01-21T12:06:42Z
+// EOF AnnotationInstance.h - Released 2019-04-30T16:31:10Z

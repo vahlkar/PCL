@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard RestorationFilters Process Module Version 01.00.05.0346
+// Standard RestorationFilters Process Module Version 01.00.05.0352
 // ----------------------------------------------------------------------------
-// RestorationFilterInterface.cpp - Released 2019-01-21T12:06:42Z
+// RestorationFilterInterface.cpp - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -852,4 +852,4 @@ RestorationFilterInterface::GUIData::GUIData( RestorationFilterInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF RestorationFilterInterface.cpp - Released 2019-04-30T16:31:10Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0405
+// Standard Global Process Module Version 01.02.08.0411
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2019-01-21T12:06:41Z
+// PreferencesInterface.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -1156,7 +1156,22 @@ MainWindowPreferencesPage::MainWindowPreferencesPage( PreferencesInstance& insta
    OpenURLsWithInternalBrowser_Flag.item = &instance.mainWindow.openURLsWithInternalBrowser;
    OpenURLsWithInternalBrowser_Flag.SetToolTip(
       "<p>Use the web browser integrated with the PixInsight core application to open URLs (for example, from the "
-      "RESOURCES main menu), instead of the default browser application. True by default since core version 1.8.5.</p>" );
+      "Resources main menu), instead of the default browser application. Enabled by default since core version 1.8.5.</p>" );
+
+   OpenResourcesOnNewWebBrowserWindows_Flag.checkBox.SetText( "Open Resource URLs on new web browser windows" );
+   OpenResourcesOnNewWebBrowserWindows_Flag.item = &instance.mainWindow.openResourcesOnNewWebBrowserWindows;
+   OpenResourcesOnNewWebBrowserWindows_Flag.SetToolTip(
+      "<p>Open URLs from the Resources main menu on newly created, independent web browser windows. If this option "
+      "is disabled, resources will be loaded by the browser component integrated with the Process Explorer window.</p>" );
+
+   PrivateWebBrowsingMode_Flag.checkBox.SetText( "Private web browsing mode" );
+   PrivateWebBrowsingMode_Flag.item = &instance.mainWindow.privateWebBrowsingMode;
+   PrivateWebBrowsingMode_Flag.SetToolTip(
+      "<p>Keep normally persistent data in volatile memory when using the integrated web browser component, "
+      "leaving no trace on disk. This includes cookies, the HTTP cache (documents, images, etc), and the browsing history.</p>"
+      "<p>Changes to this option will be applied to subsequently created web browser windows. Existing WebView controls "
+      "and the browsers integrated with the Process Explorer and Object Explorer windows will require an application restart "
+      "for changes to take effect.</p>" );
 
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( MaximizeAtStartup_Flag );
@@ -1178,6 +1193,8 @@ MainWindowPreferencesPage::MainWindowPreferencesPage( PreferencesInstance& insta
    Page_Sizer.Add( ExpandMostUsedAtStartup_Flag );
    Page_Sizer.Add( ExpandFavoritesAtStartup_Flag );
    Page_Sizer.Add( OpenURLsWithInternalBrowser_Flag );
+   Page_Sizer.Add( OpenResourcesOnNewWebBrowserWindows_Flag );
+   Page_Sizer.Add( PrivateWebBrowsingMode_Flag );
 
    Page_Sizer.AddStretch();
 
@@ -1186,25 +1203,27 @@ MainWindowPreferencesPage::MainWindowPreferencesPage( PreferencesInstance& insta
 
 void MainWindowPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
 {
-   to.mainWindow.maximizeAtStartup             = from.mainWindow.maximizeAtStartup;
-   to.mainWindow.fullScreenAtStartup           = from.mainWindow.fullScreenAtStartup;
-   to.mainWindow.showSplashAtStartup           = from.mainWindow.showSplashAtStartup;
-   to.mainWindow.checkForUpdatesAtStartup      = from.mainWindow.checkForUpdatesAtStartup;
-   to.mainWindow.confirmProgramTermination     = from.mainWindow.confirmProgramTermination;
-   to.mainWindow.nativeMenuBar                 = from.mainWindow.nativeMenuBar;
-   to.mainWindow.capitalizedMenuBars           = from.mainWindow.capitalizedMenuBars;
-   to.mainWindow.windowButtonsOnTheLeft        = from.mainWindow.windowButtonsOnTheLeft;
-   to.mainWindow.acceptDroppedFiles            = from.mainWindow.acceptDroppedFiles;
-   to.mainWindow.doubleClickLaunchesOpenDialog = from.mainWindow.doubleClickLaunchesOpenDialog;
-   to.mainWindow.maxRecentFiles                = from.mainWindow.maxRecentFiles;
-   to.mainWindow.showRecentlyUsed              = from.mainWindow.showRecentlyUsed;
-   to.mainWindow.showMostUsed                  = from.mainWindow.showMostUsed;
-   to.mainWindow.showFavorites                 = from.mainWindow.showFavorites;
-   to.mainWindow.maxUsageListLength            = from.mainWindow.maxUsageListLength;
-   to.mainWindow.expandRecentlyUsedAtStartup   = from.mainWindow.expandRecentlyUsedAtStartup;
-   to.mainWindow.expandMostUsedAtStartup       = from.mainWindow.expandMostUsedAtStartup;
-   to.mainWindow.expandFavoritesAtStartup      = from.mainWindow.expandFavoritesAtStartup;
-   to.mainWindow.openURLsWithInternalBrowser   = from.mainWindow.openURLsWithInternalBrowser;
+   to.mainWindow.maximizeAtStartup                   = from.mainWindow.maximizeAtStartup;
+   to.mainWindow.fullScreenAtStartup                 = from.mainWindow.fullScreenAtStartup;
+   to.mainWindow.showSplashAtStartup                 = from.mainWindow.showSplashAtStartup;
+   to.mainWindow.checkForUpdatesAtStartup            = from.mainWindow.checkForUpdatesAtStartup;
+   to.mainWindow.confirmProgramTermination           = from.mainWindow.confirmProgramTermination;
+   to.mainWindow.nativeMenuBar                       = from.mainWindow.nativeMenuBar;
+   to.mainWindow.capitalizedMenuBars                 = from.mainWindow.capitalizedMenuBars;
+   to.mainWindow.windowButtonsOnTheLeft              = from.mainWindow.windowButtonsOnTheLeft;
+   to.mainWindow.acceptDroppedFiles                  = from.mainWindow.acceptDroppedFiles;
+   to.mainWindow.doubleClickLaunchesOpenDialog       = from.mainWindow.doubleClickLaunchesOpenDialog;
+   to.mainWindow.maxRecentFiles                      = from.mainWindow.maxRecentFiles;
+   to.mainWindow.showRecentlyUsed                    = from.mainWindow.showRecentlyUsed;
+   to.mainWindow.showMostUsed                        = from.mainWindow.showMostUsed;
+   to.mainWindow.showFavorites                       = from.mainWindow.showFavorites;
+   to.mainWindow.maxUsageListLength                  = from.mainWindow.maxUsageListLength;
+   to.mainWindow.expandRecentlyUsedAtStartup         = from.mainWindow.expandRecentlyUsedAtStartup;
+   to.mainWindow.expandMostUsedAtStartup             = from.mainWindow.expandMostUsedAtStartup;
+   to.mainWindow.expandFavoritesAtStartup            = from.mainWindow.expandFavoritesAtStartup;
+   to.mainWindow.openURLsWithInternalBrowser         = from.mainWindow.openURLsWithInternalBrowser;
+   to.mainWindow.openResourcesOnNewWebBrowserWindows = from.mainWindow.openResourcesOnNewWebBrowserWindows;
+   to.mainWindow.privateWebBrowsingMode              = from.mainWindow.privateWebBrowsingMode;
 }
 
 // ----------------------------------------------------------------------------
@@ -1837,14 +1856,34 @@ DirectoriesAndNetworkPreferencesPage::DirectoriesAndNetworkPreferencesPage( Pref
    DownloadsDirectory_Dir.item = &instance.imageWindow.downloadsDirectory;
    DownloadsDirectory_Dir.SetToolTip(
       "<p>This is the directory where PixInsight will store all downloaded files.</p>"
+      "<p><b>* Note *</b> This option only applies to <i>core network</i> operations, such as files downloaded with the "
+      "<i>File &gt; Open Location</i> menu item, the open command, and the update system, among others. It does not apply "
+      "to the integrated web browser component.</p>"
       "<p><b>* Warning *</b> Ensure that there is enough free space on the storage device that supports this directory "
       "on the local filesystem, or download operations may fail.</p>" );
+
+   ProxyURL_String.label.SetText( "Proxy URL" );
+   ProxyURL_String.item = &instance.imageWindow.proxyURL;
+   ProxyURL_String.SetToolTip(
+      "<p>The proxy host that will be used for core network operations. This can be specified either as a host name or as a "
+      "dotted numerical IP address. A numerical IPv6 address must be written within square brackets. To specify the port "
+      "number (strongly recommended), append :&lt;port&gt; to the host name. The proxy host may be prefixed with "
+      "&lt;scheme&gt;:// to specify the type of proxy to be used. If no scheme is specified, http:// will be assumed by "
+      "default. Finally, the host can include an embedded user/password specification, but be aware that passwords specified "
+      "this way won't be stored securely and will be visible as plain text on this interface.</p>"
+      "<p>To disable the use of a proxy server, leave this parameter empty as it is by default.</p>"
+      "<p><b>* Note *</b> This option only applies to <i>core network</i> operations, such as files downloaded with the "
+      "<i>File &gt; Open Location</i> menu item, the open command, and the update system, among others. It does not apply "
+      "to the integrated web browser component.</p>" );
 
    FollowDownloadLocations_Flag.checkBox.SetText( "Follow download locations" );
    FollowDownloadLocations_Flag.item = &instance.imageWindow.followDownloadLocations;
    FollowDownloadLocations_Flag.SetToolTip(
       "<p>Enable this option to allow PixInsight to follow HTTP redirections, even if they point to a different "
       "server than the one specified in the original URL.</p>"
+      "<p><b>* Note *</b> This option only applies to <i>core network</i> operations, such as files downloaded with the "
+      "<i>File &gt; Open Location</i> menu item, the open command, and the update system, among others. It does not apply "
+      "to the integrated web browser component.</p>"
       "<p><b>* Warning * Enabling this option is potentially dangerous. DO NOT enable it if you "
       "are not absolutely sure of what you are doing.</b></p>" );
 
@@ -1853,6 +1892,9 @@ DirectoriesAndNetworkPreferencesPage::DirectoriesAndNetworkPreferencesPage( Pref
    VerboseNetworkOperations_Flag.SetToolTip(
       "<p>Enable this option to obtain information about network operations on PixInsight's stdout. Currently "
       "this only works under UNIX/Linux and macOS.</p>"
+      "<p><b>* Note *</b> This option only applies to <i>core network</i> operations, such as files downloaded with the "
+      "<i>File &gt; Open Location</i> menu item, the open command, and the update system, among others. It does not apply "
+      "to the integrated web browser component.</p>"
       "<p><b>* Warning * Be aware that sensitive information, including user passwords and IP addresses, "
       "can be written to stdout as part of the generated reports.</b></p>" );
 
@@ -1860,6 +1902,7 @@ DirectoriesAndNetworkPreferencesPage::DirectoriesAndNetworkPreferencesPage( Pref
    Page_Sizer.Add( SwapDirectories_DirList );
    Page_Sizer.Add( SwapCompression_Flag );
    Page_Sizer.Add( DownloadsDirectory_Dir );
+   Page_Sizer.Add( ProxyURL_String );
    Page_Sizer.Add( FollowDownloadLocations_Flag );
    Page_Sizer.Add( VerboseNetworkOperations_Flag );
    Page_Sizer.AddStretch();
@@ -1872,6 +1915,7 @@ void DirectoriesAndNetworkPreferencesPage::TransferSettings( PreferencesInstance
    to.imageWindow.swapDirectories          = from.imageWindow.swapDirectories;
    to.imageWindow.swapCompression          = from.imageWindow.swapCompression;
    to.imageWindow.downloadsDirectory       = from.imageWindow.downloadsDirectory;
+   to.imageWindow.proxyURL                 = from.imageWindow.proxyURL;
    to.imageWindow.followDownloadLocations  = from.imageWindow.followDownloadLocations;
    to.imageWindow.verboseNetworkOperations = from.imageWindow.verboseNetworkOperations;
 }
@@ -2687,4 +2731,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF PreferencesInterface.cpp - Released 2019-04-30T16:31:09Z

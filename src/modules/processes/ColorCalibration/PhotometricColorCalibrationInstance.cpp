@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.03.0336
+// Standard ColorCalibration Process Module Version 01.03.04.0344
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// PhotometricColorCalibrationInstance.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -503,7 +503,9 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                   << "XPIXSZ"
                                   << "YPIXSZ"
                                   << "OBJCTRA"
+                                  << "RA"
                                   << "OBJCTDEC"
+                                  << "DEC"
                                   << "DATE-OBS";
 
          static SortedIsoStringList s_requiredKeywords;
@@ -525,7 +527,8 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
 
          static SortedIsoStringList s_optionalKeywords;
          if ( s_optionalKeywords.IsEmpty() )
-            s_optionalKeywords    << "REFSPLINE"; // ImageSolver script
+            s_optionalKeywords    << "REFSPLIN"    // ImageSolver script
+                                  << "REFSPLINE";  // be compatible with old script versions
 
          FITSKeywordArray inputKeywords = view.Window().Keywords();
          PropertyArray inputProperties = view.GetStorableProperties();
@@ -570,9 +573,9 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                   focalLength = keyword;
                else if ( keyword.name == "XPIXSZ" )
                   pixelSize = keyword;
-               else if ( keyword.name == "OBJCTRA" )
+               else if ( keyword.name == "OBJCTRA" || keyword.name == "RA" )
                   centerRA = keyword;
-               else if ( keyword.name == "OBJCTDEC" )
+               else if ( keyword.name == "OBJCTDEC" || keyword.name == "DEC" )
                   centerDec = keyword;
                else if ( keyword.name == "DATE-OBS" )
                   epochJD = keyword;
@@ -628,6 +631,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
             String scriptPath = coreSrcDir + "/scripts/AdP/ImageSolver.js";
             StringKeyValueList arguments = StringKeyValueList()
                                              << StringKeyValue( "metadata_focal", String( focalLength.value ) )
+                                             << StringKeyValue( "metadata_useFocal", "true" )
                                              << StringKeyValue( "metadata_xpixsz", String( pixelSize.value ) )
                                              << StringKeyValue( "metadata_ra", String( centerRA.value ) )
                                              << StringKeyValue( "metadata_dec", String( centerDec.value ) )
@@ -640,6 +644,9 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                              << StringKeyValue( "solver_alignAlgorithm", String( p_solverAlignmentDevice ) )
                                              << StringKeyValue( "solver_distortionCorrection", String( bool( p_solverDistortionCorrection ) ) )
                                              << StringKeyValue( "solver_splineSmoothing", String( p_solverSplineSmoothing ) )
+                                             << StringKeyValue( "solver_enableSimplifier", "true" )
+                                             << StringKeyValue( "solver_simplifierTolerance", "0.25" )
+                                             << StringKeyValue( "solver_simplifierRejectFraction", "0.1" )
                                              << StringKeyValue( "solver_projection", String( p_solverProjection ) )
                                              << StringKeyValue( "solver_catalogMode", "1" )
                                              << StringKeyValue( "solver_autoMagnitude", "false" )
@@ -773,7 +780,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                           << StringKeyValue( "phot_saveDiagnostic", "false" )
                                           << StringKeyValue( "phot_autoSolve", "false" )
                                           << StringKeyValue( "phot_forceSolve", "false" )
-                                          << StringKeyValue( "phot_solverUseImageMetadata", "false" )
+                                          << StringKeyValue( "phot_solverUseImageMetadata", "true" )
                                           << StringKeyValue( "phot_saveSolve", "false" )
                                           << StringKeyValue( "phot_solveSuffix", "_WCS" )
                                           << StringKeyValue( "phot_generateErrorLog", "false" )
@@ -1261,4 +1268,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2019-04-30T16:31:09Z

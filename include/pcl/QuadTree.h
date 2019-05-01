@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/QuadTree.h - Released 2019-01-21T12:06:07Z
+// pcl/QuadTree.h - Released 2019-04-30T16:30:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -99,10 +99,10 @@ namespace pcl
  *
  * \b References
  *
- * \li 1. Mark de Berg et al, <em>Computational Geometry: Algorithms and
+ * 1. Mark de Berg et al, <em>Computational Geometry: Algorithms and
  * Applications Third Edition,</em> Springer, 2010, Chapter 14.
  *
- * \li 2. Hanan Samet, <em>Foundations of Multidimensional and Metric Data
+ * 2. Hanan Samet, <em>Foundations of Multidimensional and Metric Data
  * Structures,</em> Morgan Kaufmann, 2006, Section 1.4.
  *
  * \sa KDTree
@@ -132,13 +132,143 @@ public:
     */
    typedef DRect                       rectangle;
 
+   // -------------------------------------------------------------------------
+
+   /*!
+    * \class pcl::QuadTree::Node
+    * \brief Quadtree node structure
+    */
+   struct Node
+   {
+      rectangle rect;         //!< The rectangular region represented by this node.
+      Node*     nw = nullptr; //!< North-West child node, representing the top-left subregion.
+      Node*     ne = nullptr; //!< North-East child node, representing the top-right subregion.
+      Node*     sw = nullptr; //!< South-West child node, representing the bottom-left subregion.
+      Node*     se = nullptr; //!< South-East child node, representing the bottom-right subregion.
+
+      /*!
+       * Default constructor. Constructs an uninitialized quadtree node.
+       */
+      Node( const rectangle& r = rectangle( 0.0 ) ) : rect( r )
+      {
+      }
+
+      /*!
+       * Returns true iff this is a leaf quadtree node. A leaf node does not
+       * contain child nodes, that is, there is no further subdivision of the
+       * domain space beyond a leaf quadtree node.
+       *
+       * In a healthy quadtree (as any QuadTree structure should be under
+       * normal working conditions), you can expect any leaf node to be an
+       * instance of QuadTree::LeafNode containing a nonempty list of points.
+       */
+      bool IsLeaf() const
+      {
+         return nw == nullptr && ne == nullptr && sw == nullptr && se == nullptr;
+      }
+
+      /*!
+       * Returns true iff the rectangular region represented by this node
+       * intersects the specified rectangle \a r.
+       */
+      bool Intersects( const rectangle& r ) const
+      {
+         return rect.x1 >= r.x0 && rect.x0 <= r.x1 &&
+                rect.y1 >= r.y0 && rect.y0 <= r.y1;
+      }
+
+      /*!
+       * Returns true iff the rectangular region represented by this node
+       * includes the specified point \a p.
+       */
+      bool Includes( const point& p ) const
+      {
+         component x = p[0];
+         if ( x >= rect.x0 )
+            if ( x <= rect.x1 )
+            {
+               component y = p[1];
+               return y >= rect.y0 && y <= rect.y1;
+            }
+         return false;
+      }
+
+      /*!
+       * Returns the Northwest (top left) splitting rectangle for this node.
+       */
+      rectangle NWRect() const
+      {
+         return rectangle( rect.TopLeft(), rect.Center() );
+      }
+
+      /*!
+       * Returns the Northeast (top right) splitting rectangle for this node.
+       */
+      rectangle NERect() const
+      {
+         return rectangle( rect.CenterTop(), rect.CenterRight() );
+      }
+
+      /*!
+       * Returns the Southwest (bottom left) splitting rectangle for this node.
+       */
+      rectangle SWRect() const
+      {
+         return rectangle( rect.CenterLeft(), rect.CenterBottom() );
+      }
+
+      /*!
+       * Returns the Southeast (bottom right) splitting rectangle for this
+       * node.
+       */
+      rectangle SERect() const
+      {
+         return rectangle( rect.Center(), rect.BottomRight() );
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
+   /*!
+    * \class pcl::QuadTree::LeafNode
+    * \brief Quadtree leaf node structure
+    */
+   struct LeafNode : public Node
+   {
+      /*!
+       * The list of points contained by this leaf node.
+       *
+       * In a healthy quadtree (as any QuadTree structure should be under
+       * normal working conditions), every existing leaf node should contain a
+       * nonempty point list.
+       */
+      point_list points;
+
+      /*!
+       * Constructs a new leaf node representing the specified rectangular
+       * region \a r and storing a nonempty point list \a p.
+       */
+      LeafNode( const rectangle& r, const point_list& p ) : Node( r ), points( p )
+      {
+         PCL_CHECK( !points.IsEmpty() )
+      }
+
+      /*!
+       * Returns the number of points contained by this leaf node. Under normal
+       * conditions, the returned value must be > 0.
+       */
+      int Length() const
+      {
+         return int( points.Length() );
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
    /*!
     * Constructs an empty quadtree.
     */
-   QuadTree() :
-      m_root( nullptr ), m_bucketCapacity( 0 ), m_length( 0 )
-   {
-   }
+   QuadTree() = default;
 
    /*!
     * Constructs a quadtree and builds it for the specified list of \a points.
@@ -152,11 +282,44 @@ public:
     * If the specified list of \a points is empty, this constructor yields an
     * empty quadtree.
     */
-   QuadTree( const point_list& points, int bucketCapacity = 40 ) :
-      m_root( nullptr ), m_bucketCapacity( 0 ), m_length( 0 )
+   QuadTree( const point_list& points, int bucketCapacity = 40 )
    {
       Build( points, bucketCapacity );
    }
+
+   /*!
+    * Constructs a quadtree and builds it for the specified list of \a points
+    * and a prescribed rectangular search region.
+    *
+    * \param rect             The rectangular search region.
+    *
+    * \param points           A list of points that will be stored in this
+    *                         quadtree.
+    *
+    * \param bucketCapacity   The maximum number of points in a leaf tree node.
+    *                         Must be >= 1. The default value is 40.
+    *
+    * If the specified list of \a points is empty, or if no points lie within
+    * the \a rect region, this constructor yields an empty quadtree.
+    */
+   QuadTree( const rectangle& rect, const point_list& points, int bucketCapacity = 40 )
+   {
+      Build( rect, points, bucketCapacity );
+   }
+
+   /*!
+    * Copy constructor. Copy construction is disabled because this class uses
+    * internal data structures that cannot be copy-constructed. However,
+    * %QuadTree implements move construction and move assignment.
+    */
+   QuadTree( const QuadTree& ) = delete;
+
+   /*!
+    * Copy assignment operator. Copy assignment is disabled because this class
+    * uses internal data structures that cannot be copy-assigned. However,
+    * %QuadTree implements move assignment and move construction.
+    */
+   QuadTree& operator =( const QuadTree& ) = delete;
 
    /*!
     * Move constructor.
@@ -173,12 +336,15 @@ public:
     */
    QuadTree& operator =( QuadTree&& x )
    {
-      DestroyTree( m_root );
-      m_root = x.m_root;
-      m_bucketCapacity = x.m_bucketCapacity;
-      m_length = x.m_length;
-      x.m_root = nullptr;
-      x.m_length = 0;
+      if ( &x != this )
+      {
+         DestroyTree( m_root );
+         m_root = x.m_root;
+         m_bucketCapacity = x.m_bucketCapacity;
+         m_length = x.m_length;
+         x.m_root = nullptr;
+         x.m_length = 0;
+      }
       return *this;
    }
 
@@ -243,6 +409,34 @@ public:
    }
 
    /*!
+    * Builds a new quadtree with the specified list of \a points and a
+    * prescribed rectangular search region.
+    *
+    * \param rect             The rectangular search region.
+    *
+    * \param points           A list of points to be stored in this quadtree.
+    *                         Only points included in the specified \a rect
+    *                         search region will be inserted in the tree.
+    *                         All points outside \a rect will be ignored.
+    *
+    * \param bucketCapacity   The maximum number of points in a leaf tree node.
+    *                         Must be >= 1. The default value is 40.
+    *
+    * If the tree stores point objects before calling this function, they are
+    * destroyed and removed before building a new tree.
+    *
+    * If the specified list of \a points is empty, or if no points lie within
+    * the \a rect region, this member function yields an empty quadtree.
+    */
+   void Build( const rectangle& rect, const point_list& points, int bucketCapacity = 40 )
+   {
+      Clear();
+      m_bucketCapacity = Max( 1, bucketCapacity );
+      if ( !points.IsEmpty() )
+         m_root = BuildTree( rect.Ordered(), points );
+   }
+
+   /*!
     * Performs a rectangular range search in this quadtree.
     *
     * \param rect    The rectangular search region.
@@ -253,7 +447,7 @@ public:
    point_list Search( const rectangle& rect ) const
    {
       point_list found;
-      SearchTree( found, rect, m_root );
+      SearchTree( found, rect.Ordered(), m_root );
       return found;
    }
 
@@ -276,7 +470,7 @@ public:
    template <class F>
    void Search( const rectangle& rect, F callback, void* data ) const
    {
-      SearchTree( rect, callback, data, m_root );
+      SearchTree( rect.Ordered(), callback, data, m_root );
    }
 
    /*!
@@ -301,7 +495,7 @@ public:
     */
    void Delete( const rectangle& rect )
    {
-      DeleteTree( rect, m_root );
+      DeleteTree( rect.Ordered(), m_root );
    }
 
    /*!
@@ -325,9 +519,126 @@ public:
    /*!
     * Returns true iff this quadtree is empty.
     */
-   bool IsEmpty()
+   bool IsEmpty() const
    {
       return m_root == nullptr;
+   }
+
+   /*!
+    * Returns a pointer to the root node of this quadtree, or nullptr if this
+    * quadtree is empty.
+    *
+    * The returned pointer is const qualified to forbid uncontrolled
+    * alterations that might invalidate the quadtree structure.
+    */
+   const Node* Root() const
+   {
+      return m_root;
+   }
+
+   /*!
+    * Returns a pointer to the (mutable) root node of this quadtree, or nullptr
+    * if this quadtree is empty.
+    */
+   Node* Root()
+   {
+      return m_root;
+   }
+
+   /*!
+    * Performs a recursive left-to-right, depth-first traversal of the subtree
+    * rooted at the specified \a node, invoking the specified function \a f
+    * successively for each non-empty leaf node.
+    *
+    * The function \a f must be compatible with the form:
+    *
+    * \code void f( const rectangle& r, const point_list& p ) \endcode
+    *
+    * where \a r is the plane region covered by the current leaf node, \a p is
+    * the list of points in the current leaf node.
+    *
+    * The sequence of calls for the subtrees in each non-leaf node is: NW, NE,
+    * SW, SE. Only non-empty leaf nodes are included in the traversal, hence
+    * the function \a f will be invoked exclusively for non-empty point lists.
+    *
+    * If the specified \a node is nullptr, this function takes no action.
+    */
+   template <class F>
+   static void Traverse( const Node* node, F f )
+   {
+      if ( node != nullptr )
+         if ( node->IsLeaf() )
+            f( node->rect, static_cast<const LeafNode*>( node )->points );
+         else
+         {
+            Traverse( node->nw, f );
+            Traverse( node->ne, f );
+            Traverse( node->sw, f );
+            Traverse( node->se, f );
+         }
+   }
+
+   /*!
+    * Performs a recursive left-to-right, depth-first traversal of the subtree
+    * rooted at the specified (mutable) \a node, invoking the specified
+    * function \a f successively for each non-empty leaf node.
+    *
+    * The function \a f must be compatible with the form:
+    *
+    * \code void f( const rectangle& r, point_list& p ) \endcode
+    *
+    * where \a r is the plane region covered by the current leaf node, \a p is
+    * the list of points in the current leaf node.
+    *
+    * The sequence of calls for the subtrees in each non-leaf node is: NW, NE,
+    * SW, SE. Only non-empty leaf nodes are included in the traversal, hence
+    * the function \a f will be invoked exclusively for non-empty point lists.
+    *
+    * If the specified \a node is nullptr, this function takes no action.
+    */
+   template <class F>
+   static void Traverse( Node* node, F f )
+   {
+      if ( node != nullptr )
+         if ( node->IsLeaf() )
+            f( node->rect, static_cast<LeafNode*>( node )->points );
+         else
+         {
+            Traverse( node->nw, f );
+            Traverse( node->ne, f );
+            Traverse( node->sw, f );
+            Traverse( node->se, f );
+         }
+   }
+
+   /*!
+    * Performs a recursive left-to-right, depth-first traversal of the entire
+    * quadtree, invoking the specified function \a f successively for each leaf
+    * node. Calling this function is equivalent to:
+    *
+    * \code Traverse( Root(), f ) \endcode
+    *
+    * If this quadtree is empty, this function takes no action.
+    */
+   template <class F>
+   void Traverse( F f ) const
+   {
+      Traverse( m_root, f );
+   }
+
+   /*!
+    * Performs a recursive left-to-right, depth-first traversal of the entire
+    * (mutable) quadtree, invoking the specified function \a f successively for
+    * each leaf node. Calling this function is equivalent to:
+    *
+    * \code Traverse( Root(), f ) \endcode
+    *
+    * If this quadtree is empty, this function takes no action.
+    */
+   template <class F>
+   void Traverse( F f )
+   {
+      Traverse( m_root, f );
    }
 
    /*!
@@ -342,59 +653,15 @@ public:
 
 private:
 
-   struct Node
+   Node*     m_root = nullptr;
+   int       m_bucketCapacity = 0;
+   size_type m_length = 0;
+
+   Node* NewLeafNode( const rectangle& rect, const point_list& points )
    {
-      rectangle rect;         // rectangular region
-      Node*     nw = nullptr; // north-west
-      Node*     ne = nullptr; // north-east
-      Node*     sw = nullptr; // south-west
-      Node*     se = nullptr; // south-east
-
-      Node( const rectangle& r = rectangle( 0.0 ) ) : rect( r )
-      {
-      }
-
-      bool IsLeaf() const
-      {
-         return nw == nullptr && ne == nullptr && sw == nullptr && se == nullptr;
-      }
-
-      bool Intersects( const rectangle& r ) const
-      {
-         return rect.x1 >= r.x0 && rect.x0 <= r.x1 &&
-                rect.y1 >= r.y0 && rect.y0 <= r.y1;
-      }
-
-      bool Includes( const point& p ) const
-      {
-         component x = p[0];
-         if ( x >= rect.x0 )
-            if ( x <= rect.x1 )
-            {
-               component y = p[1];
-               return y >= rect.y0 && y <= rect.y1;
-            }
-         return false;
-      }
-   };
-
-   struct LeafNode : public Node
-   {
-      point_list points;
-
-      LeafNode( const rectangle& r, const point_list& p ) : Node( r ), points( p )
-      {
-      }
-
-      int Length() const
-      {
-         return int( points.Length() );
-      }
-   };
-
-   Node*     m_root;
-   int       m_bucketCapacity;
-   size_type m_length;
+      m_length += points.Length();
+      return new LeafNode( rect, points );
+   }
 
    Node* BuildTree( const rectangle& rect, const point_list& points )
    {
@@ -402,15 +669,21 @@ private:
          return nullptr;
 
       if ( points.Length() <= size_type( m_bucketCapacity ) )
-      {
-         m_length += points.Length();
-         return new LeafNode( rect, points );
-      }
-
-      Node* node = new Node( rect );
+         return NewLeafNode( rect, points );
 
       double x2 = (rect.x0 + rect.x1)/2;
       double y2 = (rect.y0 + rect.y1)/2;
+      // Prevent geometrically degenerate subtrees. For safety, we enforce
+      // minimum region dimensions larger than twice the machine epsilon for
+      // the rectangle coordinate type.
+      if ( x2 - rect.x0 <= std::numeric_limits<double>::epsilon() ||
+           rect.x1 - x2 <= std::numeric_limits<double>::epsilon() ||
+           y2 - rect.y0 <= std::numeric_limits<double>::epsilon() ||
+           rect.y1 - y2 <= std::numeric_limits<double>::epsilon() )
+      {
+         return NewLeafNode( rect, points );
+      }
+
       point_list nw, ne, sw, se;
       for ( const point& p : points )
       {
@@ -432,17 +705,18 @@ private:
          }
       }
 
+      Node* node = new Node( rect );
       node->nw = BuildTree( rectangle( rect.x0, rect.y0,      x2,      y2 ), nw );
       node->ne = BuildTree( rectangle(      x2, rect.y0, rect.x1,      y2 ), ne );
       node->sw = BuildTree( rectangle( rect.x0,      y2,      x2, rect.y1 ), sw );
       node->se = BuildTree( rectangle(      x2,      y2, rect.x1, rect.y1 ), se );
 
-      // Don't propagate degeneracies.
+      // Further degeneracies may result, e.g. if the point class is not
+      // behaving as expected. Do not allow them.
       if ( node->IsLeaf() )
       {
          delete node;
-         m_length += points.Length();
-         return new LeafNode( rect, points );
+         return NewLeafNode( rect, points );
       }
 
       return node;
@@ -534,54 +808,67 @@ private:
                rectangle rect = leaf->rect;
                double x2 = (rect.x0 + rect.x1)/2;
                double y2 = (rect.y0 + rect.y1)/2;
-               point_list nw, ne, sw, se;
-               for ( const point& p : leaf->points )
+               // Prevent geometrically degenerate subtrees. For safety, we
+               // enforce minimum region dimensions larger than twice the
+               // machine epsilon for the rectangle coordinate type.
+               if ( x2 - rect.x0 <= std::numeric_limits<double>::epsilon() ||
+                    rect.x1 - x2 <= std::numeric_limits<double>::epsilon() ||
+                    y2 - rect.y0 <= std::numeric_limits<double>::epsilon() ||
+                    rect.y1 - y2 <= std::numeric_limits<double>::epsilon() )
                {
-                  component x = p[0];
-                  component y = p[1];
-                  if ( x <= x2 )
-                  {
-                     if ( y <= y2 )
-                        nw << p;
-                     else
-                        sw << p;
-                  }
-                  else
-                  {
-                     if ( y <= y2 )
-                        ne << p;
-                     else
-                        se << p;
-                  }
-               }
-
-               if ( x <= x2 )
-               {
-                  if ( y <= y2 )
-                     nw << pt;
-                  else
-                     sw << pt;
+                  leaf->points << pt;
                }
                else
                {
-                  if ( y <= y2 )
-                     ne << pt;
+                  point_list nw, ne, sw, se;
+                  for ( const point& p : leaf->points )
+                  {
+                     component x = p[0];
+                     component y = p[1];
+                     if ( x <= x2 )
+                     {
+                        if ( y <= y2 )
+                           nw << p;
+                        else
+                           sw << p;
+                     }
+                     else
+                     {
+                        if ( y <= y2 )
+                           ne << p;
+                        else
+                           se << p;
+                     }
+                  }
+
+                  if ( x <= x2 )
+                  {
+                     if ( y <= y2 )
+                        nw << pt;
+                     else
+                        sw << pt;
+                  }
                   else
-                     se << pt;
+                  {
+                     if ( y <= y2 )
+                        ne << pt;
+                     else
+                        se << pt;
+                  }
+
+                  delete leaf;
+
+                  node = new Node( rect );
+
+                  if ( !nw.IsEmpty() )
+                     node->nw = new LeafNode( rectangle( rect.x0, rect.y0,      x2,      y2 ), nw );
+                  if ( !ne.IsEmpty() )
+                     node->ne = new LeafNode( rectangle(      x2, rect.y0, rect.x1,      y2 ), ne );
+                  if ( !sw.IsEmpty() )
+                     node->sw = new LeafNode( rectangle( rect.x0,      y2,      x2, rect.y1 ), sw );
+                  if ( !se.IsEmpty() )
+                     node->se = new LeafNode( rectangle(      x2,      y2, rect.x1, rect.y1 ), se );
                }
-
-               delete leaf;
-
-               node = new Node( rect );
-
-               if ( !nw.IsEmpty() )
-                  node->nw = new LeafNode( rectangle( rect.x0, rect.y0,      x2,      y2 ), nw );
-               if ( !ne.IsEmpty() )
-                  node->ne = new LeafNode( rectangle(      x2, rect.y0, rect.x1,      y2 ), ne );
-               if ( !sw.IsEmpty() )
-                  node->sw = new LeafNode( rectangle( rect.x0,      y2,      x2, rect.y1 ), sw );
-               if ( !se.IsEmpty() )
-                  node->se = new LeafNode( rectangle(      x2,      y2, rect.x1, rect.y1 ), se );
             }
 
             ++m_length;
@@ -722,4 +1009,4 @@ private:
 #endif   // __PCL_QuadTree_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/QuadTree.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/QuadTree.h - Released 2019-04-30T16:30:41Z

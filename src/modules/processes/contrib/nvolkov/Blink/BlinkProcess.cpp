@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Blink Process Module Version 01.02.02.0300
+// Standard Blink Process Module Version 01.02.02.0306
 // ----------------------------------------------------------------------------
-// BlinkProcess.cpp - Released 2019-01-21T12:06:42Z
+// BlinkProcess.cpp - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -140,4 +140,4 @@ bool BlinkProcess::IsAssignable() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkProcess.cpp - Released 2019-01-21T12:06:42Z
+// EOF BlinkProcess.cpp - Released 2019-04-30T16:31:10Z

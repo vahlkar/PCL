@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0405
+// Standard Global Process Module Version 01.02.08.0411
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInterface.cpp - Released 2019-01-21T12:06:41Z
+// ColorManagementSetupInterface.cpp - Released 2019-04-30T16:31:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -878,4 +878,4 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF ColorManagementSetupInterface.cpp - Released 2019-04-30T16:31:09Z

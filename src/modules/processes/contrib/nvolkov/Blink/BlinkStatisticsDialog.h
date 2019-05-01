@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// Standard Blink Process Module Version 01.02.02.0300
+// Standard Blink Process Module Version 01.02.02.0306
 // ----------------------------------------------------------------------------
-// BlinkStatisticsDialog.h - Released 2019-01-21T12:06:42Z
+// BlinkStatisticsDialog.h - Released 2019-04-30T16:31:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -135,4 +135,4 @@ private:
 #endif   // __BlinkStatisticsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkStatisticsDialog.h - Released 2019-01-21T12:06:42Z
+// EOF BlinkStatisticsDialog.h - Released 2019-04-30T16:31:10Z

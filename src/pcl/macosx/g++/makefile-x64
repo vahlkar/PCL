@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.110
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:18.473Z
+# Generated on .... 2019-04-30T16:35:19.566Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ MacOSX/g++
@@ -159,6 +159,7 @@ SRC_FILES= \
 ../../StatusMonitor.cpp \
 ../../StdStatus.cpp \
 ../../String.cpp \
+../../SurfaceSimplifier.cpp \
 ../../SurfaceSpline.cpp \
 ../../TabBox.cpp \
 ../../TextBox.cpp \
@@ -334,6 +335,7 @@ OBJ_FILES= \
 ./x64/Release/StatusMonitor.o \
 ./x64/Release/StdStatus.o \
 ./x64/Release/String.o \
+./x64/Release/SurfaceSimplifier.o \
 ./x64/Release/SurfaceSpline.o \
 ./x64/Release/TabBox.o \
 ./x64/Release/TextBox.o \
@@ -509,6 +511,7 @@ DEP_FILES= \
 ./x64/Release/StatusMonitor.d \
 ./x64/Release/StdStatus.d \
 ./x64/Release/String.d \
+./x64/Release/SurfaceSimplifier.d \
 ./x64/Release/SurfaceSpline.d \
 ./x64/Release/TabBox.d \
 ./x64/Release/TextBox.d \
@@ -558,6 +561,6 @@ post-build:
 	cp $(OBJ_DIR)/libPCL-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -mmacosx-version-min=10.11 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.1 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++11 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk -mmacosx-version-min=10.12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.1 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++11 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

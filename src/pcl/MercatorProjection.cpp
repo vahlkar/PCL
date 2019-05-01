@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 02.01.12.0947
 // ----------------------------------------------------------------------------
-// pcl/MercatorProjection.cpp - Released 2019-01-21T12:06:21Z
+// pcl/MercatorProjection.cpp - Released 2019-04-30T16:30:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -84,4 +84,4 @@ bool MercatorProjection::Unproject(DPoint& pN, const DPoint& pW) const noexcept
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MercatorProjection.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/MercatorProjection.cpp - Released 2019-04-30T16:30:49Z

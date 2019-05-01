@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.110
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:44.803Z
+# Generated on .... 2019-04-30T16:35:44.269Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E5FCF03A-4C74-4064-8938-6589E4EDF525}</ProjectGuid>
+    <ProjectGuid>{CD104889-9F56-4FBF-BA62-53C680EED7C1}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -130,9 +130,6 @@
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>signtool.exe sign /a /t http://timestamp.verisign.com/scripts/timstamp.dll /v $(TargetDir)$(TargetFileName)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -171,9 +168,6 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>signtool.exe sign /a /t http://timestamp.verisign.com/scripts/timstamp.dll /v $(TargetDir)$(TargetFileName)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -204,9 +198,6 @@
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>signtool.exe sign /a /t http://timestamp.verisign.com/scripts/timstamp.dll /v $(TargetDir)$(TargetFileName)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -234,20 +225,11 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <PostBuildEvent>
-      <Command>signtool.exe sign /a /t http://timestamp.verisign.com/scripts/timstamp.dll /v $(TargetDir)$(TargetFileName)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Alignment.cpp"/>
     <ClCompile Include="..\..\IINDIProperty.cpp"/>
-    <ClCompile Include="..\..\INDI\base64.c"/>
-    <ClCompile Include="..\..\INDI\baseclient.cpp"/>
-    <ClCompile Include="..\..\INDI\basedevice.cpp"/>
-    <ClCompile Include="..\..\INDI\indicom.c"/>
-    <ClCompile Include="..\..\INDI\indiproperty.cpp"/>
-    <ClCompile Include="..\..\INDI\indistandardproperty.cpp"/>
-    <ClCompile Include="..\..\INDI\lilxml.c"/>
+    <ClCompile Include="..\..\IIndigoProperty.cpp"/>
     <ClCompile Include="..\..\INDICCDFrameInstance.cpp"/>
     <ClCompile Include="..\..\INDICCDFrameInterface.cpp"/>
     <ClCompile Include="..\..\INDICCDFrameParameters.cpp"/>
@@ -262,27 +244,13 @@
     <ClCompile Include="..\..\INDIMountInterface.cpp"/>
     <ClCompile Include="..\..\INDIMountParameters.cpp"/>
     <ClCompile Include="..\..\INDIMountProcess.cpp"/>
+    <ClCompile Include="..\..\IndigoClient.cpp"/>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Alignment.h"/>
     <ClInclude Include="..\..\DeviceConfigBase.h"/>
     <ClInclude Include="..\..\IINDIProperty.h"/>
-    <ClInclude Include="..\..\INDI\ClientListener.h"/>
-    <ClInclude Include="..\..\INDI\IClientListener.h"/>
-    <ClInclude Include="..\..\INDI\PCLClientListener.h"/>
-    <ClInclude Include="..\..\INDI\base64.h"/>
-    <ClInclude Include="..\..\INDI\base64_luts.h"/>
-    <ClInclude Include="..\..\INDI\baseclient.h"/>
-    <ClInclude Include="..\..\INDI\basedevice.h"/>
-    <ClInclude Include="..\..\INDI\indiapi.h"/>
-    <ClInclude Include="..\..\INDI\indibase.h"/>
-    <ClInclude Include="..\..\INDI\indibasetypes.h"/>
-    <ClInclude Include="..\..\INDI\indicom.h"/>
-    <ClInclude Include="..\..\INDI\indidevapi.h"/>
-    <ClInclude Include="..\..\INDI\indiproperty.h"/>
-    <ClInclude Include="..\..\INDI\indistandardproperty.h"/>
-    <ClInclude Include="..\..\INDI\lilxml.h"/>
-    <ClInclude Include="..\..\INDI\locale_compat.h"/>
+    <ClInclude Include="..\..\IIndigoProperty.h"/>
     <ClInclude Include="..\..\INDICCDFrameInstance.h"/>
     <ClInclude Include="..\..\INDICCDFrameInterface.h"/>
     <ClInclude Include="..\..\INDICCDFrameParameters.h"/>
@@ -298,6 +266,7 @@
     <ClInclude Include="..\..\INDIMountParameters.h"/>
     <ClInclude Include="..\..\INDIMountProcess.h"/>
     <ClInclude Include="..\..\INDIParamListTypes.h"/>
+    <ClInclude Include="..\..\IndigoClient.h"/>
     <ClInclude Include="..\..\ModuleParameterRegistration.h"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
