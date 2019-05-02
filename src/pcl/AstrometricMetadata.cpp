@@ -709,8 +709,6 @@ void AstrometricMetadata::UpdateDescription() const
          DPoint projOrgRD = m_projection->ProjectionOrigin();
          bool flipped;
          double rotation = Rotation( flipped );
-         DPoint e0, e1, e2, e3, e4;
-         Verify( e0, e1, e2, e3, e4 );
 
          const SplineWorldTransformation* S = dynamic_cast<const SplineWorldTransformation*>( m_transformWI.Pointer() );
 
@@ -769,21 +767,22 @@ void AstrometricMetadata::UpdateDescription() const
                }
 
          m_description->fieldOfView = FieldString( m_width*m_resolution ) << " x " << FieldString( m_height*m_resolution );
-         m_description->centerCoordinates =
-            ImageToCelestialToString( this, DPoint( m_width/2.0, m_height/2.0 ) )
-            + ReprojectionErrorsToString( e0 );
-         m_description->topLeftCoordinates =
-            ImageToCelestialToString( this, DPoint( 0, 0 ) )
-            + ReprojectionErrorsToString( e1 );
-         m_description->topRightCoordinates =
-            ImageToCelestialToString( this, DPoint( m_width, 0 ) )
-            + ReprojectionErrorsToString( e2 );
-         m_description->bottomLeftCoordinates =
-            ImageToCelestialToString( this, DPoint( 0, m_height ) )
-            + ReprojectionErrorsToString( e3 );
-         m_description->bottomRightCoordinates =
-            ImageToCelestialToString( this, DPoint( m_width, m_height ) )
-            + ReprojectionErrorsToString( e4 );
+         m_description->centerCoordinates = ImageToCelestialToString( this, DPoint( m_width/2.0, m_height/2.0 ) );
+         m_description->topLeftCoordinates = ImageToCelestialToString( this, DPoint( 0, 0 ) );
+         m_description->topRightCoordinates = ImageToCelestialToString( this, DPoint( m_width, 0 ) );
+         m_description->bottomLeftCoordinates = ImageToCelestialToString( this, DPoint( 0, m_height ) );
+         m_description->bottomRightCoordinates = ImageToCelestialToString( this, DPoint( m_width, m_height ) );
+
+         if ( S != nullptr )
+         {
+            DPoint e0, e1, e2, e3, e4;
+            Verify( e0, e1, e2, e3, e4 );
+            m_description->centerCoordinates << ReprojectionErrorsToString( e0 );
+            m_description->topLeftCoordinates << ReprojectionErrorsToString( e1 );
+            m_description->topRightCoordinates << ReprojectionErrorsToString( e2 );
+            m_description->bottomLeftCoordinates << ReprojectionErrorsToString( e3 );
+            m_description->bottomRightCoordinates << ReprojectionErrorsToString( e4 );
+         }
       }
 }
 
