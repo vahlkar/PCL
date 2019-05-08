@@ -505,7 +505,7 @@ private:
             double a = M[0][0];
             double b = M[1][0];
             double c = M[2][0];
-            int mr = m_enableRejection ? TruncInt( m_rejectFraction*n ) : 1; // max. number of outliers
+            int mr = m_enableRejection ? Max( 1, TruncInt( m_rejectFraction*n ) ) : 1; // max. number of outliers
             int nr = 0;
             point_list P = points;
             for ( point& p : P )
