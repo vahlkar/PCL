@@ -52,6 +52,7 @@
 #include <pcl/AstrometricMetadata.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/ProjectionFactory.h>
+#include <pcl/Version.h>
 #include <pcl/XISF.h>
 
 /*
@@ -421,6 +422,19 @@ static void ModifyKeyword( FITSKeywordArray& keywords, IsoString name, IsoString
    keywords << FITSHeaderKeyword( name, value, comment );
 }
 
+static void ModifySignatureKeyword( FITSKeywordArray& keywords )
+{
+   FITSHeaderKeyword signature( "COMMENT", IsoString(), "Astrometric solution by " + PixInsightVersion::AsString() );
+   for ( FITSHeaderKeyword& keyword : keywords )
+      if ( keyword.name == "COMMENT" )
+         if ( keyword.comment.StartsWith( "Astrometric solution by" ) )
+         {
+            keyword = signature;
+            return;
+         }
+   keywords << signature;
+}
+
 static void RemoveKeyword( FITSKeywordArray& keywords, IsoString name )
 {
    keywords.Remove( FITSHeaderKeyword( name ), []( const FITSHeaderKeyword& k1, const FITSHeaderKeyword& k2 )
@@ -431,6 +445,8 @@ static void RemoveKeyword( FITSKeywordArray& keywords, IsoString name )
 
 void AstrometricMetadata::UpdateBasicKeywords( FITSKeywordArray& keywords ) const
 {
+   ModifySignatureKeyword( keywords );
+
    if ( m_focalLength.IsDefined() && m_focalLength() > 0 )
       ModifyKeyword( keywords, "FOCALLEN", IsoString().Format( "%.3f", m_focalLength() ), "Focal length (mm)" );
    else
@@ -438,14 +454,14 @@ void AstrometricMetadata::UpdateBasicKeywords( FITSKeywordArray& keywords ) cons
 
    if ( m_pixelSize.IsDefined() && m_pixelSize() > 0 )
    {
-      ModifyKeyword( keywords, "XPIXSZ", IsoString().Format( "%.3f", m_pixelSize() ), "Pixel size, X-axis (um)" );
-      ModifyKeyword( keywords, "YPIXSZ", IsoString().Format( "%.3f", m_pixelSize() ), "Pixel size, Y-axis (um)" );
+      ModifyKeyword( keywords, "XPIXSZ", IsoString().Format( "%.3f", m_pixelSize() ), "Pixel size including binning, X-axis (um)" );
+      ModifyKeyword( keywords, "YPIXSZ", IsoString().Format( "%.3f", m_pixelSize() ), "Pixel size including binning, Y-axis (um)" );
    }
 
    if ( m_obsDate.IsDefined() )
       ModifyKeyword( keywords, "DATE-OBS",
             '\'' + TimePoint( m_obsDate() ).ToIsoString( 3/*timeItems*/, 3/*precision*/, 0/*tz*/, false/*timeZone*/ ) + '\'',
-            "Starting date and time of observation (UTC)" );
+            "Date and time of observation (UTC)" );
 
    if ( m_geoLongitude.IsDefined() && m_geoLatitude.IsDefined() )
    {
@@ -522,7 +538,7 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
                << FITSHeaderKeyword( "CD2_2", IsoString().Format( "%.16g", wcs.cd2_2() ), "Scale matrix (2,2)" );
 
       if ( HasSplineWorldTransformation() )
-         keywords << FITSHeaderKeyword( "REFSPLIN", "T", "Spline-based astrometric solution available" );
+         keywords << FITSHeaderKeyword( "REFSPLIN", "T", "Thin plate spline astrometric solution available" );
 
       // AIPS keywords (CDELT1, CDELT2, CROTA1, CROTA2)
       keywords << FITSHeaderKeyword( "CDELT1", IsoString().Format( "%.16g", wcs.cdelt1() ), "Axis1 scale" )

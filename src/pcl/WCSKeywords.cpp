@@ -125,7 +125,7 @@ void WCSKeywords::Read( const FITSKeywordArray& keywords )
          if ( svalue.TryToDouble( nvalue ) )
             focallen = nvalue;
       }
-      else if ( key.name == "XPIXSZ" )
+      else if ( key.name == "XPIXSZ" || key.name == "PIXSIZE" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             xpixsz = nvalue;
