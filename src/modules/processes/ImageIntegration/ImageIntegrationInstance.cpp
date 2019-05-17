@@ -535,6 +535,20 @@ struct Definable
       return *this;
    }
 
+   Definable& operator +=( const T& otherValue )
+   {
+      if ( consistent )
+         if ( defined )
+            value += otherValue;
+         else
+         {
+            value = otherValue;
+            defined = true;
+         }
+
+      return *this;
+   }
+
    bool ConsistentlyDefined( const String& what = String() ) const
    {
       if ( defined )
@@ -587,6 +601,9 @@ public:
       Definable<double>    ra;            // deg (-180,+180]
       Definable<double>    dec;           // deg [-90,+90]
       Definable<double>    equinox;
+      Definable<double>    longObs;       // deg (-180,+180]
+      Definable<double>    latObs;        // deg [-90,+90]
+      Definable<double>    altObs;
 
       FileMetadata() = default;
       FileMetadata( const FileMetadata& ) = default;
@@ -614,9 +631,9 @@ public:
                   expTime = Round( value.ToDouble(), 3 ); // 1 ms
                else if ( k.name == "CCD-TEMP" )
                   sensorTemp = Round( value.ToDouble(), 1 ); // 0.1 C
-               else if ( k.name == "PIXSIZE1" )
+               else if ( k.name == "XPIXSZ" )
                   xPixSize = value.ToDouble();
-               else if ( k.name == "PIXSIZE2" )
+               else if ( k.name == "YPIXSZ" )
                   yPixSize = value.ToDouble();
                else if ( k.name == "PIXSIZE" )
                   xPixSize = yPixSize = value.ToDouble();
@@ -642,16 +659,46 @@ public:
                   objectName = String( value );
                else if ( k.name == "DATE-OBS" )
                   observationTime = TimePoint( value );
-               else if ( k.name == "OBJCTRA" )
+               else if ( k.name == "OBJCTRA" || k.name == "RA" )
                {
-                  ra = value.SexagesimalToDouble( ' ' )*15;
-                  if ( ra.value > 180 )
-                     ra.value -= 360;
+                  double x = value.SexagesimalToDouble( ' ' )*15;
+                  if ( x < 0 || x > 360 )
+                     throw Error( "Right ascension value out of range: '" + value + '\'' );
+                  // Keep R.A. in (-180,+180], so we can average all values later.
+                  if ( x > 180 )
+                     x -= 360;
+                  ra = x;
                }
-               else if ( k.name == "OBJCTDEC" )
-                  dec = value.SexagesimalToDouble( ' ' );
+               else if ( k.name == "OBJCTDEC" || k.name == "DEC" )
+               {
+                  double x = value.SexagesimalToDouble( ' ' );
+                  if ( x < -90 || x > 90 )
+                     throw Error( "Declination value out of range: '" + value + '\'' );
+                  dec = x;
+               }
                else if ( k.name == "EQUINOX" )
                   equinox = value.ToDouble();
+               else if ( k.name == "LONG-OBS" || k.name == "SITELONG" )
+               {
+                  double x = value.SexagesimalToDouble( Array<char>() << ' ' << ':' );
+                  // Keep longitudes in (-180,+180], so we can average all values later.
+                  if ( x > 180 )
+                     x -= 360;
+                  else if ( x <= -180 )
+                     x += 360;
+                  if ( x < -180 || x > 180 )
+                     throw Error( "Geographic longitude value out of range: '" + value + '\'' );
+                  longObs = x;
+               }
+               else if ( k.name == "LAT-OBS" || k.name == "SITELAT" )
+               {
+                  double x = value.SexagesimalToDouble( Array<char>() << ' ' << ':' );
+                  if ( x < -90 || x > 90 )
+                     throw Error( "Geographic latitude value out of range: '" + value + '\'' );
+                  latObs = x;
+               }
+               else if ( k.name == "ALT-OBS" || k.name == "SITEELEV" )
+                  altObs = value.ToDouble();
             }
             catch ( Exception& x )
             {
@@ -732,6 +779,12 @@ public:
                         dec = tokens[1].ToDouble();
                      else if ( tokens[0] == "equinox" )
                         equinox = tokens[1].ToDouble();
+                     else if ( tokens[0] == "longObs" )
+                        longObs = tokens[1].ToDouble();
+                     else if ( tokens[0] == "latObs" )
+                        latObs = tokens[1].ToDouble();
+                     else if ( tokens[0] == "altObs" )
+                        altObs = tokens[1].ToDouble();
                }
 
                m_valid = true;
@@ -770,7 +823,10 @@ public:
                          << ItemSeparator << "observationTime" << TokenSeparator << observationTime.ToString()
                          << ItemSeparator << "ra"              << TokenSeparator << ra.ToString()
                          << ItemSeparator << "dec"             << TokenSeparator << dec.ToString()
-                         << ItemSeparator << "equinox"         << TokenSeparator << equinox.ToString();
+                         << ItemSeparator << "equinox"         << TokenSeparator << equinox.ToString()
+                         << ItemSeparator << "longObs"         << TokenSeparator << longObs.ToString()
+                         << ItemSeparator << "latObs"          << TokenSeparator << latObs.ToString()
+                         << ItemSeparator << "altObs"          << TokenSeparator << altObs.ToString();
       }
 
       bool IsValid() const
@@ -1792,6 +1848,8 @@ void IntegrationFile::ToDrizzleData( DrizzleData& drz ) const
 IntegrationFile::FileMetadata IntegrationFile::SummaryMetadata()
 {
    FileMetadata summary;
+   Definable<double> jdi, jdf;
+   jdi.value = jdf.value = 0; // silence 'may be used uninitialized' warnings
    for ( const IntegrationFile* file : s_files )
    {
       const FileMetadata& metadata = file->Metadata();
@@ -1818,13 +1876,27 @@ IntegrationFile::FileMetadata IntegrationFile::SummaryMetadata()
             summary.aperture         = metadata.aperture;
             summary.apertureArea     = metadata.apertureArea;
             summary.objectName       = metadata.objectName;
-            summary.observationTime  = metadata.observationTime;
             summary.ra              += metadata.ra;
             summary.dec             += metadata.dec;
             summary.equinox          = metadata.equinox;
+            summary.longObs         += metadata.longObs;
+            summary.latObs          += metadata.latObs;
+            summary.altObs          += metadata.altObs;
          }
          else
             summary = metadata;
+
+         /*
+          * Accumulate observation times as separate Julian day number and day
+          * fraction to preserve accuracy.
+          */
+         if ( metadata.observationTime.defined )
+         {
+            jdi += double( metadata.observationTime.value.JDI() );
+            jdf += metadata.observationTime.value.JDF();
+         }
+         else
+            jdi.consistent = jdf.consistent = false;
       }
       else
       {
@@ -1842,6 +1914,17 @@ IntegrationFile::FileMetadata IntegrationFile::SummaryMetadata()
          summary.ra.value /= s_files.Length();
       if ( summary.dec.defined )
          summary.dec.value /= s_files.Length();
+      if ( summary.longObs.defined )
+         summary.longObs.value /= s_files.Length();
+      if ( summary.latObs.defined )
+         summary.latObs.value /= s_files.Length();
+      if ( summary.altObs.defined )
+         summary.altObs.value /= s_files.Length();
+      if ( jdi.defined )
+         if ( jdi.consistent )
+            summary.observationTime = TimePoint( jdi.value/s_files.Length(), jdf.value/s_files.Length() );
+         else
+            summary.observationTime.consistent = false; // force a warning message
    }
 
    return summary;
@@ -4670,55 +4753,34 @@ bool ImageIntegrationInstance::ExecuteGlobal()
                }
 
             if ( metadata.xPixSize.ConsistentlyDefined( "pixel x-size" ) )
-            {
-               if ( metadata.yPixSize.ConsistentlyDefined( "pixel y-size" ) )
-                  if ( metadata.xPixSize.value == metadata.yPixSize.value )
-                  {
-                     keywords << FITSHeaderKeyword( "PIXSIZE", IsoString( metadata.xPixSize.value ), "Pixel size in microns" );
-                     goto __noYPixSize;
-                  }
-
-               keywords << FITSHeaderKeyword( "PIXSIZE1", IsoString( metadata.xPixSize.value ), "Pixel size in microns, X axis" );
-            }
+               keywords << FITSHeaderKeyword( "XPIXSZ", IsoString( metadata.xPixSize.value ), "Pixel size including binning, X-axis (um)" );
 
             if ( metadata.yPixSize.ConsistentlyDefined( "pixel y-size" ) )
-               keywords << FITSHeaderKeyword( "PIXSIZE2", IsoString( metadata.yPixSize.value ), "Pixel size in microns, Y axis" );
-__noYPixSize:
+               keywords << FITSHeaderKeyword( "YPIXSZ", IsoString( metadata.yPixSize.value ), "Pixel size including binning, Y-axis (um)" );
 
             if ( metadata.xBinning.ConsistentlyDefined( "pixel x-binning" ) )
-            {
-               if ( metadata.yBinning.ConsistentlyDefined( "pixel y-binning" ) )
-                  if ( metadata.xBinning.value == metadata.yBinning.value )
-                  {
-                     keywords << FITSHeaderKeyword( "BINNING", IsoString( metadata.xBinning.value ), "Pixel binning factor" );
-                     metadata.yBinning.defined = false;
-                     goto __noYBinning;
-                  }
-
-               keywords << FITSHeaderKeyword( "XBINNING", IsoString( metadata.xBinning.value ), "Pixel binning factor, X axis" );
-            }
+               keywords << FITSHeaderKeyword( "XBINNING", IsoString( metadata.xBinning.value ), "Pixel binning factor, X-axis" );
 
             if ( metadata.yBinning.ConsistentlyDefined( "pixel y-binning" ) )
-               keywords << FITSHeaderKeyword( "YBINNING", IsoString( metadata.yBinning.value ), "Pixel binning factor, Y axis" );
-__noYBinning:
+               keywords << FITSHeaderKeyword( "YBINNING", IsoString( metadata.yBinning.value ), "Pixel binning factor, Y-axis" );
 
             if ( metadata.xOrigin.ConsistentlyDefined( "subframe x-origin" ) )
-               keywords << FITSHeaderKeyword( "XORGSUBF", IsoString( metadata.xOrigin.value ), "Subframe origin, X axis" );
+               keywords << FITSHeaderKeyword( "XORGSUBF", IsoString( metadata.xOrigin.value ), "Subframe origin, X-axis (px)" );
 
             if ( metadata.yOrigin.ConsistentlyDefined( "subframe y-origin" ) )
-               keywords << FITSHeaderKeyword( "YORGSUBF", IsoString( metadata.yOrigin.value ), "Subframe origin, Y axis" );
+               keywords << FITSHeaderKeyword( "YORGSUBF", IsoString( metadata.yOrigin.value ), "Subframe origin, Y-axis (px)" );
 
             if ( metadata.telescopeName.ConsistentlyDefined( "telescope name" ) )
                keywords << FITSHeaderKeyword( "TELESCOP", metadata.telescopeName.value.SingleQuoted(), "Name of telescope" );
 
             if ( metadata.focalLength.ConsistentlyDefined( "focal length" ) )
-               keywords << FITSHeaderKeyword( "FOCALLEN", IsoString( metadata.focalLength.value ), "Effective focal length in mm" );
+               keywords << FITSHeaderKeyword( "FOCALLEN", IsoString( metadata.focalLength.value ), "Effective focal length (mm)" );
 
             if ( metadata.aperture.ConsistentlyDefined( "aperture diameter" ) )
-               keywords << FITSHeaderKeyword( "APTDIA", IsoString( metadata.aperture.value ), "Effective aperture diameter in mm" );
+               keywords << FITSHeaderKeyword( "APTDIA", IsoString( metadata.aperture.value ), "Effective aperture diameter (mm)" );
 
             if ( metadata.apertureArea.ConsistentlyDefined( "aperture area" ) )
-               keywords << FITSHeaderKeyword( "APTAREA", IsoString( metadata.apertureArea.value ), "Effective aperture area in square mm" );
+               keywords << FITSHeaderKeyword( "APTAREA", IsoString( metadata.apertureArea.value ), "Effective aperture area (mm**2)" );
 
             if ( metadata.objectName.ConsistentlyDefined( "object name" ) )
                keywords << FITSHeaderKeyword( "OBJECT", metadata.objectName.value.SingleQuoted(), "Name of observed object" );
@@ -4732,7 +4794,7 @@ __noYBinning:
                SexagesimalConversionOptions options( 3/*items*/, 3/*precision*/, false/*sign*/, 0/*width*/, ' '/*separator*/ );
                keywords << FITSHeaderKeyword( "OBJCTRA",
                                               IsoString::ToSexagesimal( ra, options ).SingleQuoted(),
-                                              "Approximate right ascension in hours" );
+                                              "Right ascension of the center of the image" );
             }
 
             if ( metadata.dec.ConsistentlyDefined( "declination" ) )
@@ -4740,11 +4802,35 @@ __noYBinning:
                SexagesimalConversionOptions options( 3/*items*/, 2/*precision*/, true/*sign*/, 0/*width*/, ' '/*separator*/ );
                keywords << FITSHeaderKeyword( "OBJCTDEC",
                                               IsoString::ToSexagesimal( metadata.dec.value, options ).SingleQuoted(),
-                                              "Approximate declination in degrees" );
+                                              "Declination of the center of the image" );
             }
 
             if ( metadata.equinox.ConsistentlyDefined( "equinox" ) )
                keywords << FITSHeaderKeyword( "EQUINOX", IsoString( metadata.equinox.value ), "Equinox of celestial coordinates" );
+
+            if ( metadata.observationTime.ConsistentlyDefined( "observation date/time" ) )
+               keywords << FITSHeaderKeyword( "DATE-OBS",
+                                              metadata.observationTime.value.ToIsoString( 3/*timeItems*/, 3/*precision*/, 0/*tz*/, false/*timeZone*/ ).SingleQuoted(),
+                                              "Average date and time of observation (UTC)" );
+
+            if ( metadata.longObs.ConsistentlyDefined( "geodetic longitude" ) )
+            {
+               SexagesimalConversionOptions options( 3/*items*/, 2/*precision*/, true/*sign*/, 0/*width*/, ' '/*separator*/ );
+               keywords << FITSHeaderKeyword( "LONG-OBS",
+                                              IsoString::ToSexagesimal( metadata.longObs.value, options ).SingleQuoted(),
+                                              "Geodetic longitude of observation location (deg)" );
+            }
+
+            if ( metadata.latObs.ConsistentlyDefined( "geodetic latitude" ) )
+            {
+               SexagesimalConversionOptions options( 3/*items*/, 2/*precision*/, true/*sign*/, 0/*width*/, ' '/*separator*/ );
+               keywords << FITSHeaderKeyword( "LAT-OBS",
+                                              IsoString::ToSexagesimal( metadata.latObs.value, options ).SingleQuoted(),
+                                              "Geodetic latitude of observation location (deg)" );
+            }
+
+            if ( metadata.altObs.ConsistentlyDefined( "geodetic height" ) )
+               keywords << FITSHeaderKeyword( "ALT-OBS", IsoString( metadata.altObs.value ), "Geodetic height of observation location (m)" );
          }
 
          /*
