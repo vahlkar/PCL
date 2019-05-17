@@ -672,11 +672,11 @@ public:
     *
     * \param smoothness Smoothing factor. Must be >= 0. The default value is 0.
     *
-    * \param order      Derivative order. Must be >= 1. The default value is 2.
-    *
     * \param W          Reference to a vector of positive node \e weights > 0,
     *                   when the smoothing factor is > 1. For an interpolating
     *                   spline this parameter will be ignored (see below).
+    *
+    * \param order      Derivative order. Must be >= 2. The default value is 2.
     *
     * For \a smoothness <= 0, an interpolating spline will be generated: all
     * node values will be reproduced exactly at their respective coordinates.
@@ -705,7 +705,7 @@ public:
     * be used with care.
     */
    void Initialize( const point_list& P1, const point_list& P2,
-                    float smoothness = 0, int order = 2, const FVector& W = FVector() )
+                    float smoothness = 0, const FVector& W = FVector(), int order = 2 )
    {
       PCL_PRECONDITION( P1.Length() >= 3 )
       PCL_PRECONDITION( P1.Length() <= P2.Length() )
