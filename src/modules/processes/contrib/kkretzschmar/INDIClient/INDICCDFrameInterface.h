@@ -124,6 +124,11 @@ public:
        return externalFilterWheelDeviceName != String("<No filter wheel>") ? externalFilterWheelDeviceName : m_device;
    }
 
+   int TelescopeFocalLength() const
+   {
+      return m_telescopeFocalLength;
+   }
+
 private:
 
    String                          m_device;
@@ -230,6 +235,8 @@ private:
    };
 
    GUIData* GUI = nullptr;
+
+   int32_t m_telescopeFocalLength = 0;
 
    void UpdateControls();
 

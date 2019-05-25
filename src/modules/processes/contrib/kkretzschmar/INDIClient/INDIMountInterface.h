@@ -324,6 +324,11 @@ public:
    MountConfigDialog( const String& deviceName,
                       double geoLat, double geoLong, double geoHeight,
                       String utcTime, double utcOffset );
+
+   double getTelescopeFocalLength() const {
+       return TelescopeFocalLength_NumericEdit.Value();
+   }
+
 private:
 
    Timer UpdateUtc_Timer;

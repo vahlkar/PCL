@@ -1148,17 +1148,17 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
    TelescopeAperture_NumericEdit.edit.SetFixedWidth( editWidth2 );
    TelescopeAperture_NumericEdit.sizer.AddStretch();
    TelescopeAperture_NumericEdit.SetValue( telescopeAperture );
-
+*/
    TelescopeFocalLength_NumericEdit.label.SetText( "Telescope focal length:" );
    TelescopeFocalLength_NumericEdit.label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    TelescopeFocalLength_NumericEdit.label.SetToolTip( "<p>Telescope's focal length in millimeters.</p> ");
    TelescopeFocalLength_NumericEdit.label.SetFixedWidth( labelWidth1 );
    TelescopeFocalLength_NumericEdit.SetInteger();
-   TelescopeFocalLength_NumericEdit.SetRange( 10, 100000 );
+   TelescopeFocalLength_NumericEdit.SetRange( 0, 100000 );
    TelescopeFocalLength_NumericEdit.edit.SetFixedWidth( editWidth2 );
    TelescopeFocalLength_NumericEdit.sizer.AddStretch();
-   TelescopeFocalLength_NumericEdit.SetValue( telescopeFocalLength );
-    */
+   TelescopeFocalLength_NumericEdit.SetValue( 0 );
+
    Global_Sizer.SetSpacing( 8 );
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.Add( Latitude_Sizer );
@@ -1166,7 +1166,7 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
    Global_Sizer.Add( Height_NumericEdit );
    Global_Sizer.Add( Date_Sizer );
    Global_Sizer.Add( UtcTime_Sizer );
-   //Global_Sizer.Add( TelescopeFocalLength_NumericEdit );
+   Global_Sizer.Add( TelescopeFocalLength_NumericEdit );
 
    AddBaseControls();
 }
@@ -1195,16 +1195,16 @@ void MountConfigDialog::SendUpdatedProperties()
       double newUtcTime = SexagesimalToDecimal(  +1, UtcTime_H_SpinBox.Value(), UtcTime_M_SpinBox.Value(), UtcTime_S_NumericEdit.Value() );
       INDIClient::TheClient()->SendNewPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, "INDI_NUMBER", UTC_TIME_ITEM_NAME, newUtcTime );
    }
-
-
    // sending telescope info in bulk request
-   /*INDINewPropertyItem newPropertyItem( m_device, "TELESCOPE_INFO", "INDI_NUMBER" );
-   newPropertyItem.ElementValues << ElementValue( "TELESCOPE_APERTURE", TelescopeAperture_NumericEdit.Value() );
-   newPropertyItem.ElementValues << ElementValue( "TELESCOPE_FOCAL_LENGTH", TelescopeFocalLength_NumericEdit.Value() );
-   newPropertyItem.ElementValues << ElementValue( "GUIDER_APERTURE", 10 );
-   newPropertyItem.ElementValues << ElementValue( "GUIDER_FOCAL_LENGTH", 100 );
-
-   INDIClient::TheClient()->SendNewPropertyItem( newPropertyItem );*/
+   if (INDIClient::TheClient()->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", mountProp, false/*formatted*/ ))
+   {
+     INDINewPropertyItem newPropertyItem( m_device, "TELESCOPE_INFO", "INDI_NUMBER" );
+     newPropertyItem.ElementValues << ElementValue( "TELESCOPE_APERTURE", TelescopeAperture_NumericEdit.Value() );
+     newPropertyItem.ElementValues << ElementValue( "TELESCOPE_FOCAL_LENGTH", TelescopeFocalLength_NumericEdit.Value() );
+     newPropertyItem.ElementValues << ElementValue( "GUIDER_APERTURE", 10 );
+     newPropertyItem.ElementValues << ElementValue( "GUIDER_FOCAL_LENGTH", 100 );
+     INDIClient::TheClient()->SendNewPropertyItem( newPropertyItem );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1757,7 +1757,8 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
       "referred to the mean equator and equinox of J2000.0; for example, if you have entered ICRS reference data "
       "taken from a star catalog.</p>"
       "<p>If this option is disabled coordinates are assumed to be apparent, that is, referred to the true equator "
-      "and equinox of date.</p>" );
+      "and equinox of date.</p>"
+      "<p>This option is permanently disabled, if the mount device expects J2000.0 coordinates</p>");
    MountComputeApparentPosition_Sizer.AddSpacing( labelWidth1 + 4 );
    MountComputeApparentPosition_Sizer.Add( MountComputeApparentPosition_CheckBox );
    MountComputeApparentPosition_Sizer.AddStretch();
@@ -2129,6 +2130,18 @@ __device_found:
             GUI->MountPark_Button.SetText("Park");
           }
 
+      if ( indi->GetPropertyItem( m_device, MOUNT_EPOCH_PROPERTY_NAME, MOUNT_EPOCH_ITEM_NAME, mountProp, false/*formatted*/ ) )
+         if (TruncInt(mountProp.PropertyValue.ToDouble()) == 0)
+         {
+           GUI->MountComputeApparentPosition_CheckBox.Uncheck();
+           GUI->MountComputeApparentPosition_CheckBox.Enable();
+         } else
+         {
+           GUI->MountComputeApparentPosition_CheckBox.Check();
+           GUI->MountComputeApparentPosition_CheckBox.Disable();
+         }
+
+
       if ( indi->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_APERTURE", mountProp, false/*formatted*/ ) )
          m_telescopeAperture = mountProp.PropertyValue.ToDouble();
       else
@@ -2136,8 +2149,6 @@ __device_found:
 
       if ( indi->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", mountProp, false/*formatted*/ ) )
          m_telescopeFocalLength = mountProp.PropertyValue.ToDouble();
-      else
-         m_telescopeFocalLength = 0;
 
    }
 }
@@ -2323,7 +2334,6 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
             if ( m_searchDialog->GoToTarget() )
                INDIMountInterfaceExecution( this ).Perform( IMCCommand::GoTo );
 
-            GUI->MountComputeApparentPosition_CheckBox.SetChecked( false );
          }
    }
    else if ( sender == GUI->MountPlanets_Button )
@@ -2347,7 +2357,6 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
          if ( m_planetDialog->GoToTarget() )
             INDIMountInterfaceExecution( this ).Perform( IMCCommand::GoTo );
 
-         GUI->MountComputeApparentPosition_CheckBox.SetChecked( false );
       }
    }
    else if ( sender == GUI->MountAsteroids_Button )
@@ -2371,7 +2380,6 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
          if ( m_asteroidDialog->GoToTarget() )
             INDIMountInterfaceExecution( this ).Perform( IMCCommand::GoTo );
 
-         GUI->MountComputeApparentPosition_CheckBox.SetChecked( false );
       }
    }
    else if ( sender == GUI->SlewStop_Button )
@@ -2435,7 +2443,7 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
                                      UtcOffset() );
       if ( mountConfig.Execute() && INDIClient::HasClient() )
       {
-         // ### TODO?
+         m_telescopeFocalLength = mountConfig.getTelescopeFocalLength();
       }
    }
 }

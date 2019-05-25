@@ -90,6 +90,7 @@ ICFServerFrame*             TheICFServerFrameParameter = nullptr;
 REGISTER_MODULE_PARAMETER(ICFExternalFilterWheelDeviceName);
 REGISTER_MODULE_PARAMETER(ICFEnableAlignmentCorrection);
 REGISTER_MODULE_PARAMETER(ICFAlignmentFile);
+REGISTER_MODULE_PARAMETER(ICFTelescopeFocalLength);
 
 
 // ----------------------------------------------------------------------------
@@ -736,6 +737,7 @@ DEFINE_STRING_PARAMETER_CLASS(ICFAlignmentFile,"alignmentModelFile");
 
 // ----------------------------------------------------------------------------
 
+DEFINE_INT32_PARAMETER_CLASS(ICFTelescopeFocalLength,"telescopeAperture",0,0,int32_max);
 
 
 } // pcl

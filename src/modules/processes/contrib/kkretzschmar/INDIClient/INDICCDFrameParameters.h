@@ -538,6 +538,9 @@ DECLARE_STRING_PARAMETER_CLASS(ICFAlignmentFile);
 
 // ----------------------------------------------------------------------------
 
+DECLARE_INT32_PARAMETER_CLASS(ICFTelescopeFocalLength);
+
+// ----------------------------------------------------------------------------
 
 PCL_END_LOCAL
 

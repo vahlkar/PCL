@@ -106,6 +106,7 @@ INDICCDFrameInstance::INDICCDFrameInstance( const MetaProcess* m ) :
    p_extFilterWheelDeviceName( TheICFExternalFilterWheelDeviceNameParameter->DefaultValue() ),
    p_enableAlignmentCorrection( TheICFEnableAlignmentCorrectionParameter->DefaultValue() ),
    p_alignmentFile( TheICFAlignmentFileParameter->DefaultValue() ),
+   p_telescopeFocalLength( TheICFTelescopeFocalLengthParameter->DefaultValue()),
 
    m_exposureNumber( 0 )
 {
@@ -154,6 +155,7 @@ void INDICCDFrameInstance::Assign( const ProcessImplementation& p )
       p_extFilterWheelDeviceName = x->p_extFilterWheelDeviceName;
       p_enableAlignmentCorrection = x->p_enableAlignmentCorrection;
       p_alignmentFile             = x->p_alignmentFile;
+      p_telescopeFocalLength         = x->p_telescopeFocalLength;
 
       o_clientViewIds            = x->o_clientViewIds;
       o_clientFilePaths          = x->o_clientFilePaths;
@@ -232,6 +234,13 @@ void  INDICCDFrameInstance::SetTelescopeAlignmentModelParameter( bool throwError
    default:
       break;
    }
+}
+
+// ----------------------------------------------------------------------------
+
+void INDICCDFrameInstance::SetTelescopeFocalLength( )
+{
+  p_telescopeFocalLength = TheINDIMountInterface->TelescopeFocalLength();
 }
 
 // ----------------------------------------------------------------------------
@@ -608,6 +617,8 @@ void* INDICCDFrameInstance::LockParameter( const MetaParameter* p, size_type tab
       return &p_enableAlignmentCorrection;
    if ( p == TheICFAlignmentFileParameter )
       return p_alignmentFile.Begin();
+   if ( p == TheICFTelescopeFocalLengthParameter )
+       return &p_telescopeFocalLength;
 
    if ( p == TheICFClientViewIdParameter )
       return o_clientViewIds[tableRow].Begin();
@@ -712,7 +723,8 @@ bool INDICCDFrameInstance::AllocateParameter( size_type sizeOrLength, const Meta
       o_serverFrames[tableRow].Clear();
       if ( sizeOrLength > 0 )
          o_serverFrames[tableRow].SetLength( sizeOrLength );
-   } else if ( p == TheICFAlignmentFileParameter )
+   }
+   else if ( p == TheICFAlignmentFileParameter )
    {
       p_alignmentFile.Clear();
       if ( sizeOrLength > 0 )
@@ -1045,6 +1057,8 @@ void AbstractINDICCDFrameExecution::Perform()
       String telescopeName = m_instance.TelescopeDeviceName();
 
       m_instance.SetTelescopeAlignmentModelParameter();
+      m_instance.SetTelescopeFocalLength();
+
 
       m_instance.SendDeviceProperties( false/*async*/ );
 
@@ -1221,7 +1235,7 @@ void AbstractINDICCDFrameExecution::Perform()
                      {
                         // If not already available, try to get the telescope
                         // pier side from standard device properties.
-                        if ( !data.focalLength.IsDefined() )
+                        if ( !data.telescopePierSide.IsDefined() )
                            if ( indi->GetPropertyItem( telescopeName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, item) )
                            {
                               if (item.PropertyValue == "ON" )
@@ -1282,15 +1296,20 @@ void AbstractINDICCDFrameExecution::Perform()
 
                         // If not already available, try to get the telescope
                         // focal length from standard device properties.
-                        if ( !data.focalLength.IsDefined() )
+                        if ( !data.focalLength.IsDefined())
                            if ( indi->GetPropertyItem( telescopeName, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", item, false/*formatted*/ ) )
                            {
                               double focalLengthMM = Round( item.PropertyValue.ToDouble(), 3 );
                               data.focalLength = focalLengthMM/1000;
                               keywords << FITSHeaderKeyword( "FOCALLEN", focalLengthMM, "Focal length (mm)" );
                            }
+                           else if (m_instance.p_telescopeFocalLength != 0)
+                           {
+                              double focalLengthMM = m_instance.p_telescopeFocalLength;
+                              data.focalLength = focalLengthMM/1000;
+                              keywords << FITSHeaderKeyword( "FOCALLEN", focalLengthMM, "Focal length (mm)" );
+                           }
                      }
-
                      // Replace existing coordinate keywords with our
                      // (rigorously calculated) GCRS coordinates.
                      if ( data.ra.IsDefined() && data.dec.IsDefined() )
@@ -1313,25 +1332,6 @@ void AbstractINDICCDFrameExecution::Perform()
                               k.comment = "Coordinates referred to GCRS / J2000.0";
                            }
 
-                     // If not already available, try to get the telescope
-                     // aperture from standard device properties.
-                     if ( !data.aperture.IsDefined() )
-                        if ( indi->GetPropertyItem( telescopeName, "TELESCOPE_INFO", "TELESCOPE_APERTURE", item, false/*formatted*/ ) )
-                        {
-                           double apertureMM = Round( item.PropertyValue.ToDouble(), 3 );
-                           data.aperture = apertureMM/1000;
-                           keywords << FITSHeaderKeyword( "APTDIA", apertureMM, "Aperture diameter (mm)" );
-                        }
-
-                     // If not already available, try to get the telescope
-                     // focal length from standard device properties.
-                     if ( !data.focalLength.IsDefined() )
-                        if ( indi->GetPropertyItem( telescopeName, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", item, false/*formatted*/ ) )
-                        {
-                           double focalLengthMM = Round( item.PropertyValue.ToDouble(), 3 );
-                           data.focalLength = focalLengthMM/1000;
-                           keywords << FITSHeaderKeyword( "FOCALLEN", focalLengthMM, "Focal length (mm)" );
-                        }
 
                      // If not already available, try to get the local
                      // geographic longitude of observatory.

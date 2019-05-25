@@ -111,6 +111,7 @@ INDICCDFrameProcess::INDICCDFrameProcess() : MetaProcess()
    new ICFClientFilePath( TheICFClientFramesParameter );
    new ICFServerFrames( this );
    new ICFServerFrame( TheICFServerFramesParameter );
+   new ICFTelescopeFocalLength( this );
 }
 
 // ----------------------------------------------------------------------------
