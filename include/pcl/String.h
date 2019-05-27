@@ -2543,8 +2543,8 @@ public:
                for ( const_iterator p = m_data->string + i; j < len; ++j, ++p )
                   for ( auto c : ca )
                      if ( *p == char_type( c ) )
-                        break;
-
+                        goto __Break_1;
+__Break_1:
                GenericString t;
                if ( i < j )
                {
