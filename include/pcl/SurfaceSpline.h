@@ -634,7 +634,7 @@ public:
    PointSurfaceSpline( const point_list& P1, const point_list& P2,
                        float smoothness = 0, int order = 2, const FVector& W = FVector() )
    {
-      Initialize( P1, P2, smoothness, order, W );
+      Initialize( P1, P2, smoothness, W, order );
    }
 
    /*!
