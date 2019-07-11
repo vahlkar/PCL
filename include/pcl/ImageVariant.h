@@ -2699,7 +2699,7 @@ public:
    // -------------------------------------------------------------------------
 
 #define __GET_EXTREME_SAMPLE_VALUES( I ) \
-   static_cast<const pcl::I&>( **this ).GetColumn( min, max, rect, firstChannel, lastChannel, maxProcessors )
+   static_cast<const pcl::I&>( **this ).GetExtremeSampleValues( min, max, rect, firstChannel, lastChannel, maxProcessors )
 
    /*!
     * Obtains the extreme values among a subset of pixel samples of this image.
