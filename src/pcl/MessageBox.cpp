@@ -140,7 +140,7 @@ MessageBox::std_button MessageBox::Execute()
 
       cmd.Append( '\"' );
 
-      system( cmd.c_str() );
+      PCL_UNUSED( system( cmd.c_str() ) );
 
 #endif   // __PCL_WINDOWS
 
