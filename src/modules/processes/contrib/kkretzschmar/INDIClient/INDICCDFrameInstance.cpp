@@ -1125,8 +1125,8 @@ void AbstractINDICCDFrameExecution::Perform()
                throw Error( "Cannot get current mount coordinates for device '" + telescopeName + "'" );
             double ra = 0;
             double dec = 0;
-            itemRA.PropertyTarget.TryToDouble(ra);
-            itemDec.PropertyTarget.TryToDouble(dec);
+            itemRA.PropertyValue.TryToDouble(ra);
+            itemDec.PropertyValue.TryToDouble(dec);
             telescopeRA = Rad( ra *15 );
             telescopeDec = Rad( dec );
           }
@@ -1271,7 +1271,7 @@ void AbstractINDICCDFrameExecution::Perform()
                         data.telescopeName = telescopeName;
 
                         // Store the epoch-of-date coordinates
-                        if ( !data.eodRa.IsDefined() || !data.eodDec.IsDefined() )
+                        if (!data.eodRa.IsDefined() || !data.eodDec.IsDefined())
                         {
                            data.eodRa = Deg( telescopeRA );
                            data.eodDec = Deg( telescopeDec );
@@ -1281,17 +1281,18 @@ void AbstractINDICCDFrameExecution::Perform()
                         // true / EOD coordinates.
                         if ( data.year.IsDefined() )
                         {
-                           TimePoint t( data.year(), data.month(), data.day(), data.dayf() - data.tz()/24 );
-                           Position P( t, "UTC" );
-                           P.InitEquinoxBasedParameters();
-                           Vector u3 = Vector::FromSpherical( telescopeRA, telescopeDec );
-                           // Apparent -> GCRS
-                           Vector u2 = P.EquinoxBiasPrecessionNutationInverseMatrix() * u3;
-                           // ### TODO: Topocentric -> geocentric coordinates.
-                           u2.ToSpherical2Pi( telescopeRA, telescopeDec );
-                           data.ra = Deg( telescopeRA );
-                           data.dec = Deg( telescopeDec );
-                           data.equinox = 2000.0;
+							TimePoint t(data.year(), data.month(), data.day(), data.dayf() - data.tz() / 24);
+							Position P(t, "UTC");
+							P.InitEquinoxBasedParameters();
+							Vector u3 = Vector::FromSpherical(telescopeRA, telescopeDec);
+							// Apparent -> GCRS
+							Vector u2 = P.EquinoxBiasPrecessionNutationInverseMatrix() * u3;
+							// ### TODO: Topocentric -> geocentric coordinates.
+							u2.ToSpherical2Pi(telescopeRA, telescopeDec);
+							data.ra = Deg(telescopeRA);
+							data.dec = Deg(telescopeDec);
+							
+							data.equinox = 2000.0;
                         }
 
                         // If not already available, try to get the telescope
@@ -1312,26 +1313,50 @@ void AbstractINDICCDFrameExecution::Perform()
                      }
                      // Replace existing coordinate keywords with our
                      // (rigorously calculated) GCRS coordinates.
-                     if ( data.ra.IsDefined() && data.dec.IsDefined() )
-                        for ( FITSHeaderKeyword& k : keywords )
-                           if ( k.name == "OBJCTRA" )
-                           {
-                              k.value = '\'' + IsoString::ToSexagesimal( data.ra()/15,
-                                                   RAConversionOptions( 3/*precision*/, 0/*width*/ ) ) + '\'';
-                              k.comment = "Right ascension of the center of the image";
-                           }
-                           else if ( k.name == "OBJCTDEC" )
-                           {
-                              k.value = '\'' + IsoString::ToSexagesimal( data.dec(),
-                                                   DecConversionOptions( 2/*precision*/, 0/*width*/ ) ) + '\'';
-                              k.comment = "Declination of the center of the image";
-                           }
-                           else if ( k.name == "EQUINOX" )
-                           {
-                              k.value = "2000.0";
-                              k.comment = "Coordinates referred to GCRS / J2000.0";
-                           }
-
+					 bool raKeywordFound = false;
+					 bool decKeywordFound = false;
+					 bool equinoxKeywordFound = false;
+					 if (data.ra.IsDefined() && data.dec.IsDefined()) {
+						 for (FITSHeaderKeyword& k : keywords)
+							 if (k.name == "OBJCTRA")
+							 {
+								 raKeywordFound = true;
+								 k.value = '\'' + IsoString::ToSexagesimal(data.ra() / 15,
+									 RAConversionOptions(3/*precision*/, 0/*width*/)) + '\'';
+								 k.comment = "Right ascension of the center of the image";
+							 }
+							 else if (k.name == "OBJCTDEC")
+							 {
+								 decKeywordFound = true;
+								 k.value = '\'' + IsoString::ToSexagesimal(data.dec(),
+									 DecConversionOptions(2/*precision*/, 0/*width*/)) + '\'';
+								 k.comment = "Declination of the center of the image";
+							 }
+							 else if (k.name == "EQUINOX")
+							 {
+								 equinoxKeywordFound = true;
+								 k.value = "2000.0";
+								 k.comment = "Coordinates referred to GCRS / J2000.0";
+							 }
+					 }
+					 
+					 if (!raKeywordFound)
+					 {
+						 IsoString sexagesimal = '\'' + IsoString::ToSexagesimal(data.ra() / 15,
+							 RAConversionOptions(3/*precision*/, 0/*width*/)) + '\'';
+						 keywords << FITSHeaderKeyword("OBJCTRA", sexagesimal, "Right ascension of the center of the image");
+					 }
+					 if (!decKeywordFound)
+					 {
+						 IsoString sexagesimal = '\'' + IsoString::ToSexagesimal(data.dec(),
+							 DecConversionOptions(2/*precision*/, 0/*width*/)) + '\'';
+						 keywords << FITSHeaderKeyword("OBJCTDEC", sexagesimal, "Declination of the center of the image");
+					 }
+					 if (!equinoxKeywordFound)
+					 {
+						 keywords << FITSHeaderKeyword("EQUINOX", 2000.0, "Coordinates referred to GCRS / J2000.0");
+					 }
+					 
 
                      // If not already available, try to get the local
                      // geographic longitude of observatory.

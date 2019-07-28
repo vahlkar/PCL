@@ -51,7 +51,9 @@
 // ----------------------------------------------------------------------------
 
 #include "IndigoClient.h"
+#ifndef __PCL_WINDOWS
 #include <unistd.h>
+#endif
 #include <string.h>
 
 #include "indigo_json.h"
@@ -74,9 +76,12 @@ IndigoClient::IndigoClient(const char* clientName, const char* host, int32_t por
 IndigoClient::~IndigoClient() {
     indigo_detach_client(&m_indigoClient);
     indigo_stop();
+#ifndef __PCL_WINDOWS
     for (auto iter = m_devices.begin(); iter != m_devices.end(); iter++) {
        indigo_remove_driver(*iter);
     }
+#endif // !_PCL_WINDOWS
+
 }
 
 
@@ -255,6 +260,7 @@ indigo_server_entry* IndigoClient::getServerEntry(const char* host, int32_t port
 }
 
 bool IndigoClient::loadDeviceDriver(const std::string& driver) {
+#ifndef __PCL_WINDOWS
    indigo_driver_entry* driverEntry = nullptr;
    indigo_result rc = indigo_load_driver(driver.c_str(), true, &driverEntry);
    if (driverEntry != nullptr) {
@@ -262,6 +268,9 @@ bool IndigoClient::loadDeviceDriver(const std::string& driver) {
    }
    indigo_attach_client(&m_indigoClient);
    return true;
+#else
+   return false;
+#endif
 }
 
 bool IndigoClient::connectDevice(const std::string& deviceName)  {

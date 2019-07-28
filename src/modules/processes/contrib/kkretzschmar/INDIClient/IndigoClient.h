@@ -79,7 +79,9 @@ class IndigoClient
    };
    std::string m_serverHost;
    uint32_t    m_port;
+#ifndef __PCL_WINDOWS
    std::set<indigo_driver_entry*>    m_devices;
+#endif
 public:
    explicit IndigoClient(const char* clientName);
    IndigoClient(const char* clientName, const char* host, int32_t port);

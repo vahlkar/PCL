@@ -347,7 +347,7 @@ bool INDIMountInstance::ExecuteOn( View& view )
    double imageCenterRA = -1, imageCenterDec = -91;
    {
       AutoViewLock lock( view );
-
+	  // Observation:Center coordinates are given w.r.t epoch J2000
       Variant ra = view.PropertyValue( "Observation:Center:RA" );
       Variant dec = view.PropertyValue( "Observation:Center:Dec" );
       if ( !ra.IsValid() || !dec.IsValid() )
@@ -358,6 +358,7 @@ bool INDIMountInstance::ExecuteOn( View& view )
 
       if ( view.HasProperty( "Image:Center:RA" ) && view.HasProperty( "Image:Center:Dec" ) )
       {
+		 // Image:Center coordinates must be given w.r.t epoch J2000
          ra = view.PropertyValue( "Image:Center:RA" );
          dec = view.PropertyValue( "Image:Center:Dec" );
          if ( !ra.IsValid() || !dec.IsValid() )
@@ -367,6 +368,7 @@ bool INDIMountInstance::ExecuteOn( View& view )
       }
       else
       {
+		 // OBJCTRA, OBJCTDEC must be given w.r.t epoch J2000
          FITSKeywordArray keywords;
          view.Window().GetKeywords( keywords );
          for ( auto k : keywords )
@@ -382,8 +384,9 @@ bool INDIMountInstance::ExecuteOn( View& view )
 
    GetCurrentCoordinates();
 
-   double deltaRA = o_currentRA - imageCenterRA;
-   double deltaDec = o_currentDec - imageCenterDec;
+   // delta coordinates are independent to epoch
+   double deltaRA = observationCenterRA - imageCenterRA;
+   double deltaDec = observationCenterDec - imageCenterDec;
 
    if ( o_currentLST >= 0 ) // ### N.B.: o_currentLST < 0 if LST property could not be retrieved
    {
@@ -411,6 +414,7 @@ bool INDIMountInstance::ExecuteOn( View& view )
    try
    {
       p_command = IMCCommand::GoTo;
+	  // target coordinates have to consider mount epoch
       p_targetRA = AlignmentModel::RangeShiftRightAscension(o_currentRA + deltaRA);
       p_targetDec = o_currentDec + deltaDec;
       p_computeApparentPosition = false;
