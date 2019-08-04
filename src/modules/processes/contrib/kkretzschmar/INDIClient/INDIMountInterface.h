@@ -446,9 +446,7 @@ public:
 
    int AlignmentMethod() const;
 
-   bool ShouldComputeTopocentricApparentCoordinates() {
-      return !GUI->MountComputeApparentPosition_CheckBox.IsChecked();
-   }
+   bool ShouldComputeTopocentricApparentCoordinates();
 
 private:
 
@@ -520,8 +518,6 @@ private:
             SpinBox           TargetDec_M_SpinBox;
             NumericEdit       TargetDec_S_NumericEdit;
             CheckBox          MountTargetDECIsSouth_CheckBox;
-         HorizontalSizer   MountComputeApparentPosition_Sizer;
-            CheckBox         MountComputeApparentPosition_CheckBox;
          HorizontalSizer   MountSearch_Sizer;
             PushButton        MountSearch_Button;
             PushButton        MountPlanets_Button;

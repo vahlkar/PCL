@@ -1376,6 +1376,21 @@ int INDIMountInterface::AlignmentMethod() const
    return GUI->m_alignmentModelIndex;
 }
 
+bool INDIMountInterface::ShouldComputeTopocentricApparentCoordinates()
+{
+	INDIPropertyListItem item;
+	INDIClient* indi = INDIClient::TheClientOrDie();
+	if (indi->GetPropertyItem(m_device, MOUNT_EPOCH_PROPERTY_NAME, MOUNT_EPOCH_ITEM_NAME, item, false/*formatted*/))
+	{
+		if (TruncInt(item.PropertyValue.ToDouble()) == 0)
+			return true;
+	}
+	else
+		return true;
+
+	return false;
+}
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* INDIMountInterface::NewProcess() const
@@ -1389,8 +1404,6 @@ ProcessImplementation* INDIMountInterface::NewProcess() const
 
    instance->p_targetDec = SexagesimalToDecimal( GUI->MountTargetDECIsSouth_CheckBox.IsChecked() ? -1 : +1,
          GUI->TargetDec_H_SpinBox.Value(), GUI->TargetDec_M_SpinBox.Value(), GUI->TargetDec_S_NumericEdit.Value() );
-
-   instance->p_computeApparentPosition = GUI->MountComputeApparentPosition_CheckBox.IsChecked();
 
    instance->p_alignmentMethod = GUI->m_alignmentModelIndex;
 
@@ -1752,17 +1765,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountTargetDec_Sizer.Add( MountTargetDECIsSouth_CheckBox );
    MountTargetDec_Sizer.AddStretch();
 
-   MountComputeApparentPosition_CheckBox.SetText( "Equinox J2000.0" );
-   MountComputeApparentPosition_CheckBox.SetToolTip( "<p>Check this option if manually entered coordinates are "
-      "referred to the mean equator and equinox of J2000.0; for example, if you have entered ICRS reference data "
-      "taken from a star catalog.</p>"
-      "<p>If this option is disabled coordinates are assumed to be apparent, that is, referred to the true equator "
-      "and equinox of date.</p>"
-      "<p>This option is permanently disabled, if the mount device expects J2000.0 coordinates</p>");
-   MountComputeApparentPosition_Sizer.AddSpacing( labelWidth1 + 4 );
-   MountComputeApparentPosition_Sizer.Add( MountComputeApparentPosition_CheckBox );
-   MountComputeApparentPosition_Sizer.AddStretch();
-
+   
    MountSearch_Button.SetText( "Search" );
    MountSearch_Button.SetIcon( w.ScaledResource( ":/icons/find.png" ) );
    MountSearch_Button.SetStyleSheet( buttonStyleSheet1 );
@@ -1824,7 +1827,6 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountGoTo_Sizer.SetSpacing( 8 );
    MountGoTo_Sizer.Add( MountTargetRA_Sizer );
    MountGoTo_Sizer.Add( MountTargetDec_Sizer );
-   MountGoTo_Sizer.Add( MountComputeApparentPosition_Sizer );
    MountGoTo_Sizer.Add( MountSearch_Sizer );
    MountGoTo_Sizer.Add( MountGoToStart_Sizer );
    MountGoTo_Sizer.Add( MountGoToCancel_Sizer );
@@ -2129,17 +2131,6 @@ __device_found:
           {
             GUI->MountPark_Button.SetText("Park");
           }
-
-      if ( indi->GetPropertyItem( m_device, MOUNT_EPOCH_PROPERTY_NAME, MOUNT_EPOCH_ITEM_NAME, mountProp, false/*formatted*/ ) )
-         if (TruncInt(mountProp.PropertyValue.ToDouble()) == 0)
-         {
-           GUI->MountComputeApparentPosition_CheckBox.Uncheck();
-           GUI->MountComputeApparentPosition_CheckBox.Enable();
-         } else
-         {
-           GUI->MountComputeApparentPosition_CheckBox.Check();
-           GUI->MountComputeApparentPosition_CheckBox.Disable();
-         }
 
 
       if ( indi->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_APERTURE", mountProp, false/*formatted*/ ) )

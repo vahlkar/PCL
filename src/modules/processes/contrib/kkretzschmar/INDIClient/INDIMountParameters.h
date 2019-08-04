@@ -98,10 +98,6 @@ DECLARE_DOUBLE_PARAMETER_CLASS(IMCTargetDec);
 
 // ----------------------------------------------------------------------------
 
-DECLARE_BOOLEAN_PARAMETER_CLASS(IMCComputeApparentPosition);
-
-// ----------------------------------------------------------------------------
-
 DECLARE_DOUBLE_READ_ONLY_PARAMETER_CLASS(IMCCurrentLST);
 
 // ----------------------------------------------------------------------------

@@ -107,7 +107,6 @@ private:
            pcl_enum p_pierSide;
            double   p_targetRA;
            double   p_targetDec;
-           pcl_bool p_computeApparentPosition;
            pcl_bool p_enableAlignmentCorrection;
            String   p_alignmentFile;
            uint32   p_alignmentConfig;

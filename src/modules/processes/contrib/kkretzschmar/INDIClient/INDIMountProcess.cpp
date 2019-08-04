@@ -81,7 +81,6 @@ INDIMountProcess::INDIMountProcess() : MetaProcess()
    new IMCSlewRate( this );
    new IMCTargetRA( this );
    new IMCTargetDec( this );
-   new IMCComputeApparentPosition( this );
    new IMCCurrentLST( this );
    new IMCCurrentRA( this );
    new IMCCurrentDec( this );

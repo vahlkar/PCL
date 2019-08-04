@@ -967,9 +967,9 @@ ImagePropertiesFromImageMetadata( const ImageMetadata& data )
    if ( data.apertureArea.IsDefined() )
       properties << ImageProperty( "Instrument:Telescope:CollectingArea", Round( data.apertureArea(), 3 ) );
    if ( data.eodRa.IsDefined() )
-      properties << ImageProperty( "Instrument:Telescope:Pointing:RA", data.eodRa() );
+      properties << ImageProperty( "Instrument:Telescope:Pointing:RA", data.ra() );
    if ( data.eodDec.IsDefined() )
-      properties << ImageProperty( "Instrument:Telescope:Pointing:Dec", data.eodDec() );
+      properties << ImageProperty( "Instrument:Telescope:Pointing:Dec", data.dec() );
    if ( data.filterName.IsDefined() )
       properties << ImageProperty( "Instrument:Filter:Name", data.filterName() );
    if ( data.sensorTemp.IsDefined() )
@@ -1278,8 +1278,25 @@ void AbstractINDICCDFrameExecution::Perform()
                         }
 
                         // Compute GCRS / J2000.0 coordinates from telescope
-                        // true / EOD coordinates.
-                        if ( data.year.IsDefined() )
+                        // true / EOD coordinates if epoch == JNow
+						data.ra = Deg(telescopeRA);
+						data.dec = Deg(telescopeDec);
+						data.equinox = 2000.0;
+						INDIPropertyListItem item;
+						INDIClient* indi = INDIClient::TheClientOrDie();
+						bool computeApparentPositions = false;
+						if (indi->GetPropertyItem(telescopeName, MOUNT_EPOCH_PROPERTY_NAME, MOUNT_EPOCH_ITEM_NAME, item, false/*formatted*/))
+						{
+							if (TruncInt(item.PropertyValue.ToDouble()) == 0)
+								computeApparentPositions = true;
+						}
+						else
+						{
+							// fallback: if EPOCH property is not defined assume JNoe
+							computeApparentPositions = true;
+						}
+
+                        if ( data.year.IsDefined() && computeApparentPositions)
                         {
 							TimePoint t(data.year(), data.month(), data.day(), data.dayf() - data.tz() / 24);
 							Position P(t, "UTC");
@@ -1291,8 +1308,6 @@ void AbstractINDICCDFrameExecution::Perform()
 							u2.ToSpherical2Pi(telescopeRA, telescopeDec);
 							data.ra = Deg(telescopeRA);
 							data.dec = Deg(telescopeDec);
-							
-							data.equinox = 2000.0;
                         }
 
                         // If not already available, try to get the telescope
