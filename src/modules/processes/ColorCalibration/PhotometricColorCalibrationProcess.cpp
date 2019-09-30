@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.04.0344
+// Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationProcess.cpp - Released 2019-04-30T16:31:09Z
+// PhotometricColorCalibrationProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -58,7 +58,6 @@
 #include <pcl/Console.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/GlobalSettings.h>
-#include <pcl/MessageBox.h>
 #include <pcl/XML.h>
 
 namespace pcl
@@ -74,10 +73,18 @@ PhotometricColorCalibrationProcess* ThePhotometricColorCalibrationProcess = null
 
 // ----------------------------------------------------------------------------
 
-PhotometricColorCalibrationProcess::PhotometricColorCalibrationProcess() : MetaProcess()
+PhotometricColorCalibrationProcess::PhotometricColorCalibrationProcess()
 {
    ThePhotometricColorCalibrationProcess = this;
 
+   new PCCWorkingMode( this );
+   new PCCApplyCalibration( this );
+   new PCCRedFilterWavelength( this );
+   new PCCRedFilterBandwidth( this );
+   new PCCGreenFilterWavelength( this );
+   new PCCGreenFilterBandwidth( this );
+   new PCCBlueFilterWavelength( this );
+   new PCCBlueFilterBandwidth( this );
    new PCCWhiteReferenceId( this );
    new PCCWhiteReferenceName( this );
    new PCCWhiteReferenceSr_JV( this );
@@ -114,7 +121,6 @@ PhotometricColorCalibrationProcess::PhotometricColorCalibrationProcess() : MetaP
    new PCCPhotShowDetectedStars( this );
    new PCCPhotShowBackgroundModels( this );
    new PCCPhotGenerateGraphs( this );
-   new PCCApplyCalibration( this );
    new PCCNeutralizeBackground( this );
    new PCCBackgroundReferenceViewId( this );
    new PCCBackgroundLow( this );
@@ -189,14 +195,11 @@ static WhiteReference      s_zeroPoint;
 static bool                s_initialized = false;
 static bool                s_valid = false;
 
-void PhotometricColorCalibrationProcess::InitializeWhiteReferences( bool interactive )
+void PhotometricColorCalibrationProcess::InitializeWhiteReferences()
 {
    if ( !s_initialized )
    {
       s_initialized = true;
-
-      if ( !interactive )
-         Exception::DisableGUIOutput();
 
       String wrfFilePath = PixInsightSettings::GlobalString( "Application/LibraryDirectory" ) + "/default.xwrf";
 
@@ -285,15 +288,11 @@ void PhotometricColorCalibrationProcess::InitializeWhiteReferences( bool interac
 
          if ( errorCount > 0 )
          {
-            if ( interactive )
-               MessageBox( "<p>Decoded white reference database file with " + String( errorCount ) + "error(s).</p>"
-                        "<p><b>Reinstalling the PixInsight platform should solve this problem.</b></p>",
-                        "PhotometricColorCalibration",
-                        StdIcon::Warning,
-                        StdButton::Ok ).Execute();
-
-            Console().CriticalLn( "<end><cbr><br>*** Error: PhotometricColorCalibration: "
-                        "Decoded white reference database file with " + String( errorCount ) + "error(s): " + wrfFilePath );
+            Console console;
+            console.Show();
+            console.CriticalLn( "<end><cbr><br>*** Error: PhotometricColorCalibration: "
+                        "Decoded white reference database file with " + String( errorCount ) + "error(s): " + wrfFilePath +
+                        "<br>Reinstalling the PixInsight platform should solve this problem." );
          }
 
          s_valid = true;
@@ -308,17 +307,13 @@ void PhotometricColorCalibrationProcess::InitializeWhiteReferences( bool interac
       }
       catch ( const String& what )
       {
-         if ( interactive )
-            MessageBox( "<p>Decoding white reference database file: " + what +
-                        ". Selectable white references won't be available, and PhotometricColorCalibration "
-                        "will work with factory-default white and photometric zero point references.</p>"
-                        "<p><b>Reinstalling the PixInsight platform should solve this problem.</b></p>",
-                        "PhotometricColorCalibration",
-                        StdIcon::Error,
-                        StdButton::Ok ).Execute();
-
-         Console().CriticalLn( "<end><cbr><br>*** Error: PhotometricColorCalibration: "
-                        "Decoding white reference database file: " + what + ": " + wrfFilePath );
+         Console console;
+         console.Show();
+         console.CriticalLn( "<end><cbr><br>*** Error: PhotometricColorCalibration: "
+                     "Decoding white reference database file: " + what + ": " + wrfFilePath +
+                     "<br>Selectable white references won't be available, and PhotometricColorCalibration "
+                     "will work with factory-default white and photometric zero point references."
+                     "<br>Reinstalling the PixInsight platform should solve this problem." );
       }
       catch ( ... )
       {
@@ -328,9 +323,6 @@ void PhotometricColorCalibrationProcess::InitializeWhiteReferences( bool interac
          }
          ERROR_HANDLER
       }
-
-      if ( !interactive )
-         Exception::EnableGUIOutput();
    }
 }
 
@@ -367,4 +359,4 @@ int PhotometricColorCalibrationProcess::FindWhiteReferenceById( const String& id
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF PhotometricColorCalibrationProcess.cpp - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GrayscaleRGBActions.h - Released 2019-04-30T16:31:09Z
+// GrayscaleRGBActions.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -59,8 +59,6 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// ConvertToGrayscaleAction
-// ----------------------------------------------------------------------------
 
 class ConvertToGrayscaleAction : public Action
 {
@@ -68,13 +66,10 @@ public:
 
    ConvertToGrayscaleAction();
 
-   virtual void Execute();
-
-   virtual bool IsEnabled( ActionInfo ) const;
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 };
 
-// ----------------------------------------------------------------------------
-// ConvertToRGBColorAction
 // ----------------------------------------------------------------------------
 
 class ConvertToRGBColorAction : public Action
@@ -83,9 +78,8 @@ public:
 
    ConvertToRGBColorAction();
 
-   virtual void Execute();
-
-   virtual bool IsEnabled( ActionInfo ) const;
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -95,4 +89,4 @@ public:
 #endif   // __GrayscaleRGBActions_h
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBActions.h - Released 2019-04-30T16:31:09Z
+// EOF GrayscaleRGBActions.h - Released 2019-09-29T12:27:57Z

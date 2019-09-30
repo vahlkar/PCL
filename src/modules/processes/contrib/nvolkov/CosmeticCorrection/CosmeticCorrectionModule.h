@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CosmeticCorrection Process Module Version 01.02.05.0232
+// Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionModule.h - Released 2019-04-30T16:31:10Z
+// CosmeticCorrectionModule.h - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -60,8 +60,6 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionModule
-// ----------------------------------------------------------------------------
 
 class CosmeticCorrectionModule : public MetaModule
 {
@@ -78,8 +76,6 @@ public:
    virtual String TradeMarks() const;
    virtual String OriginalFileName() const;
    virtual void GetReleaseDate( int& year, int& month, int& day ) const;
-
-   static String ReadableVersion();
 };
 
 // ----------------------------------------------------------------------------
@@ -89,4 +85,4 @@ public:
 #endif   // __CosmeticCorrectionModule_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionModule.h - Released 2019-04-30T16:31:10Z
+// EOF CosmeticCorrectionModule.h - Released 2019-09-29T12:27:58Z

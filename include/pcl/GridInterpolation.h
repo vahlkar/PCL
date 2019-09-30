@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/GridInterpolation.h - Released 2019-04-30T16:30:41Z
+// pcl/GridInterpolation.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -54,6 +54,10 @@
 
 /// \file pcl/GridInterpolation.h
 
+#include <pcl/Defs.h>
+#include <pcl/Diagnostics.h>
+
+#include <pcl/AbstractImage.h>
 #include <pcl/BicubicInterpolation.h>
 #include <pcl/Matrix.h>
 #include <pcl/ParallelProcess.h>
@@ -63,6 +67,7 @@
 
 #ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
 #  include <pcl/Console.h>
+#  include <pcl/StdStatus.h>
 #endif
 
 namespace pcl
@@ -171,23 +176,27 @@ public:
 
       m_G = DMatrix( rows, cols );
 
+      StatusMonitor monitor;
 #ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
+      StandardStatus status;
       if ( verbose )
-         Console().WriteLn( "<end><cbr>Building surface interpolation grid...<flush>" );
+      {
+         monitor.SetCallback( &status );
+         monitor.Initialize( "Building surface interpolation grid", rows );
+      }
 #endif
+
+      AbstractImage::ThreadData data( monitor, rows );
 
       int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( rows, 1 ) ) : 1;
       int rowsPerThread = rows/numberOfThreads;
       ReferenceArray<GridInitializationThread<SI> > threads;
       for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new GridInitializationThread<SI>( *this, S,
-                                 i*rowsPerThread,
-                                 (j < numberOfThreads) ? j*rowsPerThread : rows ) );
-      int n = 0;
-      for ( GridInitializationThread<SI>& thread : threads )
-         thread.Start( ThreadPriority::DefaultMax, n++ );
-      for ( GridInitializationThread<SI>& thread : threads )
-         thread.Wait();
+         threads.Add( new GridInitializationThread<SI>( data, *this, S,
+                                                        i*rowsPerThread,
+                                                        (j < numberOfThreads) ? j*rowsPerThread : rows ) );
+
+      AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
       m_I.Initialize( m_G.Begin(), cols, rows );
@@ -335,20 +344,31 @@ private:
    {
    public:
 
-      GridInitializationThread( GridInterpolation& grid, const SI& surface, int startRow, int endRow ) :
-         m_grid( grid ), m_surface( surface ), m_startRow( startRow ), m_endRow( endRow )
+      GridInitializationThread( const AbstractImage::ThreadData& data,
+                                GridInterpolation& grid, const SI& surface, int startRow, int endRow ) :
+         m_data( data ),
+         m_grid( grid ),
+         m_surface( surface ),
+         m_startRow( startRow ), m_endRow( endRow )
       {
       }
 
       PCL_HOT_FUNCTION void Run() override
       {
+         INIT_THREAD_MONITOR()
+
          for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         {
             for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_G.Cols(); ++j, x += m_grid.m_delta )
                m_grid.m_G[i][j] = m_surface( x, y );
+
+            UPDATE_THREAD_MONITOR( 32 )
+         }
       }
 
    private:
 
+      const AbstractImage::ThreadData& m_data;
             GridInterpolation& m_grid;
       const SI&                m_surface;
             int                m_startRow, m_endRow;
@@ -459,29 +479,27 @@ public:
       m_Gx = DMatrix( rows, cols );
       m_Gy = DMatrix( rows, cols );
 
+      StatusMonitor monitor;
 #ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
+      StandardStatus status;
       if ( verbose )
-         Console().WriteLn( "<end><cbr>Building surface interpolation grid...<flush>" );
+      {
+         monitor.SetCallback( &status );
+         monitor.Initialize( "Building surface interpolation grid", rows );
+      }
 #endif
+
+      AbstractImage::ThreadData data( monitor, rows );
 
       int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( rows, 1 ) ) : 1;
       int rowsPerThread = rows/numberOfThreads;
       ReferenceArray<GridInitializationThread<PSI> > threads;
       for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new GridInitializationThread<PSI>( *this, PS,
-                                 i*rowsPerThread,
-                                 (j < numberOfThreads) ? j*rowsPerThread : rows ) );
-      int n = 0;
-      if ( numberOfThreads > 1 )
-      {
-         for ( GridInitializationThread<PSI>& thread : threads )
-            thread.Start( ThreadPriority::DefaultMax, n++ );
-         for ( GridInitializationThread<PSI>& thread : threads )
-            thread.Wait();
-      }
-      else
-         threads[0].Run();
+         threads.Add( new GridInitializationThread<PSI>( data, *this, PS,
+                                                         i*rowsPerThread,
+                                                         (j < numberOfThreads) ? j*rowsPerThread : rows ) );
 
+      AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
       m_Ix.Initialize( m_Gx.Begin(), cols, rows );
@@ -553,29 +571,27 @@ public:
       m_Gx = DMatrix( rows, cols );
       m_Gy = DMatrix( rows, cols );
 
+      StatusMonitor monitor;
 #ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
+      StandardStatus status;
       if ( verbose )
-         Console().WriteLn( "<end><cbr>Building surface interpolation grid...<flush>" );
+      {
+         monitor.SetCallback( &status );
+         monitor.Initialize( "Building surface interpolation grid", rows );
+      }
 #endif
+
+      AbstractImage::ThreadData data( monitor, rows );
 
       int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( rows, 1 ) ) : 1;
       int rowsPerThread = rows/numberOfThreads;
       ReferenceArray<GridInitializationXYThread<SI> > threads;
       for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new GridInitializationXYThread<SI>( *this, Sx, Sy,
-                                 i*rowsPerThread,
-                                 (j < numberOfThreads) ? j*rowsPerThread : rows ) );
-      int n = 0;
-      if ( numberOfThreads > 1 )
-      {
-         for ( GridInitializationXYThread<SI>& thread : threads )
-            thread.Start( ThreadPriority::DefaultMax, n++ );
-         for ( GridInitializationXYThread<SI>& thread : threads )
-            thread.Wait();
-      }
-      else
-         threads[0].Run();
+         threads.Add( new GridInitializationXYThread<SI>( data, *this, Sx, Sy,
+                                                          i*rowsPerThread,
+                                                          (j < numberOfThreads) ? j*rowsPerThread : rows ) );
 
+      AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
       m_Ix.Initialize( m_Gx.Begin(), cols, rows );
@@ -638,6 +654,43 @@ public:
       m_Gy = Gy;
       m_Ix.Initialize( m_Gx.Begin(), cols, rows );
       m_Iy.Initialize( m_Gy.Begin(), cols, rows );
+   }
+
+   /*!
+    *
+    */
+   template <class PSI>
+   void ApplyLocalModel( const PSI& PS,
+                         const String& message = "Applying local interpolation model",
+                         bool verbose = true )
+   {
+      PCL_PRECONDITION( IsValid() )
+
+      if ( !IsValid() )
+         throw Error( "PointGridInterpolation::ApplyLocalModel(): Uninitialized interpolation." );
+
+      StatusMonitor monitor;
+#ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
+      StandardStatus status;
+      if ( verbose )
+      {
+         monitor.SetCallback( &status );
+         monitor.Initialize( message, m_Gx.Rows() );
+      }
+#endif
+
+      AbstractImage::ThreadData data( monitor, m_Gx.Rows() );
+
+      int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( m_Gx.Rows(), 1 ) ) : 1;
+      int rowsPerThread = m_Gx.Rows()/numberOfThreads;
+      ReferenceArray<LocalModelThread<PSI> > threads;
+      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+         threads.Add( new LocalModelThread<PSI>( data, *this, PS,
+                                                 i*rowsPerThread,
+                                                 (j < numberOfThreads) ? j*rowsPerThread : m_Gx.Rows() ) );
+
+      AbstractImage::RunThreads( threads, data );
+      threads.Destroy();
    }
 
    /*!
@@ -711,6 +764,7 @@ public:
    template <typename T>
    DPoint operator ()( T x, T y ) const
    {
+      PCL_PRECONDITION( IsValid() )
       double fx = (double( x ) - m_rect.x0)/m_delta;
       double fy = (double( y ) - m_rect.y0)/m_delta;
       return DPoint( m_Ix( fx, fy ), m_Iy( fx, fy ) );
@@ -744,27 +798,38 @@ private:
    {
    public:
 
-      GridInitializationThread( PointGridInterpolation& grid, const PSI& surface, int startRow, int endRow ) :
-         m_grid( grid ), m_surface( surface ), m_startRow( startRow ), m_endRow( endRow )
+      GridInitializationThread( const AbstractImage::ThreadData& data,
+                                PointGridInterpolation& grid, const PSI& surface, int startRow, int endRow ) :
+         m_data( data ),
+         m_grid( grid ),
+         m_surface( surface ),
+         m_startRow( startRow ), m_endRow( endRow )
       {
       }
 
       PCL_HOT_FUNCTION void Run() override
       {
+         INIT_THREAD_MONITOR()
+
          for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         {
             for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
             {
                DPoint p = m_surface( x, y );
                m_grid.m_Gx[i][j] = p.x;
                m_grid.m_Gy[i][j] = p.y;
             }
+
+            UPDATE_THREAD_MONITOR( 32 )
+         }
       }
 
    private:
 
-            PointGridInterpolation& m_grid;
-      const PSI&                    m_surface;
-            int                     m_startRow, m_endRow;
+      const AbstractImage::ThreadData& m_data;
+            PointGridInterpolation&    m_grid;
+      const PSI&                       m_surface;
+            int                        m_startRow, m_endRow;
    };
 
    template <class SI>
@@ -772,28 +837,78 @@ private:
    {
    public:
 
-      GridInitializationXYThread( PointGridInterpolation& grid,
+      GridInitializationXYThread( const AbstractImage::ThreadData& data,
+                                  PointGridInterpolation& grid,
                                   const SI& surfaceX, const SI& surfaceY, int startRow, int endRow ) :
-         m_grid( grid ), m_surfaceX( surfaceX ), m_surfaceY( surfaceY ), m_startRow( startRow ), m_endRow( endRow )
+         m_data( data ),
+         m_grid( grid ),
+         m_surfaceX( surfaceX ), m_surfaceY( surfaceY ),
+         m_startRow( startRow ), m_endRow( endRow )
       {
       }
 
       PCL_HOT_FUNCTION void Run() override
       {
+         INIT_THREAD_MONITOR()
+
          for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         {
             for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
             {
                m_grid.m_Gx[i][j] = m_surfaceX( x, y );
                m_grid.m_Gy[i][j] = m_surfaceY( x, y );
             }
+
+            UPDATE_THREAD_MONITOR( 32 )
+         }
       }
 
    private:
 
-            PointGridInterpolation& m_grid;
-      const SI&                     m_surfaceX;
-      const SI&                     m_surfaceY;
-            int                     m_startRow, m_endRow;
+      const AbstractImage::ThreadData& m_data;
+            PointGridInterpolation&    m_grid;
+      const SI&                        m_surfaceX;
+      const SI&                        m_surfaceY;
+            int                        m_startRow, m_endRow;
+   };
+
+   template <class PSI>
+   class LocalModelThread : public Thread
+   {
+   public:
+
+      LocalModelThread( const AbstractImage::ThreadData& data,
+                        PointGridInterpolation& grid, const PSI& model, int startRow, int endRow ) :
+         m_data( data ),
+         m_grid( grid ),
+         m_model( model ),
+         m_startRow( startRow ), m_endRow( endRow )
+      {
+      }
+
+      PCL_HOT_FUNCTION void Run() override
+      {
+         INIT_THREAD_MONITOR()
+
+         for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         {
+            for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+            {
+               DPoint d = m_model( x, y );
+               m_grid.m_Gx[i][j] += d.x;
+               m_grid.m_Gy[i][j] += d.y;
+            }
+
+            UPDATE_THREAD_MONITOR( 32 )
+         }
+      }
+
+   private:
+
+      const AbstractImage::ThreadData& m_data;
+            PointGridInterpolation&    m_grid;
+      const PSI&                       m_model;
+            int                        m_startRow, m_endRow;
    };
 };
 
@@ -804,4 +919,4 @@ private:
 #endif   // __PCL_GridInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GridInterpolation.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/GridInterpolation.h - Released 2019-09-29T12:27:26Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 01.03.00.0443
+// Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// DynamicPSFInterface.cpp - Released 2019-04-30T16:31:09Z
+// DynamicPSFInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -147,6 +147,8 @@ public:
       Global_Sizer.Add( Buttons_Sizer );
 
       SetSizer( Global_Sizer );
+
+      EnsureLayoutUpdated();
       AdjustToContents();
       SetFixedSize();
 
@@ -238,6 +240,8 @@ public:
       Global_Sizer.Add( Buttons_Sizer );
 
       SetSizer( Global_Sizer );
+
+      EnsureLayoutUpdated();
       AdjustToContents();
       SetMinSize();
 
@@ -2887,6 +2891,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
    StarDetectionParameters_Control.Hide();
    Scale_Control.Hide();
 
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 }
 
@@ -2895,4 +2900,4 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF DynamicPSFInterface.cpp - Released 2019-09-29T12:27:57Z

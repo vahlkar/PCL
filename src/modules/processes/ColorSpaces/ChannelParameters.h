@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// ChannelParameters.h - Released 2019-04-30T16:31:09Z
+// ChannelParameters.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -68,14 +68,11 @@ public:
 
    ColorSpaceId( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
-
-   // -------------------------------------------------------------------------
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 
    static IsoString SpaceId( int cs );
    static IsoString ChannelId( int cs, int c );
@@ -89,10 +86,9 @@ public:
 
    ChannelTable( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type MinLength() const;
-   virtual size_type MaxLength() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   size_type MaxLength() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -103,9 +99,8 @@ public:
 
    ChannelEnabled( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -116,10 +111,9 @@ public:
 
    ChannelId( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -139,12 +133,11 @@ public:
 
    ChannelSampleFormat( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -154,4 +147,4 @@ public:
 #endif   // __ChannelParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelParameters.h - Released 2019-04-30T16:31:09Z
+// EOF ChannelParameters.h - Released 2019-09-29T12:27:57Z

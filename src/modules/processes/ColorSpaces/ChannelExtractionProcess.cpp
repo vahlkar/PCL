@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// ChannelExtractionProcess.cpp - Released 2019-04-30T16:31:09Z
+// ChannelExtractionProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -60,7 +60,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ChannelExtractionProcess*  TheChannelExtractionProcess = 0;
+ChannelExtractionProcess*  TheChannelExtractionProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ ChannelExtractionProcess*  TheChannelExtractionProcess = 0;
 
 // ----------------------------------------------------------------------------
 
-ChannelExtractionProcess::ChannelExtractionProcess() : MetaProcess()
+ChannelExtractionProcess::ChannelExtractionProcess()
 {
    TheChannelExtractionProcess = this;
 
@@ -89,16 +89,9 @@ IsoString ChannelExtractionProcess::Id() const
 
 // ----------------------------------------------------------------------------
 
-IsoString ChannelExtractionProcess::Category() const
+IsoString ChannelExtractionProcess::Categories() const
 {
    return "ColorSpaces,ChannelManagement";
-}
-
-// ----------------------------------------------------------------------------
-
-uint32 ChannelExtractionProcess::Version() const
-{
-   return 0x100;
 }
 
 // ----------------------------------------------------------------------------
@@ -134,7 +127,7 @@ ProcessImplementation* ChannelExtractionProcess::Create() const
 ProcessImplementation* ChannelExtractionProcess::Clone( const ProcessImplementation& p ) const
 {
    const ChannelExtractionInstance* instPtr = dynamic_cast<const ChannelExtractionInstance*>( &p );
-   return (instPtr != 0) ? new ChannelExtractionInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new ChannelExtractionInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -149,4 +142,4 @@ bool ChannelExtractionProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF ChannelExtractionProcess.cpp - Released 2019-09-29T12:27:57Z

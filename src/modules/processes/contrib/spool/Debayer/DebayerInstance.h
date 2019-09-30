@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 01.08.01.0337
+// Standard Debayer Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// DebayerInstance.h - Released 2019-04-30T16:31:10Z
+// DebayerInstance.h - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -114,7 +114,7 @@ private:
    pcl_bool   p_showImages;        // optional for view execution only
    String     p_cfaSourceFilePath; // ...
    item_list  p_targets;
-   pcl_bool   p_noGUIMessages;
+   pcl_bool   p_noGUIMessages; // ### DEPRECATED
 
    // Format hints
    String      p_inputHints;
@@ -189,4 +189,4 @@ private:
 #endif   // __DebayerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.h - Released 2019-04-30T16:31:10Z
+// EOF DebayerInstance.h - Released 2019-09-29T12:27:58Z

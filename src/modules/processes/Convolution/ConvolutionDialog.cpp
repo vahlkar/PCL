@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Convolution Process Module Version 01.01.03.0288
+// Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionDialog.cpp - Released 2019-04-30T16:31:09Z
+// ConvolutionDialog.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -92,7 +92,7 @@ namespace pcl
       return tr;
    }
 
-   ConvolutionFilterCodeDialog::ConvolutionFilterCodeDialog( String mode, const Filter& _filter ) : Dialog(), filter( _filter )
+   ConvolutionFilterCodeDialog::ConvolutionFilterCodeDialog( String mode, const Filter& a_filter ) : filter( a_filter )
    {
       // ### TextBox
       FilterCode_TextBox.SetScaledMinSize( 700, 300 );
@@ -270,4 +270,4 @@ namespace pcl
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionDialog.cpp - Released 2019-04-30T16:31:09Z
+// EOF ConvolutionDialog.cpp - Released 2019-09-29T12:27:57Z

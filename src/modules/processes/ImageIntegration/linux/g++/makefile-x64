@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.110
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-04-30T16:35:38.010Z
+# Generated on .... 2019-09-30T11:28:09.126Z
 # Project id ...... ImageIntegration
 # Project type .... Module
 # Platform ........ Linux/g++
@@ -34,7 +34,8 @@ SRC_FILES= \
 ../../ImageIntegrationModule.cpp \
 ../../ImageIntegrationParameters.cpp \
 ../../ImageIntegrationProcess.cpp \
-../../IntegrationCache.cpp
+../../IntegrationCache.cpp \
+../../SystemMemory.cpp
 
 #
 # Object files
@@ -56,7 +57,8 @@ OBJ_FILES= \
 ./x64/Release/ImageIntegrationModule.o \
 ./x64/Release/ImageIntegrationParameters.o \
 ./x64/Release/ImageIntegrationProcess.o \
-./x64/Release/IntegrationCache.o
+./x64/Release/IntegrationCache.o \
+./x64/Release/SystemMemory.o
 
 #
 # Dependency files
@@ -78,7 +80,8 @@ DEP_FILES= \
 ./x64/Release/ImageIntegrationModule.d \
 ./x64/Release/ImageIntegrationParameters.d \
 ./x64/Release/ImageIntegrationProcess.d \
-./x64/Release/IntegrationCache.d
+./x64/Release/IntegrationCache.d \
+./x64/Release/SystemMemory.d
 
 #
 # Rules
@@ -99,6 +102,6 @@ post-build:
 	cp $(OBJ_DIR)/ImageIntegration-pxm.so $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -mfpmath=sse -msse4.1 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++11 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver1 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

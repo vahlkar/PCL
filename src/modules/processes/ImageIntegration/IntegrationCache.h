@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// IntegrationCache.h - Released 2019-04-30T16:31:09Z
+// IntegrationCache.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -89,9 +89,9 @@ public:
 
 private:
 
-   virtual void AssignData( const FileDataCacheItem& item );
-   virtual String DataAsString() const;
-   virtual bool GetDataFromTokens( const StringList& tokens );
+   void AssignData( const FileDataCacheItem& item ) override;
+   String DataAsString() const override;
+   bool GetDataFromTokens( const StringList& tokens ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -103,14 +103,14 @@ public:
    IntegrationCache();
    virtual ~IntegrationCache();
 
-   virtual String CacheName() const
+   String CacheName() const override
    {
       return "ImageIntegration Cache";
    }
 
 private:
 
-   virtual FileDataCacheItem* NewItem() const
+   FileDataCacheItem* NewItem() const override
    {
       return new IntegrationCacheItem;
    }
@@ -125,4 +125,4 @@ extern IntegrationCache* TheIntegrationCache;
 #endif   // __IntegrationCache_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.h - Released 2019-04-30T16:31:09Z
+// EOF IntegrationCache.h - Released 2019-09-29T12:27:57Z

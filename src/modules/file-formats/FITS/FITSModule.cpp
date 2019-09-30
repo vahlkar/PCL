@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0439
+// Standard FITS File Format Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// FITSModule.cpp - Released 2019-04-30T16:31:00Z
+// FITSModule.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     01
-#define MODULE_VERSION_REVISION  05
-#define MODULE_VERSION_BUILD     0439
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     1
+#define MODULE_VERSION_REVISION  5
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       30
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "FITSModule.h"
 #include "FITSFormat.h"
@@ -68,9 +68,11 @@ namespace pcl
 
 // -------------------------------------------------------------------------
 
-FITSModule::FITSModule() : MetaModule()
+FITSModule::FITSModule()
 {
 }
+
+// -------------------------------------------------------------------------
 
 const char* FITSModule::Version() const
 {
@@ -81,35 +83,49 @@ const char* FITSModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// -------------------------------------------------------------------------
+
 IsoString FITSModule::Name() const
 {
    return "FITS";
 }
+
+// -------------------------------------------------------------------------
 
 String FITSModule::Description() const
 {
    return "PixInsight Standard FITS File Format Module";
 }
 
+// -------------------------------------------------------------------------
+
 String FITSModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String FITSModule::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// -------------------------------------------------------------------------
+
 String FITSModule::Copyright() const
 {
-   return "Copyright (c) 2005-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String FITSModule::TradeMarks() const
 {
    return "PixInsight";
 }
+
+// -------------------------------------------------------------------------
 
 String FITSModule::OriginalFileName() const
 {
@@ -126,6 +142,8 @@ String FITSModule::OriginalFileName() const
    return "FITS-pxm.dll";
 #endif
 }
+
+// -------------------------------------------------------------------------
 
 void FITSModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -149,4 +167,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF FITSModule.cpp - Released 2019-04-30T16:31:00Z
+// EOF FITSModule.cpp - Released 2019-09-29T12:27:43Z

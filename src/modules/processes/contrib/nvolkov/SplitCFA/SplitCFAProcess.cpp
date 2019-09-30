@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard SplitCFA Process Module Version 01.00.06.0197
+// Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAProcess.cpp - Released 2019-04-30T16:31:10Z
+// SplitCFAProcess.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -53,7 +53,6 @@
 
 #include "SplitCFAInstance.h"
 #include "SplitCFAInterface.h"
-#include "SplitCFAModule.h" // for SplitCFAModule::ReadableVersion();
 #include "SplitCFAParameters.h"
 #include "SplitCFAProcess.h"
 
@@ -70,7 +69,7 @@ SplitCFAProcess* TheSplitCFAProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-SplitCFAProcess::SplitCFAProcess() : MetaProcess()
+SplitCFAProcess::SplitCFAProcess()
 {
    TheSplitCFAProcess = this;
 
@@ -118,10 +117,10 @@ uint32 SplitCFAProcess::Version() const
 
 String SplitCFAProcess::Description() const
 {
-   return SplitCFAModule::ReadableVersion() +
-           "<html><p>The module extract 4 ( [ R ] [ G ] [ G ] [ B ] ) sub images from CFA Bayer to 4 files( names [ 0 ] [ 1 ] [ 2 ] [ 3 ] ).<br/>"
-           "<html><p>For more detailed information, please refer to the Release Information board on PixInsight Forum:<br/>"
-           "http://pixinsight.com/forum/index.php?topic=6249.0</html>";
+   return
+   "<html>"
+   "<p>Extracts 4 ( [ R ] [ G ] [ G ] [ B ] ) subimages from Bayer CFA to 4 files( names [ 0 ] [ 1 ] [ 2 ] [ 3 ] ).</p>"
+   "</html>";
 }
 
 // ----------------------------------------------------------------------------
@@ -151,4 +150,4 @@ ProcessImplementation* SplitCFAProcess::Clone( const ProcessImplementation& p ) 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAProcess.cpp - Released 2019-04-30T16:31:10Z
+// EOF SplitCFAProcess.cpp - Released 2019-09-29T12:27:58Z

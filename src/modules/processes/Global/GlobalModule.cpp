@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0411
+// Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// GlobalModule.cpp - Released 2019-04-30T16:31:09Z
+// GlobalModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     02
-#define MODULE_VERSION_REVISION  08
-#define MODULE_VERSION_BUILD     0411
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     2
+#define MODULE_VERSION_REVISION  8
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       30
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "ColorManagementSetupAction.h"
 #include "ColorManagementSetupInterface.h"
@@ -76,7 +76,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GlobalModule::GlobalModule() : MetaModule()
+GlobalModule::GlobalModule()
 {
 }
 
@@ -111,7 +111,7 @@ String GlobalModule::Author() const
 
 String GlobalModule::Copyright() const
 {
-   return "Copyright (c) 2005-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
 }
 
 String GlobalModule::TradeMarks() const
@@ -171,4 +171,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GlobalModule.cpp - Released 2019-04-30T16:31:09Z
+// EOF GlobalModule.cpp - Released 2019-09-29T12:27:57Z

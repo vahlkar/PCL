@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 01.00.09.0193
+// Standard XISF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// XISFOptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// XISFOptionsDialog.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -58,7 +58,7 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 XISFOptionsDialogBase::XISFOptionsDialogBase( const XISFOptions& xisfOptions, const char* labelForWidth ) :
-   Dialog(), options( xisfOptions ), m_labelWidth( 0 )
+   options( xisfOptions )
 {
    m_labelWidth = Font().Width( String( labelForWidth ? labelForWidth : "Compression codec:" ) + "MM" );
    int ui4 = LogicalPixelsToPhysical( 4 );
@@ -191,6 +191,8 @@ XISFOptionsDialogBase::XISFOptionsDialogBase( const XISFOptions& xisfOptions, co
    BottomSection_Sizer.Add( Cancel_PushButton );
 }
 
+// ----------------------------------------------------------------------------
+
 int XISFOptionsDialogBase::CompressionCodecToComboBoxItem( XISF::block_compression codec )
 {
    switch ( codec )
@@ -208,6 +210,8 @@ int XISFOptionsDialogBase::CompressionCodecToComboBoxItem( XISF::block_compressi
    }
 }
 
+// ----------------------------------------------------------------------------
+
 XISF::block_compression XISFOptionsDialogBase::ComboBoxItemToCompressionCodec( int item )
 {
    bool withByteShuffle = CompressionShuffle_CheckBox.IsChecked();
@@ -224,6 +228,8 @@ XISF::block_compression XISFOptionsDialogBase::ComboBoxItemToCompressionCodec( i
    }
 }
 
+// ----------------------------------------------------------------------------
+
 int XISFOptionsDialogBase::ChecksumAlgorithmToComboBoxItem( XISF::block_checksum algorithm )
 {
    switch ( algorithm )
@@ -237,6 +243,8 @@ int XISFOptionsDialogBase::ChecksumAlgorithmToComboBoxItem( XISF::block_checksum
       return 2;
    }
 }
+
+// ----------------------------------------------------------------------------
 
 XISF::block_checksum XISFOptionsDialogBase::ComboBoxItemToChecksumAlgorithm( int item )
 {
@@ -253,6 +261,8 @@ XISF::block_checksum XISFOptionsDialogBase::ComboBoxItemToChecksumAlgorithm( int
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void XISFOptionsDialogBase::GetBaseParameters()
 {
    if ( DataCompression_GroupBox.IsChecked() )
@@ -268,6 +278,8 @@ void XISFOptionsDialogBase::GetBaseParameters()
       options.checksumAlgorithm = XISFChecksum::None;
 }
 
+// ----------------------------------------------------------------------------
+
 void XISFOptionsDialogBase::Base_Button_Click( Button& sender, bool checked )
 {
    if ( sender == OK_PushButton )
@@ -276,6 +288,7 @@ void XISFOptionsDialogBase::Base_Button_Click( Button& sender, bool checked )
       Cancel();
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 XISFOptionsDialog::XISFOptionsDialog( const ImageOptions& o, const XISFOptions& x, const IsoString& h ) :
@@ -450,6 +463,8 @@ XISFOptionsDialog::XISFOptionsDialog( const ImageOptions& o, const XISFOptions& 
    Global_Sizer.Add( BottomSection_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
    AdjustToContents();
    SetFixedSize();
 
@@ -467,6 +482,8 @@ void XISFOptionsDialog::Button_Click( Button& sender, bool checked )
    else
       Base_Button_Click( sender, checked );
 }
+
+// ----------------------------------------------------------------------------
 
 void XISFOptionsDialog::Dialog_Return( Dialog&/*sender*/, int retVal )
 {
@@ -522,4 +539,4 @@ void XISFOptionsDialog::Dialog_Return( Dialog&/*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFOptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// EOF XISFOptionsDialog.cpp - Released 2019-09-29T12:27:43Z

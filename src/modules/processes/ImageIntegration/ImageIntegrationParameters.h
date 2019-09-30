@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2019-04-30T16:31:09Z
+// ImageIntegrationParameters.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -68,7 +68,7 @@ public:
 
    IIImages( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IIImages* TheIIImagesParameter;
@@ -81,8 +81,8 @@ public:
 
    IIImageEnabled( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIImageEnabled* TheIIImageEnabledParameter;
@@ -95,7 +95,7 @@ public:
 
    IIImagePath( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IIImagePath* TheIIImagePathParameter;
@@ -108,7 +108,7 @@ public:
 
    IIDrizzlePath( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IIDrizzlePath* TheIIDrizzlePathParameter;
@@ -121,7 +121,7 @@ public:
 
    IILocalNormalizationDataPath( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IILocalNormalizationDataPath* TheIILocalNormalizationDataPathParameter;
@@ -134,7 +134,7 @@ public:
 
    IIInputHints( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IIInputHints* TheIIInputHintsParameter;
@@ -154,11 +154,11 @@ public:
 
    IICombination( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern IICombination* TheIICombinationParameter;
@@ -181,11 +181,11 @@ public:
 
    IIWeightMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern IIWeightMode* TheIIWeightModeParameter;
@@ -198,7 +198,7 @@ public:
 
    IIWeightKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IIWeightKeyword* TheIIWeightKeywordParameter;
@@ -221,11 +221,11 @@ public:
 
    IIWeightScale( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern IIWeightScale* TheIIWeightScaleParameter;
@@ -238,8 +238,8 @@ public:
 
    IIIgnoreNoiseKeywords( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIIgnoreNoiseKeywords* TheIIIgnoreNoiseKeywordsParameter;
@@ -261,11 +261,11 @@ public:
 
    IINormalization( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern IINormalization* TheIINormalizationParameter;
@@ -289,11 +289,11 @@ public:
 
    IIRejection( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern IIRejection* TheIIRejectionParameter;
@@ -313,11 +313,11 @@ public:
 
    IIRejectionNormalization( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern IIRejectionNormalization* TheIIRejectionNormalizationParameter;
@@ -330,9 +330,9 @@ public:
 
    IIMinMaxLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern IIMinMaxLow* TheIIMinMaxLowParameter;
@@ -345,9 +345,9 @@ public:
 
    IIMinMaxHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern IIMinMaxHigh* TheIIMinMaxHighParameter;
@@ -360,11 +360,11 @@ public:
 
    IIPercentileLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIPercentileLow* TheIIPercentileLowParameter;
@@ -377,11 +377,11 @@ public:
 
    IIPercentileHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIPercentileHigh* TheIIPercentileHighParameter;
@@ -394,11 +394,11 @@ public:
 
    IISigmaLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IISigmaLow* TheIISigmaLowParameter;
@@ -411,14 +411,31 @@ public:
 
    IISigmaHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IISigmaHigh* TheIISigmaHighParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIWinsorizationCutoff : public MetaFloat
+{
+public:
+
+   IIWinsorizationCutoff( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIWinsorizationCutoff* TheIIWinsorizationCutoffParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -428,11 +445,11 @@ public:
 
    IILinearFitLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IILinearFitLow* TheIILinearFitLowParameter;
@@ -445,11 +462,11 @@ public:
 
    IILinearFitHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IILinearFitHigh* TheIILinearFitHighParameter;
@@ -462,11 +479,11 @@ public:
 
    IICCDGain( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IICCDGain* TheIICCDGainParameter;
@@ -479,11 +496,11 @@ public:
 
    IICCDReadNoise( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IICCDReadNoise* TheIICCDReadNoiseParameter;
@@ -496,11 +513,11 @@ public:
 
    IICCDScaleNoise( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IICCDScaleNoise* TheIICCDScaleNoiseParameter;
@@ -513,8 +530,8 @@ public:
 
    IIClipLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIClipLow* TheIIClipLowParameter;
@@ -527,8 +544,8 @@ public:
 
    IIClipHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIClipHigh* TheIIClipHighParameter;
@@ -541,8 +558,8 @@ public:
 
    IIRangeClipLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIRangeClipLow* TheIIRangeClipLowParameter;
@@ -555,11 +572,11 @@ public:
 
    IIRangeLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIRangeLow* TheIIRangeLowParameter;
@@ -572,8 +589,8 @@ public:
 
    IIRangeClipHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIRangeClipHigh* TheIIRangeClipHighParameter;
@@ -586,11 +603,11 @@ public:
 
    IIRangeHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIRangeHigh* TheIIRangeHighParameter;
@@ -603,8 +620,8 @@ public:
 
    IIMapRangeRejection( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIMapRangeRejection* TheIIMapRangeRejectionParameter;
@@ -617,8 +634,8 @@ public:
 
    IIReportRangeRejection( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIReportRangeRejection* TheIIReportRangeRejectionParameter;
@@ -631,8 +648,8 @@ public:
 
    IILargeScaleClipLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IILargeScaleClipLow* TheIILargeScaleClipLowParameter;
@@ -645,10 +662,10 @@ public:
 
    IILargeScaleClipLowProtectedLayers( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IILargeScaleClipLowProtectedLayers* TheIILargeScaleClipLowProtectedLayersParameter;
@@ -661,10 +678,10 @@ public:
 
    IILargeScaleClipLowGrowth( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IILargeScaleClipLowGrowth* TheIILargeScaleClipLowGrowthParameter;
@@ -677,8 +694,8 @@ public:
 
    IILargeScaleClipHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IILargeScaleClipHigh* TheIILargeScaleClipHighParameter;
@@ -691,10 +708,10 @@ public:
 
    IILargeScaleClipHighProtectedLayers( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IILargeScaleClipHighProtectedLayers* TheIILargeScaleClipHighProtectedLayersParameter;
@@ -707,10 +724,10 @@ public:
 
    IILargeScaleClipHighGrowth( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IILargeScaleClipHighGrowth* TheIILargeScaleClipHighGrowthParameter;
@@ -723,8 +740,8 @@ public:
 
    IIGenerate64BitResult( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIGenerate64BitResult* TheIIGenerate64BitResultParameter;
@@ -737,8 +754,8 @@ public:
 
    IIGenerateRejectionMaps( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIGenerateRejectionMaps* TheIIGenerateRejectionMapsParameter;
@@ -751,8 +768,8 @@ public:
 
    IIGenerateIntegratedImage( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIGenerateIntegratedImage* TheIIGenerateIntegratedImageParameter;
@@ -765,8 +782,8 @@ public:
 
    IIGenerateDrizzleData( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIGenerateDrizzleData* TheIIGenerateDrizzleDataParameter;
@@ -779,8 +796,8 @@ public:
 
    IIClosePreviousImages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIClosePreviousImages* TheIIClosePreviousImagesParameter;
@@ -793,10 +810,10 @@ public:
 
    IIBufferSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIBufferSize* TheIIBufferSizeParameter;
@@ -809,13 +826,27 @@ public:
 
    IIStackSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIStackSize* TheIIStackSizeParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIAutoMemorySize : public MetaBoolean
+{
+public:
+
+   IIAutoMemorySize( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern IIAutoMemorySize* TheIIAutoMemorySizeParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -825,8 +856,8 @@ public:
 
    IIUseROI( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIUseROI* TheIIUseROIParameter;
@@ -839,10 +870,10 @@ public:
 
    IIROIX0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIROIX0* TheIIROIX0Parameter;
@@ -856,10 +887,10 @@ public:
 
    IIROIY0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIROIY0* TheIIROIY0Parameter;
@@ -872,10 +903,10 @@ public:
 
    IIROIX1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIROIX1* TheIIROIX1Parameter;
@@ -888,10 +919,10 @@ public:
 
    IIROIY1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIROIY1* TheIIROIY1Parameter;
@@ -904,8 +935,8 @@ public:
 
    IIUseCache( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIUseCache* TheIIUseCacheParameter;
@@ -918,8 +949,8 @@ public:
 
    IIEvaluateNoise( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIEvaluateNoise* TheIIEvaluateNoiseParameter;
@@ -932,14 +963,42 @@ public:
 
    IIMRSMinDataFraction( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIMRSMinDataFraction* TheIIMRSMinDataFractionParameter;
+
+// ----------------------------------------------------------------------------
+
+class IISubtractPedestals : public MetaBoolean
+{
+public:
+
+   IISubtractPedestals( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern IISubtractPedestals* TheIISubtractPedestalsParameter;
+
+// ----------------------------------------------------------------------------
+
+class IITruncateOnOutOfRange : public MetaBoolean
+{
+public:
+
+   IITruncateOnOutOfRange( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern IITruncateOnOutOfRange* TheIITruncateOnOutOfRangeParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -949,8 +1008,8 @@ public:
 
    IINoGUIMessages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IINoGUIMessages* TheIINoGUIMessagesParameter;
@@ -963,8 +1022,8 @@ public:
 
    IIUseFileThreads( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IIUseFileThreads* TheIIUseFileThreadsParameter;
@@ -977,11 +1036,11 @@ public:
 
    IIFileThreadOverload( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IIFileThreadOverload* TheIIFileThreadOverloadParameter;
@@ -998,8 +1057,8 @@ public:
 
    IIIntegrationImageId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIIntegrationImageId* TheIIIntegrationImageIdParameter;
@@ -1012,8 +1071,8 @@ public:
 
    IILowRejectionMapImageId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IILowRejectionMapImageId* TheIILowRejectionMapImageIdParameter;
@@ -1026,8 +1085,8 @@ public:
 
    IIHighRejectionMapImageId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIHighRejectionMapImageId* TheIIHighRejectionMapImageIdParameter;
@@ -1040,8 +1099,8 @@ public:
 
    IISlopeMapImageId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IISlopeMapImageId* TheIISlopeMapImageIdParameter;
@@ -1054,8 +1113,8 @@ public:
 
    IINumberOfChannels( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IINumberOfChannels* TheIINumberOfChannelsParameter;
@@ -1068,8 +1127,8 @@ public:
 
    IINumberOfPixels( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IINumberOfPixels* TheIINumberOfPixelsParameter;
@@ -1082,8 +1141,8 @@ public:
 
    IITotalPixels( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IITotalPixels* TheIITotalPixelsParameter;
@@ -1096,8 +1155,8 @@ public:
 
    IITotalRejectedLowRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IITotalRejectedLowRK* TheIITotalRejectedLowRKParameter;
@@ -1110,8 +1169,8 @@ public:
 
    IITotalRejectedLowG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IITotalRejectedLowG* TheIITotalRejectedLowGParameter;
@@ -1124,8 +1183,8 @@ public:
 
    IITotalRejectedLowB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IITotalRejectedLowB* TheIITotalRejectedLowBParameter;
@@ -1138,8 +1197,8 @@ public:
 
    IITotalRejectedHighRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IITotalRejectedHighRK* TheIITotalRejectedHighRKParameter;
@@ -1152,8 +1211,8 @@ public:
 
    IITotalRejectedHighG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IITotalRejectedHighG* TheIITotalRejectedHighGParameter;
@@ -1166,8 +1225,8 @@ public:
 
    IITotalRejectedHighB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IITotalRejectedHighB* TheIITotalRejectedHighBParameter;
@@ -1180,10 +1239,10 @@ public:
 
    IIFinalNoiseEstimateRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIFinalNoiseEstimateRK* TheIIFinalNoiseEstimateRKParameter;
@@ -1196,10 +1255,10 @@ public:
 
    IIFinalNoiseEstimateG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIFinalNoiseEstimateG* TheIIFinalNoiseEstimateGParameter;
@@ -1212,10 +1271,10 @@ public:
 
    IIFinalNoiseEstimateB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIFinalNoiseEstimateB* TheIIFinalNoiseEstimateBParameter;
@@ -1228,10 +1287,10 @@ public:
 
    IIFinalScaleEstimateRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIFinalScaleEstimateRK* TheIIFinalScaleEstimateRKParameter;
@@ -1244,10 +1303,10 @@ public:
 
    IIFinalScaleEstimateG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIFinalScaleEstimateG* TheIIFinalScaleEstimateGParameter;
@@ -1260,10 +1319,10 @@ public:
 
    IIFinalScaleEstimateB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIFinalScaleEstimateB* TheIIFinalScaleEstimateBParameter;
@@ -1276,10 +1335,10 @@ public:
 
    IIFinalLocationEstimateRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIFinalLocationEstimateRK* TheIIFinalLocationEstimateRKParameter;
@@ -1292,10 +1351,10 @@ public:
 
    IIFinalLocationEstimateG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIFinalLocationEstimateG* TheIIFinalLocationEstimateGParameter;
@@ -1308,10 +1367,10 @@ public:
 
    IIFinalLocationEstimateB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIFinalLocationEstimateB* TheIIFinalLocationEstimateBParameter;
@@ -1324,9 +1383,9 @@ public:
 
    IIReferenceNoiseReductionRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIReferenceNoiseReductionRK* TheIIReferenceNoiseReductionRKParameter;
@@ -1339,9 +1398,9 @@ public:
 
    IIReferenceNoiseReductionG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIReferenceNoiseReductionG* TheIIReferenceNoiseReductionGParameter;
@@ -1354,9 +1413,9 @@ public:
 
    IIReferenceNoiseReductionB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIReferenceNoiseReductionB* TheIIReferenceNoiseReductionBParameter;
@@ -1369,9 +1428,9 @@ public:
 
    IIMedianNoiseReductionRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIMedianNoiseReductionRK* TheIIMedianNoiseReductionRKParameter;
@@ -1384,9 +1443,9 @@ public:
 
    IIMedianNoiseReductionG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIMedianNoiseReductionG* TheIIMedianNoiseReductionGParameter;
@@ -1399,9 +1458,9 @@ public:
 
    IIMedianNoiseReductionB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIMedianNoiseReductionB* TheIIMedianNoiseReductionBParameter;
@@ -1414,9 +1473,9 @@ public:
 
    IIReferenceSNRIncrementRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIReferenceSNRIncrementRK* TheIIReferenceSNRIncrementRKParameter;
@@ -1429,9 +1488,9 @@ public:
 
    IIReferenceSNRIncrementG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIReferenceSNRIncrementG* TheIIReferenceSNRIncrementGParameter;
@@ -1444,9 +1503,9 @@ public:
 
    IIReferenceSNRIncrementB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIReferenceSNRIncrementB* TheIIReferenceSNRIncrementBParameter;
@@ -1459,9 +1518,9 @@ public:
 
    IIAverageSNRIncrementRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIAverageSNRIncrementRK* TheIIAverageSNRIncrementRKParameter;
@@ -1474,9 +1533,9 @@ public:
 
    IIAverageSNRIncrementG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIAverageSNRIncrementG* TheIIAverageSNRIncrementGParameter;
@@ -1489,9 +1548,9 @@ public:
 
    IIAverageSNRIncrementB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIAverageSNRIncrementB* TheIIAverageSNRIncrementBParameter;
@@ -1504,8 +1563,8 @@ public:
 
    IIImageData( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageData* TheIIImageDataParameter;
@@ -1518,9 +1577,9 @@ public:
 
    IIImageWeightRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageWeightRK* TheIIImageWeightRKParameter;
@@ -1533,9 +1592,9 @@ public:
 
    IIImageWeightG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageWeightG* TheIIImageWeightGParameter;
@@ -1548,9 +1607,9 @@ public:
 
    IIImageWeightB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageWeightB* TheIIImageWeightBParameter;
@@ -1563,8 +1622,8 @@ public:
 
    IIImageRejectedLowRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageRejectedLowRK* TheIIImageRejectedLowRKParameter;
@@ -1577,8 +1636,8 @@ public:
 
    IIImageRejectedLowG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageRejectedLowG* TheIIImageRejectedLowGParameter;
@@ -1591,8 +1650,8 @@ public:
 
    IIImageRejectedLowB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageRejectedLowB* TheIIImageRejectedLowBParameter;
@@ -1605,8 +1664,8 @@ public:
 
    IIImageRejectedHighRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageRejectedHighRK* TheIIImageRejectedHighRKParameter;
@@ -1619,8 +1678,8 @@ public:
 
    IIImageRejectedHighG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageRejectedHighG* TheIIImageRejectedHighGParameter;
@@ -1633,8 +1692,8 @@ public:
 
    IIImageRejectedHighB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IIImageRejectedHighB* TheIIImageRejectedHighBParameter;
@@ -1648,4 +1707,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2019-04-30T16:31:09Z
+// EOF ImageIntegrationParameters.h - Released 2019-09-29T12:27:57Z

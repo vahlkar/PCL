@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG2000 File Format Module Version 01.00.02.0357
+// Standard JPEG2000 File Format Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// JPEG2000Instance.cpp - Released 2019-04-30T16:31:00Z
+// JPEG2000Instance.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -58,6 +58,7 @@
 #include <pcl/StdStatus.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/File.h>
+#include <pcl/MetaModule.h>
 
 #define JP2KERROR( msg ) throw Error( String( msg ) + ": " + m_path );
 
@@ -140,7 +141,7 @@ ImageDescriptionArray JPCInstance::Open( const String& filePath, const IsoString
 
       Console().Write( String().Format( "<end><cbr>Decoding JPEG2000 %s format...",
                                                   IsCodeStream() ? "code stream" : "JP2" ) );
-      Console().Flush();
+      Module->ProcessEvents();
 
       m_jp2Image = jas_image_decode( m_jp2Stream, fmtid, 0 );
 
@@ -738,8 +739,9 @@ static void WriteJP2KImage( const GenericImage<P>& img,
 #define IMPLEMENT_WRITE_IMAGE()                                                                 \
    try                                                                                          \
    {                                                                                            \
-      Console().Write( String().Format( "<end><cbr>Encoding JPEG2000 %s format...<flush>",      \
+      Console().Write( String().Format( "<end><cbr>Encoding JPEG2000 %s format...",             \
                                                    IsCodeStream() ? "code stream" : "JP2" ) );  \
+      Module->ProcessEvents();                                                                  \
       ImageInfo info( img );                                                                    \
       CreateImage( info );                                                                      \
       WriteJP2KImage( img, info, m_options, m_jp2Stream, m_jp2Image,                            \
@@ -892,4 +894,4 @@ void JP2Instance::WriteICCProfile( const ICCProfile& icc )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Instance.cpp - Released 2019-04-30T16:31:00Z
+// EOF JPEG2000Instance.cpp - Released 2019-09-29T12:27:43Z

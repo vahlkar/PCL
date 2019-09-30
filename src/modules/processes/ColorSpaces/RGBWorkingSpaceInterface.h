@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceInterface.h - Released 2019-04-30T16:31:09Z
+// RGBWorkingSpaceInterface.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -75,31 +75,24 @@ public:
    RGBWorkingSpaceInterface();
    virtual ~RGBWorkingSpaceInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-   virtual void ApplyInstance() const;
-   virtual void TrackViewUpdated( bool active );
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual bool WantsImageNotifications() const;
-   virtual void ImageUpdated( const View& v );
-   virtual void ImageFocused( const View& v );
-   virtual void ImageRGBWSUpdated( const View& v );
-
-   virtual bool WantsGlobalNotifications() const;
-   virtual void GlobalRGBWSUpdated();
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void TrackViewUpdated( bool active ) override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   bool WantsImageNotifications() const override;
+   void ImageUpdated( const View& v ) override;
+   void ImageFocused( const View& v ) override;
+   void ImageRGBWSUpdated( const View& v ) override;
+   bool WantsGlobalNotifications() const override;
+   void GlobalRGBWSUpdated() override;
 
 private:
 
@@ -187,4 +180,4 @@ PCL_END_LOCAL
 #endif   // __RGBWorkingSpaceInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceInterface.h - Released 2019-04-30T16:31:09Z
+// EOF RGBWorkingSpaceInterface.h - Released 2019-09-29T12:27:57Z

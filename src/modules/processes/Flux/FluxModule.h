@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0216
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxModule.h - Released 2019-04-30T16:31:09Z
+// FluxModule.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -59,8 +59,6 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// FluxModule
-// ----------------------------------------------------------------------------
 
 class FluxModule : public MetaModule
 {
@@ -68,15 +66,15 @@ public:
 
    FluxModule();
 
-   virtual const char* Version() const;
-   virtual IsoString Name() const;
-   virtual String Description() const;
-   virtual String Company() const;
-   virtual String Author() const;
-   virtual String Copyright() const;
-   virtual String TradeMarks() const;
-   virtual String OriginalFileName() const;
-   virtual void GetReleaseDate( int& year, int& month, int& day ) const;
+   const char* Version() const override;
+   IsoString Name() const override;
+   String Description() const override;
+   String Company() const override;
+   String Author() const override;
+   String Copyright() const override;
+   String TradeMarks() const override;
+   String OriginalFileName() const override;
+   void GetReleaseDate( int& year, int& month, int& day ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -86,4 +84,4 @@ public:
 #endif   // __FluxModule_h
 
 // ----------------------------------------------------------------------------
-// EOF FluxModule.h - Released 2019-04-30T16:31:09Z
+// EOF FluxModule.h - Released 2019-09-29T12:27:57Z

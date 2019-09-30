@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Exception.h - Released 2019-04-30T16:30:41Z
+// pcl/Exception.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -142,7 +142,8 @@ public:
     * Returns true iff console text output is enabled for %Exception.
     *
     * When console output is enabled, exception information is presented as
-    * text on the PixInsight core application's console.
+    * text on the PixInsight core application's console. Console exception
+    * output is always enabled by default.
     *
     * \sa IsGUIOutputEnabled(), EnableConsoleOutput(), EnableGUIOutput()
     */
@@ -171,7 +172,8 @@ public:
     * Returns true iff GUI output is enabled for %Exception.
     *
     * When GUI output is enabled, exception information is presented through
-    * message boxes and other modal, graphical interface elements.
+    * message boxes and other modal, graphical interface elements. GUI
+    * exception output is always disabled by default.
     *
     * \sa IsConsoleOutputEnabled(), EnableConsoleOutput(), EnableGUIOutput()
     */
@@ -236,14 +238,14 @@ public:
     * items such as file names, object identifiers, source code positions, date
     * and time representations, etc.
     */
-   virtual String Message() const
+   String Message() const override
    {
       return m_message;
    }
 
    /*!
     */
-   virtual String Caption() const
+   String Caption() const override
    {
       return "Error";
    }
@@ -294,7 +296,7 @@ public:
 
    /*!
     */
-   virtual String Caption() const
+   String Caption() const override
    {
       return "Fatal Error";
    }
@@ -393,11 +395,11 @@ public:
 
    /*!
     */
-   virtual String Message() const;
+   String Message() const override;
 
    /*!
     */
-   virtual void Show() const;
+   void Show() const override;
 
 protected:
 
@@ -636,4 +638,4 @@ PCL_DECLARE_EXCEPTION_CLASS( ProcessAborted, "Process aborted", String() );
 #endif   // __PCL_Exception_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Exception.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/Exception.h - Released 2019-09-29T12:27:26Z

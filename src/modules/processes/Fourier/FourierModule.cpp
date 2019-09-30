@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Fourier Process Module Version 01.00.04.0272
+// Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierModule.cpp - Released 2019-04-30T16:31:09Z
+// FourierModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  04
-#define MODULE_VERSION_BUILD     0272
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  4
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       30
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "FourierModule.h"
 #include "FourierTransformProcess.h"
@@ -71,7 +71,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FourierModule::FourierModule() : MetaModule()
+FourierModule::FourierModule()
 {
 }
 
@@ -118,7 +118,7 @@ String FourierModule::Author() const
 
 String FourierModule::Copyright() const
 {
-   return "Copyright (c) 2011-2018 Pleiades Astrophoto";
+   return "Copyright (c) 2011-2019 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -175,4 +175,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF FourierModule.cpp - Released 2019-04-30T16:31:09Z
+// EOF FourierModule.cpp - Released 2019-09-29T12:27:57Z

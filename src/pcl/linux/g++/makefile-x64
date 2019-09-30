@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.110
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-04-30T16:35:19.520Z
+# Generated on .... 2019-09-30T11:27:51.683Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
@@ -48,7 +48,6 @@ SRC_FILES= \
 ../../Control.cpp \
 ../../Convolution.cpp \
 ../../Crop.cpp \
-../../CubicSplineInterpolation.cpp \
 ../../Cursor.cpp \
 ../../Diagnostics.cpp \
 ../../Dialog.cpp \
@@ -92,6 +91,7 @@ SRC_FILES= \
 ../../ImageWindow.cpp \
 ../../ImageWindow_CM.cpp \
 ../../IntegerResample.cpp \
+../../IntegrationMetadata.cpp \
 ../../JPLEphemeris.cpp \
 ../../JulianDay.cpp \
 ../../KernelFilter.cpp \
@@ -116,6 +116,7 @@ SRC_FILES= \
 ../../NetworkTransfer.cpp \
 ../../NumericControl.cpp \
 ../../OrthographicProjection.cpp \
+../../PSFFit.cpp \
 ../../Pen.cpp \
 ../../PolarTransform.cpp \
 ../../Position.cpp \
@@ -224,7 +225,6 @@ OBJ_FILES= \
 ./x64/Release/Control.o \
 ./x64/Release/Convolution.o \
 ./x64/Release/Crop.o \
-./x64/Release/CubicSplineInterpolation.o \
 ./x64/Release/Cursor.o \
 ./x64/Release/Diagnostics.o \
 ./x64/Release/Dialog.o \
@@ -268,6 +268,7 @@ OBJ_FILES= \
 ./x64/Release/ImageWindow.o \
 ./x64/Release/ImageWindow_CM.o \
 ./x64/Release/IntegerResample.o \
+./x64/Release/IntegrationMetadata.o \
 ./x64/Release/JPLEphemeris.o \
 ./x64/Release/JulianDay.o \
 ./x64/Release/KernelFilter.o \
@@ -292,6 +293,7 @@ OBJ_FILES= \
 ./x64/Release/NetworkTransfer.o \
 ./x64/Release/NumericControl.o \
 ./x64/Release/OrthographicProjection.o \
+./x64/Release/PSFFit.o \
 ./x64/Release/Pen.o \
 ./x64/Release/PolarTransform.o \
 ./x64/Release/Position.o \
@@ -400,7 +402,6 @@ DEP_FILES= \
 ./x64/Release/Control.d \
 ./x64/Release/Convolution.d \
 ./x64/Release/Crop.d \
-./x64/Release/CubicSplineInterpolation.d \
 ./x64/Release/Cursor.d \
 ./x64/Release/Diagnostics.d \
 ./x64/Release/Dialog.d \
@@ -444,6 +445,7 @@ DEP_FILES= \
 ./x64/Release/ImageWindow.d \
 ./x64/Release/ImageWindow_CM.d \
 ./x64/Release/IntegerResample.d \
+./x64/Release/IntegrationMetadata.d \
 ./x64/Release/JPLEphemeris.d \
 ./x64/Release/JulianDay.d \
 ./x64/Release/KernelFilter.d \
@@ -468,6 +470,7 @@ DEP_FILES= \
 ./x64/Release/NetworkTransfer.d \
 ./x64/Release/NumericControl.d \
 ./x64/Release/OrthographicProjection.d \
+./x64/Release/PSFFit.d \
 ./x64/Release/Pen.d \
 ./x64/Release/PolarTransform.d \
 ./x64/Release/Position.d \
@@ -561,6 +564,6 @@ post-build:
 	cp $(OBJ_DIR)/libPCL-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -mfpmath=sse -msse4.1 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++11 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver1 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

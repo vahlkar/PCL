@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.110
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-04-30T16:35:21.581Z
+# Generated on .... 2019-09-30T11:27:53.673Z
 # Project id ...... libraw
 # Project type .... StaticLibrary
 # Platform ........ FreeBSD/g++

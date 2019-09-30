@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard BMP File Format Module Version 01.00.04.0353
+// Standard BMP File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// BMPModule.cpp - Released 2019-04-30T16:31:00Z
+// BMPModule.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  04
-#define MODULE_VERSION_BUILD     0353
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  4
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       30
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "BMPModule.h"
 #include "BMPFormat.h"
@@ -68,9 +68,11 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-BMPModule::BMPModule() : MetaModule()
+BMPModule::BMPModule()
 {
 }
+
+// -------------------------------------------------------------------------
 
 const char* BMPModule::Version() const
 {
@@ -81,35 +83,49 @@ const char* BMPModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// -------------------------------------------------------------------------
+
 IsoString BMPModule::Name() const
 {
    return "BMP";
 }
+
+// -------------------------------------------------------------------------
 
 String BMPModule::Description() const
 {
    return "PixInsight Standard BMP File Format Module";
 }
 
+// -------------------------------------------------------------------------
+
 String BMPModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String BMPModule::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// -------------------------------------------------------------------------
+
 String BMPModule::Copyright() const
 {
-   return "Copyright (c) 2005-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String BMPModule::TradeMarks() const
 {
    return "PixInsight";
 }
+
+// -------------------------------------------------------------------------
 
 String BMPModule::OriginalFileName() const
 {
@@ -126,6 +142,8 @@ String BMPModule::OriginalFileName() const
    return "BMP-pxm.dll";
 #endif
 }
+
+// -------------------------------------------------------------------------
 
 void BMPModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -162,4 +180,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF BMPModule.cpp - Released 2019-04-30T16:31:00Z
+// EOF BMPModule.cpp - Released 2019-09-29T12:27:43Z

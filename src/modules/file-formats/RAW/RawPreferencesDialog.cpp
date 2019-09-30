@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 01.05.02.0434
+// Standard RAW File Format Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// RawPreferencesDialog.cpp - Released 2019-04-30T16:31:00Z
+// RawPreferencesDialog.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -388,9 +388,14 @@ RawPreferencesDialog::RawPreferencesDialog( RawPreferences& prf ) :
 
    SetSizer( Global_Sizer );
 
+   EnsureLayoutUpdated();
+   AdjustToContents();
+   SetFixedSize();
+
+//    PureRGB_PushButton.SetMinWidth( Font().Width( PureRGB_PushButton.Text() + "MMMM" ) );
+
    SetWindowTitle( "RAW Format Preferences" );
 
-   OnShow( (Control::event_handler)&RawPreferencesDialog::Dialog_Show, *this );
    OnReturn( (Dialog::return_event_handler)&RawPreferencesDialog::Dialog_Return, *this );
 
    UpdateControls();
@@ -616,18 +621,6 @@ void RawPreferencesDialog::Button_Click( Button& sender, bool checked )
 
 // ----------------------------------------------------------------------------
 
-void RawPreferencesDialog::Dialog_Show( Control& sender )
-{
-   // ### BUGFIX: the PureRGB button does not resize correctly upon creation,
-   // so we have to force a minimum width here. So far this only happens on
-   // Linux and macOS, not on Windows. Core bug? Qt bug?
-   PureRGB_PushButton.SetMinWidth( Font().Width( PureRGB_PushButton.Text() + "MMMM" ) );
-   AdjustToContents();
-   SetFixedSize();
-}
-
-// ----------------------------------------------------------------------------
-
 void RawPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 {
    if ( retVal != StdDialogCode::Ok )
@@ -639,4 +632,4 @@ void RawPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawPreferencesDialog.cpp - Released 2019-04-30T16:31:00Z
+// EOF RawPreferencesDialog.cpp - Released 2019-09-29T12:27:43Z

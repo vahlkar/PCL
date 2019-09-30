@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0410
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FastRotationProcess.cpp - Released 2019-04-30T16:31:09Z
+// FastRotationProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -73,27 +73,35 @@ FastRotationProcess* TheFastRotationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-FastRotationProcess::FastRotationProcess() : MetaProcess()
+FastRotationProcess::FastRotationProcess()
 {
    TheFastRotationProcess = this;
    new FRMode( this );
    TheFRNoGUIMessagesParameter = new NoGUIMessages( this );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString FastRotationProcess::Id() const
 {
    return "FastRotation";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString FastRotationProcess::Category() const
 {
    return "Geometry";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 FastRotationProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String FastRotationProcess::Description() const
 {
@@ -111,20 +119,28 @@ String FastRotationProcess::Description() const
    "</html>";
 }
 
+// ----------------------------------------------------------------------------
+
 const char** FastRotationProcess::IconImageXPM() const
 {
    return FastRotationIcon_XPM;
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* FastRotationProcess::DefaultInterface() const
 {
    return TheFastRotationInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* FastRotationProcess::Create() const
 {
    return new FastRotationInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* FastRotationProcess::Clone( const ProcessImplementation& p ) const
 {
@@ -132,10 +148,14 @@ ProcessImplementation* FastRotationProcess::Clone( const ProcessImplementation& 
    return (instPtr != nullptr) ? new FastRotationInstance( *instPtr ) : nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FastRotationProcess::CanProcessCommandLines() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 static void ShowHelp()
 {
@@ -271,4 +291,4 @@ int FastRotationProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF FastRotationProcess.cpp - Released 2019-09-29T12:27:57Z

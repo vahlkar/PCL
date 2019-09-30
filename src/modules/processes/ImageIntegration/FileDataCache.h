@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// FileDataCache.h - Released 2019-04-30T16:31:09Z
+// FileDataCache.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -174,10 +174,8 @@ class PCL_CLASS FileDataCache
 public:
 
    FileDataCache( const IsoString& key, int days = 30 ) :
-      m_cache(),
       m_keyPrefix( key.Trimmed() ),
-      m_durationDays( Max( 0, days ) ),
-      m_enabled( true )
+      m_durationDays( Max( 0, days ) )
    {
       PCL_PRECONDITION( !m_keyPrefix.IsEmpty() )
       if ( m_keyPrefix.IsEmpty() )
@@ -250,8 +248,8 @@ private:
    mutable Mutex       m_mutex;
            cache_index m_cache;
            IsoString   m_keyPrefix;
-           int         m_durationDays; // <= 0 -> never expires
-           bool        m_enabled;
+           int         m_durationDays = 30; // <= 0 -> never expires
+           bool        m_enabled = true;
 };
 
 // ----------------------------------------------------------------------------
@@ -261,4 +259,4 @@ private:
 #endif   // __FileDataCache_h
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCache.h - Released 2019-04-30T16:31:09Z
+// EOF FileDataCache.h - Released 2019-09-29T12:27:57Z

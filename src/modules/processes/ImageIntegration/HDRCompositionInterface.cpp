@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// HDRCompositionInterface.cpp - Released 2019-04-30T16:31:09Z
+// HDRCompositionInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -707,7 +707,6 @@ HDRCompositionInterface::GUIData::GUIData( HDRCompositionInterface& w )
    InputImages_Sizer.Add( InputButtons_Sizer );
 
    InputImages_Control.SetSizer( InputImages_Sizer );
-   InputImages_Control.AdjustToContents();
 
    //
 
@@ -742,7 +741,6 @@ HDRCompositionInterface::GUIData::GUIData( HDRCompositionInterface& w )
    FormatHints_Sizer.Add( InputHints_Sizer );
 
    FormatHints_Control.SetSizer( FormatHints_Sizer );
-   FormatHints_Control.AdjustToContents();
 
    //
 
@@ -1019,7 +1017,6 @@ HDRCompositionInterface::GUIData::GUIData( HDRCompositionInterface& w )
    FittingRegion_Sizer.Add( FittingRectHeight_Sizer );
 
    FittingRegion_Control.SetSizer( FittingRegion_Sizer );
-   FittingRegion_Control.AdjustToContents();
    FittingRegion_Control.OnViewDrag( (Control::view_drag_event_handler)&HDRCompositionInterface::__ViewDrag, w );
    FittingRegion_Control.OnViewDrop( (Control::view_drop_event_handler)&HDRCompositionInterface::__ViewDrop, w );
 
@@ -1046,6 +1043,9 @@ HDRCompositionInterface::GUIData::GUIData( HDRCompositionInterface& w )
    Global_Sizer.Add( FittingRegion_Control );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
+   w.AdjustToContents();
    w.SetFixedWidth();
 
    FormatHints_Control.Hide();
@@ -1059,4 +1059,4 @@ HDRCompositionInterface::GUIData::GUIData( HDRCompositionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF HDRCompositionInterface.cpp - Released 2019-09-29T12:27:57Z

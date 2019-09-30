@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/UnixSignalException.cpp - Released 2019-04-30T16:30:49Z
+// pcl/UnixSignalException.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -203,15 +203,15 @@ static void CriticalSignalHandler( int signalNumber )
 
 void UnixSignalException::Show() const
 {
-   bool wasConsole = IsConsoleOutputEnabled();
-   bool wasGUI = IsGUIOutputEnabled();
+   bool wasConsoleOutput = IsConsoleOutputEnabled();
+   bool wasGUIOutput = IsGUIOutputEnabled();
    EnableConsoleOutput();
    DisableGUIOutput();
 
    Exception::Show();
 
-   EnableConsoleOutput( wasConsole );
-   EnableGUIOutput( wasGUI );
+   EnableConsoleOutput( wasConsoleOutput );
+   EnableGUIOutput( wasGUIOutput );
 }
 
 // ----------------------------------------------------------------------------
@@ -236,4 +236,4 @@ void UnixSignalException::Initialize()
 #endif   // __PCL_LINUX || __PCL_FREEBSD || __PCL_MACOSX
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UnixSignalException.cpp - Released 2019-04-30T16:30:49Z
+// EOF pcl/UnixSignalException.cpp - Released 2019-09-29T12:27:33Z

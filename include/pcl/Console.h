@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Console.h - Released 2019-04-30T16:30:41Z
+// pcl/Console.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -180,6 +180,7 @@ class PCL_CLASS View;
  * <tr><td>\<notags\>\</notags\></td>         <td>Disables/enables tag interpretation, except the \</notags\> tag, which is always interpreted.</td></tr>
  * <tr><td>\<noentities\>\</noentities\></td> <td>Disables/enables interpretation of ISO-8859-1 entities.</td></tr>
  * <tr><td>\<raw\>\</raw\></td>               <td>Disables/enables interpretation of tags, except the \</raw\> tag, and ISO-8859-1 entities. \<raw\> is equivalent to (but faster than) \<noentities\>\<notags\>.</td></tr>
+ * <tr><td>\<code\>\</code\></td>             <td>Equivalent to \<monospace\>\<raw\>. Useful to show source code fragments.</td></tr>
  *
  * <tr><td>\<monospace\></td>    <td>Selects a platform-dependent, monospaced font.</td></tr>
  * <tr><td>\<sans\></td>         <td>Selects a platform-dependent, sans-serif font.</td></tr>
@@ -824,4 +825,4 @@ inline Console& operator >>( Console& o, String& s )
 #endif   // __PCL_Console_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Console.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/Console.h - Released 2019-09-29T12:27:26Z

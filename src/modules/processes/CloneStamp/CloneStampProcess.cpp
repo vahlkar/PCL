@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CloneStamp Process Module Version 01.00.02.0367
+// Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampProcess.cpp - Released 2019-04-30T16:31:09Z
+// CloneStampProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -50,17 +50,17 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "CloneStampProcess.h"
-#include "CloneStampParameters.h"
 #include "CloneStampInstance.h"
 #include "CloneStampInterface.h"
+#include "CloneStampParameters.h"
+#include "CloneStampProcess.h"
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-CloneStampProcess* TheCloneStampProcess = 0;
+CloneStampProcess* TheCloneStampProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ CloneStampProcess* TheCloneStampProcess = 0;
 
 // ----------------------------------------------------------------------------
 
-CloneStampProcess::CloneStampProcess() : MetaProcess()
+CloneStampProcess::CloneStampProcess()
 {
    TheCloneStampProcess = this;
 
@@ -95,57 +95,75 @@ CloneStampProcess::CloneStampProcess() : MetaProcess()
    new CSBoundsColor( this );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString CloneStampProcess::Id() const
 {
    return "CloneStamp";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString CloneStampProcess::Category() const
 {
    return "Painting";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 CloneStampProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String CloneStampProcess::Description() const
 {
    return "";
 }
 
+// ----------------------------------------------------------------------------
+
 const char** CloneStampProcess::IconImageXPM() const
 {
    return CloneStampIcon_XPM;
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* CloneStampProcess::DefaultInterface() const
 {
    return TheCloneStampInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* CloneStampProcess::Create() const
 {
    return new CloneStampInstance( this );
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* CloneStampProcess::Clone( const ProcessImplementation& p ) const
 {
    const CloneStampInstance* instPtr = dynamic_cast<const CloneStampInstance*>( &p );
-   return (instPtr != 0) ? new CloneStampInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new CloneStampInstance( *instPtr ) : nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* CloneStampProcess::TestClone( const ProcessImplementation& p ) const
 {
    const CloneStampInstance* instPtr = dynamic_cast<const CloneStampInstance*>( &p );
-   if ( instPtr != 0 )
+   if ( instPtr != nullptr )
    {
       CloneStampInstance* i = new CloneStampInstance( TheCloneStampProcess );
       i->TestAssign( *instPtr );
       return i;
    }
-   return 0;
+   return nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -153,4 +171,4 @@ ProcessImplementation* CloneStampProcess::TestClone( const ProcessImplementation
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF CloneStampProcess.cpp - Released 2019-09-29T12:27:57Z

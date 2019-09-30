@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard SplitCFA Process Module Version 01.00.06.0197
+// Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAInstance.cpp - Released 2019-04-30T16:31:10Z
+// SplitCFAInstance.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -52,7 +52,6 @@
 // ----------------------------------------------------------------------------
 
 #include "SplitCFAInstance.h"
-#include "SplitCFAModule.h" // for ReadableVersion()
 
 #include <pcl/AutoViewLock.h>
 #include <pcl/ErrorHandler.h>
@@ -581,8 +580,8 @@ void SplitCFAInstance::SaveImage( const SplitCFAThread* t )
       if ( outputFormat.CanStoreKeywords() )
       {
          FITSKeywordArray keywords = data.keywords;
-         keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), "SplitCFA with " + PixInsightVersion::AsString() ) );
-         keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), "SplitCFA with " + SplitCFAModule::ReadableVersion() ) );
+         keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), PixInsightVersion::AsString() ) );
+         keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), Module->ReadableVersion() ) );
          keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "SplitCFA" ) );
          outputFile.WriteFITSKeywords( keywords );
       }
@@ -613,8 +612,6 @@ bool SplitCFAInstance::ExecuteGlobal()
 
    try //try 1
    {
-      Exception::EnableConsoleOutput();
-      Exception::DisableGUIOutput();
       console.EnableAbort();
 
       int succeeded = 0;
@@ -752,16 +749,10 @@ bool SplitCFAInstance::ExecuteGlobal()
 
       console.NoteLn( String().Format( "<br>===== SplitCFA: %u succeeded, %u skipped, %u canceled =====",
                                        succeeded, skipped, total - succeeded ) );
-
-      Exception::DisableConsoleOutput();
-      Exception::EnableGUIOutput();
-
       return true;
    }
    catch ( ... )
    {
-      Exception::DisableConsoleOutput();
-      Exception::EnableGUIOutput();
       console.NoteLn( "<end><cbr><br>* SplitCFA terminated." );
       throw;
    }
@@ -901,4 +892,4 @@ size_type SplitCFAInstance::ParameterLength( const MetaParameter* p, size_type t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAInstance.cpp - Released 2019-04-30T16:31:10Z
+// EOF SplitCFAInstance.cpp - Released 2019-09-29T12:27:58Z

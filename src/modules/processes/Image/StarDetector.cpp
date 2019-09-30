@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 01.03.00.0443
+// Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// StarDetector.cpp - Released 2019-04-30T16:31:09Z
+// StarDetector.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -213,9 +213,10 @@ StarDetector::Status Detect( const Image& img, int channel,
           * If the search radius has stabilized, check if we have reached
           * convergence. We converge to within +/- 0.01 px.
           */
-         if ( Abs( pos.x - lastPos.x ) < 0.005 && Abs( pos.y - lastPos.y ) < 0.005 )
-            return (r.x0 > 0 && r.y0 > 0 && r.x1 < V.Cols() && r.y1 < V.Rows()) ?
-                        StarDetector::DetectedOk : StarDetector::CrossingEdges;
+         if ( Abs( pos.x - lastPos.x ) < 0.005 )
+            if ( Abs( pos.y - lastPos.y ) < 0.005 )
+               return (r.x0 > 0 && r.y0 > 0 && r.x1 < V.Cols() && r.y1 < V.Rows()) ?
+                           StarDetector::DetectedOk : StarDetector::CrossingEdges;
       }
    }
 
@@ -232,21 +233,21 @@ StarDetector::StarDetector( const Image& img, int channel,
    star.status = Detect( img, channel, star.pos, radius, threshold );
    star.rect = DRect( star.pos - double( radius ), star.pos + double( radius ) );
 
-   if ( autoAperture && star )
-   {
-      Rect r = star.rect.RoundedToInt();
-
-      for ( double m0 = 1; ; )
+   if ( star )
+      if ( autoAperture )
       {
-         double m = Matrix::FromImage( img, r ).Median();
-         if ( m0 < m || (m0 - m)/m0 < 0.01 )
-            break;
-         m0 = m;
-         r.InflateBy( 1, 1 );
-      }
+         Rect r = star.rect.RoundedToInt();
+         for ( double m0 = 1; ; )
+         {
+            double m = Matrix::FromImage( img, r ).Median();
+            if ( m0 < m || (m0 - m)/m0 < 0.01 )
+               break;
+            m0 = m;
+            r.InflateBy( 1, 1 );
+         }
 
-      star.rect = r;
-   }
+         star.rect = r;
+      }
 }
 
 // ----------------------------------------------------------------------------
@@ -254,4 +255,4 @@ StarDetector::StarDetector( const Image& img, int channel,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.cpp - Released 2019-04-30T16:31:09Z
+// EOF StarDetector.cpp - Released 2019-09-29T12:27:57Z

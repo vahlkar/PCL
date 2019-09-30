@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG2000 File Format Module Version 01.00.02.0357
+// Standard JPEG2000 File Format Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// JPEG2000PreferencesDialog.h - Released 2019-04-30T16:31:00Z
+// JPEG2000PreferencesDialog.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -67,10 +67,6 @@ public:
 
    JPEG2000PreferencesDialog( const JP2Format::EmbeddingOverrides&, const JPEG2000ImageOptions&, bool isJPC );
 
-   virtual ~JPEG2000PreferencesDialog()
-   {
-   }
-
    JP2Format::EmbeddingOverrides overrides;
 
 private:
@@ -85,4 +81,4 @@ private:
 #endif   // __JPEG2000PreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000PreferencesDialog.h - Released 2019-04-30T16:31:00Z
+// EOF JPEG2000PreferencesDialog.h - Released 2019-09-29T12:27:43Z

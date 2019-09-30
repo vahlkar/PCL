@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 01.04.01.0368
+// Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2019-04-30T16:31:09Z
+// LocalNormalizationInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -105,7 +105,7 @@ LocalNormalizationInstance::LocalNormalizationInstance( const MetaProcess* P ) :
    p_showBackgroundModels( TheLNShowBackgroundModelsParameter->DefaultValue() ),
    p_showRejectionMaps( TheLNShowRejectionMapsParameter->DefaultValue() ),
    p_plotNormalizationFunctions( LNPlotNormalizationFunctions::Default ),
-   p_noGUIMessages( TheLNNoGUIMessagesParameter->DefaultValue() ),
+   p_noGUIMessages( TheLNNoGUIMessagesParameter->DefaultValue() ), // ### DEPRECATED
    p_outputDirectory( TheLNOutputDirectoryParameter->DefaultValue() ),
    p_outputExtension( TheLNOutputExtensionParameter->DefaultValue() ),
    p_outputPrefix( TheLNOutputPrefixParameter->DefaultValue() ),
@@ -1449,8 +1449,6 @@ typedef IndirectArray<LocalNormalizationThread> thread_list;
 
 bool LocalNormalizationInstance::ExecuteGlobal()
 {
-   Exception::DisableGUIOutput( p_noGUIMessages );
-
    {
       String why;
       if ( !CanExecuteGlobal( why ) )
@@ -1482,8 +1480,6 @@ bool LocalNormalizationInstance::ExecuteGlobal()
 
    try
    {
-      Exception::DisableGUIOutput();
-
       console.EnableAbort();
 
       if ( p_referenceIsView )
@@ -1900,4 +1896,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2019-04-30T16:31:09Z
+// EOF LocalNormalizationInstance.cpp - Released 2019-09-29T12:27:57Z

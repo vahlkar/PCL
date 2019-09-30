@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.h - Released 2019-04-30T16:31:09Z
+// ImageIntegrationProcess.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -66,19 +66,14 @@ public:
 
    ImageIntegrationProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Category() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-
-   virtual const char** IconImageXPM() const;
-
-   virtual ProcessInterface* DefaultInterface() const;
-
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
+   IsoString Id() const override;
+   IsoString Category() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   const char** IconImageXPM() const override;
+   ProcessInterface* DefaultInterface() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
 };
 
 PCL_BEGIN_LOCAL
@@ -92,4 +87,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.h - Released 2019-04-30T16:31:09Z
+// EOF ImageIntegrationProcess.h - Released 2019-09-29T12:27:57Z

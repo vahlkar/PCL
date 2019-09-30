@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0439
+// Standard FITS File Format Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// FITSRangeOptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// FITSRangeOptionsDialog.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -62,7 +62,6 @@ namespace pcl
 FITSRangeOptionsDialog::FITSRangeOptionsDialog( const FITSFormat::OutOfRangePolicyOptions& options,
                                                 int bitsPerSample,
                                                 double minSampleValue, double maxSampleValue ) :
-   Dialog(),
    outOfRange( options )
 {
    if ( maxSampleValue < minSampleValue )
@@ -158,23 +157,17 @@ FITSRangeOptionsDialog::FITSRangeOptionsDialog( const FITSFormat::OutOfRangePoli
    Global_Sizer.Add( BottomSection_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
+   AdjustToContents();
+   SetFixedSize();
+
    SetWindowTitle( "FITS Floating Point Range Options" );
 
-   OnShow( (Control::event_handler)&FITSRangeOptionsDialog::Control_Show, *this );
    OnReturn( (Dialog::return_event_handler)&FITSRangeOptionsDialog::Dialog_Return, *this );
 }
 
 // ----------------------------------------------------------------------------
-
-void FITSRangeOptionsDialog::Control_Show( Control& sender )
-{
-   AdjustToContents();
-   Info_Label.SetMinWidth();
-   Info_Label.AdjustToContents();
-   Info_Label.SetMinHeight();
-   AdjustToContents();
-   SetFixedSize();
-}
 
 void FITSRangeOptionsDialog::Button_Click( Button& sender, bool checked )
 {
@@ -199,4 +192,4 @@ void FITSRangeOptionsDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSRangeOptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// EOF FITSRangeOptionsDialog.cpp - Released 2019-09-29T12:27:43Z

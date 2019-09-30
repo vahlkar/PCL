@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2019-04-30T16:30:41Z
+// pcl/Vector.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -57,6 +57,7 @@
 #include <pcl/Defs.h>
 #include <pcl/Diagnostics.h>
 
+#include <pcl/Container.h>
 #include <pcl/Exception.h>
 #include <pcl/ReferenceCounter.h>
 #include <pcl/Search.h>
@@ -102,7 +103,7 @@ namespace pcl
  * \sa GenericMatrix, \ref vector_operators, \ref vector_types
  */
 template <typename T>
-class PCL_CLASS GenericVector
+class PCL_CLASS GenericVector : public DirectContainer<T>
 {
 public:
 
@@ -2861,4 +2862,4 @@ typedef F80Vector                   LDVector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/Vector.h - Released 2019-09-29T12:27:26Z

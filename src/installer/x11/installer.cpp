@@ -7,7 +7,7 @@
 // ----------------------------------------------------------------------------
 // This file is part of PixInsight X11 UNIX/Linux Installer
 // ----------------------------------------------------------------------------
-// 2019/04/30 16:32:57 UTC
+// 2019/09/24 17:33:11 UTC
 // installer.cpp
 // ----------------------------------------------------------------------------
 // Copyright (c) 2013-2019 Pleiades Astrophoto S.L.
@@ -894,10 +894,8 @@ bool PixInsightX11Installer::DoShowHelp()
 
 String PixInsightX11Installer::VersionString()
 {
-   String version = String().Format( "%02d.%02d.%02d.%04d ",
-                        PI_VERSION_MAJOR, PI_VERSION_MINOR, PI_VERSION_RELEASE, PI_VERSION_BUILD );
-   version += PI_VERSION_CODENAME;
-   return version;
+   return String().Format( "%d.%d.%d ",
+            PI_VERSION_MAJOR, PI_VERSION_MINOR, PI_VERSION_RELEASE ) << PI_VERSION_CODENAME;
 }
 
 // ----------------------------------------------------------------------------
@@ -1205,5 +1203,5 @@ int main( int argc, const char** argv )
 }
 
 // ----------------------------------------------------------------------------
-// 2019/04/30 16:32:57 UTC
+// 2019/09/24 17:33:11 UTC
 // installer.cpp

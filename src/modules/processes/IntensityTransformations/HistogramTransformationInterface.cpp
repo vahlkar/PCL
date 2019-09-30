@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 01.07.01.0436
+// Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationInterface.cpp - Released 2019-04-30T16:31:09Z
+// HistogramTransformationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -1841,6 +1841,9 @@ void HistogramTransformationInterface::__ViewList_ViewSelected( ViewList&, View&
 
 void HistogramTransformationInterface::__Histogram_Paint( Control& sender, const pcl::Rect& updateRect )
 {
+   if ( GUI == nullptr )
+      return;
+
    if ( sender == GUI->InputHistogramPlot_Control )
    {
       if ( m_inputDirty )
@@ -1919,6 +1922,9 @@ void HistogramTransformationInterface::__Histogram_Paint( Control& sender, const
 
 void HistogramTransformationInterface::__Sliders_Paint( Control& sender, const pcl::Rect& updateRect )
 {
+   if ( GUI == nullptr )
+      return;
+
    if ( m_slidersDirty )
       RegenerateSlidersViewport();
 
@@ -1942,6 +1948,9 @@ void HistogramTransformationInterface::__Sliders_Paint( Control& sender, const p
 void HistogramTransformationInterface::__Histogram_Resize( Control& sender,
                                              int/*newWidth*/, int/*newHeight*/, int/*oldWidth*/, int/*oldHeight*/ )
 {
+   if ( GUI == nullptr )
+      return;
+
    if ( sender == GUI->InputHistogramPlot_Control )
    {
       m_inputBitmap = Bitmap::Null();
@@ -3147,8 +3156,6 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
    RangeSection_Sizer.Add( HighRange_Sizer );
 
    RangeSection_Control.SetSizer( RangeSection_Sizer );
-   RangeSection_Control.AdjustToContents();
-   RangeSection_Control.SetMinHeight();
 
    if ( !w.m_rangeSectionVisible )
       RangeSection_Control.Hide();
@@ -3170,6 +3177,8 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
    Global_Sizer.Add( RangeSection_Control );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 
    UpdateRealTimePreview_Timer.SetSingleShot();
@@ -3182,4 +3191,4 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF HistogramTransformationInterface.cpp - Released 2019-09-29T12:27:57Z

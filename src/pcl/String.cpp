@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/String.cpp - Released 2019-04-30T16:30:49Z
+// pcl/String.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1933,6 +1933,7 @@ void ParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const S& separat
    {
       Array<T> tokens;
       str.Break( tokens, separator, true/*trim*/ );
+
       int n = int( tokens.Length() );
       if ( n < 1 )
          throw ParseError( "empty string" );
@@ -2597,4 +2598,4 @@ IsoString IsoString::CurrentLocalISO8601DateTime( const ISO8601ConversionOptions
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.cpp - Released 2019-04-30T16:30:49Z
+// EOF pcl/String.cpp - Released 2019-09-29T12:27:33Z

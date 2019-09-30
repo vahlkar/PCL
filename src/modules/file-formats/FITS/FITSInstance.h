@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0439
+// Standard FITS File Format Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// FITSInstance.h - Released 2019-04-30T16:31:00Z
+// FITSInstance.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -74,60 +74,60 @@ public:
 
    virtual ~FITSInstance() noexcept( false );
 
-   virtual ImageDescriptionArray Open( const String& filePath, const IsoString& hints );
-   virtual bool IsOpen() const;
-   virtual String FilePath() const;
-   virtual void Close();
+   ImageDescriptionArray Open( const String& filePath, const IsoString& hints ) override;
+   bool IsOpen() const override;
+   String FilePath() const override;
+   void Close() override;
 
-   virtual void SelectImage( int index );
-   virtual int SelectedImageIndex() const;
+   void SelectImage( int index ) override;
+   int SelectedImageIndex() const override;
 
-   virtual void* FormatSpecificData() const;
+   void* FormatSpecificData() const override;
 
-   virtual ICCProfile ReadICCProfile();
-   virtual UInt8Image ReadThumbnail();
-   virtual FITSKeywordArray ReadFITSKeywords();
-   virtual PropertyDescriptionArray ImageProperties();
-   virtual Variant ReadImageProperty( const IsoString& property );
+   ICCProfile ReadICCProfile() override;
+   UInt8Image ReadThumbnail() override;
+   FITSKeywordArray ReadFITSKeywords() override;
+   PropertyDescriptionArray ImageProperties() override;
+   Variant ReadImageProperty( const IsoString& property ) override;
 
-   virtual void ReadImage( Image& );
-   virtual void ReadImage( DImage& );
-   virtual void ReadImage( UInt8Image& );
-   virtual void ReadImage( UInt16Image& );
-   virtual void ReadImage( UInt32Image& );
+   void ReadImage( Image& ) override;
+   void ReadImage( DImage& ) override;
+   void ReadImage( UInt8Image& ) override;
+   void ReadImage( UInt16Image& ) override;
+   void ReadImage( UInt32Image& ) override;
 
-   virtual void ReadSamples( Image::sample* buffer, int startRow, int rowCount, int channel );
-   virtual void ReadSamples( DImage::sample* buffer, int startRow, int rowCount, int channel );
-   virtual void ReadSamples( UInt8Image::sample* buffer, int startRow, int rowCount, int channel );
-   virtual void ReadSamples( UInt16Image::sample* buffer, int startRow, int rowCount, int channel );
-   virtual void ReadSamples( UInt32Image::sample* buffer, int startRow, int rowCount, int channel );
+   void ReadSamples( Image::sample* buffer, int startRow, int rowCount, int channel ) override;
+   void ReadSamples( DImage::sample* buffer, int startRow, int rowCount, int channel ) override;
+   void ReadSamples( UInt8Image::sample* buffer, int startRow, int rowCount, int channel ) override;
+   void ReadSamples( UInt16Image::sample* buffer, int startRow, int rowCount, int channel ) override;
+   void ReadSamples( UInt32Image::sample* buffer, int startRow, int rowCount, int channel ) override;
 
-   virtual bool QueryOptions( Array<ImageOptions>& options, Array<void*>& formatOptions );
-   virtual void Create( const String& filePath, int numberOfImages, const IsoString& hints );
-   virtual void SetId( const IsoString& id );
-   virtual void SetOptions( const ImageOptions& options );
-   virtual void SetFormatSpecificData( const void* data );
+   bool QueryOptions( Array<ImageOptions>& options, Array<void*>& formatOptions ) override;
+   void Create( const String& filePath, int numberOfImages, const IsoString& hints ) override;
+   void SetId( const IsoString& id ) override;
+   void SetOptions( const ImageOptions& options ) override;
+   void SetFormatSpecificData( const void* data ) override;
 
-   virtual void WriteICCProfile( const ICCProfile& );
-   virtual void WriteThumbnail( const UInt8Image& );
-   virtual void WriteFITSKeywords( const FITSKeywordArray& );
-   virtual void WriteImageProperty( const IsoString& property, const Variant& value );
+   void WriteICCProfile( const ICCProfile& ) override;
+   void WriteThumbnail( const UInt8Image& ) override;
+   void WriteFITSKeywords( const FITSKeywordArray& ) override;
+   void WriteImageProperty( const IsoString& property, const Variant& value ) override;
 
-   virtual void WriteImage( const Image& );
-   virtual void WriteImage( const DImage& );
-   virtual void WriteImage( const UInt8Image& );
-   virtual void WriteImage( const UInt16Image& );
-   virtual void WriteImage( const UInt32Image& );
+   void WriteImage( const Image& ) override;
+   void WriteImage( const DImage& ) override;
+   void WriteImage( const UInt8Image& ) override;
+   void WriteImage( const UInt16Image& ) override;
+   void WriteImage( const UInt32Image& ) override;
 
-   virtual void CreateImage( const ImageInfo& info );
+   void CreateImage( const ImageInfo& info ) override;
 
-   virtual void WriteSamples( const Image::sample* buffer, int startRow, int rowCount, int channel );
-   virtual void WriteSamples( const DImage::sample* buffer, int startRow, int rowCount, int channel );
-   virtual void WriteSamples( const UInt8Image::sample* buffer, int startRow, int rowCount, int channel );
-   virtual void WriteSamples( const UInt16Image::sample* buffer, int startRow, int rowCount, int channel );
-   virtual void WriteSamples( const UInt32Image::sample* buffer, int startRow, int rowCount, int channel );
+   void WriteSamples( const Image::sample* buffer, int startRow, int rowCount, int channel ) override;
+   void WriteSamples( const DImage::sample* buffer, int startRow, int rowCount, int channel ) override;
+   void WriteSamples( const UInt8Image::sample* buffer, int startRow, int rowCount, int channel ) override;
+   void WriteSamples( const UInt16Image::sample* buffer, int startRow, int rowCount, int channel ) override;
+   void WriteSamples( const UInt32Image::sample* buffer, int startRow, int rowCount, int channel ) override;
 
-   virtual void CloseImage();
+   void CloseImage() override;
 
 private:
 
@@ -145,4 +145,4 @@ private:
 #endif   // __FITSInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.h - Released 2019-04-30T16:31:00Z
+// EOF FITSInstance.h - Released 2019-09-29T12:27:43Z

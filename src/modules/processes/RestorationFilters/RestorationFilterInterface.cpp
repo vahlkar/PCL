@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard RestorationFilters Process Module Version 01.00.05.0352
+// Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterInterface.cpp - Released 2019-04-30T16:31:10Z
+// RestorationFilterInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -328,6 +328,9 @@ void RestorationFilterInterface::__PSF_Click( Button& sender, bool checked )
 
 void RestorationFilterInterface::__PSF_Paint( Control& sender, const Rect& updateRect )
 {
+   if ( GUI == nullptr )
+      return;
+
    Graphics g( sender );
    Image f;
    if ( instance.CreatePSF( f ) )
@@ -837,6 +840,7 @@ RestorationFilterInterface::GUIData::GUIData( RestorationFilterInterface& w )
 
    w.SetSizer( Global_Sizer );
 
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedWidth();
 
@@ -852,4 +856,4 @@ RestorationFilterInterface::GUIData::GUIData( RestorationFilterInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterInterface.cpp - Released 2019-04-30T16:31:10Z
+// EOF RestorationFilterInterface.cpp - Released 2019-09-29T12:27:58Z

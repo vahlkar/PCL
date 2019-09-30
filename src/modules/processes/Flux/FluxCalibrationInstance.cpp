@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0216
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInstance.cpp - Released 2019-04-30T16:31:09Z
+// FluxCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -68,43 +68,35 @@ const double inv_ch = 1/1.986e-9;
 // ----------------------------------------------------------------------------
 
 FluxCalibrationInstance::FluxCalibrationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m )
+   ProcessImplementation( m ),
+   p_wavelength(            TheFCWavelengthValueParameter->DefaultValue(),
+                            FCParameterMode::Literal,
+                            "FLTWAVE" ),
+   p_transmissivity(        TheFCTransmissivityValueParameter->DefaultValue(),
+                            FCParameterMode::Literal,
+                            "FLTTRANS" ),
+   p_filterWidth(           TheFCFilterWidthValueParameter->DefaultValue(),
+                            FCParameterMode::Literal,
+                            "FLTWIDTH" ),
+   p_aperture(              TheFCApertureValueParameter->DefaultValue(),
+                            FCParameterMode::StandardKeyword,
+                            "APTDIA" ),
+   p_centralObstruction(    TheFCCentralObstructionValueParameter->DefaultValue(),
+                            FCParameterMode::StandardKeyword,
+                            "OBSTDIA" ),
+   p_exposureTime(          TheFCExposureTimeValueParameter->DefaultValue(),
+                            FCParameterMode::StandardKeyword,
+                            "EXPTIME" ),
+   p_atmosphericExtinction( TheFCAtmosphericExtinctionValueParameter->DefaultValue(),
+                            FCParameterMode::Literal,
+                            "ATMEXTIN" ),
+   p_sensorGain(            TheFCSensorGainValueParameter->DefaultValue(),
+                            FCParameterMode::Literal,
+                            "CCDSENS" ),
+   p_quantumEfficiency(     TheFCQuantumEfficiencyValueParameter->DefaultValue(),
+                            FCParameterMode::Literal,
+                            "CCDQE" )
 {
-   p_wavelength.value = TheFCWavelengthValueParameter->DefaultValue();
-   p_wavelength.mode = FCParameterMode::Literal;
-   p_wavelength.stdKeyword = "FLTWAVE";
-
-   p_transmissivity.value = TheFCTransmissivityValueParameter->DefaultValue();
-   p_transmissivity.mode = FCParameterMode::Literal;
-   p_transmissivity.stdKeyword = "FLTTRANS";
-
-   p_filterWidth.value = TheFCFilterWidthValueParameter->DefaultValue();
-   p_filterWidth.mode = FCParameterMode::Literal;
-   p_filterWidth.stdKeyword = "FLTWIDTH";
-
-   p_aperture.value = TheFCApertureValueParameter->DefaultValue();
-   p_aperture.mode = FCParameterMode::StandardKeyword;
-   p_aperture.stdKeyword = "APTDIA";
-
-   p_centralObstruction.value = TheFCCentralObstructionValueParameter->DefaultValue();
-   p_centralObstruction.mode = FCParameterMode::StandardKeyword;
-   p_centralObstruction.stdKeyword = "OBSTDIA";
-
-   p_exposureTime.value = TheFCExposureTimeValueParameter->DefaultValue();
-   p_exposureTime.mode = FCParameterMode::StandardKeyword;
-   p_exposureTime.stdKeyword = "EXPTIME";
-
-   p_atmosphericExtinction.value = TheFCAtmosphericExtinctionValueParameter->DefaultValue();
-   p_atmosphericExtinction.mode = FCParameterMode::Literal;
-   p_atmosphericExtinction.stdKeyword = "ATMEXTIN";
-
-   p_sensorGain.value = TheFCSensorGainValueParameter->DefaultValue();
-   p_sensorGain.mode = FCParameterMode::Literal;
-   p_sensorGain.stdKeyword = "CCDSENS";
-
-   p_quantumEfficiency.value = TheFCQuantumEfficiencyValueParameter->DefaultValue();
-   p_quantumEfficiency.mode = FCParameterMode::Literal;
-   p_quantumEfficiency.stdKeyword = "CCDQE";
 }
 
 // ----------------------------------------------------------------------------
@@ -508,4 +500,4 @@ size_type FluxCalibrationInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInstance.cpp - Released 2019-04-30T16:31:09Z
+// EOF FluxCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z

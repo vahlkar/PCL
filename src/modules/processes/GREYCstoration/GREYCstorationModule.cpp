@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard GREYCstoration Process Module Version 01.00.02.0353
+// Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationModule.cpp - Released 2019-04-30T16:31:09Z
+// GREYCstorationModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -65,15 +65,15 @@
  * "http://www.cecill.info".
  *****************************************************************************/
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  02
-#define MODULE_VERSION_BUILD     0353
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       30
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "GREYCstorationModule.h"
 #include "GREYCstorationProcess.h"
@@ -84,7 +84,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GREYCstorationModule::GREYCstorationModule() : MetaModule()
+GREYCstorationModule::GREYCstorationModule()
 {
 }
 
@@ -168,4 +168,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationModule.cpp - Released 2019-04-30T16:31:09Z
+// EOF GREYCstorationModule.cpp - Released 2019-09-29T12:27:57Z

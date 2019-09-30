@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0410
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// CropInterface.cpp - Released 2019-04-30T16:31:09Z
+// CropInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -1347,13 +1347,14 @@ CropInterface::GUIData::GUIData( CropInterface& w ) :
    Global_Sizer.Add( FillColor_SectionBar );
    Global_Sizer.Add( FillColor_Control );
 
-   w.AdjustToContents();
+   w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
 
    Resolution_Control.Hide();
    Mode_Control.Hide();
    FillColor_Control.Hide();
 
-   w.SetSizer( Global_Sizer );
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -1363,4 +1364,4 @@ CropInterface::GUIData::GUIData( CropInterface& w ) :
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF CropInterface.cpp - Released 2019-09-29T12:27:57Z

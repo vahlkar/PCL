@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/AkimaInterpolation.h - Released 2019-04-30T16:30:41Z
+// pcl/AkimaInterpolation.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -64,6 +64,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
+#define m_x this->m_x
+#define m_y this->m_y
+
 /*!
  * \class AkimaInterpolation
  * \brief Akima subspline interpolation algorithm
@@ -86,8 +89,10 @@ namespace pcl
  * has several practical advantages in our opinion; one of them is the enhanced
  * flexibility for the application of Akima interpolation to graphical
  * representations of curves given by a set of prescribed x,y data points.
+ *
+ * \sa CubicSplineInterpolation, LinearInterpolation
  */
-template <typename T>
+template <typename T = double>
 class PCL_CLASS AkimaInterpolation : public UnidimensionalInterpolation<T>
 {
 public:
@@ -95,8 +100,7 @@ public:
    /*!
     * Represents a vector of independent and dependent variable values.
     */
-   typedef typename UnidimensionalInterpolation<T>::vector_type
-                        vector_type;
+   typedef typename UnidimensionalInterpolation<T>::vector_type   vector_type;
 
    /*!
     * Represents a vector of interpolation coefficients.
@@ -144,14 +148,14 @@ public:
    void Initialize( const vector_type& x, const vector_type& y ) override
    {
       if ( y.Length() < 5 )
-         throw Error( "Need five or more data items in AkimaInterpolation::Initialize()" );
+         throw Error( "AkimaInterpolation::Initialize(): Less than five data points specified." );
 
       try
       {
          Clear();
          UnidimensionalInterpolation<T>::Initialize( x, y );
 
-         int n = this->m_y.Length();
+         int n = m_y.Length();
          int N = n-1; // Number of subintervals
 
          m_b = coefficient_vector( N );
@@ -166,17 +170,17 @@ public:
          coefficient_vector tL( n );
 
          // Calculate chordal slopes for each subinterval
-         if ( this->m_x )
+         if ( m_x )
             for ( int i = 0; i < N; ++i )
             {
-               T h = this->m_x[i+1] - this->m_x[i];
+               T h = m_x[i+1] - m_x[i];
                if ( 1 + h*h == 1 )
-                  throw Error( "Null interpolation subinterval in AkimaInterpolation::Initialize()" );
-               m[i] = (this->m_y[i+1] - this->m_y[i])/h;
+                  throw Error( "AkimaInterpolation::Initialize(): Empty interpolation subinterval(s)." );
+               m[i] = (m_y[i+1] - m_y[i])/h;
             }
          else
             for ( int i = 0; i < N; ++i )
-               m[i] = this->m_y[i+1] - this->m_y[i];
+               m[i] = m_y[i+1] - m_y[i];
 
          // Prescribed slopes at ending locations
          m[-2 ] = 3*m[  0] - 2*m[  1];
@@ -185,9 +189,9 @@ public:
          m[N+1] = 3*m[N-1] - 2*m[N-2];
 
          /*
-         * Akima left-hand and right-hand slopes.
-         * Right-hand slopes are just the interpolation coefficients bi.
-         */
+          * Akima left-hand and right-hand slopes.
+          * Right-hand slopes are just the interpolation coefficients bi.
+          */
          for ( int i = 0; i < n; ++i )
          {
             T f = Abs( m[i-1] - m[i-2] );
@@ -207,17 +211,17 @@ public:
          }
 
          /*
-         * Interpolation coefficients m_b[i], m_c[i], m_d[i]. 'ai' coefficients
-         * are the this->m_y[i] ordinate values.
-         */
+          * Interpolation coefficients m_b[i], m_c[i], m_d[i]. 'ai'
+          * coefficients are the m_y[i] ordinate values.
+          */
          for ( int i = 0; i < N; ++i )
          {
             m_c[i] = 3*m[i] - 2*m_b[i] - tL[i+1];
             m_d[i] = m_b[i] + tL[i+1] - 2*m[i];
 
-            if ( this->m_x )
+            if ( m_x )
             {
-               T h = this->m_x[i+1] - this->m_x[i];
+               T h = m_x[i+1] - m_x[i];
                m_c[i] /= h;
                m_d[i] /= h*h;
             }
@@ -239,31 +243,31 @@ public:
       PCL_PRECONDITION( IsValid() )
 
       /*
-       * Find the subinterval i0 such that this->m_x[i0] <= x < this->m_x[i0+1].
-       * Find the distance dx = x - this->m_x[i], or dx = x - i for implicit x = {0,1,...n-1}.
+       * Find the subinterval i0 such that m_x[i0] <= x < m_x[i0+1].
+       * Find the distance dx = x - m_x[i], or dx = x - i for implicit x = {0,1,...n-1}.
        */
       int i0;
       double dx;
-      if ( this->m_x )
+      if ( m_x )
       {
          i0 = 0;
-         int i1 = this->m_x.Length() - 1;
+         int i1 = m_x.Length() - 1;
          while ( i1-i0 > 1 )
          {
             int im = (i0 + i1) >> 1;
-            if ( x < this->m_x[im] )
+            if ( x < m_x[im] )
                i1 = im;
             else
                i0 = im;
          }
-         dx = x - double( this->m_x[i0] );
+         dx = x - double( m_x[i0] );
       }
       else
       {
          if ( x <= 0 )
-            return this->m_y[0];
-         if ( x >= this->m_y.Length()-1 )
-            return this->m_y[this->m_y.Length()-1];
+            return m_y[0];
+         if ( x >= m_y.Length()-1 )
+            return m_y[m_y.Length()-1];
          i0 = TruncInt( x );
          dx = x - i0;
       }
@@ -271,7 +275,7 @@ public:
       /*
        * Use a Horner scheme to calculate b[i]*dx + c[i]*dx^2 + d[i]*dx^3.
        */
-      return this->m_y[i0] + dx*(m_b[i0] + dx*(m_c[i0] + dx*m_d[i0]));
+      return m_y[i0] + dx*(m_b[i0] + dx*(m_c[i0] + dx*m_d[i0]));
    }
 
    /*!
@@ -298,12 +302,15 @@ protected:
 
    /*
     * Interpolating coefficients for each subinterval.
-    * The coefficients for dx^0 are the input ordinate values in the this->m_y vector.
+    * The coefficients for dx^0 are the input ordinate values in the m_y vector.
     */
    coefficient_vector m_b; // coefficients for dx^1
    coefficient_vector m_c; // coefficients for dx^2
    coefficient_vector m_d; // coefficients for dx^3
 };
+
+#undef m_x
+#undef m_y
 
 // ----------------------------------------------------------------------------
 
@@ -312,4 +319,4 @@ protected:
 #endif  // __PCL_AkimaInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AkimaInterpolation.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/AkimaInterpolation.h - Released 2019-09-29T12:27:26Z

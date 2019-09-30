@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 01.05.02.0434
+// Standard RAW File Format Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// RawFormat.h - Released 2019-04-30T16:31:00Z
+// RawFormat.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -66,31 +66,31 @@ public:
 
    RawFormat();
 
-   virtual IsoString Name() const;
+   IsoString Name() const override;
 
-   virtual StringList FileExtensions() const;
+   StringList FileExtensions() const override;
 
-   virtual uint32 Version() const;
+   uint32 Version() const override;
 
-   virtual String Description() const;
-   virtual String Implementation() const;
+   String Description() const override;
+   String Implementation() const override;
 
-   virtual String IconImageFile() const;
+   String IconImageFile() const override;
 
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStoreAlphaChannels() const;
-   virtual bool CanStoreResolution() const;
-   virtual bool CanStoreKeywords() const;
-   virtual bool CanStoreICCProfiles() const;
-   virtual bool CanStoreThumbnails() const;
-   virtual bool CanStoreImageProperties() const;
-   virtual bool SupportsViewProperties() const;
-   virtual bool CanEditPreferences() const;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStoreAlphaChannels() const override;
+   bool CanStoreResolution() const override;
+   bool CanStoreKeywords() const override;
+   bool CanStoreICCProfiles() const override;
+   bool CanStoreThumbnails() const override;
+   bool CanStoreImageProperties() const override;
+   bool SupportsViewProperties() const override;
+   bool CanEditPreferences() const override;
 
-   virtual FileFormatImplementation* Create() const;
+   FileFormatImplementation* Create() const override;
 
-   virtual bool EditPreferences() const;
+   bool EditPreferences() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -100,4 +100,4 @@ public:
 #endif   // __RawFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF RawFormat.h - Released 2019-04-30T16:31:00Z
+// EOF RawFormat.h - Released 2019-09-29T12:27:43Z

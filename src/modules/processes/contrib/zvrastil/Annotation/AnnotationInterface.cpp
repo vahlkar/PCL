@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Annotation Process Module Version 01.00.00.0245
+// Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationInterface.cpp - Released 2019-04-30T16:31:10Z
+// AnnotationInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -831,7 +831,6 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
 
    Content_GroupBox.SetTitle( "Content" );
    Content_GroupBox.SetSizer( AnnotationText_Sizer );
-   Content_GroupBox.AdjustToContents();
 
    // AnnotationFont
 
@@ -922,7 +921,6 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
 
    Font_GroupBox.SetTitle( "Font" );
    Font_GroupBox.SetSizer( Font_Sizer );
-   Font_GroupBox.AdjustToContents();
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
@@ -930,6 +928,8 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
    Global_Sizer.Add( Font_GroupBox );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -939,4 +939,4 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInterface.cpp - Released 2019-04-30T16:31:10Z
+// EOF AnnotationInterface.cpp - Released 2019-09-29T12:27:58Z

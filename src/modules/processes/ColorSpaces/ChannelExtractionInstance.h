@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// ChannelExtractionInstance.h - Released 2019-04-30T16:31:09Z
+// ChannelExtractionInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -68,15 +68,15 @@ public:
    ChannelExtractionInstance( const MetaProcess* );
    ChannelExtractionInstance( const ChannelExtractionInstance& );
 
-   virtual bool Validate( pcl::String& info );
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool IsHistoryUpdater( const View& ) const;
-   virtual bool IsMaskable( const View&, const ImageWindow& ) const;
-   virtual bool CanExecuteOn( const View& v, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   bool Validate( pcl::String& info ) override;
+   void Assign( const ProcessImplementation& ) override;
+   bool IsHistoryUpdater( const View& ) const override;
+   bool IsMaskable( const View&, const ImageWindow& ) const override;
+   bool CanExecuteOn( const View& v, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
    int ColorSpace() const
    {
@@ -120,4 +120,4 @@ private:
 #endif   // __ChannelExtractionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInstance.h - Released 2019-04-30T16:31:09Z
+// EOF ChannelExtractionInstance.h - Released 2019-09-29T12:27:57Z

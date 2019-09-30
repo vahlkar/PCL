@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// ChannelCombinationProcess.cpp - Released 2019-04-30T16:31:09Z
+// ChannelCombinationProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -60,7 +60,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ChannelCombinationProcess* TheChannelCombinationProcess = 0;
+ChannelCombinationProcess* TheChannelCombinationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ ChannelCombinationProcess* TheChannelCombinationProcess = 0;
 
 // ----------------------------------------------------------------------------
 
-ChannelCombinationProcess::ChannelCombinationProcess() : MetaProcess()
+ChannelCombinationProcess::ChannelCombinationProcess()
 {
    TheChannelCombinationProcess = this;
 
@@ -88,16 +88,9 @@ IsoString ChannelCombinationProcess::Id() const
 
 // ----------------------------------------------------------------------------
 
-IsoString ChannelCombinationProcess::Category() const
+IsoString ChannelCombinationProcess::Categories() const
 {
    return "ColorSpaces,ChannelManagement";
-}
-
-// ----------------------------------------------------------------------------
-
-uint32 ChannelCombinationProcess::Version() const
-{
-   return 0x100;
 }
 
 // ----------------------------------------------------------------------------
@@ -133,7 +126,7 @@ ProcessImplementation* ChannelCombinationProcess::Create() const
 ProcessImplementation* ChannelCombinationProcess::Clone( const ProcessImplementation& p ) const
 {
    const ChannelCombinationInstance* instPtr = dynamic_cast<const ChannelCombinationInstance*>( &p );
-   return (instPtr != 0) ? new ChannelCombinationInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new ChannelCombinationInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -148,4 +141,4 @@ bool ChannelCombinationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF ChannelCombinationProcess.cpp - Released 2019-09-29T12:27:57Z

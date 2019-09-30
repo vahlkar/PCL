@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2019-04-30T16:31:09Z
+// ImageIntegrationParameters.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -77,6 +77,7 @@ IIPercentileLow*                     TheIIPercentileLowParameter = nullptr;
 IIPercentileHigh*                    TheIIPercentileHighParameter = nullptr;
 IISigmaLow*                          TheIISigmaLowParameter = nullptr;
 IISigmaHigh*                         TheIISigmaHighParameter = nullptr;
+IIWinsorizationCutoff*               TheIIWinsorizationCutoffParameter = nullptr;
 IILinearFitLow*                      TheIILinearFitLowParameter = nullptr;
 IILinearFitHigh*                     TheIILinearFitHighParameter = nullptr;
 IICCDGain*                           TheIICCDGainParameter = nullptr;
@@ -103,6 +104,7 @@ IIGenerateDrizzleData*               TheIIGenerateDrizzleDataParameter = nullptr
 IIClosePreviousImages*               TheIIClosePreviousImagesParameter = nullptr;
 IIBufferSize*                        TheIIBufferSizeParameter = nullptr;
 IIStackSize*                         TheIIStackSizeParameter = nullptr;
+IIAutoMemorySize*                    TheIIAutoMemorySizeParameter = nullptr;
 IIUseROI*                            TheIIUseROIParameter = nullptr;
 IIROIX0*                             TheIIROIX0Parameter = nullptr;
 IIROIY0*                             TheIIROIY0Parameter = nullptr;
@@ -111,6 +113,8 @@ IIROIY1*                             TheIIROIY1Parameter = nullptr;
 IIUseCache*                          TheIIUseCacheParameter = nullptr;
 IIEvaluateNoise*                     TheIIEvaluateNoiseParameter = nullptr;
 IIMRSMinDataFraction*                TheIIMRSMinDataFractionParameter = nullptr;
+IISubtractPedestals*                 TheIISubtractPedestalsParameter = nullptr;
+IITruncateOnOutOfRange*              TheIITruncateOnOutOfRangeParameter = nullptr;
 IINoGUIMessages*                     TheIINoGUIMessagesParameter = nullptr;
 IIUseFileThreads*                    TheIIUseFileThreadsParameter = nullptr;
 IIFileThreadOverload*                TheIIFileThreadOverloadParameter = nullptr;
@@ -686,6 +690,38 @@ double IISigmaHigh::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
+IIWinsorizationCutoff::IIWinsorizationCutoff( MetaProcess* P ) : MetaFloat( P )
+{
+   TheIIWinsorizationCutoffParameter = this;
+}
+
+IsoString IIWinsorizationCutoff::Id() const
+{
+   return "winsorizationCutoff";
+}
+
+int IIWinsorizationCutoff::Precision() const
+{
+   return 3;
+}
+
+double IIWinsorizationCutoff::DefaultValue() const
+{
+   return 5;
+}
+
+double IIWinsorizationCutoff::MinimumValue() const
+{
+   return 3;
+}
+
+double IIWinsorizationCutoff::MaximumValue() const
+{
+   return 10;
+}
+
+// ----------------------------------------------------------------------------
+
 IILinearFitLow::IILinearFitLow( MetaProcess* P ) : MetaFloat( P )
 {
    TheIILinearFitLowParameter = this;
@@ -735,7 +771,7 @@ int IILinearFitHigh::Precision() const
 
 double IILinearFitHigh::DefaultValue() const
 {
-   return 2.5;
+   return 4;
 }
 
 double IILinearFitHigh::MinimumValue() const
@@ -1293,6 +1329,23 @@ double IIStackSize::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
+IIAutoMemorySize::IIAutoMemorySize( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheIIAutoMemorySizeParameter = this;
+}
+
+IsoString IIAutoMemorySize::Id() const
+{
+   return "autoMemorySize";
+}
+
+bool IIAutoMemorySize::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 IIUseROI::IIUseROI( MetaProcess* P ) : MetaBoolean( P )
 {
    TheIIUseROIParameter = this;
@@ -1480,6 +1533,40 @@ double IIMRSMinDataFraction::MinimumValue() const
 double IIMRSMinDataFraction::MaximumValue() const
 {
    return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+IISubtractPedestals::IISubtractPedestals( MetaProcess* p ) : MetaBoolean( p )
+{
+   TheIISubtractPedestalsParameter = this;
+}
+
+IsoString IISubtractPedestals::Id() const
+{
+   return "subtractPedestals";
+}
+
+bool IISubtractPedestals::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IITruncateOnOutOfRange::IITruncateOnOutOfRange( MetaProcess* p ) : MetaBoolean( p )
+{
+   TheIITruncateOnOutOfRangeParameter = this;
+}
+
+IsoString IITruncateOnOutOfRange::Id() const
+{
+   return "truncateOnOutOfRange";
+}
+
+bool IITruncateOnOutOfRange::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -2470,4 +2557,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2019-04-30T16:31:09Z
+// EOF ImageIntegrationParameters.cpp - Released 2019-09-29T12:27:57Z

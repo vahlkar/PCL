@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0411
+// Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInterface.cpp - Released 2019-04-30T16:31:09Z
+// ColorManagementSetupInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -865,10 +865,12 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    Global_Sizer.Add( GlobalOptions_Control );
    Global_Sizer.Add( GlobalActions_Sizer );
 
+   w.SetSizer( Global_Sizer );
+
    SystemSettings_Control.Hide();
    DefaultPolicies_Control.Hide();
 
-   w.SetSizer( Global_Sizer );
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -878,4 +880,4 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF ColorManagementSetupInterface.cpp - Released 2019-09-29T12:27:57Z

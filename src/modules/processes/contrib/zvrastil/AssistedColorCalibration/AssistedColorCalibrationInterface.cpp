@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard AssistedColorCalibration Process Module Version 01.00.00.0246
+// Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationInterface.cpp - Released 2019-04-30T16:31:10Z
+// AssistedColorCalibrationInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
@@ -485,6 +485,9 @@ void AssistedColorCalibrationInterface::__BackgroundRefViewSelected( ViewList& s
 
 void AssistedColorCalibrationInterface::__Histogram_Paint( Control& sender, const pcl::Rect& updateRect )
 {
+   if ( GUI == nullptr )
+      return;
+
    if ( sender == GUI->HistogramPlot_Control )
    {
       if ( inputScrBmp == 0 )
@@ -517,6 +520,9 @@ void AssistedColorCalibrationInterface::__Histogram_Paint( Control& sender, cons
 
 void AssistedColorCalibrationInterface::__Sliders_Paint( Control& sender, const pcl::Rect& updateRect )
 {
+   if ( GUI == nullptr )
+      return;
+
    if ( slidersScrBmp == 0 )
       GenerateSlidersScreenBitmap();
 
@@ -742,8 +748,9 @@ AssistedColorCalibrationInterface::GUIData::GUIData( AssistedColorCalibrationInt
    Global_Sizer.Add( PreviewParams_Section );
    Global_Sizer.Add( PreviewParams_Control );
 
-
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -812,4 +819,4 @@ void AssistedColorCalibrationInterface::GUIData::SetUpSaturationNumericControl( 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationInterface.cpp - Released 2019-04-30T16:31:10Z
+// EOF AssistedColorCalibrationInterface.cpp - Released 2019-09-29T12:27:58Z

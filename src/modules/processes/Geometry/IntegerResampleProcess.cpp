@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0410
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// IntegerResampleProcess.cpp - Released 2019-04-30T16:31:09Z
+// IntegerResampleProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -68,7 +68,7 @@ IntegerResampleProcess* TheIntegerResampleProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-IntegerResampleProcess::IntegerResampleProcess() : MetaProcess()
+IntegerResampleProcess::IntegerResampleProcess()
 {
    TheIntegerResampleProcess = this;
 
@@ -81,40 +81,56 @@ IntegerResampleProcess::IntegerResampleProcess() : MetaProcess()
    TheIRNoGUIMessagesParameter = new NoGUIMessages( this );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString IntegerResampleProcess::Id() const
 {
    return "IntegerResample";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString IntegerResampleProcess::Category() const
 {
    return "Geometry";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 IntegerResampleProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String IntegerResampleProcess::Description() const
 {
    return "";
 }
 
+// ----------------------------------------------------------------------------
+
 const char** IntegerResampleProcess::IconImageXPM() const
 {
    return IntegerResampleIcon_XPM;
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* IntegerResampleProcess::DefaultInterface() const
 {
    return TheIntegerResampleInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* IntegerResampleProcess::Create() const
 {
    return new IntegerResampleInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* IntegerResampleProcess::Clone( const ProcessImplementation& p ) const
 {
@@ -127,4 +143,4 @@ ProcessImplementation* IntegerResampleProcess::Clone( const ProcessImplementatio
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF IntegerResampleProcess.cpp - Released 2019-09-29T12:27:57Z

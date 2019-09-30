@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 01.07.01.0436
+// Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// IntensityTransformationsModule.cpp - Released 2019-04-30T16:31:09Z
+// IntensityTransformationsModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     07
-#define MODULE_VERSION_REVISION  01
-#define MODULE_VERSION_BUILD     0436
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     7
+#define MODULE_VERSION_REVISION  1
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       30
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "AdaptiveStretchCurveGraphInterface.h"
 #include "AdaptiveStretchInterface.h"
@@ -93,7 +93,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-IntensityTransformationsModule::IntensityTransformationsModule() : MetaModule()
+IntensityTransformationsModule::IntensityTransformationsModule()
 {
 }
 
@@ -128,7 +128,7 @@ String IntensityTransformationsModule::Author() const
 
 String IntensityTransformationsModule::Copyright() const
 {
-   return "Copyright (c) 2005-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
 }
 
 String IntensityTransformationsModule::TradeMarks() const
@@ -212,4 +212,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF IntensityTransformationsModule.cpp - Released 2019-04-30T16:31:09Z
+// EOF IntensityTransformationsModule.cpp - Released 2019-09-29T12:27:57Z

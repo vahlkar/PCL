@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Bitmap.h - Released 2019-04-30T16:30:41Z
+// pcl/Bitmap.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -99,6 +99,11 @@ namespace BitmapFormat
       ARGB32,               // AARRGGBB
       RGB32,                // ffRRGGBB
       ARGB32_Premultiplied, // AARRGGBB with premultiplied RGB
+
+      // ### TODO: Core version 1.8.x: Implement 16-bit bitmap formats.
+//       RGBA64,               // RRRRGGGGBBBBAAAA
+//       RGBA64,               // RRRRGGGGBBBBffff
+//       RGBA64_Premultiplied, // RRRRGGGGBBBBAAAA with premultiplied RGB
 
       NumberOfBitmapFormats,
 
@@ -1414,4 +1419,4 @@ private:
 #endif   // __PCL_Bitmap_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Bitmap.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/Bitmap.h - Released 2019-09-29T12:27:26Z

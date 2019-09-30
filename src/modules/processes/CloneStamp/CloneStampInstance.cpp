@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CloneStamp Process Module Version 01.00.02.0367
+// Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInstance.cpp - Released 2019-04-30T16:31:09Z
+// CloneStampInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -51,8 +51,8 @@
 // ----------------------------------------------------------------------------
 
 #include "CloneStampInstance.h"
-#include "CloneStampParameters.h"
 #include "CloneStampInterface.h"
+#include "CloneStampParameters.h"
 
 #include <pcl/AutoViewLock.h>
 #include <pcl/ImageWindow.h>
@@ -66,10 +66,8 @@ namespace pcl
 
 CloneStampInstance::CloneStampInstance( const MetaProcess* P ) :
    ProcessImplementation( P ),
-   width( 0 ), height( 0 ), // don't rescale coordinates
    color( uint32( TheCSColorParameter->DefaultValue() ) ),
-   boundsColor( uint32( TheCSBoundsColorParameter->DefaultValue() ) ),
-   isInterfaceInstance( false )
+   boundsColor( uint32( TheCSBoundsColorParameter->DefaultValue() ) )
 {
 }
 
@@ -142,20 +140,15 @@ KernelFilter CloneStampInstance::BrushData::CreateBrush() const
                                                0.F, 0.F,     0.F );
    const float KMax = 16.0f;
    const float KMin = 1.0f;
-
 /*
    float k = (softness <= 0.5) ?
       KMax - (2*KMax - 4)*softness : 2 - (4 - 2*KMin)*(softness - 0.5);
 */
    int n = 1 + (Max( 1, radius ) << 1);
-
    VariableShapeFilter G( n, (KMax - KMin)*(1 - softness) + KMin, 0.025F );
-
    KernelFilter::coefficient_matrix C = G.Coefficients();
-
    if ( opacity != 1 )
       C *= opacity;
-
    for ( int i = 0; i < n; ++i )
       for ( int j = 0; j < n; ++j )
          if ( C[i][j] <= 0.025F )
@@ -421,7 +414,7 @@ private:
 
       brush_data br( b );
       if ( istsx || istsy )
-         br.radius = RoundI( Max( tsx, tsy ) * b.radius );
+         br.radius = RoundInt( Max( tsx, tsy ) * b.radius );
 
       if ( brush.IsEmpty() || brushData != br )
       {
@@ -430,30 +423,26 @@ private:
       }
 
       const float* m = brush.Begin();
-
-      double fm = 0; // calm compiler
-
       for ( int dy = -int( brushData.radius ); dy <= +int( brushData.radius ); ++dy )
       {
-         int ys = (isssy ? RoundI( ssy*(i->targetPos.y - delta.y) ) : (i->targetPos.y - delta.y)) + dy;
-         int yt = (istsy ? RoundI( tsy*i->targetPos.y ) : i->targetPos.y) + dy;
+         int ys = (isssy ? RoundInt( ssy*(i->targetPos.y - delta.y) ) : (i->targetPos.y - delta.y)) + dy;
+         int yt = (istsy ? RoundInt( tsy*i->targetPos.y ) : i->targetPos.y) + dy;
 
          if ( ys >= 0 && ys < src.Height() && yt >= 0 && yt < image.Height() )
          {
             for ( int dx = -int( brushData.radius ); dx <= +int( brushData.radius ); ++dx, ++m )
                if ( *m != 0 )
                {
-                  int xs = (isssx ? RoundI( ssx*(i->targetPos.x - delta.x) ) : (i->targetPos.x - delta.x)) + dx;
-                  int xt = (istsx ? RoundI( tsx*i->targetPos.x ) : i->targetPos.x) + dx;
+                  int xs = (isssx ? RoundInt( ssx*(i->targetPos.x - delta.x) ) : (i->targetPos.x - delta.x)) + dx;
+                  int xt = (istsx ? RoundInt( tsx*i->targetPos.x ) : i->targetPos.x) + dx;
 
                   if ( xs >= 0 && xs < src.Width() && xt >= 0 && xt < image.Width() )
                   {
                      double m0 = *m;
                      double m1 = 1 - m0;
-
                      for ( int c = 0; c < nt; ++c )
                      {
-                        //double fm = 0; // calm compiler
+                        double fm = 0;
                         if ( masked )
                         {
                            typename P2::sample vm = mask.Pixel( xt, yt, Min( c, nm-1 ) );
@@ -461,24 +450,18 @@ private:
                               continue;
 
                            P2::FromSample( fm, vm );
-
                            if ( maskInverted )
                               fm = 1 - fm;
                         }
 
                         typename P::sample& t = image.Pixel( xt, yt, c );
-
                         double ft;
                         P::FromSample( ft, t );
-
                         double fs;
                         P1::FromSample( fs, src.Pixel( xs, ys, Min( c, ns-1 ) ) );
-
                         double f = m1*ft + m0*fs;
-
                         if ( masked )
                            f = fm*f + (1 - fm)*ft;
-
                         t = P::ToSample( f );
                      }
                   }
@@ -548,7 +531,6 @@ private:
             for ( int j = 0; j < db; ++j )
             {
                double m0 = *m++;
-
                if ( m0 != 0 && xs >= 0 && xs < src.Width() && xt >= 0 && xt < image.Width() )
                {
                   if ( m0 > 0.985 )
@@ -559,15 +541,12 @@ private:
                   else
                   {
                      double m1 = 1 - m0;
-
                      for ( int c = 0; c < nt; ++c )
                      {
                         double ft;
                         P::FromSample( ft, *pt[c] );
-
                         double fs;
                         P1::FromSample( fs, *ps[c]++ );
-
                         *pt[c]++ = P::ToSample( m1*ft + m0*fs );
                      }
                   }
@@ -586,7 +565,6 @@ private:
          {
             for ( int c = 0; c < nt; ++c )
                pt[c] += db, ps[c] += db;
-
             m += db;
          }
 
@@ -696,8 +674,10 @@ void* CloneStampInstance::LockParameter( const MetaParameter* p, size_type table
    if ( p == TheCSBoundsColorParameter )
       return &boundsColor;
 
-   return 0;
+   return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool CloneStampInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
@@ -725,6 +705,8 @@ bool CloneStampInstance::AllocateParameter( size_type sizeOrLength, const MetaPa
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type CloneStampInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheCSClonerTableParameter )
@@ -741,4 +723,4 @@ size_type CloneStampInstance::ParameterLength( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInstance.cpp - Released 2019-04-30T16:31:09Z
+// EOF CloneStampInstance.cpp - Released 2019-09-29T12:27:57Z

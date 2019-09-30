@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0410
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// RotationInterface.cpp - Released 2019-04-30T16:31:09Z
+// RotationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -402,8 +402,6 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Rotation_Sizer.Add( Dial_Control );
 
    Rotation_Control.SetSizer( Rotation_Sizer );
-   //Rotation_Control.AdjustToContents();
-   //Rotation_Control.SetFixedSize();
 
    // -------------------------------------------------------------------------
 
@@ -518,10 +516,12 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    Global_Sizer.Add( FillColor_SectionBar );
    Global_Sizer.Add( FillColor_Control );
 
+   w.SetSizer( Global_Sizer );
+
    Interpolation_Control.Hide();
    FillColor_Control.Hide();
 
-   w.SetSizer( Global_Sizer );
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -531,4 +531,4 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF RotationInterface.cpp - Released 2019-09-29T12:27:57Z

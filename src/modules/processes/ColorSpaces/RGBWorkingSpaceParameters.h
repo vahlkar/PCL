@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceParameters.h - Released 2019-04-30T16:31:09Z
+// RGBWorkingSpaceParameters.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -68,10 +68,9 @@ public:
 
    RGBWSChannelTable( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type MinLength() const;
-   virtual size_type MaxLength() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   size_type MaxLength() const override;
 };
 
 extern RGBWSChannelTable*  TheRGBWSChannelTableParameter;
@@ -84,11 +83,10 @@ public:
 
    RGBWSLuminanceCoefficient( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern RGBWSLuminanceCoefficient*  TheRGBWSLuminanceCoefficientParameter;
@@ -101,11 +99,10 @@ public:
 
    RGBWSChromaticityX( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern RGBWSChromaticityX*   TheRGBWSChromaticityXParameter;
@@ -118,11 +115,10 @@ public:
 
    RGBWSChromaticityY( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern RGBWSChromaticityY*   TheRGBWSChromaticityYParameter;
@@ -135,12 +131,11 @@ public:
 
    RGBWSGamma( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RGBWSGamma*  TheRGBWSGammaParameter;
@@ -153,9 +148,8 @@ public:
 
    RGBWSsRGBG( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern RGBWSsRGBG*  TheRGBWSsRGBGParameter;
@@ -168,9 +162,8 @@ public:
 
    RGBWSApplyGlobal( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern RGBWSApplyGlobal*   TheRGBWSApplyGlobalParameter;
@@ -184,4 +177,4 @@ PCL_END_LOCAL
 #endif   // __RGBWorkingSpaceParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceParameters.h - Released 2019-04-30T16:31:09Z
+// EOF RGBWorkingSpaceParameters.h - Released 2019-09-29T12:27:57Z

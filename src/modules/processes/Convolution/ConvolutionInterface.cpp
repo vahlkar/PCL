@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Convolution Process Module Version 01.01.03.0288
+// Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInterface.cpp - Released 2019-04-30T16:31:09Z
+// ConvolutionInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -527,6 +527,9 @@ void ConvolutionInterface::__Filter_SliderUpdated( Slider& sender, int value )
 
 void ConvolutionInterface::__Filter_Paint( Control& sender, const Rect& updateRect )
 {
+   if ( GUI == nullptr )
+      return;
+
    Graphics g( sender );
    Image f;
    if ( instance.CreateFilterImage( f ) )
@@ -996,6 +999,8 @@ ConvolutionInterface::GUIData::GUIData( ConvolutionInterface& w )
    Global_Sizer.Add( Filter_Sizer );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 
@@ -1009,4 +1014,4 @@ ConvolutionInterface::GUIData::GUIData( ConvolutionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF ConvolutionInterface.cpp - Released 2019-09-29T12:27:57Z

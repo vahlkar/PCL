@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Exception.cpp - Released 2019-04-30T16:30:49Z
+// pcl/Exception.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -63,8 +63,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-static bool s_useConsole = false;
-static bool s_useGUI = true;
+static bool s_useConsole = true;
+static bool s_useGUI = false;
 
 // ----------------------------------------------------------------------------
 
@@ -224,6 +224,7 @@ void Exception::Show() const
       if ( HaveConsole() )
       {
          Console console;
+         console.Show();
          console.Critical( "<end><cbr>*** " + text );
          console.Write( "\x1b[39m<end><cbr>" );
       }
@@ -268,24 +269,30 @@ void Exception::EnableGUIOutput( bool enable )
 
 String ParseError::Message() const
 {
-   String s = m_message;
+   String info = m_message;
 
    if ( !m_beingParsed.IsEmpty() )
-   {
-      if ( !m_message.IsEmpty() )
-         s += ":\n";
-
       if ( m_errorPosition >= 0 )
       {
-         s += m_beingParsed.Left( m_errorPosition );
-         s += char16_type( 0x2b1b ); // Unicode black large square character
-         s += m_beingParsed.Substring( m_errorPosition );
+         if ( !info.IsEmpty() )
+            info += ":\n";
+         info += "<code>";
+         info += m_beingParsed;
+         info += '\n';
+         info += String( '.', m_errorPosition );
+         info += '^';
+         info += "</code>";
       }
       else
-         s += m_beingParsed;
-   }
+      {
+         if ( !info.IsEmpty() )
+            info += ": ";
+         info += "<code>";
+         info += m_beingParsed;
+         info += "</code>";
+      }
 
-   return s;
+   return info;
 }
 
 // ----------------------------------------------------------------------------
@@ -295,53 +302,20 @@ void ParseError::Show() const
    bool showOnGUI = s_useGUI && Thread::IsRootThread();
 
    if ( s_useConsole || !showOnGUI )
-   {
-      String info = m_message;
-
-      if ( !m_beingParsed.IsEmpty() )
-         if ( m_errorPosition >= 0 )
-         {
-            if ( !info.IsEmpty() )
-               info += ":\n";
-
-            if ( HaveConsole() )
-               info += "<monospace><raw>";
-
-            info += m_beingParsed;
-            info += '\n';
-            info += String( '.', m_errorPosition );
-            info += '^';
-
-            if ( HaveConsole() )
-               info += "</raw><default-font>";
-         }
-         else
-         {
-            if ( !info.IsEmpty() )
-               info += ": ";
-
-            if ( HaveConsole() )
-               info += "<raw>";
-
-            info += m_beingParsed;
-
-            if ( HaveConsole() )
-               info += "</raw>";
-         }
-
       if ( HaveConsole() )
       {
          Console console;
-         console.Critical( "<end><cbr>*** " + Caption() + ": " + info );
+         console.Show();
+         console.Critical( "<end><cbr>*** " + Caption() + ": " + Message() );
          console.Write( "\x1b[39m<end><cbr>" );
       }
       else
-         std::cerr << "\n*** " << Caption() << ": " << info << '\n';
-   }
+         std::cerr << "\n*** " << Caption() << ": " << Message() << '\n';
 
    if ( showOnGUI )
    {
       String info = Message();
+      info.ReplaceString( "code>", "tt>" );
       String caption = Caption();
       pcl::MessageBox( info, caption, StdIcon::Error ).Execute();
    }
@@ -360,13 +334,13 @@ String SourceCodeError::Message() const
 
       if ( m_lineNumber >= 0 )
       {
-         s.AppendFormat( "line=%d", m_lineNumber );
+         s.AppendFormat( "%d", m_lineNumber );
          if ( m_columnNumber >= 0 )
-            s += ',';
+            s += ':';
       }
 
       if ( m_columnNumber >= 0 )
-         s.AppendFormat( "column=%d", m_columnNumber );
+         s.AppendFormat( "%d", m_columnNumber );
 
       s += ")";
    }
@@ -381,16 +355,15 @@ void SourceCodeError::Show() const
    bool showOnGUI = s_useGUI && Thread::IsRootThread();
 
    if ( s_useConsole || !showOnGUI )
-   {
       if ( HaveConsole() )
       {
          Console console;
+         console.Show();
          console.Critical( "<end><cbr>*** " + Caption() + ": <raw>" + Message() + "</raw>" );
          console.Write( "\x1b[39m<end><cbr>" );
       }
       else
          std::cerr << "\n*** " << Caption() << ": " << Message() << '\n';
-   }
 
    if ( showOnGUI )
    {
@@ -405,4 +378,4 @@ void SourceCodeError::Show() const
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Exception.cpp - Released 2019-04-30T16:30:49Z
+// EOF pcl/Exception.cpp - Released 2019-09-29T12:27:33Z

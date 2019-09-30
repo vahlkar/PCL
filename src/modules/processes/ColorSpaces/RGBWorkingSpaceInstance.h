@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceInstance.h - Released 2019-04-30T16:31:09Z
+// RGBWorkingSpaceInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -70,17 +70,17 @@ public:
    RGBWorkingSpaceInstance( const RGBWorkingSpaceInstance& );
    RGBWorkingSpaceInstance( const MetaProcess*, const RGBColorSystem& );
 
-   virtual bool Validate( pcl::String& info );
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool IsMaskable( const View& v, const ImageWindow& mask ) const;
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View& v, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   bool Validate( pcl::String& info ) override;
+   void Assign( const ProcessImplementation& ) override;
+   bool IsMaskable( const View& v, const ImageWindow& mask ) const override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View& v, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
    const FVector& LuminanceCoefficients() const
    {
@@ -134,4 +134,4 @@ private:
 #endif   // __RGBWorkingSpaceInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceInstance.h - Released 2019-04-30T16:31:09Z
+// EOF RGBWorkingSpaceInstance.h - Released 2019-09-29T12:27:57Z

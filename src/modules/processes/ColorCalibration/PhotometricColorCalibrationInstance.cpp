@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.04.0344
+// Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2019-04-30T16:31:09Z
+// PhotometricColorCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -88,6 +88,14 @@ namespace pcl
 
 PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const MetaProcess* m ) :
    ProcessImplementation( m ),
+   p_workingMode( PCCWorkingMode::Default ),
+   p_applyCalibration( ThePCCApplyCalibrationParameter->DefaultValue() ),
+   p_redFilterWavelength( ThePCCRedFilterWavelengthParameter->DefaultValue() ),
+   p_redFilterBandwidth( ThePCCRedFilterBandwidthParameter->DefaultValue() ),
+   p_greenFilterWavelength( ThePCCGreenFilterWavelengthParameter->DefaultValue() ),
+   p_greenFilterBandwidth( ThePCCGreenFilterBandwidthParameter->DefaultValue() ),
+   p_blueFilterWavelength( ThePCCBlueFilterWavelengthParameter->DefaultValue() ),
+   p_blueFilterBandwidth( ThePCCBlueFilterBandwidthParameter->DefaultValue() ),
    p_whiteReferenceId( ThePCCWhiteReferenceIdParameter->DefaultValue() ),
    p_whiteReferenceName( ThePCCWhiteReferenceNameParameter->DefaultValue() ),
    p_whiteReferenceSr_JV( ThePCCWhiteReferenceSr_JVParameter->DefaultValue() ),
@@ -124,7 +132,6 @@ PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const 
    p_photShowDetectedStars( ThePCCPhotShowDetectedStarsParameter->DefaultValue() ),
    p_photShowBackgroundModels( ThePCCPhotShowBackgroundModelsParameter->DefaultValue() ),
    p_photGenerateGraphs( ThePCCPhotGenerateGraphsParameter->DefaultValue() ),
-   p_applyCalibration( ThePCCApplyCalibrationParameter->DefaultValue() ),
    p_neutralizeBackground( ThePCCNeutralizeBackgroundParameter->DefaultValue() ),
    p_backgroundReferenceViewId( ThePCCBackgroundReferenceViewIdParameter->DefaultValue() ),
    p_backgroundLow( ThePCCBackgroundLowParameter->DefaultValue() ),
@@ -149,6 +156,14 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
    const PhotometricColorCalibrationInstance* x = dynamic_cast<const PhotometricColorCalibrationInstance*>( &p );
    if ( x != nullptr )
    {
+      p_workingMode                    = x->p_workingMode;
+      p_applyCalibration               = x->p_applyCalibration;
+      p_redFilterWavelength            = x->p_redFilterWavelength;
+      p_redFilterBandwidth             = x->p_redFilterBandwidth;
+      p_greenFilterWavelength          = x->p_greenFilterWavelength;
+      p_greenFilterBandwidth           = x->p_greenFilterBandwidth;
+      p_blueFilterWavelength           = x->p_blueFilterWavelength;
+      p_blueFilterBandwidth            = x->p_blueFilterBandwidth;
       p_whiteReferenceId               = x->p_whiteReferenceId;
       p_whiteReferenceName             = x->p_whiteReferenceName;
       p_whiteReferenceSr_JV            = x->p_whiteReferenceSr_JV;
@@ -185,7 +200,6 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
       p_photShowDetectedStars          = x->p_photShowDetectedStars;
       p_photShowBackgroundModels       = x->p_photShowBackgroundModels;
       p_photGenerateGraphs             = x->p_photGenerateGraphs;
-      p_applyCalibration               = x->p_applyCalibration;
       p_neutralizeBackground           = x->p_neutralizeBackground;
       p_backgroundReferenceViewId      = x->p_backgroundReferenceViewId;
       p_backgroundLow                  = x->p_backgroundLow;
@@ -223,6 +237,14 @@ bool PhotometricColorCalibrationInstance::CanExecuteOn( const View& view, pcl::S
       whyNot = "PhotometricColorCalibration cannot be executed on complex images.";
       return false;
    }
+   if ( p_neutralizeBackground )
+      if ( p_backgroundUseROI )
+         if ( !p_backgroundROI.IsRect() )
+         {
+            whyNot = "Empty background reference ROI defined.";
+            return false;
+         }
+
    return true;
 }
 
@@ -230,7 +252,7 @@ bool PhotometricColorCalibrationInstance::CanExecuteOn( const View& view, pcl::S
 // ----------------------------------------------------------------------------
 
 /*
- * POD structures to hold catalog and image star fluxes.
+ * POD structures to hold catalog and image star magnitudes.
  */
 struct RG
 {
@@ -239,6 +261,15 @@ struct RG
 struct BG
 {
    double catB, catG, imgB, imgG;
+};
+
+/*
+ *
+ */
+struct MF
+{
+   double catR, catG, catB;    // catalog magnitudes
+   double fluxR, fluxG, fluxB; // measured fluxes
 };
 
 /*
@@ -427,6 +458,33 @@ static void ApplyWhiteBalance( ImageVariant& image, const DVector& W )
       case 16: ApplyWhiteBalance( static_cast<UInt16Image&>( *image ), W ); break;
       case 32: ApplyWhiteBalance( static_cast<UInt32Image&>( *image ), W ); break;
       }
+}
+
+// ----------------------------------------------------------------------------
+
+double RobustMean( Array<double>& v, float k = 2.0 )
+{
+   double m0 = Median( v.Begin(), v.End() );
+   Array<double> vl, vh;
+   for ( double x : v )
+      if ( x < m0 )
+         vl << x;
+      else
+         vh << x;
+   double ml = Median( vl.Begin(), vl.End() );
+   double sl = k*1.4826*MAD( vl.Begin(), vl.End(), ml );
+   double mh = Median( vh.Begin(), vh.End() );
+   double sh = k*1.4826*MAD( vh.Begin(), vh.End(), mh );
+   Array<double> L, H;
+   for ( double l : vl )
+      if ( Abs( l - ml ) < sl )
+         L << l;
+   for ( double h : vh )
+      if ( Abs( h - mh ) < sh )
+         H << h;
+   if ( L.Length() > 3 && H.Length() > 3 )
+      return (Mean( L.Begin(), L.End() ) + Mean( H.Begin(), H.End() ))/2;
+   return (ml + mh)/2;
 }
 
 // ----------------------------------------------------------------------------
@@ -643,6 +701,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                              << StringKeyValue( "solver_noiseLayers", String( p_solverNoiseLayers ) )
                                              << StringKeyValue( "solver_alignAlgorithm", String( p_solverAlignmentDevice ) )
                                              << StringKeyValue( "solver_distortionCorrection", String( bool( p_solverDistortionCorrection ) ) )
+                                             << StringKeyValue( "solver_distortedCorners", "false" )
                                              << StringKeyValue( "solver_splineSmoothing", String( p_solverSplineSmoothing ) )
                                              << StringKeyValue( "solver_enableSimplifier", "true" )
                                              << StringKeyValue( "solver_simplifierTolerance", "0.25" )
@@ -651,6 +710,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                              << StringKeyValue( "solver_catalogMode", "1" )
                                              << StringKeyValue( "solver_autoMagnitude", "false" )
                                              << StringKeyValue( "solver_showStars", "false" )
+                                             << StringKeyValue( "solver_showSimplifiedSurfaces", "false" )
                                              << StringKeyValue( "solver_showDistortion", "false" )
                                              << StringKeyValue( "solver_generateErrorImg", "false" )
                                              << StringKeyValue( "solver_generateDistortModel", "false" )
@@ -851,137 +911,261 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
          || indexOfImageBFlux  < 0 )
          throw Error( "Wrong or corrupted photometry data: <raw>" + fluxFilePath + "</raw>" );
 
-      Array<RG> rg;
-      Array<BG> bg;
-      for ( const IsoString& line : lines )
-         if ( IsoCharTraits::IsDigit( *line ) )
+      DVector W;
+
+      if ( p_workingMode == PCCWorkingMode::Broadband )
+      {
+         Array<RG> rg;
+         Array<BG> bg;
+         for ( const IsoString& line : lines )
+            if ( IsoCharTraits::IsDigit( *line ) )
+            {
+               IsoStringList tokens;
+               line.Break( tokens, ';' );
+
+               double imgMagG;
+               if ( !tokens[indexOfImageGFlux].TryToDouble( imgMagG ) )
+                  continue;
+               imgMagG = -2.5118 * Log( imgMagG );
+               if ( !IsFinite( imgMagG ) )
+                  continue;
+
+               double catMagG;
+               if ( !tokens[indexOfCatalogGmag].TryToDouble( catMagG ) )
+                  continue;
+
+               double imgMagR;
+               bool haveImgMagR = tokens[indexOfImageRFlux].TryToDouble( imgMagR );
+               if ( haveImgMagR )
+                  imgMagR = -2.5118 * Log( imgMagR );
+               if ( !IsFinite( imgMagR ) )
+                  haveImgMagR = false;
+
+               double imgMagB;
+               bool haveImgMagB = tokens[indexOfImageBFlux].TryToDouble( imgMagB );
+               if ( haveImgMagB )
+                  imgMagB = -2.5118 * Log( imgMagB );
+               if ( !IsFinite( imgMagB ) )
+                  haveImgMagB = false;
+
+               if ( haveImgMagR )
+               {
+                  double catMagR;
+                  if ( tokens[indexOfCatalogRmag].TryToDouble( catMagR ) )
+                     rg << RG{ catMagR, catMagG, imgMagR, imgMagG };
+               }
+
+               if ( haveImgMagB )
+               {
+                  double catMagB;
+                  if ( tokens[indexOfCatalogBmag].TryToDouble( catMagB ) )
+                     bg << BG{ catMagB, catMagG, imgMagB, imgMagG };
+               }
+            }
+
+         /*
+          * Fit color transformation functions.
+          */
+         Vector catIndexRG( rg.Length() );
+         Vector imgIndexRG( rg.Length() );
+         for ( size_type i = 0; i < rg.Length(); ++i )
          {
-            IsoStringList tokens;
-            line.Break( tokens, ';' );
-
-            double imgMagG;
-            if ( !tokens[indexOfImageGFlux].TryToDouble( imgMagG ) )
-               continue;
-            imgMagG = -2.5118 * Log( imgMagG );
-            if ( !IsFinite( imgMagG ) )
-               continue;
-
-            double catMagG;
-            if ( !tokens[indexOfCatalogGmag].TryToDouble( catMagG ) )
-               continue;
-
-            double imgMagR;
-            bool haveImgMagR = tokens[indexOfImageRFlux].TryToDouble( imgMagR );
-            if ( haveImgMagR )
-               imgMagR = -2.5118 * Log( imgMagR );
-            if ( !IsFinite( imgMagR ) )
-               haveImgMagR = false;
-
-            double imgMagB;
-            bool haveImgMagB = tokens[indexOfImageBFlux].TryToDouble( imgMagB );
-            if ( haveImgMagB )
-               imgMagB = -2.5118 * Log( imgMagB );
-            if ( !IsFinite( imgMagB ) )
-               haveImgMagB = false;
-
-            if ( haveImgMagR )
-            {
-               double catMagR;
-               if ( tokens[indexOfCatalogRmag].TryToDouble( catMagR ) )
-                  rg << RG{ catMagR, catMagG, imgMagR, imgMagG };
-            }
-
-            if ( haveImgMagB )
-            {
-               double catMagB;
-               if ( tokens[indexOfCatalogBmag].TryToDouble( catMagB ) )
-                  bg << BG{ catMagB, catMagG, imgMagB, imgMagG };
-            }
+            catIndexRG[i] = rg[i].catR - rg[i].catG;
+            imgIndexRG[i] = rg[i].imgR - rg[i].imgG;
          }
 
-      /*
-       * Fit color transformation functions.
-       */
-      Vector catIndexRG( rg.Length() );
-      Vector imgIndexRG( rg.Length() );
-      for ( size_type i = 0; i < rg.Length(); ++i )
-      {
-         catIndexRG[i] = rg[i].catR - rg[i].catG;
-         imgIndexRG[i] = rg[i].imgR - rg[i].imgG;
+         Vector catIndexBG( bg.Length() );
+         Vector imgIndexBG( bg.Length() );
+         for ( size_type i = 0; i < bg.Length(); ++i )
+         {
+            catIndexBG[i] = bg[i].catB - bg[i].catG;
+            imgIndexBG[i] = bg[i].imgB - bg[i].imgG;
+         }
+
+         LinearFit LRG = FitVectors( catIndexRG, imgIndexRG );
+         LinearFit LBG = FitVectors( catIndexBG, imgIndexBG );
+
+         console.NoteLn( String().Format( "<end><cbr>* Color transformation functions:\n"
+                                          "R-G = %+.6e %c %.6e*(Sr-JV) &plusmn; %.6e\n"
+                                          "B-G = %+.6e %c %.6e*(JB-JV) &plusmn; %.6e",
+                                          LRG.a, (LRG.b < 0) ? '-' : '+', Abs( LRG.b ), LRG.adev,
+                                          LBG.a, (LBG.b < 0) ? '-' : '+', Abs( LBG.b ), LBG.adev ) );
+
+         W = DVector( Pow( 2.5118, LRG( p_whiteReferenceSr_JV - p_zeroPointSr_JV ) ),
+                      1.0,
+                      Pow( 2.5118, LBG( p_whiteReferenceJB_JV - p_zeroPointJB_JV ) ) );
+
+         W /= W.MaxComponent();
+
+         console.NoteLn( String().Format( "<end><cbr>* White balance factors:\n"
+                                          "W_R : %.4e\n"
+                                          "W_G : %.4e\n"
+                                          "W_B : %.4e", W[0], W[1], W[2] ) );
+
+         if ( p_photGenerateGraphs )
+         {
+            if ( !ThePhotometricColorCalibrationGraphInterface->IsVisible() )
+               ThePhotometricColorCalibrationGraphInterface->Launch();
+            ThePhotometricColorCalibrationGraphInterface->UpdateGraphs( view.FullId(), p_photCatalogName, "r'", "V", "B",
+                                                                        catIndexRG, imgIndexRG, LRG,
+                                                                        catIndexBG, imgIndexBG, LBG );
+         }
+
+         /*
+          * Generate metadata.
+          */
+         {
+            DVector W0( 2 );
+            W0[0] = p_whiteReferenceSr_JV;
+            W0[1] = p_whiteReferenceJB_JV;
+            DVector Z0( 2 );
+            Z0[0] = p_zeroPointSr_JV;
+            Z0[1] = p_zeroPointJB_JV;
+
+            properties << Property( "PCL:PCC:Fit_Sr_JV_R_G", DVector( LRG.a, LRG.b, LRG.adev ) )
+                       << Property( "PCL:PCC:Fit_JB_JV_B_G", DVector( LBG.a, LBG.b, LBG.adev ) )
+                       << Property( "PCL:PCC:White_Sr_JV", W0[0] )
+                       << Property( "PCL:PCC:White_JB_JV", W0[1] )
+                       << Property( "PCL:PCC:Zero_Sr_JV", Z0[0] )
+                       << Property( "PCL:PCC:Zero_JB_JV", Z0[1] )
+                       << Property( "PCL:PCC:Scale_Sr_JV_JB_JV", W );
+
+            keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Color calibration with "  + PixInsightVersion::AsString() )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with "  + Module->ReadableVersion() )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with PhotometricColorCalibration process" )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                          IsoString().Format( "PhotometricColorCalibration.fit_Sr_JV_R_G: %.6e %.6e %.6e", LRG.a, LRG.b, LRG.adev ) )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                          IsoString().Format( "PhotometricColorCalibration.fit_JB_JV_B_G: %.6e %.6e %.6e", LBG.a, LBG.b, LBG.adev ) )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                          IsoString().Format( "PhotometricColorCalibration.white_Sr_JV: %.5e", W0[0] ) )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                          IsoString().Format( "PhotometricColorCalibration.white_JB_JV: %.5e", W0[1] ) )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                          IsoString().Format( "PhotometricColorCalibration.zero_Sr_JV: %.5e", Z0[0] ) )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                          IsoString().Format( "PhotometricColorCalibration.zero_JB_JV: %.5e", Z0[1] ) )
+                     << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                          IsoString().Format( "PhotometricColorCalibration.scale_Sr_JV_JB_JV: %.4e %.4e %.4e", W[0], W[1], W[2] ) );
+         }
       }
-
-      Vector catIndexBG( bg.Length() );
-      Vector imgIndexBG( bg.Length() );
-      for ( size_type i = 0; i < bg.Length(); ++i )
+      else
       {
-         catIndexBG[i] = bg[i].catB - bg[i].catG;
-         imgIndexBG[i] = bg[i].imgB - bg[i].imgG;
-      }
+#define B   440
+#define G   550
+#define R   670
+#define XB  p_blueFilterWavelength
+#define XG  p_greenFilterWavelength
+#define XR  p_redFilterWavelength
+#define WB  p_blueFilterBandwidth
+#define WG  p_greenFilterBandwidth
+#define WR  p_redFilterBandwidth
 
-      LinearFit LRG = FitVectors( catIndexRG, imgIndexRG );
-      LinearFit LBG = FitVectors( catIndexBG, imgIndexBG );
+         Array<double> ZR, ZG, ZB;
+         for ( const IsoString& line : lines )
+            if ( IsoCharTraits::IsDigit( *line ) )
+            {
+               IsoStringList tokens;
+               line.Break( tokens, ';' );
 
-      console.NoteLn( String().Format( "<end><cbr>* Color transformation functions:\n"
-                                       "R-G = %+.6e %c %.6e*(Sr-JV) &plusmn; %.6e\n"
-                                       "B-G = %+.6e %c %.6e*(JB-JV) &plusmn; %.6e",
-                                       LRG.a, (LRG.b < 0) ? '-' : '+', Abs( LRG.b ), LRG.adev,
-                                       LBG.a, (LBG.b < 0) ? '-' : '+', Abs( LBG.b ), LBG.adev ) );
+               /*
+                * Catalog magnitudes.
+                */
+               double r, g, b;
+               if ( !tokens[indexOfCatalogRmag].TryToDouble( r ) ||
+                    !tokens[indexOfCatalogGmag].TryToDouble( g ) ||
+                    !tokens[indexOfCatalogBmag].TryToDouble( b ) )
+                  continue;
+               /*
+                * Star fluxes measured on the image.
+                */
+               double ir, ig, ib;
+               if ( !tokens[indexOfImageRFlux].TryToDouble( ir ) ||
+                    !tokens[indexOfImageGFlux].TryToDouble( ig ) ||
+                    !tokens[indexOfImageBFlux].TryToDouble( ib ) )
+                  continue;
 
-      DVector W( Pow( 2.5118, LRG( p_whiteReferenceSr_JV - p_zeroPointSr_JV ) ),
-                 1.0,
-                 Pow( 2.5118, LBG( p_whiteReferenceJB_JV - p_zeroPointJB_JV ) ) );
+               /*
+                * Catalog fluxes at catalog filter effective wavelengths.
+                * (APASS photometric system)
+                */
+               double yr = 0.14 * 4490 / Pow( 2.5118, r );
+               double yg = 0.16 * 3640 / Pow( 2.5118, g );
+               double yb = 0.22 * 4260 / Pow( 2.5118, b );
 
-      W /= W.MaxComponent();
+               /*
+                * Catalog fluxes at user filter effective wavelengths.
+                */
+               double fr = (XR - G)*(XR - R)/(B - G)/(B - R) * yb
+                         + (XR - R)*(XR - B)/(G - R)/(G - B) * yg
+                         + (XR - B)*(XR - G)/(R - B)/(R - G) * yr;
 
-      console.NoteLn( String().Format( "<end><cbr>* White balance factors:\n"
-                                       "W_R : %.4e\n"
-                                       "W_G : %.4e\n"
-                                       "W_B : %.4e", W[0], W[1], W[2] ) );
+               double fg = (XG - G)*(XG - R)/(B - G)/(B - R) * yb
+                         + (XG - R)*(XG - B)/(G - R)/(G - B) * yg
+                         + (XG - B)*(XG - G)/(R - B)/(R - G) * yr;
 
-      if ( p_photGenerateGraphs )
-      {
-         if ( !ThePhotometricColorCalibrationGraphInterface->IsVisible() )
-            ThePhotometricColorCalibrationGraphInterface->Launch();
-         ThePhotometricColorCalibrationGraphInterface->UpdateGraphs( view.FullId(), p_photCatalogName, "r'", "V", "B",
-                                                                     catIndexRG, imgIndexRG, LRG,
-                                                                     catIndexBG, imgIndexBG, LBG );
-      }
+               double fb = (XB - G)*(XB - R)/(B - G)/(B - R) * yb
+                         + (XB - R)*(XB - B)/(G - R)/(G - B) * yg
+                         + (XB - B)*(XB - G)/(R - B)/(R - G) * yr;
 
-      /*
-       * Generate metadata.
-       */
-      {
-         DVector W0( 2 );
-         W0[0] = p_whiteReferenceSr_JV;
-         W0[1] = p_whiteReferenceJB_JV;
-         DVector Z0( 2 );
-         Z0[0] = p_zeroPointSr_JV;
-         Z0[1] = p_zeroPointJB_JV;
+               ZR << ir / fr;
+               ZG << ig / fg;
+               ZB << ib / fb;
+            }
 
-         properties << Property( "PCL:PCC:Fit_Sr_JV_R_G", DVector( LRG.a, LRG.b, LRG.adev ) )
-                    << Property( "PCL:PCC:Fit_JB_JV_B_G", DVector( LBG.a, LBG.b, LBG.adev ) )
-                    << Property( "PCL:PCC:White_Sr_JV", W0[0] )
-                    << Property( "PCL:PCC:White_JB_JV", W0[1] )
-                    << Property( "PCL:PCC:Zero_Sr_JV", Z0[0] )
-                    << Property( "PCL:PCC:Zero_JB_JV", Z0[1] )
-                    << Property( "PCL:PCC:Scale_Sr_JV_JB_JV", W );
+         double zr = RobustMean( ZR );
+         double zg = RobustMean( ZG );
+         double zb = RobustMean( ZB );
 
-         keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Color calibration with "  + PixInsightVersion::AsString() )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with "  + Module->ReadableVersion() )
+         /*
+          * zr/zg, zb/zg are the ratios of calibrated photon fluxes with
+          * respect to green.
+          *
+          * WR/WG, WB/WG are the ratios of filter bandwidths, used to calibrate
+          * the filter's emission line independently of star fluxes.
+          */
+         W = DVector( zg/zr * WR/WG, 1.0, zg/zb * WB/WG );
+         W /= W.MaxComponent();
+
+         console.NoteLn( String().Format( "<end><cbr>* Photon calibration factors:\n"
+                                          "W_R : %.4e\n"
+                                          "W_G : %.4e\n"
+                                          "W_B : %.4e", W[0], W[1], W[2] ) );
+
+         properties << Property( "PCL:PCC:BlueFilterWavelength", XB )
+                    << Property( "PCL:PCC:GreenFilterWavelength", XG )
+                    << Property( "PCL:PCC:RedFilterWavelength", XR )
+                    << Property( "PCL:PCC:BlueFilterBandwidth", WB )
+                    << Property( "PCL:PCC:GreenFilterBandwidth", WG )
+                    << Property( "PCL:PCC:RedFilterBandwidth", WR )
+                    << Property( "PCL:PCC:Scale_R_G_B", W );
+
+         keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Photon calibration with "  + PixInsightVersion::AsString() )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Photon calibration with "  + Module->ReadableVersion() )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(), "Photon calibration with PhotometricColorCalibration process" )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "PhotometricColorCalibration.fit_Sr_JV_R_G: %.6e %.6e %.6e", LRG.a, LRG.b, LRG.adev ) )
+                                       IsoString().Format( "PhotometricColorCalibration.blueFilterWavelength: %.1f", XB ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "PhotometricColorCalibration.fit_JB_JV_B_G: %.6e %.6e %.6e", LBG.a, LBG.b, LBG.adev ) )
+                                       IsoString().Format( "PhotometricColorCalibration.greenFilterWavelength: %.1f", XG ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "PhotometricColorCalibration.white_Sr_JV: %.5e", W0[0] ) )
+                                       IsoString().Format( "PhotometricColorCalibration.redFilterWavelength: %.1f", XR ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "PhotometricColorCalibration.white_JB_JV: %.5e", W0[1] ) )
+                                       IsoString().Format( "PhotometricColorCalibration.blueFilterBandwidth: %.1f", WB ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "PhotometricColorCalibration.zero_Sr_JV: %.5e", Z0[0] ) )
+                                       IsoString().Format( "PhotometricColorCalibration.greenFilterBandwidth: %.1f", WG ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "PhotometricColorCalibration.zero_JB_JV: %.5e", Z0[1] ) )
+                                       IsoString().Format( "PhotometricColorCalibration.redFilterBandwidth: %.1f", WR ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "PhotometricColorCalibration.scale_Sr_JV_JB_JV: %.4e %.4e %.4e", W[0], W[1], W[2] ) );
+                                       IsoString().Format( "PhotometricColorCalibration.scale_R_G_B: %.4e %.4e %.4e", W[0], W[1], W[2] ) );
+#undef B
+#undef G
+#undef R
+#undef XB
+#undef XG
+#undef XR
+#undef WB
+#undef WG
+#undef WR
       }
 
       /*
@@ -1001,8 +1185,10 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                if ( p_backgroundUseROI )
                {
                   p_backgroundROI.Order();
-                  if ( !p_backgroundROI.IsRect() )
-                     throw Error( "Empty background reference ROI defined" );
+                  // ROI validity already checked by CanExecuteOn(), which we
+                  // have called above.
+//                   if ( !p_backgroundROI.IsRect() )
+//                      throw Error( "Empty background reference ROI defined" );
                }
 
                if ( p_backgroundHigh < p_backgroundLow )
@@ -1101,6 +1287,22 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
 
 void* PhotometricColorCalibrationInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
+   if ( p == ThePCCWorkingModeParameter )
+      return &p_workingMode;
+   if ( p == ThePCCApplyCalibrationParameter )
+      return &p_applyCalibration;
+   if ( p == ThePCCRedFilterWavelengthParameter )
+      return &p_redFilterWavelength;
+   if ( p == ThePCCRedFilterBandwidthParameter )
+      return &p_redFilterBandwidth;
+   if ( p == ThePCCGreenFilterWavelengthParameter )
+      return &p_greenFilterWavelength;
+   if ( p == ThePCCGreenFilterBandwidthParameter )
+      return &p_greenFilterBandwidth;
+   if ( p == ThePCCBlueFilterWavelengthParameter )
+      return &p_blueFilterWavelength;
+   if ( p == ThePCCBlueFilterBandwidthParameter )
+      return &p_blueFilterBandwidth;
    if ( p == ThePCCWhiteReferenceIdParameter )
       return p_whiteReferenceId.Begin();
    if ( p == ThePCCWhiteReferenceNameParameter )
@@ -1175,8 +1377,6 @@ void* PhotometricColorCalibrationInstance::LockParameter( const MetaParameter* p
       return &p_photGenerateGraphs;
    if ( p == ThePCCNeutralizeBackgroundParameter )
       return &p_neutralizeBackground;
-   if ( p == ThePCCApplyCalibrationParameter )
-      return &p_applyCalibration;
    if ( p == ThePCCBackgroundReferenceViewIdParameter )
       return p_backgroundReferenceViewId.Begin();
    if ( p == ThePCCBackgroundLowParameter )
@@ -1268,4 +1468,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2019-04-30T16:31:09Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z

@@ -1,6 +1,6 @@
 /* -*- C++ -*-
  * File: libraw.h
- * Copyright 2008-2018 LibRaw LLC (info@libraw.org)
+ * Copyright 2008-2019 LibRaw LLC (info@libraw.org)
  * Created: Sat Mar  8, 2008
  *
  * LibRaw C++ interface
@@ -362,6 +362,7 @@ protected:
 
   /* DNG SDK data */
   void *dnghost;
+  void *dngnegative;
   int valid_for_dngsdk();
   int try_dngsdk();
   /* X3F data */

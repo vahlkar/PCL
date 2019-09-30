@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2019-04-30T16:31:09Z
+// DrizzleIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -57,7 +57,9 @@
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileFormat.h>
 #include <pcl/FileFormatInstance.h>
+#include <pcl/Homography.h>
 #include <pcl/ImageWindow.h>
+#include <pcl/IntegrationMetadata.h>
 #include <pcl/LocalNormalizationData.h>
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
@@ -72,77 +74,6 @@
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-/*
- * Homography class borrowed from ImageRegistration to fix compilation issue:
- * http://pixinsight.com/forum/index.php?topic=7936.0
- *
- * ### TODO: This is a temporary fix - Must implement this class (improved) as
- * a public PCL class.
- */
-class Homography
-{
-public:
-
-   typedef Array<FPoint>   point_list;
-
-   Homography() : H( Matrix::UnitMatrix( 3 ) )
-   {
-   }
-
-   Homography( const Matrix& aH ) : H( aH )
-   {
-   }
-
-   Homography( const Homography& h ) : H( h.H )
-   {
-   }
-
-//    Homography( const point_list& P1, const point_list& P2 ) : H( HomographyDLT( P1, P2 ).H )
-//    {
-//    }
-
-   template <typename T>
-   DPoint operator ()( T x, T y ) const
-   {
-      double w = H[2][0]*x + H[2][1]*y + H[2][2];
-      PCL_CHECK( 1 + w != 1 )
-      return DPoint( (H[0][0]*x + H[0][1]*y + H[0][2])/w,
-                     (H[1][0]*x + H[1][1]*y + H[1][2])/w );
-   }
-
-   template <typename T>
-   DPoint operator ()( const GenericPoint<T>& p ) const
-   {
-      return operator ()( p.x, p.y );
-   }
-
-   Homography Inverse() const
-   {
-      return Homography( H.Inverse() );
-   }
-
-   operator const Matrix&() const
-   {
-      return H;
-   }
-
-   bool IsValid() const
-   {
-      return !H.IsEmpty();
-   }
-
-   void EnsureUnique()
-   {
-      H.EnsureUnique();
-   }
-
-private:
-
-   Matrix H;
-};
 
 // ----------------------------------------------------------------------------
 
@@ -212,9 +143,7 @@ public:
       }
 
       const_iterator( const const_iterator& ) = default;
-#ifndef _MSC_VER
       const_iterator( const_iterator&& ) = default;
-#endif
 
       /*
        * Returns true iff this iterator is valid.
@@ -269,8 +198,8 @@ public:
 
    private:
 
-      const DrizzleKernelFunction& f;
-      DVector::const_iterator      x, y, z;
+      const DrizzleKernelFunction&  f;
+            DVector::const_iterator x, y, z;
    };
 
    /*
@@ -327,14 +256,14 @@ private:
 
    double m_2s2;
 
-   virtual void Reset( double dropSize )
+   void Reset( double dropSize ) override
    {
       double sigma = dropSize/2/Sqrt( -2*Ln( DRIZZLE_KERNEL_EPSILON ) );
       PCL_CHECK( sigma > 0 )
       m_2s2 = 2*sigma*sigma;
    }
 
-   virtual double Value( double dx, double dy ) const
+   double Value( double dx, double dy ) const override
    {
       return Exp( -(dx*dx + dy*dy)/m_2s2 );
    }
@@ -349,7 +278,7 @@ class VariableShapeDrizzleKernelFunction : public DrizzleKernelFunction
 {
 public:
 
-   VariableShapeDrizzleKernelFunction( double shape ) : DrizzleKernelFunction(), m_shape( shape ), m_rk( 1 )
+   VariableShapeDrizzleKernelFunction( double shape ) : m_shape( shape )
    {
       PCL_PRECONDITION( m_shape > 0 )
    }
@@ -357,16 +286,16 @@ public:
 private:
 
    double m_shape;
-   double m_rk;
+   double m_rk = 1;
 
-   virtual void Reset( double dropSize )
+   void Reset( double dropSize ) override
    {
       double sigma = dropSize/2/Pow( -m_shape*Ln( DRIZZLE_KERNEL_EPSILON ), 1/m_shape );
       PCL_CHECK( sigma > 0 )
       m_rk = m_shape * Pow( sigma, m_shape );
    }
 
-   virtual double Value( double dx, double dy ) const
+   double Value( double dx, double dy ) const override
    {
       return Exp( -Pow( Sqrt( (dx*dx + dy*dy) ), m_shape )/m_rk );
    }
@@ -427,26 +356,22 @@ private:
 
 DrizzleIntegrationInstance::DrizzleIntegrationInstance( const MetaProcess* m ) :
    ProcessImplementation( m ),
-   p_inputData(),
-   p_inputHints(),
-   p_inputDirectory(),
    p_scale( TheDZScaleParameter->DefaultValue() ),
    p_dropShrink( TheDZDropShrinkParameter->DefaultValue() ),
    p_kernelFunction( DZKernelFunction::Default ),
    p_kernelGridSize( TheDZKernelGridSizeParameter->DefaultValue() ),
-   p_origin( TheDZOriginXParameter->DefaultValue(), TheDZOriginYParameter->DefaultValue() ),
+   p_origin( TheDZOriginXParameter->DefaultValue(), TheDZOriginYParameter->DefaultValue() ), // ### DEPRECATED
    p_enableCFA( TheDZEnableCFAParameter->DefaultValue() ),
    p_cfaPattern( TheDZCFAPatternParameter->DefaultValue() ),
    p_enableRejection( TheDZEnableRejectionParameter->DefaultValue() ),
    p_enableImageWeighting( TheDZEnableImageWeightingParameter->DefaultValue() ),
    p_enableSurfaceSplines( TheDZEnableSurfaceSplinesParameter->DefaultValue() ),
+   p_enableLocalDistortion( TheDZEnableLocalDistortionParameter->DefaultValue() ),
    p_enableLocalNormalization( TheDZEnableLocalNormalizationParameter->DefaultValue() ),
    p_useROI( TheDZUseROIParameter->DefaultValue() ),
-   p_roi( 0 ),
    p_closePreviousImages( TheDZClosePreviousImagesParameter->DefaultValue() ),
-   p_noGUIMessages( TheDZNoGUIMessagesParameter->DefaultValue() ),
-   p_onError( DZOnError::Default ),
-   o_output()
+   p_noGUIMessages( TheDZNoGUIMessagesParameter->DefaultValue() ), // ### DEPRECATED
+   p_onError( DZOnError::Default )
 {
 }
 
@@ -478,6 +403,7 @@ void DrizzleIntegrationInstance::Assign( const ProcessImplementation& p )
       p_enableRejection          = x->p_enableRejection;
       p_enableImageWeighting     = x->p_enableImageWeighting;
       p_enableSurfaceSplines     = x->p_enableSurfaceSplines;
+      p_enableLocalDistortion    = x->p_enableLocalDistortion;
       p_enableLocalNormalization = x->p_enableLocalNormalization;
       p_useROI                   = x->p_useROI;
       p_roi                      = x->p_roi;
@@ -541,6 +467,9 @@ public:
 private:
 
    typedef DrizzleIntegrationInstance::input_data_list   input_data_list;
+   typedef Homography<DPoint>                            homography;
+   typedef PointGridInterpolation                        grid_interpolation;
+   typedef RecursivePointSurfaceSpline<DPoint>           local_distortion_model;
 
    DrizzleIntegrationInstance& m_instance;
    DrizzleData                 m_decoder;              // current drizzle data
@@ -548,7 +477,7 @@ private:
    bool                        m_hasLocalNormalization = false;
    int                         m_referenceWidth        = 0;
    int                         m_referenceHeight       = 0;
-   Point                       m_origin                = Point( 0 ); // output ROI origin
+   Point                       m_origin                = 0; // output ROI origin
    int                         m_width                 = 0; // output ROI dimensions in pixels
    int                         m_height                = 0;
    int                         m_numberOfChannels      = 0;
@@ -568,16 +497,17 @@ private:
       }
 
       const DrizzleIntegrationEngine& engine;
-      const Image&                    source;
-      const CFAIndex&                 cfaIndex;
-            Image&                    result;
-            Image&                    weight;
-            Homography                H, Hinv;
-            PointGridInterpolation    G, Ginv;
-            double                    dropDelta0;
-            double                    dropDelta1;
-            bool                      splines;
-            bool                      rejection;
+      const Image&                    source;     // the current source image
+      const CFAIndex&                 cfaIndex;   // CFA channel selection
+            Image&                    result;     // output drizzle integrated image
+            Image&                    weight;     // output drizzle weights map
+            DPoint                    origin;     // alignment origin
+            homography                H, Hinv;    // projective transformation
+            grid_interpolation        G, Ginv;    // discretized thin plate splines
+            double                    dropDelta0; // drop reduction, top-left
+            double                    dropDelta1; // drop reduction, bottom-right
+            bool                      splines;    // have alignment splines?
+            bool                      rejection;  // have pixel rejection?
    };
 
    class DrizzleThread : public Thread
@@ -591,7 +521,7 @@ private:
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -649,26 +579,37 @@ private:
                referenceRect.x0 = (x + m_data.engine.m_origin.x) * m_data.engine.m_pixelSize;
                referenceRect.x1 = referenceRect.x0 + m_data.engine.m_pixelSize;
 
+               Point q;
+               bool reject = false;
+               if ( m_data.rejection || m_data.engine.m_hasLocalNormalization )
+               {
+                  q = (referenceRect.TopLeft() + DRIZZLE_BOUNDS_TOLERANCE).TruncatedToInt();
+                  if ( m_data.rejection )
+                     if ( reject = m_data.engine.Reject( q, 0/*channel*/ ) )
+                        if ( m_data.engine.m_numberOfChannels == 1 )
+                           continue;
+               }
+
                DPoint sourceP0, sourceP1, sourceP2, sourceP3;
                if ( m_data.splines )
                {
-                  sourceP0 = m_data.G( referenceRect.x0, referenceRect.y1 );
-                  sourceP1 = m_data.G( referenceRect.x0, referenceRect.y0 );
-                  sourceP2 = m_data.G( referenceRect.x1, referenceRect.y0 );
-                  sourceP3 = m_data.G( referenceRect.x1, referenceRect.y1 );
+                  sourceP0 = m_data.G( referenceRect.x0 - m_data.origin.x, referenceRect.y1 - m_data.origin.y );
+                  sourceP1 = m_data.G( referenceRect.x0 - m_data.origin.x, referenceRect.y0 - m_data.origin.y );
+                  sourceP2 = m_data.G( referenceRect.x1 - m_data.origin.x, referenceRect.y0 - m_data.origin.y );
+                  sourceP3 = m_data.G( referenceRect.x1 - m_data.origin.x, referenceRect.y1 - m_data.origin.y );
                }
                else
                {
-                  sourceP0 = m_data.H( referenceRect.x0, referenceRect.y1 );
-                  sourceP1 = m_data.H( referenceRect.x0, referenceRect.y0 );
-                  sourceP2 = m_data.H( referenceRect.x1, referenceRect.y0 );
-                  sourceP3 = m_data.H( referenceRect.x1, referenceRect.y1 );
+                  sourceP0 = m_data.H( referenceRect.x0 - m_data.origin.x, referenceRect.y1 - m_data.origin.y );
+                  sourceP1 = m_data.H( referenceRect.x0 - m_data.origin.x, referenceRect.y0 - m_data.origin.y );
+                  sourceP2 = m_data.H( referenceRect.x1 - m_data.origin.x, referenceRect.y0 - m_data.origin.y );
+                  sourceP3 = m_data.H( referenceRect.x1 - m_data.origin.x, referenceRect.y1 - m_data.origin.y );
                }
 
-               sourceP0 += m_data.engine.m_instance.p_origin;
-               sourceP1 += m_data.engine.m_instance.p_origin;
-               sourceP2 += m_data.engine.m_instance.p_origin;
-               sourceP3 += m_data.engine.m_instance.p_origin;
+               sourceP0 += m_data.origin;
+               sourceP1 += m_data.origin;
+               sourceP2 += m_data.origin;
+               sourceP3 += m_data.origin;
 
                DRect sourceBounds( Min( Min( Min( sourceP0.x, sourceP1.x ), sourceP2.x ), sourceP3.x ) - DRIZZLE_BOUNDS_TOLERANCE,
                                    Min( Min( Min( sourceP0.y, sourceP1.y ), sourceP2.y ), sourceP3.y ) - DRIZZLE_BOUNDS_TOLERANCE,
@@ -704,25 +645,29 @@ private:
                             GetAreaOfIntersectionOfQuadAndCircle( area, dropRect.Center(), dropRect.Width()/2, sourceP0, sourceP1, sourceP2, sourceP3 )
                           : GetAreaOfIntersectionOfQuadAndRect( area, dropRect, sourceP0, sourceP1, sourceP2, sourceP3, m_kernel ) )
                      {
-                        Point q;
-                        if ( m_data.rejection || m_data.engine.m_hasLocalNormalization )
-                           q = (m_data.splines ? m_data.Ginv( p ) : m_data.Hinv( p )).RoundedToInt();
+//                      Point q;
+//                      if ( m_data.rejection || m_data.engine.m_hasLocalNormalization )
+//                      {
+//                         DPoint r( p.x - m_data.origin.x, p.y - m_data.origin.y );
+//                         q = ((m_data.splines ? m_data.Ginv( r ) : m_data.Hinv( r )) + m_data.origin).TruncatedToInt();
+//                      }
 
-                        for ( int c = 0; c < m_data.engine.m_numberOfChannels; ++c )
+                        for ( int c = (reject ? 1 : 0); c < m_data.engine.m_numberOfChannels; ++c )
                         {
                            if ( m_data.cfaIndex )
                               if ( !m_data.cfaIndex( p, c ) )
                                  continue;
 
-                           if ( !m_data.rejection || !m_data.engine.Reject( q, c ) )
+                           if ( m_data.rejection )
+                              if ( m_data.engine.Reject( q, c ) )
+                                 continue;
+
+                           double value = m_data.source( p, m_data.cfaIndex ? 0 : c );
+                           if ( Abs( value ) > std::numeric_limits<double>::epsilon() )
                            {
-                              double value = m_data.source( p, m_data.cfaIndex ? 0 : c );
-                              if ( 1 + value != 1 )
-                              {
-                                 double weightedArea = area * m_data.engine.Weight( c );
-                                 r[c] += weightedArea * m_data.engine.Normalize( value, q, c );
-                                 w[c] += weightedArea;
-                              }
+                              double weightedArea = area * m_data.engine.Weight( c );
+                              r[c] += weightedArea * m_data.engine.Normalize( value, q, c );
+                              w[c] += weightedArea;
                            }
                         }
 
@@ -825,7 +770,7 @@ private:
    };
 
    /*
-    * Returns true iff a nonempty intersection exists between the specified
+    * Returns true iff a nonempty intersection can exist between the specified
     * rectangles r and s.
     */
    static bool CanRectsIntersect( const DRect& r, const DRect& s )
@@ -835,7 +780,7 @@ private:
 
    /*
     * Returns true iff the specified line segment with end points p0 and p1
-    * intersects the rectangle r.
+    * can intersect the rectangle r.
     */
    static bool CanSegmentAndRectIntersect( const DPoint& p0, const DPoint& p1, const DRect& r )
    {
@@ -866,8 +811,8 @@ private:
    }
 
    /*
-    * Returns true iff a point p is in the convex polygon defined by the set of
-    * points P.
+    * Returns true iff the specified point p is interior to the convex polygon
+    * defined by the set of points P.
     *
     * Adapted from the Wolfram Demonstrations Project:
     * "An Efficient Test for a Point to Be in a Convex Polygon"
@@ -880,7 +825,7 @@ private:
    }
 
    /*
-    * Returns true iff a point p is in the convex quad {p0,p1,p2,p3}.
+    * Returns true iff a point p is interior to the convex quad {p0,p1,p2,p3}.
     *
     * Adapted from the Wolfram Demonstrations Project:
     * "An Efficient Test for a Point to Be in a Convex Polygon"
@@ -1227,6 +1172,14 @@ private:
    }
 
    /*
+    * Returns serialized metadata items for the current source image.
+    */
+   const String& Metadata() const
+   {
+      return m_decoder.Metadata();
+   }
+
+   /*
     * Returns the location estimate for the specified channel of the current
     * source image.
     */
@@ -1345,9 +1298,7 @@ void DrizzleIntegrationEngine::Perform()
    {
       Rect roi( 0 );
       double totalOutputData = 0;
-      bool havePedestal = false;
-      bool ignoringPedestal = false;
-      float pedestal = 0;
+      Array<IntegrationMetadata> inputMetadata;
 
       Console console;
 
@@ -1355,7 +1306,7 @@ void DrizzleIntegrationEngine::Perform()
       int succeeded = 0;
       int skipped = 0;
       int failed = 0;
-      for ( auto item : m_instance.p_inputData )
+      for ( const auto& item : m_instance.p_inputData )
       {
          try
          {
@@ -1486,7 +1437,7 @@ void DrizzleIntegrationEngine::Perform()
                else if ( !m_decoder.CFASourcePattern().IsEmpty() )
                   if ( m_decoder.CFASourcePattern() != cfaPattern )
                      console.WarningLn( "<end><cbr>** Warning: CFA pattern mismatch: "
-                           "The drizzle file says '" + m_decoder.CFASourcePattern() + "', "
+                           "The drizzle file says '" + m_decoder.CFASourcePattern() + "'; "
                            "we are forcing '" + cfaPattern + "\' as per instance parameters." );
 
                cfaIndex = CFAIndex( cfaPattern );
@@ -1520,7 +1471,6 @@ void DrizzleIntegrationEngine::Perform()
                   throw Error( filePath + ": No such file." );
 
                FileFormat format( File::ExtractExtension( filePath ), true/*read*/, false/*write*/ );
-
                FileFormatInstance file( format );
 
                ImageDescriptionArray images;
@@ -1537,58 +1487,25 @@ void DrizzleIntegrationEngine::Perform()
                if ( !images[0].info.supported || images[0].info.NumberOfSamples() == 0 )
                   throw Error( file.FilePath() + ": Invalid or unsupported image." );
 
-               if ( !ignoringPedestal )
-               {
-                  double thisPedestal = 0;
-                  bool hasPedestal = GetKeywordValue( thisPedestal, file, "PEDESTAL" );
-                  if ( hasPedestal )
-                  {
-                     if ( thisPedestal < 0 )
-                     {
-                        console.WarningLn( String().Format( "** Warning: Invalid negative PEDESTAL keyword value: %.4g", thisPedestal ) );
-                        ignoringPedestal = true;
-                     }
-                     else if ( havePedestal )
-                     {
-                        if ( thisPedestal != pedestal )
-                        {
-                           console.WarningLn( String().Format( "** Warning: Inconsistent PEDESTAL keyword value: %.4g", thisPedestal ) );
-                           ignoringPedestal = true;
-                        }
-                     }
-                     else
-                     {
-                        havePedestal = true;
-                        pedestal = thisPedestal;
-                     }
-                  }
-                  else
-                  {
-                     if ( havePedestal )
-                        if ( pedestal != 0 )
-                        {
-                           console.WarningLn( "** Warning: Missing PEDESTAL keyword" );
-                           ignoringPedestal = true;
-                        }
-                  }
-                  if ( ignoringPedestal )
-                     console.WarningLn( "** Warning: Ignoring all existing PEDESTAL keyword values because of inconsistent/invalid values." );
-               }
-
-               sourceImage = Image( (void*)0, 0, 0 ); // shared image
+               sourceImage = Image( (void*)nullptr, 0, 0 ); // shared image
                if ( !file.ReadImage( sourceImage ) )
                   throw CaughtException();
+
+               if ( m_decoder.Pedestal() > 0 )
+                  sourceImage -= m_decoder.Pedestal();
             }
+
+            inputMetadata << IntegrationMetadata( m_decoder.Metadata() );
 
             console.Write( "<end><cbr>Scale factors : " );
             for ( int c = 0; c < m_numberOfChannels; ++c )
                console.Write( String().Format( " %8.5f", m_decoder.Scale()[c] ) );
-            console.Write(       "<br>Zero offset   : " );
+            console.Write(       "<br>Zero offsets  : " );
             for ( int c = 0; c < m_numberOfChannels; ++c )
                console.Write( String().Format( " %+.6e", m_decoder.ReferenceLocation()[c] - m_decoder.Location()[c] ) );
             if ( m_instance.p_enableImageWeighting )
             {
-               console.Write(    "<br>Weight        : " );
+               console.Write(    "<br>Weights       : " );
                for ( int c = 0; c < m_numberOfChannels; ++c )
                   console.Write( String().Format( " %10.5f", m_decoder.Weight()[c] ) );
                console.WriteLn();
@@ -1606,23 +1523,54 @@ void DrizzleIntegrationEngine::Perform()
                                    static_cast<Image&>( *resultImage ),
                                    static_cast<Image&>( *weightImage ),
                                    monitor, m_height );
-            threadData.H = Homography( m_decoder.AlignmentMatrix() );
+            threadData.origin = m_decoder.AlignmentOrigin();
+            threadData.H = homography( m_decoder.AlignmentMatrix() );
             if ( m_instance.p_enableSurfaceSplines )
                if ( m_decoder.HasAlignmentSplines() )
-               {
-                  console.WriteLn( "<end><cbr>Building 2D surface interpolation grids...<flush>" );
-                  threadData.G.Initialize( Rect( m_referenceWidth, m_referenceHeight ), 8, m_decoder.AlignmentSplines(), false/*verbose*/ );
-               }
+                  threadData.G.Initialize( Rect( m_referenceWidth, m_referenceHeight ),
+                                           8/*gridDelta*/, m_decoder.AlignmentSplines() );
             threadData.dropDelta0 = (1 - m_instance.p_dropShrink)/2;
             threadData.dropDelta1 = 1 - threadData.dropDelta0;
             threadData.splines = threadData.G.IsValid();
             threadData.rejection = m_instance.p_enableRejection && m_decoder.HasRejectionData();
-            if ( threadData.rejection || m_hasLocalNormalization )
-            {
-               threadData.Hinv = threadData.H.Inverse();
-               if ( threadData.splines )
-                  threadData.Ginv.Initialize( threadData.G.ReferenceRect(), threadData.G.Delta(), m_decoder.AlignmentSplines().Inverse(), false/*verbose*/ );
-            }
+//             if ( threadData.rejection || m_hasLocalNormalization )
+//             {
+//                threadData.Hinv = threadData.H.Inverse();
+//                if ( threadData.splines )
+//                   if ( m_decoder.HasAlignmentInverseSplines() )
+//                      threadData.Ginv.Initialize( Rect( m_referenceWidth, m_referenceHeight ),
+//                                                  8/*gridDelta*/, m_decoder.AlignmentInverseSplines() );
+//                   else
+//                   {
+//                      if ( threadData.rejection )
+//                         console.WarningLn( "<end><cbr>** Warning: The drizzle data file does not provide inverse alignment splines. "
+//                                            "They will be approximated numerically, which may lead to pixel rejection errors." );
+//                      threadData.Ginv.Initialize( Rect( m_referenceWidth, m_referenceHeight ),
+//                                                  8/*gridDelta*/, m_decoder.AlignmentSplines().Inverse() );
+//                   }
+//             }
+            if ( threadData.splines )
+               if ( m_instance.p_enableLocalDistortion )
+                  if ( m_decoder.HasLocalDistortionModel() )
+                  {
+                     DrizzleData::distortion_vector LP1, LD2, LP2, LD1;
+                     DrizzleData::weight_vector LW;
+                     int order;
+                     float regularization;
+                     bool extrapolation;
+                     m_decoder.GetLocalDistortionModel( LP1, LD2, LP2, LD1, LW, order, regularization, extrapolation );
+                     local_distortion_model L12( LP1, LD2, regularization, order, LW, extrapolation );
+                     if ( L12.IsValid() )
+                     {
+                        threadData.G.ApplyLocalModel( L12, "Applying local distortion model" );
+//                         if ( threadData.Ginv.IsValid() )
+//                         {
+//                            local_distortion_model L21( LP2, LD1, regularization, order, FVector()/*weights*/, extrapolation );
+//                            if ( L21.IsValid() )
+//                               threadData.Ginv.ApplyLocalModel( L21, "Applying inverse local distortion model" );
+//                         }
+                     }
+                  }
             threadData.status.Initialize( "Integrating pixels", m_height );
 
             int numberOfThreads = Thread::NumberOfThreads( m_height, Max( 1, 4096/m_width ) );
@@ -1756,8 +1704,19 @@ void DrizzleIntegrationEngine::Perform()
       m_instance.o_output.integratedPixels = size_type( succeeded )*size_type( m_referenceWidth )*size_type( m_referenceHeight );
       m_instance.o_output.outputData = totalOutputData;
 
-      FITSKeywordArray keywords;
-      resultWindow.GetKeywords( keywords );
+      PropertyArray properties;
+      FITSKeywordArray keywords = resultWindow.Keywords();
+
+      IntegrationMetadata metadata = IntegrationMetadata::Summary( inputMetadata );
+      if ( metadata.IsValid() )
+      {
+         if ( metadata.xPixSize.IsConsistentlyDefined() )
+            metadata.xPixSize.ForceValue( metadata.xPixSize() / m_instance.p_scale );
+         if ( metadata.yPixSize.IsConsistentlyDefined() )
+            metadata.yPixSize.ForceValue( metadata.yPixSize() / m_instance.p_scale );
+      }
+
+      metadata.UpdatePropertiesAndKeywords( properties, keywords );
 
       keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Integration with " + PixInsightVersion::AsString() )
                << FITSHeaderKeyword( "HISTORY", IsoString(), "Integration with " + Module->ReadableVersion() )
@@ -1769,10 +1728,10 @@ void DrizzleIntegrationEngine::Perform()
                                      "DrizzleIntegration.kernelFunction: " + TheDZKernelFunctionParameter->ElementId( m_instance.p_kernelFunction ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      IsoString().Format( "DrizzleIntegration.kernelGridSize: %d", m_instance.p_kernelGridSize ) )
-               << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                     IsoString().Format( "DrizzleIntegration.originX: %.2f", m_instance.p_origin.x ) )
-               << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                     IsoString().Format( "DrizzleIntegration.originY: %.2f", m_instance.p_origin.y ) )
+//                << FITSHeaderKeyword( "HISTORY", IsoString(),
+//                                      IsoString().Format( "DrizzleIntegration.originX: %.2f", m_instance.p_origin.x ) )
+//                << FITSHeaderKeyword( "HISTORY", IsoString(),
+//                                      IsoString().Format( "DrizzleIntegration.originY: %.2f", m_instance.p_origin.y ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      "DrizzleIntegration.enableCFA: " + IsoString( bool( m_instance.p_enableCFA ) ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
@@ -1783,6 +1742,8 @@ void DrizzleIntegrationEngine::Perform()
                                      "DrizzleIntegration.enableImageWeighting: " + IsoString( bool( m_instance.p_enableImageWeighting ) ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      "DrizzleIntegration.enableSurfaceSplines: " + IsoString( bool( m_instance.p_enableSurfaceSplines ) ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                     "DrizzleIntegration.enableLocalDistortion: " + IsoString( bool( m_instance.p_enableLocalDistortion ) ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      "DrizzleIntegration.enableLocalNormalization: " + IsoString( bool( m_instance.p_enableLocalNormalization ) ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
@@ -1806,25 +1767,20 @@ void DrizzleIntegrationEngine::Perform()
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      IsoString().Format( "DrizzleIntegration.outputData: %.3f", totalOutputData ) );
 
-      if ( !ignoringPedestal )
-         if ( havePedestal )
-            if ( pedestal > 0 )
+      if ( metadata.IsValid() )
+         if ( metadata.pedestal.IsConsistentlyDefined() )
+            if ( metadata.pedestal() > 0 )
             {
                keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                    IsoString().Format( "DrizzleIntegration.outputPedestal: %.4g DN", pedestal ) )
-                        << FITSHeaderKeyword( "PEDESTAL",
-                                    IsoString().Format( "%.4g", pedestal ), "Value in DN added to enforce positivity" );
-
-               console.NoteLn( String().Format( "* PEDESTAL keyword created with value: %.4g DN", pedestal ) );
+                                       IsoString().Format( "DrizzleIntegration.outputPedestal: %.4f DN", metadata.pedestal() ) );
+               console.NoteLn( String().Format( "<end><cbr>* PEDESTAL keyword created with value = %.4f DN", metadata.pedestal() ) );
             }
 
       resultWindow.SetKeywords( keywords );
+      resultWindow.MainView().SetStorableProperties( properties, false/*notify*/ );
 
       resultWindow.Show();
-      resultWindow.ZoomToFit( false/*allowZoomIn*/ );
-
       weightWindow.Show();
-      weightWindow.ZoomToFit( false/*allowZoomIn*/ );
 
       console.NoteLn( String().Format( "<end><cbr><br>===== DrizzleIntegration: %u succeeded, %u failed, %u skipped =====",
                                        succeeded, failed, skipped ) );
@@ -1844,8 +1800,6 @@ void DrizzleIntegrationEngine::Perform()
 
 bool DrizzleIntegrationInstance::ExecuteGlobal()
 {
-   Exception::DisableGUIOutput( p_noGUIMessages );
-
    o_output = OutputData();
 
    Console().EnableAbort();
@@ -1885,9 +1839,9 @@ void* DrizzleIntegrationInstance::LockParameter( const MetaParameter* p, size_ty
    if ( p == TheDZKernelGridSizeParameter )
       return &p_kernelGridSize;
    if ( p == TheDZOriginXParameter )
-      return &p_origin.x;
+      return &p_origin.x; // ### DEPRECATED
    if ( p == TheDZOriginYParameter )
-      return &p_origin.y;
+      return &p_origin.y; // ### DEPRECATED
    if ( p == TheDZEnableCFAParameter )
       return &p_enableCFA;
    if ( p == TheDZCFAPatternParameter )
@@ -1898,6 +1852,8 @@ void* DrizzleIntegrationInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_enableImageWeighting;
    if ( p == TheDZEnableSurfaceSplinesParameter )
       return &p_enableSurfaceSplines;
+   if ( p == TheDZEnableLocalDistortionParameter )
+      return &p_enableLocalDistortion;
    if ( p == TheDZEnableLocalNormalizationParameter )
       return &p_enableLocalNormalization;
    if ( p == TheDZUseROIParameter )
@@ -1913,7 +1869,7 @@ void* DrizzleIntegrationInstance::LockParameter( const MetaParameter* p, size_ty
    if ( p == TheDZClosePreviousImagesParameter )
       return &p_closePreviousImages;
    if ( p == TheDZNoGUIMessagesParameter )
-      return &p_noGUIMessages;
+      return &p_noGUIMessages; // ### DEPRECATED
    if ( p == TheDZOnErrorParameter )
       return &p_onError;
 
@@ -2090,4 +2046,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2019-04-30T16:31:09Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CloneStamp Process Module Version 01.00.02.0367
+// Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampModule.cpp - Released 2019-04-30T16:31:09Z
+// CloneStampModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -50,28 +50,30 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  02
-#define MODULE_VERSION_BUILD     0367
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     4
-#define MODULE_RELEASE_DAY       30
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
+#include "CloneStampInterface.h"
 #include "CloneStampModule.h"
 #include "CloneStampProcess.h"
-#include "CloneStampInterface.h"
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-CloneStampModule::CloneStampModule() : MetaModule()
+CloneStampModule::CloneStampModule()
 {
 }
+
+// ----------------------------------------------------------------------------
 
 const char* CloneStampModule::Version() const
 {
@@ -82,35 +84,49 @@ const char* CloneStampModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString CloneStampModule::Name() const
 {
    return "CloneStamp";
 }
+
+// ----------------------------------------------------------------------------
 
 String CloneStampModule::Description() const
 {
    return "PixInsight Standard CloneStamp Process Module";
 }
 
+// ----------------------------------------------------------------------------
+
 String CloneStampModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String CloneStampModule::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// ----------------------------------------------------------------------------
+
 String CloneStampModule::Copyright() const
 {
-   return "Copyright (c) 2007-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2007-2019 Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String CloneStampModule::TradeMarks() const
 {
    return "PixInsight";
 }
+
+// ----------------------------------------------------------------------------
 
 String CloneStampModule::OriginalFileName() const
 {
@@ -127,6 +143,8 @@ String CloneStampModule::OriginalFileName() const
    return "CloneStamp-pxm.dll";
 #endif
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -153,4 +171,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampModule.cpp - Released 2019-04-30T16:31:09Z
+// EOF CloneStampModule.cpp - Released 2019-09-29T12:27:57Z

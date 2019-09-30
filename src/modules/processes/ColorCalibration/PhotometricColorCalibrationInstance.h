@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.04.0344
+// Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.h - Released 2019-04-30T16:31:09Z
+// PhotometricColorCalibrationInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -68,18 +68,34 @@ public:
    PhotometricColorCalibrationInstance( const MetaProcess* );
    PhotometricColorCalibrationInstance( const PhotometricColorCalibrationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
    /*
-    * White reference
+    * Working modes.
+    */
+   pcl_enum p_workingMode; // RGB / narrowband
+   pcl_bool p_applyCalibration;
+
+   /*
+    * Filter parameters (narrowband mode).
+    */
+   float    p_redFilterWavelength;
+   float    p_redFilterBandwidth;
+   float    p_greenFilterWavelength;
+   float    p_greenFilterBandwidth;
+   float    p_blueFilterWavelength;
+   float    p_blueFilterBandwidth;
+
+   /*
+    * White reference parameters (broadband mode).
     */
    String   p_whiteReferenceId;
    String   p_whiteReferenceName; // informative
@@ -89,7 +105,7 @@ private:
    float    p_zeroPointJB_JV;
 
    /*
-    * Plate solving
+    * Plate solving parameters.
     */
    float    p_focalLength; // mm
    float    p_pixelSize;   // um
@@ -112,7 +128,7 @@ private:
    pcl_enum p_solverProjection;
 
    /*
-    * Photometry
+    * Photometry parameters.
     */
    String   p_photCatalogName;
    int32    p_photLimitMagnitude;
@@ -127,12 +143,7 @@ private:
    pcl_bool p_photGenerateGraphs;
 
    /*
-    * Working modes
-    */
-   pcl_bool p_applyCalibration;
-
-   /*
-    * Background neutralization
+    * Background neutralization parameters.
     */
    pcl_bool p_neutralizeBackground;
    String   p_backgroundReferenceViewId; // if empty, use $T
@@ -152,4 +163,4 @@ private:
 #endif   // __PhotometricColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.h - Released 2019-04-30T16:31:09Z
+// EOF PhotometricColorCalibrationInstance.h - Released 2019-09-29T12:27:57Z

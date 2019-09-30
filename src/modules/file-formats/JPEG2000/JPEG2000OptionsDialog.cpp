@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG2000 File Format Module Version 01.00.02.0357
+// Standard JPEG2000 File Format Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// JPEG2000OptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// JPEG2000OptionsDialog.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -57,9 +57,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-JPEG2000OptionsDialog::JPEG2000OptionsDialog( const ImageOptions& o, const JPEG2000ImageOptions& t, bool isJPC ) :
-   Dialog(),
-   options(), jp2Options()
+JPEG2000OptionsDialog::JPEG2000OptionsDialog( const ImageOptions& o, const JPEG2000ImageOptions& t, bool isJPC )
 {
    int labelWidth1 = Font().Width( String( "Decompression Layers:" ) + 'M' );
 
@@ -206,6 +204,8 @@ JPEG2000OptionsDialog::JPEG2000OptionsDialog( const ImageOptions& o, const JPEG2
    Global_Sizer.Add( BottomSection_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
    AdjustToContents();
    SetFixedSize();
 
@@ -282,4 +282,4 @@ void JPEG2000OptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000OptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// EOF JPEG2000OptionsDialog.cpp - Released 2019-09-29T12:27:43Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// LRGBCombinationProcess.cpp - Released 2019-04-30T16:31:09Z
+// LRGBCombinationProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -60,7 +60,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LRGBCombinationProcess* TheLRGBCombinationProcess = 0;
+LRGBCombinationProcess* TheLRGBCombinationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ LRGBCombinationProcess* TheLRGBCombinationProcess = 0;
 
 // ----------------------------------------------------------------------------
 
-LRGBCombinationProcess::LRGBCombinationProcess() : MetaProcess()
+LRGBCombinationProcess::LRGBCombinationProcess()
 {
    TheLRGBCombinationProcess = this;
 
@@ -94,16 +94,9 @@ IsoString LRGBCombinationProcess::Id() const
 
 // ----------------------------------------------------------------------------
 
-IsoString LRGBCombinationProcess::Category() const
+IsoString LRGBCombinationProcess::Categories() const
 {
    return "ColorSpaces";
-}
-
-// ----------------------------------------------------------------------------
-
-uint32 LRGBCombinationProcess::Version() const
-{
-   return 0x100;
 }
 
 // ----------------------------------------------------------------------------
@@ -139,7 +132,7 @@ ProcessImplementation* LRGBCombinationProcess::Create() const
 ProcessImplementation* LRGBCombinationProcess::Clone( const ProcessImplementation& p ) const
 {
    const LRGBCombinationInstance* instPtr = dynamic_cast<const LRGBCombinationInstance*>( &p );
-   return (instPtr != 0) ? new LRGBCombinationInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new LRGBCombinationInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -154,4 +147,4 @@ bool LRGBCombinationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF LRGBCombinationProcess.cpp - Released 2019-09-29T12:27:57Z

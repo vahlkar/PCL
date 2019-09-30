@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard GradientDomain Process Module Version 00.06.04.0246
+// Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrInterface.cpp - Released 2019-04-30T16:31:10Z
+// GradientsHdrInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -360,6 +360,8 @@ GradientsHdrInterface::GUIData::GUIData( GradientsHdrInterface& w )
    global_Sizer.Add( rescale01_Sizer );
 
    w.SetSizer( global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 
@@ -374,4 +376,4 @@ GradientsHdrInterface::GUIData::GUIData( GradientsHdrInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrInterface.cpp - Released 2019-04-30T16:31:10Z
+// EOF GradientsHdrInterface.cpp - Released 2019-09-29T12:27:58Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/WCSKeywords.cpp - Released 2019-04-30T16:30:49Z
+// pcl/WCSKeywords.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -62,13 +62,262 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-void WCSKeywords::Read( const FITSKeywordArray& keywords )
+void WCSKeywords::Read( const PropertyArray& properties, const FITSKeywordArray& keywords )
 {
-   for ( const FITSHeaderKeyword& key : keywords )
+   Optional<double> expTime; // only if Observation:Time:End is not available
+
+   /*
+    * XISF properties take precedence over FITS keywords.
+    *
+    * ### TODO: When defined by the XISF standard, include all properties in
+    *           the WCS namespace.
+    */
+   for ( const Property& property : properties )
    {
-      IsoString svalue = key.StripValueDelimiters();
+      if ( property.Id() == "Observation:Center:RA" )
+         objctra = property.Value().ToDouble();
+      else if ( property.Id() == "Observation:Center:Dec" )
+         objctdec = property.Value().ToDouble();
+      else if ( property.Id() == "Observation:Equinox" )
+         equinox = property.Value().ToDouble();
+      else if ( property.Id() == "Observation:Time:Start" )
+         dateobs = property.Value().ToTimePoint().JD();
+      else if ( property.Id() == "Observation:Time:End" )
+         dateend = property.Value().ToTimePoint().JD();
+      else if ( property.Id() == "Observation:Location:Longitude" )
+         longobs = property.Value().ToDouble();
+      else if ( property.Id() == "Observation:Location:Latitude" )
+         latobs = property.Value().ToDouble();
+      else if ( property.Id() == "Observation:Location:Elevation" )
+         altobs = property.Value().ToDouble();
+      else if ( property.Id() == "Instrument:Telescope:FocalLength" )
+         focallen = property.Value().ToDouble() * 1000;
+      else if ( property.Id() == "Instrument:Sensor:XPixelSize" )
+         xpixsz = property.Value().ToDouble();
+      else if ( property.Id() == "Instrument:ExposureTime" )
+         expTime = property.Value().ToDouble();
+   }
+
+   /*
+    * Standard WCS FITS keywords.
+    */
+   for ( const FITSHeaderKeyword& keyword : keywords )
+   {
+      IsoString svalue = keyword.StripValueDelimiters();
       double nvalue;
-      if ( key.name == "OBJCTRA" || key.name == "RA" )
+      if ( keyword.name == "CTYPE1" )
+      {
+         ctype1 = svalue;
+      }
+      else if ( keyword.name == "CTYPE2" )
+      {
+         ctype2 = svalue;
+      }
+      else if ( keyword.name == "CRVAL1" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            crval1 = nvalue;
+      }
+      else if ( keyword.name == "CRVAL2" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            crval2 = nvalue;
+      }
+      else if ( keyword.name == "CRPIX1" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            crpix1 = nvalue;
+      }
+      else if ( keyword.name == "CRPIX2" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            crpix2 = nvalue;
+      }
+      else if ( keyword.name == "CD1_1" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            cd1_1 = nvalue;
+      }
+      else if ( keyword.name == "CD1_2" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            cd1_2 = nvalue;
+      }
+      else if ( keyword.name == "CD2_1" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            cd2_1 = nvalue;
+      }
+      else if ( keyword.name == "CD2_2" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            cd2_2 = nvalue;
+      }
+      else if ( keyword.name == "CDELT1" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            cdelt1 = nvalue;
+      }
+      else if ( keyword.name == "CDELT2" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            cdelt2 = nvalue;
+      }
+      else if ( keyword.name == "CROTA1" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            crota1 = nvalue;
+      }
+      else if ( keyword.name == "CROTA2" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            crota2 = nvalue;
+      }
+      else if ( keyword.name == "PV1_1" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            pv1_1 = nvalue;
+      }
+      else if ( keyword.name == "PV1_2" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            pv1_2 = nvalue;
+      }
+      else if ( keyword.name == "PV1_3" || keyword.name == "LONPOLE" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            lonpole = nvalue;
+      }
+      else if ( keyword.name == "PV1_4" || keyword.name == "LATPOLE" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            latpole = nvalue;
+      }
+      else if ( keyword.name == "REFSPLIN" || keyword.name == "REFSPLINE" )
+      {
+         // N.B. Be compatible with 9-char keyword "REFSPLINE" written by old
+         // versions of the ImageSolver script.
+         refSpline = svalue;
+      }
+   }
+
+   /*
+    * Primary optional FITS keywords.
+    */
+   for ( const FITSHeaderKeyword& keyword : keywords )
+   {
+      IsoString svalue = keyword.StripValueDelimiters();
+      double nvalue;
+      if ( !objctra.IsDefined() && keyword.name == "RA" )
+      {
+         if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
+            if ( nvalue >= 0 )
+            {
+               /*
+                * The RA keyword value can be either a complex angular
+                * representation in hours (hh mm ss.sss) or a scalar in degrees
+                * ([+|-]ddd.dddddd).
+                */
+               if ( svalue.Contains( ' ' ) || svalue.Contains( ':' ) )
+                  nvalue *= 15;
+               if ( nvalue <= 360 )
+               {
+                  if ( nvalue == 360 )
+                     nvalue = 0;
+                  objctra = nvalue;
+               }
+            }
+      }
+      else if ( !objctdec.IsDefined() && keyword.name == "DEC" )
+      {
+         /*
+          * The DEC keyword value can be either a complex angular
+          * representation in degrees ([+|-]dd mm ss.sss) or a scalar
+          * ([+|-]ddd.dddddd), also in degrees.
+          */
+         if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
+            if ( nvalue >= -90 )
+               if ( nvalue <= +90 )
+                  objctdec = nvalue;
+      }
+      else if ( !equinox.IsDefined() && keyword.name == "EQUINOX" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            equinox = nvalue;
+      }
+      else if ( !dateobs.IsDefined() && keyword.name == "DATE-BEG" )
+      {
+         TimePoint t;
+         if ( TimePoint::TryFromString( t, svalue ) )
+            dateobs = t.JD();
+      }
+      else if ( !dateend.IsDefined() && keyword.name == "DATE-END" )
+      {
+         TimePoint t;
+         if ( TimePoint::TryFromString( t, svalue ) )
+            dateend = t.JD();
+      }
+      else if ( !longobs.IsDefined() && keyword.name == "OBSGEO-L" )
+      {
+         /*
+          * The OBSGEO-L keyword value can be either a complex angular
+          * representation in degrees ([+|-]ddd mm ss.sss) or a scalar in
+          * degrees ([+|-]ddd.dddddd), positive East.
+          */
+         if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
+         {
+            if ( nvalue > 180 )
+               nvalue -= 360;
+            else if ( nvalue <= -180 )
+               nvalue += 360;
+            if ( nvalue >= -180 )
+               if ( nvalue <= 180 )
+                  longobs = nvalue;
+         }
+      }
+      else if ( !latobs.IsDefined() && keyword.name == "OBSGEO-B" )
+      {
+         /*
+          * The OBSGEO-B keyword value can be either a complex angular
+          * representation in degrees ([+|-]dd mm ss.sss) or a scalar in
+          * degrees ([+|-]dd.dddddd), positive North.
+          */
+         if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
+            if ( nvalue >= -90 )
+               if ( nvalue <= +90 )
+                  latobs = nvalue;
+      }
+      else if ( !altobs.IsDefined() && keyword.name == "OBSGEO-H" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            altobs = nvalue;
+      }
+      else if ( !focallen.IsDefined() && keyword.name == "FOCALLEN" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            focallen = nvalue;
+      }
+      else if ( !xpixsz.IsDefined() && keyword.name == "XPIXSZ" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            xpixsz = nvalue;
+      }
+      else if ( !expTime.IsDefined() && keyword.name == "EXPTIME" )
+      {
+         if ( svalue.TryToDouble( nvalue ) )
+            expTime = nvalue;
+      }
+   }
+
+   /*
+    * Secondary optional FITS keywords, supported for compatibility with some
+    * applications.
+    */
+   for ( const FITSHeaderKeyword& keyword : keywords )
+   {
+      IsoString svalue = keyword.StripValueDelimiters();
+      double nvalue;
+      if ( !objctra.IsDefined() && keyword.name == "OBJCTRA" )
       {
          if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
             if ( nvalue >= 0 )
@@ -82,20 +331,20 @@ void WCSKeywords::Read( const FITSKeywordArray& keywords )
                }
             }
       }
-      else if ( key.name == "OBJCTDEC" || key.name == "DEC" )
+      else if ( !objctdec.IsDefined() && keyword.name == "OBJCTDEC" )
       {
          if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
             if ( nvalue >= -90 )
                if ( nvalue <= +90 )
                   objctdec = nvalue;
       }
-      else if ( key.name == "DATE-OBS" )
+      else if ( !dateobs.IsDefined() && keyword.name == "DATE-OBS" )
       {
          TimePoint t;
          if ( TimePoint::TryFromString( t, svalue ) )
             dateobs = t.JD();
       }
-      else if ( key.name == "LONG-OBS" || key.name == "SITELONG" )
+      else if ( !longobs.IsDefined() && (keyword.name == "LONG-OBS" || keyword.name == "SITELONG") )
       {
          if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
          {
@@ -108,122 +357,44 @@ void WCSKeywords::Read( const FITSKeywordArray& keywords )
                   longobs = nvalue;
          }
       }
-      else if ( key.name == "LAT-OBS" || key.name == "SITELAT" )
+      else if ( !latobs.IsDefined() && (keyword.name == "LAT-OBS" || keyword.name == "SITELAT") )
       {
          if ( svalue.TrySexagesimalToDouble( nvalue, Array<char>() << ' ' << ':' ) )
             if ( nvalue >= -90 )
                if ( nvalue <= +90 )
                   latobs = nvalue;
       }
-      else if ( key.name == "ALT-OBS" || key.name == "SITEELEV" )
+      else if ( !altobs.IsDefined() && (keyword.name == "ALT-OBS" || keyword.name == "SITEELEV") )
       {
          if ( svalue.TryToDouble( nvalue ) )
             altobs = nvalue;
       }
-      else if ( key.name == "FOCALLEN" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            focallen = nvalue;
-      }
-      else if ( key.name == "XPIXSZ" || key.name == "PIXSIZE" )
+      else if ( !xpixsz.IsDefined() && keyword.name == "PIXSIZE" )
       {
          if ( svalue.TryToDouble( nvalue ) )
             xpixsz = nvalue;
       }
-      else if ( key.name == "CTYPE1" )
-      {
-         ctype1 = svalue;
-      }
-      else if ( key.name == "CTYPE2" )
-      {
-         ctype2 = svalue;
-      }
-      else if ( key.name == "CRVAL1" )
+      else if ( !expTime.IsDefined() && keyword.name == "EXPOSURE" )
       {
          if ( svalue.TryToDouble( nvalue ) )
-            crval1 = nvalue;
-      }
-      else if ( key.name == "CRVAL2" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            crval2 = nvalue;
-      }
-      else if ( key.name == "CRPIX1" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            crpix1 = nvalue;
-      }
-      else if ( key.name == "CRPIX2" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            crpix2 = nvalue;
-      }
-      else if ( key.name == "CD1_1" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            cd1_1 = nvalue;
-      }
-      else if ( key.name == "CD1_2" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            cd1_2 = nvalue;
-      }
-      else if ( key.name == "CD2_1" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            cd2_1 = nvalue;
-      }
-      else if ( key.name == "CD2_2" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            cd2_2 = nvalue;
-      }
-      else if ( key.name == "CDELT1" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            cdelt1 = nvalue;
-      }
-      else if ( key.name == "CDELT2" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            cdelt2 = nvalue;
-      }
-      else if ( key.name == "CROTA1" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            crota1 = nvalue;
-      }
-      else if ( key.name == "CROTA2" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            crota2 = nvalue;
-      }
-      else if ( key.name == "PV1_1" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            pv1_1 = nvalue;
-      }
-      else if ( key.name == "PV1_2" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            pv1_2 = nvalue;
-      }
-      else if ( key.name == "PV1_3" || key.name == "LONPOLE" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            lonpole = nvalue;
-      }
-      else if ( key.name == "PV1_4" || key.name == "LATPOLE" )
-      {
-         if ( svalue.TryToDouble( nvalue ) )
-            latpole = nvalue;
-      }
-      else if ( key.name == "REFSPLIN" || key.name == "REFSPLINE" )
-      {
-         // N.B. 9-char keyword name "REFSPLINE" written by old versions, not FITS-compliant.
-         refSpline = svalue;
+            expTime = nvalue;
       }
    }
+
+   /*
+    * If Observation:Time:End is not available, try to approximate it from the
+    * observation start time and exposure time in seconds.
+    */
+   if ( !dateend.IsDefined() )
+      if ( dateobs.IsDefined() )
+         if ( expTime.IsDefined() )
+            dateend = dateobs() + expTime()/86400;
+
+   // For mental sanity, ensure start_time <= end_time.
+   if ( dateobs.IsDefined() )
+      if ( dateend.IsDefined() )
+         if ( dateend() < dateobs() )
+            Swap( dateobs, dateend );
 }
 
 // ----------------------------------------------------------------------------
@@ -269,4 +440,4 @@ bool WCSKeywords::ExtractWorldTransformation( LinearTransformation& transIW, int
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WCSKeywords.cpp - Released 2019-04-30T16:30:49Z
+// EOF pcl/WCSKeywords.cpp - Released 2019-09-29T12:27:33Z

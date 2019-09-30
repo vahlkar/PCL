@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard GradientDomain Process Module Version 00.06.04.0246
+// Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionProcess.cpp - Released 2019-04-30T16:31:10Z
+// GradientsHdrCompositionProcess.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -47,7 +47,7 @@ GradientsHdrCompositionProcess* TheGradientsHdrCompositionProcess = 0;
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionProcess::GradientsHdrCompositionProcess() : MetaProcess()
+GradientsHdrCompositionProcess::GradientsHdrCompositionProcess()
 {
    TheGradientsHdrCompositionProcess = this;
 
@@ -135,4 +135,4 @@ ProcessImplementation* GradientsHdrCompositionProcess::Clone( const ProcessImple
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionProcess.cpp - Released 2019-04-30T16:31:10Z
+// EOF GradientsHdrCompositionProcess.cpp - Released 2019-09-29T12:27:58Z

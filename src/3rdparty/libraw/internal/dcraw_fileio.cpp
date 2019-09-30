@@ -1,5 +1,5 @@
 /* 
-  Copyright 2008-2018 LibRaw LLC (info@libraw.org)
+  Copyright 2008-2019 LibRaw LLC (info@libraw.org)
 
 LibRaw is free software; you can redistribute it and/or modify
 it under the terms of the one of two licenses as you choose:
@@ -76,7 +76,7 @@ void CLASS bad_pixels(const char *cfname)
             tot += BAYER2(r, c);
             n++;
           }
-    BAYER2(row, col) = tot / n;
+    if(n>0) BAYER2(row, col) = tot / n;
 #ifdef DCRAW_VERBOSE
     if (verbose)
     {

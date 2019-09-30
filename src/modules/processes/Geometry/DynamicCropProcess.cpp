@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0410
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// DynamicCropProcess.cpp - Released 2019-04-30T16:31:09Z
+// DynamicCropProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -68,7 +68,7 @@ DynamicCropProcess* TheDynamicCropProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-DynamicCropProcess::DynamicCropProcess() : MetaProcess()
+DynamicCropProcess::DynamicCropProcess()
 {
    TheDynamicCropProcess = this;
 
@@ -94,20 +94,28 @@ DynamicCropProcess::DynamicCropProcess() : MetaProcess()
    TheDCNoGUIMessagesParameter = new NoGUIMessages( this );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString DynamicCropProcess::Id() const
 {
    return "DynamicCrop";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString DynamicCropProcess::Category() const
 {
    return "Geometry";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 DynamicCropProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String DynamicCropProcess::Description() const
 {
@@ -151,20 +159,28 @@ String DynamicCropProcess::Description() const
    "</html>";
 }
 
+// ----------------------------------------------------------------------------
+
 const char** DynamicCropProcess::IconImageXPM() const
 {
    return DynamicCropIcon_XPM;
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* DynamicCropProcess::DefaultInterface() const
 {
    return TheDynamicCropInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* DynamicCropProcess::Create() const
 {
    return new DynamicCropInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* DynamicCropProcess::Clone( const ProcessImplementation& p ) const
 {
@@ -177,4 +193,4 @@ ProcessImplementation* DynamicCropProcess::Clone( const ProcessImplementation& p
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF DynamicCropProcess.cpp - Released 2019-09-29T12:27:57Z

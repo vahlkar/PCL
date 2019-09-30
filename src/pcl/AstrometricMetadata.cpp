@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2019-04-30T16:30:49Z
+// pcl/AstrometricMetadata.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -79,14 +79,25 @@ AstrometricMetadata::AstrometricMetadata( ProjectionBase* projection,
 
 // ----------------------------------------------------------------------------
 
-void AstrometricMetadata::Build( const FITSKeywordArray& keywords, const ByteArray& controlPoints, int width, int height )
+void AstrometricMetadata::Build( const PropertyArray& properties, const FITSKeywordArray& keywords,
+                                 const ByteArray& controlPoints, int width, int height )
 {
    m_description.Destroy();
 
-   WCSKeywords wcs( keywords );
+   WCSKeywords wcs( properties, keywords );
 
-   m_pixelSize = wcs.xpixsz();
-   m_obsDate = wcs.dateobs;
+   m_pixelSize = wcs.xpixsz;
+
+   if ( wcs.dateobs.IsDefined() )
+      m_obsStartTime = TimePoint( wcs.dateobs() );
+   else
+      m_obsStartTime = Optional<TimePoint>();
+
+   if ( wcs.dateend.IsDefined() )
+      m_obsEndTime = TimePoint( wcs.dateend() );
+   else
+      m_obsEndTime = Optional<TimePoint>();
+
    m_geoLongitude = wcs.longobs;
    m_geoLatitude = wcs.latobs;
    m_geoHeight = wcs.altobs;
@@ -112,7 +123,6 @@ void AstrometricMetadata::Build( const FITSKeywordArray& keywords, const ByteArr
          double resx = Sqrt( linearTransIW.A00()*linearTransIW.A00() + linearTransIW.A01()*linearTransIW.A01() );
          double resy = Sqrt( linearTransIW.A10()*linearTransIW.A10() + linearTransIW.A11()*linearTransIW.A11() );
          m_resolution = (resx + resy)/2;
-         m_useFocal = false;
          if ( m_pixelSize.IsDefined() )
             if ( m_pixelSize() > 0 )
                m_focalLength = FocalFromResolution( m_resolution );
@@ -123,14 +133,12 @@ void AstrometricMetadata::Build( const FITSKeywordArray& keywords, const ByteArr
    {
       if ( wcs.focallen.IsDefined() )
          if ( wcs.focallen() > 0 )
-         {
             m_focalLength = wcs.focallen();
-            m_useFocal = true;
-         }
-      if ( m_useFocal )
-         if ( m_pixelSize.IsDefined() )
-            if ( m_pixelSize() > 0 )
-               m_resolution = ResolutionFromFocal( m_focalLength() );
+      if ( m_focalLength.IsDefined() )
+         if ( m_focalLength() > 0 )
+            if ( m_pixelSize.IsDefined() )
+               if ( m_pixelSize() > 0 )
+                  m_resolution = ResolutionFromFocal( m_focalLength() );
    }
 }
 
@@ -142,14 +150,12 @@ AstrometricMetadata::AstrometricMetadata( const ImageWindow& window )
    View view = window.MainView();
    view.GetSize( width, height );
 
-   FITSKeywordArray keywords = window.Keywords();
-
    ByteArray controlPoints;
    Variant v = view.PropertyValue( "Transformation_ImageToProjection" );
    if ( v.IsValid() )
       controlPoints = v.ToByteArray();
 
-   Build( keywords, controlPoints, width, height );
+   Build( view.GetProperties(), window.Keywords(), controlPoints, width, height );
 }
 
 // ----------------------------------------------------------------------------
@@ -158,14 +164,12 @@ AstrometricMetadata::AstrometricMetadata( XISFReader& reader )
 {
    ImageInfo info = reader.ImageInfo();
 
-   FITSKeywordArray keywords = reader.ReadFITSKeywords();
-
    ByteArray controlPoints;
    Variant v = reader.ReadImageProperty( "Transformation_ImageToProjection" );
    if ( v.IsValid() )
       controlPoints = v.ToByteArray();
 
-   Build( keywords, controlPoints, info.width, info.height );
+   Build( reader.ReadImageProperties(), reader.ReadFITSKeywords(), controlPoints, info.width, info.height );
 }
 
 // ----------------------------------------------------------------------------
@@ -193,8 +197,11 @@ void AstrometricMetadata::Write( ImageWindow& window, bool notify ) const
       view.SetStorablePropertyValue( "Instrument:Sensor:YPixelSize", Round( m_pixelSize(), 3 ), notify );
    }
 
-   if ( m_obsDate.IsDefined() )
-      view.SetStorablePropertyValue( "Observation:Time:Start", TimePoint( m_obsDate() ), notify );
+   if ( m_obsStartTime.IsDefined() )
+      view.SetStorablePropertyValue( "Observation:Time:Start", m_obsStartTime(), notify );
+
+   if ( m_obsEndTime.IsDefined() )
+      view.SetStorablePropertyValue( "Observation:Time:End", m_obsEndTime(), notify );
 
    if ( m_geoLongitude.IsDefined() && m_geoLatitude.IsDefined() )
    {
@@ -248,8 +255,11 @@ void AstrometricMetadata::Write( XISFWriter& writer ) const
       writer.WriteImageProperty( "Instrument:Sensor:YPixelSize", Round( m_pixelSize(), 3 ) );
    }
 
-   if ( m_obsDate.IsDefined() )
-      writer.WriteImageProperty( "Observation:Time:Start", TimePoint( m_obsDate() ) );
+   if ( m_obsStartTime.IsDefined() )
+      writer.WriteImageProperty( "Observation:Time:Start", m_obsStartTime() );
+
+   if ( m_obsEndTime.IsDefined() )
+      writer.WriteImageProperty( "Observation:Time:End", m_obsEndTime() );
 
    if ( m_geoLongitude.IsDefined() && m_geoLatitude.IsDefined() )
    {
@@ -374,42 +384,44 @@ String AstrometricMetadata::Summary() const
    String summary;
    summary    << "Referentiation matrix (world[ra,dec] = matrix * image[x,y]):" << '\n'
               << m_description->referenceMatrix << '\n'
-              << "WCS transformation ...... " << m_description->wcsTransformationType << '\n';
+              << "WCS transformation ....... " << m_description->wcsTransformationType << '\n';
    if ( !m_description->controlPoints.IsEmpty() )
-      summary << "Control points .......... " << m_description->controlPoints << '\n';
+      summary << "Control points ........... " << m_description->controlPoints << '\n';
    if ( !m_description->splineLengths.IsEmpty() )
-      summary << "Spline lengths .......... " << m_description->splineLengths << '\n';
-   summary    << "Projection .............. " << m_description->projectionName << '\n'
-              << "Projection origin ....... " << m_description->projectionOrigin << '\n'
-              << "Resolution .............. " << m_description->resolution << '\n'
-              << "Rotation ................ " << m_description->rotation << '\n';
+      summary << "Spline lengths ........... " << m_description->splineLengths << '\n';
+   summary    << "Projection ............... " << m_description->projectionName << '\n'
+              << "Projection origin ........ " << m_description->projectionOrigin << '\n'
+              << "Resolution ............... " << m_description->resolution << '\n'
+              << "Rotation ................. " << m_description->rotation << '\n';
 
-   if ( !m_description->observationDate.IsEmpty() )
-      summary << "Observation date ........ " << m_description->observationDate << '\n';
+   if ( !m_description->observationStartTime.IsEmpty() )
+      summary << "Observation start time ... " << m_description->observationStartTime << '\n';
+   if ( !m_description->observationEndTime.IsEmpty() )
+      summary << "Observation end time ..... " << m_description->observationEndTime << '\n';
 
    if ( !m_description->observerLocation.IsEmpty() )
-      summary << "Geodetic coordinates .... " << m_description->observerLocation << '\n';
+      summary << "Geodetic coordinates ..... " << m_description->observerLocation << '\n';
 
    if ( !m_description->focalDistance.IsEmpty() )
-      summary << "Focal distance .......... " << m_description->focalDistance << '\n';
+      summary << "Focal distance ........... " << m_description->focalDistance << '\n';
 
    if ( !m_description->pixelSize.IsEmpty() )
-      summary << "Pixel size .............. " << m_description->pixelSize << '\n';
+      summary << "Pixel size ............... " << m_description->pixelSize << '\n';
 
-   summary    << "Field of view ........... " << m_description->fieldOfView << '\n'
-              << "Image center ............ " << m_description->centerCoordinates << '\n'
+   summary    << "Field of view ............ " << m_description->fieldOfView << '\n'
+              << "Image center ............. " << m_description->centerCoordinates << '\n'
               << "Image bounds:" << '\n'
-              << "   top-left ............. " << m_description->topLeftCoordinates << '\n'
-              << "   top-right ............ " << m_description->topRightCoordinates << '\n'
-              << "   bottom-left .......... " << m_description->bottomLeftCoordinates << '\n'
-              << "   bottom-right ......... " << m_description->bottomRightCoordinates << '\n';
+              << "   top-left .............. " << m_description->topLeftCoordinates << '\n'
+              << "   top-right ............. " << m_description->topRightCoordinates << '\n'
+              << "   bottom-left ........... " << m_description->bottomLeftCoordinates << '\n'
+              << "   bottom-right .......... " << m_description->bottomRightCoordinates << '\n';
 
    return summary;
 }
 
 // ----------------------------------------------------------------------------
 
-static void ModifyKeyword( FITSKeywordArray& keywords, IsoString name, IsoString value, IsoString comment )
+static void ModifyKeyword( FITSKeywordArray& keywords, const IsoString& name, const IsoString& value, const IsoString& comment )
 {
    for ( FITSHeaderKeyword& keyword : keywords )
       if ( keyword.name == name )
@@ -435,7 +447,7 @@ static void ModifySignatureKeyword( FITSKeywordArray& keywords )
    keywords << signature;
 }
 
-static void RemoveKeyword( FITSKeywordArray& keywords, IsoString name )
+static void RemoveKeyword( FITSKeywordArray& keywords, const IsoString& name )
 {
    keywords.Remove( FITSHeaderKeyword( name ), []( const FITSHeaderKeyword& k1, const FITSHeaderKeyword& k2 )
                                                { return k1.name == k2.name; } );
@@ -448,38 +460,64 @@ void AstrometricMetadata::UpdateBasicKeywords( FITSKeywordArray& keywords ) cons
    ModifySignatureKeyword( keywords );
 
    if ( m_focalLength.IsDefined() && m_focalLength() > 0 )
-      ModifyKeyword( keywords, "FOCALLEN", IsoString().Format( "%.3f", m_focalLength() ), "Focal length (mm)" );
+      ModifyKeyword( keywords, "FOCALLEN", IsoString().Format( "%.8g", m_focalLength() ), "Focal length (mm)" );
    else
       RemoveKeyword( keywords, "FOCALLEN" );
 
    if ( m_pixelSize.IsDefined() && m_pixelSize() > 0 )
    {
-      ModifyKeyword( keywords, "XPIXSZ", IsoString().Format( "%.3f", m_pixelSize() ), "Pixel size including binning, X-axis (um)" );
-      ModifyKeyword( keywords, "YPIXSZ", IsoString().Format( "%.3f", m_pixelSize() ), "Pixel size including binning, Y-axis (um)" );
+      ModifyKeyword( keywords, "XPIXSZ", IsoString().Format( "%.6g", m_pixelSize() ), "Pixel size including binning, X-axis (um)" );
+      ModifyKeyword( keywords, "YPIXSZ", IsoString().Format( "%.6g", m_pixelSize() ), "Pixel size including binning, Y-axis (um)" );
+      RemoveKeyword( keywords, "PIXSIZE" );
    }
 
-   if ( m_obsDate.IsDefined() )
+   if ( m_obsStartTime.IsDefined() )
+   {
       ModifyKeyword( keywords, "DATE-OBS",
-            '\'' + TimePoint( m_obsDate() ).ToIsoString( 3/*timeItems*/, 3/*precision*/, 0/*tz*/, false/*timeZone*/ ) + '\'',
-            "Date and time of observation (UTC)" );
+            m_obsStartTime().ToIsoString( 3/*timeItems*/, 3/*precision*/, 0/*tz*/, false/*timeZone*/ ).SingleQuoted(),
+            "Date/time of start of observation (UTC)" );
+      RemoveKeyword( keywords, "DATE-BEG" );
+   }
+
+   if ( m_obsEndTime.IsDefined() )
+      ModifyKeyword( keywords, "DATE-END",
+            m_obsEndTime().ToIsoString( 3/*timeItems*/, 3/*precision*/, 0/*tz*/, false/*timeZone*/ ).SingleQuoted(),
+            "Date/time of end of observation (UTC)" );
 
    if ( m_geoLongitude.IsDefined() && m_geoLatitude.IsDefined() )
    {
-      ModifyKeyword( keywords, "LONG-OBS", IsoString().Format( "%.6f", m_geoLongitude() ), "Geodetic longitude of observation location (deg)" );
-      ModifyKeyword( keywords, "LAT-OBS", IsoString().Format( "%.6f", m_geoLatitude() ), "Geodetic latitude of observation location (deg)" );
+      ModifyKeyword( keywords, "OBSGEO-L", IsoString().Format( "%.10g", m_geoLongitude() ), "Geodetic longitude of observation location (deg)" );
+      ModifyKeyword( keywords, "LONG-OBS", IsoString().Format( "%.10g", m_geoLongitude() ), "Geodetic longitude (deg) (compatibility)" );
+      RemoveKeyword( keywords, "SITELONG" );
+
+      ModifyKeyword( keywords, "OBSGEO-B", IsoString().Format( "%.10g", m_geoLatitude() ), "Geodetic latitude of observation location (deg)" );
+      ModifyKeyword( keywords, "LAT-OBS", IsoString().Format( "%.10g", m_geoLatitude() ), "Geodetic latitude (deg) (compatibility)" );
+      RemoveKeyword( keywords, "SITELAT" );
+
       if ( m_geoHeight.IsDefined() )
-         ModifyKeyword( keywords, "ALT-OBS", IsoString().Format( "%.0f", m_geoHeight() ), "Geodetic height of observation location (m)" );
+      {
+         ModifyKeyword( keywords, "OBSGEO-H", IsoString().Format( "%.0f", m_geoHeight() ), "Geodetic height of observation location (m)" );
+         ModifyKeyword( keywords, "ALT-OBS", IsoString().Format( "%.0f", m_geoHeight() ), "Geodetic height (m) (compatibility)" );
+         RemoveKeyword( keywords, "SITEELEV" );
+      }
    }
 
    DPoint pRD;
    if ( ImageToCelestial( pRD, DPoint( m_width/2.0, m_height/2.0 ) ) )
    {
+      ModifyKeyword( keywords, "RA",
+            IsoString().Format( "%.16g", pRD.x ),
+            "Right ascension of the center of the image (deg)" );
       ModifyKeyword( keywords, "OBJCTRA",
-            '\'' + IsoString::ToSexagesimal( pRD.x/15, RAConversionOptions( 3/*precision*/, 0/*width*/ ) ) + '\'',
-            "Right ascension of the center of the image" );
+            IsoString::ToSexagesimal( pRD.x/15, RAConversionOptions( 3/*precision*/, 0/*width*/ ) ).SingleQuoted(),
+            "Right ascension (hours) (compatibility)" );
+
+      ModifyKeyword( keywords, "DEC",
+            IsoString().Format( "%.16g", pRD.y ),
+            "Declination of the center of the image (deg)" );
       ModifyKeyword( keywords, "OBJCTDEC",
-            '\'' + IsoString::ToSexagesimal( pRD.y, DecConversionOptions( 2/*precision*/, 0/*width*/ ) ) + '\'',
-            "Declination of the center of the image" );
+            IsoString::ToSexagesimal( pRD.y, DecConversionOptions( 2/*precision*/, 0/*width*/ ) ).SingleQuoted(),
+            "Declination (deg) (compatibility)" );
    }
 }
 
@@ -516,8 +554,8 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
       keywords << FITSHeaderKeyword( "EQUINOX", "2000.0", "Coordinates referred to ICRS / J2000.0" )
                << FITSHeaderKeyword( "CTYPE1", wcs.ctype1, "Axis1 projection: " + m_projection->Name() )
                << FITSHeaderKeyword( "CTYPE2", wcs.ctype2, "Axis2 projection: " + m_projection->Name() )
-               << FITSHeaderKeyword( "CRPIX1", IsoString().Format( "%.8g", wcs.crpix1() ), "Axis1 reference pixel" )
-               << FITSHeaderKeyword( "CRPIX2", IsoString().Format( "%.8g", wcs.crpix2() ), "Axis2 reference pixel" );
+               << FITSHeaderKeyword( "CRPIX1", IsoString().Format( "%.16g", wcs.crpix1() ), "Axis1 reference pixel" )
+               << FITSHeaderKeyword( "CRPIX2", IsoString().Format( "%.16g", wcs.crpix2() ), "Axis2 reference pixel" );
 
       if ( wcs.crval1.IsDefined() )
          keywords << FITSHeaderKeyword( "CRVAL1", IsoString().Format( "%.16g", wcs.crval1() ), "Axis1 reference value" );
@@ -550,6 +588,43 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
 
 // ----------------------------------------------------------------------------
 
+void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords )
+{
+   RemoveKeyword( keywords, "RA" );
+   RemoveKeyword( keywords, "OBJCTRA" );
+   RemoveKeyword( keywords, "DEC" );
+   RemoveKeyword( keywords, "OBJCTDEC" );
+   RemoveKeyword( keywords, "FOCALLEN" );
+   RemoveKeyword( keywords, "XPIXSZ" );
+   RemoveKeyword( keywords, "YPIXSZ" );
+   RemoveKeyword( keywords, "PIXSIZE" );
+   RemoveKeyword( keywords, "EQUINOX" );
+   RemoveKeyword( keywords, "CTYPE1" );
+   RemoveKeyword( keywords, "CTYPE2" );
+   RemoveKeyword( keywords, "CRVAL1" );
+   RemoveKeyword( keywords, "CRVAL2" );
+   RemoveKeyword( keywords, "CRPIX1" );
+   RemoveKeyword( keywords, "CRPIX2" );
+   RemoveKeyword( keywords, "CD1_1" );
+   RemoveKeyword( keywords, "CD1_2" );
+   RemoveKeyword( keywords, "CD2_1" );
+   RemoveKeyword( keywords, "CD2_2" );
+   RemoveKeyword( keywords, "CDELT1" );
+   RemoveKeyword( keywords, "CDELT2" );
+   RemoveKeyword( keywords, "CROTA1" );
+   RemoveKeyword( keywords, "CROTA2" );
+   RemoveKeyword( keywords, "PV1_1" );
+   RemoveKeyword( keywords, "PV1_2" );
+   RemoveKeyword( keywords, "PV1_3" );
+   RemoveKeyword( keywords, "LONPOLE" );
+   RemoveKeyword( keywords, "PV1_4" );
+   RemoveKeyword( keywords, "LATPOLE" );
+   RemoveKeyword( keywords, "REFSPLIN" );
+   RemoveKeyword( keywords, "REFSPLINE" ); // N.B. 9-char keyword name written by old versions, not FITS-compliant.
+}
+
+// ----------------------------------------------------------------------------
+
 static void ModifyProperty( PropertyArray& properties, const IsoString& id, const Variant& value )
 {
    PropertyArray::iterator i = properties.Search( id );
@@ -570,6 +645,8 @@ void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
    {
       if ( m_focalLength.IsDefined() && m_focalLength() > 0 )
          ModifyProperty( properties, "Instrument:Telescope:FocalLength", Round( m_focalLength()/1000, 6 ) );
+      else
+         RemoveProperty( properties, "Instrument:Telescope:FocalLength" );
 
       if ( m_pixelSize.IsDefined() && m_pixelSize() > 0 )
       {
@@ -577,8 +654,11 @@ void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
          ModifyProperty( properties, "Instrument:Sensor:YPixelSize", Round( m_pixelSize(), 3 ) );
       }
 
-      if ( m_obsDate.IsDefined() )
-         ModifyProperty( properties, "Observation:Time:Start", TimePoint( m_obsDate() ) );
+      if ( m_obsStartTime.IsDefined() )
+         ModifyProperty( properties, "Observation:Time:Start", m_obsStartTime() );
+
+      if ( m_obsEndTime.IsDefined() )
+         ModifyProperty( properties, "Observation:Time:End", m_obsEndTime() );
 
       if ( m_geoLongitude.IsDefined() && m_geoLatitude.IsDefined() )
       {
@@ -612,6 +692,37 @@ void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
    }
    else
       RemoveProperty( properties, "Transformation_ImageToProjection" );
+}
+
+// ----------------------------------------------------------------------------
+
+void AstrometricMetadata::RemoveProperties( PropertyArray& properties )
+{
+   RemoveProperty( properties, "Instrument:Telescope:FocalLength" );
+   RemoveProperty( properties, "Instrument:Sensor:XPixelSize" );
+   RemoveProperty( properties, "Instrument:Sensor:YPixelSize" );
+   RemoveProperty( properties, "Observation:Center:RA" );
+   RemoveProperty( properties, "Observation:Center:Dec" );
+   RemoveProperty( properties, "Observation:Center:X" );
+   RemoveProperty( properties, "Observation:Center:Y" );
+   RemoveProperty( properties, "Observation:CelestialReferenceSystem" );
+   RemoveProperty( properties, "Observation:Equinox" );
+   RemoveProperty( properties, "Transformation_ImageToProjection" );
+}
+
+void AstrometricMetadata::RemoveProperties( ImageWindow& window )
+{
+   View view = window.MainView();
+   view.DeletePropertyIfExists( "Instrument:Telescope:FocalLength" );
+   view.DeletePropertyIfExists( "Instrument:Sensor:XPixelSize" );
+   view.DeletePropertyIfExists( "Instrument:Sensor:YPixelSize" );
+   view.DeletePropertyIfExists( "Observation:Center:RA" );
+   view.DeletePropertyIfExists( "Observation:Center:Dec" );
+   view.DeletePropertyIfExists( "Observation:Center:X" );
+   view.DeletePropertyIfExists( "Observation:Center:Y" );
+   view.DeletePropertyIfExists( "Observation:CelestialReferenceSystem" );
+   view.DeletePropertyIfExists( "Observation:Equinox" );
+   view.DeletePropertyIfExists( "Transformation_ImageToProjection" );
 }
 
 // ----------------------------------------------------------------------------
@@ -733,14 +844,14 @@ void AstrometricMetadata::UpdateDescription() const
          m_description->referenceMatrix = linearTransIW.ToString();
          if ( S != nullptr )
          {
-            m_description->wcsTransformationType = "2-D surface splines";
+            m_description->wcsTransformationType = "Thin plate spline";
             m_description->controlPoints = String( S->NumberOfControlPoints() );
             int xWI, yWI, xIW, yIW;
             S->GetSplineLengths( xWI, yWI, xIW, yIW );
             m_description->splineLengths = String().Format( "l:%d b:%d X:%d Y:%d", xWI, yWI, xIW, yIW );
          }
          else
-            m_description->wcsTransformationType = "linear";
+            m_description->wcsTransformationType = "Linear";
 
          m_description->projectionName = m_projection->Name();
          m_description->projectionOrigin = String().Format( "[%.6f %.6f] px", projOrgPx.x, projOrgPx.y )
@@ -748,8 +859,11 @@ void AstrometricMetadata::UpdateDescription() const
          m_description->resolution = String().Format( "%.3f arcsec/px", m_resolution*3600 );
          m_description->rotation = String().Format( "%.3f deg", rotation ) << (flipped ? " (flipped)" : "");
 
-         if ( m_obsDate.IsDefined() )
-            m_description->observationDate = TimePoint( m_obsDate() ).ToString( "%Y-%M-%D %h:%m:%s0" );
+         if ( m_obsStartTime.IsDefined() )
+            m_description->observationStartTime = m_obsStartTime().ToString( "%Y-%M-%D %h:%m:%s0 UTC" );
+
+         if ( m_obsEndTime.IsDefined() )
+            m_description->observationEndTime = m_obsEndTime().ToString( "%Y-%M-%D %h:%m:%s0 UTC" );
 
          if ( m_geoLongitude.IsDefined() && m_geoLatitude.IsDefined() )
          {
@@ -807,4 +921,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2019-04-30T16:30:49Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2019-09-29T12:27:33Z

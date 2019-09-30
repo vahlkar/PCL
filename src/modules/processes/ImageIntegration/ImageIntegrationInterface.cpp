@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2019-04-30T16:31:09Z
+// ImageIntegrationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -342,13 +342,27 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
 
    GUI->GenerateDrizzleData_CheckBox.SetChecked( instance.p_generateDrizzleData );
 
+   GUI->SubtractPedestals_CheckBox.SetChecked( instance.p_subtractPedestals );
+
+   GUI->TruncateOnOutOfRange_CheckBox.SetChecked( instance.p_truncateOnOutOfRange );
+   GUI->TruncateOnOutOfRange_CheckBox.Enable( instance.p_generateIntegratedImage );
+
    GUI->EvaluateNoise_CheckBox.SetChecked( instance.p_evaluateNoise );
    GUI->EvaluateNoise_CheckBox.Enable( instance.p_generateIntegratedImage );
 
    GUI->ClosePreviousImages_CheckBox.SetChecked( instance.p_closePreviousImages );
 
+   GUI->AutoMemorySize_CheckBox.SetChecked( instance.p_autoMemorySize );
+
    GUI->BufferSize_SpinBox.SetValue( instance.p_bufferSizeMB );
+
+   GUI->BufferSize_Label.Enable( !instance.p_autoMemorySize );
+   GUI->BufferSize_SpinBox.Enable( !instance.p_autoMemorySize );
+
    GUI->StackSize_SpinBox.SetValue( instance.p_stackSizeMB );
+
+   GUI->StackSize_Label.Enable( !instance.p_autoMemorySize );
+   GUI->StackSize_SpinBox.Enable( !instance.p_autoMemorySize );
 
    GUI->UseCache_CheckBox.SetChecked( instance.p_useCache );
 }
@@ -417,6 +431,9 @@ void ImageIntegrationInterface::UpdateRejectionControls()
 
    GUI->SigmaHigh_NumericControl.Enable( doesSigmaClipRejection && instance.p_clipHigh );
    GUI->SigmaHigh_NumericControl.SetValue( instance.p_sigmaHigh );
+
+   GUI->WinsorizationCutoff_NumericControl.Enable( instance.p_rejection == IIRejection::WinsorizedSigmaClip );
+   GUI->WinsorizationCutoff_NumericControl.SetValue( instance.p_winsorizationCutoff );
 
    GUI->LinearFitLow_NumericControl.Enable( doesLinearFitRejection );
    GUI->LinearFitLow_NumericControl.SetValue( instance.p_linearFitLow );
@@ -871,10 +888,19 @@ void ImageIntegrationInterface::__Integration_Click( Button& sender, bool checke
       instance.p_generateDrizzleData = checked;
    else if ( sender == GUI->IgnoreNoiseKeywords_CheckBox )
       instance.p_ignoreNoiseKeywords = checked;
+   else if ( sender == GUI->SubtractPedestals_CheckBox )
+      instance.p_subtractPedestals = checked;
+   else if ( sender == GUI->TruncateOnOutOfRange_CheckBox )
+      instance.p_truncateOnOutOfRange = checked;
    else if ( sender == GUI->EvaluateNoise_CheckBox )
       instance.p_evaluateNoise = checked;
    else if ( sender == GUI->ClosePreviousImages_CheckBox )
       instance.p_closePreviousImages = checked;
+   else if ( sender == GUI->AutoMemorySize_CheckBox )
+   {
+      instance.p_autoMemorySize = checked;
+      UpdateIntegrationControls();
+   }
    else if ( sender == GUI->UseCache_CheckBox )
       instance.p_useCache = checked;
 }
@@ -925,6 +951,8 @@ void ImageIntegrationInterface::__Rejection_EditValueUpdated( NumericEdit& sende
       instance.p_sigmaLow = value;
    else if ( sender == GUI->SigmaHigh_NumericControl )
       instance.p_sigmaHigh = value;
+   else if ( sender == GUI->WinsorizationCutoff_NumericControl )
+      instance.p_winsorizationCutoff = value;
    else if ( sender == GUI->LinearFitLow_NumericControl )
       instance.p_linearFitLow = value;
    else if ( sender == GUI->LinearFitHigh_NumericControl )
@@ -1167,7 +1195,7 @@ void ImageIntegrationInterface::__ViewDrop( Control& sender, const Point& pos, c
 ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 {
    pcl::Font fnt = w.Font();
-   int labelWidth1 = fnt.Width( String( "CCD readout noise:" ) + 'T' );
+   int labelWidth1 = fnt.Width( String( "Winsorization cutoff:" ) + 'M' );
    int editWidth1 = fnt.Width( String( 'M', 16 ) );
    int editWidth2 = fnt.Width( String( '0', 11 ) );
    //int spinWidth1 = fnt.Width( String( '0', 11 ) );
@@ -1282,7 +1310,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    InputImages_Sizer.Add( InputButtons_Sizer );
 
    InputImages_Control.SetSizer( InputImages_Sizer );
-   InputImages_Control.AdjustToContents();
 
    //
 
@@ -1317,7 +1344,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    FormatHints_Sizer.Add( InputHints_Sizer );
 
    FormatHints_Control.SetSizer( FormatHints_Sizer );
-   FormatHints_Control.AdjustToContents();
 
    //
 
@@ -1527,16 +1553,43 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Generate64BitResult_Sizer.AddStretch();
 
    GenerateDrizzleData_CheckBox.SetText( "Generate drizzle data" );
-   GenerateDrizzleData_CheckBox.SetToolTip( "<p>Generate a drizzle data file for each integrated image.</p>"
-      "<p>Drizzle data files contain geometrical projection parameters, pixel rejection and statistical data "
-      "for the DrizzleIntegration tool. StarAlignment creates drizzle files with projection data, and the "
-      "ImageIntegration tool appends rejection and statistical data to the same files. Drizzle files carry "
+   GenerateDrizzleData_CheckBox.SetToolTip( "<p>Generate an XML drizzle data file for each integrated image.</p>"
+      "<p>Drizzle data files contain geometrical projection parameters, pixel rejection maps, statistical data "
+      "and metadata for the DrizzleIntegration tool. StarAlignment creates drizzle files with projection data, "
+      "and the ImageIntegration tool appends rejection and statistical data to the same files. Drizzle files carry "
       "the .xdrz file suffix.</p>" );
    GenerateDrizzleData_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::__Integration_Click, w );
 
    GenerateDrizzleData_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    GenerateDrizzleData_Sizer.Add( GenerateDrizzleData_CheckBox );
    GenerateDrizzleData_Sizer.AddStretch();
+
+   SubtractPedestals_CheckBox.SetText( "Subtract pedestals" );
+   SubtractPedestals_CheckBox.SetToolTip( "<p>Subtract PEDESTAL keyword values, if present in input images.</p>"
+      "<p>Some applications add small positive values (typically about 100 DN) systematically to calibrated light frames. "
+      "<p>These small <i>pedestals</i> should be subtracted from source integration pixels to refer all input data to the "
+      "same zero point consistently. This option should be enabled under normal working conditions.</p>" );
+   SubtractPedestals_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::__Integration_Click, w );
+
+   SubtractPedestals_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   SubtractPedestals_Sizer.Add( SubtractPedestals_CheckBox );
+   SubtractPedestals_Sizer.AddStretch();
+
+   TruncateOnOutOfRange_CheckBox.SetText( "Truncate on out-of-range" );
+   TruncateOnOutOfRange_CheckBox.SetToolTip( "<p>If the output integrated image has saturated pixel samples "
+      "out of the nominal [0,1] range, truncate them instead of rescaling the whole image.</p>"
+      "<p>No out-of-range values should occur after integration of a well-calibrated data set. However, with improperly "
+      "calibrated data, saturated pixels may lead to out-of-range values after output normalization, depending on "
+      "the frame selected as integration reference.</p>"
+      "<p>When this happens, the best option for integration of light or science frames is a linear rescaling, which "
+      "preserves all of the integrated data. However, in some cases altering all pixel values is not admissible, so a "
+      "rescaling operation is not applicable. This is the case for integration of flat frames, where truncation is the "
+      "only option available to preserve the correct illumination profile in the integrated master flat frame.</p>" );
+   TruncateOnOutOfRange_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::__Integration_Click, w );
+
+   TruncateOnOutOfRange_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   TruncateOnOutOfRange_Sizer.Add( TruncateOnOutOfRange_CheckBox );
+   TruncateOnOutOfRange_Sizer.AddStretch();
 
    EvaluateNoise_CheckBox.SetText( "Evaluate noise" );
    EvaluateNoise_CheckBox.SetToolTip( "<p>Evaluate the standard deviation of Gaussian noise for the final "
@@ -1560,6 +1613,19 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ClosePreviousImages_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ClosePreviousImages_Sizer.Add( ClosePreviousImages_CheckBox );
    ClosePreviousImages_Sizer.AddStretch();
+
+   AutoMemorySize_CheckBox.SetText( "Automatic buffer sizes" );
+   AutoMemorySize_CheckBox.SetToolTip( "<p>Use the largest possible buffer and stack sizes, calculated "
+      "automatically from the amount of physical memory currently available to PixInsight.</p>"
+      "<p>Usually this is the best option to optimize image integration performance, but be aware that for large "
+      "data sets and low-memory machines (relative to the total size of the data) the process may use too many "
+      "system resources. If you want finer control on system resources usage, disable this option and tweak the "
+      "values of the <i>buffer size</i> and <i>stack size</i> parameters.</p>" );
+   AutoMemorySize_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::__Integration_Click, w );
+
+   AutoMemorySize_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   AutoMemorySize_Sizer.Add( AutoMemorySize_CheckBox );
+   AutoMemorySize_Sizer.AddStretch();
 
    const char* bufferSizeToolTip =
       "<p>This parameter defines the size of the working buffers used to read pixel rows. There is an "
@@ -1589,16 +1655,20 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "parameter, the better the performance, especially on multiprocessor/multicore systems.</p>"
 
       "<p>The best performance is achieved when the whole set of integrated pixels can be loaded at "
-      "once in the integration stack. For this to happen, the following conditions must be true: (1) "
-      "<i>buffer size</i> must be large enough as to allow loading an input file (in 32-bit floating "
-      "point format) completely in a single file reading operation, and (2) <i>stack size</i> must be "
-      "larger than or equal to W*H*(12*N + 4), where W and H are the image width and height in pixels, "
-      "respectively, and N is the number of integrated images. For linear fit clipping rejection, "
-      "replace 4 with 8 in the above equation. Note that this may require a large amount of RAM "
-      "available for relatively large image sets. As an example, the default stack size of 1024 (1 GiB) "
-      "is sufficient to integrate 20 2048x2048 monochrome images optimally with the default buffer size "
-      "of 16 MiB. With a stack size of 4 GiB and a buffer size of 64 MiB you could integrate 20 4Kx4K "
-      "monochrome images with optimum performance on a 64-bit version of PixInsight.</p>";
+      "once in the integration stack. For this to happen, the following conditions must be true:</p>"
+
+      "<ul>"
+      "<li><i>Buffer size</i> must be large enough as to allow loading an input files in 32-bit floating "
+      "point format completely with a single file read operation.</li>"
+      "<li><i>Stack size</i> must be larger than or equal to W*H*(12*N + 4), where W and H are the image "
+      "width and height in pixels, respectively, and N is the number of integrated images. For linear fit "
+      "clipping rejection, replace 4 with 8 in the above equation.</li>"
+      "</ul>"
+
+      "<p>Note that this may require a large amount of RAM available for relatively large image sets. "
+      "As an example, the default stack size of 1024 (1 GiB) is sufficient to integrate 20 2048x2048 monochrome "
+      "images optimally with the default buffer size of 16 MiB. With a stack size of 4 GiB and a buffer size of "
+      "64 MiB you could integrate 20 4Kx4K monochrome images with optimum performance.</p>";
 
    StackSize_Label.SetText( "Stack size (MiB):" );
    StackSize_Label.SetFixedWidth( labelWidth1 );
@@ -1644,14 +1714,16 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Integration_Sizer.Add( GenerateIntegratedImage_Sizer );
    Integration_Sizer.Add( Generate64BitResult_Sizer );
    Integration_Sizer.Add( GenerateDrizzleData_Sizer );
+   Integration_Sizer.Add( SubtractPedestals_Sizer );
+   Integration_Sizer.Add( TruncateOnOutOfRange_Sizer );
    Integration_Sizer.Add( EvaluateNoise_Sizer );
    Integration_Sizer.Add( ClosePreviousImages_Sizer );
+   Integration_Sizer.Add( AutoMemorySize_Sizer );
    Integration_Sizer.Add( BufferSize_Sizer );
    Integration_Sizer.Add( StackSize_Sizer );
    Integration_Sizer.Add( Cache_Sizer );
 
    Integration_Control.SetSizer( Integration_Sizer );
-   Integration_Control.AdjustToContents();
 
    //
 
@@ -1835,7 +1907,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Rejection1_Sizer.Add( MapRangeRejection_Sizer );
 
    Rejection1_Control.SetSizer( Rejection1_Sizer );
-   Rejection1_Control.AdjustToContents();
 
    //
 
@@ -1923,6 +1994,21 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "rejection algorithms.</p>" );
    SigmaHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::__Rejection_EditValueUpdated, w );
 
+   WinsorizationCutoff_NumericControl.label.SetText( "Winsorization cutoff:" );
+   WinsorizationCutoff_NumericControl.label.SetFixedWidth( labelWidth1 );
+   WinsorizationCutoff_NumericControl.slider.SetRange( 30, 100 );
+   WinsorizationCutoff_NumericControl.slider.SetScaledMinWidth( 250 );
+   WinsorizationCutoff_NumericControl.SetReal();
+   WinsorizationCutoff_NumericControl.SetRange( TheIIWinsorizationCutoffParameter->MinimumValue(), TheIIWinsorizationCutoffParameter->MaximumValue() );
+   WinsorizationCutoff_NumericControl.SetPrecision( TheIIWinsorizationCutoffParameter->Precision() );
+   WinsorizationCutoff_NumericControl.edit.SetFixedWidth( editWidth2 );
+   WinsorizationCutoff_NumericControl.SetToolTip( "<p>Cutoff point for the Winsorized sigma clipping rejection algorithm, "
+      "in sigma units.</p>"
+      "<p>All pixel samples with absolute differences from the median larger than this parameter will be set equal to the median "
+      "of the pixel stack in the first rejection iteration. This replaces extreme outliers, such as cosmics, hot and cold pixels, "
+      "with plausible values instead of their nearest neighbors.</p>" );
+   WinsorizationCutoff_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::__Rejection_EditValueUpdated, w );
+
    LinearFitLow_NumericControl.label.SetText( "Linear fit low:" );
    LinearFitLow_NumericControl.label.SetFixedWidth( labelWidth1 );
    LinearFitLow_NumericControl.slider.SetRange( 0, 100 );
@@ -1976,13 +2062,13 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Rejection2_Sizer.Add( PercentileHigh_NumericControl );
    Rejection2_Sizer.Add( SigmaLow_NumericControl );
    Rejection2_Sizer.Add( SigmaHigh_NumericControl );
+   Rejection2_Sizer.Add( WinsorizationCutoff_NumericControl );
    Rejection2_Sizer.Add( LinearFitLow_NumericControl );
    Rejection2_Sizer.Add( LinearFitHigh_NumericControl );
    Rejection2_Sizer.Add( RangeLow_NumericControl );
    Rejection2_Sizer.Add( RangeHigh_NumericControl );
 
    Rejection2_Control.SetSizer( Rejection2_Sizer );
-   Rejection2_Control.AdjustToContents();
 
    //
 
@@ -2033,7 +2119,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Rejection3_Sizer.Add( CCDScaleNoise_NumericControl );
 
    Rejection3_Control.SetSizer( Rejection3_Sizer );
-   Rejection3_Control.AdjustToContents();
 
    //
 
@@ -2159,7 +2244,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    LargeScaleRejection_Sizer.Add( GrowthHigh_Sizer );
 
    LargeScaleRejection_Control.SetSizer( LargeScaleRejection_Sizer );
-   LargeScaleRejection_Control.AdjustToContents();
 
    //
 
@@ -2253,7 +2337,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    ROI_Sizer.Add( ROIHeight_Sizer );
 
    ROI_Control.SetSizer( ROI_Sizer );
-   ROI_Control.AdjustToContents();
    ROI_Control.OnViewDrag( (Control::view_drag_event_handler)&ImageIntegrationInterface::__ViewDrag, w );
    ROI_Control.OnViewDrop( (Control::view_drop_event_handler)&ImageIntegrationInterface::__ViewDrop, w );
 
@@ -2279,6 +2362,9 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Global_Sizer.Add( ROI_Control );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
+   w.AdjustToContents();
    w.SetFixedWidth();
 
    FormatHints_Control.Hide();
@@ -2296,4 +2382,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF ImageIntegrationInterface.cpp - Released 2019-09-29T12:27:57Z

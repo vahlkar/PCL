@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 01.08.01.0337
+// Standard Debayer Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2019-04-30T16:31:10Z
+// DebayerInstance.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -123,7 +123,7 @@ DebayerInstance::DebayerInstance( const MetaProcess* m ) :
    p_noiseEvaluationAlgorithm( DebayerNoiseEvaluationAlgorithm::Default ),
    p_showImages( TheDebayerShowImagesParameter->DefaultValue() ),
    p_cfaSourceFilePath( TheDebayerCFASourceFilePathParameter->DefaultValue() ),
-   p_noGUIMessages( TheDebayerNoGUIMessagesParameter->DefaultValue() ),
+   p_noGUIMessages( TheDebayerNoGUIMessagesParameter->DefaultValue() ), // ### DEPRECATED
    p_inputHints( TheDebayerInputHintsParameter->DefaultValue() ),
    p_outputHints( TheDebayerOutputHintsParameter->DefaultValue() ),
    p_outputDirectory( TheDebayerOutputDirectoryParameter->DefaultValue() ),
@@ -2512,7 +2512,7 @@ private:
          outputFile.WriteImageProperties( properties );
       }
       else
-         console.WarningLn( "** Warning: The output format cannot store image properties - properties not embedded." );
+         console.WarningLn( "** Warning: The output format cannot store image properties - required properties not embedded." );
 
       if ( outputFormat.CanStoreKeywords() )
       {
@@ -2667,21 +2667,22 @@ bool DebayerInstance::ExecuteOn( View& view )
       DebayerEngine( output, *this, bayerPattern ).Debayer( source );
    }
 
-   outputWindow.MainView().SetProperties( view.GetStorableProperties(), true/*notify*/, ViewPropertyAttribute::Storable );
+   outputWindow.MainView().SetStorableProperties( view.GetStorableProperties(), false/*notify*/ );
 
    String cfaSourceFilePath = p_cfaSourceFilePath.Trimmed();
    if ( cfaSourceFilePath.IsEmpty() )
       cfaSourceFilePath = view.Window().FilePath();
    if ( !cfaSourceFilePath.IsEmpty() )
-      outputWindow.MainView().SetPropertyValue( "PCL:CFASourceFilePath", cfaSourceFilePath, true/*notify*/, ViewPropertyAttribute::Storable );
-   outputWindow.MainView().SetPropertyValue( "PCL:CFASourcePattern", patternId, true/*notify*/, ViewPropertyAttribute::Storable );
-   outputWindow.MainView().SetPropertyValue( "PCL:CFASourceInterpolation", methodId, true/*notify*/, ViewPropertyAttribute::Storable );
+      outputWindow.MainView().SetStorablePropertyValue( "PCL:CFASourceFilePath", cfaSourceFilePath, false/*notify*/ );
+   outputWindow.MainView().SetStorablePropertyValue( "PCL:CFASourcePattern", patternId, false/*notify*/ );
+   outputWindow.MainView().SetStorablePropertyValue( "PCL:CFASourceInterpolation", methodId, false/*notify*/ );
 
    FITSKeywordArray keywords;
    view.Window().GetKeywords( keywords );
 
    keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Demosaicing with "  + PixInsightVersion::AsString() )
             << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaicing with "  + Module->ReadableVersion() )
+            << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaicing with Debayer process" )
             << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.pattern: " + patternId )
             << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.method: "  + methodId );
 
@@ -2748,15 +2749,11 @@ bool DebayerInstance::ExecuteGlobal()
 {
    o_outputFileData = Array<OutputFileData>( p_targets.Length() );
 
-   Exception::DisableGUIOutput( p_noGUIMessages );
-
    {
       String why;
       if ( !CanExecuteGlobal( why ) )
          throw Error( why );
    }
-
-   Exception::DisableGUIOutput();
 
    Console console;
    console.EnableAbort();
@@ -3583,4 +3580,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2019-04-30T16:31:10Z
+// EOF DebayerInstance.cpp - Released 2019-09-29T12:27:58Z

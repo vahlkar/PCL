@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GrayscaleRGBProcesses.h - Released 2019-04-30T16:31:09Z
+// GrayscaleRGBProcesses.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -59,8 +59,6 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// ConvertToGrayscaleProcess
-// ----------------------------------------------------------------------------
 
 class ConvertToGrayscaleProcess : public MetaProcess
 {
@@ -68,19 +66,13 @@ public:
 
    ConvertToGrayscaleProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Category() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-
-   virtual const char** IconImageXPM() const;
-
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
-
-   virtual bool IsAssignable() const;
+   IsoString Id() const override;
+   IsoString Categories() const override;
+   String Description() const override;
+   const char** IconImageXPM() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
+   bool IsAssignable() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -90,8 +82,6 @@ extern ConvertToGrayscaleProcess* TheConvertToGrayscaleProcess;
 PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
-// ConvertToRGBColorProcess
-// ----------------------------------------------------------------------------
 
 class ConvertToRGBColorProcess : public MetaProcess
 {
@@ -99,19 +89,13 @@ public:
 
    ConvertToRGBColorProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Category() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-
-   virtual const char** IconImageXPM() const;
-
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
-
-   virtual bool IsAssignable() const;
+   IsoString Id() const override;
+   IsoString Categories() const override;
+   String Description() const override;
+   const char** IconImageXPM() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
+   bool IsAssignable() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -127,4 +111,4 @@ PCL_END_LOCAL
 #endif   // __GrayscaleRGBProcesses_h
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBProcesses.h - Released 2019-04-30T16:31:09Z
+// EOF GrayscaleRGBProcesses.h - Released 2019-09-29T12:27:57Z

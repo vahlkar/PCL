@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Allocator.h - Released 2019-04-30T16:30:41Z
+// pcl/Allocator.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -311,6 +311,12 @@ inline void Destroy( unsigned char*, unsigned char* ) {}
 inline void Destroy( wchar_t* )           {}
 inline void Destroy( wchar_t*, wchar_t* ) {}
 
+inline void Destroy( char16_t* )            {}
+inline void Destroy( char16_t*, char16_t* ) {}
+
+inline void Destroy( char32_t* )            {}
+inline void Destroy( char32_t*, char32_t* ) {}
+
 inline void Destroy( signed int* )              {}
 inline void Destroy( signed int*, signed int* ) {}
 
@@ -399,4 +405,4 @@ inline void Destroy( long double**, long double** ) {}
 #endif  // __PCL_Allocator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Allocator.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/Allocator.h - Released 2019-09-29T12:27:26Z

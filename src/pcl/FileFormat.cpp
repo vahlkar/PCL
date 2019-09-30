@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/FileFormat.cpp - Released 2019-04-30T16:30:49Z
+// pcl/FileFormat.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -145,7 +145,7 @@ FileFormat::FileFormat( const String& nameExtOrMime, bool toRead, bool toWrite )
       m_data->handle = (*API->FileFormat->GetFileFormatByFileExtension)( ModuleHandle(), nameExtOrMime.c_str(), toRead, toWrite );
       if ( m_data->handle == nullptr )
          throw Error( "FileFormat: No installed image file format was found "
-                      "for the specified file extension \'" + nameExtOrMime + "\'and access conditions" );
+                      "for the specified file extension \'" + nameExtOrMime + "\' and access conditions" );
    }
    else
    {
@@ -518,10 +518,10 @@ Array<FileFormat> FileFormat::AllFormats()
 
 bool FileFormat::IsSupportedFileFormatBySuffix( const String& path, bool toRead, bool toWrite )
 {
-   String suffix = File::ExtractSuffix( path ).Trimmed().CaseFolded();
-   if ( suffix.IsEmpty() )
+   String pathOrSuffix = path.Trimmed();
+   if ( pathOrSuffix.IsEmpty() )
       return false;
-   return (*API->FileFormat->GetFileFormatByFileExtension)( ModuleHandle(), suffix.c_str(), toRead, toWrite ) != nullptr;
+   return (*API->FileFormat->GetFileFormatByFileExtension)( ModuleHandle(), pathOrSuffix.c_str(), toRead, toWrite ) != nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -552,11 +552,8 @@ FindSupportedImageFiles( StringList& list, const String& dirPath, const String& 
          }
          else
          {
-            {
-               String ext = File::ExtractSuffix( info.name );
-               if ( (*API->FileFormat->GetFileFormatByFileExtension)( ModuleHandle(), ext.c_str(), toRead, toWrite ) != nullptr )
-                  list << File::FullPath( dirPath + '/' + info.name );
-            }
+            if ( (*API->FileFormat->GetFileFormatByFileExtension)( ModuleHandle(), info.name.c_str(), toRead, toWrite ) != nullptr )
+               list << File::FullPath( dirPath + '/' + info.name );
          }
 
    for ( const String& dir : directories )
@@ -674,4 +671,4 @@ StringList FileFormat::EphemerisFiles( const String& dirPath, bool recursive, bo
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormat.cpp - Released 2019-04-30T16:30:49Z
+// EOF pcl/FileFormat.cpp - Released 2019-09-29T12:27:33Z

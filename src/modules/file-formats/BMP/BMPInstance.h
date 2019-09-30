@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard BMP File Format Module Version 01.00.04.0353
+// Standard BMP File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// BMPInstance.h - Released 2019-04-30T16:31:00Z
+// BMPInstance.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -79,23 +79,23 @@ public:
       Close();
    }
 
-   virtual ImageDescriptionArray Open( const String& filePath, const IsoString& hints );
-   virtual bool IsOpen() const;
-   virtual String FilePath() const;
-   virtual void Create( const String& filePath, int numberOfImages, const IsoString& hints );
-   virtual void Close();
+   ImageDescriptionArray Open( const String& filePath, const IsoString& hints ) override;
+   bool IsOpen() const override;
+   String FilePath() const override;
+   void Create( const String& filePath, int numberOfImages, const IsoString& hints ) override;
+   void Close() override;
 
-   virtual void ReadImage( Image& );
-   virtual void ReadImage( DImage& );
-   virtual void ReadImage( UInt8Image& );
-   virtual void ReadImage( UInt16Image& );
-   virtual void ReadImage( UInt32Image& );
+   void ReadImage( Image& ) override;
+   void ReadImage( DImage& ) override;
+   void ReadImage( UInt8Image& ) override;
+   void ReadImage( UInt16Image& ) override;
+   void ReadImage( UInt32Image& ) override;
 
-   virtual void WriteImage( const Image& );
-   virtual void WriteImage( const DImage& );
-   virtual void WriteImage( const UInt8Image& );
-   virtual void WriteImage( const UInt16Image& );
-   virtual void WriteImage( const UInt32Image& );
+   void WriteImage( const Image& ) override;
+   void WriteImage( const DImage& ) override;
+   void WriteImage( const UInt8Image& ) override;
+   void WriteImage( const UInt16Image& ) override;
+   void WriteImage( const UInt32Image& ) override;
 
    virtual int DefaultQuality() const
    {
@@ -265,4 +265,4 @@ public:
 #endif   // __BMPInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF BMPInstance.h - Released 2019-04-30T16:31:00Z
+// EOF BMPInstance.h - Released 2019-09-29T12:27:43Z

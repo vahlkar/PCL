@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 01.07.01.0436
+// Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertProcess.h - Released 2019-04-30T16:31:09Z
+// InvertProcess.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -88,4 +88,4 @@ PCL_END_LOCAL
 #endif   // __InvertProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF InvertProcess.h - Released 2019-04-30T16:31:09Z
+// EOF InvertProcess.h - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Blink Process Module Version 01.02.02.0306
+// Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkStatisticsDialog.cpp - Released 2019-04-30T16:31:10Z
+// BlinkStatisticsDialog.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -68,7 +68,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-BlinkStatisticsDialog::BlinkStatisticsDialog( BlinkInterface* parent ) : Dialog(), m_parent( parent ), m_outputDir()
+BlinkStatisticsDialog::BlinkStatisticsDialog( BlinkInterface* parent ) : m_parent( parent )
 {
    // File_ComboBox
    File_ComboBox.SetToolTip( "<p>Select Image to see FITS keywords.</p>" );
@@ -173,9 +173,11 @@ BlinkStatisticsDialog::BlinkStatisticsDialog( BlinkInterface* parent ) : Dialog(
 
    SetSizer( Global_Sizer );
 
+   EnsureLayoutUpdated();
    SetScaledMinWidth( 600 );
 
    SetWindowTitle( DIALOG_TITLE );
+
    Init();
 
    OnReturn( (Dialog::return_event_handler)&BlinkStatisticsDialog::__Dialog_Return, *this );
@@ -773,4 +775,4 @@ void BlinkStatisticsDialog::__Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkStatisticsDialog.cpp - Released 2019-04-30T16:31:10Z
+// EOF BlinkStatisticsDialog.cpp - Released 2019-09-29T12:27:58Z

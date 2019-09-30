@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Iterator.h - Released 2019-04-30T16:30:41Z
+// pcl/Iterator.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -283,7 +283,7 @@ public:
     * Constructs a %ReverseIteratorBase object as a duplicate of the specified
     * bidirectional iterator \a i.
     */
-   ReverseIteratorBase( const BI& i ) : pcl::Iterator<C,T>(), iterator( i )
+   ReverseIteratorBase( const BI& i ) : iterator( i )
    {
    }
 
@@ -516,9 +516,211 @@ distance_type operator -( const ReverseRandomAccessIterator<RI,T>& i, const Reve
 
 // ----------------------------------------------------------------------------
 
+/*!
+ * \class ReverseIterable
+ * \brief Reverse container adaptor
+ *
+ * A utility template class to facilitate the use of ranged-based for loops
+ * with reverse container iteration. Example of use:
+ *
+ * \code
+ * Array<int> A{ 1, 2, 3, 4, 5 };
+ * for ( auto a : A )
+ *    cout << a << ' ';
+ * cout << '\n';
+ * for ( auto a : ReverseIterable( A ) )
+ *    cout << a << ' ';
+ * cout << '\n';
+ * \endcode
+ *
+ * The output is:
+ *
+ * 1 2 3 4 5 \n
+ * 5 4 3 2 1
+ *
+ * \note This class requires a compiler with C++14 support. In addition, the
+ * above example assumes a compiler with support for class template argument
+ * deduction, which is a C++17 feature.
+ */
+template <class C>
+class PCL_CLASS ReverseIterable
+{
+public:
+
+   typedef C   container;
+
+   ReverseIterable( container& c ) : m_container( c )
+   {
+   }
+
+   ReverseIterable( const ReverseIterable& ) = default;
+
+   /*!
+    * Returns a mutable reverse iterator located at the <em>reverse
+    * beginning</em> of the iterated container.
+    *
+    * The reverse beginning corresponds to the last element in the container.
+    */
+   auto Begin()
+   {
+      return m_container.ReverseBegin();
+   }
+
+   /*!
+    * Returns an immutable reverse iterator located at the <em>reverse
+    * beginning</em> of the iterated container.
+    *
+    * The reverse beginning corresponds to the last element in the container.
+    */
+   auto Begin() const
+   {
+      return m_container.ReverseBegin();
+   }
+
+   /*!
+    * Returns an immutable reverse iterator located at the <em>reverse
+    * beginning</em> of the iterated container.
+    *
+    * The reverse beginning corresponds to the last element in the container.
+    */
+   auto ConstBegin() const
+   {
+      return m_container.ConstReverseBegin();
+   }
+
+   /*!
+    * Returns a mutable reverse iterator located at the <em>reverse end</em> of
+    * the iterated container.
+    *
+    * The reverse end corresponds to a nonexistent element immediately before
+    * the first element in the container.
+    */
+   auto End()
+   {
+      return m_container.ReverseEnd();
+   }
+
+   /*!
+    * Returns an immutable reverse iterator located at the <em>reverse end</em>
+    * of the iterated container.
+    *
+    * The reverse end corresponds to a nonexistent element immediately before
+    * the first element in the container.
+    */
+   auto End() const
+   {
+      return m_container.ReverseEnd();
+   }
+
+   /*!
+    * Returns an immutable reverse iterator located at the <em>reverse end</em>
+    * of the iterated container.
+    *
+    * The reverse end corresponds to a nonexistent element immediately before
+    * the first element in the container.
+    */
+   auto ConstEnd() const
+   {
+      return m_container.ConstReverseEnd();
+   }
+
+   /*!
+    * Returns a mutable iterator located at the beginning of the iterated
+    * container.
+    */
+   auto ReverseBegin()
+   {
+      return m_container.Begin();
+   }
+
+   /*!
+    * Returns an immutable iterator located at the beginning of the iterated
+    * container.
+    */
+   auto ReverseBegin() const
+   {
+      return m_container.Begin();
+   }
+
+   /*!
+    * Returns an immutable iterator located at the beginning of the iterated
+    * container.
+    */
+   auto ConstReverseBegin() const
+   {
+      return m_container.ConstBegin();
+   }
+
+   /*!
+    * Returns a mutable iterator located at the end of the iterated container.
+    */
+   auto ReverseEnd()
+   {
+      return m_container.End();
+   }
+
+   /*!
+    * Returns an immutable iterator located at the end of the iterated
+    * container.
+    */
+   auto ReverseEnd() const
+   {
+      return m_container.End();
+   }
+
+   /*!
+    * Returns an immutable iterator located at the end of the iterated
+    * container.
+    */
+   auto ConstReverseEnd() const
+   {
+      return m_container.ConstEnd();
+   }
+
+#ifndef __PCL_NO_STL_COMPATIBLE_ITERATORS
+   /*!
+    * STL-compatible iteration. Equivalent to Begin().
+    */
+   auto begin()
+   {
+      return Begin();
+   }
+
+   /*!
+    * STL-compatible iteration. Equivalent to Begin() const.
+    */
+   auto begin() const
+   {
+      return Begin();
+   }
+
+   /*!
+    * STL-compatible iteration. Equivalent to End().
+    */
+   auto end()
+   {
+      return End();
+   }
+
+   /*!
+    * STL-compatible iteration. Equivalent to End() const.
+    */
+   auto end() const
+   {
+      return End();
+   }
+#endif   // !__PCL_NO_STL_COMPATIBLE_ITERATORS
+
+private:
+
+   container& m_container;
+};
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 #endif  // __PCL_Iterator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Iterator.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/Iterator.h - Released 2019-09-29T12:27:26Z

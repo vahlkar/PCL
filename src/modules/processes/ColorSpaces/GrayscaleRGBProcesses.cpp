@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GrayscaleRGBProcesses.cpp - Released 2019-04-30T16:31:09Z
+// GrayscaleRGBProcesses.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -62,11 +62,11 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ConvertToGrayscaleProcess* TheConvertToGrayscaleProcess = 0;
+ConvertToGrayscaleProcess* TheConvertToGrayscaleProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-ConvertToGrayscaleProcess::ConvertToGrayscaleProcess() : MetaProcess()
+ConvertToGrayscaleProcess::ConvertToGrayscaleProcess()
 {
    TheConvertToGrayscaleProcess = this;
 }
@@ -80,16 +80,9 @@ IsoString ConvertToGrayscaleProcess::Id() const
 
 // ----------------------------------------------------------------------------
 
-IsoString ConvertToGrayscaleProcess::Category() const
+IsoString ConvertToGrayscaleProcess::Categories() const
 {
    return "ColorSpaces, ColorSpaceConversion";
-}
-
-// ----------------------------------------------------------------------------
-
-uint32 ConvertToGrayscaleProcess::Version() const
-{
-   return 0x100;
 }
 
 // ----------------------------------------------------------------------------
@@ -129,7 +122,7 @@ ProcessImplementation* ConvertToGrayscaleProcess::Create() const
 ProcessImplementation* ConvertToGrayscaleProcess::Clone( const ProcessImplementation& p ) const
 {
    const ConvertToGrayscaleInstance* instPtr = dynamic_cast<const ConvertToGrayscaleInstance*>( &p );
-   return (instPtr != 0) ? new ConvertToGrayscaleInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new ConvertToGrayscaleInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -146,11 +139,11 @@ bool ConvertToGrayscaleProcess::IsAssignable() const
 
 // ----------------------------------------------------------------------------
 
-ConvertToRGBColorProcess* TheConvertToRGBColorProcess = 0;
+ConvertToRGBColorProcess* TheConvertToRGBColorProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-ConvertToRGBColorProcess::ConvertToRGBColorProcess() : MetaProcess()
+ConvertToRGBColorProcess::ConvertToRGBColorProcess()
 {
    TheConvertToRGBColorProcess = this;
 }
@@ -164,16 +157,9 @@ IsoString ConvertToRGBColorProcess::Id() const
 
 // ----------------------------------------------------------------------------
 
-IsoString ConvertToRGBColorProcess::Category() const
+IsoString ConvertToRGBColorProcess::Categories() const
 {
    return "ColorSpaces, ColorSpaceConversion";
-}
-
-// ----------------------------------------------------------------------------
-
-uint32 ConvertToRGBColorProcess::Version() const
-{
-   return 0x100;
 }
 
 // ----------------------------------------------------------------------------
@@ -211,7 +197,7 @@ ProcessImplementation* ConvertToRGBColorProcess::Create() const
 ProcessImplementation* ConvertToRGBColorProcess::Clone( const ProcessImplementation& p ) const
 {
    const ConvertToRGBColorInstance* instPtr = dynamic_cast<const ConvertToRGBColorInstance*>( &p );
-   return (instPtr != 0) ? new ConvertToRGBColorInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new ConvertToRGBColorInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -226,4 +212,4 @@ bool ConvertToRGBColorProcess::IsAssignable() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBProcesses.cpp - Released 2019-04-30T16:31:09Z
+// EOF GrayscaleRGBProcesses.cpp - Released 2019-09-29T12:27:57Z

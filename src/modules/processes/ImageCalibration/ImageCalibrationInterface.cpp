@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 01.04.01.0368
+// Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2019-04-30T16:31:09Z
+// ImageCalibrationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1050,7 +1050,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    TargetImages_Sizer.Add( TargetButtons_Sizer );
 
    TargetImages_Control.SetSizer( TargetImages_Sizer );
-   TargetImages_Control.AdjustToContents();
 
    //
 
@@ -1097,7 +1096,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    FormatHints_Sizer.Add( OutputHints_Sizer );
 
    FormatHints_Control.SetSizer( FormatHints_Sizer );
-   FormatHints_Control.AdjustToContents();
 
    //
 
@@ -1284,7 +1282,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    OutputFiles_Sizer.Add( OnError_Sizer );
 
    OutputFiles_Control.SetSizer( OutputFiles_Sizer );
-   OutputFiles_Control.AdjustToContents();
 
    //
 
@@ -1365,7 +1362,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Pedestal_Sizer.Add( PedestalKeyword_Sizer );
 
    Pedestal_Control.SetSizer( Pedestal_Sizer );
-   Pedestal_Control.AdjustToContents();
 
    //
 
@@ -1826,7 +1822,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan_Sizer.Add( Overscan4Target_Sizer );
 
    Overscan_Control.SetSizer( Overscan_Sizer );
-   Overscan_Control.AdjustToContents();
 
    //
 
@@ -1865,7 +1860,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    MasterBias_Sizer.Add( CalibrateMasterBias_Sizer );
 
    MasterBias_Control.SetSizer( MasterBias_Sizer );
-   MasterBias_Control.AdjustToContents();
 
    //
 
@@ -1995,7 +1989,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    MasterDark_Sizer.Add( DarkCFADetectionMode_Sizer );
 
    MasterDark_Control.SetSizer( MasterDark_Sizer );
-   MasterDark_Control.AdjustToContents();
 
    //
 
@@ -2035,7 +2028,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    MasterFlat_Sizer.Add( CalibrateMasterFlat_Sizer );
 
    MasterFlat_Control.SetSizer( MasterFlat_Sizer );
-   MasterFlat_Control.AdjustToContents();
 
    //
 
@@ -2060,13 +2052,13 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    w.SetSizer( Global_Sizer );
 
-   w.SetFixedWidth();
-
    FormatHints_Control.Hide();
    Pedestal_Control.Hide();
    Overscan_Control.Hide();
 
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
+   w.SetFixedWidth();
 }
 
 // ----------------------------------------------------------------------------
@@ -2074,4 +2066,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF ImageCalibrationInterface.cpp - Released 2019-09-29T12:27:57Z

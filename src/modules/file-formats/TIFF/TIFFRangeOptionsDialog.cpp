@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard TIFF File Format Module Version 01.00.07.0375
+// Standard TIFF File Format Module Version 1.0.7
 // ----------------------------------------------------------------------------
-// TIFFRangeOptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// TIFFRangeOptionsDialog.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -62,7 +62,6 @@ namespace pcl
 TIFFRangeOptionsDialog::TIFFRangeOptionsDialog( const TIFFFormat::OutOfRangePolicyOptions& options,
                                                 int bitsPerSample,
                                                 double minSampleValue, double maxSampleValue ) :
-   Dialog(),
    outOfRange( options )
 {
    if ( maxSampleValue < minSampleValue )
@@ -158,23 +157,23 @@ TIFFRangeOptionsDialog::TIFFRangeOptionsDialog( const TIFFFormat::OutOfRangePoli
    Global_Sizer.Add( BottomSection_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
+   AdjustToContents();
+
+   Info_Label.SetMinWidth();
+   Info_Label.AdjustToContents();
+   Info_Label.SetMinHeight();
+
+   AdjustToContents();
+   SetFixedSize();
+
    SetWindowTitle( "TIFF Floating Point Range Options" );
 
-   OnShow( (Control::event_handler)&TIFFRangeOptionsDialog::Control_Show, *this );
    OnReturn( (Dialog::return_event_handler)&TIFFRangeOptionsDialog::Dialog_Return, *this );
 }
 
 // ----------------------------------------------------------------------------
-
-void TIFFRangeOptionsDialog::Control_Show( Control& sender )
-{
-   AdjustToContents();
-   Info_Label.SetMinWidth();
-   Info_Label.AdjustToContents();
-   Info_Label.SetMinHeight();
-   AdjustToContents();
-   SetFixedSize();
-}
 
 void TIFFRangeOptionsDialog::Button_Click( Button& sender, bool checked )
 {
@@ -199,4 +198,4 @@ void TIFFRangeOptionsDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFRangeOptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// EOF TIFFRangeOptionsDialog.cpp - Released 2019-09-29T12:27:43Z

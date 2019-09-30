@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0439
+// Standard FITS File Format Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// FITSFormat.cpp - Released 2019-04-30T16:31:00Z
+// FITSFormat.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -62,7 +62,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FITSFormat::FITSFormat() : MetaFileFormat()
+FITSFormat::FITSFormat()
 {
 }
 
@@ -73,7 +73,7 @@ IsoString FITSFormat::Name() const
 
 StringList FITSFormat::FileExtensions() const
 {
-   return StringList() << ".fit" << ".fits" << ".fts";
+   return StringList() << ".fit" << ".fits" << ".fts" << ".fits.fz";
 }
 
 IsoStringList FITSFormat::MimeTypes() const
@@ -117,7 +117,7 @@ String FITSFormat::Implementation() const
    "National Aeronautics and Space Administration.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2018, Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -447,4 +447,4 @@ FITSFormat::FormatOptions* FITSFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.cpp - Released 2019-04-30T16:31:00Z
+// EOF FITSFormat.cpp - Released 2019-09-29T12:27:43Z

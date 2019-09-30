@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CloneStamp Process Module Version 01.00.02.0367
+// Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInstance.h - Released 2019-04-30T16:31:09Z
+// CloneStampInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -69,28 +69,34 @@ public:
    CloneStampInstance( const MetaProcess* );
    CloneStampInstance( const CloneStampInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-           void TestAssign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View& v, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual bool IsMaskable( const View& v, const ImageWindow& mask ) const;
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   void TestAssign( const ProcessImplementation& );
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View& v, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   bool IsMaskable( const View& v, const ImageWindow& mask ) const override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
    struct BrushData
    {
-      // Brush radius. Radius = 0 means a single-point brush.
+      /*
+       * Brush radius. Radius=0 means a single-point brush.
+       */
       int32 radius = 5;
 
-      // Brush softness. From 0=hard to 1=very_soft. 0.5=Gaussian.
+      /*
+       * Brush softness. From 0=hard to 1=very_soft. 0.5=Gaussian.
+       */
       float softness = 0.5F;
 
-      // Brush opacity. 0=transparent (no action), 1=opaque
-      // Opacity multiplies mask items before mixing cloned pixels.
+      /*
+       * Brush opacity. 0=transparent (no action), 1=opaque
+       * Opacity multiplies mask items before mixing cloned pixels.
+       */
       float opacity = 1.0F;
 
       BrushData() = default;
@@ -106,12 +112,10 @@ private:
 
    struct ClonerData
    {
-      uint32   actionIdx; // action index (on the actions array)
+      uint32   actionIdx = uint32_max; // action index (on the actions array)
       I32Point targetPos; // target location
 
-      ClonerData( const Point& p = Point( 0 ) ) :
-         actionIdx( uint32_max ),
-         targetPos( p )
+      ClonerData( const Point& p = Point( 0 ) ) : targetPos( p )
       {
       }
 
@@ -120,21 +124,13 @@ private:
 
    struct ActionData
    {
-      String    sourceId;     // source image
-      int32     sourceWidth;  // source width in pixels
-      int32     sourceHeight; // source height in pixels
-      I32Point  sourcePos;    // initial source position
-      BrushData brush;        // brush
+      String    sourceId;         // source image
+      int32     sourceWidth = 0;  // source width in pixels
+      int32     sourceHeight = 0; // source height in pixels
+      I32Point  sourcePos = 0;    // initial source position
+      BrushData brush;            // action brush
 
-      ActionData() :
-         sourceId(),
-         sourceWidth( 0 ),
-         sourceHeight( 0 ),
-         sourcePos( 0 ),
-         brush()
-      {
-      }
-
+      ActionData() = default;
       ActionData( const ActionData& ) = default;
    };
 
@@ -144,8 +140,8 @@ private:
    action_sequence actions; // cloner actions
    cloner_sequence cloner;  // cloner items
 
-   int32 width;  // target width in pixels
-   int32 height; // target height in pixels
+   int32 width = 0;  // target width in pixels
+   int32 height = 0; // target height in pixels
 
    static void Apply( ImageVariant& img, const ImageVariant& src, const ImageVariant& mask, bool maskInverted,
                       const BrushData&, cloner_sequence::const_iterator, const Point& delta );
@@ -157,7 +153,7 @@ private:
    uint32 boundsColor; // bounds color
 
    // Private flag to work in coordination with CloneStampInterface::Execute()
-   bool   isInterfaceInstance;
+   bool   isInterfaceInstance = false;
 
    friend class CloneStampEngine;
    friend class CloneStampInterface;
@@ -170,4 +166,4 @@ private:
 #endif   // __CloneStampInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInstance.h - Released 2019-04-30T16:31:09Z
+// EOF CloneStampInstance.h - Released 2019-09-29T12:27:57Z

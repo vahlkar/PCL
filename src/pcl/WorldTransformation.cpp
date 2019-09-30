@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.cpp - Released 2019-04-30T16:30:49Z
+// pcl/WorldTransformation.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -55,6 +55,12 @@
 /*
  * Based on original work contributed by Andrés del Pozo.
  */
+
+#ifndef __PCL_NO_WARNING_MUTE_PRAGMAS
+#  ifdef _MSC_VER
+#    pragma warning( disable: 4804 ) // unsafe use of type 'bool' in operation
+#  endif
+#endif
 
 namespace pcl
 {
@@ -382,4 +388,4 @@ void SplineWorldTransformation::CalculateLinearApproximation()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.cpp - Released 2019-04-30T16:30:49Z
+// EOF pcl/WorldTransformation.cpp - Released 2019-09-29T12:27:33Z

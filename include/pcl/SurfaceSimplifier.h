@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSimplifier.h - Released 2019-04-30T16:30:41Z
+// pcl/SurfaceSimplifier.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -389,16 +389,18 @@ public:
     *
     * \param z          The function values for the input point set.
     *
+    * The template argument C must be a direct container of numeric scalars
+    * with random access semantics, such as Array or GenericVector.
+    *
     * If the specified surface can be simplified with the current working
-    * parameters defined for this object, the output vectors will have less
-    * elements (usually \e much less) than the input vectors. Otherwise an
-    * exact copy of the input vectors will be obtained in \a xs, \a ys and
-    * \a zs. This will happen also if the input vectors have less than four
-    * coordinates, since a triangle cannot be simplified.
+    * parameters defined for this object, the output containers will have less
+    * elements (usually \e much less) than the input containers. Otherwise an
+    * exact copy of the input containers will be obtained in \a xs, \a ys and
+    * \a zs. This will happen also if the input containers have less than four
+    * coordinates, since a triangular facet cannot be simplified.
     */
-   template <typename T>
-   void Simplify( GenericVector<T>& xs, GenericVector<T>& ys, GenericVector<T>& zs,
-                  const GenericVector<T>& x, const GenericVector<T>& y, const GenericVector<T>& z ) const
+   template <class C>
+   void Simplify( C& xs, C& ys, C& zs, const C& x, const C& y, const C& z ) const
    {
       int n = Min( Min( x.Length(), y.Length() ), z.Length() );
       if ( n < 4 )
@@ -423,14 +425,14 @@ public:
       P = Simplify( R );
 
       n = int( P.Length() );
-      xs = GenericVector<T>( n );
-      ys = GenericVector<T>( n );
-      zs = GenericVector<T>( n );
+      xs = C( n );
+      ys = C( n );
+      zs = C( n );
       for ( int i = 0; i < n; ++i )
       {
-         xs[i] = T( P[i].x );
-         ys[i] = T( P[i].y );
-         zs[i] = T( P[i].z );
+         xs[i] = typename C::item_type( P[i].x );
+         ys[i] = typename C::item_type( P[i].y );
+         zs[i] = typename C::item_type( P[i].z );
       }
    }
 
@@ -451,7 +453,7 @@ private:
    {
       point_list Q;
       R.Traverse(
-         [&Q,this]( const rectangle& rect, point_list& points )
+         [&Q,this]( const rectangle& rect, point_list& points, void*& )
          {
             int n = int( points.Length() );
             if ( n < 4 ) // cannot simplify triangles
@@ -576,4 +578,4 @@ private:
 #endif   // __PCL_SurfaceSimplifier_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSimplifier.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/SurfaceSimplifier.h - Released 2019-09-29T12:27:26Z

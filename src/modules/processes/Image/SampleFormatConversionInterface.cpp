@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 01.03.00.0443
+// Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// SampleFormatConversionInterface.cpp - Released 2019-04-30T16:31:09Z
+// SampleFormatConversionInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -413,15 +413,10 @@ SampleFormatConversionInterface::GUIData::GUIData( SampleFormatConversionInterfa
 
    Conversion_GroupBox.SetTitle( "Pixel Sample Format" );
    Conversion_GroupBox.SetSizer( Conversion_Sizer );
-   Conversion_GroupBox.AdjustToContents();
-   Conversion_GroupBox.SetMinSize();
    Conversion_GroupBox.OnViewDrag( (Control::view_drag_event_handler)&SampleFormatConversionInterface::__ViewDrag, w );
    Conversion_GroupBox.OnViewDrop( (Control::view_drop_event_handler)&SampleFormatConversionInterface::__ViewDrop, w );
 
    CurrentViewInfo_Label.SetText( "T\nT" ); // ensure enough space to show two lines of text
-   CurrentViewInfo_Label.AdjustToContents();
-   CurrentViewInfo_Label.SetFixedHeight();
-   CurrentViewInfo_Label.Clear();
    CurrentViewInfo_Label.DisableWordWrapping();
 
    CurrentViewInfo_Sizer.SetMargin( 6 );
@@ -429,9 +424,6 @@ SampleFormatConversionInterface::GUIData::GUIData( SampleFormatConversionInterfa
 
    CurrentViewInfo_GroupBox.SetTitle( "Current Image" );
    CurrentViewInfo_GroupBox.SetSizer( CurrentViewInfo_Sizer );
-   CurrentViewInfo_GroupBox.SetMinWidth( Conversion_GroupBox.Width() );
-   CurrentViewInfo_GroupBox.AdjustToContents();
-   CurrentViewInfo_GroupBox.SetMinHeight();
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
@@ -442,8 +434,20 @@ SampleFormatConversionInterface::GUIData::GUIData( SampleFormatConversionInterfa
       CurrentViewInfo_GroupBox.Hide();
 
    w.SetSizer( Global_Sizer );
+
+   CurrentViewInfo_Label.EnsureLayoutUpdated();
+   CurrentViewInfo_Label.AdjustToContents();
+   CurrentViewInfo_Label.SetFixedHeight();
+
+   CurrentViewInfo_GroupBox.EnsureLayoutUpdated();
+   CurrentViewInfo_GroupBox.AdjustToContents();
+   CurrentViewInfo_GroupBox.SetMinWidth( Conversion_GroupBox.Width() );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
+
+   CurrentViewInfo_Label.Clear();
 }
 
 // ----------------------------------------------------------------------------
@@ -465,4 +469,4 @@ void SampleFormatConversionInterface::GUIData::SetupTrackViewControls( SampleFor
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF SampleFormatConversionInterface.cpp - Released 2019-09-29T12:27:57Z

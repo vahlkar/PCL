@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/ShepardInterpolation.h - Released 2019-04-30T16:30:41Z
+// pcl/ShepardInterpolation.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -57,8 +57,6 @@
 #include <pcl/Defs.h>
 #include <pcl/Diagnostics.h>
 
-#include <pcl/BicubicInterpolation.h>
-#include <pcl/ParallelProcess.h>
 #include <pcl/QuadTree.h>
 #include <pcl/Vector.h>
 
@@ -85,19 +83,26 @@ namespace pcl
  */
 #define __PCL_SHEPARD_DEFAULT_POWER          4
 
+/*
+ * Default regularization (smoothing) factor for local Shepard interpolation,
+ * in the range [0,1). This is a clipping fraction for Winsorization of nearby
+ * function values in the point interpolation routine.
+ */
+#define __PCL_SHEPARD_DEFAULT_REGULARIZATION 0
+
 // ----------------------------------------------------------------------------
 
 /*!
  * \class ShepardInterpolation
- * \brief Two-dimensional surface interpolation with the local Shepard method
+ * \brief Two-dimensional surface interpolation with the local Shepard method.
  *
  * %ShepardInterpolation implements the Shepard method of function
  * interpolation/approximation for arbitrarily distributed input nodes in two
  * dimensions.
  *
  * This class implements local Shepard interpolation with Franke-Little
- * weights, quadtree structures for fast rectangular search of input nodes, and
- * an adaptive local interpolation search routine.
+ * weights, quadtree structures for fast rectangular search of input nodes,
+ * optional regularization, and an adaptive local interpolation search routine.
  *
  * \b References
  *
@@ -108,11 +113,11 @@ namespace pcl
  * Franke, Richard (1982). <em>Scattered data interpolation: tests of some
  * methods</em>. Mathematics of Computation 38 (1982), pp. 181-200.
  *
- * Mark de Berg et al, <em>Computational Geometry: Algorithms and Applications
- * Third Edition,</em> Springer, 2010, Chapter 14.
- *
  * Hanan Samet, <em>Foundations of Multidimensional and Metric Data
  * Structures,</em> Morgan Kaufmann, 2006, Section 1.4.
+ *
+ * Mark de Berg et al, <em>Computational Geometry: Algorithms and Applications
+ * Third Edition,</em> Springer, 2010, Chapter 14.
  *
  * \sa SurfaceSpline, SurfacePolynomial, QuadTree
  */
@@ -270,6 +275,38 @@ public:
    }
 
    /*!
+    * Sets the <em>smoothing factor</em> of the local Shepard interpolation.
+    *
+    * \param r    Smoothing factor in the range [0,1).
+    *
+    * For \a r > 0, a regularized local interpolation will be applied. The \a r
+    * argument represents a fraction of the count of nearby function samples
+    * that will be Winsorized, that is, replaced with their r-th nearest value
+    * at the top and the tail of the interpolation sample.
+    *
+    * For \a r = 0, a normal (unsmoothed) local Shepard interpolation scheme is
+    * used. This is the default state for newly created instances of
+    * %ShepardInterpolation.
+    *
+    * If an invalid value \a r < 0 or \a r &ge; 1 is specified, the default
+    * \a r = 0 smoothing factor will be set.
+    */
+   void SetSmoothing( float r )
+   {
+      PCL_PRECONDITION( r >= 0 && r < 1 )
+      m_r = (r < 0 || r >= 1) ? __PCL_SHEPARD_DEFAULT_REGULARIZATION : r;
+   }
+
+   /*!
+    * Returns the <em>smoothing factor</em> of this local Shepard
+    * interpolation. See SetSmoothing() for more information.
+    */
+   float Smoothing() const
+   {
+      return m_r;
+   }
+
+   /*!
     * Generation of a two-dimensional surface approximation.
     *
     * \param x       X node coordinates.
@@ -364,7 +401,8 @@ public:
       for ( double R = m_R; ; R += m_R )
       {
          int m = 0;
-         double R2 = R*R, W = 0, z = 0;
+         double R2 = R*R;
+         Array<DPoint> V;
          m_T.Search( DRect( dx-R, dy-R, dx+R, dy+R ),
                      [&]( const vector_type& v, void* )
                      {
@@ -374,24 +412,52 @@ public:
                         if ( r2 < R2 )
                         {
                            ++m;
+                           double w = PowI( 1 - Sqrt( r2 )/R, m_mu );
+                           /*
+                            * N.B. The equivalent code below is about 400 times
+                            * slower than the above call to PowI() for m_mu=16.
+                            * Measured on a TR 2990WX.
+                            *
                            double w = 1 - Sqrt( r2 )/R;
                            for ( int i = 1; i < m_mu; ++i )
                               w *= w;
-                           W += w;
-                           z += w*v[2];
+                            */
+                           V << DPoint( w, w*v[2] );
                         }
                      },
                      nullptr );
          if ( m >= 3 )
          {
-            if ( 1 + W != 1 )
-               return T( z/W );
+            if ( m_r > 0 )
+            {
+               /*
+                * Regularization by Winsorization of the weighted sample.
+                */
+               int r = Min( TruncInt( m_r * m ), (m >> 1) - (m & 1)^1 );
+               if ( r > 0 )
+               {
+                  V.Sort( []( const DPoint& v1, const DPoint& v2 )
+                     {
+                        return v1.y < v2.y;
+                     } );
+                  for ( int i = 0; i < r; ++i )
+                  {
+                     V[i].y = V[r].y;
+                     V[m-i-1].y = V[m-r-1].y;
+                  }
+               }
+            }
+            DPoint Wz( 0 );
+            for ( const DPoint& v : V )
+               Wz += v;
+            if ( 1 + Wz.x != 1 )
+               return T( Wz.y/Wz.x );
             if ( R >= 1 )
                break; // degenerate!
          }
       }
 
-      return 0; // !?
+      return 0; // empty!?
    }
 
    /*!
@@ -419,8 +485,9 @@ protected:
    double      m_r0 = 1;   // scaling factor for normalization of node coordinates
    double      m_x0 = 0;   // zero offset for normalization of X node coordinates
    double      m_y0 = 0;   // zero offset for normalization of Y node coordinates
-   int         m_mu = __PCL_SHEPARD_DEFAULT_POWER;         // power parameter (leveling factor)
-   double      m_R  = __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS; // initial search radius
+   int         m_mu = __PCL_SHEPARD_DEFAULT_POWER;          // power parameter (leveling factor)
+   double      m_R  = __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS;  // initial search radius
+   float       m_r  = __PCL_SHEPARD_DEFAULT_REGULARIZATION; // regularization (clipping fraction)
    search_tree m_T;        // tree points store input coordinates and function values
 
    /*!
@@ -592,9 +659,11 @@ public:
     * See the corresponding Initialize() member function for a detailed
     * description of parameters.
     */
-   PointShepardInterpolation( const point_list& P1, const point_list& P2, float smoothness = 0, int order = 2 )
+   PointShepardInterpolation( const point_list& P1, const point_list& P2,
+                              int power = __PCL_SHEPARD_DEFAULT_POWER,
+                              double radius = __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS )
    {
-      Initialize( P1, P2, smoothness, order );
+      Initialize( P1, P2, power, radius );
    }
 
    /*!
@@ -640,6 +709,11 @@ public:
     *                   value is 0.1. See ShepardInterpolation::SetRadius() for
     *                   a complete description of this parameter.
     *
+    * \param smoothing  Smoothing factor. Must be in the range [0,1). The
+    *                   default value is zero. See
+    *                   ShepardInterpolation::SetSmoothing() for a complete
+    *                   description of this parameter.
+    *
     * The input nodes can be arbitrarily distributed and don't need to follow
     * any specific order. However, all node points should be distinct with
     * respect to the machine epsilon for the floating point type used to
@@ -650,12 +724,14 @@ public:
     */
    void Initialize( const point_list& P1, const point_list& P2,
                     int power = __PCL_SHEPARD_DEFAULT_POWER,
-                    double radius = __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS )
+                    double radius = __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS,
+                    float smoothing = __PCL_SHEPARD_DEFAULT_REGULARIZATION )
    {
       PCL_PRECONDITION( P1.Length() >= 3 )
       PCL_PRECONDITION( P1.Length() <= P2.Length() )
       PCL_PRECONDITION( power > 0 )
       PCL_PRECONDITION( radius > 0 )
+      PCL_PRECONDITION( smoothing >= 0 && smoothing < 1 )
 
       m_Sx.Clear();
       m_Sy.Clear();
@@ -665,6 +741,9 @@ public:
 
       m_Sx.SetRadius( radius );
       m_Sy.SetRadius( radius );
+
+      m_Sx.SetSmoothing( smoothing );
+      m_Sy.SetSmoothing( smoothing );
 
       if ( P1.Length() < 3 || P2.Length() < 3 )
          throw Error( "PointShepardInterpolation::Initialize(): At least three input nodes must be specified." );
@@ -760,4 +839,4 @@ private:
 #endif   // __PCL_ShepardInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ShepardInterpolation.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/ShepardInterpolation.h - Released 2019-09-29T12:27:26Z

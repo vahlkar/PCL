@@ -1,6 +1,6 @@
 /* -*- C++ -*-
  * File: var_defines.h
- * Copyright 2008-2018 LibRaw LLC (info@libraw.org)
+ * Copyright 2008-2019 LibRaw LLC (info@libraw.org)
  * Created: Sat Mar  8, 2008
  *
  * LibRaw redefinitions of dcraw internal variables
@@ -76,7 +76,6 @@ it under the terms of the one of two licenses as you choose:
 #define flash_used      (imgdata.color.flash_used)
 #define canon_ev        (imgdata.color.canon_ev)
 #define model2          (imgdata.color.model2)
-#define baseline_exposure  (imgdata.color.baseline_exposure)
 
 //imgdata.thumbnail
 
@@ -95,6 +94,9 @@ it under the terms of the one of two licenses as you choose:
 #define gpsdata         (imgdata.other.gpsdata)
 #define desc            (imgdata.other.desc)
 #define artist          (imgdata.other.artist)
+#define is_NikonTransfer (imgdata.other.is_NikonTransfer)
+#define is_4K_RAFdata    (imgdata.other.is_4K_RAFdata)
+#define is_PentaxRicohMakernotes    (imgdata.other.is_PentaxRicohMakernotes)
 
 //imgdata.output
 #define greybox         (imgdata.params.greybox)
@@ -161,6 +163,7 @@ it under the terms of the one of two licenses as you choose:
 #define OlyID           (libraw_internal_data.identify_data.OlyID)
 #define tiff_nifds      (libraw_internal_data.identify_data.tiff_nifds)
 #define tiff_flip       (libraw_internal_data.identify_data.tiff_flip)
+#define metadata_blocks (libraw_internal_data.identify_data.metadata_blocks)
 
 //libraw_internal_data.unpacker_data
 #define order           (libraw_internal_data.unpacker_data.order)
@@ -178,6 +181,7 @@ it under the terms of the one of two licenses as you choose:
 #define tiff_samples    (libraw_internal_data.unpacker_data.tiff_samples)
 #define tiff_bps        (libraw_internal_data.unpacker_data.tiff_bps)
 #define tiff_compress   (libraw_internal_data.unpacker_data.tiff_compress)
+#define tiff_sampleformat (libraw_internal_data.unpacker_data.tiff_sampleformat)
 #define zero_after_ff   (libraw_internal_data.unpacker_data.zero_after_ff)
 #define tile_width      (libraw_internal_data.unpacker_data.tile_width)
 #define tile_length     (libraw_internal_data.unpacker_data.tile_length)

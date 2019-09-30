@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/DrizzleData.cpp - Released 2019-04-30T16:30:49Z
+// pcl/DrizzleData.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -66,14 +66,23 @@ void DrizzleData::Clear()
 {
    m_sourceFilePath = m_cfaSourceFilePath = m_cfaSourcePattern = m_alignTargetFilePath = String();
    m_referenceWidth = m_referenceHeight = -1;
+   m_alignmentOrigin = 0.5;
    m_H = Matrix();
    m_S.Clear();
-   m_Sx = m_Sy = spline();
+   m_Sinv.Clear();
+   m_LP1.Clear();
+   m_LD2.Clear();
+   m_LP2.Clear();
+   m_LD1.Clear();
+   m_LW.Clear();
+   m_Sx = m_Sy = m_Sxinv = m_Syinv = spline();
    ClearIntegrationData();
 }
 
 void DrizzleData::ClearIntegrationData()
 {
+   m_metadata.Clear();
+   m_pedestal = 0;
    m_location = m_referenceLocation = m_scale = m_unitScale = m_weight = m_unitWeight = Vector();
    m_rejectionLowCount = m_rejectionHighCount = UI64Vector();
    m_rejectionMap.FreeData();
@@ -129,6 +138,10 @@ XMLDocument* DrizzleData::Serialize() const
       << XMLAttribute( "height", String( m_referenceHeight ) )
       << (m_location.IsEmpty() ? XMLAttribute() : XMLAttribute( "numberOfChannels", String( m_location.Length() ) )) );
 
+   new XMLElement( *root, "AlignmentOrigin", XMLAttributeList()
+                                 << XMLAttribute( "x", String( m_alignmentOrigin.x ) )
+                                 << XMLAttribute( "y", String( m_alignmentOrigin.y ) ) );
+
    if ( !m_H.IsEmpty() )
       *(new XMLElement( *root, "AlignmentMatrix" )) << new XMLText( String().ToCommaSeparated( m_H ) );
 
@@ -136,7 +149,37 @@ XMLDocument* DrizzleData::Serialize() const
    {
       SerializeSpline( new XMLElement( *root, "AlignmentSplineX" ), m_S.m_Sx );
       SerializeSpline( new XMLElement( *root, "AlignmentSplineY" ), m_S.m_Sy );
+
+      if ( m_Sinv.IsValid() )
+      {
+         SerializeSpline( new XMLElement( *root, "AlignmentInverseSplineX" ), m_Sinv.m_Sx );
+         SerializeSpline( new XMLElement( *root, "AlignmentInverseSplineY" ), m_Sinv.m_Sy );
+      }
+
+      if ( !m_LP1.IsEmpty() && !m_LD2.IsEmpty() )
+      {
+         XMLElement* element = new XMLElement( *root, "LocalDistortionModel", XMLAttributeList()
+                                 << XMLAttribute( "order", String( m_localDistortionOrder ) )
+                                 << XMLAttribute( "regularization", String( m_localDistortionRegularization ) )
+                                 << XMLAttribute( "extrapolation", String( m_localDistortionExtrapolation ) ) );
+         SerializeDistortionPoints( new XMLElement( *element, "ReferencePoints" ), m_LP1 );
+         SerializeDistortionPoints( new XMLElement( *element, "TargetDisplacements" ), m_LD2 );
+         if ( !m_LW.IsEmpty() )
+            SerializeDistortionWeights( new XMLElement( *element, "PointWeights" ), m_LW );
+         if ( !m_LP2.IsEmpty() && !m_LD1.IsEmpty() )
+         {
+            SerializeDistortionPoints( new XMLElement( *element, "TargetPoints" ), m_LP2 );
+            SerializeDistortionPoints( new XMLElement( *element, "ReferenceDisplacements" ), m_LD1 );
+         }
+      }
    }
+
+   if ( !m_metadata.IsEmpty() )
+      *(new XMLElement( *root, "Metadata", XMLAttributeList()
+                           << XMLAttribute( "encoding", "Base64" ) )) << new XMLText( IsoString::ToBase64( m_metadata ) );
+
+   if ( m_pedestal > 0 )
+      *(new XMLElement( *root, "Pedestal" )) << new XMLText( String( m_pedestal ) );
 
    if ( !m_location.IsEmpty() )
    {
@@ -405,6 +448,15 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
             if ( m_referenceWidth < 1 || m_referenceHeight < 1 )
                throw Error( "Invalid reference dimension(s)." );
          }
+         else if ( element.Name() == "AlignmentOrigin" )
+         {
+            String x = element.AttributeValue( "x" );
+            String y = element.AttributeValue( "y" );
+            if ( x.IsEmpty() || y.IsEmpty() )
+               throw Error( "Missing alignment origin attribute(s)." );
+            m_alignmentOrigin.x = x.ToDouble();
+            m_alignmentOrigin.y = y.ToDouble();
+         }
          else if ( element.Name() == "AlignmentMatrix" )
          {
             Vector v = ParseListOfRealValues( element, 9, 9 );
@@ -417,6 +469,94 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
          else if ( element.Name() == "AlignmentSplineY" )
          {
             ParseSpline( m_Sy, element );
+         }
+         else if ( element.Name() == "AlignmentInverseSplineX" )
+         {
+            ParseSpline( m_Sxinv, element );
+         }
+         else if ( element.Name() == "AlignmentInverseSplineY" )
+         {
+            ParseSpline( m_Syinv, element );
+         }
+         else if ( element.Name() == "LocalDistortionModel" )
+         {
+            String s = element.AttributeValue( "order" );
+            if ( !s.IsEmpty() )
+            {
+               m_localDistortionOrder = s.ToInt();
+               if ( m_localDistortionOrder < 2 || m_localDistortionOrder > 6 )
+                  throw Error( "Invalid local distortion derivative order."  );
+            }
+
+            s = element.AttributeValue( "regularization" );
+            if ( !s.IsEmpty() )
+            {
+               m_localDistortionRegularization = s.ToFloat();
+               if ( m_localDistortionRegularization < 0 )
+                  throw Error( "Invalid local distortion regularization factor."  );
+            }
+
+            s = element.AttributeValue( "extrapolation" );
+            if ( !s.IsEmpty() )
+               m_localDistortionExtrapolation = s.ToBool();
+
+            for ( const XMLNode& node : element )
+            {
+               if ( !node.IsElement() )
+               {
+                  WarnOnUnexpectedChildNode( node, "LocalDistortionModel" );
+                  continue;
+               }
+               const XMLElement& element = static_cast<const XMLElement&>( node );
+               if ( element.Name() == "ReferencePoints" )
+                  m_LP1 = ParseDistortionPoints( element );
+               else if ( element.Name() == "TargetDisplacements" )
+                  m_LD2 = ParseDistortionPoints( element );
+               else if ( element.Name() == "PointWeights" )
+                  m_LW = ParseDistortionWeights( element );
+               else if ( element.Name() == "TargetPoints" )
+                  m_LP2 = ParseDistortionPoints( element );
+               else if ( element.Name() == "ReferenceDisplacements" )
+                  m_LD1 = ParseDistortionPoints( element );
+               else
+                  WarnOnUnknownChildElement( element, "LocalDistortionModel" );
+            }
+
+            if ( m_LP1.IsEmpty() || m_LD2.IsEmpty() )
+               throw Error( "Missing or incomplete local distortion model data." );
+            if ( m_LP1.Length() < 3 || m_LD2.Length() < 3 || !m_LP2.IsEmpty() && (m_LP2.Length() < 3 || m_LD1.Length() < 3) )
+               throw Error( "Insufficient local distortion point data."  );
+            if ( !m_LW.IsEmpty() && m_LW.Length() < m_LP1.Length() )
+               throw Error( "Insufficient local distortion weight data."  );
+            if ( m_LP1.Length() != m_LD2.Length() || m_LP2.Length() != m_LD1.Length() )
+               throw Error( "Incongruent local distortion data."  );
+         }
+         else if ( element.Name() == "Metadata" )
+         {
+            if ( !ignoreIntegrationData )
+            {
+               String encoding = element.AttributeValue( "encoding" );
+               if ( encoding.IsEmpty() )
+                  m_metadata = element.Text().Trimmed();
+               else
+               {
+                  if ( encoding.CaseFolded() != "base64" )
+                     throw Error( "Invalid metadata encoding attribute value: Expected Base64, got '" + encoding + "'." );
+                  ByteArray data = IsoString( element.Text().Trimmed() ).FromBase64();
+                  m_metadata = String( reinterpret_cast<const char16_type*>( data.Begin() ),
+                                       reinterpret_cast<const char16_type*>( data.End() ) );
+               }
+            }
+         }
+         else if ( element.Name() == "Pedestal" )
+         {
+            if ( !ignoreIntegrationData )
+            {
+               String pedestal = element.Text().Trimmed();
+               m_pedestal = pedestal.ToDouble();
+               if ( m_pedestal < 0 || m_pedestal >= 1 )
+                  throw Error( "Pedestal value out of range: '" + pedestal + "'." );
+            }
          }
          else if ( element.Name() == "LocationEstimates" )
          {
@@ -481,6 +621,12 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
    if ( m_Sx.IsValid() != m_Sy.IsValid() )
       throw Error( "Missing required AlignmentSplineX/AlignmentSplineY element." );
 
+   if ( m_Sxinv.IsValid() != m_Syinv.IsValid() )
+      throw Error( "Missing required inverse AlignmentSplineX/AlignmentSplineY element." );
+
+   if ( m_Sxinv.IsValid() && !m_Sx.IsValid() )
+      throw Error( "Missing required AlignmentSplineX and AlignmentSplineY elements." );
+
    if ( !ignoreIntegrationData )
    {
       if ( m_location.IsEmpty() )
@@ -523,6 +669,14 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
       m_S.m_Sy = m_Sy;
       m_Sx.Clear();
       m_Sy.Clear();
+
+      if ( m_Sxinv.IsValid() )
+      {
+         m_Sinv.m_Sx = m_Sxinv;
+         m_Sinv.m_Sy = m_Syinv;
+         m_Sxinv.Clear();
+         m_Syinv.Clear();
+      }
    }
 }
 
@@ -570,59 +724,7 @@ void DrizzleData::ParseRejectionMap( const XMLElement& root )
          if ( channel == numberOfChannels )
             throw Error( "Unexpected ChannelData child element - all rejection map channels are already defined." );
 
-         ByteArray channelData;
-
-         String compressionName = element.AttributeValue( "compression" ).CaseFolded();
-         if ( !compressionName.IsEmpty() )
-         {
-            AutoPointer<Compression> compression;
-            if ( compressionName == "lz4" )
-               compression = new LZ4Compression;
-            else if ( compressionName == "lz4hc" )
-               compression = new LZ4HCCompression;
-            else if ( compressionName == "zlib" )
-               compression = new ZLibCompression;
-            else
-               throw Error( "Unknown or unsupported compression codec '" + compressionName + '\'' );
-
-            Compression::subblock_list subblocks;
-
-            for ( const XMLNode& node : element )
-            {
-               if ( !node.IsElement() )
-               {
-                  WarnOnUnexpectedChildNode( node, "ChannelData" );
-                  continue;
-               }
-
-               const XMLElement& subElement = static_cast<const XMLElement&>( node );
-
-               if ( subElement.Name() == "Subblock" )
-               {
-                  Compression::Subblock subblock;
-                  s = subElement.AttributeValue( "uncompressedSize" );
-                  if ( s.IsEmpty() )
-                     throw Error( "Missing subblock uncompressedSize attribute." );
-                  subblock.uncompressedSize = s.ToUInt64();
-                  subblock.compressedData = IsoString( subElement.Text().Trimmed() ).FromBase64();
-                  subblocks << subblock;
-               }
-               else
-               {
-                  WarnOnUnknownChildElement( element, "ChannelData" );
-               }
-            }
-
-            if ( subblocks.IsEmpty() )
-               throw Error( "Parsing xdrz RejectionMap ChannelData element: Missing Subblock child element(s)." );
-
-            channelData = compression->Uncompress( subblocks );
-         }
-         else
-         {
-            channelData = IsoString( element.Text().Trimmed() ).FromBase64();
-         }
-
+         ByteArray channelData = ParseMaybeCompressedData( element );
          if ( channelData.Size() != m_rejectionMap.ChannelSize() )
             throw Error( "Parsing xdrz RejectionMap ChannelData element: Invalid channel data size: "
                "Expected " + String( m_rejectionMap.ChannelSize() ) + " bytes, "
@@ -651,27 +753,8 @@ void DrizzleData::SerializeRejectionMap( XMLElement* root ) const
    root->SetAttribute( "numberOfChannels", String( m_rejectionMap.NumberOfChannels() ) );
 
    for ( int c = 0; c < m_rejectionMap.NumberOfChannels(); ++c )
-   {
-      XMLElement* element = new XMLElement( *root, "ChannelData" );
-      if ( m_compressionEnabled )
-      {
-         LZ4Compression compression;
-         Compression::subblock_list subblocks = compression.Compress( m_rejectionMap[c], m_rejectionMap.ChannelSize() );
-         if ( !subblocks.IsEmpty() )
-         {
-            element->SetAttribute( "compression", compression.AlgorithmName() );
-            for ( const Compression::Subblock& subblock : subblocks )
-            {
-               XMLElement* subblockElement = new XMLElement( *element, "Subblock" );
-               subblockElement->SetAttribute( "uncompressedSize", String( subblock.uncompressedSize ) );
-               *subblockElement << new XMLText( IsoString::ToBase64( subblock.compressedData ) );
-            }
-            continue;
-         }
-      }
-
-      *element << new XMLText( IsoString::ToBase64( m_rejectionMap[c], m_rejectionMap.ChannelSize() ) );
-   }
+      SerializeMaybeCompressedData( new XMLElement( *root, "ChannelData" ),
+                                    m_rejectionMap[c], m_rejectionMap.ChannelSize() );
 }
 
 // ----------------------------------------------------------------------------
@@ -733,25 +816,15 @@ void DrizzleData::ParseSpline( DrizzleData::spline& S, const XMLElement& root )
       const XMLElement& element = static_cast<const XMLElement&>( node );
 
       if ( element.Name() == "NodeXCoordinates" )
-      {
          S.m_x = ParseBase64EncodedVector<vector_spline::spline::scalar>( element, 3 );
-      }
       else if ( element.Name() == "NodeYCoordinates" )
-      {
          S.m_y = ParseBase64EncodedVector<vector_spline::spline::scalar>( element, 3 );
-      }
       else if ( element.Name() == "Coefficients" )
-      {
          S.m_spline = ParseBase64EncodedVector<vector_spline::spline::scalar>( element, 3 );
-      }
       else if ( element.Name() == "NodeWeights" )
-      {
          S.m_weights = ParseBase64EncodedVector<FVector::scalar>( element, 3 );
-      }
       else
-      {
          WarnOnUnknownChildElement( element, "AlignmentSplineX/AlignmentSplineY" );
-      }
    }
 
    if ( S.m_x.Length() < 3 )
@@ -786,6 +859,139 @@ void DrizzleData::SerializeSpline( XMLElement* root, const DrizzleData::spline& 
       if ( !S.m_weights.IsEmpty() )
          (*new XMLElement( *root, "NodeWeights" )) << new XMLText( IsoString::ToBase64( S.m_weights ) );
    }
+}
+
+// ----------------------------------------------------------------------------
+
+DrizzleData::distortion_vector DrizzleData::ParseDistortionPoints( const XMLElement& root )
+{
+   ByteArray pointData = ParseMaybeCompressedData( root );
+   if ( pointData.Size() % sizeof( distortion_vector::item_type ) )
+      throw Error( "Parsing distortion points vector from " + root.Name() + " element: Invalid data length." );
+
+   distortion_vector D( pointData.Size()/sizeof( distortion_vector::item_type ) );
+   ::memcpy( D.Begin(), pointData.Begin(), pointData.Size() );
+   return D;
+}
+
+// ----------------------------------------------------------------------------
+
+void DrizzleData::SerializeDistortionPoints( XMLElement* root, const distortion_vector& points ) const
+{
+   SerializeMaybeCompressedData( root, points.Begin(), points.Size(), sizeof( distortion_vector::item_type::component ) );
+}
+
+// ----------------------------------------------------------------------------
+
+DrizzleData::weight_vector DrizzleData::ParseDistortionWeights( const XMLElement& root )
+{
+   ByteArray weightData = ParseMaybeCompressedData( root );
+   if ( weightData.Size() % sizeof( weight_vector::item_type ) )
+      throw Error( "Parsing distortion weights vector from " + root.Name() + " element: Invalid data length." );
+
+   weight_vector W( weightData.Size()/sizeof( weight_vector::item_type ) );
+   ::memcpy( W.Begin(), weightData.Begin(), weightData.Size() );
+   return W;
+}
+
+// ----------------------------------------------------------------------------
+
+void DrizzleData::SerializeDistortionWeights( XMLElement* root, const weight_vector& weights ) const
+{
+   SerializeMaybeCompressedData( root, weights.Begin(), weights.Size(), sizeof( weight_vector::item_type ) );
+}
+
+// ----------------------------------------------------------------------------
+
+ByteArray DrizzleData::ParseMaybeCompressedData( const XMLElement& root )
+{
+   String algorithmName = root.AttributeValue( "compression" ).CaseFolded();
+   if ( algorithmName.IsEmpty() )
+      return IsoString( root.Text().Trimmed() ).FromBase64();
+
+   AutoPointer<Compression> compression;
+   if ( algorithmName == "lz4" || algorithmName == "lz4+sh" )
+      compression = new LZ4Compression;
+   else if ( algorithmName == "lz4hc" || algorithmName == "lz4hc+sh" )
+      compression = new LZ4HCCompression;
+   else if ( algorithmName == "zlib" || algorithmName == "zlib+sh" )
+      compression = new ZLibCompression;
+   else
+      throw Error( "Unknown or unsupported compression codec '" + algorithmName + '\'' );
+
+   if ( algorithmName.EndsWith( "+sh" ) )
+   {
+      String itemSize = root.AttributeValue( "itemSize" ).CaseFolded();
+      if ( !itemSize.IsEmpty() )
+      {
+         compression->SetItemSize( itemSize.ToUInt() );
+         compression->EnableByteShuffling();
+      }
+   }
+
+   Compression::subblock_list subblocks;
+
+   for ( const XMLNode& node : root )
+   {
+      if ( !node.IsElement() )
+      {
+         WarnOnUnexpectedChildNode( node, root.Name() );
+         continue;
+      }
+
+      const XMLElement& element = static_cast<const XMLElement&>( node );
+
+      if ( element.Name() == "Subblock" )
+      {
+         Compression::Subblock subblock;
+         String size = element.AttributeValue( "uncompressedSize" );
+         if ( size.IsEmpty() )
+            throw Error( "Missing subblock uncompressedSize attribute." );
+         subblock.uncompressedSize = size.ToUInt64();
+         subblock.compressedData = IsoString( element.Text().Trimmed() ).FromBase64();
+         subblocks << subblock;
+      }
+      else
+      {
+         WarnOnUnknownChildElement( root, root.Name() );
+      }
+   }
+
+   if ( subblocks.IsEmpty() )
+      throw Error( "Parsing xdrz " + root.Name() + " element: Missing Subblock child element(s)." );
+
+   return compression->Uncompress( subblocks );
+}
+
+// ----------------------------------------------------------------------------
+
+void DrizzleData::SerializeMaybeCompressedData( XMLElement* root, const void* data, size_type size, size_type itemSize ) const
+{
+   if ( m_compressionEnabled )
+   {
+      LZ4Compression compression;
+      if ( itemSize > 1 )
+      {
+         compression.SetItemSize( itemSize );
+         compression.EnableByteShuffling();
+      }
+      Compression::subblock_list subblocks = compression.Compress( data, size );
+      if ( !subblocks.IsEmpty() )
+      {
+         root->SetAttribute( "compression", compression.AlgorithmName().CaseFolded() + ((itemSize > 1) ? "+sh" : "") );
+         if ( itemSize > 1 )
+            root->SetAttribute( "itemSize", String( itemSize ) );
+         for ( const Compression::Subblock& subblock : subblocks )
+         {
+            XMLElement* subblockElement = new XMLElement( *root, "Subblock" );
+            subblockElement->SetAttribute( "uncompressedSize", String( subblock.uncompressedSize ) );
+            *subblockElement << new XMLText( IsoString::ToBase64( subblock.compressedData ) );
+         }
+         return;
+      }
+   }
+
+   *root << new XMLText( IsoString::ToBase64( data, size ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -981,4 +1187,4 @@ void DrizzleData::PlainTextSplineDecoder::ProcessBlock( IsoString& s, const IsoS
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/DrizzleData.cpp - Released 2019-04-30T16:30:49Z
+// EOF pcl/DrizzleData.cpp - Released 2019-09-29T12:27:33Z

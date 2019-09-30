@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 01.04.04.0035
+// Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2019-04-30T16:31:10Z
+// SubframeSelectorInstance.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -591,80 +591,65 @@ bool SubframeSelectorInstance::TestStarDetector()
    inputThreadData.showStarDetectionMaps = true;
    inputThreadData.instance = this;
 
+   /*
+    * For all errors generated, we want a report on the console. This is
+    * customary in PixInsight for all batch processes.
+    */
+   Exception::EnableConsoleOutput();
+   Exception::DisableGUIOutput();
+
+   console.EnableAbort();
+   Module->ProcessEvents();
+
    try
    {
       /*
-       * For all errors generated, we want a report on the console. This is
-       * customary in PixInsight for all batch processes.
+       * Extract the first target frame from the targets list, load and
+       * measure it.
        */
-      Exception::EnableConsoleOutput();
-      Exception::DisableGUIOutput();
+      SubframeItem item = *p_subframes;
 
-      console.EnableAbort();
+      console.WriteLn( String().Format( "<end><cbr><br>Measuring subframe %u of %u", 1, p_subframes.Length() ) );
       Module->ProcessEvents();
+
+      SubframeSelectorMeasureThread* thread =
+         new SubframeSelectorMeasureThread( 1, LoadSubframe( item.path ), item.path, &inputThreadData );
+
+      // Keep the GUI responsive, last chance to abort
+      Module->ProcessEvents();
+      if ( console.AbortRequested() )
+         throw ProcessAborted();
+
+      thread->Run();
+
+      Module->ProcessEvents();
+
+      return true;
+
+   } // try
+   catch ( ProcessAborted& )
+   {
+      /*
+       * The user has requested to abort the process.
+       */
+      throw;
+   }
+   catch ( ... )
+   {
+      if ( console.AbortRequested() )
+         throw ProcessAborted();
 
       try
       {
-         /*
-          * Extract the first target
-          * frame from the targets list,
-          * load and calibrate it.
-          */
-         SubframeItem item = *p_subframes;
-
-         console.WriteLn( String().Format( "<end><cbr><br>Measuring subframe %u of %u", 1, p_subframes.Length() ) );
-         Module->ProcessEvents();
-
-         SubframeSelectorMeasureThread* thread =
-            new SubframeSelectorMeasureThread( 1, LoadSubframe( item.path ), item.path, &inputThreadData );
-
-         // Keep the GUI responsive, last chance to abort
-         Module->ProcessEvents();
-         if ( console.AbortRequested() )
-            throw ProcessAborted();
-
-         thread->Run();
-
-         Module->ProcessEvents();
-
-         return true;
-
-      } // try
-      catch ( ProcessAborted& )
-      {
-         /*
-          * The user has requested to abort the process.
-          */
          throw;
       }
-      catch ( ... )
-      {
-         /*
-          * The user has requested to abort the process.
-          */
-         if ( console.AbortRequested() )
-            throw ProcessAborted();
+      ERROR_HANDLER
 
-         try
-         {
-            throw;
-         }
-         ERROR_HANDLER
+      console.ResetStatus();
+      console.EnableAbort();
 
-         console.ResetStatus();
-         console.EnableAbort();
-
-         console.NoteLn( "Abort on error." );
-         throw ProcessAborted();
-      }
-   } // try
-   catch ( ... )
-   {
-      /*
-       * All breaking errors are caught here.
-       */
-      Exception::EnableGUIOutput( true );
-      throw;
+      console.NoteLn( "Abort on error." );
+      throw ProcessAborted();
    }
 }
 
@@ -724,232 +709,230 @@ bool SubframeSelectorInstance::Measure()
             console.NoteLn( "<end><cbr><br>* Loaded cache: " + String( TheSubframeSelectorCache->NumberOfItems() ) + " item(s)" );
    }
 
+   /*
+    * For all errors generated, we want a report on the console. This is
+    * customary in PixInsight for all batch processes.
+    */
+   Exception::EnableConsoleOutput();
+   Exception::DisableGUIOutput();
+
+   console.EnableAbort();
+   Module->ProcessEvents();
+
+   /*
+    * Begin subframe measuring process.
+    */
+   int succeeded = 0;
+   int failed = 0;
+   int skipped = 0;
+
+   /*
+    * Running threads list. Note that IndirectArray<> initializes all item
+    * pointers to nullptr.
+    */
+   int numberOfThreads = Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 );
+   thread_list runningThreads( Min( int( p_subframes.Length() ), numberOfThreads ) );
+
+   /*
+    * Pending subframes list. We use this list for temporary storage of indices
+    * that need measuring.
+    */
+   Array<size_type> pendingItems;
+   for ( size_type i = 0; i < p_subframes.Length(); ++i )
+      if ( p_subframes[i].enabled )
+         pendingItems << i;
+      else
+      {
+         console.NoteLn( "* Skipping disabled target: " + p_subframes[i].path );
+         ++skipped;
+      }
+   size_type pendingItemsTotal = pendingItems.Length();
+
+   console.WriteLn( String().Format( "<end><cbr><br>Measuring of %u subframes:", pendingItemsTotal ) );
+   console.WriteLn( String().Format( "* Using %u worker threads", runningThreads.Length() ) );
+
    try
    {
       /*
-       * For all errors generated, we want a report on the console. This is
-       * customary in PixInsight for all batch processes.
+       * Thread watching loop.
        */
-      Exception::EnableConsoleOutput();
-      Exception::DisableGUIOutput();
-
-      console.EnableAbort();
-      Module->ProcessEvents();
-
-      /*
-       * Begin subframe measuring process.
-       */
-      int succeeded = 0;
-      int failed = 0;
-      int skipped = 0;
-
-      /*
-       * Running threads list. Note that IndirectArray<> initializes all item
-       * pointers to zero.
-       */
-      int numberOfThreads = Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 );
-      thread_list runningThreads( Min( int( p_subframes.Length() ), numberOfThreads ) );
-
-      /*
-       * Pending subframes list. We use this list for temporary storage of
-       * indices that need measuring.
-       */
-      Array<size_type> pendingItems;
-      for ( size_type i = 0; i < p_subframes.Length(); ++i )
-         if ( p_subframes[i].enabled )
-            pendingItems << i;
-         else
-         {
-            console.NoteLn( "* Skipping disabled target: " + p_subframes[i].path );
-            ++skipped;
-         }
-      size_type pendingItemsTotal = pendingItems.Length();
-
-      console.WriteLn( String().Format( "<end><cbr><br>Measuring of %u subframes:", pendingItemsTotal ) );
-      console.WriteLn( String().Format( "* Using %u worker threads", runningThreads.Length() ) );
-
-      try
+      for ( ;; )
       {
-         /*
-          * Thread watching loop.
-          */
-         for ( ;; )
+         try
          {
-            try
+            int running = 0;
+            for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
             {
-               int running = 0;
-               for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
-               {
-                  Module->ProcessEvents();
-                  if ( console.AbortRequested() )
-                     throw ProcessAborted();
-
-                  if ( *i != nullptr )
-                  {
-                     if ( !(*i)->Wait( 150 ) )
-                     {
-                        ++running;
-                        continue;
-                     }
-
-                     /*
-                      * A thread has just finished.
-                      */
-                     try
-                     {
-                        if ( !(*i)->Success() )
-                           throw Error( (*i)->ConsoleOutputText() );
-
-                        (*i)->FlushConsoleOutputText();
-                        Module->ProcessEvents();
-
-                        // Store output data
-                        MeasureItem m( (*i)->Index() );
-                        m.Input( (*i)->OutputData() );
-                        p_measures << m;
-                        (*i)->OutputData().AddToCache();
-
-                        // Dispose this calibration thread, since we are done with
-                        // it. NB: IndirectArray<T>::Delete() sets to zero the
-                        // pointer pointed to by the iterator, but does not remove
-                        // the array element.
-                        runningThreads.Delete( i );
-                     }
-                     catch ( ... )
-                     {
-                        // Ensure the thread is also destroyed in the event of
-                        // error; we'd enter an infinite loop otherwise!
-                        runningThreads.Delete( i );
-                        throw;
-                     }
-
-                     ++succeeded;
-                  }
-
-                  /*
-                   * If there are items pending, create a new thread and
-                   * fire the next one.
-                   */
-                  if ( !pendingItems.IsEmpty() )
-                  {
-                     SubframeItem item = p_subframes[*pendingItems];
-
-                     size_type threadIndex = i - runningThreads.Begin();
-                     console.NoteLn( String().Format( "<end><cbr><br>[%03u] Measuring subframe %u of %u",
-                                                      threadIndex,
-                                                      pendingItemsTotal-pendingItems.Length()+1,
-                                                      pendingItemsTotal ) );
-
-                     /*
-                      * Check for the subframe in the cache, and use that if possible.
-                      */
-                     MeasureData cacheData( item.path );
-                     if ( p_fileCache && cacheData.GetFromCache() )
-                     {
-                        console.NoteLn( "<end><cbr>* Retrieved data from file cache." );
-                        MeasureItem m( pendingItemsTotal-pendingItems.Length()+1, item.path );
-                        m.Input( cacheData );
-                        p_measures << m;
-                        ++succeeded;
-                        ++running;
-                     }
-                     else
-                     {
-                        /*
-                         * If not in cache, create a new thread for this subframe image.
-                         */
-                        *i = new SubframeSelectorMeasureThread( pendingItemsTotal-pendingItems.Length()+1,
-                                                                LoadSubframe( item.path ),
-                                                                item.path,
-                                                                &inputThreadData );
-                        (*i)->Start( ThreadPriority::DefaultMax );
-                        ++running;
-                     }
-
-                     pendingItems.Remove( pendingItems.Begin() );
-
-                     if ( pendingItems.IsEmpty() )
-                        console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
-                  }
-               }
-
-               if ( !running )
-                  break;
-            }
-            catch ( ProcessAborted& )
-            {
-               throw;
-            }
-            catch ( ... )
-            {
+               Module->ProcessEvents();
                if ( console.AbortRequested() )
                   throw ProcessAborted();
 
-               ++failed;
-               try
+               if ( *i != nullptr )
                {
-                  throw;
+                  if ( !(*i)->Wait( 150 ) )
+                  {
+                     ++running;
+                     continue;
+                  }
+
+                  /*
+                   * A thread has just finished.
+                   */
+                  try
+                  {
+                     if ( !(*i)->Success() )
+                        throw Error( (*i)->ConsoleOutputText() );
+
+                     (*i)->FlushConsoleOutputText();
+                     Module->ProcessEvents();
+
+                     /*
+                      * Store output data.
+                      */
+                     MeasureItem m( (*i)->Index() );
+                     m.Input( (*i)->OutputData() );
+                     p_measures << m;
+                     (*i)->OutputData().AddToCache();
+
+                     /*
+                      * Dispose this calibration thread, since we are done with
+                      * it. NB: IndirectArray<T>::Delete() sets to zero the
+                      * pointer pointed to by the iterator, but does not remove
+                      * the array element.
+                      */
+                     runningThreads.Delete( i );
+                  }
+                  catch ( ... )
+                  {
+                     /*
+                      * Ensure the thread is also destroyed in the event of
+                      * error; we'd enter an infinite loop otherwise!
+                      */
+                     runningThreads.Delete( i );
+                     throw;
+                  }
+
+                  ++succeeded;
                }
-               ERROR_HANDLER
 
-               console.ResetStatus();
-               console.EnableAbort();
+               /*
+                * If there are items pending, create a new thread and fire the
+                * next one.
+                */
+               if ( !pendingItems.IsEmpty() )
+               {
+                  SubframeItem item = p_subframes[*pendingItems];
 
-               console.NoteLn( "Abort on error." );
-               throw ProcessAborted();
+                  size_type threadIndex = i - runningThreads.Begin();
+                  console.NoteLn( String().Format( "<end><cbr><br>[%03u] Measuring subframe %u of %u",
+                                                   threadIndex,
+                                                   pendingItemsTotal-pendingItems.Length()+1,
+                                                   pendingItemsTotal ) );
+
+                  /*
+                   * Check for the subframe in the cache, and use that if
+                   * possible.
+                   */
+                  MeasureData cacheData( item.path );
+                  if ( p_fileCache && cacheData.GetFromCache() )
+                  {
+                     console.NoteLn( "<end><cbr>* Retrieved data from file cache." );
+                     MeasureItem m( pendingItemsTotal-pendingItems.Length()+1, item.path );
+                     m.Input( cacheData );
+                     p_measures << m;
+                     ++succeeded;
+                     ++running;
+                  }
+                  else
+                  {
+                     /*
+                      * If not in cache, create a new thread for this subframe
+                      * image.
+                      */
+                     *i = new SubframeSelectorMeasureThread( pendingItemsTotal-pendingItems.Length()+1,
+                                                             LoadSubframe( item.path ),
+                                                             item.path,
+                                                             &inputThreadData );
+                     (*i)->Start( ThreadPriority::DefaultMax );
+                     ++running;
+                  }
+
+                  pendingItems.Remove( pendingItems.Begin() );
+
+                  if ( pendingItems.IsEmpty() )
+                     console.NoteLn( "<br>* Waiting for running tasks to terminate...<br>" );
+               }
             }
+
+            if ( !running )
+               break;
+         }
+         catch ( ProcessAborted& )
+         {
+            throw;
+         }
+         catch ( ... )
+         {
+            if ( console.AbortRequested() )
+               throw ProcessAborted();
+
+            ++failed;
+            try
+            {
+               throw;
+            }
+            ERROR_HANDLER
+
+            console.ResetStatus();
+            console.EnableAbort();
+
+            console.NoteLn( "Abort on error." );
+            throw ProcessAborted();
          }
       }
-      catch ( ... )
-      {
-         console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
-         for ( SubframeSelectorMeasureThread* thread : runningThreads )
-            if ( thread != nullptr )
-               thread->Abort();
-         for ( SubframeSelectorMeasureThread* thread : runningThreads )
-            if ( thread != nullptr )
-               thread->Wait();
-         runningThreads.Destroy();
-         throw;
-      }
-
-      /*
-       * Fail if no images have been measured.
-       */
-      if ( succeeded == 0 ) {
-         if ( failed == 0 )
-            throw Error( "No images were measured: Empty subframes list? No enabled subframes?" );
-         throw Error( "No image could be measured." );
-      }
-
-      /*
-       * Write the final report to the console.
-       */
-      console.NoteLn( String().Format(
-         "<end><cbr><br>===== SubframeSelector: %u succeeded, %u failed, %u skipped =====",
-         succeeded, failed, skipped ) );
-
-      p_measures.Sort( SubframeSortingBinaryPredicate( SSSortingProperty::Index, 0 ) );
-
-      if ( TheSubframeSelectorMeasurementsInterface != nullptr )
-         TheSubframeSelectorMeasurementsInterface->SetMeasurements( p_measures );
-
-      if ( TheSubframeSelectorInterface != nullptr )
-      {
-         TheSubframeSelectorInterface->ShowExpressionsInterface();
-         TheSubframeSelectorInterface->ShowMeasurementsInterface();
-      }
-
-      return true;
-   } // try
+   }
    catch ( ... )
    {
-      /*
-       * All breaking errors are caught here.
-       */
-      Exception::EnableGUIOutput( true );
+      console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
+      for ( SubframeSelectorMeasureThread* thread : runningThreads )
+         if ( thread != nullptr )
+            thread->Abort();
+      for ( SubframeSelectorMeasureThread* thread : runningThreads )
+         if ( thread != nullptr )
+            thread->Wait();
+      runningThreads.Destroy();
       throw;
    }
+
+   /*
+    * Fail if no images have been measured.
+    */
+   if ( succeeded == 0 )
+   {
+      if ( failed == 0 )
+         throw Error( "No images were measured: Empty subframes list? No enabled subframes?" );
+      throw Error( "No image could be measured." );
+   }
+
+   /*
+    * Write the final report to the console.
+    */
+   console.NoteLn( String().Format(
+      "<end><cbr><br>===== SubframeSelector: %u succeeded, %u failed, %u skipped =====",
+      succeeded, failed, skipped ) );
+
+   p_measures.Sort( SubframeSortingBinaryPredicate( SSSortingProperty::Index, 0 ) );
+
+   if ( TheSubframeSelectorMeasurementsInterface != nullptr )
+      TheSubframeSelectorMeasurementsInterface->SetMeasurements( p_measures );
+
+   if ( TheSubframeSelectorInterface != nullptr )
+   {
+      TheSubframeSelectorInterface->ShowExpressionsInterface();
+      TheSubframeSelectorInterface->ShowMeasurementsInterface();
+   }
+
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1711,4 +1694,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2019-04-30T16:31:10Z
+// EOF SubframeSelectorInstance.cpp - Released 2019-09-29T12:27:58Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.h - Released 2019-04-30T16:31:09Z
+// DrizzleIntegrationInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -71,14 +71,14 @@ public:
    DrizzleIntegrationInstance( const MetaProcess* );
    DrizzleIntegrationInstance( const DrizzleIntegrationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool IsHistoryUpdater( const View& v ) const;
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool IsHistoryUpdater( const View& ) const override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter*, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter*, size_type tableRow ) const override;
 
 private:
 
@@ -91,7 +91,7 @@ private:
       DataItem() = default;
       DataItem( const DataItem& ) = default;
 
-      DataItem( const String& path_ ) : path( path_ )
+      DataItem( const String& a_path ) : path( a_path )
       {
       }
 
@@ -110,17 +110,18 @@ private:
    float           p_dropShrink;               // pixel shrink factor
    pcl_enum        p_kernelFunction;           // drop kernel function (square, circular, Gaussian, VariableShape...)
    int32           p_kernelGridSize;           // grid size for double integration of kernel functions
-   FPoint          p_origin;                   // origin of image registration coordinates in reference image pixels
+   FPoint          p_origin;                   // ### DEPRECATED origin of image registration coordinates in reference image pixels
    pcl_bool        p_enableCFA;                // work with monochrome input CFA frames to integrate an RGB color image
    String          p_cfaPattern;               // the CFA pattern, such as "RGGB", "GRBG", etc.
    pcl_bool        p_enableRejection;          // enable pixel rejection
    pcl_bool        p_enableImageWeighting;     // enable image weights
-   pcl_bool        p_enableSurfaceSplines;     // enable registration surface splines
+   pcl_bool        p_enableSurfaceSplines;     // enable registration with surface splines
+   pcl_bool        p_enableLocalDistortion;    // enable registration with local distortion corrections
    pcl_bool        p_enableLocalNormalization; // enable local normalization for output
    pcl_bool        p_useROI;                   // use a region of interest
-   Rect            p_roi;                      // region of interest
+   Rect            p_roi = Rect( 0 );          // region of interest
    pcl_bool        p_closePreviousImages;      // close existing integration and weight images before running
-   pcl_bool        p_noGUIMessages;            // only show errors on the console
+   pcl_bool        p_noGUIMessages;            // ### DEPRECATED
    pcl_enum        p_onError;                  // error policy
 
    /*
@@ -158,7 +159,7 @@ private:
          ImageData( const ImageData& ) = default;
          ImageData& operator =( const ImageData& ) = default;
 
-         ImageData( const String& filePath_ ) : filePath( filePath_ )
+         ImageData( const String& a_filePath ) : filePath( a_filePath )
          {
          }
       };
@@ -179,4 +180,4 @@ private:
 #endif   // __DrizzleIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.h - Released 2019-04-30T16:31:09Z
+// EOF DrizzleIntegrationInstance.h - Released 2019-09-29T12:27:57Z

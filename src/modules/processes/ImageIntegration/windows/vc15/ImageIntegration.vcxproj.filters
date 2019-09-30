@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.110
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-04-30T16:35:38.143Z
+# Generated on .... 2019-09-30T11:28:09.264Z
 # Project id ...... ImageIntegration
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>23d50501-4b8d-4621-9d79-801f253a4702</UniqueIdentifier>
+      <UniqueIdentifier>2582961f-0dbb-43cf-8203-7a47e1b478e7</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>40cc3168-daaf-41fd-84b8-1f2edfb0784f</UniqueIdentifier>
+      <UniqueIdentifier>dbfc779f-8c63-46ad-ab6c-7202c294c56c</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>a458e569-c12f-4bd3-9dad-84f083803519</UniqueIdentifier>
+      <UniqueIdentifier>23bc149d-3593-4fb5-b130-2a4da4045f0c</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +74,9 @@
     <ClCompile Include="..\..\IntegrationCache.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\SystemMemory.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\DrizzleIntegrationInstance.h">
@@ -122,6 +125,9 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\IntegrationCache.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SystemMemory.h">
         <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

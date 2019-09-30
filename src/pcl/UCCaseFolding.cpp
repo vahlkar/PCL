@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/UCCaseFolding.cpp - Released 2019-04-30T16:30:49Z
+// pcl/UCCaseFolding.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -747,4 +747,4 @@ char16_type PCL_FUNC PCL_ToCaseFolded( char16_type c )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UCCaseFolding.cpp - Released 2019-04-30T16:30:49Z
+// EOF pcl/UCCaseFolding.cpp - Released 2019-09-29T12:27:33Z

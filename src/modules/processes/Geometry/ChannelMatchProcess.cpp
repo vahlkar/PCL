@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0410
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ChannelMatchProcess.cpp - Released 2019-04-30T16:31:09Z
+// ChannelMatchProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -68,7 +68,7 @@ ChannelMatchProcess* TheChannelMatchProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-ChannelMatchProcess::ChannelMatchProcess() : MetaProcess()
+ChannelMatchProcess::ChannelMatchProcess()
 {
    TheChannelMatchProcess = this;
 
@@ -79,46 +79,64 @@ ChannelMatchProcess::ChannelMatchProcess() : MetaProcess()
    new CMFactor( TheCMChannelsParameter );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ChannelMatchProcess::Id() const
 {
    return "ChannelMatch";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString ChannelMatchProcess::Category() const
 {
    return "Geometry";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 ChannelMatchProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String ChannelMatchProcess::Description() const
 {
    return "";
 }
 
+// ----------------------------------------------------------------------------
+
 const char** ChannelMatchProcess::IconImageXPM() const
 {
    return ChannelMatchIcon_XPM;
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* ChannelMatchProcess::DefaultInterface() const
 {
    return TheChannelMatchInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* ChannelMatchProcess::Create() const
 {
    return new ChannelMatchInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* ChannelMatchProcess::Clone( const ProcessImplementation& p ) const
 {
    const ChannelMatchInstance* instPtr = dynamic_cast<const ChannelMatchInstance*>( &p );
    return (instPtr != nullptr) ? new ChannelMatchInstance( *instPtr ) : nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool ChannelMatchProcess::NeedsValidation() const
 {
@@ -130,4 +148,4 @@ bool ChannelMatchProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF ChannelMatchProcess.cpp - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 01.05.02.0434
+// Standard RAW File Format Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// RawFormat.cpp - Released 2019-04-30T16:31:00Z
+// RawFormat.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -80,6 +80,7 @@ StringList RawFormat::FileExtensions() const
                        << ".bay"  // Casio
                        << ".crw"  // Canon photo RAW
                        << ".cr2"  // Canon photo RAW
+                       << ".cr3"  // Canon photo RAW
                        << ".cap"  // Phase_One
                        << ".dcs"  // Kodak Photo RAW
                        << ".dcr"  // Kodak Photo RAW
@@ -137,16 +138,16 @@ String RawFormat::Implementation() const
    "<html>"
    "<p>PixInsight Standard File Format Support Modules.</p>"
 
-   "<p>This implementation of digital camera raw format decoding uses LibRaw version 0.19.2.</p>"
+   "<p>This implementation of digital camera raw format decoding uses LibRaw version 0.19.5.</p>"
 
    "<p>LibRaw library:<br/>"
-   "Copyright (c) 2008-2018 LibRaw LLC (info@libraw.org)<br/>"
+   "Copyright (c) 2008-2019 LibRaw LLC (info@libraw.org)<br/>"
    "The LibRaw library includes source code from:</p>"
 
    "<p>dcraw.c, Dave Coffin's raw photo decoder. Copyright (c) 1997-2016 by Dave Coffin</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2018, Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2019, Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -372,4 +373,4 @@ bool RawFormat::EditPreferences() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawFormat.cpp - Released 2019-04-30T16:31:00Z
+// EOF RawFormat.cpp - Released 2019-09-29T12:27:43Z

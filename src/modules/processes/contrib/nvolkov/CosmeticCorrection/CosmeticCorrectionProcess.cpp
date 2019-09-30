@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CosmeticCorrection Process Module Version 01.02.05.0232
+// Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionProcess.cpp - Released 2019-04-30T16:31:10Z
+// CosmeticCorrectionProcess.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -55,7 +55,6 @@
 #include "CosmeticCorrectionParameters.h"
 #include "CosmeticCorrectionInstance.h"
 #include "CosmeticCorrectionInterface.h"
-#include "CosmeticCorrectionModule.h" // for CosmeticCorrectionModule::ReadableVersion()
 
 namespace pcl
 {
@@ -70,7 +69,7 @@ CosmeticCorrectionProcess* TheCosmeticCorrectionProcess = 0;
 
 // ----------------------------------------------------------------------------
 
-CosmeticCorrectionProcess::CosmeticCorrectionProcess() : MetaProcess()
+CosmeticCorrectionProcess::CosmeticCorrectionProcess()
 {
    TheCosmeticCorrectionProcess = this;
 
@@ -128,10 +127,11 @@ uint32 CosmeticCorrectionProcess::Version() const
 
 String CosmeticCorrectionProcess::Description() const
 {
-   return  CosmeticCorrectionModule::ReadableVersion() +
-         "<html><br/>The CosmeticCorrection tool replaces defective pixels (hot and cold pixels)"
-         "with averaged values from the appropriate neighbor pixels.<br/> "
-         "The script requires a map of defective pixels or a master dark frame.</html>";
+   return "<html>"
+          "<p>The CosmeticCorrection tool replaces defective pixels (hot and cold pixels) "
+          "with averaged values from the appropriate neighbor pixels.</p>"
+          "<p>The script requires a map of defective pixels or a master dark frame.</p>"
+          "</html>";
 }
 
 const char** CosmeticCorrectionProcess::IconImageXPM() const
@@ -160,4 +160,4 @@ ProcessImplementation* CosmeticCorrectionProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionProcess.cpp - Released 2019-04-30T16:31:10Z
+// EOF CosmeticCorrectionProcess.cpp - Released 2019-09-29T12:27:58Z

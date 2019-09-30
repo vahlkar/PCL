@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/QuadTree.h - Released 2019-04-30T16:30:41Z
+// pcl/QuadTree.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -132,6 +132,11 @@ public:
     */
    typedef DRect                       rectangle;
 
+   /*!
+    * The type of rectangular region coordinates.
+    */
+   typedef rectangle::component        coordinate;
+
    // -------------------------------------------------------------------------
 
    /*!
@@ -179,18 +184,21 @@ public:
 
       /*!
        * Returns true iff the rectangular region represented by this node
-       * includes the specified point \a p.
+       * includes a point in the plane specified by its coordinates \a x, \a y.
        */
-      bool Includes( const point& p ) const
+      bool Includes( coordinate x, coordinate y ) const
       {
-         component x = p[0];
-         if ( x >= rect.x0 )
-            if ( x <= rect.x1 )
-            {
-               component y = p[1];
-               return y >= rect.y0 && y <= rect.y1;
-            }
-         return false;
+         return x >= rect.x0 && x <= rect.x1 &&
+                y >= rect.y0 && y <= rect.y1;
+      }
+
+      /*!
+       * Returns true iff the rectangular region represented by this node
+       * includes the specified point \a p in the plane.
+       */
+      bool Includes( const rectangle::point& p ) const
+      {
+         return Includes( p.x, p.y );
       }
 
       /*!
@@ -243,6 +251,16 @@ public:
        * nonempty point list.
        */
       point_list points;
+
+      /*!
+       * Pointer to an arbitrary data structure that can be associated with
+       * this leaf node. Its default value is \c nullptr.
+       *
+       * The quadtree structure does not access this pointer in any way.
+       * Destruction of the object pointed to by this member, if required, is
+       * the sole responsibility of the external code that has defined it.
+       */
+      void* data = nullptr;
 
       /*!
        * Constructs a new leaf node representing the specified rectangular
@@ -546,16 +564,65 @@ public:
    }
 
    /*!
+    * Returns a pointer to the (immutable) leaf node of this quadtree that
+    * includes the specified point \a p in the plane, or nullptr if no such
+    * leaf node exists in this quadtree.
+    */
+   const LeafNode* LeafNodeAt( rectangle::point p ) const
+   {
+      return SearchLeafNode( p, m_root );
+   }
+
+   /*!
+    * Returns a pointer to the leaf node of this quadtree that includes the
+    * specified point \a p in the plane, or nullptr if no such leaf node exists
+    * in this quadtree.
+    */
+   LeafNode* LeafNodeAt( rectangle::point p )
+   {
+      return SearchLeafNode( p, m_root );
+   }
+
+   /*!
+    * Returns a pointer to the (immutable) node of this quadtree that includes
+    * the specified point \a p in the plane, or nullptr if no such node exists
+    * in this quadtree.
+    *
+    * The returned node can be a leaf node or a structural node. This function
+    * should only return nullptr if the specified point \a p is exterior to the
+    * root rectangular region of this quadtree, or if this quadtree is empty.
+    */
+   const Node* NodeAt( rectangle::point p ) const
+   {
+      return SearchNode( p, m_root );
+   }
+
+   /*!
+    * Returns a pointer to the node of this quadtree that includes the
+    * specified point \a p in the plane, or nullptr if no such node exists in
+    * this quadtree.
+    *
+    * The returned node can be a leaf node or a structural node. This function
+    * should only return nullptr if the specified point \a p is exterior to the
+    * root rectangular region of this quadtree, or if this quadtree is empty.
+    */
+   Node* NodeAt( rectangle::point p )
+   {
+      return SearchNode( p, m_root );
+   }
+
+   /*!
     * Performs a recursive left-to-right, depth-first traversal of the subtree
     * rooted at the specified \a node, invoking the specified function \a f
-    * successively for each non-empty leaf node.
+    * successively for each leaf node.
     *
     * The function \a f must be compatible with the form:
     *
-    * \code void f( const rectangle& r, const point_list& p ) \endcode
+    * \code void f( const rectangle& r, const point_list& p, void*& d ) \endcode
     *
     * where \a r is the plane region covered by the current leaf node, \a p is
-    * the list of points in the current leaf node.
+    * the list of points in the current leaf node, and \a d is the optional
+    * pointer to arbitrary data associated with the current leaf node.
     *
     * The sequence of calls for the subtrees in each non-leaf node is: NW, NE,
     * SW, SE. Only non-empty leaf nodes are included in the traversal, hence
@@ -568,7 +635,9 @@ public:
    {
       if ( node != nullptr )
          if ( node->IsLeaf() )
-            f( node->rect, static_cast<const LeafNode*>( node )->points );
+            f( node->rect,
+               static_cast<const LeafNode*>( node )->points,
+               static_cast<const LeafNode*>( node )->data );
          else
          {
             Traverse( node->nw, f );
@@ -581,14 +650,15 @@ public:
    /*!
     * Performs a recursive left-to-right, depth-first traversal of the subtree
     * rooted at the specified (mutable) \a node, invoking the specified
-    * function \a f successively for each non-empty leaf node.
+    * function \a f successively for each leaf node.
     *
     * The function \a f must be compatible with the form:
     *
-    * \code void f( const rectangle& r, point_list& p ) \endcode
+    * \code void f( const rectangle& r, point_list& p, void*& d ) \endcode
     *
     * where \a r is the plane region covered by the current leaf node, \a p is
-    * the list of points in the current leaf node.
+    * the list of points in the current leaf node, and \a d is the optional
+    * pointer to arbitrary data associated with the current leaf node.
     *
     * The sequence of calls for the subtrees in each non-leaf node is: NW, NE,
     * SW, SE. Only non-empty leaf nodes are included in the traversal, hence
@@ -601,7 +671,8 @@ public:
    {
       if ( node != nullptr )
          if ( node->IsLeaf() )
-            f( node->rect, static_cast<LeafNode*>( node )->points );
+            f( node->rect, static_cast<LeafNode*>( node )->points,
+                           static_cast<LeafNode*>( node )->data );
          else
          {
             Traverse( node->nw, f );
@@ -663,6 +734,60 @@ private:
       return new LeafNode( rect, points );
    }
 
+   LeafNode* SearchLeafNode( const rectangle::point& p, const Node* node ) const
+   {
+      if ( node != nullptr )
+         if ( node->Includes( p ) )
+         {
+            if ( node->IsLeaf() )
+               return const_cast<LeafNode*>( static_cast<const LeafNode*>( node ) );
+
+            LeafNode* child = SearchLeafNode( p, node->nw );
+            if ( child == nullptr )
+            {
+               child = SearchLeafNode( p, node->ne );
+               if ( child == nullptr )
+               {
+                  child = SearchLeafNode( p, node->sw );
+                  if ( child == nullptr )
+                     child = SearchLeafNode( p, node->se );
+               }
+            }
+            return child;
+         }
+
+      return nullptr;
+   }
+
+   Node* SearchNode( const rectangle::point& p, const Node* node ) const
+   {
+      if ( node != nullptr )
+         if ( node->Includes( p ) )
+         {
+            if ( node->IsLeaf() )
+               return const_cast<Node*>( node );
+
+            Node* child = SearchNode( p, node->nw );
+            if ( child == nullptr )
+            {
+               child = SearchNode( p, node->ne );
+               if ( child == nullptr )
+               {
+                  child = SearchNode( p, node->sw );
+                  if ( child == nullptr )
+                  {
+                     child = SearchNode( p, node->se );
+                     if ( child == nullptr )
+                        return const_cast<Node*>( node );
+                  }
+               }
+            }
+            return child;
+         }
+
+      return nullptr;
+   }
+
    Node* BuildTree( const rectangle& rect, const point_list& points )
    {
       if ( points.IsEmpty() )
@@ -676,10 +801,10 @@ private:
       // Prevent geometrically degenerate subtrees. For safety, we enforce
       // minimum region dimensions larger than twice the machine epsilon for
       // the rectangle coordinate type.
-      if ( x2 - rect.x0 <= std::numeric_limits<double>::epsilon() ||
-           rect.x1 - x2 <= std::numeric_limits<double>::epsilon() ||
-           y2 - rect.y0 <= std::numeric_limits<double>::epsilon() ||
-           rect.y1 - y2 <= std::numeric_limits<double>::epsilon() )
+      if ( x2 - rect.x0 <= std::numeric_limits<coordinate>::epsilon() ||
+           rect.x1 - x2 <= std::numeric_limits<coordinate>::epsilon() ||
+           y2 - rect.y0 <= std::numeric_limits<coordinate>::epsilon() ||
+           rect.y1 - y2 <= std::numeric_limits<coordinate>::epsilon() )
       {
          return NewLeafNode( rect, points );
       }
@@ -811,10 +936,10 @@ private:
                // Prevent geometrically degenerate subtrees. For safety, we
                // enforce minimum region dimensions larger than twice the
                // machine epsilon for the rectangle coordinate type.
-               if ( x2 - rect.x0 <= std::numeric_limits<double>::epsilon() ||
-                    rect.x1 - x2 <= std::numeric_limits<double>::epsilon() ||
-                    y2 - rect.y0 <= std::numeric_limits<double>::epsilon() ||
-                    rect.y1 - y2 <= std::numeric_limits<double>::epsilon() )
+               if ( x2 - rect.x0 <= std::numeric_limits<coordinate>::epsilon() ||
+                    rect.x1 - x2 <= std::numeric_limits<coordinate>::epsilon() ||
+                    y2 - rect.y0 <= std::numeric_limits<coordinate>::epsilon() ||
+                    rect.y1 - y2 <= std::numeric_limits<coordinate>::epsilon() )
                {
                   leaf->points << pt;
                }
@@ -948,12 +1073,13 @@ private:
    void DeleteTree( const point& pt, Node*& node )
    {
       if ( node != nullptr )
-         if ( node->Includes( pt ) )
+      {
+         component x = pt[0];
+         component y = pt[1];
+         if ( node->Includes( x, y ) )
             if ( node->IsLeaf() )
             {
                LeafNode* leaf = static_cast<LeafNode*>( node );
-               component x = pt[0];
-               component y = pt[1];
                point_list points;
                for ( const point& p : leaf->points )
                {
@@ -984,6 +1110,7 @@ private:
                   node = nullptr;
                }
             }
+      }
    }
 
    void DestroyTree( Node* node )
@@ -1009,4 +1136,4 @@ private:
 #endif   // __PCL_QuadTree_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/QuadTree.h - Released 2019-04-30T16:30:41Z
+// EOF pcl/QuadTree.h - Released 2019-09-29T12:27:26Z

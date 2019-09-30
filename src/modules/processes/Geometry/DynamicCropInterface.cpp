@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0410
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// DynamicCropInterface.cpp - Released 2019-04-30T16:31:09Z
+// DynamicCropInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -2382,6 +2382,7 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
 
    w.SetSizer( Global_Sizer );
 
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedWidth();
 
@@ -2399,4 +2400,4 @@ DynamicCropInterface::GUIData::GUIData( DynamicCropInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF DynamicCropInterface.cpp - Released 2019-09-29T12:27:57Z

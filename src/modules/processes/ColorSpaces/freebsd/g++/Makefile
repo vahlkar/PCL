@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.110
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-04-30T16:35:34.078Z
+# Generated on .... 2019-09-30T11:28:05.159Z
 # Project id ...... ColorSpaces
 # Project type .... Module
 # Platform ........ FreeBSD/g++

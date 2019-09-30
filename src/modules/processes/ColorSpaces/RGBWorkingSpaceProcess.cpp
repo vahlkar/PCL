@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0380
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceProcess.cpp - Released 2019-04-30T16:31:09Z
+// RGBWorkingSpaceProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -60,7 +60,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-RGBWorkingSpaceProcess*  TheRGBWorkingSpaceProcess = 0;
+RGBWorkingSpaceProcess*  TheRGBWorkingSpaceProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ RGBWorkingSpaceProcess*  TheRGBWorkingSpaceProcess = 0;
 
 // ----------------------------------------------------------------------------
 
-RGBWorkingSpaceProcess::RGBWorkingSpaceProcess() : MetaProcess()
+RGBWorkingSpaceProcess::RGBWorkingSpaceProcess()
 {
    TheRGBWorkingSpaceProcess = this;
 
@@ -92,16 +92,9 @@ IsoString RGBWorkingSpaceProcess::Id() const
 
 // ----------------------------------------------------------------------------
 
-IsoString RGBWorkingSpaceProcess::Category() const
+IsoString RGBWorkingSpaceProcess::Categories() const
 {
    return "ColorSpaces";
-}
-
-// ----------------------------------------------------------------------------
-
-uint32 RGBWorkingSpaceProcess::Version() const
-{
-   return 0x100;
 }
 
 // ----------------------------------------------------------------------------
@@ -166,7 +159,7 @@ ProcessImplementation* RGBWorkingSpaceProcess::Create() const
 ProcessImplementation* RGBWorkingSpaceProcess::Clone( const ProcessImplementation& p ) const
 {
    const RGBWorkingSpaceInstance* instPtr = dynamic_cast<const RGBWorkingSpaceInstance*>( &p );
-   return (instPtr != 0) ? new RGBWorkingSpaceInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new RGBWorkingSpaceInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -181,4 +174,4 @@ bool RGBWorkingSpaceProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF RGBWorkingSpaceProcess.cpp - Released 2019-09-29T12:27:57Z

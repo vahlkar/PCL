@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.04.0344
+// Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationGraphInterface.cpp - Released 2019-04-30T16:31:09Z
+// PhotometricColorCalibrationGraphInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -364,4 +364,4 @@ PhotometricColorCalibrationGraphInterface::GUIData::GUIData( PhotometricColorCal
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationGraphInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF PhotometricColorCalibrationGraphInterface.cpp - Released 2019-09-29T12:27:57Z

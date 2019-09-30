@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0478
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationParameters.cpp - Released 2019-04-30T16:31:09Z
+// DrizzleIntegrationParameters.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -74,6 +74,7 @@ DZCFAPattern*                 TheDZCFAPatternParameter = nullptr;
 DZEnableRejection*            TheDZEnableRejectionParameter = nullptr;
 DZEnableImageWeighting*       TheDZEnableImageWeightingParameter = nullptr;
 DZEnableSurfaceSplines*       TheDZEnableSurfaceSplinesParameter = nullptr;
+DZEnableLocalDistortion*      TheDZEnableLocalDistortionParameter = nullptr;
 DZEnableLocalNormalization*   TheDZEnableLocalNormalizationParameter = nullptr;
 DZUseROI*                     TheDZUseROIParameter = nullptr;
 DZROIX0*                      TheDZROIX0Parameter = nullptr;
@@ -470,6 +471,23 @@ IsoString DZEnableSurfaceSplines::Id() const
 }
 
 bool DZEnableSurfaceSplines::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DZEnableLocalDistortion::DZEnableLocalDistortion( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheDZEnableLocalDistortionParameter = this;
+}
+
+IsoString DZEnableLocalDistortion::Id() const
+{
+   return "enableLocalDistortion";
+}
+
+bool DZEnableLocalDistortion::DefaultValue() const
 {
    return true;
 }
@@ -1341,4 +1359,4 @@ bool DZImageOutputData::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationParameters.cpp - Released 2019-04-30T16:31:09Z
+// EOF DrizzleIntegrationParameters.cpp - Released 2019-09-29T12:27:57Z

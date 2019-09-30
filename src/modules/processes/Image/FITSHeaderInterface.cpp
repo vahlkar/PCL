@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 01.03.00.0443
+// Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// FITSHeaderInterface.cpp - Released 2019-04-30T16:31:09Z
+// FITSHeaderInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -259,11 +259,10 @@ void FITSHeaderInterface::UpdateKeywordList()
 void FITSHeaderInterface::UpdateButtons()
 {
    IndirectArray<TreeBox::Node> selected = GUI->Keywords_List.SelectedNodes();
-
    bool reserved = false;
-   for ( IndirectArray<TreeBox::Node>::const_iterator i = selected.ReverseBegin(); i != selected.ReverseEnd(); --i )
+   for ( const TreeBox::Node* node : ReverseIterable( selected ) )
    {
-      int index = GUI->Keywords_List.ChildIndex( *i );
+      int index = GUI->Keywords_List.ChildIndex( node );
       if ( size_type( index ) >= instance.keywords.Length() ||
            FITSHeaderInstance::IsReservedKeyword( instance.keywords[index].name ) )
       {
@@ -454,13 +453,10 @@ void FITSHeaderInterface::__Keyword_ButtonClick( Button& sender, bool /*checked*
    if ( sender == GUI->Remove_PushButton )
    {
       IndirectArray<TreeBox::Node> selected = GUI->Keywords_List.SelectedNodes();
-
-      for ( IndirectArray<TreeBox::Node>::iterator i = selected.ReverseBegin(); i != selected.ReverseEnd(); --i )
+      for ( TreeBox::Node* node : ReverseIterable( selected ) )
       {
-         int index = GUI->Keywords_List.ChildIndex( *i );
-
+         int index = GUI->Keywords_List.ChildIndex( node );
          GUI->Keywords_List.Remove( index );
-
          if ( size_type( index ) < instance.keywords.Length() )
             instance.keywords.Remove( instance.keywords.At( size_type( index ) ) );
       }
@@ -633,6 +629,8 @@ FITSHeaderInterface::GUIData::GUIData( FITSHeaderInterface& w )
    Global_Sizer.Add( Buttons_Sizer );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 }
 
@@ -641,4 +639,4 @@ FITSHeaderInterface::GUIData::GUIData( FITSHeaderInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF FITSHeaderInterface.cpp - Released 2019-09-29T12:27:57Z

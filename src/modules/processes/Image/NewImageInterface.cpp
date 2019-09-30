@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 01.03.00.0443
+// Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// NewImageInterface.cpp - Released 2019-04-30T16:31:09Z
+// NewImageInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -659,6 +659,8 @@ NewImageInterface::GUIData::GUIData( NewImageInterface& w )
    //
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -668,4 +670,4 @@ NewImageInterface::GUIData::GUIData( NewImageInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInterface.cpp - Released 2019-04-30T16:31:09Z
+// EOF NewImageInterface.cpp - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.04.0344
+// Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// LinearFitProcess.cpp - Released 2019-04-30T16:31:09Z
+// LinearFitProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -73,7 +73,7 @@ LinearFitProcess* TheLinearFitProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-LinearFitProcess::LinearFitProcess() : MetaProcess()
+LinearFitProcess::LinearFitProcess()
 {
    TheLinearFitProcess = this;
 
@@ -274,4 +274,4 @@ int LinearFitProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitProcess.cpp - Released 2019-04-30T16:31:09Z
+// EOF LinearFitProcess.cpp - Released 2019-09-29T12:27:57Z

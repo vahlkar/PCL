@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.12.0947
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG File Format Module Version 01.00.04.0374
+// Standard JPEG File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// JPEGOptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// JPEGOptionsDialog.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -155,6 +155,8 @@ JPEGOptionsDialog::JPEGOptionsDialog( const ImageOptions& o, const JPEGImageOpti
    Global_Sizer.Add( BottomSection_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
    AdjustToContents();
    SetFixedSize();
 
@@ -221,4 +223,4 @@ void JPEGOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGOptionsDialog.cpp - Released 2019-04-30T16:31:00Z
+// EOF JPEGOptionsDialog.cpp - Released 2019-09-29T12:27:43Z
