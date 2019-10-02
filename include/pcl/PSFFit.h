@@ -49,10 +49,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#ifndef __PSF_h
-#define __PSF_h
+#ifndef __PCL_PSFFit_h
+#define __PCL_PSFFit_h
 
-/// \file pcl/Variant.h
+/// \file pcl/PSFFit.h
 
 #include <pcl/Defs.h>
 #include <pcl/Diagnostics.h>
@@ -445,7 +445,7 @@ private:
 
 } // pcl
 
-#endif   // __PSF_h
+#endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
 // EOF pcl/PSFFit.h - Released 2019-09-29T12:27:26Z
