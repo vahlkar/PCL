@@ -697,7 +697,8 @@ void StatisticsInterface::ImageUpdated( const View& view )
 {
    if ( GUI != nullptr )
       if ( view == m_currentView )
-         UpdateControls();
+         if ( view.CanRead() )
+            UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
@@ -706,10 +707,11 @@ void StatisticsInterface::ImageFocused( const View& view )
 {
    if ( GUI != nullptr )
       if ( IsTrackViewActive() )
-      {
-         GUI->AllViews_ViewList.SelectView( view ); // normally not necessary, but we can invoke this f() directly
-         UpdateControls();
-      }
+         if ( view.CanRead() )
+         {
+            GUI->AllViews_ViewList.SelectView( view ); // normally not necessary, but we can invoke this f() directly
+            UpdateControls();
+         }
 }
 
 // ----------------------------------------------------------------------------
@@ -734,12 +736,13 @@ void StatisticsInterface::ViewPropertyDeleted( const View& view, const IsoString
 {
    if ( GUI != nullptr )
       if ( view == m_currentView )
-         if ( ViewPropertyRequired( property ) )
-         {
-            DeactivateTrackView();
-            GUI->AllViews_ViewList.SelectView( View::Null() );
-            UpdateControls();
-         }
+         if ( view.CanRead() )
+            if ( ViewPropertyRequired( property ) )
+            {
+               DeactivateTrackView();
+               GUI->AllViews_ViewList.SelectView( View::Null() );
+               UpdateControls();
+            }
 }
 
 // ----------------------------------------------------------------------------
