@@ -135,6 +135,16 @@ public:
 #endif
       }
    }
+
+private:
+
+   /*
+    * Ignore this object for thread availability reports.
+    */
+   bool IsStealth() const override
+   {
+      return true;
+   }
 };
 
 static MonitorDispatcherThread* s_thread = nullptr;

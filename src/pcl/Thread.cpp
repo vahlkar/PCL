@@ -125,13 +125,18 @@ public:
    {
       try
       {
-         volatile AutoCounter counter;
+         if ( !T->IsStealth() )
+         {
+            volatile AutoCounter counter;
 
-         if ( s_enableAffinity )
-            if ( T->m_processorIndex >= 0 )
-               T->SetAffinity( T->m_processorIndex );
+            if ( s_enableAffinity )
+               if ( T->m_processorIndex >= 0 )
+                  T->SetAffinity( T->m_processorIndex );
 
-         T->Run();
+            T->Run();
+         }
+         else
+            T->Run();
       }
       catch ( ... )
       {

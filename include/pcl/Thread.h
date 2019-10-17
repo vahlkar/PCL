@@ -635,6 +635,13 @@ private:
 
    void* CloneHandle() const override;
 
+protected:
+
+   virtual bool IsStealth() const
+   {
+      return false;
+   }
+
    friend class ThreadDispatcher;
 };
 
