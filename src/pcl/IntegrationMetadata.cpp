@@ -709,7 +709,6 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
    ConsistentlyDefined<TimePoint> startTime, endTime;
    int raTotal = 0, decTotal = 0, longObsTotal = 0, latObsTotal = 0, altObsTotal = 0;
    for ( const IntegrationMetadata& metadata : items )
-   {
       if ( metadata.IsValid() )
       {
          if ( summary.IsValid() )
@@ -738,37 +737,37 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
             summary.equinox          = metadata.equinox;
 
             if ( metadata.ra.IsDefined() )
-            {
                summary.ra += metadata.ra;
-               ++raTotal;
-            }
 
             if ( metadata.dec.IsDefined() )
-            {
                summary.dec += metadata.dec;
-               ++decTotal;
-            }
 
             if ( metadata.longObs.IsDefined() )
-            {
                summary.longObs += metadata.longObs;
-               ++longObsTotal;
-            }
 
             if ( metadata.latObs.IsDefined() )
-            {
                summary.latObs += metadata.latObs;
-               ++latObsTotal;
-            }
 
             if ( metadata.altObs.IsDefined() )
-            {
                summary.altObs += metadata.altObs;
-               ++altObsTotal;
-            }
          }
          else
             summary = metadata;
+
+         if ( metadata.ra.IsDefined() )
+            ++raTotal;
+
+         if ( metadata.dec.IsDefined() )
+            ++decTotal;
+
+         if ( metadata.longObs.IsDefined() )
+            ++longObsTotal;
+
+         if ( metadata.latObs.IsDefined() )
+            ++latObsTotal;
+
+         if ( metadata.altObs.IsDefined() )
+            ++altObsTotal;
 
          if ( metadata.startTime.IsDefined() && metadata.endTime.IsDefined() )
          {
@@ -802,7 +801,6 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
             return IntegrationMetadata();
          }
       }
-   }
 
    if ( summary.IsValid() )
    {
