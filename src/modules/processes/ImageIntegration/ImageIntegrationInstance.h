@@ -165,6 +165,7 @@ private:
    int32       p_bufferSizeMB;      // size of a row buffer in megabytes
    int32       p_stackSizeMB;       // size of the pixel integration stack in megabytes
    pcl_bool    p_autoMemorySize;    // compute buffer and stack sizes automatically from physical memory available
+   float       p_autoMemoryLimit;   // maximum fraction of available memory we can use
 
    pcl_bool    p_useROI;            // use a region of interest; entire image otherwise
    Rect        p_roi = Rect( 0 );   // region of interest

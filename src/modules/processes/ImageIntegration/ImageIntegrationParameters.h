@@ -850,6 +850,23 @@ extern IIAutoMemorySize* TheIIAutoMemorySizeParameter;
 
 // ----------------------------------------------------------------------------
 
+class IIAutoMemoryLimit : public MetaFloat
+{
+public:
+
+   IIAutoMemoryLimit( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIAutoMemoryLimit* TheIIAutoMemoryLimitParameter;
+
+// ----------------------------------------------------------------------------
+
 class IIUseROI : public MetaBoolean
 {
 public:

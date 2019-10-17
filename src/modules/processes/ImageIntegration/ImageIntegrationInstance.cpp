@@ -129,6 +129,7 @@ ImageIntegrationInstance::ImageIntegrationInstance( const MetaProcess* m ) :
    p_bufferSizeMB( TheIIBufferSizeParameter->DefaultValue() ),
    p_stackSizeMB( TheIIStackSizeParameter->DefaultValue() ),
    p_autoMemorySize( TheIIAutoMemorySizeParameter->DefaultValue() ),
+   p_autoMemoryLimit( TheIIAutoMemoryLimitParameter->DefaultValue() ),
    p_useROI( TheIIUseROIParameter->DefaultValue() ),
    p_useCache( TheIIUseCacheParameter->DefaultValue() ),
    p_evaluateNoise( TheIIEvaluateNoiseParameter->DefaultValue() ),
@@ -200,6 +201,7 @@ void ImageIntegrationInstance::Assign( const ProcessImplementation& p )
       p_bufferSizeMB                      = x->p_bufferSizeMB;
       p_stackSizeMB                       = x->p_stackSizeMB;
       p_autoMemorySize                    = x->p_autoMemorySize;
+      p_autoMemoryLimit                   = x->p_autoMemoryLimit;
       p_useROI                            = x->p_useROI;
       p_roi                               = x->p_roi;
       p_useCache                          = x->p_useCache;
@@ -713,6 +715,16 @@ public:
       return s_bufferRows;
    }
 
+   static size_type AvailableMemory()
+   {
+      return s_availableMemory;
+   }
+
+   static size_type TotalBufferSize()
+   {
+      return s_files.Length() * s_bufferRows * s_width * sizeof( float );
+   }
+
    static void UpdateBuffers( int startRow, int channel )
    {
       for ( IntegrationFile* file : s_files )
@@ -762,6 +774,7 @@ private:
    static int                      s_numberOfChannels;
    static bool                     s_isColor;
    static bool                     s_incremental;
+   static size_type                s_availableMemory;
    static int                      s_bufferRows;
 
    struct ThreadIndex
@@ -889,6 +902,7 @@ int IntegrationFile::s_height = 0;
 int IntegrationFile::s_numberOfChannels = 0;
 bool IntegrationFile::s_isColor = false;
 bool IntegrationFile::s_incremental = false;
+size_type IntegrationFile::s_availableMemory = 0;
 int IntegrationFile::s_bufferRows = 0;
 
 // ----------------------------------------------------------------------------
@@ -1083,19 +1097,22 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
       s_numberOfChannels = images[0].info.numberOfChannels;
       s_isColor = images[0].info.colorSpace != ColorSpace::Gray;
 
+      s_availableMemory = AvailablePhysicalMemory();
+
       s_incremental = format.CanReadIncrementally();
       if ( s_incremental )
       {
          size_type bufferSize = 0;
          if ( instance.p_autoMemorySize )
-            bufferSize = AvailablePhysicalMemory();
+            bufferSize = size_type( double( instance.p_autoMemoryLimit ) * s_availableMemory / s_files.Length() );
          if ( bufferSize == 0 )
             bufferSize = size_type( instance.p_bufferSizeMB )*1024*1024;
          s_bufferRows = Range( int( bufferSize/(s_width * sizeof( float )) ), 1, s_roi.Height() );
       }
       else
       {
-         console.NoteLn( "<end><cbr><br>* Incremental image integration disabled because of lack of file format support: " + format.Name() + "<br>" );
+         console.WarningLn( "<end><cbr><br>** Warning: Incremental file reading disabled because of lack of file format support: "
+                            + format.Name() + "<br>" );
          s_bufferRows = s_roi.Height();
       }
    }
@@ -3811,29 +3828,35 @@ bool ImageIntegrationInstance::ExecuteGlobal()
 
       int totalStacks;
       {
-         size_type stackSize = size_type( IntegrationFile::Width() ) * (
-                                    IntegrationFile::NumberOfFiles()*sizeof( RejectionDataItem )
+         size_type stackSize = size_type( IntegrationFile::Width() ) *
+                                 (IntegrationFile::NumberOfFiles()*sizeof( RejectionDataItem )
                                   + sizeof( int )
-                                  + ((p_rejection == IIRejection::LinearFit) ? sizeof( float ) : 0) );
+                                  + ((p_rejection == IIRejection::LinearFit) ? sizeof( float ) : 0));
+
          size_type stackBufferSize = 0;
-         bool autoSize = false;
          if ( p_autoMemorySize )
          {
-            stackBufferSize = AvailablePhysicalMemory();
-            if ( stackBufferSize == 0 )
-               console.WarningLn( "<end><cbr><br>** Warning: Unable to get available physical memory." );
-            else
-               autoSize = true;
+            size_type totalAvailable = size_type( double( p_autoMemoryLimit ) * IntegrationFile::AvailableMemory() );
+            if ( totalAvailable > IntegrationFile::TotalBufferSize() )
+               stackBufferSize = totalAvailable - IntegrationFile::TotalBufferSize();
          }
-         if ( stackBufferSize == 0 )
+         else
             stackBufferSize = size_type( p_stackSizeMB )*1024*1024;
-         totalStacks = int( Min( Max( size_type( 1 ), stackBufferSize/stackSize ),
+
+         totalStacks = int( Min( Max( size_type( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) ),
+                                      stackBufferSize/stackSize ),
                                  size_type( IntegrationFile::BufferRows() ) ) );
-         console.Write( "<end><cbr><br>" );
-         if ( autoSize )
-            console.NoteLn( String().Format( "* Available physical memory: %.3f GiB",
-                                             stackBufferSize/1024/1024/1024.0 ) );
-         console.NoteLn( String().Format( "* Using %d concurrent pixel stack(s) = %.3f GiB<br>",
+
+         if ( IntegrationFile::AvailableMemory() == 0 )
+            console.WarningLn( "<end><cbr><br>** Warning: Unable to get available physical memory." );
+         else
+            console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB",
+                                             IntegrationFile::AvailableMemory()/1024/1024/1024.0 ) );
+
+         console.NoteLn( String().Format( "* Allocated pixel buffer: %d rows, %.3f GiB",
+                                          IntegrationFile::BufferRows(),
+                                          IntegrationFile::TotalBufferSize()/1024/1024/1024.0 ) );
+         console.NoteLn( String().Format( "* Using %d concurrent pixel stack(s), %.3f GiB<br>",
                                           totalStacks, totalStacks*stackSize/1024/1024/1024.0 ) );
       }
 
@@ -4769,6 +4792,8 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_stackSizeMB;
    if ( p == TheIIAutoMemorySizeParameter )
       return &p_autoMemorySize;
+   if ( p == TheIIAutoMemoryLimitParameter )
+      return &p_autoMemoryLimit;
    if ( p == TheIIUseROIParameter )
       return &p_useROI;
    if ( p == TheIIROIX0Parameter )

@@ -121,6 +121,7 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIBufferSize( this );
    new IIStackSize( this );
    new IIAutoMemorySize( this );
+   new IIAutoMemoryLimit( this );
    new IIUseROI( this );
    new IIROIX0( this );
    new IIROIY0( this );

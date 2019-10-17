@@ -105,6 +105,7 @@ IIClosePreviousImages*               TheIIClosePreviousImagesParameter = nullptr
 IIBufferSize*                        TheIIBufferSizeParameter = nullptr;
 IIStackSize*                         TheIIStackSizeParameter = nullptr;
 IIAutoMemorySize*                    TheIIAutoMemorySizeParameter = nullptr;
+IIAutoMemoryLimit*                   TheIIAutoMemoryLimitParameter = nullptr;
 IIUseROI*                            TheIIUseROIParameter = nullptr;
 IIROIX0*                             TheIIROIX0Parameter = nullptr;
 IIROIY0*                             TheIIROIY0Parameter = nullptr;
@@ -1342,6 +1343,38 @@ IsoString IIAutoMemorySize::Id() const
 bool IIAutoMemorySize::DefaultValue() const
 {
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIAutoMemoryLimit::IIAutoMemoryLimit( MetaProcess* P ) : MetaFloat( P )
+{
+   TheIIAutoMemoryLimitParameter = this;
+}
+
+IsoString IIAutoMemoryLimit::Id() const
+{
+   return "autoMemoryLimit";
+}
+
+int IIAutoMemoryLimit::Precision() const
+{
+   return 2;
+}
+
+double IIAutoMemoryLimit::DefaultValue() const
+{
+   return 0.75;
+}
+
+double IIAutoMemoryLimit::MinimumValue() const
+{
+   return 0.10;
+}
+
+double IIAutoMemoryLimit::MaximumValue() const
+{
+   return 1.00;
 }
 
 // ----------------------------------------------------------------------------

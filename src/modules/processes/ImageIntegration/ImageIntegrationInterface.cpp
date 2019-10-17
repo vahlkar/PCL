@@ -1658,7 +1658,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "once in the integration stack. For this to happen, the following conditions must be true:</p>"
 
       "<ul>"
-      "<li><i>Buffer size</i> must be large enough as to allow loading an input files in 32-bit floating "
+      "<li><i>Buffer size</i> must be large enough as to allow loading an input file in 32-bit floating "
       "point format completely with a single file read operation.</li>"
       "<li><i>Stack size</i> must be larger than or equal to W*H*(12*N + 4), where W and H are the image "
       "width and height in pixels, respectively, and N is the number of integrated images. For linear fit "
