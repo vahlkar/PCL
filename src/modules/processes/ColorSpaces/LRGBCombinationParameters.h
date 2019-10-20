@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0374
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// LRGBCombinationParameters.h - Released 2019-01-21T12:06:41Z
+// LRGBCombinationParameters.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -68,10 +68,9 @@ public:
 
    LRGBChannelTable( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type MinLength() const;
-   virtual size_type MaxLength() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   size_type MaxLength() const override;
 };
 
 extern LRGBChannelTable*   TheLRGBChannelTableParameter;
@@ -106,11 +105,10 @@ public:
 
    LRGBChannelWeight( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LRGBChannelWeight*  TheLRGBChannelWeightParameter;
@@ -123,12 +121,11 @@ public:
 
    LRGBLuminanceMTF( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LRGBLuminanceMTF*   TheLRGBLuminanceMTFParameter;
@@ -141,12 +138,11 @@ public:
 
    LRGBSaturationMTF( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LRGBSaturationMTF*  TheLRGBSaturationMTFParameter;
@@ -159,9 +155,8 @@ public:
 
    LRGBClipHighlights( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LRGBClipHighlights* TheLRGBClipHighlightsParameter;
@@ -174,9 +169,8 @@ public:
 
    LRGBNoiseReduction( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LRGBNoiseReduction* TheLRGBNoiseReductionParameter;
@@ -189,11 +183,10 @@ public:
 
    LRGBLayersRemoved( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LRGBLayersRemoved* TheLRGBLayersRemovedParameter;
@@ -206,11 +199,10 @@ public:
 
    LRGBLayersProtected( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LRGBLayersProtected* TheLRGBLayersProtectedParameter;
@@ -224,4 +216,4 @@ PCL_END_LOCAL
 #endif   // __LRGBCombinationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationParameters.h - Released 2019-01-21T12:06:41Z
+// EOF LRGBCombinationParameters.h - Released 2019-09-29T12:27:57Z

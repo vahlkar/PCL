@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0404
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ResampleProcess.cpp - Released 2019-01-21T12:06:41Z
+// ResampleProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -68,7 +68,7 @@ ResampleProcess* TheResampleProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-ResampleProcess::ResampleProcess() : MetaProcess()
+ResampleProcess::ResampleProcess()
 {
    TheResampleProcess = this;
 
@@ -86,40 +86,56 @@ ResampleProcess::ResampleProcess() : MetaProcess()
    TheRSNoGUIMessagesParameter = new NoGUIMessages( this );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ResampleProcess::Id() const
 {
    return "Resample";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString ResampleProcess::Category() const
 {
    return "Geometry";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 ResampleProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String ResampleProcess::Description() const
 {
    return "";
 }
 
+// ----------------------------------------------------------------------------
+
 const char** ResampleProcess::IconImageXPM() const
 {
    return ResampleIcon_XPM;
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* ResampleProcess::DefaultInterface() const
 {
    return TheResampleInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* ResampleProcess::Create() const
 {
    return new ResampleInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* ResampleProcess::Clone( const ProcessImplementation& p ) const
 {
@@ -132,4 +148,4 @@ ProcessImplementation* ResampleProcess::Clone( const ProcessImplementation& p ) 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleProcess.cpp - Released 2019-01-21T12:06:41Z
+// EOF ResampleProcess.cpp - Released 2019-09-29T12:27:57Z

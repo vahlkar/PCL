@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// FileDataCachePreferencesDialog.cpp - Released 2019-01-21T12:06:41Z
+// FileDataCachePreferencesDialog.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -60,9 +60,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* theCache ) :
-   Dialog(),
-   cache( theCache )
+FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* cache ) :
+   m_cache( cache )
 {
    int labelWidth1 = Font().Width( String( "Cache duration (days):" ) + 'T' );
    int ui4 = LogicalPixelsToPhysical( 4 );
@@ -74,7 +73,7 @@ FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* t
    "estimates of all integrated images. A persistent cache is kept across "
    "PixInsight sessions. If you disable this option, the file cache will "
    "still be used, but only during the current session; as soon as you exit "
-   "the PixInsight Core application, all the cached information will be lost. "
+   "the PixInsight core application, all the cached information will be lost. "
    "With the persistent cache option enabled, all cache items will be stored "
    "and will be available the next time you run PixInsight.</p>"
    "<p>The cache greatly improves performance when the same images are being "
@@ -161,37 +160,43 @@ FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* t
    Global_Sizer.Add( Buttons_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
    AdjustToContents();
    SetFixedSize();
 
-   //
-
-   SetWindowTitle( cache->CacheName() + " Preferences" );
+   SetWindowTitle( m_cache->CacheName() + " Preferences" );
 
    OnReturn( (pcl::Dialog::return_event_handler)&FileDataCachePreferencesDialog::Dialog_Return, *this );
 
-   cacheEnabled = cache->IsEnabled();
-   cacheDuration = cache->Duration();
+   m_cacheEnabled = m_cache->IsEnabled();
+   m_cacheDuration = m_cache->Duration();
 
    Update();
 }
 
+// ----------------------------------------------------------------------------
+
 void FileDataCachePreferencesDialog::Update()
 {
-   PersistentCache_CheckBox.SetChecked( cacheEnabled );
-   CacheDuration_Label.Enable( cacheEnabled );
-   CacheDuration_SpinBox.Enable( cacheEnabled );
-   CacheDuration_SpinBox.SetValue( cacheDuration );
+   PersistentCache_CheckBox.SetChecked( m_cacheEnabled );
+   CacheDuration_Label.Enable( m_cacheEnabled );
+   CacheDuration_SpinBox.Enable( m_cacheEnabled );
+   CacheDuration_SpinBox.SetValue( m_cacheDuration );
 }
+
+// ----------------------------------------------------------------------------
 
 void FileDataCachePreferencesDialog::SpinBox_ValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == CacheDuration_SpinBox )
    {
-      cacheDuration = value;
+      m_cacheDuration = value;
       Update();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void FileDataCachePreferencesDialog::Button_Click( Button& sender, bool checked )
 {
@@ -199,14 +204,14 @@ void FileDataCachePreferencesDialog::Button_Click( Button& sender, bool checked 
    {
       if ( MessageBox( "<p>This will delete all cache items currently stored in volatile memory.</p>"
                        "<p><b>This action is irreversible. Proceed?</b></p>",
-                       cache->CacheName() + " - Clear Memory Cache", // caption
+                       m_cache->CacheName() + " - Clear Memory Cache", // caption
                        StdIcon::Warning,
                        StdButton::No, StdButton::Yes ).Execute() == StdButton::Yes )
       {
-         size_type n = cache->NumberOfItems();
-         cache->Clear();
+         size_type n = m_cache->NumberOfItems();
+         m_cache->Clear();
          MessageBox( "<p>" + String( n ) + " cache item(s) were deleted.</p>",
-                     cache->CacheName() + " - Clear Memory Cache", // caption
+                     m_cache->CacheName() + " - Clear Memory Cache", // caption
                      StdIcon::Information,
                      StdButton::Ok ).Execute();
       }
@@ -215,20 +220,20 @@ void FileDataCachePreferencesDialog::Button_Click( Button& sender, bool checked 
    {
       if ( MessageBox( "<p>This will delete all stored persistent file cache items.</p>"
                        "<p><b>This action is irreversible. Proceed?</b></p>",
-                       cache->CacheName() + " - Purge Persistent Cache", // caption
+                       m_cache->CacheName() + " - Purge Persistent Cache", // caption
                        StdIcon::Warning,
                        StdButton::No, StdButton::Yes ).Execute() == StdButton::Yes )
       {
-         cache->Purge();
+         m_cache->Purge();
          MessageBox( "<p>All persistent cache items were deleted.</p>",
-                     cache->CacheName() + " - Purge Persistent Cache", // caption
+                     m_cache->CacheName() + " - Purge Persistent Cache", // caption
                      StdIcon::Information,
                      StdButton::Ok ).Execute();
       }
    }
    else if ( sender == PersistentCache_CheckBox )
    {
-      cacheEnabled = checked;
+      m_cacheEnabled = checked;
       Update();
    }
    else if ( sender == OK_PushButton )
@@ -237,12 +242,14 @@ void FileDataCachePreferencesDialog::Button_Click( Button& sender, bool checked 
       Cancel();
 }
 
+// ----------------------------------------------------------------------------
+
 void FileDataCachePreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 {
    if ( retVal == StdDialogCode::Ok )
    {
-      cache->Enable( cacheEnabled );
-      cache->SetDuration( cacheDuration );
+      m_cache->Enable( m_cacheEnabled );
+      m_cache->SetDuration( m_cacheDuration );
    }
 }
 
@@ -251,4 +258,4 @@ void FileDataCachePreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCachePreferencesDialog.cpp - Released 2019-01-21T12:06:41Z
+// EOF FileDataCachePreferencesDialog.cpp - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 01.04.01.0362
+// Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationProcess.cpp - Released 2019-01-21T12:06:41Z
+// ImageCalibrationProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -68,7 +68,7 @@ ImageCalibrationProcess* TheImageCalibrationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-ImageCalibrationProcess::ImageCalibrationProcess() : MetaProcess()
+ImageCalibrationProcess::ImageCalibrationProcess()
 {
    TheImageCalibrationProcess = this;
 
@@ -200,4 +200,4 @@ ProcessImplementation* ImageCalibrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationProcess.cpp - Released 2019-01-21T12:06:41Z
+// EOF ImageCalibrationProcess.cpp - Released 2019-09-29T12:27:57Z

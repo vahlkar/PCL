@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 01.04.01.0362
+// Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// ImageCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -124,7 +124,7 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m ) :
    calibrateDark( TheICCalibrateDarkParameter->DefaultValue() ),
    calibrateFlat( TheICCalibrateFlatParameter->DefaultValue() ),
    optimizeDarks( TheICOptimizeDarksParameter->DefaultValue() ),
-   darkOptimizationThreshold( TheICDarkOptimizationThresholdParameter->DefaultValue() ),
+   darkOptimizationThreshold( TheICDarkOptimizationThresholdParameter->DefaultValue() ), // ### DEPRECATED
    darkOptimizationLow( TheICDarkOptimizationLowParameter->DefaultValue() ),
    darkOptimizationWindow( TheICDarkOptimizationWindowParameter->DefaultValue() ),
    darkCFADetectionMode( ICDarkCFADetectionMode::Default ),
@@ -138,7 +138,7 @@ ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m ) :
    outputPedestal( TheICOutputPedestalParameter->DefaultValue() ),
    overwriteExistingFiles( TheICOverwriteExistingFilesParameter->DefaultValue() ),
    onError( ICOnError::Default ),
-   noGUIMessages( TheICNoGUIMessagesParameter->DefaultValue() )
+   noGUIMessages( TheICNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
 {
 }
 
@@ -1507,21 +1507,18 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
     * Keep track of private data structures.
     */
    if ( data.fsData != nullptr )
-      if ( outputFormat.UsesFormatSpecificData() && outputFormat.ValidateFormatSpecificData( data.fsData ) )
-         outputFile.SetFormatSpecificData( data.fsData );
+      if ( outputFormat.UsesFormatSpecificData() )
+         if ( outputFormat.ValidateFormatSpecificData( data.fsData ) )
+            outputFile.SetFormatSpecificData( data.fsData );
 
    /*
     * Set image properties.
     */
    if ( !data.properties.IsEmpty() )
-      if ( outputFormat.CanStoreImageProperties() )
-      {
+      if ( outputFormat.CanStoreImageProperties() && outputFormat.SupportsViewProperties() )
          outputFile.WriteImageProperties( data.properties );
-         if ( !outputFormat.SupportsViewProperties() )
-            console.WarningLn( "** Warning: The output format cannot store view properties; existing properties have been stored as BLOB data." );
-      }
       else
-         console.WarningLn( "** Warning: The output format cannot store image properties; existing properties will be lost." );
+         console.WarningLn( "** Warning: The output format cannot store image properties - existing properties not embedded." );
 
    /*
     * Add FITS header keywords and preserve existing ones, if possible.
@@ -1869,632 +1866,611 @@ bool ImageCalibrationInstance::ExecuteGlobal()
          throw Error( why );
 
       if ( !outputDirectory.IsEmpty() && !File::DirectoryExists( outputDirectory ) )
-         throw( "The specified output directory does not exist: " + outputDirectory );
+         throw Error( "The specified output directory does not exist: " + outputDirectory );
 
       for ( image_list::const_iterator i = targetFrames.Begin(); i != targetFrames.End(); ++i )
          if ( i->enabled && !File::Exists( i->path ) )
-            throw( "No such file exists on the local filesystem: " + i->path );
+            throw Error( "No such file exists on the local filesystem: " + i->path );
    }
 
-   try
+   /*
+    * Master frames in use.
+    */
+   AutoPointer<Image> bias, dark, optimizingDark, flat;
+
+   /*
+    * Flag true if the master dark frame is mosaiced with a Color Filter Array
+    * (CFA, e.g. a Bayer pattern), either explicitly reported by the file
+    * format (RAW), detected heuristically (e.g., a CFA stored as a proprietary
+    * FITS file), or forced with darkCFADetectionMode = ForceCFA.
+    */
+   bool isDarkCFA = false;
+
+   /*
+    * Per-channel flat scaling factors.
+    */
+   FVector s;
+
+   /*
+    * Reset output data.
+    */
+   output.Clear();
+
+   /*
+    * Allow the user to abort the calibration process.
+    */
+   Console console;
+   console.EnableAbort();
+
+   /*
+    * Initialize validation geometries.
+    */
+   geometry = calibratedGeometry = 0;
+
+   /*
+    * Overscan regions grouped by target regions.
+    */
+   overscan_table O;
+   if ( overscan.enabled )
+      O = BuildOverscanTable();
+
+   /*
+    * Load and calibrate, as appropriate, all master calibration frames.
+    */
+   if ( masterBias.enabled || masterDark.enabled || masterFlat.enabled )
    {
-      /*
-       * Master frames in use.
-       */
-      AutoPointer<Image> bias, dark, optimizingDark, flat;
+      console.WriteLn( "<end><cbr><br>Loading master calibration frames:" );
 
       /*
-       * Flag true if the master dark frame is mosaiced with a Color Filter
-       * Array (CFA, e.g. a Bayer pattern), either explicitly reported by the
-       * file format (RAW), detected heuristically (e.g., a CFA stored as a
-       * proprietary FITS file), or forced with darkCFADetectionMode = ForceCFA.
+       * Load master bias, dark and flat frames, and validate their geometries.
        */
-      bool isDarkCFA = false;
+      if ( masterBias.enabled )
+         bias = LoadCalibrationFrame( masterBias.path, calibrateBias );
 
-      /*
-       * Per-channel flat scaling factors.
-       */
-      FVector s;
-
-      /*
-       * Reset output data
-       */
-      output.Clear();
-
-      /*
-       * For all errors generated, we want a report on the console. This is
-       * customary in PixInsight for all batch processes.
-       */
-      Exception::EnableConsoleOutput();
-      Exception::DisableGUIOutput();
-
-      /*
-       * Allow the user to abort the calibration process.
-       */
-      Console console;
-      console.EnableAbort();
-
-      /*
-       * Initialize validation geometries.
-       */
-      geometry = calibratedGeometry = 0;
-
-      /*
-       * Overscan regions grouped by target regions.
-       */
-      overscan_table O;
-      if ( overscan.enabled )
-         O = BuildOverscanTable();
-
-      /*
-       * Load and calibrate all master calibration frames.
-       */
-      if ( masterBias.enabled || masterDark.enabled || masterFlat.enabled )
+      if ( masterDark.enabled )
       {
-         console.WriteLn( "<end><cbr><br>Loading master calibration frames:" );
+         dark = LoadCalibrationFrame( masterDark.path, calibrateDark, &isDarkCFA );
 
-         /*
-          * Load master bias, dark and flat frames, and validate their
-          * geometries.
-          */
-
-         if ( masterBias.enabled )
-            bias = LoadCalibrationFrame( masterBias.path, calibrateBias );
-
-         if ( masterDark.enabled )
+         switch ( darkCFADetectionMode )
          {
-            dark = LoadCalibrationFrame( masterDark.path, calibrateDark, &isDarkCFA );
-
-            switch ( darkCFADetectionMode )
-            {
-            default:
-            case ICDarkCFADetectionMode::DetectCFA:
-               if ( !isDarkCFA )
-                  isDarkCFA = IsBayerPattern( *dark );
-               if ( isDarkCFA )
-                  console.NoteLn( "<end><cbr>* Note: CFA pattern detected." );
-               break;
-            case ICDarkCFADetectionMode::ForceCFA:
-               if ( !isDarkCFA )
-                  console.WarningLn( "<end><cbr>"
-                              "** Warning: The file format reports no CFA pattern for the master dark frame, "
-                                  "but it is being forced as per process instance parameters." );
-               isDarkCFA = true;
-               break;
-            case ICDarkCFADetectionMode::IgnoreCFA:
-               if ( isDarkCFA )
-                  console.WarningLn( "<end><cbr>"
-                              "** Warning: The file format reports a CFA pattern for the master dark frame, "
-                                  "but it is being ignored as per process instance parameters." );
-               isDarkCFA = false;
-               break;
-            }
+         default:
+         case ICDarkCFADetectionMode::DetectCFA:
+            if ( !isDarkCFA )
+               isDarkCFA = IsBayerPattern( *dark );
+            if ( isDarkCFA )
+               console.NoteLn( "<end><cbr>* Note: CFA pattern detected." );
+            break;
+         case ICDarkCFADetectionMode::ForceCFA:
+            if ( !isDarkCFA )
+               console.WarningLn( "<end><cbr>"
+                           "** Warning: The file format reports no CFA pattern for the master dark frame, "
+                                 "but it is being forced as per process instance parameters." );
+            isDarkCFA = true;
+            break;
+         case ICDarkCFADetectionMode::IgnoreCFA:
+            if ( isDarkCFA )
+               console.WarningLn( "<end><cbr>"
+                           "** Warning: The file format reports a CFA pattern for the master dark frame, "
+                                 "but it is being ignored as per process instance parameters." );
+            isDarkCFA = false;
+            break;
          }
+      }
 
-         if ( masterFlat.enabled )
-            flat = LoadCalibrationFrame( masterFlat.path, calibrateFlat );
-
-         Module->ProcessEvents();
-
-         /*
-          * Apply overscan corrections.
-          */
-         if ( overscan.enabled )
-         {
-            if ( calibrateBias )
-               if ( masterBias.enabled )
-               {
-                  console.WriteLn( "<end><cbr><br>Applying overscan correction: master bias frame ..." );
-                  SubtractOverscan( *bias, O, overscan.imageRect );
-               }
-            if ( calibrateDark )
-               if ( masterDark.enabled )
-               {
-                  console.WriteLn( "<end><cbr><br>Applying overscan correction: master dark frame ..." );
-                  SubtractOverscan( *dark, O, overscan.imageRect );
-               }
-            if ( calibrateFlat )
-               if ( masterFlat.enabled )
-               {
-                  console.WriteLn( "<end><cbr><br>Applying overscan correction: master flat frame ..." );
-                  SubtractOverscan( *flat, O, overscan.imageRect );
-               }
-         }
-
-         Module->ProcessEvents();
-
-         /*
-          * Calibrate the master dark frame by subtracting the master bias
-          * frame.
-          */
-         if ( masterDark.enabled )
-         {
-            if ( calibrateDark )
-               if ( masterBias.enabled )
-               {
-                  console.WriteLn( "<end><cbr><br>Applying bias correction: master dark frame ..." );
-                  SubtractBias( *dark, *bias );
-               }
-
-            /*
-             * If necessary, create the dark optimization window image.
-             * NB: This must be done after calibrating the master dark frame.
-             */
-            if ( optimizeDarks )
-            {
-               dark->ResetSelections();
-               optimizingDark = new Image( *dark );
-               if ( isDarkCFA )
-                  IntegerResample( -2 ) >> *optimizingDark;
-
-               console.WriteLn( "<end><cbr><br>Dark frame optimization thresholds:" );
-               for ( int c = 0; c < optimizingDark->NumberOfChannels(); ++c )
-               {
-                  optimizingDark->SelectChannel( c );
-                  double location = optimizingDark->Median();
-                  double scale = optimizingDark->MAD( location ) * 1.4826;
-                  double t;
-                  if ( darkOptimizationThreshold > 0 ) // ### be backwards-compatible
-                  {
-                     t = Range( darkOptimizationThreshold, 0.0F, 1.0F );
-                     darkOptimizationLow = (t - location)/scale;
-                     darkOptimizationThreshold = 0;
-                  }
-                  else
-                  {
-                     t = Range( location + darkOptimizationLow * scale, 0.0, 1.0 );
-                  }
-                  size_type N = optimizingDark->NumberOfPixels();
-                  for ( Image::sample_iterator i( *optimizingDark, c ); i; ++i )
-                     if ( *i < t )
-                     {
-                        *i = 0;
-                        --N;
-                     }
-                  console.WriteLn( String().Format( "<end><cbr>Td%d = %.8f (%llu px = %.3f%%)",
-                                                      c, t, N, 100.0*N/optimizingDark->NumberOfPixels() ) );
-                  if ( N < DARK_COUNT_LOW*optimizingDark->NumberOfPixels() )
-                     console.WarningLn( String().Format( "** Warning: The dark frame optimization threshold is probably too high (channel %d).", c ) );
-                  if ( N < DARK_COUNT_SMALL )
-                  {
-                     console.WarningLn( String().Format( "** Warning: The dark frame optimization pixel set is too small - disabling dark frame optimization (channel %d).", c ) );
-                     optimizingDark.Destroy();
-                  }
-               }
-
-               if ( optimizingDark )
-               {
-                  optimizingDark->ResetSelections();
-
-                  if ( darkOptimizationWindow > 0
-                     && (darkOptimizationWindow < dark->Width() || darkOptimizationWindow < dark->Height()) )
-                  {
-                     optimizingDark->SelectRectangle( OptimizingRect( *optimizingDark, darkOptimizationWindow ) );
-                     optimizingDark->Crop();
-                     optimizingDark->ResetSelections();
-                  }
-               }
-            }
-         }
-
-         Module->ProcessEvents();
-
-         /*
-          * Calibrate and scale the master flat frame
-          */
-         if ( masterFlat.enabled )
-         {
-            /*
-             * Calibrate the master flat frame by subtracting bias and dark
-             * master frames. If selected, perform a dark optimization for the
-             * master flat.
-             */
-            if ( calibrateFlat )
-               if ( masterBias.enabled || masterDark.enabled )
-               {
-                  console.WriteLn( "<end><cbr><br>Calibrating master flat frame ..." );
-
-                  FVector K;
-                  if ( masterDark.enabled )
-                     if ( optimizeDarks && optimizingDark )
-                     {
-                        console.WriteLn( "Optimizing master dark frame:" );
-                        K = OptimizeDark( *flat, *optimizingDark, isDarkCFA );
-                        for ( int c = 0; c < flat->NumberOfChannels(); ++c )
-                        {
-                           console.WriteLn( String().Format( "<end><cbr>k%d = %.3f", c, K[c] ) );
-                           if ( K[c] <= NO_DARK_CORRELATION )
-                              console.WarningLn( String().Format( "** Warning: No correlation between "
-                                                "the master dark and master flat frames (channel %d).", c ) );
-                        }
-                     }
-                     else
-                        K = FVector( 1.0F, flat->NumberOfChannels() );
-
-                  Module->ProcessEvents();
-                  Calibrate( *flat, bias, dark, K, 0, FVector() );
-               }
-
-            Module->ProcessEvents();
-
-            /*
-             * Compute flat scaling factors as the mean pixel value of each
-             * channel.
-             */
-            console.WriteLn( "<end><cbr>Computing master flat scaling factors ..." );
-
-            s = FVector( flat->NumberOfChannels() );
-
-            flat->SetRangeClipping( 0.00002, 0.99998 );
-
-            for ( int c = 0; c < flat->NumberOfChannels(); ++c )
-            {
-               flat->SelectChannel( c );
-               s[c] = flat->Mean();
-               if ( 1 + s[c] == 1 )
-                  throw Error( String().Format( "Zero or insignificant scaling factor for flat frame channel# %d. "
-                                                "(empty master flat frame image?)", c ) );
-            }
-
-            flat->ResetSelections();
-
-            for ( int c = 0; c < flat->NumberOfChannels(); ++c )
-               console.WriteLn( String().Format( "s%d = %.6f", c, s[c] ) );
-         }
-      } // if bias or dark or flat
+      if ( masterFlat.enabled )
+         flat = LoadCalibrationFrame( masterFlat.path, calibrateFlat );
 
       Module->ProcessEvents();
 
       /*
-       * Begin light frame calibration process.
+       * Apply overscan corrections.
        */
-
-      int succeeded = 0;
-      int failed = 0;
-      int skipped = 0;
-
-      /*
-       * Running threads list. Note that IndirectArray<> initializes all item
-       * pointers to zero.
-       */
-      int numberOfThreads = Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 );
-      thread_list runningThreads( Min( int( targetFrames.Length() ), numberOfThreads ) );
-
-      /*
-       * Waiting threads list. We use this list for temporary storage of
-       * calibration threads for multiple image files.
-       */
-      thread_list waitingThreads;
-
-      /*
-       * Flag to signal the beginning of the final waiting period, when there
-       * are no more pending images but there are still running threads.
-       */
-      bool waitingForFinished = false;
-
-      /*
-       * Prepare working thread data.
-       */
-      CalibrationThreadData threadData;
-      threadData.instance = this;
-      threadData.overscan = O;
-      threadData.bias = bias;
-      threadData.dark = dark;
-      threadData.optimizingDark = optimizingDark;
-      threadData.isDarkCFA = isDarkCFA;
-      threadData.flat = flat;
-      threadData.fScale = s;
-      threadData.maxProcessors = 1 + (numberOfThreads - runningThreads.Length())/runningThreads.Length();
-
-      /*
-       * We'll work on a temporary duplicate of the target frames list. This
-       * allows us to modify the working list without altering the instance.
-       */
-      image_list targets( targetFrames );
-
-      console.WriteLn( String().Format( "<end><cbr><br>Calibration of %u target frames:", targetFrames.Length() ) );
-      console.WriteLn( String().Format( "* Using %u worker threads", runningThreads.Length() ) );
-
-      try
+      if ( overscan.enabled )
       {
-         for ( ;; )
-         {
-            try
+         if ( calibrateBias )
+            if ( masterBias.enabled )
             {
-               /*
-                * Thread watching loop.
-                */
-               thread_list::iterator i = nullptr;
-               size_type unused = 0;
-               for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j )
-               {
-                  // Keep the GUI responsive
-                  Module->ProcessEvents();
-                  if ( console.AbortRequested() )
-                     throw ProcessAborted();
+               console.WriteLn( "<end><cbr><br>Applying overscan correction: master bias frame ..." );
+               SubtractOverscan( *bias, O, overscan.imageRect );
+            }
+         if ( calibrateDark )
+            if ( masterDark.enabled )
+            {
+               console.WriteLn( "<end><cbr><br>Applying overscan correction: master dark frame ..." );
+               SubtractOverscan( *dark, O, overscan.imageRect );
+            }
+         if ( calibrateFlat )
+            if ( masterFlat.enabled )
+            {
+               console.WriteLn( "<end><cbr><br>Applying overscan correction: master flat frame ..." );
+               SubtractOverscan( *flat, O, overscan.imageRect );
+            }
+      }
 
-                  if ( *j == nullptr )
+      Module->ProcessEvents();
+
+      /*
+       * Calibrate the master dark frame by subtracting the master bias frame.
+       */
+      if ( masterDark.enabled )
+      {
+         if ( calibrateDark )
+            if ( masterBias.enabled )
+            {
+               console.WriteLn( "<end><cbr><br>Applying bias correction: master dark frame ..." );
+               SubtractBias( *dark, *bias );
+            }
+
+         /*
+          * If necessary, create the dark optimization window image.
+          * NB: This must be done after calibrating the master dark frame.
+          */
+         if ( optimizeDarks )
+         {
+            dark->ResetSelections();
+            optimizingDark = new Image( *dark );
+            if ( isDarkCFA )
+               IntegerResample( -2 ) >> *optimizingDark;
+
+            console.WriteLn( "<end><cbr><br>Dark frame optimization thresholds:" );
+            for ( int c = 0; c < optimizingDark->NumberOfChannels(); ++c )
+            {
+               optimizingDark->SelectChannel( c );
+               double location = optimizingDark->Median();
+               double scale = optimizingDark->MAD( location ) * 1.4826;
+               double t;
+               if ( darkOptimizationThreshold > 0 ) // ### be backwards-compatible
+               {
+                  t = Range( darkOptimizationThreshold, 0.0F, 1.0F );
+                  darkOptimizationLow = (t - location)/scale;
+                  darkOptimizationThreshold = 0;
+               }
+               else
+               {
+                  t = Range( location + darkOptimizationLow * scale, 0.0, 1.0 );
+               }
+               size_type N = optimizingDark->NumberOfPixels();
+               for ( Image::sample_iterator i( *optimizingDark, c ); i; ++i )
+                  if ( *i < t )
                   {
-                     /*
-                      * This is a free thread slot. Ignore it if we don't have
-                      * more pending images to feed in.
-                      */
-                     if ( targets.IsEmpty() && waitingThreads.IsEmpty() )
+                     *i = 0;
+                     --N;
+                  }
+               console.WriteLn( String().Format( "<end><cbr>Td%d = %.8f (%llu px = %.3f%%)",
+                                                   c, t, N, 100.0*N/optimizingDark->NumberOfPixels() ) );
+               if ( N < DARK_COUNT_LOW*optimizingDark->NumberOfPixels() )
+                  console.WarningLn( String().Format( "** Warning: The dark frame optimization threshold is probably too high (channel %d).", c ) );
+               if ( N < DARK_COUNT_SMALL )
+               {
+                  console.WarningLn( String().Format( "** Warning: The dark frame optimization pixel set is too small - disabling dark frame optimization (channel %d).", c ) );
+                  optimizingDark.Destroy();
+               }
+            }
+
+            if ( optimizingDark )
+            {
+               optimizingDark->ResetSelections();
+
+               if ( darkOptimizationWindow > 0
+                  && (darkOptimizationWindow < dark->Width() || darkOptimizationWindow < dark->Height()) )
+               {
+                  optimizingDark->SelectRectangle( OptimizingRect( *optimizingDark, darkOptimizationWindow ) );
+                  optimizingDark->Crop();
+                  optimizingDark->ResetSelections();
+               }
+            }
+         }
+      }
+
+      Module->ProcessEvents();
+
+      /*
+       * Calibrate and scale the master flat frame.
+       */
+      if ( masterFlat.enabled )
+      {
+         /*
+          * Calibrate the master flat frame by subtracting bias and dark master
+          * frames. If selected, perform a dark optimization for the master
+          * flat.
+          */
+         if ( calibrateFlat )
+            if ( masterBias.enabled || masterDark.enabled )
+            {
+               console.WriteLn( "<end><cbr><br>Calibrating master flat frame ..." );
+
+               FVector K;
+               if ( masterDark.enabled )
+                  if ( optimizeDarks && optimizingDark )
+                  {
+                     console.WriteLn( "Optimizing master dark frame:" );
+                     K = OptimizeDark( *flat, *optimizingDark, isDarkCFA );
+                     for ( int c = 0; c < flat->NumberOfChannels(); ++c )
                      {
-                        ++unused;
-                        continue;
+                        console.WriteLn( String().Format( "<end><cbr>k%d = %.3f", c, K[c] ) );
+                        if ( K[c] <= NO_DARK_CORRELATION )
+                           console.WarningLn( String().Format( "** Warning: No correlation between "
+                                             "the master dark and master flat frames (channel %d).", c ) );
                      }
                   }
                   else
-                  {
-                     /*
-                      * This is an existing thread. If this thread is still
-                      * alive, wait for 0.1 seconds and then continue watching.
-                      */
-                     if ( (*j)->IsActive() )
-                     {
-                        pcl::Sleep( 100 );
-                        continue;
-                     }
-                  }
+                     K = FVector( 1.0F, flat->NumberOfChannels() );
 
-                  /*
-                   * If we have a useful free thread slot, or a thread has just
-                   * finished, exit the watching loop and work it out.
-                   */
-                  i = j;
-                  break;
-               }
+               Module->ProcessEvents();
+               Calibrate( *flat, bias, dark, K, 0, FVector() );
+            }
 
-               /*
-                * Keep watching while there is no useful free thread slots or a
-                * finished thread.
-                */
-               if ( i == nullptr )
-                  if ( unused == runningThreads.Length() )
-                     break;
-                  else
-                     continue;
+         Module->ProcessEvents();
 
-               /*
-                * At this point we have found either a unused thread slot that
-                * we can reuse, or a thread that has just finished execution.
-                */
-               if ( *i != nullptr )
-               {
-                  /*
-                   * This is a just-finished thread.
-                   */
-                  try
-                  {
-                     if ( !(*i)->Success() )
-                        throw Error( (*i)->ConsoleOutputText() );
+         /*
+          * Compute flat scaling factors as the mean pixel value of each
+          * channel.
+          */
+         console.WriteLn( "<end><cbr>Computing master flat scaling factors ..." );
 
-                     // Write the calibrated image.
-                     WriteCalibratedImage( *i );
+         s = FVector( flat->NumberOfChannels() );
 
-                     // Dispose this calibration thread, since we are done with
-                     // it. NB: IndirectArray<T>::Delete() sets to zero the
-                     // pointer pointed to by the iterator, but does not remove
-                     // the array element.
-                     runningThreads.Delete( i );
-                  }
-                  catch ( ... )
-                  {
-                     // Ensure the thread is also destroyed in the event of
-                     // error; we'd enter an infinite loop otherwise!
-                     runningThreads.Delete( i );
-                     throw;
-                  }
+         flat->SetRangeClipping( 0.00002, 0.99998 );
 
-                  ++succeeded;
-               }
+         for ( int c = 0; c < flat->NumberOfChannels(); ++c )
+         {
+            flat->SelectChannel( c );
+            s[c] = flat->Mean();
+            if ( 1 + s[c] == 1 )
+               throw Error( String().Format( "Zero or insignificant scaling factor for flat frame channel# %d. "
+                                             "(empty master flat frame image?)", c ) );
+         }
 
+         flat->ResetSelections();
+
+         for ( int c = 0; c < flat->NumberOfChannels(); ++c )
+            console.WriteLn( String().Format( "s%d = %.6f", c, s[c] ) );
+      }
+   } // if bias or dark or flat
+
+   Module->ProcessEvents();
+
+   /*
+    * Begin light frame calibration process.
+    */
+
+   int succeeded = 0;
+   int failed = 0;
+   int skipped = 0;
+
+   /*
+    * Running threads list. Note that IndirectArray<> initializes all item
+    * pointers to zero.
+    */
+   int numberOfThreads = Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 );
+   thread_list runningThreads( Min( int( targetFrames.Length() ), numberOfThreads ) );
+
+   /*
+    * Waiting threads list. We use this list for temporary storage of
+    * calibration threads for multiple image files.
+    */
+   thread_list waitingThreads;
+
+   /*
+    * Flag to signal the beginning of the final waiting period, when there are
+    * no more pending images but there are still running threads.
+    */
+   bool waitingForFinished = false;
+
+   /*
+    * Prepare working thread data.
+    */
+   CalibrationThreadData threadData;
+   threadData.instance = this;
+   threadData.overscan = O;
+   threadData.bias = bias;
+   threadData.dark = dark;
+   threadData.optimizingDark = optimizingDark;
+   threadData.isDarkCFA = isDarkCFA;
+   threadData.flat = flat;
+   threadData.fScale = s;
+   threadData.maxProcessors = 1 + (numberOfThreads - runningThreads.Length())/runningThreads.Length();
+
+   /*
+    * We'll work on a temporary duplicate of the target frames list. This
+    * allows us to modify the working list without altering the instance.
+    */
+   image_list targets( targetFrames );
+
+   console.WriteLn( String().Format( "<end><cbr><br>Calibration of %u target frames:", targetFrames.Length() ) );
+   console.WriteLn( String().Format( "* Using %u worker threads", runningThreads.Length() ) );
+
+   try
+   {
+      for ( ;; )
+      {
+         try
+         {
+            /*
+             * Thread watching loop.
+             */
+            thread_list::iterator i = nullptr;
+            size_type unused = 0;
+            for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j )
+            {
                // Keep the GUI responsive
                Module->ProcessEvents();
                if ( console.AbortRequested() )
                   throw ProcessAborted();
 
-               if ( !waitingThreads.IsEmpty() )
+               if ( *j == nullptr )
                {
                   /*
-                   * If there are threads waiting, pop the first one from the
-                   * waiting threads list and put it in the free thread slot
-                   * for immediate firing.
+                   * This is a free thread slot. Ignore it if we don't have
+                   * more pending images to feed in.
                    */
-                  *i = *waitingThreads;
-                  waitingThreads.Remove( waitingThreads.Begin() );
+                  if ( targets.IsEmpty() && waitingThreads.IsEmpty() )
+                  {
+                     ++unused;
+                     continue;
+                  }
                }
                else
                {
                   /*
-                   * If there are no more target frames to calibrate, simply
-                   * wait until all running threads terminate execution.
+                   * This is an existing thread. If this thread is still alive,
+                   * wait for 0.1 seconds and then continue watching.
                    */
-                  if ( targets.IsEmpty() )
+                  if ( (*j)->IsActive() )
                   {
-                     bool someRunning = false;
-                     for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j )
-                        if ( *j != 0 )
-                        {
-                           someRunning = true;
-                           break;
-                        }
-
-                     /*
-                      * If there are still running threads, continue waiting.
-                      */
-                     if ( someRunning )
-                     {
-                        if ( !waitingForFinished )
-                        {
-                           console.WriteLn( "<end><cbr><br>* Waiting for running tasks to terminate ..." );
-                           waitingForFinished = true;
-                        }
-
-                        continue;
-                     }
-
-                     /*
-                      * If there are no running threads, no waiting threads,
-                      * and no pending target frames, then we are done.
-                      */
-                     break;
-                  }
-
-                  /*
-                   * We still have pending work to do: Extract the next target
-                   * frame from the targets list, load and calibrate it.
-                   */
-                  ImageItem item = *targets;
-                  targets.Remove( targets.Begin() );
-
-                  console.WriteLn( String().Format( "<end><cbr><br>Calibrating target frame %u of %u",
-                                                      targetFrames.Length()-targets.Length(),
-                                                      targetFrames.Length() ) );
-                  if ( !item.enabled )
-                  {
-                     console.NoteLn( "* Skipping disabled target" );
-                     ++skipped;
+                     pcl::Sleep( 100 );
                      continue;
                   }
-
-                  /*
-                   * Create a new thread for this target frame image, or if
-                   * this is a multiple-image file, a set of threads for all
-                   * subimages in this file.
-                   */
-                  thread_list threads = LoadTargetFrame( item.path, threadData );
-
-                  /*
-                   * Put the new thread --or the first thread if this is a
-                   * multiple-image file-- in the free slot.
-                   */
-                  *i = *threads;
-                  threads.Remove( threads.Begin() );
-
-                  /*
-                   * Add the rest of subimages in a multiple-image file to the
-                   * list of waiting threads.
-                   */
-                  if ( !threads.IsEmpty() )
-                     waitingThreads.Add( threads );
                }
 
                /*
-                * If we have produced a new thread, run it immediately. Note
-                * that we support thread CPU affinity, if it has been enabled
-                * on the platform via global preferences - hence the second
-                * argument to Thread::Start() below.
+                * If we have a useful free thread slot, or a thread has just
+                * finished, exit the watching loop and work it out.
                 */
-               if ( *i != nullptr )
-                  (*i)->Start( ThreadPriority::DefaultMax, i - runningThreads.Begin() );
-            } // try
-            catch ( ProcessAborted& )
-            {
-               /*
-                * The user has requested to abort the process.
-                */
-               throw;
+               i = j;
+               break;
             }
-            catch ( ... )
-            {
-               /*
-                * The user has requested to abort the process.
-                */
-               if ( console.AbortRequested() )
-                  throw ProcessAborted();
 
-               /*
-                * Other errors handled according to the selected error policy.
-                */
-
-               ++failed;
-
-               try
-               {
-                  throw;
-               }
-               ERROR_HANDLER
-
-               console.ResetStatus();
-               console.EnableAbort();
-
-               console.Note( "<end><cbr><br>* Applying error policy: " );
-
-               switch ( onError )
-               {
-               default: // ?
-               case ICOnError::Continue:
-                  console.NoteLn( "Continue on error." );
+            /*
+             * Keep watching while there is no useful free thread slots or a
+             * finished thread.
+             */
+            if ( i == nullptr )
+               if ( unused == runningThreads.Length() )
+                  break;
+               else
                   continue;
 
-               case ICOnError::Abort:
-                  console.NoteLn( "Abort on error." );
-                  throw ProcessAborted();
+            /*
+             * At this point we have found either a unused thread slot that we
+             * can reuse, or a thread that has just finished execution.
+             */
+            if ( *i != nullptr )
+            {
+               /*
+                * This is a just-finished thread.
+                */
+               try
+               {
+                  if ( !(*i)->Success() )
+                     throw Error( (*i)->ConsoleOutputText() );
 
-               case ICOnError::AskUser:
-                  {
-                     console.NoteLn( "Ask on error..." );
+                  WriteCalibratedImage( *i );
 
-                     int r = MessageBox( "<p style=\"white-space:pre;\">"
-                        "An error occurred during ImageCalibration execution. What do you want to do?</p>",
-                        "ImageCalibration",
-                        StdIcon::Error,
-                        StdButton::Ignore, StdButton::Abort ).Execute();
+                  /*
+                   * Dispose this calibration thread, since we are done with
+                   * it. NB: IndirectArray<T>::Delete() sets to zero the
+                   * pointer pointed to by the iterator, but does not remove
+                   * the array element.
+                   */
+                  runningThreads.Delete( i );
+               }
+               catch ( ... )
+               {
+                  /*
+                   * Ensure the thread is also destroyed in the event of error;
+                   * we'd enter an infinite loop otherwise!
+                   */
+                  runningThreads.Delete( i );
+                  throw;
+               }
 
-                     if ( r == StdButton::Abort )
+               ++succeeded;
+            }
+
+            // Keep the GUI responsive
+            Module->ProcessEvents();
+            if ( console.AbortRequested() )
+               throw ProcessAborted();
+
+            if ( !waitingThreads.IsEmpty() )
+            {
+               /*
+                * If there are threads waiting, pop the first one from the
+                * waiting threads list and put it in the free thread slot for
+                * immediate firing.
+                */
+               *i = *waitingThreads;
+               waitingThreads.Remove( waitingThreads.Begin() );
+            }
+            else
+            {
+               /*
+                * If there are no more target frames to calibrate, simply wait
+                * until all running threads terminate execution.
+                */
+               if ( targets.IsEmpty() )
+               {
+                  bool someRunning = false;
+                  for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j )
+                     if ( *j != 0 )
                      {
-                        console.NoteLn( "* Aborting as per user request." );
-                        throw ProcessAborted();
+                        someRunning = true;
+                        break;
                      }
 
-                     console.NoteLn( "* Ignoring error as per user request." );
+                  /*
+                   * If there are still running threads, continue waiting.
+                   */
+                  if ( someRunning )
+                  {
+                     if ( !waitingForFinished )
+                     {
+                        console.WriteLn( "<end><cbr><br>* Waiting for running tasks to terminate ..." );
+                        waitingForFinished = true;
+                     }
+
                      continue;
                   }
+
+                  /*
+                   * If there are no running threads, no waiting threads, and
+                   * no pending target frames, then we are done.
+                   */
+                  break;
+               }
+
+               /*
+                * We still have pending work to do: Extract the next target
+                * frame from the targets list, load and calibrate it.
+                */
+               ImageItem item = *targets;
+               targets.Remove( targets.Begin() );
+
+               console.WriteLn( String().Format( "<end><cbr><br>Calibrating target frame %u of %u",
+                                                   targetFrames.Length()-targets.Length(),
+                                                   targetFrames.Length() ) );
+               if ( !item.enabled )
+               {
+                  console.NoteLn( "* Skipping disabled target" );
+                  ++skipped;
+                  continue;
+               }
+
+               /*
+                * Create a new thread for this target frame image, or if this
+                * is a multiple-image file, a set of threads for all subimages
+                * in this file.
+                */
+               thread_list threads = LoadTargetFrame( item.path, threadData );
+
+               /*
+                * Put the new thread --or the first thread if this is a
+                * multiple-image file-- in the free slot.
+                */
+               *i = *threads;
+               threads.Remove( threads.Begin() );
+
+               /*
+                * Add the rest of subimages in a multiple-image file to the
+                * list of waiting threads.
+                */
+               if ( !threads.IsEmpty() )
+                  waitingThreads.Add( threads );
+            }
+
+            /*
+             * If we have produced a new thread, run it immediately. Note that
+             * we support thread CPU affinity, if it has been enabled on the
+             * platform via global preferences - hence the second argument to
+             * Thread::Start() below.
+             */
+            if ( *i != nullptr )
+               (*i)->Start( ThreadPriority::DefaultMax, i - runningThreads.Begin() );
+         } // try
+         catch ( ProcessAborted& )
+         {
+            /*
+             * The user has requested to abort the process.
+             */
+            throw;
+         }
+         catch ( ... )
+         {
+            /*
+             * The user has requested to abort the process.
+             */
+            if ( console.AbortRequested() )
+               throw ProcessAborted();
+
+            /*
+             * Other errors handled according to the selected error policy.
+             */
+            ++failed;
+
+            try
+            {
+               throw;
+            }
+            ERROR_HANDLER
+
+            console.ResetStatus();
+            console.EnableAbort();
+
+            console.Note( "<end><cbr><br>* Applying error policy: " );
+
+            switch ( onError )
+            {
+            default: // ?
+            case ICOnError::Continue:
+               console.NoteLn( "Continue on error." );
+               continue;
+
+            case ICOnError::Abort:
+               console.NoteLn( "Abort on error." );
+               throw ProcessAborted();
+
+            case ICOnError::AskUser:
+               {
+                  console.NoteLn( "Ask on error..." );
+
+                  int r = MessageBox( "<p style=\"white-space:pre;\">"
+                     "An error occurred during ImageCalibration execution. What do you want to do?</p>",
+                     "ImageCalibration",
+                     StdIcon::Error,
+                     StdButton::Ignore, StdButton::Abort ).Execute();
+
+                  if ( r == StdButton::Abort )
+                  {
+                     console.NoteLn( "* Aborting as per user request." );
+                     throw ProcessAborted();
+                  }
+
+                  console.NoteLn( "* Ignoring error as per user request." );
+                  continue;
                }
             }
-         } // for ( ;; )
-      } // try
-
-      catch ( ... )
-      {
-         console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate ..." );
-         for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
-            if ( *i != 0 ) (*i)->Abort();
-         for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
-            if ( *i != 0 ) (*i)->Wait();
-         runningThreads.Destroy();
-         waitingThreads.Destroy();
-         throw;
-      }
-
-      /*
-       * Fail if no images have been calibrated.
-       */
-      if ( succeeded == 0 )
-      {
-         if ( failed == 0 )
-            throw Error( "No images were calibrated: Empty target frames list? No enabled target frames?" );
-         throw Error( "No image could be calibrated." );
-      }
-
-      /*
-       * Write the final report to the console.
-       */
-      console.NoteLn( String().Format( "<end><cbr><br>===== ImageCalibration: %u succeeded, %u failed, %u skipped =====",
-                                       succeeded, failed, skipped ) );
-      return true;
+         }
+      } // for ( ;; )
    } // try
-
    catch ( ... )
    {
-      /*
-       * All breaking errors are caught here.
-       */
-      Exception::EnableGUIOutput( !noGUIMessages );
+      console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate ..." );
+      for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
+         if ( *i != 0 ) (*i)->Abort();
+      for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
+         if ( *i != 0 ) (*i)->Wait();
+      runningThreads.Destroy();
+      waitingThreads.Destroy();
       throw;
    }
+
+   /*
+    * Fail if no images have been calibrated.
+    */
+   if ( succeeded == 0 )
+   {
+      if ( failed == 0 )
+         throw Error( "No images were calibrated: Empty target frames list? No enabled target frames?" );
+      throw Error( "No image could be calibrated." );
+   }
+
+   /*
+    * Write the final report to the console.
+    */
+   console.NoteLn( String().Format( "<end><cbr><br>===== ImageCalibration: %u succeeded, %u failed, %u skipped =====",
+                                    succeeded, failed, skipped ) );
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -2801,4 +2777,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF ImageCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z

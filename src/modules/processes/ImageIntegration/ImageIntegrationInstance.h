@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.h - Released 2019-01-21T12:06:41Z
+// ImageIntegrationInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -71,14 +71,14 @@ public:
    ImageIntegrationInstance( const MetaProcess* );
    ImageIntegrationInstance( const ImageIntegrationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool IsHistoryUpdater( const View& v ) const;
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool IsHistoryUpdater( const View& ) const override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter*, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter*, size_type tableRow ) const override;
 
 private:
 
@@ -92,7 +92,7 @@ private:
       ImageItem() = default;
       ImageItem( const ImageItem& ) = default;
 
-      ImageItem( const String& path_ ) : path( path_ )
+      ImageItem( const String& a_path ) : path( a_path )
       {
       }
 
@@ -130,6 +130,8 @@ private:
    float       p_sigmaLow;      // low sigma clipping, in sigma units
    float       p_sigmaHigh;     // high sigma clipping, in sigma units
 
+   float       p_winsorizationCutoff; // cutoff point for Winsorized sigma clipping
+
    float       p_linearFitLow;  // low linear fit tolerance, in sigma units
    float       p_linearFitHigh; // high linear fit tolerance, in sigma units
 
@@ -160,18 +162,23 @@ private:
    pcl_bool    p_generateDrizzleData;     // append rejection and weight data to existing .drz files
    pcl_bool    p_closePreviousImages;     // close existing integration and map images before running
 
-   int32       p_bufferSizeMB;  // size of a row buffer in megabytes
-   int32       p_stackSizeMB;   // size of the pixel integration stack in megabytes
+   int32       p_bufferSizeMB;      // size of a row buffer in megabytes
+   int32       p_stackSizeMB;       // size of the pixel integration stack in megabytes
+   pcl_bool    p_autoMemorySize;    // compute buffer and stack sizes automatically from physical memory available
+   float       p_autoMemoryLimit;   // maximum fraction of available memory we can use
 
-   pcl_bool    p_useROI;        // use a region of interest; entire image otherwise
-   Rect        p_roi;           // region of interest
+   pcl_bool    p_useROI;            // use a region of interest; entire image otherwise
+   Rect        p_roi = Rect( 0 );   // region of interest
 
-   pcl_bool    p_useCache;      // use the dynamic file cache
+   pcl_bool    p_useCache;          // use the dynamic file cache
 
-   pcl_bool    p_evaluateNoise; // perform a MRS Gaussian noise estimation for the resulting image
+   pcl_bool    p_evaluateNoise;     // perform a MRS Gaussian noise estimation for the resulting image
    float       p_mrsMinDataFraction; // minimum fraction of data for a valid MRS noise evaluation
 
-   pcl_bool    p_noGUIMessages; // only show errors on the console
+   pcl_bool    p_subtractPedestals;    // subtract PEDESTAL keyword values from input images
+   pcl_bool    p_truncateOnOutOfRange; // if the output image is out of [0,1], truncate instead of rescaling
+
+   pcl_bool    p_noGUIMessages;     // ### DEPRECATED
 
    // High-level parallelism
    pcl_bool    p_useFileThreads;
@@ -316,4 +323,4 @@ private:
 #endif   // __ImageIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.h - Released 2019-01-21T12:06:41Z
+// EOF ImageIntegrationInstance.h - Released 2019-09-29T12:27:57Z

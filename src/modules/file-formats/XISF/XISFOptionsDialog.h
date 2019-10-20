@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 01.00.09.0187
+// Standard XISF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// XISFOptionsDialog.h - Released 2019-01-21T12:06:31Z
+// XISFOptionsDialog.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -80,7 +80,7 @@ public:
 
 protected:
 
-   int m_labelWidth;
+   int m_labelWidth = 0;
 
    GroupBox          DataCompression_GroupBox;
    VerticalSizer     DataCompression_Sizer;
@@ -179,4 +179,4 @@ private:
 #endif   // XISFOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFOptionsDialog.h - Released 2019-01-21T12:06:31Z
+// EOF XISFOptionsDialog.h - Released 2019-09-29T12:27:43Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 01.03.00.0437
+// Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsInterface.cpp - Released 2019-01-21T12:06:41Z
+// ExtractAlphaChannelsInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -297,6 +297,8 @@ ExtractAlphaChannelsInterface::GUIData::GUIData( ExtractAlphaChannelsInterface& 
    Global_Sizer.Add( Mode_GroupBox );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedHeight();
 }
@@ -306,4 +308,4 @@ ExtractAlphaChannelsInterface::GUIData::GUIData( ExtractAlphaChannelsInterface& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF ExtractAlphaChannelsInterface.cpp - Released 2019-09-29T12:27:57Z

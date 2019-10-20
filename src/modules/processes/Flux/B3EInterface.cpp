@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInterface.cpp - Released 2019-01-21T12:06:41Z
+// B3EInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -89,42 +89,58 @@ B3EInterface::B3EInterface() :
    TheB3EInterface = this;
 }
 
+// ----------------------------------------------------------------------------
+
 B3EInterface::~B3EInterface()
 {
    if ( GUI != nullptr )
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString B3EInterface::Id() const
 {
    return "B3Estimator";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* B3EInterface::Process() const
 {
    return TheB3EProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 const char** B3EInterface::IconImageXPM() const
 {
    return B3EIcon_XPM;
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures B3EInterface::Features() const
 {
    return InterfaceFeature::DefaultGlobal;
 }
 
+// ----------------------------------------------------------------------------
+
 void B3EInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void B3EInterface::ResetInstance()
 {
    B3EInstance defaultInstance( TheB3EProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool B3EInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -145,10 +161,14 @@ bool B3EInterface::Launch( const MetaProcess& P, const ProcessImplementation*, b
    return &P == TheB3EProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* B3EInterface::NewProcess() const
 {
    return new B3EInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool B3EInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -158,10 +178,14 @@ bool B3EInterface::ValidateProcess( const ProcessImplementation& p, String& whyN
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool B3EInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool B3EInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -236,6 +260,8 @@ void B3EInterface::__GetFocus( Control& sender )
          e->Clear();
 }
 
+// ----------------------------------------------------------------------------
+
 void B3EInterface::__EditCompleted( Edit& sender )
 {
    try
@@ -258,6 +284,8 @@ void B3EInterface::__EditCompleted( Edit& sender )
       UpdateControls();
    )
 }
+
+// ----------------------------------------------------------------------------
 
 void B3EInterface::__EditCompleted_bkg( Edit& sender )
 {
@@ -306,6 +334,8 @@ void B3EInterface::__EditCompleted_bkg( Edit& sender )
       sender.Focus();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void B3EInterface::__Clicked( Button& sender, bool checked )
 {
@@ -381,6 +411,8 @@ void B3EInterface::__Clicked( Button& sender, bool checked )
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void B3EInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->IntensityUnits_ComboBox )
@@ -426,6 +458,8 @@ void B3EInterface::__ItemSelected( ComboBox& sender, int itemIndex )
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void B3EInterface::__ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->CenterInput1_NumericEdit )
@@ -445,6 +479,8 @@ void B3EInterface::__ValueUpdated( NumericEdit& sender, double value )
    else if ( sender == GUI->CenterOutput_NumericEdit )
       instance.p_outputCenter = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void B3EInterface::__SpinValueUpdated( SpinBox& sender, int value )
 {
@@ -467,6 +503,8 @@ void B3EInterface::__SpinValueUpdated( SpinBox& sender, int value )
       instance.p_inputView[1].backgroundROI.y1 = instance.p_inputView[1].backgroundROI.y0 + value;
 }
 
+// ----------------------------------------------------------------------------
+
 void B3EInterface::__GroupBoxCheck( GroupBox& sender, bool checked )
 {
    if ( sender == GUI->BackgroundROI1_GroupBox )
@@ -475,6 +513,8 @@ void B3EInterface::__GroupBoxCheck( GroupBox& sender, bool checked )
       instance.p_inputView[1].backgroundUseROI = checked;
 }
 
+// ----------------------------------------------------------------------------
+
 void B3EInterface::__BackgroundReference_Check( SectionBar& sender, bool checked )
 {
    if ( sender == GUI->BackgroundReference1_SectionBar )
@@ -482,6 +522,8 @@ void B3EInterface::__BackgroundReference_Check( SectionBar& sender, bool checked
    else if ( sender == GUI->BackgroundReference2_SectionBar )
       instance.p_inputView[1].subtractBackground = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void B3EInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
@@ -497,6 +539,8 @@ void B3EInterface::__ViewDrag( Control& sender, const Point& pos, const View& vi
       wantsView = view.IsPreview();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void B3EInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -548,6 +592,7 @@ void B3EInterface::__ViewDrop( Control& sender, const Point& pos, const View& vi
    }
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 B3EInterface::GUIData::GUIData( B3EInterface& w )
@@ -1032,6 +1077,8 @@ B3EInterface::GUIData::GUIData( B3EInterface& w )
    Global_Sizer.Add( BackgroundReference2_Control );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.SetFixedWidth();
 
    BackgroundReference1_Control.Hide();
@@ -1046,4 +1093,4 @@ B3EInterface::GUIData::GUIData( B3EInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF B3EInterface.cpp - Released 2019-09-29T12:27:57Z

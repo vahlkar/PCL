@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/View.h - Released 2019-01-21T12:06:07Z
+// pcl/View.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -569,6 +569,7 @@ public:
     * be used by modules.
     *
     * \sa ComputeProperty()
+    * \ingroup view_properties
     */
    static bool IsReservedViewPropertyId( const IsoString& id );
 
@@ -598,6 +599,7 @@ public:
     * Storable properties have the ViewPropertyAttribute::Storable attribute
     * set and are intended to be persistent when writting view images to files.
     *
+    * \sa SetStorableProperties()
     * \ingroup view_properties
     */
    PropertyArray GetStorableProperties() const;
@@ -634,6 +636,21 @@ public:
     */
    void SetProperties( const PropertyArray& properties, bool notify = true,
                        ViewPropertyAttributes attributes = ViewPropertyAttribute::NoChange );
+
+   /*!
+    * Sets the values of a set of storable properties in this view.
+    *
+    * Calling this function is equivalent to:
+    *
+    * \code SetProperties( properties, notify, ViewPropertyAttribute::Storable ) \endcode
+    *
+    * \sa GetStorableProperties()
+    * \ingroup view_properties
+    */
+   void SetStorableProperties( const PropertyArray& properties, bool notify = true )
+   {
+      SetProperties( properties, notify, ViewPropertyAttribute::Storable );
+   }
 
    /*!
     * Returns the value of the specified \a property in this view.
@@ -755,6 +772,8 @@ public:
     * This function simplifies defining view properties, where the Storable
     * attribute is used very often to ensure that properties will be propagated
     * to newly created and updated disk files.
+    *
+    * \ingroup view_properties
     */
    void SetStorablePropertyValue( const IsoString& property, const Variant& value, bool notify = true )
    {
@@ -859,6 +878,24 @@ public:
    }
 
    /*!
+    * Deletes the specified \a property and its associated value in this view,
+    * only if it is currently defined. If \a property is not defined, calling
+    * this member function has no effect.
+    *
+    * \ingroup view_properties
+    */
+   void DeletePropertyIfExists( const IsoString& property, bool notify = true )
+   {
+      if ( HasProperty( property ) )
+         DeleteProperty( property, notify );
+   }
+
+   void DeletePropertyIfExists( const IsoString::ustring_base& property, bool notify = true )
+   {
+      DeletePropertyIfExists( IsoString( property ), notify );
+   }
+
+   /*!
     * Returns true iff the specified \a id string is a valid view identifier.
     *
     * A valid view identifier can include a preview separator (the sequence
@@ -932,4 +969,4 @@ protected:
 #endif   // __PCL_View_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/View.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/View.h - Released 2019-09-29T12:27:26Z

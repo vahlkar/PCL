@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard TIFF File Format Module Version 01.00.07.0369
+// Standard TIFF File Format Module Version 1.0.7
 // ----------------------------------------------------------------------------
-// TIFFOptionsDialog.cpp - Released 2019-01-21T12:06:31Z
+// TIFFOptionsDialog.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -58,7 +58,8 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 TIFFOptionsDialog::TIFFOptionsDialog( const pcl::ImageOptions& o, const pcl::TIFFImageOptions& t ) :
-Dialog(), options( o ), tiffOptions( t )
+   options( o ),
+   tiffOptions( t )
 {
    int labelWidth = Font().Width( String( "64-bit IEEE 754 floating point" ) + 'M' );
 
@@ -78,6 +79,7 @@ Dialog(), options( o ), tiffOptions( t )
    Double_RadioButton.SetMinWidth( labelWidth );
 
    SampleFormat_Sizer.SetMargin( 6 );
+   SampleFormat_Sizer.SetSpacing( 4 );
    SampleFormat_Sizer.Add( UInt8_RadioButton );
    SampleFormat_Sizer.Add( UInt16_RadioButton );
    SampleFormat_Sizer.Add( UInt32_RadioButton );
@@ -99,6 +101,7 @@ Dialog(), options( o ), tiffOptions( t )
    LZW_RadioButton.SetToolTip( "LZW compression (discouraged)" );
 
    Compression_Sizer.SetMargin( 6 );
+   Compression_Sizer.SetSpacing( 4 );
    Compression_Sizer.Add( NoCompression_RadioButton );
    Compression_Sizer.Add( ZIP_RadioButton );
    Compression_Sizer.Add( LZW_RadioButton );
@@ -112,6 +115,7 @@ Dialog(), options( o ), tiffOptions( t )
    ICCProfile_CheckBox.SetToolTip( "Embed an ICC profile" );
 
    EmbeddedData_Sizer.SetMargin( 6 );
+   EmbeddedData_Sizer.SetSpacing( 4 );
    EmbeddedData_Sizer.Add( ICCProfile_CheckBox );
 
    EmbeddedData_GroupBox.SetTitle( "Embedded Data" );
@@ -134,11 +138,12 @@ Dialog(), options( o ), tiffOptions( t )
    PremultipliedAlpha_CheckBox.SetToolTip( "Write RGB/K components premultiplied by the active alpha channel." );
 
    Miscellaneous_Sizer.SetMargin( 6 );
+   Miscellaneous_Sizer.SetSpacing( 4 );
    Miscellaneous_Sizer.Add( Planar_CheckBox );
    Miscellaneous_Sizer.Add( AssociatedAlpha_CheckBox );
    Miscellaneous_Sizer.Add( PremultipliedAlpha_CheckBox );
 
-   Miscellaneous_GroupBox.SetTitle( "Miscellaneous" );
+   Miscellaneous_GroupBox.SetTitle( "Miscellaneous Options" );
    Miscellaneous_GroupBox.SetSizer( Miscellaneous_Sizer );
    Miscellaneous_GroupBox.AdjustToContents();
 
@@ -147,6 +152,7 @@ Dialog(), options( o ), tiffOptions( t )
    LeftPanel_Sizer.Add( Compression_GroupBox );
    LeftPanel_Sizer.Add( EmbeddedData_GroupBox );
    LeftPanel_Sizer.Add( Miscellaneous_GroupBox );
+   LeftPanel_Sizer.AddStretch();
 
    ImageDescription_Sizer.SetMargin( 6 );
    ImageDescription_Sizer.Add( ImageDescription_TextBox );
@@ -193,6 +199,8 @@ Dialog(), options( o ), tiffOptions( t )
    Global_Sizer.Add( RightPanel_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
    AdjustToContents();
    SetFixedSize();
 
@@ -288,4 +296,4 @@ void TIFFOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFOptionsDialog.cpp - Released 2019-01-21T12:06:31Z
+// EOF TIFFOptionsDialog.cpp - Released 2019-09-29T12:27:43Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/SurfacePolynomial.h - Released 2019-01-21T12:06:07Z
+// pcl/SurfacePolynomial.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -58,6 +58,7 @@
 #include <pcl/Diagnostics.h>
 
 #include <pcl/Matrix.h>
+#include <pcl/Point.h>
 #include <pcl/Vector.h>
 
 namespace pcl
@@ -335,9 +336,214 @@ protected:
 
 // ----------------------------------------------------------------------------
 
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \class PointSurfacePolynomial
+ * \brief Vector polynomial interpolation/approximation in two dimensions
+ *
+ * The template parameter P represents an interpolation point in two
+ * dimensions. The type P must implement P::x and P::y data members accessible
+ * from the current %PointSurfacePolynomial template specialization. These
+ * members must provide the values of the horizontal and vertical coordinates,
+ * respectively, of an interpolation point. In addition, the scalar types of
+ * the P::x and P::y point members must support conversion to double semantics.
+ */
+template <class P = DPoint>
+class PCL_CLASS PointSurfacePolynomial
+{
+public:
+
+   /*!
+    * Represents an interpolation point in two dimensions.
+    */
+   typedef P                           point;
+
+   /*!
+    * Represents a sequence of interpolation points.
+    */
+   typedef Array<point>                point_list;
+
+   /*!
+    * Represents a coordinate interpolating/approximating surface.
+    */
+   typedef SurfacePolynomial<double>   surface;
+
+   /*!
+    * Default constructor. Yields an empty instance that cannot be used without
+    * initialization.
+    */
+   PointSurfacePolynomial() = default;
+
+   /*!
+    * Copy constructor.
+    */
+   PointSurfacePolynomial( const PointSurfacePolynomial& ) = default;
+
+   /*!
+    * Move constructor.
+    */
+   PointSurfacePolynomial( PointSurfacePolynomial&& ) = default;
+
+   /*!
+    * Constructs a %PointSurfacePolynomial object initialized for the
+    * specified input data and interpolation parameters.
+    *
+    * See the corresponding Initialize() member function for a detailed
+    * description of parameters.
+    */
+   PointSurfacePolynomial( const point_list& P1, const point_list& P2, int degree = 3 )
+   {
+      Initialize( P1, P2, degree );
+   }
+
+   /*!
+    * Constructs a %PointSurfacePolynomial object initialized with prescribed
+    * point surface interpolations.
+    *
+    * See the corresponding Initialize() member function for a more detailed
+    * description of parameters and their required conditions.
+    */
+   PointSurfacePolynomial( const surface& Sx, const surface& Sy )
+   {
+      Initialize( Sx, Sy );
+   }
+
+   /*!
+    * Copy assignment operator. Returns a reference to this object.
+    */
+   PointSurfacePolynomial& operator =( const PointSurfacePolynomial& ) = default;
+
+   /*!
+    * Move assignment operator. Returns a reference to this object.
+    */
+   PointSurfacePolynomial& operator =( PointSurfacePolynomial&& ) = default;
+
+   /*!
+    * Initializes this %PointSurfacePolynomial object for the specified
+    * input data and interpolation parameters.
+    *
+    * \param P1         A sequence of distinct interpolation node points.
+    *
+    * \param P2         A sequence of interpolation values. For each point in
+    *                   \a P1, the coordinates of its counterpart point in
+    *                   \a P2 will be used as the interpolation node values in
+    *                   the X and Y directions.
+    *
+    * \param degree     Polynomial degree. Must be &ge; 1. The default value is
+    *                   3. See SurfacePolynomial::SetDegree() for a complete
+    *                   description of this parameter.
+    *
+    * The input nodes can be arbitrarily distributed and don't need to follow
+    * any specific order. However, all node points should be distinct with
+    * respect to the machine epsilon for the floating point type used to
+    * represent coordinates.
+    *
+    * See the SurfacePolynomial::Initialize() member function for a complete
+    * description of this initialization process.
+    */
+   void Initialize( const point_list& P1, const point_list& P2, int degree = 3 )
+   {
+      PCL_PRECONDITION( P1.Length() >= 3 )
+      PCL_PRECONDITION( P1.Length() <= P2.Length() )
+      PCL_PRECONDITION( degree > 0 )
+
+      m_Sx.Clear();
+      m_Sy.Clear();
+
+      m_Sx.SetDegree( degree );
+      m_Sy.SetDegree( degree );
+
+      if ( P1.Length() < 3 || P2.Length() < 3 )
+         throw Error( "PointSurfacePolynomial::Initialize(): At least three input nodes must be specified." );
+
+      if ( P2.Length() < P1.Length() )
+         throw Error( "PointSurfacePolynomial::Initialize(): Incompatible point array lengths." );
+
+      DVector X( int( P1.Length() ) ),
+              Y( int( P1.Length() ) ),
+              Zx( int( P1.Length() ) ),
+              Zy( int( P1.Length() ) );
+      for ( int i = 0; i < X.Length(); ++i )
+      {
+          X[i] = P1[i].x;
+          Y[i] = P1[i].y;
+         Zx[i] = P2[i].x;
+         Zy[i] = P2[i].y;
+      }
+      m_Sx.Initialize( X.Begin(), Y.Begin(), Zx.Begin(), X.Length() );
+      m_Sy.Initialize( X.Begin(), Y.Begin(), Zy.Begin(), X.Length() );
+   }
+
+   /*!
+    * Deallocates internal structures, yielding an empty object that cannot be
+    * used before a new call to Initialize().
+    */
+   void Clear()
+   {
+      m_Sx.Clear();
+      m_Sy.Clear();
+   }
+
+   /*!
+    * Returns true iff this is a valid, initialized object ready for
+    * interpolation.
+    */
+   bool IsValid() const
+   {
+      return m_Sx.IsValid() && m_Sy.IsValid();
+   }
+
+   /*!
+    * Returns a reference to the internal object used for interpolation in the
+    * X plane direction.
+    */
+   const surface& SurfaceX() const
+   {
+      return m_Sx;
+   }
+
+   /*!
+    * Returns a reference to the internal object used for interpolation in the
+    * Y plane direction.
+    */
+   const surface& SurfaceY() const
+   {
+      return m_Sy;
+   }
+
+   /*!
+    * Returns an interpolated point at the specified coordinates.
+    */
+   template <typename T>
+   DPoint operator ()( T x, T y ) const
+   {
+      return DPoint( m_Sx( x, y ), m_Sy( x, y ) );
+   }
+
+   /*!
+    * Returns an interpolated point at the given \a p.x and \a p.y coordinates.
+    */
+   template <typename T>
+   DPoint operator ()( const GenericPoint<T>& p ) const
+   {
+      return operator ()( p.x, p.y );
+   }
+
+private:
+
+   /*
+    * The surface interpolations in the X and Y plane directions.
+    */
+   surface m_Sx, m_Sy;
+};
+
+// ----------------------------------------------------------------------------
+
 }  // pcl
 
 #endif   // __PCL_SurfacePolynomial_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfacePolynomial.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/SurfacePolynomial.h - Released 2019-09-29T12:27:26Z

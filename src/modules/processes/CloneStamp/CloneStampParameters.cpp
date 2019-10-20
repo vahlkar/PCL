@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CloneStamp Process Module Version 01.00.02.0361
+// Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampParameters.cpp - Released 2019-01-21T12:06:41Z
+// CloneStampParameters.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -57,23 +57,23 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-CSClonerTable*      TheCSClonerTableParameter = 0;
-CSActionIndex*      TheCSActionIndexParameter = 0;
-CSTargetX*          TheCSTargetXParameter = 0;
-CSTargetY*          TheCSTargetYParameter = 0;
-CSActionTable*      TheCSActionTableParameter = 0;
-CSSourceIdentifier* TheCSSourceIdentifierParameter = 0;
-CSSourceWidth*      TheCSSourceWidthParameter = 0;
-CSSourceHeight*     TheCSSourceHeightParameter = 0;
-CSSourceX*          TheCSSourceXParameter = 0;
-CSSourceY*          TheCSSourceYParameter = 0;
-CSRadius*           TheCSRadiusParameter = 0;
-CSSoftness*         TheCSSoftnessParameter = 0;
-CSOpacity*          TheCSOpacityParameter = 0;
-CSWidth*            TheCSWidthParameter = 0;
-CSHeight*           TheCSHeightParameter = 0;
-CSColor*            TheCSColorParameter = 0;
-CSBoundsColor*      TheCSBoundsColorParameter = 0;
+CSClonerTable*      TheCSClonerTableParameter = nullptr;
+CSActionIndex*      TheCSActionIndexParameter = nullptr;
+CSTargetX*          TheCSTargetXParameter = nullptr;
+CSTargetY*          TheCSTargetYParameter = nullptr;
+CSActionTable*      TheCSActionTableParameter = nullptr;
+CSSourceIdentifier* TheCSSourceIdentifierParameter = nullptr;
+CSSourceWidth*      TheCSSourceWidthParameter = nullptr;
+CSSourceHeight*     TheCSSourceHeightParameter = nullptr;
+CSSourceX*          TheCSSourceXParameter = nullptr;
+CSSourceY*          TheCSSourceYParameter = nullptr;
+CSRadius*           TheCSRadiusParameter = nullptr;
+CSSoftness*         TheCSSoftnessParameter = nullptr;
+CSOpacity*          TheCSOpacityParameter = nullptr;
+CSWidth*            TheCSWidthParameter = nullptr;
+CSHeight*           TheCSHeightParameter = nullptr;
+CSColor*            TheCSColorParameter = nullptr;
+CSBoundsColor*      TheCSBoundsColorParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -359,4 +359,4 @@ double CSBoundsColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampParameters.cpp - Released 2019-01-21T12:06:41Z
+// EOF CloneStampParameters.cpp - Released 2019-09-29T12:27:57Z

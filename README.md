@@ -65,21 +65,21 @@ Here is a list of subdirectories, along with descriptions of the files therein. 
 **[PCL]/src/modules/processes/[module_name]/freebsd/g++**
 
 <dl><dd>
-   Makefiles for FreeBSD 10 with the system clang C++ compiler
+   Makefiles for FreeBSD 12 with the system Clang C++ compiler
 </dd></dl>
 
 **[PCL]/src/modules/file-formats/[module_name]/linux/g++**<br/>
 **[PCL]/src/modules/processes/[module_name]/linux/g++**
 
 <dl><dd>
-   Makefiles for Linux with GCC >= 4.8.5 (GCC 7 or higher recommended)
+   Makefiles for Linux with GCC >= 7 (GCC 9 or higher recommended)
 </dd></dl>
 
 **[PCL]/src/modules/file-formats/[module_name]/macosx/g++**<br/>
 **[PCL]/src/modules/processes/[module_name]/macosx/g++**
 
 <dl><dd>
-   Makefiles for macOS >= 10.9 with clang C++ compiler/Xcode version >= 5.0
+   Makefiles for macOS >= 10.14 with Clang C++ compiler/Xcode version >= 11.0
 </dd></dl>
 
 **[PCL]/src/modules/file-formats/[module_name]/windows/vc15**<br/>
@@ -100,17 +100,16 @@ Here is a list of subdirectories, along with descriptions of the files therein. 
 
 The current version of PCL has been built and tested with:
 
-   * Red Hat Enterprise Linux 7.4: GCC C++ compiler 7.3.0.
-   * macOS 10.11: Clang C++ compiler with Xcode 8.2.1, as provided by Apple.
+   * Ubuntu 18.04 LTS: GCC C/C++ compiler 9.1.0.
+   * FreeBSD 12.0: Clang C/C++ compiler, default system compiler version.
+   * macOS 10.14.6: Clang C/C++ compiler with Xcode 11.0, as provided by Apple.
    * Windows 10: Microsoft Visual C++ 2017 Community Edition.
 
-We are currently working on the port to FreeBSD:
+This version of PCL requires a compiler with C++17 language support.
 
-   * FreeBSD 10.4: System clang compiler.
+The GCC and Clang C++ compilers provide higher conformance to ISO C++ standards and are high quality development tools. On FreeBSD and macOS we rely on the Clang/LLVM compiler included with the latest versions of Xcode and FreeBSD.
 
-The GCC and clang C++ compilers provide higher conformance to ISO C++ standards and are high quality development tools. On FreeBSD and macOS we rely on the Clang/LLVM compiler included with the latest versions of Xcode and FreeBSD.
-
-On Windows, we provide project files for the Microsoft Visual Studio integrated development environment (.vcxproj files). As of PCL version 2.1.10, we support Visual C++ 2017 exclusively.
+On Windows, we provide project files for the Microsoft Visual Studio integrated development environment (.vcxproj files). Since PCL version 2.1.10, we support Visual C++ 2017 exclusively.
 
 
 ## Environment Variables

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:20.414Z
+# Generated on .... 2019-09-30T11:27:53.214Z
 # Project id ...... jpeg
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{56F79C7A-1C60-424F-8FDD-6163DD5DE4BD}</ProjectGuid>
+    <ProjectGuid>{4306D7ED-D2F3-458D-A510-622128BB2293}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -115,6 +115,7 @@
       <DebugInformationFormat></DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR64)\jpeg-pxi.lib</OutputFile>
@@ -142,6 +143,7 @@
       <DebugInformationFormat></DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR32)\jpeg-pxi.lib</OutputFile>
@@ -164,6 +166,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR64)\jpeg-pxi.lib</OutputFile>
@@ -183,6 +186,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR32)\jpeg-pxi.lib</OutputFile>

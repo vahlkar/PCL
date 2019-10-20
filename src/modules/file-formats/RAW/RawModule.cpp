@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 01.05.02.0428
+// Standard RAW File Format Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// RawModule.cpp - Released 2019-01-21T12:06:31Z
+// RawModule.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -50,27 +50,21 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     05
-#define MODULE_VERSION_REVISION  02
-#define MODULE_VERSION_BUILD     0428
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     5
+#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "RawModule.h"
 #include "RawFormat.h"
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-RawModule::RawModule() : MetaModule()
-{
-}
 
 // ----------------------------------------------------------------------------
 
@@ -154,20 +148,6 @@ void RawModule::GetReleaseDate( int& year, int& month, int& day ) const
 
 // ----------------------------------------------------------------------------
 
-#define READABLE_VERSION_NUMBERS_1( a, b, c, d )  #a + '.' + #b + '.' + #c + '.' + #d
-#define READABLE_VERSION_NUMBERS( a, b, c, d ) READABLE_VERSION_NUMBERS_1( a, b, c, d )
-
-IsoString RawModule::ReadableVersion()
-{
-   return IsoString( "RAW module " ) +
-            READABLE_VERSION_NUMBERS( MODULE_VERSION_MAJOR,
-                                      MODULE_VERSION_MINOR,
-                                      MODULE_VERSION_REVISION,
-                                      MODULE_VERSION_BUILD );
-}
-
-// ----------------------------------------------------------------------------
-
 } // pcl
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
@@ -181,4 +161,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF RawModule.cpp - Released 2019-01-21T12:06:31Z
+// EOF RawModule.cpp - Released 2019-09-29T12:27:43Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.h - Released 2019-01-21T12:06:41Z
+// ImageIntegrationInterface.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -78,25 +78,18 @@ public:
    ImageIntegrationInterface();
    virtual ~ImageIntegrationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   InterfaceFeatures Features() const;
-
-   virtual void EditPreferences();
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual void SaveSettings() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
+   InterfaceFeatures Features() const override;
+   void EditPreferences() override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   void SaveSettings() const override;
 
 private:
 
@@ -160,10 +153,16 @@ private:
             CheckBox          Generate64BitResult_CheckBox;
          HorizontalSizer   GenerateDrizzleData_Sizer;
             CheckBox          GenerateDrizzleData_CheckBox;
+         HorizontalSizer   SubtractPedestals_Sizer;
+            CheckBox          SubtractPedestals_CheckBox;
+         HorizontalSizer   TruncateOnOutOfRange_Sizer;
+            CheckBox          TruncateOnOutOfRange_CheckBox;
          HorizontalSizer   EvaluateNoise_Sizer;
             CheckBox          EvaluateNoise_CheckBox;
          HorizontalSizer   ClosePreviousImages_Sizer;
             CheckBox          ClosePreviousImages_CheckBox;
+         HorizontalSizer   AutoMemorySize_Sizer;
+            CheckBox          AutoMemorySize_CheckBox;
          HorizontalSizer   BufferSize_Sizer;
             Label             BufferSize_Label;
             SpinBox           BufferSize_SpinBox;
@@ -210,6 +209,7 @@ private:
          NumericControl    PercentileHigh_NumericControl;
          NumericControl    SigmaLow_NumericControl;
          NumericControl    SigmaHigh_NumericControl;
+         NumericControl    WinsorizationCutoff_NumericControl;
          NumericControl    LinearFitLow_NumericControl;
          NumericControl    LinearFitHigh_NumericControl;
          NumericControl    RangeLow_NumericControl;
@@ -312,4 +312,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.h - Released 2019-01-21T12:06:41Z
+// EOF ImageIntegrationInterface.h - Released 2019-09-29T12:27:57Z

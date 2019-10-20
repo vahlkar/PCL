@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 01.03.00.0437
+// Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ImageIdentifierInterface.cpp - Released 2019-01-21T12:06:41Z
+// ImageIdentifierInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -231,6 +231,8 @@ ImageIdentifierInterface::GUIData::GUIData( ImageIdentifierInterface& w )
    Global_Sizer.Add( Identifier_Sizer );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedHeight();
 }
@@ -240,4 +242,4 @@ ImageIdentifierInterface::GUIData::GUIData( ImageIdentifierInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF ImageIdentifierInterface.cpp - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// FileDataCachePreferencesDialog.h - Released 2019-01-21T12:06:41Z
+// FileDataCachePreferencesDialog.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -71,14 +71,13 @@ class FileDataCachePreferencesDialog : public Dialog
 {
 public:
 
-   FileDataCachePreferencesDialog( FileDataCache* cache );
+   FileDataCachePreferencesDialog( FileDataCache* );
 
 private:
 
-   FileDataCache* cache;
-
-   bool cacheEnabled;
-   int cacheDuration;
+   FileDataCache* m_cache;
+   bool           m_cacheEnabled;
+   int            m_cacheDuration;
 
    VerticalSizer  Global_Sizer;
       HorizontalSizer   PersistentCache_Sizer;
@@ -108,4 +107,4 @@ private:
 #endif   // __FileDataCachePreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCachePreferencesDialog.h - Released 2019-01-21T12:06:41Z
+// EOF FileDataCachePreferencesDialog.h - Released 2019-09-29T12:27:57Z

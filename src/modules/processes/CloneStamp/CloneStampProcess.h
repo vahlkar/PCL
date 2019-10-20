@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CloneStamp Process Module Version 01.00.02.0361
+// Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampProcess.h - Released 2019-01-21T12:06:41Z
+// CloneStampProcess.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -66,20 +66,15 @@ public:
 
    CloneStampProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Category() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-
-   virtual const char** IconImageXPM() const;
-
-   virtual ProcessInterface* DefaultInterface() const;
-
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
-   virtual ProcessImplementation* TestClone( const ProcessImplementation& ) const;
+   IsoString Id() const override;
+   IsoString Category() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   const char** IconImageXPM() const override;
+   ProcessInterface* DefaultInterface() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
+   ProcessImplementation* TestClone( const ProcessImplementation& ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -95,4 +90,4 @@ PCL_END_LOCAL
 #endif   // __CloneStampProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampProcess.h - Released 2019-01-21T12:06:41Z
+// EOF CloneStampProcess.h - Released 2019-09-29T12:27:57Z

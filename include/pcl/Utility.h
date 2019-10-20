@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Utility.h - Released 2019-01-21T12:06:07Z
+// pcl/Utility.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -230,12 +230,9 @@ const T& Range( const T& x, const T& a, const T& b, BP p )
  * \ingroup utility_algorithms
  */
 template <typename T> inline
-void Swap( T& a, T& b )
-#ifndef _MSC_VER
-   noexcept( std::is_nothrow_copy_constructible<T>::value
-          && std::is_nothrow_copy_assignable<T>::value
-          && std::is_nothrow_move_assignable<T>::value )
-#endif
+void Swap( T& a, T& b ) noexcept( std::is_nothrow_copy_constructible<T>::value
+                               && std::is_nothrow_copy_assignable<T>::value
+                               && std::is_nothrow_move_assignable<T>::value )
 {
    T c( a ); a = b; b = std::move( c );
 }
@@ -705,4 +702,4 @@ int Compare( FI1 i1, FI1 j1, FI2 i2, FI2 j2, BP p )
 #endif  // __PCL_Utility_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Utility.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Utility.h - Released 2019-09-29T12:27:26Z

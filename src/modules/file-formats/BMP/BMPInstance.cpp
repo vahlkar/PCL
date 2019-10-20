@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard BMP File Format Module Version 01.00.04.0347
+// Standard BMP File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// BMPInstance.cpp - Released 2019-01-21T12:06:31Z
+// BMPInstance.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -177,7 +177,7 @@ template <class P>
 static void ReadImageImp( GenericImage<P>& image, const AutoPointer<Bitmap>& bitmap, const ImageInfo& info )
 {
    if ( bitmap.IsNull() || bitmap->IsNull() )
-      throw Error( "Attempt to read bitmap before opening a file" );
+      throw Error( "Attempt to read a bitmap before opening a file" );
 
    image.AllocateData( info.width, info.height, info.numberOfChannels, ColorSpace::value_type( info.colorSpace ) );
    int n = image.NumberOfNominalChannels();
@@ -231,7 +231,7 @@ template <class P>
 static void WriteImageImp( const String& path, AutoPointer<Bitmap>& bitmap, const GenericImage<P>& image, int quality, const IsoString& hints )
 {
    if ( path.IsEmpty() || bitmap.IsNull() )
-      throw Error( "Attempt to write bitmap before creating a file" );
+      throw Error( "Attempt to write a bitmap before creating a file" );
 
    if ( !hints.IsEmpty() )
    {
@@ -284,4 +284,4 @@ void BitmapInstance::WriteImage( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BMPInstance.cpp - Released 2019-01-21T12:06:31Z
+// EOF BMPInstance.cpp - Released 2019-09-29T12:27:43Z

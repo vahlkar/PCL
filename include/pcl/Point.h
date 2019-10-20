@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Point.h - Released 2019-01-21T12:06:07Z
+// pcl/Point.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -207,20 +207,77 @@ public:
 #endif
 
    /*!
+    * Returns the square of the Euclidian distance between this point and
+    * another point \a p in the plane.
+    *
+    * The Euclidian distance between two points p and q is the length of the
+    * straight line between both points: Sqrt( (p.x - q.x)^2 + (p.y - q.y)^2 ).
+    *
+    * This function returns just the radicand (p.x - q.x)^2 + (p.y - q.y)^2.
+    * This is useful because saves calculation of a square root, which is
+    * unnecessary in some practical cases. One of them is ordering of
+    * distances: Sqrt(A) < Sqrt(B) implies A < B.
+    *
+    * \sa DistanceTo(), ManhattanDistanceTo()
+    */
+   template <typename T1>
+   double SquaredDistanceTo( const GenericPoint<T1>& p ) const
+   {
+      double dx = double( p.x ) - double( x );
+      double dy = double( p.y ) - double( y );
+      return dx*dx + dy*dy;
+   }
+
+   /*!
     * Returns the Euclidian distance between this point and another point \a p
     * in the plane.
     *
     * The Euclidian distance between two points p and q is the length of the
     * straight line between both points: Sqrt( (p.x - q.x)^2 + (p.y - q.y)^2 ).
     *
-    * \sa ManhattanDistanceTo()
+    * \sa SquaredDistanceTo(), ManhattanDistanceTo()
     */
    template <typename T1>
    double DistanceTo( const GenericPoint<T1>& p ) const
    {
-      double dx = double( p.x ) - double( x );
-      double dy = double( p.y ) - double( y );
-      return pcl::Sqrt( dx*dx + dy*dy );
+      return pcl::Sqrt( SquaredDistanceTo( p ) );
+   }
+
+   /*!
+    * Returns the square of the Euclidian distance between this point and the
+    * origin of coordinates in the plane. In other words, this function returns
+    * the squared length of the two-dimensional vector represented by this
+    * point object.
+    *
+    * This function is equivalent to:
+    *
+    * \code SquaredDistanceTo( GenericPoint<double>( 0 ) ) \endcode
+    *
+    * but potentially faster, depending mainly on compiler optimizations.
+    *
+    * \sa DistanceToOrigin()
+    */
+   double SquaredDistanceToOrigin() const
+   {
+      return double( x )*double( x ) + double( y )*double( y );
+   }
+
+   /*!
+    * Returns the Euclidian distance between this point and the origin of
+    * coordinates in the plane. In other words, this function returns the
+    * length of the two-dimensional vector represented by this point object.
+    *
+    * This function is equivalent to:
+    *
+    * \code DistanceTo( GenericPoint<double>( 0 ) ) \endcode
+    *
+    * but potentially faster, depending mainly on compiler optimizations.
+    *
+    * \sa SquaredDistanceToOrigin(), ManhattanDistanceToOrigin()
+    */
+   double DistanceToOrigin() const
+   {
+      return pcl::Sqrt( SquaredDistanceToOrigin() );
    }
 
    /*!
@@ -230,12 +287,30 @@ public:
     * The Manhattan distance between two points p and q is the sum of distances
     * measured along axes at right angles: |p.x - q.x| + |p.y - q.y|.
     *
-    * \sa DistanceTo()
+    * \sa DistanceTo(), ManhattanDistanceToOrigin()
     */
    template <typename T1>
    double ManhattanDistanceTo( const GenericPoint<T1>& p ) const
    {
       return Abs( double( p.x ) - double( x ) ) + Abs( double( p.y ) - double( y ) );
+   }
+
+   /*!
+    * Returns the Manhattan distance between this point and the origin of
+    * coordinates in the plane. In other words, this function returns the sum
+    * of the absolute values of this point's x and y coordinates.
+    *
+    * This function is equivalent to:
+    *
+    * \code ManhattanDistanceTo( GenericPoint<double>( 0 ) ) \endcode
+    *
+    * but potentially faster, depending mainly on compiler optimizations.
+    *
+    * \sa ManhattanDistanceTo(), DistanceToOrigin()
+    */
+   double ManhattanDistanceToOrigin() const
+   {
+      return Abs( double( x ) ) + Abs( double( y ) );
    }
 
    /*!
@@ -758,6 +833,63 @@ public:
    GenericPoint operator -() const
    {
       return GenericPoint( -x, -y );
+   }
+
+   /*!
+    * Reflects this point in the origin. This transformation changes the signs
+    * of both point coordinates.
+    */
+   void Reflect()
+   {
+      x = -x;
+      y = -y;
+   }
+
+   /*!
+    * Reflects this point across the X axis. This transformation changes the
+    * sign of this point's y-coordinate.
+    */
+   void ReflectX()
+   {
+      y = -y;
+   }
+
+   /*!
+    * Reflects this point across the Y axis. This transformation changes the
+    * sign of this point's x-coordinate.
+    */
+   void ReflectY()
+   {
+      x = -x;
+   }
+
+   /*!
+    * Returns the reflexion of this point in the origin. The returned point has
+    * the coordinates of this point with inverse signs.
+    */
+   GenericPoint Reflected() const
+   {
+      return GenericPoint( -x, -y );
+   }
+
+   /*!
+    * Returns the reflexion of this point across the X axis. The returned point
+    * has the same x-coordinate as this point and the y-coordinate of this
+    * point with inverse sign.
+    */
+   GenericPoint ReflectedX() const
+   {
+      return GenericPoint( x, -y );
+   }
+
+   /*!
+    * Returns the reflexion of this point across the Y axis. The returned point
+    * has the x-coordinate of this point with inverse sign and the same
+    * y-coordinate as this point.
+    */
+   GenericPoint ReflectedY() const
+   {
+      return GenericPoint( -x, y );
    }
 
    /*
@@ -1347,4 +1479,4 @@ typedef F64Point                    DPoint;
 #endif  // __PCL_Point_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Point.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Point.h - Released 2019-09-29T12:27:26Z

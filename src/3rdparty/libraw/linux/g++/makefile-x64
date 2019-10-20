@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:20.964Z
+# Generated on .... 2019-09-30T11:27:53.717Z
 # Project id ...... libraw
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
@@ -75,9 +75,9 @@ post-build:
 	cp $(OBJ_DIR)/liblibraw-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/internal/%.o: ../../internal/%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D"LIBRAW_LIBRARY_BUILD" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/libraw" -mtune=skylake -mfpmath=sse -msse4.1 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c++11 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D"LIBRAW_LIBRARY_BUILD" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/libraw" -mtune=znver1 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 ./x64/Release/src/%.o: ../../src/%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D"LIBRAW_LIBRARY_BUILD" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/libraw" -mtune=skylake -mfpmath=sse -msse4.1 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c++11 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D"LIBRAW_LIBRARY_BUILD" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/libraw" -mtune=znver1 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

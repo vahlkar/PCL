@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0374
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// ChannelCombinationInstance.cpp - Released 2019-01-21T12:06:41Z
+// ChannelCombinationInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -56,6 +56,7 @@
 
 #include <pcl/AutoViewLock.h>
 #include <pcl/ImageWindow.h>
+#include <pcl/IntegrationMetadata.h>
 #include <pcl/StdStatus.h>
 #include <pcl/View.h>
 
@@ -131,9 +132,12 @@ void ChannelCombinationInstance::Assign( const ProcessImplementation& p )
 
 // ----------------------------------------------------------------------------
 
-UndoFlags ChannelCombinationInstance::UndoMode( const View& ) const
+UndoFlags ChannelCombinationInstance::UndoMode( const View& view ) const
 {
-   return UndoFlag::PixelData;
+   UndoFlags flags = UndoFlag::PixelData;
+   if ( !view.IsPreview() )
+      flags |= UndoFlag::Keywords;
+   return flags;
 }
 
 // ----------------------------------------------------------------------------
@@ -185,6 +189,8 @@ static void FromRGB( int colorSpace,
    }
 }
 
+// ----------------------------------------------------------------------------
+
 #ifdef __GNUC__
 __attribute__((noinline))
 #endif
@@ -212,6 +218,8 @@ static void ToRGB( int colorSpace,
       break;
    }
 }
+
+// ----------------------------------------------------------------------------
 
 template <class P, class P0, class P1, class P2>
 #ifdef __GNUC__
@@ -391,10 +399,13 @@ static void CombineChannels( GenericImage<P>& img, int colorSpace, const String&
       CombineChannels( img, colorSpace, baseId, r, static_cast<UInt8Image*>( nullptr ), src1, src2 );
 }
 
+// ----------------------------------------------------------------------------
+
 bool ChannelCombinationInstance::ExecuteOn( View& view )
 {
    ImageWindow sourceWindow[ 3 ];
    ImageVariant sourceImage[ 3 ];
+   Array<IntegrationMetadata> sourceMetadata;
 
    AutoViewLock lock( view );
 
@@ -457,6 +468,9 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
          if ( sourceImage[i]->Width() != w0 || sourceImage[i]->Height() != h0 )
             throw Error( "ChannelCombination: Incompatible source image dimensions: " + id );
 
+         if ( !view.IsPreview() )
+            sourceMetadata << IntegrationMetadata( sourceWindow[i].MainView().GetStorableProperties(),
+                                                   sourceWindow[i].Keywords() );
          ++numberOfSources;
       }
 
@@ -516,6 +530,18 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
          break;
       }
 
+   if ( !view.IsPreview() )
+   {
+      PropertyArray properties = view.GetStorableProperties();
+      FITSKeywordArray keywords = view.Window().Keywords();
+
+      IntegrationMetadata metadata = IntegrationMetadata::Summary( sourceMetadata );
+      metadata.UpdatePropertiesAndKeywords( properties, keywords );
+
+      view.SetStorableProperties( properties );
+      view.Window().SetKeywords( keywords );
+   }
+
    return true;
 }
 
@@ -526,10 +552,13 @@ bool ChannelCombinationInstance::CanExecuteGlobal( String& whyNot ) const
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ChannelCombinationInstance::ExecuteGlobal()
 {
    ImageWindow sourceWindow[ 3 ];
    ImageVariant sourceImage[ 3 ];
+   Array<IntegrationMetadata> sourceMetadata;
 
    int numberOfSources = 0;
 
@@ -568,28 +597,29 @@ bool ChannelCombinationInstance::ExecuteGlobal()
                throw Error( "ChannelCombination: Incompatible source image dimensions: " + p_channelId[i] );
          }
 
+         sourceMetadata << IntegrationMetadata( sourceWindow[i].MainView().GetStorableProperties(),
+                                                sourceWindow[i].Keywords() );
          ++numberOfSources;
       }
 
    if ( numberOfSources == 0 )
       throw Error( "ChannelCombination: No source image(s)." );
 
-   ImageWindow w( width, height, 3, bitsPerSample, floatSample, true, true );
-   if ( w.IsNull() )
-      throw Error( "ChannelCombination: Unable to create target image." );
+   ImageWindow outputWindow( width, height, 3, bitsPerSample, floatSample, true, true );
+   if ( outputWindow.IsNull() )
+      throw Error( "ChannelCombination: Unable to create output image." );
 
-   View mainView = w.MainView();
-
-   AutoViewLock lock( mainView );
+   View outputView = outputWindow.MainView();
+   AutoViewLock lock( outputView );
 
    try
    {
-      ImageVariant image = mainView.Image();
+      ImageVariant outputImage = outputView.Image();
 
       Console().EnableAbort();
 
       StandardStatus status;
-      image->SetStatusCallback( &status );
+      outputImage->SetStatusCallback( &status );
 
       const char* what = "";
       switch ( p_colorSpace )
@@ -613,47 +643,57 @@ bool ChannelCombinationInstance::ExecuteGlobal()
          what = "normalized HSI components";
          break;
       }
-      image->Status().Initialize( String( "Combining " ) + what, image->NumberOfPixels() );
+      outputImage->Status().Initialize( String( "Combining " ) + what, outputImage->NumberOfPixels() );
 
-      String baseId = mainView.Id();
-      Rect r = image->Bounds();
+      String baseId = outputView.Id();
+      Rect r = outputImage->Bounds();
 
-      if ( image.IsFloatSample() )
-         switch ( image.BitsPerSample() )
+      if ( outputImage.IsFloatSample() )
+         switch ( outputImage.BitsPerSample() )
          {
          case 32:
-            CombineChannels( static_cast<Image&>( *image ), p_colorSpace, baseId, r,
+            CombineChannels( static_cast<Image&>( *outputImage ), p_colorSpace, baseId, r,
                              sourceImage[0], sourceImage[1], sourceImage[2] );
             break;
          case 64:
-            CombineChannels( static_cast<DImage&>( *image ), p_colorSpace, baseId, r,
+            CombineChannels( static_cast<DImage&>( *outputImage ), p_colorSpace, baseId, r,
                              sourceImage[0], sourceImage[1], sourceImage[2] );
             break;
          }
       else
-         switch ( image.BitsPerSample() )
+         switch ( outputImage.BitsPerSample() )
          {
          case  8:
-            CombineChannels( static_cast<UInt8Image&>( *image ), p_colorSpace, baseId, r,
+            CombineChannels( static_cast<UInt8Image&>( *outputImage ), p_colorSpace, baseId, r,
                              sourceImage[0], sourceImage[1], sourceImage[2] );
             break;
          case 16:
-            CombineChannels( static_cast<UInt16Image&>( *image ), p_colorSpace, baseId, r,
+            CombineChannels( static_cast<UInt16Image&>( *outputImage ), p_colorSpace, baseId, r,
                              sourceImage[0], sourceImage[1], sourceImage[2] );
             break;
          case 32:
-            CombineChannels( static_cast<UInt32Image&>( *image ), p_colorSpace, baseId, r,
+            CombineChannels( static_cast<UInt32Image&>( *outputImage ), p_colorSpace, baseId, r,
                              sourceImage[0], sourceImage[1], sourceImage[2] );
             break;
          }
 
-      w.Show();
+      PropertyArray properties = outputView.GetStorableProperties();
+      FITSKeywordArray keywords = outputWindow.Keywords();
+
+      IntegrationMetadata metadata = IntegrationMetadata::Summary( sourceMetadata );
+      metadata.UpdatePropertiesAndKeywords( properties, keywords );
+
+      outputView.SetStorableProperties( properties );
+      outputWindow.SetKeywords( keywords );
+
+      outputWindow.Show();
+      outputWindow.ZoomToFit( false/*allowZoom*/ );
 
       return true;
    }
    catch ( ... )
    {
-      w.Close();
+      outputWindow.Close();
       throw;
    }
 }
@@ -668,8 +708,11 @@ void* ChannelCombinationInstance::LockParameter( const MetaParameter* p, size_ty
       return p_channelEnabled+tableRow;
    if ( p == TheChannelIdCombinationParameter )
       return p_channelId[tableRow].Begin();
-   return 0;
+
+   return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool ChannelCombinationInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
@@ -687,12 +730,15 @@ bool ChannelCombinationInstance::AllocateParameter( size_type sizeOrLength, cons
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type ChannelCombinationInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheChannelIdCombinationParameter )
       return p_channelId[tableRow].Length();
    if ( p == TheChannelTableCombinationParameter )
       return 3;
+
    return 0;
 }
 
@@ -701,4 +747,4 @@ size_type ChannelCombinationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF ChannelCombinationInstance.cpp - Released 2019-09-29T12:27:57Z

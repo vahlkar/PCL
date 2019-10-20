@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0374
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GrayscaleRGBInstances.h - Released 2019-01-21T12:06:41Z
+// GrayscaleRGBInstances.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -67,9 +67,9 @@ public:
    ConvertToGrayscaleInstance( const MetaProcess* );
    ConvertToGrayscaleInstance( const ConvertToGrayscaleInstance& );
 
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -81,9 +81,9 @@ public:
    ConvertToRGBColorInstance( const MetaProcess* );
    ConvertToRGBColorInstance( const ConvertToRGBColorInstance& );
 
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -93,4 +93,4 @@ public:
 #endif   // __GrayscaleRGBInstances_h
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBInstances.h - Released 2019-01-21T12:06:41Z
+// EOF GrayscaleRGBInstances.h - Released 2019-09-29T12:27:57Z

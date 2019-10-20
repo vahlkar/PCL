@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.cpp - Released 2019-01-21T12:06:21Z
+// pcl/WorldTransformation.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,11 +49,18 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include <pcl/SurfaceSimplifier.h>
 #include <pcl/WorldTransformation.h>
 
 /*
  * Based on original work contributed by Andrés del Pozo.
  */
+
+#ifndef __PCL_NO_WARNING_MUTE_PRAGMAS
+#  ifdef _MSC_VER
+#    pragma warning( disable: 4804 ) // unsafe use of type 'bool' in operation
+#  endif
+#endif
 
 namespace pcl
 {
@@ -63,10 +70,13 @@ namespace pcl
 void SplineWorldTransformation::Serialize( ByteArray& data ) const
 {
    IsoString text;
-   text << "VERSION:1" << '\n'
+   text << "VERSION:1.1" << '\n'
         << "TYPE:SurfaceSpline" << '\n'
         << "ORDER:" << IsoString( m_order ) << '\n'
-        << "SMOOTHING:" << IsoString( m_smoothness ) << '\n'
+        << "SMOOTHING:" << IsoString().Format( "%.4f", m_smoothness ) << '\n'
+        << "SIMPLIFIER:" << (m_enableSimplifier ? '1' : '0') << '\n'
+        << "TOLERANCE:" << IsoString().Format( "%.2f", m_simplifierTolerance ) << '\n'
+        << "REJECTFRACTION:" << IsoString().Format( "%.2f", m_simplifierRejectFraction ) << '\n'
         << "CONTROLPOINTS:[" << '\n';
 
    if ( m_weights.IsEmpty() )
@@ -79,10 +89,9 @@ void SplineWorldTransformation::Serialize( ByteArray& data ) const
          text << IsoString().Format( "%.16g;%.16g;%.16g;%.16g;%.6g",
                                      m_controlPointsI[i].x, m_controlPointsI[i].y,
                                      m_controlPointsW[i].x, m_controlPointsW[i].y, m_weights[int( i )] ) << '\n';
-   text << ']';
+   text << "]";
 
-   data = ByteArray( reinterpret_cast<uint8*>( text.Begin() ),
-                     reinterpret_cast<uint8*>( text.End() ) );
+   data = text.ToByteArray();
 }
 
 // ----------------------------------------------------------------------------
@@ -93,15 +102,17 @@ void SplineWorldTransformation::Deserialize( const ByteArray& data )
    {
       IsoStringList lines;
       IsoString( reinterpret_cast<const char*>( data.Begin() ),
-               reinterpret_cast<const char*>( data.End() ) ).Break( lines, '\n' );
+                 reinterpret_cast<const char*>( data.End() ) ).Break( lines, '\n' );
       if ( lines.IsEmpty() )
          throw Error( "Invalid spline raw serialization." );
 
       {
          IsoStringList tokens;
          lines[0].Break( tokens, ':' );
-         if ( tokens.Length() != 2 || tokens[0] != "VERSION" || tokens[1] != "1" )
-            throw Error( "Invalid/unsupported spline raw serialization version." );
+         if ( tokens.Length() != 2 || tokens[0] != "VERSION" )
+            throw Error( "Invalid spline raw serialization version data." );
+         if ( tokens[1] != "1" && tokens[1] != "1.1" )
+            throw Error( "Unsupported spline raw serialization version '" + tokens[1] + "'." );
       }
 
       Array<float> weights;
@@ -116,9 +127,14 @@ void SplineWorldTransformation::Deserialize( const ByteArray& data )
             m_order = tokens[1].ToInt();
          else if ( tokens[0] == "SMOOTHING" )
             m_smoothness = tokens[1].ToFloat();
+         else if ( tokens[0] == "SIMPLIFIER" )
+            m_enableSimplifier = tokens[1].ToInt() != 0;
+         else if ( tokens[0] == "TOLERANCE" )
+            m_simplifierTolerance = tokens[1].ToFloat();
+         else if ( tokens[0] == "REJECTFRACTION" )
+            m_simplifierRejectFraction = tokens[1].ToFloat();
          else if ( tokens[0] == "CONTROLPOINTS" )
          {
-            //tokens[1].Trim(); // number of control points?
             for ( ;; )
             {
                if ( ++i == lines.End() )
@@ -167,17 +183,147 @@ void SplineWorldTransformation::InitializeSplines()
 {
    try
    {
-      if ( m_controlPointsW.Length() != m_controlPointsI.Length() )
-         throw Error( "The specified control point arrays have different lengths." );
-      if ( m_controlPointsW.Length() < 5 )
+      int n = int( m_controlPointsW.Length() );
+      if ( n < 5 )
          throw Error( "At least five control points are required." );
+      if ( n != int( m_controlPointsI.Length() ) )
+         throw Error( "The specified control point arrays have different lengths." );
       if ( m_smoothness > 0 )
          if ( !m_weights.IsEmpty() )
-            if ( size_type( m_weights.Length() ) != m_controlPointsW.Length() )
+            if ( m_weights.Length() != n )
                throw Error( "Invalid length of point weights vector." );
 
-      m_splineWI.Initialize( m_controlPointsW, m_controlPointsI, m_smoothness, m_weights, m_order );
-      m_splineIW.Initialize( m_controlPointsI, m_controlPointsW, m_smoothness, m_weights, m_order );
+      if ( m_enableSimplifier )
+      {
+         /*
+          * With surface simplification enabled, build approximating surface
+          * splines from simplified control point lists. The point weights
+          * array will be ignored. Spline smoothness should be low in this
+          * case, just to filter out residual noise, since surface
+          * simplification applies robust outlier rejection techniques.
+          */
+         double xmin = m_controlPointsI[0].x, xmax = xmin;
+         double ymin = m_controlPointsI[0].y, ymax = ymin;
+         double lmin = m_controlPointsW[0].x, lmax = lmin;
+         double bmin = m_controlPointsW[0].y, bmax = bmin;
+         DVector l( n ), b( n ), x( n ), y( n );
+         for ( int i = 0; i < n; ++i )
+         {
+            if ( m_controlPointsI[i].x < xmin )
+               xmin = m_controlPointsI[i].x;
+            if ( m_controlPointsI[i].x > xmax )
+               xmax = m_controlPointsI[i].x;
+
+            if ( m_controlPointsI[i].y < ymin )
+               ymin = m_controlPointsI[i].y;
+            if ( m_controlPointsI[i].y > ymax )
+               ymax = m_controlPointsI[i].y;
+
+            if ( m_controlPointsW[i].x < lmin )
+               lmin = m_controlPointsW[i].x;
+            if ( m_controlPointsW[i].x > lmax )
+               lmax = m_controlPointsW[i].x;
+
+            if ( m_controlPointsW[i].y < bmin )
+               bmin = m_controlPointsW[i].y;
+            if ( m_controlPointsW[i].y > bmax )
+               bmax = m_controlPointsW[i].y;
+
+            l[i] = m_controlPointsW[i].x;
+            b[i] = m_controlPointsW[i].y;
+            x[i] = m_controlPointsI[i].x;
+            y[i] = m_controlPointsI[i].y;
+         }
+
+         /*
+          * Image resolution in degrees/pixel with respect to native
+          * projection coordinates. We use this value to scale the tolerance
+          * of the surface simplifier for the image-to-world transformation.
+          */
+         double dx = xmax - xmin;
+         double dy = ymax - ymin;
+         double dl = lmax - lmin;
+         double db = bmax - bmin;
+         double rs = Sqrt( dl*dl + db*db )/Sqrt( dx*dx + dy*dy );
+
+         SurfaceSimplifier SS;
+         SS.EnableRejection();
+         SS.SetRejectFraction( m_simplifierRejectFraction );
+         SS.EnableCentroidInclusion();
+
+         // Simplified surface coordinates.
+         DVector xs1, ys1, xs2, ys2, zxs, zys;
+
+         /*
+          * Simplify the world-to-image transformation surface.
+          */
+         SS.SetTolerance( m_simplifierTolerance ); // in pixels
+         SS.Simplify( xs1, ys1, zxs, l, b, x );
+         if ( xs1 > __PCL_WCS_MAX_SPLINE_POINTS )
+         {
+            m_truncated = true;
+            xs1 = DVector( xs1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+            ys1 = DVector( ys1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+            zxs = DVector( zxs.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+         }
+         SS.Simplify( xs2, ys2, zys, l, b, y );
+         if ( xs2 > __PCL_WCS_MAX_SPLINE_POINTS )
+         {
+            m_truncated = true;
+            xs2 = DVector( xs2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+            ys2 = DVector( ys2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+            zys = DVector( zys.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+         }
+         m_splineWI.Initialize( xs1, ys1, zxs, xs2, ys2, zys,
+                                m_smoothness,
+                                FVector()/*xWeights*/, FVector()/*yWeights*/, m_order );
+
+         /*
+          * Simplify the image-to-world transformation surface.
+          */
+         SS.SetTolerance( m_simplifierTolerance*rs ); // in degrees
+         SS.Simplify( xs1, ys1, zxs, x, y, l );
+         if ( xs1 > __PCL_WCS_MAX_SPLINE_POINTS )
+         {
+            m_truncated = true;
+            xs1 = DVector( xs1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+            ys1 = DVector( ys1.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+            zxs = DVector( zxs.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+         }
+         SS.Simplify( xs2, ys2, zys, x, y, b );
+         if ( xs2 > __PCL_WCS_MAX_SPLINE_POINTS )
+         {
+            m_truncated = true;
+            xs2 = DVector( xs2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+            ys2 = DVector( ys2.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+            zys = DVector( zys.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+         }
+         m_splineIW.Initialize( xs1, ys1, zxs, xs2, ys2, zys,
+                                m_smoothness,
+                                FVector()/*xWeights*/, FVector()/*yWeights*/, m_order );
+      }
+      else
+      {
+         /*
+          * When no surface simplification is used, build surface splines with
+          * the specified metadata: The (possibly truncated) sets of control
+          * points and weights, spline smoothness and order.
+          */
+         if ( n > __PCL_WCS_MAX_SPLINE_POINTS )
+         {
+            m_truncated = true;
+            Array<DPoint> PW( m_controlPointsW.Begin(), m_controlPointsW.At( __PCL_WCS_MAX_SPLINE_POINTS ) );
+            Array<DPoint> PI( m_controlPointsI.Begin(), m_controlPointsI.At( __PCL_WCS_MAX_SPLINE_POINTS ) );
+            FVector w = m_weights.IsEmpty() ? FVector() : FVector( m_weights.Begin(), __PCL_WCS_MAX_SPLINE_POINTS );
+            m_splineWI.Initialize( PW, PI, m_smoothness, w, m_order );
+            m_splineIW.Initialize( PI, PW, m_smoothness, w, m_order );
+         }
+         else
+         {
+            m_splineWI.Initialize( m_controlPointsW, m_controlPointsI, m_smoothness, m_weights, m_order );
+            m_splineIW.Initialize( m_controlPointsI, m_controlPointsW, m_smoothness, m_weights, m_order );
+         }
+      }
 
       if ( !m_splineWI.IsValid() || !m_splineIW.IsValid() )
          throw Error( "Invalid surface spline initialization." );
@@ -242,4 +388,4 @@ void SplineWorldTransformation::CalculateLinearApproximation()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/WorldTransformation.cpp - Released 2019-09-29T12:27:33Z

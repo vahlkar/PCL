@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0405
+// Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2019-01-21T12:06:41Z
+// PreferencesInterface.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -507,6 +507,8 @@ public:
    GlobalFlagControl          ExpandMostUsedAtStartup_Flag;
    GlobalFlagControl          ExpandFavoritesAtStartup_Flag;
    GlobalFlagControl          OpenURLsWithInternalBrowser_Flag;
+   GlobalFlagControl          OpenResourcesOnNewWebBrowserWindows_Flag;
+   GlobalFlagControl          PrivateWebBrowsingMode_Flag;
 };
 
 DEFINE_PREFERENCES_CATEGORY( MainWindow, "Main Window / Startup" )
@@ -643,6 +645,7 @@ public:
    GlobalDirectoryListControl SwapDirectories_DirList;
    GlobalFlagControl          SwapCompression_Flag;
    GlobalDirectoryControl     DownloadsDirectory_Dir;
+   GlobalStringControl        ProxyURL_String;
    GlobalFlagControl          FollowDownloadLocations_Flag;
    GlobalFlagControl          VerboseNetworkOperations_Flag;
 };
@@ -945,4 +948,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2019-01-21T12:06:41Z
+// EOF PreferencesInterface.h - Released 2019-09-29T12:27:57Z

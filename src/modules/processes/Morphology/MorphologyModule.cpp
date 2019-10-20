@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Morphology Process Module Version 01.00.00.0356
+// Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologyModule.cpp - Released 2019-01-21T12:06:41Z
+// MorphologyModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  00
-#define MODULE_VERSION_BUILD     0356
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  1
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "MorphologyModule.h"
 #include "MorphologicalTransformationProcess.h"
@@ -69,7 +69,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-MorphologyModule::MorphologyModule() : MetaModule()
+MorphologyModule::MorphologyModule()
 {
 }
 
@@ -104,7 +104,7 @@ String MorphologyModule::Author() const
 
 String MorphologyModule::Copyright() const
 {
-   return "Copyright (c) 2006-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2006-2019 Pleiades Astrophoto";
 }
 
 String MorphologyModule::TradeMarks() const
@@ -153,4 +153,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF MorphologyModule.cpp - Released 2019-01-21T12:06:41Z
+// EOF MorphologyModule.cpp - Released 2019-09-29T12:27:57Z

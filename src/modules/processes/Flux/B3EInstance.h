@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInstance.h - Released 2019-01-21T12:06:41Z
+// B3EInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -68,18 +68,15 @@ public:
    B3EInstance( const MetaProcess* );
    B3EInstance( const B3EInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-
-   virtual bool Validate( String& info );
-
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool CanExecuteGlobal( pcl::String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool Validate( String& info ) override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool CanExecuteGlobal( pcl::String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
@@ -152,4 +149,4 @@ private:
 #endif   // __B3EInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF B3EInstance.h - Released 2019-01-21T12:06:41Z
+// EOF B3EInstance.h - Released 2019-09-29T12:27:57Z

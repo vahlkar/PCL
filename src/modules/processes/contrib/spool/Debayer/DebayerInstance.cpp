@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 01.08.00.0327
+// Standard Debayer Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2019-01-21T12:06:42Z
+// DebayerInstance.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -123,7 +123,7 @@ DebayerInstance::DebayerInstance( const MetaProcess* m ) :
    p_noiseEvaluationAlgorithm( DebayerNoiseEvaluationAlgorithm::Default ),
    p_showImages( TheDebayerShowImagesParameter->DefaultValue() ),
    p_cfaSourceFilePath( TheDebayerCFASourceFilePathParameter->DefaultValue() ),
-   p_noGUIMessages( TheDebayerNoGUIMessagesParameter->DefaultValue() ),
+   p_noGUIMessages( TheDebayerNoGUIMessagesParameter->DefaultValue() ), // ### DEPRECATED
    p_inputHints( TheDebayerInputHintsParameter->DefaultValue() ),
    p_outputHints( TheDebayerOutputHintsParameter->DefaultValue() ),
    p_outputDirectory( TheDebayerOutputDirectoryParameter->DefaultValue() ),
@@ -2512,7 +2512,7 @@ private:
          outputFile.WriteImageProperties( properties );
       }
       else
-         console.WarningLn( "** Warning: The output format cannot store image properties - properties not embedded." );
+         console.WarningLn( "** Warning: The output format cannot store image properties - required properties not embedded." );
 
       if ( outputFormat.CanStoreKeywords() )
       {
@@ -2667,21 +2667,22 @@ bool DebayerInstance::ExecuteOn( View& view )
       DebayerEngine( output, *this, bayerPattern ).Debayer( source );
    }
 
-   outputWindow.MainView().SetProperties( view.GetStorableProperties(), true/*notify*/, ViewPropertyAttribute::Storable );
+   outputWindow.MainView().SetStorableProperties( view.GetStorableProperties(), false/*notify*/ );
 
    String cfaSourceFilePath = p_cfaSourceFilePath.Trimmed();
    if ( cfaSourceFilePath.IsEmpty() )
       cfaSourceFilePath = view.Window().FilePath();
    if ( !cfaSourceFilePath.IsEmpty() )
-      outputWindow.MainView().SetPropertyValue( "PCL:CFASourceFilePath", cfaSourceFilePath, true/*notify*/, ViewPropertyAttribute::Storable );
-   outputWindow.MainView().SetPropertyValue( "PCL:CFASourcePattern", patternId, true/*notify*/, ViewPropertyAttribute::Storable );
-   outputWindow.MainView().SetPropertyValue( "PCL:CFASourceInterpolation", methodId, true/*notify*/, ViewPropertyAttribute::Storable );
+      outputWindow.MainView().SetStorablePropertyValue( "PCL:CFASourceFilePath", cfaSourceFilePath, false/*notify*/ );
+   outputWindow.MainView().SetStorablePropertyValue( "PCL:CFASourcePattern", patternId, false/*notify*/ );
+   outputWindow.MainView().SetStorablePropertyValue( "PCL:CFASourceInterpolation", methodId, false/*notify*/ );
 
    FITSKeywordArray keywords;
    view.Window().GetKeywords( keywords );
 
    keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Demosaicing with "  + PixInsightVersion::AsString() )
             << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaicing with "  + Module->ReadableVersion() )
+            << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaicing with Debayer process" )
             << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.pattern: " + patternId )
             << FITSHeaderKeyword( "HISTORY", IsoString(), "Demosaic.method: "  + methodId );
 
@@ -2748,15 +2749,11 @@ bool DebayerInstance::ExecuteGlobal()
 {
    o_outputFileData = Array<OutputFileData>( p_targets.Length() );
 
-   Exception::DisableGUIOutput( p_noGUIMessages );
-
    {
       String why;
       if ( !CanExecuteGlobal( why ) )
          throw Error( why );
    }
-
-   Exception::DisableGUIOutput();
 
    Console console;
    console.EnableAbort();
@@ -2989,41 +2986,107 @@ void DebayerInstance::ApplyErrorPolicy()
 pcl_enum DebayerInstance::BayerPatternFromTarget( const View& view ) const
 {
    if ( p_bayerPattern == DebayerBayerPatternParameter::Auto )
-      return BayerPatternFromTargetProperty( view.PropertyValue( "PCL:CFASourcePattern" ) );
+   {
+      if ( view.HasProperty( "PCL:CFASourcePattern" ) )
+         return BayerPatternFromTargetProperty( view.PropertyValue( "PCL:CFASourcePattern" ) );
+
+      FITSKeywordArray keywords = view.Window().Keywords();
+      IsoString bayerPattern;
+      int xOffset = 0, yOffset = 0;
+      for ( const FITSHeaderKeyword& keyword : keywords )
+         if ( keyword.name == "BAYERPAT" )
+            bayerPattern = keyword.StripValueDelimiters().Uppercase();
+         else if ( keyword.name == "XBAYROFF" )
+            (void)keyword.value.TryToInt( xOffset );
+         else if ( keyword.name == "YBAYROFF" )
+            (void)keyword.value.TryToInt( yOffset );
+      if ( !bayerPattern.IsEmpty() )
+         return BayerPatternFromTargetPropertyValue( bayerPattern, xOffset, yOffset );
+
+      throw Error( "Unable to acquire CFA pattern information: Required image metadata not available." );
+   }
+
    return p_bayerPattern;
 }
 
 pcl_enum DebayerInstance::BayerPatternFromTarget( FileFormatInstance& file ) const
 {
    if ( p_bayerPattern == DebayerBayerPatternParameter::Auto )
-      return BayerPatternFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePattern" ) );
+   {
+      if ( file.HasImageProperty( "PCL:CFASourcePattern" ) )
+         return BayerPatternFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePattern" ) );
+
+      if ( file.Format().CanStoreKeywords() )
+      {
+         FITSKeywordArray keywords;
+         if ( file.ReadFITSKeywords( keywords ) )
+         {
+            IsoString bayerPattern;
+            int xOffset = 0, yOffset = 0;
+            for ( const FITSHeaderKeyword& keyword : keywords )
+               if ( keyword.name == "BAYERPAT" )
+                  bayerPattern = keyword.StripValueDelimiters().Uppercase();
+               else if ( keyword.name == "XBAYROFF" )
+                  (void)keyword.value.TryToInt( xOffset );
+               else if ( keyword.name == "YBAYROFF" )
+                  (void)keyword.value.TryToInt( yOffset );
+            if ( !bayerPattern.IsEmpty() )
+               return BayerPatternFromTargetPropertyValue( bayerPattern, xOffset, yOffset );
+         }
+      }
+
+      throw Error( "Unable to acquire CFA pattern information: Required image metadata not available." );
+   }
+
    return p_bayerPattern;
 }
 
 pcl_enum DebayerInstance::BayerPatternFromTargetProperty( const Variant& cfaSourcePattern )
 {
-   if ( !cfaSourcePattern.IsValid() || !cfaSourcePattern.IsString() )
-      throw Error( "Unable to acquire CFA pattern information: Unavailable or invalid image properties." );
+   if ( cfaSourcePattern.IsValid() )
+      if ( cfaSourcePattern.IsString() )
+         return BayerPatternFromTargetPropertyValue( cfaSourcePattern.ToIsoString() );
 
-   IsoString patternId = cfaSourcePattern.ToIsoString();
-   if ( patternId == "RGGB" )
-      return DebayerBayerPatternParameter::RGGB;
-   if ( patternId == "BGGR" )
-      return DebayerBayerPatternParameter::BGGR;
-   if ( patternId == "GBRG" )
-      return DebayerBayerPatternParameter::GBRG;
-   if ( patternId == "GRBG" )
-      return DebayerBayerPatternParameter::GRBG;
-   if ( patternId == "GRGB" )
-      return DebayerBayerPatternParameter::GRGB;
-   if ( patternId == "GBGR" )
-      return DebayerBayerPatternParameter::GBGR;
-   if ( patternId == "RGBG" )
-      return DebayerBayerPatternParameter::RGBG;
-   if ( patternId == "BGRG" )
-      return DebayerBayerPatternParameter::BGRG;
+   throw Error( "Unable to acquire CFA pattern information: Invalid image property value." );
+}
 
-   throw Error( "Unsupported or invalid CFA pattern '" + patternId + '\'' );
+pcl_enum DebayerInstance::BayerPatternFromTargetPropertyValue( const IsoString& patternId, int dx, int dy )
+{
+   if ( patternId.Length() == 4 )
+   {
+      IsoString bayerPattern = patternId;
+      if ( dx % 2 )
+      {
+         // Swap pattern columns
+         Swap( bayerPattern[0], bayerPattern[1] );
+         Swap( bayerPattern[2], bayerPattern[3] );
+      }
+      if ( dy % 2 )
+      {
+         // Swap pattern rows
+         Swap( bayerPattern[0], bayerPattern[2] );
+         Swap( bayerPattern[1], bayerPattern[3] );
+      }
+
+      if ( bayerPattern == "RGGB" )
+         return DebayerBayerPatternParameter::RGGB;
+      if ( bayerPattern == "BGGR" )
+         return DebayerBayerPatternParameter::BGGR;
+      if ( bayerPattern == "GBRG" )
+         return DebayerBayerPatternParameter::GBRG;
+      if ( bayerPattern == "GRBG" )
+         return DebayerBayerPatternParameter::GRBG;
+      if ( bayerPattern == "GRGB" )
+         return DebayerBayerPatternParameter::GRGB;
+      if ( bayerPattern == "GBGR" )
+         return DebayerBayerPatternParameter::GBGR;
+      if ( bayerPattern == "RGBG" )
+         return DebayerBayerPatternParameter::RGBG;
+      if ( bayerPattern == "BGRG" )
+         return DebayerBayerPatternParameter::BGRG;
+   }
+
+   throw Error( "Unsupported or invalid CFA Bayer pattern '" + patternId + '\'' );
 }
 
 // ----------------------------------------------------------------------------
@@ -3031,23 +3094,92 @@ pcl_enum DebayerInstance::BayerPatternFromTargetProperty( const Variant& cfaSour
 IsoString DebayerInstance::CFAPatternIdFromTarget( const View& view, bool xtrans ) const
 {
    if ( xtrans || p_bayerPattern == DebayerBayerPatternParameter::Auto )
-      return CFAPatternIdFromTargetProperty( view.PropertyValue( "PCL:CFASourcePattern" ) );
+   {
+      if ( view.HasProperty( "PCL:CFASourcePattern" ) )
+         return CFAPatternIdFromTargetProperty( view.PropertyValue( "PCL:CFASourcePattern" ) );
+
+      if ( !xtrans )
+      {
+         FITSKeywordArray keywords = view.Window().Keywords();
+         IsoString bayerPattern;
+         int xOffset = 0, yOffset = 0;
+         for ( const FITSHeaderKeyword& keyword : keywords )
+            if ( keyword.name == "BAYERPAT" )
+               bayerPattern = keyword.StripValueDelimiters().Uppercase();
+            else if ( keyword.name == "XBAYROFF" )
+               (void)keyword.value.TryToInt( xOffset );
+            else if ( keyword.name == "YBAYROFF" )
+               (void)keyword.value.TryToInt( yOffset );
+         if ( !bayerPattern.IsEmpty() )
+            return CFAPatternIdFromTargetProperty( bayerPattern, xOffset, yOffset );
+      }
+
+      throw Error( "Unable to acquire CFA pattern information: Required image metadata not available." );
+   }
+
    return TheDebayerBayerPatternParameter->ElementId( p_bayerPattern );
 }
 
 IsoString DebayerInstance::CFAPatternIdFromTarget( FileFormatInstance& file, bool xtrans ) const
 {
    if ( xtrans || p_bayerPattern == DebayerBayerPatternParameter::Auto )
-      return CFAPatternIdFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePattern" ) );
+   {
+      if ( file.HasImageProperty( "PCL:CFASourcePattern" ) )
+         return CFAPatternIdFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePattern" ) );
+
+      if ( !xtrans )
+         if ( file.Format().CanStoreKeywords() )
+         {
+            FITSKeywordArray keywords;
+            if ( file.ReadFITSKeywords( keywords ) )
+            {
+               IsoString bayerPattern;
+               int xOffset = 0, yOffset = 0;
+               for ( const FITSHeaderKeyword& keyword : keywords )
+                  if ( keyword.name == "BAYERPAT" )
+                     bayerPattern = keyword.StripValueDelimiters().Uppercase();
+                  else if ( keyword.name == "XBAYROFF" )
+                     (void)keyword.value.TryToInt( xOffset );
+                  else if ( keyword.name == "YBAYROFF" )
+                     (void)keyword.value.TryToInt( yOffset );
+               if ( !bayerPattern.IsEmpty() )
+                  return CFAPatternIdFromTargetProperty( bayerPattern, xOffset, yOffset );
+            }
+         }
+
+      throw Error( "Unable to acquire CFA pattern information: Required image metadata not available." );
+   }
+
    return TheDebayerBayerPatternParameter->ElementId( p_bayerPattern );
 }
 
-IsoString DebayerInstance::CFAPatternIdFromTargetProperty( const Variant& cfaSourcePattern )
+IsoString DebayerInstance::CFAPatternIdFromTargetProperty( const Variant& cfaSourcePattern, int dx, int dy )
 {
    if ( cfaSourcePattern.IsValid() )
       if ( cfaSourcePattern.IsString() )
-         return cfaSourcePattern.ToIsoString().Trimmed();
-   throw Error( "Missing or invalid CFA pattern description property." );
+      {
+         IsoString cfaPattern = cfaSourcePattern.ToIsoString().Trimmed();
+         if ( dx || dy )
+            if ( cfaPattern.Length() == 4 )
+            {
+               if ( dx % 2 )
+               {
+                  // Swap pattern columns
+                  Swap( cfaPattern[0], cfaPattern[1] );
+                  Swap( cfaPattern[2], cfaPattern[3] );
+               }
+               if ( dy % 2 )
+               {
+                  // Swap pattern rows
+                  Swap( cfaPattern[0], cfaPattern[2] );
+                  Swap( cfaPattern[1], cfaPattern[3] );
+               }
+            }
+
+         return cfaPattern;
+      }
+
+   throw Error( "Unable to acquire CFA pattern information: Invalid image property or keyword value." );
 }
 
 // ----------------------------------------------------------------------------
@@ -3448,4 +3580,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2019-01-21T12:06:42Z
+// EOF DebayerInstance.cpp - Released 2019-09-29T12:27:58Z

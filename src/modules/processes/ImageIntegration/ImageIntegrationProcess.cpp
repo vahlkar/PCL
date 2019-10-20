@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.cpp - Released 2019-01-21T12:06:41Z
+// ImageIntegrationProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -68,7 +68,7 @@ ImageIntegrationProcess* TheImageIntegrationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-ImageIntegrationProcess::ImageIntegrationProcess() : MetaProcess()
+ImageIntegrationProcess::ImageIntegrationProcess()
 {
    TheImageIntegrationProcess = this;
 
@@ -93,6 +93,7 @@ ImageIntegrationProcess::ImageIntegrationProcess() : MetaProcess()
    new IIPercentileHigh( this );
    new IISigmaLow( this );
    new IISigmaHigh( this );
+   new IIWinsorizationCutoff( this );
    new IILinearFitLow( this );
    new IILinearFitHigh( this );
    new IICCDGain( this );
@@ -119,6 +120,8 @@ ImageIntegrationProcess::ImageIntegrationProcess() : MetaProcess()
    new IIClosePreviousImages( this );
    new IIBufferSize( this );
    new IIStackSize( this );
+   new IIAutoMemorySize( this );
+   new IIAutoMemoryLimit( this );
    new IIUseROI( this );
    new IIROIX0( this );
    new IIROIY0( this );
@@ -127,6 +130,8 @@ ImageIntegrationProcess::ImageIntegrationProcess() : MetaProcess()
    new IIUseCache( this );
    new IIEvaluateNoise( this );
    new IIMRSMinDataFraction( this );
+   new IISubtractPedestals( this );
+   new IITruncateOnOutOfRange( this );
    new IINoGUIMessages( this );
    new IIUseFileThreads( this );
    new IIFileThreadOverload( this );
@@ -241,4 +246,4 @@ ProcessImplementation* ImageIntegrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.cpp - Released 2019-01-21T12:06:41Z
+// EOF ImageIntegrationProcess.cpp - Released 2019-09-29T12:27:57Z

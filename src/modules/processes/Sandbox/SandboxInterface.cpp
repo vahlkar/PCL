@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Sandbox Process Module Version 01.00.02.0286
+// Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxInterface.cpp - Released 2019-01-21T12:06:42Z
+// SandboxInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -322,6 +322,8 @@ SandboxInterface::GUIData::GUIData( SandboxInterface& w )
    Global_Sizer.Add( ParameterFive_Sizer );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -331,4 +333,4 @@ SandboxInterface::GUIData::GUIData( SandboxInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SandboxInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF SandboxInterface.cpp - Released 2019-09-29T12:27:58Z

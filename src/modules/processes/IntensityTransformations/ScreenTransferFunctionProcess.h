@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 01.07.01.0430
+// Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionProcess.h - Released 2019-01-21T12:06:41Z
+// ScreenTransferFunctionProcess.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -97,4 +97,4 @@ PCL_END_LOCAL
 #endif   // __ScreenTransferFunctionProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionProcess.h - Released 2019-01-21T12:06:41Z
+// EOF ScreenTransferFunctionProcess.h - Released 2019-09-29T12:27:57Z

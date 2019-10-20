@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard BMP File Format Module Version 01.00.04.0347
+// Standard BMP File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// BMPFormat.h - Released 2019-01-21T12:06:31Z
+// BMPFormat.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -66,24 +66,18 @@ public:
 
    BMPFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -94,24 +88,18 @@ public:
 
    GIFFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -122,24 +110,18 @@ public:
 
    ICOFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -150,24 +132,18 @@ public:
 
    MNGFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -178,24 +154,18 @@ public:
 
    PBMFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -206,24 +176,18 @@ public:
 
    PGMFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -234,24 +198,18 @@ public:
 
    PNGFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -262,24 +220,18 @@ public:
 
    PPMFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -290,24 +242,18 @@ public:
 
    XBMFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -318,24 +264,18 @@ public:
 
    XPMFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -346,24 +286,18 @@ public:
 
    TGAFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -374,24 +308,18 @@ public:
 
    WEBPFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -402,24 +330,18 @@ public:
 
    SVGFormat() = default;
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanRead() const;
-   virtual bool CanWrite() const;
-   virtual bool CanStore8Bit() const;
-   virtual bool CanStore16Bit() const;
-
-   virtual FileFormatImplementation* Create() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String IconImageFile() const override;
+   bool CanRead() const override;
+   bool CanWrite() const override;
+   bool CanStore8Bit() const override;
+   bool CanStore16Bit() const override;
+   FileFormatImplementation* Create() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -429,4 +351,4 @@ public:
 #endif   // __BMPFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF BMPFormat.h - Released 2019-01-21T12:06:31Z
+// EOF BMPFormat.h - Released 2019-09-29T12:27:43Z

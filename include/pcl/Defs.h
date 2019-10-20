@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Defs.h - Released 2019-01-21T12:06:07Z
+// pcl/Defs.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -65,7 +65,7 @@
  *       Reference Documentation
  *    </h2>
  *    <p>
- *       <strong>Copyright (c) 2003-2018, The PixInsight Development Team.
+ *       <strong>Copyright (c) 2003-2019, The PixInsight Development Team.
  *       All Rights Reserved</strong>
  *    </p>
  * </div>
@@ -242,14 +242,14 @@
 /*
  * Compiler requirements:
  *
- * - GCC >= 4.8 on UNIX/Linux
- * - Clang >= 3.3 on UNIX/Linux
- * - MSVC++ >= 14.0 / Visual Studio 2015 on Windows
+ * - GCC >= 7 on UNIX/Linux
+ * - Clang >= 5 on UNIX/Linux
+ * - MSVC++ >= 15.0 / Visual Studio 2017 on Windows
  */
 #ifdef __PCL_WINDOWS
 #  ifdef _MSC_VER
-#    if _MSC_VER < 1900
-#      error This version of PCL requires MSVC++ 14.0 / Visual Studio 2015 or higher on MS Windows platforms.
+#    if _MSC_VER < 1910
+#      error This version of PCL requires MSVC++ 15.0 / Visual Studio 2017 or higher on MS Windows platforms.
 #    endif
 #  else
 #    error Unsupported C++ compiler on MS Windows platform.
@@ -257,22 +257,20 @@
 #else
 #  ifdef _MSC_VER
 #    error _MSC_VER should not be #defined on UNIX/Linux platforms.
-#  endif
-#  ifdef __GNUC__
-#    define GCC_VERSION (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__)
-#  endif
-#  ifdef __clang__
-#    if !__has_feature( cxx_inheriting_constructors )
-#      error This version of PCL requires Clang 3.3 or higher on UNIX/Linux platforms.
-#    endif
 #  else
-#    ifdef __GNUC__
-#      if GCC_VERSION < 40800
-#        error This version of PCL requires GCC 4.8 or higher on UNIX/Linux platforms.
-#      endif
-#    else
-#      error Unsupported C++ compiler on UNIX/Linux platform.
-#    endif
+#     ifdef __clang__
+#        if ( __clang_major__ < 5 )
+#           error This version of PCL requires Clang 5 or higher on UNIX/Linux platforms.
+#        endif
+#     else
+#        ifdef __GNUC__
+#           if ( __GNUC__ < 7 )
+#              error This version of PCL requires GCC 7 or higher on UNIX/Linux platforms.
+#           endif
+#        else
+#           error Unsupported C++ compiler on UNIX/Linux platform.
+#        endif
+#     endif
 #  endif
 #endif
 
@@ -331,6 +329,14 @@
 #  define PCL_WARNINGS_DISABLE_SIZE_T_TO_INT_LOSS \
       __pragma(warning( disable: 4267 ))
 #endif
+
+/*
+ * Disable unused variable warnings. This solution is portable for all
+ * compilers supporting C++11 or newer. The function call should be optimized
+ * away by any reasonable compiler (including MSVC :).
+ */
+template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
+#define PCL_UNUSED( x ) __pcl_unused__( x );
 
 /*
  * On Windows/MSVC++, _CRT_RAND_S must be #defined for rand_s() to work:
@@ -1129,4 +1135,4 @@ typedef int64                 fsize_type;
 #endif   // __PCL_Defs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Defs.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Defs.h - Released 2019-09-29T12:27:26Z

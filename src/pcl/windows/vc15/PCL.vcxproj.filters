@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:18.573Z
+# Generated on .... 2019-09-30T11:27:51.812Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -13,7 +13,7 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>79eb0cba-4404-4a8d-8599-923b5bbafc61</UniqueIdentifier>
+      <UniqueIdentifier>c5311935-10ea-453a-b3b3-f00fd12fdc43</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +102,6 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Crop.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\CubicSplineInterpolation.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Cursor.cpp">
@@ -236,6 +233,9 @@
     <ClCompile Include="..\..\IntegerResample.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\IntegrationMetadata.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\JPLEphemeris.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
@@ -306,6 +306,9 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\OrthographicProjection.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\PSFFit.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Pen.cpp">
@@ -435,6 +438,9 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\String.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SurfaceSimplifier.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SurfaceSpline.cpp">

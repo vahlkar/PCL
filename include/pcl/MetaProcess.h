@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/MetaProcess.h - Released 2019-01-21T12:06:07Z
+// pcl/MetaProcess.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -145,7 +145,7 @@ public:
    MetaProcess& operator =( MetaProcess&& x ) = delete;
 
    /*!
-   */
+    */
    virtual IsoString Id() const override = 0;
 
    /*!
@@ -216,7 +216,7 @@ public:
     */
    virtual IsoString Category() const // ### PCL 2.x: Remove
    {
-      return Categories(); // General category
+      return Categories();
    }
 
    /*!
@@ -791,4 +791,4 @@ private:
 #endif   // __PCL_MetaProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaProcess.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/MetaProcess.h - Released 2019-09-29T12:27:26Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EParameters.h - Released 2019-01-21T12:06:41Z
+// B3EParameters.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -68,9 +68,9 @@ public:
 
    B3EInputViewId1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern B3EInputViewId1* TheB3EInputViewId1Parameter;
@@ -81,9 +81,9 @@ public:
 
    B3EInputViewId2( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern B3EInputViewId2* TheB3EInputViewId2Parameter;
@@ -96,11 +96,11 @@ public:
 
    B3EInputCenter1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EInputCenter1* TheB3EInputCenter1Parameter;
@@ -113,11 +113,11 @@ public:
 
    B3EInputCenter2( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EInputCenter2* TheB3EInputCenter2Parameter;
@@ -130,11 +130,11 @@ public:
 
    B3EOutputCenter( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EOutputCenter* TheB3EOutputCenterParameter;
@@ -154,12 +154,11 @@ public:
 
    B3EIntensityUnits( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern B3EIntensityUnits* TheB3EIntensityUnitsParameter;
@@ -172,9 +171,8 @@ public:
 
    B3ESyntheticImage( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern B3ESyntheticImage* TheB3ESyntheticImageParameter;
@@ -187,9 +185,8 @@ public:
 
    B3EThermalMap( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern B3EThermalMap* TheB3EThermalMapParameter;
@@ -202,9 +199,8 @@ public:
 
    B3EOutOfRangeMask( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern B3EOutOfRangeMask* TheB3EOutOfRangeMaskParameter;
@@ -217,8 +213,8 @@ public:
 
    B3ESyntheticImageViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern B3ESyntheticImageViewId* TheB3ESyntheticImageViewIdParameter;
@@ -231,8 +227,8 @@ public:
 
    B3EThermalMapViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern B3EThermalMapViewId* TheB3EThermalMapViewIdParameter;
@@ -245,8 +241,8 @@ public:
 
    B3EOutOfRangeMaskViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern B3EOutOfRangeMaskViewId* TheB3EOutOfRangeMaskViewIdParameter;
@@ -265,9 +261,8 @@ public:
 
    B3ESubstractBackground1( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern B3ESubstractBackground1* TheB3ESubstractBackground1Parameter;
@@ -280,7 +275,7 @@ public:
 
    B3EBackgroundReferenceViewId1( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern B3EBackgroundReferenceViewId1* TheB3EBackgroundReferenceViewId1Parameter;
@@ -293,13 +288,11 @@ public:
 
    B3EBackgroundLow1( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern B3EBackgroundLow1* TheB3EBackgroundLow1Parameter;
@@ -312,13 +305,11 @@ public:
 
    B3EBackgroundHigh1( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern B3EBackgroundHigh1* TheB3EBackgroundHigh1Parameter;
@@ -331,8 +322,8 @@ public:
 
    B3EBackgroundUseROI1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern B3EBackgroundUseROI1* TheB3EBackgroundUseROI1Parameter;
@@ -345,10 +336,10 @@ public:
 
    B3EBackgroundROIX01( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EBackgroundROIX01* TheB3EBackgroundROIX01Parameter;
@@ -362,10 +353,10 @@ public:
 
    B3EBackgroundROIY01( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EBackgroundROIY01* TheB3EBackgroundROIY01Parameter;
@@ -378,10 +369,10 @@ public:
 
    B3EBackgroundROIX11( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EBackgroundROIX11* TheB3EBackgroundROIX11Parameter;
@@ -394,10 +385,10 @@ public:
 
    B3EBackgroundROIY11( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EBackgroundROIY11* TheB3EBackgroundROIY11Parameter;
@@ -410,9 +401,8 @@ public:
 
    B3EOutputBackgroundReferenceMask1( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern B3EOutputBackgroundReferenceMask1* TheB3EOutputBackgroundReferenceMask1Parameter;
@@ -431,9 +421,8 @@ public:
 
    B3ESubstractBackground2( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern B3ESubstractBackground2* TheB3ESubstractBackground2Parameter;
@@ -446,7 +435,7 @@ public:
 
    B3EBackgroundReferenceViewId2( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern B3EBackgroundReferenceViewId2* TheB3EBackgroundReferenceViewId2Parameter;
@@ -459,13 +448,11 @@ public:
 
    B3EBackgroundLow2( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern B3EBackgroundLow2* TheB3EBackgroundLow2Parameter;
@@ -478,13 +465,11 @@ public:
 
    B3EBackgroundHigh2( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern B3EBackgroundHigh2* TheB3EBackgroundHigh2Parameter;
@@ -497,8 +482,8 @@ public:
 
    B3EBackgroundUseROI2( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern B3EBackgroundUseROI2* TheB3EBackgroundUseROI2Parameter;
@@ -511,10 +496,10 @@ public:
 
    B3EBackgroundROIX02( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EBackgroundROIX02* TheB3EBackgroundROIX02Parameter;
@@ -528,10 +513,10 @@ public:
 
    B3EBackgroundROIY02( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EBackgroundROIY02* TheB3EBackgroundROIY02Parameter;
@@ -544,10 +529,10 @@ public:
 
    B3EBackgroundROIX12( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EBackgroundROIX12* TheB3EBackgroundROIX12Parameter;
@@ -560,10 +545,10 @@ public:
 
    B3EBackgroundROIY12( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern B3EBackgroundROIY12* TheB3EBackgroundROIY12Parameter;
@@ -576,9 +561,8 @@ public:
 
    B3EOutputBackgroundReferenceMask2( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern B3EOutputBackgroundReferenceMask2* TheB3EOutputBackgroundReferenceMask2Parameter;
@@ -592,4 +576,4 @@ PCL_END_LOCAL
 #endif   // __B3EParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF B3EParameters.h - Released 2019-01-21T12:06:41Z
+// EOF B3EParameters.h - Released 2019-09-29T12:27:57Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/UnixSignalException.cpp - Released 2019-01-21T12:06:21Z
+// pcl/UnixSignalException.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,7 +93,7 @@ static IsoString GetDemangledFunctionName( const char* symbol, IsoString& addrSt
    }
 
    // The first token of tokens2 contains the mangled string. Demangle it.
-   size_t funcnameSize = 256;
+   size_t funcnameSize = 2048;
    char funcname[ funcnameSize ];
    int status;
    IsoString token( tokens2[0] );
@@ -203,15 +203,15 @@ static void CriticalSignalHandler( int signalNumber )
 
 void UnixSignalException::Show() const
 {
-   bool wasConsole = IsConsoleOutputEnabled();
-   bool wasGUI = IsGUIOutputEnabled();
+   bool wasConsoleOutput = IsConsoleOutputEnabled();
+   bool wasGUIOutput = IsGUIOutputEnabled();
    EnableConsoleOutput();
    DisableGUIOutput();
 
    Exception::Show();
 
-   EnableConsoleOutput( wasConsole );
-   EnableGUIOutput( wasGUI );
+   EnableConsoleOutput( wasConsoleOutput );
+   EnableGUIOutput( wasGUIOutput );
 }
 
 // ----------------------------------------------------------------------------
@@ -236,4 +236,4 @@ void UnixSignalException::Initialize()
 #endif   // __PCL_LINUX || __PCL_FREEBSD || __PCL_MACOSX
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UnixSignalException.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/UnixSignalException.cpp - Released 2019-09-29T12:27:33Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.03.0336
+// Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationProcess.h - Released 2019-01-21T12:06:41Z
+// PhotometricColorCalibrationProcess.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -77,21 +77,16 @@ public:
 
    PhotometricColorCalibrationProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Category() const;
+   IsoString Id() const override;
+   IsoString Category() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   const char** IconImageXPM() const override;
+   ProcessInterface* DefaultInterface() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
 
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-
-   virtual const char** IconImageXPM() const;
-
-   virtual ProcessInterface* DefaultInterface() const;
-
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
-
-   static void InitializeWhiteReferences( bool interactive = true );
+   static void InitializeWhiteReferences();
    static bool HasValidWhiteReferences();
    static const WhiteReferenceArray& WhiteReferences();
    static const WhiteReference& DefaultWhiteReference();
@@ -112,4 +107,4 @@ PCL_END_LOCAL
 #endif   // __PhotometricColorCalibrationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationProcess.h - Released 2019-01-21T12:06:41Z
+// EOF PhotometricColorCalibrationProcess.h - Released 2019-09-29T12:27:57Z

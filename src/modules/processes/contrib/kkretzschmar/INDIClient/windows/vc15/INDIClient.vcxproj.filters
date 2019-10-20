@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:44.805Z
+# Generated on .... 2019-09-30T11:28:15.080Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,10 +16,10 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>39d77d5d-eeb9-4f5a-a93f-1897bbaaca0a</UniqueIdentifier>
+      <UniqueIdentifier>e02b22a4-8d57-480a-9bf6-6262d8da391e</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>82c56ffe-6a5a-4b5f-b562-ae0b44d85457</UniqueIdentifier>
+      <UniqueIdentifier>83e7498c-8b95-4096-8ed1-f9ac1b59aeb2</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -29,25 +29,7 @@
     <ClCompile Include="..\..\IINDIProperty.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\INDI\base64.c">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDI\baseclient.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDI\basedevice.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDI\indicom.c">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDI\indiproperty.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDI\indistandardproperty.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDI\lilxml.c">
+    <ClCompile Include="..\..\IIndigoProperty.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\INDICCDFrameInstance.cpp">
@@ -92,6 +74,9 @@
     <ClCompile Include="..\..\INDIMountProcess.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\IndigoClient.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Alignment.h">
@@ -103,52 +88,7 @@
     <ClInclude Include="..\..\IINDIProperty.h">
         <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INDI\ClientListener.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\IClientListener.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\PCLClientListener.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\base64.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\base64_luts.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\baseclient.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\basedevice.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\indiapi.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\indibase.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\indibasetypes.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\indicom.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\indidevapi.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\indiproperty.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\indistandardproperty.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\lilxml.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDI\locale_compat.h">
+    <ClInclude Include="..\..\IIndigoProperty.h">
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INDICCDFrameInstance.h">
@@ -194,6 +134,9 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INDIParamListTypes.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IndigoClient.h">
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ModuleParameterRegistration.h">

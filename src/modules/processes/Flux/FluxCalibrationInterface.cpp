@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInterface.cpp - Released 2019-01-21T12:06:41Z
+// FluxCalibrationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -205,7 +205,7 @@ FluxCalibrationInterface::GUIData::GUIData( FluxCalibrationInterface& w )
       "<p>Effective filter wavelenth in nm (mandatory parameter).</p>",    true /* required parameter */ );
 
    Transmissivity_Parameter.Build(        w.m_instance.p_transmissivity,        "Transmissivity:",
-      "<p>Filter transmissivity in the range ]0,1].</p>"                                                 );
+      "<p>Filter transmissivity in the range (0,1].</p>"                                                 );
 
    FilterWidth_Parameter.Build(           w.m_instance.p_filterWidth,           "Filter width (nm):",
       "<p>Filter bandwith in nm (mandatory parameter).</p>",               true /* required parameter */ );
@@ -223,10 +223,10 @@ FluxCalibrationInterface::GUIData::GUIData( FluxCalibrationInterface& w )
       "<p>Atmospheric extinction in the range [0,1].</p>"                                                );
 
    SensorGain_Parameter.Build(            w.m_instance.p_sensorGain,            "Sensor gain (e-/ADU):",
-      "<p>Sensor gain (e-/ADU). The gain must be &gt;= 0.</p>"                                           );
+      "<p>Sensor gain (e-/ADU). The gain must be &ge; 0.</p>"                                           );
 
    QuantumEfficiency_Parameter.Build(     w.m_instance.p_quantumEfficiency,     "Quantum efficiency:",
-      "<p>Sensor quantum efficiency in the range [0,1[.</p>"                                             );
+      "<p>Sensor quantum efficiency in the range [0,1).</p>"                                             );
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
@@ -242,6 +242,8 @@ FluxCalibrationInterface::GUIData::GUIData( FluxCalibrationInterface& w )
    Global_Sizer.Add( QuantumEfficiency_Parameter );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -251,4 +253,4 @@ FluxCalibrationInterface::GUIData::GUIData( FluxCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF FluxCalibrationInterface.cpp - Released 2019-09-29T12:27:57Z

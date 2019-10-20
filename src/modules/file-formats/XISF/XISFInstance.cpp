@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 01.00.09.0187
+// Standard XISF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2019-01-21T12:06:31Z
+// XISFInstance.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -468,6 +468,8 @@ void XISFInstance::LogHandler::Init( const String& filePath, bool writing )
    m_console.Write( "<end><cbr>" );
 }
 
+// ----------------------------------------------------------------------------
+
 void XISFInstance::LogHandler::Log( const String& text, XISFLogHandler::message_type type )
 {
    m_console.Write( "<end>" );
@@ -489,6 +491,8 @@ void XISFInstance::LogHandler::Log( const String& text, XISFLogHandler::message_
    }
    Module->ProcessEvents();
 }
+
+// ----------------------------------------------------------------------------
 
 void XISFInstance::LogHandler::Close()
 {
@@ -1126,4 +1130,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2019-01-21T12:06:31Z
+// EOF XISFInstance.cpp - Released 2019-09-29T12:27:43Z

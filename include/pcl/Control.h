@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Control.h - Released 2019-01-21T12:06:07Z
+// pcl/Control.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -955,6 +955,24 @@ public:
     */
    void Restyle();
 
+   /*!
+    * Make sure the control has valid geometry and layout, even if it has never
+    * been shown on the screen.
+    *
+    * Control layouts and geometries are not computed, in general, until the
+    * control has been shown on the screen, either explicitly or implicitly. By
+    * calling this member function one can ensure that the control has computed
+    * a valid layout, including all of its child controls, even if it has never
+    * been shown, so for example a subsequent call to Width() or ClientRect()
+    * will provide actual values.
+    *
+    * This function can be quite slow, especially for complex controls such as
+    * process interfaces, so it should only be used when necessary, never on a
+    * regular basis. Calling this member function for a control that is already
+    * visible on the screen has no effect.
+    */
+   void EnsureLayoutUpdated();
+
    /*! #
     */
    void Scroll( const pcl::Point& d )
@@ -1813,4 +1831,4 @@ int CanonicalControlHeightImplementation()
 #endif   // __PCL_Control_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Control.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Control.h - Released 2019-09-29T12:27:26Z

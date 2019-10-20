@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Position.h - Released 2019-01-21T12:06:07Z
+// pcl/Position.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -82,7 +82,7 @@ namespace pcl
  */
 struct PCL_CLASS StarPosition
 {
-   double    alpha = 0;    //!< ICRS right ascension in hours.
+   double    alpha = 0;    //!< ICRS right ascension in degrees.
    double    delta = 0;    //!< ICRS declination in degrees.
    double    muAlpha = 0;  //!< Proper motion in right ascension, mas/year * cos( delta ).
    double    muDelta = 0;  //!< Proper motion in declination, in mas/year.
@@ -108,9 +108,12 @@ struct PCL_CLASS StarPosition
    /*!
     * Memberwise constructor.
     *
-    * \param ra               Right ascension equatorial coordinate in hours.
+    * \param ra               Right ascension equatorial coordinate in degrees.
+    *                         Can be specified in the range [-180,+180] or
+    *                         [0,360) indistinctly.
     *
     * \param dec              Declination equatorial coordinate in degrees.
+    *                         Should be in the [-90,+90] range.
     *
     * \param properMotionRA   Proper motion in right ascension, in mas/year,
     *                         measured on a great circle, that is, the
@@ -131,15 +134,15 @@ struct PCL_CLASS StarPosition
     * Positions and proper motions must be referred to ICRS/J2000.0.
     *
     * If out-of-range coordinates are specified, their values will be
-    * constrained to their proper ranges: right ascension to [0h,24h) and
-    * declination to [-90&deg;,+90&deg;].
+    * constrained to their proper ranges: right ascension to [0&deg;,360&deg;)
+    * and declination to [-90&deg;,+90&deg;].
     */
    StarPosition( double ra, double dec,
                  double properMotionRA = 0, double properMotionDec = 0,
                  double parallax = 0,
                  double radialVelocity = 0,
                  TimePoint epoch = TimePoint::J2000() ) :
-      alpha( ((ra = Mod( ra, 24.0 )) < 0) ? ra + 24 : ra ),
+      alpha( ((ra = Mod( ra, 360.0 )) < 0) ? ra + 360 : ra ),
       delta( Range( dec, -90.0, +90.0 ) ),
       muAlpha( properMotionRA ),
       muDelta( properMotionDec ),
@@ -1400,4 +1403,4 @@ private:
 #endif  // __PCL_Position_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Position.h - Released 2019-09-29T12:27:26Z

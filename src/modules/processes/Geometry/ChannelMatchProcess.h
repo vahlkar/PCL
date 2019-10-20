@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0404
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ChannelMatchProcess.h - Released 2019-01-21T12:06:41Z
+// ChannelMatchProcess.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -66,21 +66,21 @@ public:
 
    ChannelMatchProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Category() const;
+   IsoString Id() const override;
+   IsoString Category() const override;
 
-   virtual uint32 Version() const;
+   uint32 Version() const override;
 
-   virtual String Description() const;
+   String Description() const override;
 
-   virtual const char** IconImageXPM() const;
+   const char** IconImageXPM() const override;
 
-   virtual ProcessInterface* DefaultInterface() const;
+   ProcessInterface* DefaultInterface() const override;
 
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
 
-   virtual bool NeedsValidation() const;
+   bool NeedsValidation() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -96,4 +96,4 @@ PCL_END_LOCAL
 #endif   // __ChannelMatchProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchProcess.h - Released 2019-01-21T12:06:41Z
+// EOF ChannelMatchProcess.h - Released 2019-09-29T12:27:57Z

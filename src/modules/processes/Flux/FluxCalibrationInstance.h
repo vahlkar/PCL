@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInstance.h - Released 2019-01-21T12:06:41Z
+// FluxCalibrationInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -70,58 +70,66 @@ public:
    FluxCalibrationInstance( const MetaProcess* );
    FluxCalibrationInstance( const FluxCalibrationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter*, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter*, size_type tableRow ) const override;
 
 private:
 
    struct CalibrationParameter
    {
-      float       value;
-      pcl_enum    mode;
-      String      keyword;
-      //
-      String stdKeyword;
+      float    value;
+      pcl_enum mode;
+      String   keyword;
+      String   stdKeyword;
+
+      CalibrationParameter( float a_value, pcl_enum a_mode, const String& a_stdKeyword ) :
+         value( a_value ),
+         mode( a_mode ),
+         stdKeyword( a_stdKeyword )
+      {
+      }
+
+      CalibrationParameter() = default;
+      CalibrationParameter( const CalibrationParameter& ) = default;
+      CalibrationParameter& operator =( const CalibrationParameter& ) = default;
+
+      float operator =( float x )
+      {
+         return value = x;
+      }
 
       float GetValue( const FITSKeywordArray& keywords ) const
       {
          if ( mode == pcl_enum( FCParameterMode::Literal ) )
             return value;
 
-         for ( FITSKeywordArray::const_iterator i = keywords.Begin(); i != keywords.End(); ++i )
-            if ( mode == pcl_enum( FCParameterMode::StandardKeyword ) && String( i->name ) == stdKeyword ||
-                 mode == pcl_enum( FCParameterMode::CustomKeyword ) && String( i->name ) == keyword )
+         for ( const FITSHeaderKeyword& k : keywords )
+            if ( mode == pcl_enum( FCParameterMode::StandardKeyword ) && String( k.name ) == stdKeyword ||
+                 mode == pcl_enum( FCParameterMode::CustomKeyword ) && String( k.name ) == keyword )
             {
                float retVal;
-               if ( i->value.TryToFloat( retVal ) )
+               if ( k.value.TryToFloat( retVal ) )
                   return retVal;
             }
 
          return -1;
       }
-
-      float operator =( float x )
-      {
-         return value = x;
-      }
    };
 
    CalibrationParameter p_wavelength;            // nm
-   CalibrationParameter p_transmissivity;        // [0,1]
+   CalibrationParameter p_transmissivity;        // (0,1]
    CalibrationParameter p_filterWidth;           // nm
    CalibrationParameter p_aperture;              // mm    *
    CalibrationParameter p_centralObstruction;    // mm    *
    CalibrationParameter p_exposureTime;          // s     *
    CalibrationParameter p_atmosphericExtinction; // [0,1]
    CalibrationParameter p_sensorGain;            //       *
-   CalibrationParameter p_quantumEfficiency;     // [0,1]
+   CalibrationParameter p_quantumEfficiency;     // [0,1)
 
    friend class FluxCalibrationEngine;
    friend class FluxCalibrationProcess;
@@ -136,4 +144,4 @@ private:
 #endif   // __FluxCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInstance.h - Released 2019-01-21T12:06:41Z
+// EOF FluxCalibrationInstance.h - Released 2019-09-29T12:27:57Z

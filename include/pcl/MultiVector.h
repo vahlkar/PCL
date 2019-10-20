@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/MultiVector.h - Released 2019-01-21T12:06:07Z
+// pcl/MultiVector.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -147,10 +147,7 @@ public:
     * Constructs an empty multivector. An empty multivector has no component
     * vectors and zero length.
     */
-   GenericMultiVector() :
-      multivector_implementation()
-   {
-   }
+   GenericMultiVector() = default;
 
    /*!
     * Constructs an uninitialized multivector of the specified \a length.
@@ -235,18 +232,12 @@ public:
    /*!
     * Copy constructor.
     */
-   GenericMultiVector( const GenericMultiVector& x ) :
-      multivector_implementation( x )
-   {
-   }
+   GenericMultiVector( const GenericMultiVector& ) = default;
 
    /*!
     * Move constructor.
     */
-   GenericMultiVector( GenericMultiVector&& x ) :
-      multivector_implementation( std::move( x ) )
-   {
-   }
+   GenericMultiVector( GenericMultiVector&& ) = default;
 
    /*!
     * Destroys a %GenericMultiVector object.
@@ -258,20 +249,12 @@ public:
    /*!
     * Copy assignment operator. Returns a reference to this object.
     */
-   GenericMultiVector& operator =( const GenericMultiVector& x )
-   {
-      (void)multivector_implementation::operator =( x );
-      return *this;
-   }
+   GenericMultiVector& operator =( const GenericMultiVector& ) = default;
 
    /*!
     * Move assignment operator. Returns a reference to this object.
     */
-   GenericMultiVector& operator =( GenericMultiVector&& x )
-   {
-      (void)multivector_implementation::operator =( std::move( x ) );
-      return *this;
-   }
+   GenericMultiVector& operator =( GenericMultiVector&& ) = default;
 
    /*!
     * Assigns a constant scalar \a x to all vector components in this
@@ -446,4 +429,4 @@ typedef DMultiVector               MultiVector;
 #endif   // __PCL_MultiVector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MultiVector.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/MultiVector.h - Released 2019-09-29T12:27:26Z

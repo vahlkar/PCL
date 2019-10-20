@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 01.08.00.0327
+// Standard Debayer Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// DebayerProcess.cpp - Released 2019-01-21T12:06:42Z
+// DebayerProcess.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -285,4 +285,4 @@ int DebayerProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerProcess.cpp - Released 2019-01-21T12:06:42Z
+// EOF DebayerProcess.cpp - Released 2019-09-29T12:27:58Z

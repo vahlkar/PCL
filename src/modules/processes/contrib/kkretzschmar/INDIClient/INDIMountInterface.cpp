@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 01.01.00.0238
+// Standard INDIClient Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// INDIMountInterface.cpp - Released 2019-01-21T12:06:42Z
+// INDIMountInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2018 Klaus Kretzschmar
+// Copyright (c) 2014-2019 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -204,11 +204,11 @@ bool CoordinateSearchDialog::e_Progress( NetworkTransfer& sender,
       return false;
 
    if ( downloadTotal > 0 )
-      SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%u of %u bytes transferred (%d%%)<flush>",
+      SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%u of %u bytes transferred (%d%%)",
                                                 downloadCurrent, downloadTotal,
                                                 RoundInt( 100.0*downloadCurrent/downloadTotal ) ) );
    else
-      SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%u bytes transferred (unknown size)<flush>",
+      SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%u bytes transferred (unknown size)",
                                                 downloadCurrent ) );
    SearchInfo_TextBox.Focus();
    Module->ProcessEvents();
@@ -2762,4 +2762,4 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF INDIMountInterface.cpp - Released 2019-09-29T12:27:58Z

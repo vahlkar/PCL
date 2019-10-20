@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0433
+// Standard FITS File Format Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// FITSInstance.cpp - Released 2019-01-21T12:06:31Z
+// FITSInstance.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -551,6 +551,8 @@ static bool ApplyOutOfRangePolicy( GenericImage<P>& image, const FITSReadHints* 
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 static void ReadFITSImage3( Image& image, FITSReader* reader, const FITSReadHints* readHints )
 {
    reader->ReadImage( image );
@@ -615,6 +617,8 @@ static void ReadFITSImage1( GenericImage<P>& image, FITSReader* reader, const FI
    reader->SetOptions( options );
    ReadFITSImage2( image, reader, readHints );
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSInstance::ReadImage( Image& image )
 {
@@ -800,6 +804,8 @@ void FITSInstance::SetId( const IsoString& id )
    m_writer->SetId( id );
 }
 
+// ----------------------------------------------------------------------------
+
 void FITSInstance::SetOptions( const ImageOptions& newOptions )
 {
    CheckOpenStream( m_writer, "SetOptions" );
@@ -974,4 +980,4 @@ void FITSInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.cpp - Released 2019-01-21T12:06:31Z
+// EOF FITSInstance.cpp - Released 2019-09-29T12:27:43Z

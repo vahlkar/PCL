@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard RestorationFilters Process Module Version 01.00.05.0346
+// Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterModule.cpp - Released 2019-01-21T12:06:42Z
+// RestorationFilterModule.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  05
-#define MODULE_VERSION_BUILD     0346
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  5
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "RestorationFilterModule.h"
 #include "RestorationFilterProcess.h"
@@ -116,7 +116,7 @@ String RestorationFilterModule::Author() const
 
 String RestorationFilterModule::Copyright() const
 {
-   return "Copyright (c) 2007-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2007-2019 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -171,4 +171,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterModule.cpp - Released 2019-01-21T12:06:42Z
+// EOF RestorationFilterModule.cpp - Released 2019-09-29T12:27:58Z

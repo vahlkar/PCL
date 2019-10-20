@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 01.04.02.0025
+// Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorExpressionsInterface.cpp - Released 2019-01-21T12:06:42Z
+// SubframeSelectorExpressionsInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -327,6 +327,8 @@ SubframeSelectorExpressionsInterface::GUIData::GUIData( SubframeSelectorExpressi
    Global_Sizer.Add( ExpressionParameters_Weighting_Sizer );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 }
 
@@ -335,4 +337,4 @@ SubframeSelectorExpressionsInterface::GUIData::GUIData( SubframeSelectorExpressi
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorExpressionsInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF SubframeSelectorExpressionsInterface.cpp - Released 2019-09-29T12:27:58Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 01.07.01.0430
+// Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// MaskedStretchInterface.cpp - Released 2019-01-21T12:06:41Z
+// MaskedStretchInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -593,10 +593,11 @@ MaskedStretchInterface::GUIData::GUIData( MaskedStretchInterface& w )
    Global_Sizer.Add( ROI_SectionBar );
    Global_Sizer.Add( ROI_Control );
 
-   ROI_Control.Hide();
-
    w.SetSizer( Global_Sizer );
 
+   ROI_Control.Hide();
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -606,4 +607,4 @@ MaskedStretchInterface::GUIData::GUIData( MaskedStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF MaskedStretchInterface.cpp - Released 2019-09-29T12:27:57Z

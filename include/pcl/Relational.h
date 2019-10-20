@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Relational.h - Released 2019-01-21T12:06:07Z
+// pcl/Relational.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -126,4 +126,4 @@ bool operator >=( const T1& a, const T2& b )
 #endif  // __PCL_Relational_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Relational.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Relational.h - Released 2019-09-29T12:27:26Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EParameters.cpp - Released 2019-01-21T12:06:41Z
+// B3EParameters.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -57,42 +57,42 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-B3EInputViewId1*         TheB3EInputViewId1Parameter = 0;
-B3EInputViewId2*         TheB3EInputViewId2Parameter = 0;
-B3EInputCenter1*         TheB3EInputCenter1Parameter = 0;
-B3EInputCenter2*         TheB3EInputCenter2Parameter = 0;
-B3EOutputCenter*         TheB3EOutputCenterParameter = 0;
-B3EIntensityUnits*       TheB3EIntensityUnitsParameter = 0;
-B3ESyntheticImage*       TheB3ESyntheticImageParameter = 0;
-B3EThermalMap*           TheB3EThermalMapParameter = 0;
-B3EOutOfRangeMask*       TheB3EOutOfRangeMaskParameter = 0;
-B3ESyntheticImageViewId* TheB3ESyntheticImageViewIdParameter = 0;
-B3EThermalMapViewId*     TheB3EThermalMapViewIdParameter = 0;
-B3EOutOfRangeMaskViewId* TheB3EOutOfRangeMaskViewIdParameter = 0;
+B3EInputViewId1*         TheB3EInputViewId1Parameter = nullptr;
+B3EInputViewId2*         TheB3EInputViewId2Parameter = nullptr;
+B3EInputCenter1*         TheB3EInputCenter1Parameter = nullptr;
+B3EInputCenter2*         TheB3EInputCenter2Parameter = nullptr;
+B3EOutputCenter*         TheB3EOutputCenterParameter = nullptr;
+B3EIntensityUnits*       TheB3EIntensityUnitsParameter = nullptr;
+B3ESyntheticImage*       TheB3ESyntheticImageParameter = nullptr;
+B3EThermalMap*           TheB3EThermalMapParameter = nullptr;
+B3EOutOfRangeMask*       TheB3EOutOfRangeMaskParameter = nullptr;
+B3ESyntheticImageViewId* TheB3ESyntheticImageViewIdParameter = nullptr;
+B3EThermalMapViewId*     TheB3EThermalMapViewIdParameter = nullptr;
+B3EOutOfRangeMaskViewId* TheB3EOutOfRangeMaskViewIdParameter = nullptr;
 
 // Background Calibration 1
-B3ESubstractBackground1*               TheB3ESubstractBackground1Parameter = 0;
-B3EBackgroundReferenceViewId1*         TheB3EBackgroundReferenceViewId1Parameter = 0;
-B3EBackgroundLow1*                     TheB3EBackgroundLow1Parameter = 0;
-B3EBackgroundHigh1*                    TheB3EBackgroundHigh1Parameter = 0;
-B3EBackgroundUseROI1*                  TheB3EBackgroundUseROI1Parameter = 0;
-B3EBackgroundROIX01*                   TheB3EBackgroundROIX01Parameter = 0;
-B3EBackgroundROIY01*                   TheB3EBackgroundROIY01Parameter = 0;
-B3EBackgroundROIX11*                   TheB3EBackgroundROIX11Parameter = 0;
-B3EBackgroundROIY11*                   TheB3EBackgroundROIY11Parameter = 0;
-B3EOutputBackgroundReferenceMask1*     TheB3EOutputBackgroundReferenceMask1Parameter = 0;
+B3ESubstractBackground1*           TheB3ESubstractBackground1Parameter = nullptr;
+B3EBackgroundReferenceViewId1*     TheB3EBackgroundReferenceViewId1Parameter = nullptr;
+B3EBackgroundLow1*                 TheB3EBackgroundLow1Parameter = nullptr;
+B3EBackgroundHigh1*                TheB3EBackgroundHigh1Parameter = nullptr;
+B3EBackgroundUseROI1*              TheB3EBackgroundUseROI1Parameter = nullptr;
+B3EBackgroundROIX01*               TheB3EBackgroundROIX01Parameter = nullptr;
+B3EBackgroundROIY01*               TheB3EBackgroundROIY01Parameter = nullptr;
+B3EBackgroundROIX11*               TheB3EBackgroundROIX11Parameter = nullptr;
+B3EBackgroundROIY11*               TheB3EBackgroundROIY11Parameter = nullptr;
+B3EOutputBackgroundReferenceMask1* TheB3EOutputBackgroundReferenceMask1Parameter = nullptr;
 
 // Background Calibration 2
-B3ESubstractBackground2*               TheB3ESubstractBackground2Parameter = 0;
-B3EBackgroundReferenceViewId2*         TheB3EBackgroundReferenceViewId2Parameter = 0;
-B3EBackgroundLow2*                     TheB3EBackgroundLow2Parameter = 0;
-B3EBackgroundHigh2*                    TheB3EBackgroundHigh2Parameter = 0;
-B3EBackgroundUseROI2*                  TheB3EBackgroundUseROI2Parameter = 0;
-B3EBackgroundROIX02*                   TheB3EBackgroundROIX02Parameter = 0;
-B3EBackgroundROIY02*                   TheB3EBackgroundROIY02Parameter = 0;
-B3EBackgroundROIX12*                   TheB3EBackgroundROIX12Parameter = 0;
-B3EBackgroundROIY12*                   TheB3EBackgroundROIY12Parameter = 0;
-B3EOutputBackgroundReferenceMask2*     TheB3EOutputBackgroundReferenceMask2Parameter = 0;
+B3ESubstractBackground2*           TheB3ESubstractBackground2Parameter = nullptr;
+B3EBackgroundReferenceViewId2*     TheB3EBackgroundReferenceViewId2Parameter = nullptr;
+B3EBackgroundLow2*                 TheB3EBackgroundLow2Parameter = nullptr;
+B3EBackgroundHigh2*                TheB3EBackgroundHigh2Parameter = nullptr;
+B3EBackgroundUseROI2*              TheB3EBackgroundUseROI2Parameter = nullptr;
+B3EBackgroundROIX02*               TheB3EBackgroundROIX02Parameter = nullptr;
+B3EBackgroundROIY02*               TheB3EBackgroundROIY02Parameter = nullptr;
+B3EBackgroundROIX12*               TheB3EBackgroundROIX12Parameter = nullptr;
+B3EBackgroundROIY12*               TheB3EBackgroundROIY12Parameter = nullptr;
+B3EOutputBackgroundReferenceMask2* TheB3EOutputBackgroundReferenceMask2Parameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -862,4 +862,4 @@ bool B3EOutputBackgroundReferenceMask2::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EParameters.cpp - Released 2019-01-21T12:06:41Z
+// EOF B3EParameters.cpp - Released 2019-09-29T12:27:57Z

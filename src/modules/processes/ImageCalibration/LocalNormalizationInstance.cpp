@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 01.04.01.0362
+// Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2019-01-21T12:06:41Z
+// LocalNormalizationInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -61,6 +61,7 @@
 #include <pcl/ExternalProcess.h>
 #include <pcl/GaussianFilter.h>
 #include <pcl/GlobalSettings.h>
+#include <pcl/GridInterpolation.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/LocalNormalizationData.h>
 #include <pcl/MessageBox.h>
@@ -104,7 +105,7 @@ LocalNormalizationInstance::LocalNormalizationInstance( const MetaProcess* P ) :
    p_showBackgroundModels( TheLNShowBackgroundModelsParameter->DefaultValue() ),
    p_showRejectionMaps( TheLNShowRejectionMapsParameter->DefaultValue() ),
    p_plotNormalizationFunctions( LNPlotNormalizationFunctions::Default ),
-   p_noGUIMessages( TheLNNoGUIMessagesParameter->DefaultValue() ),
+   p_noGUIMessages( TheLNNoGUIMessagesParameter->DefaultValue() ), // ### DEPRECATED
    p_outputDirectory( TheLNOutputDirectoryParameter->DefaultValue() ),
    p_outputExtension( TheLNOutputExtensionParameter->DefaultValue() ),
    p_outputPrefix( TheLNOutputPrefixParameter->DefaultValue() ),
@@ -239,7 +240,7 @@ public:
 
    typedef ShepardInterpolation<double>   background_interpolation;
 
-   typedef GridShepardInterpolation       background_model;
+   typedef GridInterpolation              background_model;
 
    typedef Array<background_model>        background_models;
 
@@ -1448,8 +1449,6 @@ typedef IndirectArray<LocalNormalizationThread> thread_list;
 
 bool LocalNormalizationInstance::ExecuteGlobal()
 {
-   Exception::DisableGUIOutput( p_noGUIMessages );
-
    {
       String why;
       if ( !CanExecuteGlobal( why ) )
@@ -1481,8 +1480,6 @@ bool LocalNormalizationInstance::ExecuteGlobal()
 
    try
    {
-      Exception::DisableGUIOutput();
-
       console.EnableAbort();
 
       if ( p_referenceIsView )
@@ -1899,4 +1896,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF LocalNormalizationInstance.cpp - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorManagement Process Module Version 01.00.00.0359
+// Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationInterface.cpp - Released 2019-01-21T12:06:41Z
+// ICCProfileTransformationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -531,6 +531,8 @@ ICCProfileTransformationInterface::GUIData::GUIData( ICCProfileTransformationInt
    Global_Sizer.Add( Options_GroupBox );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -540,4 +542,4 @@ ICCProfileTransformationInterface::GUIData::GUIData( ICCProfileTransformationInt
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF ICCProfileTransformationInterface.cpp - Released 2019-09-29T12:27:57Z

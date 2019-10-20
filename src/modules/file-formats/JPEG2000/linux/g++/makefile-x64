@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:31.891Z
+# Generated on .... 2019-09-30T11:28:02.495Z
 # Project id ...... JPEG2000
 # Project type .... Module
 # Platform ........ Linux/g++
@@ -69,6 +69,6 @@ post-build:
 	cp $(OBJ_DIR)/JPEG2000-pxm.so $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -mfpmath=sse -msse4.1 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++11 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver1 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

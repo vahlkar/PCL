@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 01.04.02.0025
+// Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2019-01-21T12:06:42Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -770,6 +770,8 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
    MeasurementGraph_Graph( w ),
    MeasurementDistribution_Graph( w )
 {
+   int buttonWidth1 = w.Font().Width( String( "Toggle Approve" ) + "MMMM" );
+
    MeasurementTable_SectionBar.SetTitle( "Measurements Table" );
    MeasurementTable_SectionBar.SetSection( MeasurementTable_Control );
    MeasurementTable_SectionBar.OnToggleSection( (SectionBar::section_event_handler)
@@ -788,31 +790,37 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 
    MeasurementsTable_ToggleApproved_PushButton.SetText( "Toggle Approve" );
    MeasurementsTable_ToggleApproved_PushButton.SetToolTip( "<p>Toggle the approved state of currently selected measurements.</p>" );
+   MeasurementsTable_ToggleApproved_PushButton.SetFixedWidth( buttonWidth1 );
    MeasurementsTable_ToggleApproved_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
    MeasurementsTable_ToggleLocked_PushButton.SetText( "Toggle Lock" );
    MeasurementsTable_ToggleLocked_PushButton.SetToolTip( "<p>Toggle the locked state of currently selected measurements.</p>" );
+   MeasurementsTable_ToggleLocked_PushButton.SetFixedWidth( buttonWidth1 );
    MeasurementsTable_ToggleLocked_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
    MeasurementsTable_Invert_PushButton.SetText( "Invert" );
    MeasurementsTable_Invert_PushButton.SetToolTip( "<p>Invert the current selection of measurements.</p>" );
+   MeasurementsTable_Invert_PushButton.SetFixedWidth( buttonWidth1 );
    MeasurementsTable_Invert_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
    MeasurementsTable_Remove_PushButton.SetText( "Remove" );
    MeasurementsTable_Remove_PushButton.SetToolTip( "<p>Remove the selected measurements.</p>" );
+   MeasurementsTable_Remove_PushButton.SetFixedWidth( buttonWidth1 );
    MeasurementsTable_Remove_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
    MeasurementsTable_Clear_PushButton.SetText( "Clear" );
    MeasurementsTable_Clear_PushButton.SetToolTip( "<p>Clear the list of measurements.</p>" );
+   MeasurementsTable_Clear_PushButton.SetFixedWidth( buttonWidth1 );
    MeasurementsTable_Clear_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
    MeasurementsTable_ExportCSV_PushButton.SetText( "Save CSV" );
    MeasurementsTable_ExportCSV_PushButton.SetToolTip( "<p>Export the table as a CSV file.</p>" );
+   MeasurementsTable_ExportCSV_PushButton.SetFixedWidth( buttonWidth1 );
    MeasurementsTable_ExportCSV_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorMeasurementsInterface::e_ButtonClick, w );
 
@@ -871,7 +879,6 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
    MeasurementTable_Sizer.Add( MeasurementTable_TreeBox, 100 );
 
    MeasurementTable_Control.SetSizer( MeasurementTable_Sizer );
-   MeasurementTable_Control.AdjustToContents();
 
    //
 
@@ -921,6 +928,8 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
    Global_Sizer.Add( MeasurementGraph_Control, 100 );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 }
 
@@ -929,4 +938,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2019-09-29T12:27:58Z

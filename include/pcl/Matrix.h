@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2019-01-21T12:06:07Z
+// pcl/Matrix.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -57,6 +57,7 @@
 #include <pcl/Defs.h>
 #include <pcl/Diagnostics.h>
 
+#include <pcl/Container.h>
 #include <pcl/Exception.h>
 #include <pcl/Math.h>
 #include <pcl/Memory.h>
@@ -118,7 +119,7 @@ namespace pcl
  * \sa GenericVector, \ref matrix_operators, \ref matrix_types
  */
 template <typename T>
-class PCL_CLASS GenericMatrix
+class PCL_CLASS GenericMatrix : public DirectContainer<T>
 {
 public:
 
@@ -3443,4 +3444,4 @@ typedef F80Matrix                   LDMatrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Matrix.h - Released 2019-09-29T12:27:26Z

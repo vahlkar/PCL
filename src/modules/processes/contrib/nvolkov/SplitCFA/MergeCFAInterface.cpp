@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard SplitCFA Process Module Version 01.00.06.0191
+// Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAInterface.cpp - Released 2019-01-21T12:06:42Z
+// MergeCFAInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -260,6 +260,8 @@ MergeCFAInterface::GUIData::GUIData( MergeCFAInterface& w )
    Global_Sizer.Add( MergeCFA3_Sizer );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedHeight();
 }
@@ -269,4 +271,4 @@ MergeCFAInterface::GUIData::GUIData( MergeCFAInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF MergeCFAInterface.cpp - Released 2019-09-29T12:27:58Z

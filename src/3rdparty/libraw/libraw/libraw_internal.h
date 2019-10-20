@@ -1,6 +1,6 @@
 /* -*- C++ -*-
  * File: libraw_internal.h
- * Copyright 2008-2018 LibRaw LLC (info@libraw.org)
+ * Copyright 2008-2019 LibRaw LLC (info@libraw.org)
  * Created: Sat Mar  8 , 2008
  *
  * LibRaw internal data structures (not visible outside)
@@ -115,6 +115,7 @@ typedef struct
   unsigned long long OlyID;
   unsigned tiff_nifds;
   int tiff_flip;
+  int metadata_blocks;
 } identify_data_t;
 
 typedef struct
@@ -131,6 +132,7 @@ typedef struct
   unsigned tiff_samples;
   unsigned tiff_bps;
   unsigned tiff_compress;
+  unsigned tiff_sampleformat;
   unsigned zero_after_ff;
   unsigned tile_width, tile_length, load_flags;
   unsigned data_error;
@@ -138,7 +140,7 @@ typedef struct
   long long posRAFData;
   unsigned lenRAFData;
   int fuji_total_lines, fuji_total_blocks, fuji_block_width, fuji_bits, fuji_raw_type;
- int pana_encoding, pana_bpp;
+  int pana_encoding, pana_bpp;
 } unpacker_data_t;
 
 typedef struct

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 01.02.06.0214
+// Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentProcess.cpp - Released 2019-01-21T12:06:42Z
+// CometAlignmentProcess.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -55,7 +55,6 @@
 #include "CometAlignmentParameters.h"
 #include "CometAlignmentInstance.h"
 #include "CometAlignmentInterface.h"
-#include "CometAlignmentModule.h" // for CometAlignmentModule::ReadableVersion();
 
 namespace pcl
 {
@@ -135,10 +134,7 @@ uint32 CometAlignmentProcess::Version () const
 
 String CometAlignmentProcess::Description () const
 {
-   return CometAlignmentModule::ReadableVersion () +
-           "<html><p>For more detailed information, please refer to the Release Information board on PixInsight Forum:<br/>"
-           "http://pixinsight.com/forum/index.php?topic=3980.0</html>";
-
+   return "";
 }
 
 const char** CometAlignmentProcess::IconImageXPM() const
@@ -172,4 +168,4 @@ ProcessImplementation* CometAlignmentProcess::Clone (const ProcessImplementation
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentProcess.cpp - Released 2019-01-21T12:06:42Z
+// EOF CometAlignmentProcess.cpp - Released 2019-09-29T12:27:58Z

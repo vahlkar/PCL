@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Position.cpp - Released 2019-01-21T12:06:21Z
+// pcl/Position.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -626,7 +626,7 @@ Vector Position::Geometric( const StarPosition& S )
    m_isStar = true;
 
    double sa, ca;
-   SinCos( Rad( S.alpha*15 ), sa, ca );
+   SinCos( Rad( S.alpha ), sa, ca );
    double sd, cd;
    SinCos( Rad( S.delta ), sd, cd );
 
@@ -1193,4 +1193,4 @@ Optional<double> Position::ApparentVisualMagnitude( EphemerisFile::Handle& H )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/Position.cpp - Released 2019-09-29T12:27:33Z

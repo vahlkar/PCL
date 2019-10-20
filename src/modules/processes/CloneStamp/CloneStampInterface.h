@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CloneStamp Process Module Version 01.00.02.0361
+// Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInterface.h - Released 2019-01-21T12:06:41Z
+// CloneStampInterface.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -80,47 +80,35 @@ public:
    CloneStampInterface();
    virtual ~CloneStampInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-
-   virtual void Execute();
-   virtual void Cancel();
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual bool IsDynamicInterface() const;
-
-   virtual void ExitDynamicMode();
-
-   virtual void DynamicMouseEnter( View& );
-   virtual void DynamicMouseLeave( View& );
-   virtual void DynamicMouseMove( View&, const DPoint&, unsigned buttons, unsigned modifiers );
-   virtual void DynamicMousePress( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers );
-   virtual void DynamicMouseRelease( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers );
-   virtual bool DynamicKeyPress( View& v, int key, unsigned modifiers );
-   virtual bool DynamicKeyRelease( View& v, int key, unsigned modifiers );
-
-   virtual bool RequiresDynamicUpdate( const View&, const DRect& ) const;
-   virtual void DynamicPaint( const View&, VectorGraphics&, const DRect& ) const;
-
-   virtual void SaveSettings() const;
-   virtual void LoadSettings();
-
-   virtual bool WantsMaskNotifications() const;
-   virtual void MaskUpdated( const View& v );
-   virtual void MaskEnabled( const View& v );
-   virtual void MaskDisabled( const View& v );
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
+   InterfaceFeatures Features() const override;
+   void Execute() override;
+   void Cancel() override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   bool IsDynamicInterface() const override;
+   void ExitDynamicMode() override;
+   void DynamicMouseEnter( View& ) override;
+   void DynamicMouseLeave( View& ) override;
+   void DynamicMouseMove( View&, const DPoint&, unsigned buttons, unsigned modifiers ) override;
+   void DynamicMousePress( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers ) override;
+   void DynamicMouseRelease( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers ) override;
+   bool DynamicKeyPress( View& v, int key, unsigned modifiers ) override;
+   bool DynamicKeyRelease( View& v, int key, unsigned modifiers ) override;
+   bool RequiresDynamicUpdate( const View&, const DRect& ) const override;
+   void DynamicPaint( const View&, VectorGraphics&, const DRect& ) const override;
+   void SaveSettings() const override;
+   void LoadSettings() override;
+   bool WantsMaskNotifications() const override;
+   void MaskUpdated( const View& v ) override;
+   void MaskEnabled( const View& v ) override;
+   void MaskDisabled( const View& v ) override;
 
    // -------------------------------------------------------------------------
 
@@ -152,11 +140,11 @@ public:
 
    struct ClonerAction
    {
-      ViewRef*        source;
+      ViewRef*        source = nullptr;
       BrushData       brush;
       Point           delta;
       cloner_sequence cloner;
-      Rect            bounds;
+      Rect            bounds = Rect( 0 );
 
       ClonerAction( View&, const BrushData&, const Point& );
       ClonerAction( const ClonerAction& );
@@ -169,28 +157,28 @@ public:
 
 private:
 
-   View*     targetView; // dynamic targets
-   View*     sourceView;
+   View*     targetView = nullptr; // dynamic targets
+   View*     sourceView = nullptr;
 
-   BrushData brush;      // current brush parameters
-   DPoint    delta;      // current target - source offset
-   DPoint    targetPos;  // current target position
+   BrushData brush;                    // current brush parameters
+   DPoint    delta = DPoint( 0 );      // current target - source offset
+   DPoint    targetPos = DPoint( 0 );  // current target position
 
-   bool      initialized;     // a source point has been selected for the 1st time
-   bool      selectingSource; // selecting a source view/point
-   bool      selectingTarget; // selecting a target point
+   bool      initialized;              // a source point has been selected for the 1st time
+   bool      selectingSource = true;   // selecting a source view/point
+   bool      selectingTarget = false;  // selecting a target point
 
-   bool      executing;       // the current instance is being executed
-   bool      onTarget;        // the mouse cursor is on the target view
-   bool      dragging;        // dragging the mouse
-   bool      imageChanged;    // the image has been changed during the current action
+   bool      executing = false;        // the current instance is being executed
+   bool      onTarget = false;         // the mouse cursor is on the target view
+   bool      dragging = false;         // dragging the mouse
+   bool      imageChanged = false;     // the image has been changed during the current action
 
-   Rect      regenRect;
+   Rect      regenRect = Rect( 0 );
 
    uint32    color;       // drawing color, cloner
    uint32    boundsColor; // drawing color, action boundaries
 
-   bool      showBounds;  // show action boundaries
+   bool      showBounds = false;  // show action boundaries
 
    Array<ImageVariant> swapTiles; // swap tile matrix
    int                 tileRows;
@@ -272,7 +260,7 @@ private:
 #endif
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
    void UpdateControls();
    void UpdateHistoryInfo();
@@ -303,4 +291,4 @@ PCL_END_LOCAL
 #endif   // __CloneStampInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInterface.h - Released 2019-01-21T12:06:41Z
+// EOF CloneStampInterface.h - Released 2019-09-29T12:27:57Z

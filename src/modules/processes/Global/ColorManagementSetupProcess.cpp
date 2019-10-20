@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0405
+// Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ColorManagementSetupProcess.cpp - Released 2019-01-21T12:06:41Z
+// ColorManagementSetupProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -72,7 +72,7 @@ ColorManagementSetupProcess* TheColorManagementSetupProcess = 0;
 
 // ----------------------------------------------------------------------------
 
-ColorManagementSetupProcess::ColorManagementSetupProcess() : MetaProcess()
+ColorManagementSetupProcess::ColorManagementSetupProcess()
 {
    TheColorManagementSetupProcess = this;
 
@@ -429,4 +429,4 @@ int ColorManagementSetupProcess::ProcessCommandLine( const StringList& argv ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupProcess.cpp - Released 2019-01-21T12:06:41Z
+// EOF ColorManagementSetupProcess.cpp - Released 2019-09-29T12:27:57Z

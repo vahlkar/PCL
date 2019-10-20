@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG2000 File Format Module Version 01.00.02.0351
+// Standard JPEG2000 File Format Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// JPEG2000OptionsDialog.h - Released 2019-01-21T12:06:31Z
+// JPEG2000OptionsDialog.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -76,10 +76,6 @@ public:
 
    JPEG2000OptionsDialog( const ImageOptions&, const JPEG2000ImageOptions&, bool isJPC );
 
-   virtual ~JPEG2000OptionsDialog()
-   {
-   }
-
    ImageOptions         options;
    JPEG2000ImageOptions jp2Options;
 
@@ -129,4 +125,4 @@ protected:
 #endif   // __JPEG2000OptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000OptionsDialog.h - Released 2019-01-21T12:06:31Z
+// EOF JPEG2000OptionsDialog.h - Released 2019-09-29T12:27:43Z

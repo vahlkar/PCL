@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0405
+// Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2019-01-21T12:06:41Z
+// PreferencesInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -132,6 +132,8 @@ struct MainWindowPreferences
    pcl_bool    expandMostUsedAtStartup;
    pcl_bool    expandFavoritesAtStartup;
    pcl_bool    openURLsWithInternalBrowser;
+   pcl_bool    openResourcesOnNewWebBrowserWindows;
+   pcl_bool    privateWebBrowsingMode;
    String      wallpaperFile01;
    String      wallpaperFile02;
    String      wallpaperFile03;
@@ -179,6 +181,7 @@ struct ImageWindowPreferences
    StringList  swapDirectories;
    pcl_bool    swapCompression;
    String      downloadsDirectory;
+   String      proxyURL;
    pcl_bool    followDownloadLocations;
    pcl_bool    verboseNetworkOperations;
    pcl_bool    showCaptionCurrentChannels;
@@ -289,4 +292,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2019-01-21T12:06:41Z
+// EOF PreferencesInstance.h - Released 2019-09-29T12:27:57Z

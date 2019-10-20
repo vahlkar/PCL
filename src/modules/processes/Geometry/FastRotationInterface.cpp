@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0404
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FastRotationInterface.cpp - Released 2019-01-21T12:06:41Z
+// FastRotationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -234,14 +234,14 @@ FastRotationInterface::GUIData::GUIData( FastRotationInterface& w )
 
    Transform_GroupBox.SetTitle( "Transformation" );
    Transform_GroupBox.SetSizer( Transform_Sizer );
-   Transform_GroupBox.AdjustToContents();
-   Transform_GroupBox.SetMinSize();
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
    Global_Sizer.Add( Transform_GroupBox );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -251,4 +251,4 @@ FastRotationInterface::GUIData::GUIData( FastRotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF FastRotationInterface.cpp - Released 2019-09-29T12:27:57Z

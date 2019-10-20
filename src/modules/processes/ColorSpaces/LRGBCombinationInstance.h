@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0374
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// LRGBCombinationInstance.h - Released 2019-01-21T12:06:41Z
+// LRGBCombinationInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -69,16 +69,16 @@ public:
    LRGBCombinationInstance( const MetaProcess* );
    LRGBCombinationInstance( const LRGBCombinationInstance& );
 
-   virtual bool Validate( pcl::String& info );
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View& v, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   bool Validate( pcl::String& info ) override;
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View& v, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
@@ -105,4 +105,4 @@ private:
 #endif   // __LRGBCombinationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInstance.h - Released 2019-01-21T12:06:41Z
+// EOF LRGBCombinationInstance.h - Released 2019-09-29T12:27:57Z

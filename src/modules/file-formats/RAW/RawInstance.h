@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 01.05.02.0428
+// Standard RAW File Format Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// RawInstance.h - Released 2019-01-21T12:06:31Z
+// RawInstance.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -77,28 +77,28 @@ public:
 
    virtual ~RawInstance() noexcept( false );
 
-   virtual ImageDescriptionArray Open( const String& filePath, const IsoString& hints );
-   virtual bool IsOpen() const;
-   virtual String FilePath() const;
-   virtual void Close();
+   ImageDescriptionArray Open( const String& filePath, const IsoString& hints ) override;
+   bool IsOpen() const override;
+   String FilePath() const override;
+   void Close() override;
 
-   virtual String ImageFormatInfo() const;
+   String ImageFormatInfo() const override;
 
-   virtual ICCProfile ReadICCProfile();
+   ICCProfile ReadICCProfile() override;
 
    // We synthesize critical FITS keywords: TIME-OBS, EXPTIME, FOCALLEN, APTDIA
-   virtual FITSKeywordArray ReadFITSKeywords();
+   FITSKeywordArray ReadFITSKeywords() override;
 
-   virtual PropertyDescriptionArray ImageProperties();
-   virtual Variant ReadImageProperty( const IsoString& property );
+   PropertyDescriptionArray ImageProperties() override;
+   Variant ReadImageProperty( const IsoString& property ) override;
 
-   virtual void ReadImage( Image& );
-   virtual void ReadImage( DImage& );
-   virtual void ReadImage( UInt8Image& );
-   virtual void ReadImage( UInt16Image& );
-   virtual void ReadImage( UInt32Image& );
+   void ReadImage( Image& ) override;
+   void ReadImage( DImage& ) override;
+   void ReadImage( UInt8Image& ) override;
+   void ReadImage( UInt16Image& ) override;
+   void ReadImage( UInt32Image& ) override;
 
-   virtual UInt8Image ReadThumbnail();
+   UInt8Image ReadThumbnail() override;
 
 private:
 
@@ -140,4 +140,4 @@ private:
 #endif   // __RawInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.h - Released 2019-01-21T12:06:31Z
+// EOF RawInstance.h - Released 2019-09-29T12:27:43Z

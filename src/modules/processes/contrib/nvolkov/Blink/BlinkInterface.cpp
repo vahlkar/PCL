@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Blink Process Module Version 01.02.02.0300
+// Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkInterface.cpp - Released 2019-01-21T12:06:42Z
+// BlinkInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -66,6 +66,7 @@
 #include <pcl/GlobalSettings.h>
 #include <pcl/Graphics.h>
 #include <pcl/MessageBox.h>
+#include <pcl/MetaModule.h>
 #include <pcl/Random.h>
 #include <pcl/Settings.h>
 #include <pcl/StdStatus.h>  // for progress monitor
@@ -86,13 +87,6 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 static int PreviewSize = 202;
-
-// ----------------------------------------------------------------------------
-
-#if debug
-int BlinkInterface::BlinkData::m_total = 0;
-int BlinkInterface::FileData::m_total = 0;
-#endif
 
 // ----------------------------------------------------------------------------
 
@@ -176,11 +170,6 @@ BlinkInterface::FileData::FileData( FileFormatInstance& file,
    m_isSTFStatisticsEqualToReal( false ),
    m_isRealPixelData( realPixelData )
 {
-#if debug
-   m_id = m_total;
-   Console().WriteLn( String().Format( "Create FileData Id %i", m_id ) );
-   m_total++;
-#endif
    m_format = new FileFormat( file.Format() );
 
    if ( m_format->UsesFormatSpecificData() )
@@ -191,21 +180,10 @@ BlinkInterface::FileData::FileData( FileFormatInstance& file,
 
    if ( m_format->CanStoreICCProfiles() )
       file.ReadICCProfile( m_profile );
-#if debug
-   Console().WriteLn( String().Format( "FileData End") );
-#endif
 }
 
 BlinkInterface::FileData::~FileData()
 {
-#if debug
-   Console().WriteLn( String().Format( "~FileData( Id = %i, total = %i )<br>{", m_id, m_total ) );
-   Console().WriteLn( "format   = " + String( m_format != nullptr ) );
-   Console().WriteLn( "image    = " + String( m_image != nullptr ) );
-   Console().WriteLn( "statSTF  = " + String( !m_statSTF.IsEmpty() ) );
-   Console().WriteLn( "statReal = " + String( !m_statReal.IsEmpty() ) );
-   m_total--;
-#endif
    if ( m_format != nullptr )
    {
       if ( m_fsData != nullptr )
@@ -215,9 +193,6 @@ BlinkInterface::FileData::~FileData()
 
    if ( m_image != nullptr )
       delete m_image, m_image = nullptr;
-#if debug
-   Console().WriteLn( "}~FileData" );
-#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -235,25 +210,11 @@ BlinkInterface::BlinkData::BlinkData() :
    m_blinkMaster( 0 ),
    m_isBlinkMaster( false )
 {
-#if debug
-   m_id = m_total;
-   m_total++;
-#endif
 }
 
 BlinkInterface::BlinkData::~BlinkData()
 {
-#if debug
-   Console().WriteLn( "<br>~BlinkData() Start" );
-#endif
-
    Clear();
-
-#if debug
-   Console().WriteLn( String().Format( "Delete BlinkData Id %i", m_id ) );
-   m_total--;
-   Console().WriteLn( "BlinkData() Exit" );
-#endif
 }
 
 bool BlinkInterface::BlinkData::Add( const String& filePath )
@@ -311,10 +272,6 @@ void BlinkInterface::BlinkData::Remove( int row )
 {
    const int fileNumber = FileNumberGet( row );
 
-#if debug
-   Console().WriteLn( String().Format( "Delete m_filesData record # %d", fileNumber ) );
-#endif
-
    m_filesData.Destroy( m_filesData.At( fileNumber ) );
 
    if ( row == m_blinkMaster )
@@ -329,49 +286,25 @@ void BlinkInterface::BlinkData::Remove( int row )
    {
       int n = FileNumberGet( i );
       if ( n > fileNumber ) // Correcting links only for fileNumbers great then curent Removed file #
-      {
          TheBlinkInterface->GUI->Files_TreeBox.Child( i )->SetText( 1, String( --n ) );
-
-#if debug
-         Console().WriteLn( "Files_TreeBox: Link row: " + String( i ) + " to fileNumber: " + String( n ) );
-#endif
-      }
    }
    TheBlinkInterface->UpdateFileNumbers();
-
-#if debug
-   Console().WriteLn( String().Format( "m_filesData # %d was deleted", fileNumber ) );
-#endif
 
    CheckScreen();
 }
 
 void BlinkInterface::BlinkData::Clear()
 {
-#if debug
-   Console().WriteLn( "Clear() Start" );
-   Console().WriteLn( String().Format( "Total m_filesData records in memory: %u", m_filesData.Length() ) );
-#endif
-
    m_filesData.Destroy();
    m_isBlinkMaster = false;
    m_blinkMaster = 0;
    m_currentImage = 0;
 
    CheckScreen();
-
-#if debug
-   Console().WriteLn( "Clear() Exit" );
-#endif
 }
 
 void BlinkInterface::BlinkData::GetStatsForSTF( int fileNumber )
 {
-#if debug
-   Console().WriteLn( String().Format( "<br>Call GetStatsForSTF( fileNumber = %d )", fileNumber ) );
-   m_total--;
-#endif
-
    FileData& fd = m_filesData[fileNumber];
    if ( !fd.m_statSTF.IsEmpty() )
       return;
@@ -548,18 +481,11 @@ void BlinkInterface::BlinkData::DisableSTF()
 
 bool BlinkInterface::BlinkData::CheckScreen()
 {
-#if debug
-   Console().WriteLn( "<br>Call CheckScreen() with files = " + String( m_filesData.Length() ) + ", screen = " + String( !m_screen.IsNull() ) );
-#endif
-
    if ( m_screen.IsNull() ) // must check because user can close BlinkScreen by pushing red X on it.
       return false;
 
    if ( m_filesData.IsEmpty() ) // close Screen if no files
    {
-#if debug
-      Console().WriteLn( "Close BlinkScreen." );
-#endif
       m_screen.Close();
       m_screen = ImageWindow::Null();
       return false;
@@ -625,10 +551,6 @@ void BlinkInterface::BlinkData::Prev()
 
 void BlinkInterface::BlinkData::UpdateScreen( int fileNumber )
 {
-#if debug
-   Console().WriteLn( "UpdateScreen to fileNumber: " + String( fileNumber ) );
-#endif
-
    if ( m_screen.IsNull() )
    {
       if ( m_filesData.IsEmpty() )
@@ -677,21 +599,12 @@ void BlinkInterface::BlinkData::ShowNextImage()
          if ( TheBlinkInterface->GUI->Files_TreeBox.Child( m_blinkMaster )->Icon( 0 ).IsNull() )
          {
             //row of blinkMaster chenged >> find row with blinkMaster
-#if debug
-            Console().WriteLn( "row of blinkMaster was:" + String( m_blinkMaster ) );
-            Console().WriteLn( "row chenged >> find row with blinkMaster" );
-#endif
-            for ( int i = 0; i < TheBlinkInterface->GUI->Files_TreeBox.NumberOfChildren(); i++)
-            {
+            for ( int i = 0; i < TheBlinkInterface->GUI->Files_TreeBox.NumberOfChildren(); ++i )
                if ( !TheBlinkInterface->GUI->Files_TreeBox.Child( i )->Icon( 0 ).IsNull() )
                {
-#if debug
-                  Console().WriteLn( "blinkMaster found in row:" + String( i ) );
-#endif
                   m_blinkMaster = i;
                   break;
                }
-            }
          }
          Update( m_blinkMaster );
       }
@@ -821,10 +734,6 @@ void BlinkInterface::LoadSettings()
    Settings::Read( SettingsKey() + "_ReadStatsFile",      m_writeStatsFile );
 
    LoadVideoSettings();
-
-#if debug
-   Console().WriteLn( "LoadSettings()" );
-#endif
 }
 
 void BlinkInterface::LoadVideoSettings()
@@ -870,13 +779,6 @@ void BlinkInterface::ImageDeleted( const View& view )
 
 void BlinkInterface::Init()
 {
-#if debug
-   Console().WriteLn( "Init() Start" );
-   Console().WriteLn( String().Format( "files = %u", m_blink.m_filesData.Length() ) );
-   Console().WriteLn( String().Format( "currentImage = %u", m_blink.m_currentImage ) );
-   Console().WriteLn( String().Format( "blinkMaster = %i", m_blink.m_blinkMaster ) );
-#endif
-
    Disable();  // disable GUI during initialization
 
    bool noFiles = m_blink.m_filesData.IsEmpty(); // noFiles = disabled = no files
@@ -916,10 +818,6 @@ void BlinkInterface::Init()
    GeneratePreview();
 
    Enable();
-
-#if debug
-   Console().WriteLn( "Init() Exit" );
-#endif
 }
 
 void BlinkInterface::TranslucentPlanets()
@@ -1040,10 +938,6 @@ void BlinkInterface::GeneratePreview()
 
 void BlinkInterface::UpdateFileNumbers()
 {
-#if debug
-   Console().WriteLn( "UpdateFileNumbers()" );
-#endif
-
    GUI->Files_TreeBox.DisableHeaderSorting();
    for ( int i = 0; i < GUI->Files_TreeBox.NumberOfChildren(); i++ )
    {
@@ -1305,20 +1199,11 @@ void BlinkInterface::FileCloseSelected()
 
    GUI->Files_TreeBox.DisableUpdates();
    for ( int i = int( m_blink.m_filesData.Length() ); --i >= 0; )
-   {
-#if debug
-      Console().WriteLn( String().Format( "Checking for Close file # %i", i ) );
-#endif
       if ( GUI->Files_TreeBox.Child( i )->IsSelected() )
       {
-#if debug
-         Console().WriteLn(String().Format( "Close file # %i", i ) );
-#endif
-
          m_blink.Remove( i );
          GUI->Files_TreeBox.Remove( i );
       }
-   }
    GUI->Files_TreeBox.EnableUpdates();
 
    if ( m_blink.m_filesData.Length() < 2 )
@@ -1506,16 +1391,7 @@ void BlinkInterface::__Brightness_Click( Button& sender, bool checked )
 
 void BlinkInterface::__Files_NodeSelectionUpdated( TreeBox& sender )
 {
-#if debug
-   Console().WriteLn( "__Files_NodeSelectionUpdated<flush>" );
-#endif
-
    m_blink.m_currentImage = sender.ChildIndex( sender.CurrentNode() );
-
-#if debug
-   Console().WriteLn( "Set currentImage to: " + String( m_blink.m_currentImage ) );
-#endif
-
    m_blink.UpdateScreen();
 }
 
@@ -1539,33 +1415,19 @@ void BlinkInterface::__Files_MouseWheel( Control& sender, const Point& pos, int 
 
 void BlinkInterface::__Files_NodeDoubleClicked( TreeBox& sender, TreeBox::Node& node, int col  )
 {
-#if debug
-   Console().WriteLn( "__Files_NodeDoubleClicked<flush>" );
-#endif
    if ( m_blink.m_isBlinkMaster )
    {
       sender.Child( m_blink.m_blinkMaster )->SetIcon( 0, Bitmap() );
       if ( m_blink.m_blinkMaster == sender.ChildIndex( &node ) )
       {
-#if debug
-         Console().WriteLn( "Disable blinkMaster<flush>" );
-#endif
          m_blink.m_isBlinkMaster = false;
          return;
       }
    }
 
-#if debug
-   Console().WriteLn( "Enable blinkMaster<flush>" );
-#endif
-
    m_blink.m_isBlinkMaster = true;
    m_blink.m_blinkMaster = sender.ChildIndex( &node );
    node.SetIcon( 0, Bitmap( ScaledResource( ":/icons/repeat.png" ) ) );
-
-#if debug
-   Console().WriteLn( "blinkMaster set to row: " + String( m_blink.m_blinkMaster ) );
-#endif
 }
 
 void BlinkInterface::__FileButton_Click( Button& sender, bool /*checked*/ )
@@ -1780,23 +1642,13 @@ void BlinkInterface::__Hide( Control& /*sender*/ )
 
 void BlinkInterface::__UpdateAnimation_Timer( Timer& timer )
 {
-#if debug
-   ElapsedTime t;
-#endif
-
    if ( m_blink.CheckScreen() )
    {
       m_blink.ShowNextImage();
       timer.Start();
    }
    else
-   {
       Stop();
-   }
-
-#if debug
-   GUI->DebugInfo_Label.SetText( String().Format( "%.3f", time ) + "+" + String().Format( "%.3f", t() ) );
-#endif
 }
 
 void BlinkInterface::__UpdatePreview_Timer( Timer& timer )
@@ -1865,37 +1717,17 @@ String BlinkInterface::UniqueFilePath( const String& fileName, const String& dir
 
 int BlinkInterface::FileNumberGet( const int row ) //extract file # from GUI TreeBox
 {
-   const int fileNumber = TheBlinkInterface->GUI->Files_TreeBox.Child( row )->Text( 1 ).ToInt( 10 );
-
-#if debug
-   Console().WriteLn( "FileNumberGet() Convert Row # " + String( row ) + ", to fileNumber: " + String( fileNumber ) );
-#endif
-
-   return fileNumber;
+   return TheBlinkInterface->GUI->Files_TreeBox.Child( row )->Text( 1 ).ToInt( 10 );
 }
 
 String BlinkInterface::RowToStringFileNumber( const int row ) //Convert fileNumber to String with additional "0"
 {
    const int fileNumber = FileNumberGet( row );
-
    String s = String( fileNumber );
-
-#if debug
-   Console().WriteLn( "RowToStringFileNumber() TreeBox row: " + String( row ) + " link to fileNumber: " + s );
-#endif
-
    s.Prepend( '0', String( TheBlinkInterface->GUI->Files_TreeBox.NumberOfChildren() ).Length() - s.Length() );
    TheBlinkInterface->GUI->Files_TreeBox.Child( row )->SetText( 2, s );
    return s;
 }
-
-#define PrintableVersion_1( a, b, c, d ) \
-                              String( #a ) + '.' + #b + '.' + #c + '.' + #d
-
-#define PrintableVersion()    PrintableVersion_1( MODULE_VERSION_MAJOR,       \
-                                                  MODULE_VERSION_MINOR,       \
-                                                  MODULE_VERSION_REVISION,    \
-                                                  MODULE_VERSION_BUILD )
 
 FileFormatInstance BlinkInterface::CreateImageFile( int index, const String& history, const String& dir )
 {
@@ -1927,7 +1759,7 @@ FileFormatInstance BlinkInterface::CreateImageFile( int index, const String& his
       if ( !history.IsEmpty() )
       {
          keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), "Processed with " + PixInsightVersion::AsString() ) );
-         keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), "Processed with Blink module " + PrintableVersion() ) );
+         keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), "Processed with " + Module->ReadableVersion() ) );
          keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), history ) );
       }
       outputFile.WriteFITSKeywords( keywords );
@@ -1945,10 +1777,8 @@ void BlinkInterface::ResetFilesTreeBox()
    GUI->Files_TreeBox.SetNumberOfColumns( 3 );
    GUI->Files_TreeBox.HideHeader();
    GUI->Files_TreeBox.Sort( 2 );       // sort by fileNumber with preped '0'
-#ifndef debug
    GUI->Files_TreeBox.HideColumn( 1 ); // hidden column to store link from GUI to fileData
    GUI->Files_TreeBox.HideColumn( 2 ); // hidden column to store string representation of link from GUI to fileData
-#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -1990,11 +1820,6 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    RGBLinked_Button.SetScaledFixedSize( 22, 22 );
    RGBLinked_Button.SetToolTip( "<p>Link RGB channels. Enabled only for RGB images.</p>" );
    RGBLinked_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__Brightness_Click, w );
-
-#if debug
-   DebugInfo_Label.SetText( "Debug" );
-   DebugInfo_Label.Sizer().AddStretch();
-#endif
 
    PreviousImage_Button.SetIcon( Bitmap( w.ScaledResource( ":/icons/left.png" ) ) );
    PreviousImage_Button.SetScaledFixedSize( 22, 22 );
@@ -2042,11 +1867,8 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    Files_TreeBox.SetScaledMinWidth( 250 );
    Files_TreeBox.HideHeader();
    Files_TreeBox.Sort( 2 ); // sort by fileNumber with preped '0'
-
-#ifndef debug
    Files_TreeBox.HideColumn( 1 ); // hidden column to store link from GUI to fileData
    Files_TreeBox.HideColumn( 2 ); // hidden column to store string representation of link from GUI to fileData
-#endif
 
    Files_TreeBox.EnableMultipleSelections();
    Files_TreeBox.DisableRootDecoration();
@@ -2117,12 +1939,7 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    Preview_sizer.Add( Preview_ScrollBox );
    Preview_sizer.Add( STF_Sizer );
 
-#if debug
-   ActionControl_Sizer.Add( DebugInfo_Label );
-#else
    ActionControl_Sizer.AddStretch();
-#endif
-   //ActionControl_Sizer.AddSpacing( 4 );
    ActionControl_Sizer.Add( PreviousImage_Button );
    ActionControl_Sizer.Add( Play_Button );
    ActionControl_Sizer.Add( NextImage_Button ) ;
@@ -2164,6 +1981,8 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    Global_Sizer.Add( RightPanel_Control, 100 );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 
    w.OnShow( (Control::event_handler)&BlinkInterface::__Show, w );
@@ -2183,4 +2002,4 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF BlinkInterface.cpp - Released 2019-09-29T12:27:58Z

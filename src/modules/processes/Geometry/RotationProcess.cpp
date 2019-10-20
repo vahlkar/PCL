@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0404
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// RotationProcess.cpp - Released 2019-01-21T12:06:41Z
+// RotationProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -68,7 +68,7 @@ RotationProcess* TheRotationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-RotationProcess::RotationProcess() : MetaProcess()
+RotationProcess::RotationProcess()
 {
    TheRotationProcess = this;
 
@@ -84,40 +84,56 @@ RotationProcess::RotationProcess() : MetaProcess()
    TheRTNoGUIMessagesParameter = new NoGUIMessages( this );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString RotationProcess::Id() const
 {
    return "Rotation";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString RotationProcess::Category() const
 {
    return "Geometry";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 RotationProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String RotationProcess::Description() const
 {
    return "";
 }
 
+// ----------------------------------------------------------------------------
+
 const char** RotationProcess::IconImageXPM() const
 {
    return RotationIcon_XPM;
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* RotationProcess::DefaultInterface() const
 {
    return TheRotationInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* RotationProcess::Create() const
 {
    return new RotationInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* RotationProcess::Clone( const ProcessImplementation& p ) const
 {
@@ -130,4 +146,4 @@ ProcessImplementation* RotationProcess::Clone( const ProcessImplementation& p ) 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationProcess.cpp - Released 2019-01-21T12:06:41Z
+// EOF RotationProcess.cpp - Released 2019-09-29T12:27:57Z
