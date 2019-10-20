@@ -618,13 +618,13 @@ void INDIMountInstance::GetPierSide() {
             break;
          }
       }
-      else
+      /*else
       {
          // pier side fallback
          // If the INDI mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
          double hourAngle = AlignmentModel::RangeShiftHourAngle(o_currentLST - o_currentRA);
          p_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
-      }
+      }*/
 
 }
 
@@ -867,7 +867,7 @@ void AbstractINDIMountExecution::Perform()
     	  // Apply corrected position to simulate an unaligned telescope
     	  double trueTargetRa = targetRA;
     	  double trueTargetDec = targetDec;
-        m_instance.GetPierSide();
+          m_instance.GetPierSide();
     	  ApplyPointingModelCorrection(aModel.Ptr(), trueTargetRa, trueTargetDec);
 
           StartMountEvent( targetRA, m_instance.o_currentRA, targetDec, m_instance.o_currentDec, m_instance.p_command );

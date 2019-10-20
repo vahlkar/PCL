@@ -50,7 +50,8 @@
 #include "Asserts.jsh"
 #include "INDI-helper.jsh"
 
-#define CCD_DEVICE_NAME "CCD Imager Simulator @ localhost"
+#define CCD_DEVICE_NAME "CCD Imager Simulator @ klaus-Inspiron-1720"
+//#define CCD_DEVICE_NAME "CCD Simulator @ klaus-Inspiron-1720"
 
 function INDICCDControllerTests( parent )
 {

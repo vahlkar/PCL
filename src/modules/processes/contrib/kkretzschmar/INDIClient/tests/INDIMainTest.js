@@ -55,6 +55,7 @@ function INDICCDTestSuite()
    this.__base__( "INDICCDTestSuite" );
 
    this.deviceController = new INDIDeviceController;
+   this.deviceController.serverHostName = "klaus-Inspiron-1720"
    this.timer = new ElapsedTime;
 
    this.add( new INDICCDControllerTests( this ) );
@@ -134,6 +135,7 @@ function INDIMountTestSuite()
    this.__base__( "INDIMountTestSuite" );
 
    this.deviceController = new INDIDeviceController;
+   this.deviceController.serverHostName = "klaus-Inspiron-1720"
    this.timer = new ElapsedTime;
 
    this.add( new INDIMountControllerTests( this ) );
@@ -206,9 +208,9 @@ function INDIMountTestSuite()
 };
 
 // run CCD tests
-INDICCDTestSuite.prototype = new Test;
+//INDICCDTestSuite.prototype = new Test;
 
-(new INDICCDTestSuite).run();
+//(new INDICCDTestSuite).run();
 
 // run Mount tests
 INDIMountTestSuite.prototype = new Test;

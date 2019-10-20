@@ -36,6 +36,7 @@
     <ProjectGuid>{E5FCF03A-4C74-4064-8938-6589E4EDF525}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -110,9 +111,11 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <FloatingPointModel>Precise</FloatingPointModel>
-      <PrecompiledHeader></PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
@@ -120,7 +123,8 @@
       <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\INDIClient-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile></ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
@@ -151,9 +155,11 @@
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Precise</FloatingPointModel>
-      <PrecompiledHeader></PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
@@ -161,7 +167,8 @@
       <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR32)\INDIClient-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile></ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
@@ -181,31 +188,35 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;C:\Users\Klaus\source\repos\indigo\indigo_libs;C:\Users\Klaus\source\repos\indigo\indigo_windows\indigo_client\externals\pthreads4w\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader></PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;indigo_client.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;libpthreadVC3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\INDIClient-pxm.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile></ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(PCLLIBDIR64);C:\Users\Klaus\source\repos\kkretzschmar\indigo\indigo_windows\x64\Debug;C:\Users\Klaus\source\repos\kkretzschmar\indigo\indigo_windows\indigo_client\externals\pthreads4w\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>$(Platform)\$(Configuration)\$(ProjectName).lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SetChecksum>true</SetChecksum>
     </Link>
     <PostBuildEvent>
-      <Command>signtool.exe sign /a /t http://timestamp.verisign.com/scripts/timstamp.dll /v $(TargetDir)$(TargetFileName)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -217,7 +228,8 @@
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader></PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -227,7 +239,8 @@
       <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR32)\INDIClient-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile></ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
       <ImportLibrary>$(Platform)\$(Configuration)\$(ProjectName).lib</ImportLibrary>
@@ -239,68 +252,47 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Alignment.cpp"/>
-    <ClCompile Include="..\..\IINDIProperty.cpp"/>
-    <ClCompile Include="..\..\INDI\base64.c"/>
-    <ClCompile Include="..\..\INDI\baseclient.cpp"/>
-    <ClCompile Include="..\..\INDI\basedevice.cpp"/>
-    <ClCompile Include="..\..\INDI\indicom.c"/>
-    <ClCompile Include="..\..\INDI\indiproperty.cpp"/>
-    <ClCompile Include="..\..\INDI\indistandardproperty.cpp"/>
-    <ClCompile Include="..\..\INDI\lilxml.c"/>
-    <ClCompile Include="..\..\INDICCDFrameInstance.cpp"/>
-    <ClCompile Include="..\..\INDICCDFrameInterface.cpp"/>
-    <ClCompile Include="..\..\INDICCDFrameParameters.cpp"/>
-    <ClCompile Include="..\..\INDICCDFrameProcess.cpp"/>
-    <ClCompile Include="..\..\INDIClient.cpp"/>
-    <ClCompile Include="..\..\INDIClientModule.cpp"/>
-    <ClCompile Include="..\..\INDIDeviceControllerInstance.cpp"/>
-    <ClCompile Include="..\..\INDIDeviceControllerInterface.cpp"/>
-    <ClCompile Include="..\..\INDIDeviceControllerParameters.cpp"/>
-    <ClCompile Include="..\..\INDIDeviceControllerProcess.cpp"/>
-    <ClCompile Include="..\..\INDIMountInstance.cpp"/>
-    <ClCompile Include="..\..\INDIMountInterface.cpp"/>
-    <ClCompile Include="..\..\INDIMountParameters.cpp"/>
-    <ClCompile Include="..\..\INDIMountProcess.cpp"/>
+    <ClCompile Include="..\..\Alignment.cpp" />
+    <ClCompile Include="..\..\IIndigoProperty.cpp" />
+    <ClCompile Include="..\..\INDICCDFrameInstance.cpp" />
+    <ClCompile Include="..\..\INDICCDFrameInterface.cpp" />
+    <ClCompile Include="..\..\INDICCDFrameParameters.cpp" />
+    <ClCompile Include="..\..\INDICCDFrameProcess.cpp" />
+    <ClCompile Include="..\..\INDIClient.cpp" />
+    <ClCompile Include="..\..\INDIClientModule.cpp" />
+    <ClCompile Include="..\..\INDIDeviceControllerInstance.cpp" />
+    <ClCompile Include="..\..\INDIDeviceControllerInterface.cpp" />
+    <ClCompile Include="..\..\INDIDeviceControllerParameters.cpp" />
+    <ClCompile Include="..\..\INDIDeviceControllerProcess.cpp" />
+    <ClCompile Include="..\..\IndigoClient.cpp" />
+    <ClCompile Include="..\..\INDIMountInstance.cpp" />
+    <ClCompile Include="..\..\INDIMountInterface.cpp" />
+    <ClCompile Include="..\..\INDIMountParameters.cpp" />
+    <ClCompile Include="..\..\INDIMountProcess.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Alignment.h"/>
-    <ClInclude Include="..\..\DeviceConfigBase.h"/>
-    <ClInclude Include="..\..\IINDIProperty.h"/>
-    <ClInclude Include="..\..\INDI\ClientListener.h"/>
-    <ClInclude Include="..\..\INDI\IClientListener.h"/>
-    <ClInclude Include="..\..\INDI\PCLClientListener.h"/>
-    <ClInclude Include="..\..\INDI\base64.h"/>
-    <ClInclude Include="..\..\INDI\base64_luts.h"/>
-    <ClInclude Include="..\..\INDI\baseclient.h"/>
-    <ClInclude Include="..\..\INDI\basedevice.h"/>
-    <ClInclude Include="..\..\INDI\indiapi.h"/>
-    <ClInclude Include="..\..\INDI\indibase.h"/>
-    <ClInclude Include="..\..\INDI\indibasetypes.h"/>
-    <ClInclude Include="..\..\INDI\indicom.h"/>
-    <ClInclude Include="..\..\INDI\indidevapi.h"/>
-    <ClInclude Include="..\..\INDI\indiproperty.h"/>
-    <ClInclude Include="..\..\INDI\indistandardproperty.h"/>
-    <ClInclude Include="..\..\INDI\lilxml.h"/>
-    <ClInclude Include="..\..\INDI\locale_compat.h"/>
-    <ClInclude Include="..\..\INDICCDFrameInstance.h"/>
-    <ClInclude Include="..\..\INDICCDFrameInterface.h"/>
-    <ClInclude Include="..\..\INDICCDFrameParameters.h"/>
-    <ClInclude Include="..\..\INDICCDFrameProcess.h"/>
-    <ClInclude Include="..\..\INDIClient.h"/>
-    <ClInclude Include="..\..\INDIClientModule.h"/>
-    <ClInclude Include="..\..\INDIDeviceControllerInstance.h"/>
-    <ClInclude Include="..\..\INDIDeviceControllerInterface.h"/>
-    <ClInclude Include="..\..\INDIDeviceControllerParameters.h"/>
-    <ClInclude Include="..\..\INDIDeviceControllerProcess.h"/>
-    <ClInclude Include="..\..\INDIMountInstance.h"/>
-    <ClInclude Include="..\..\INDIMountInterface.h"/>
-    <ClInclude Include="..\..\INDIMountParameters.h"/>
-    <ClInclude Include="..\..\INDIMountProcess.h"/>
-    <ClInclude Include="..\..\INDIParamListTypes.h"/>
-    <ClInclude Include="..\..\ModuleParameterRegistration.h"/>
+    <ClInclude Include="..\..\Alignment.h" />
+    <ClInclude Include="..\..\DeviceConfigBase.h" />
+    <ClInclude Include="..\..\IIndigoProperty.h" />
+    <ClInclude Include="..\..\INDICCDFrameInstance.h" />
+    <ClInclude Include="..\..\INDICCDFrameInterface.h" />
+    <ClInclude Include="..\..\INDICCDFrameParameters.h" />
+    <ClInclude Include="..\..\INDICCDFrameProcess.h" />
+    <ClInclude Include="..\..\INDIClient.h" />
+    <ClInclude Include="..\..\INDIClientModule.h" />
+    <ClInclude Include="..\..\INDIDeviceControllerInstance.h" />
+    <ClInclude Include="..\..\INDIDeviceControllerInterface.h" />
+    <ClInclude Include="..\..\INDIDeviceControllerParameters.h" />
+    <ClInclude Include="..\..\INDIDeviceControllerProcess.h" />
+    <ClInclude Include="..\..\IndigoClient.h" />
+    <ClInclude Include="..\..\INDIMountInstance.h" />
+    <ClInclude Include="..\..\INDIMountInterface.h" />
+    <ClInclude Include="..\..\INDIMountParameters.h" />
+    <ClInclude Include="..\..\INDIMountProcess.h" />
+    <ClInclude Include="..\..\INDIParamListTypes.h" />
+    <ClInclude Include="..\..\ModuleParameterRegistration.h" />
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
