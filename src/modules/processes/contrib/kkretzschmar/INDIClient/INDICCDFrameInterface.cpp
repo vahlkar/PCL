@@ -77,7 +77,7 @@ class SimpleGetStringDialog : public Dialog
 {
 public:
 
-   SimpleGetStringDialog( const String& label, const String& text = String(), const String& title = "INDICCDFrame" ) :
+   SimpleGetStringDialog( const String& label, const String& text = String(), const String& title = "INDICCDFrame" )
    {
       Text_Label.SetText( label );
       Text_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
