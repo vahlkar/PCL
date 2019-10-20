@@ -4,22 +4,19 @@
 # PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-09-30T11:28:15.080Z
+# Generated on .... 2019-10-20T10:45:45.432Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc15
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Additional preprocessor definitions:
-# _CRT_SECURE_NO_WARNINGS
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>e02b22a4-8d57-480a-9bf6-6262d8da391e</UniqueIdentifier>
+      <UniqueIdentifier>3d65a1f9-31b4-4f8b-8ddb-53a021b3bb06</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>83e7498c-8b95-4096-8ed1-f9ac1b59aeb2</UniqueIdentifier>
+      <UniqueIdentifier>c005936a-3a73-4728-8c9c-89245117eac9</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

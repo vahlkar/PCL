@@ -4,13 +4,10 @@
 # PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-09-30T11:28:15.079Z
+# Generated on .... 2019-10-20T10:45:45.430Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc15
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Additional preprocessor definitions:
-# _CRT_SECURE_NO_WARNINGS
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -33,7 +30,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BFBB9E19-F758-4CE7-A20B-CF15C7AC7292}</ProjectGuid>
+    <ProjectGuid>{3A573521-804A-4480-8410-3A15E809099C}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
@@ -104,7 +101,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -145,7 +142,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -184,8 +181,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;C:\Users\Klaus\source\repos\indigo\indigo_libs;C:\Users\Klaus\source\repos\indigo\indigo_windows\indigo_client\externals\pthreads4w\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -219,7 +216,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
