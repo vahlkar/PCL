@@ -618,14 +618,6 @@ void INDIMountInstance::GetPierSide() {
             break;
          }
       }
-      else
-      {
-         // pier side fallback
-         // If the INDI mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
-         double hourAngle = AlignmentModel::RangeShiftHourAngle(o_currentLST - o_currentRA);
-         p_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
-      }
-
 }
 
  bool INDIMountInstance::isForceCounterWeightUp() const {

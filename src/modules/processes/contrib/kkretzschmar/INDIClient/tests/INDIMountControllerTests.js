@@ -163,7 +163,7 @@ function INDIMountControllerTests( parent )
 
 
 
-  /* this.add(
+   this.add(
       function testPointingModel()
       {
          let currentDir = File.extractDirectory( #__FILE__ );
@@ -246,7 +246,7 @@ function INDIMountControllerTests( parent )
             expectEqualsWithPrecision( paramExpected, param, 0.01 );
          }
       }
-   );*/
+   );
 
    this.add(
       function testParking()

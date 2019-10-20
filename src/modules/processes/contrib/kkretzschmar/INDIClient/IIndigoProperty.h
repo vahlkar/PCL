@@ -57,7 +57,7 @@
 
 #include<memory>
 
-#include "indigo_bus.h"
+#include "indigo/indigo_bus.h"
 
 #include <pcl/Exception.h>
 #include <pcl/String.h>

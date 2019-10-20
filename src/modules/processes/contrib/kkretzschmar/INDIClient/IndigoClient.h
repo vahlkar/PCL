@@ -58,8 +58,8 @@
 #include<functional>
 #include<iostream>
 
-#include "indigo_client.h"
-#include "indigo_names.h"
+#include "indigo/indigo_client.h"
+#include "indigo/indigo_names.h"
 
 class IndigoClient
 {
