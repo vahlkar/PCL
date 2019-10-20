@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Morphology Process Module Version 01.00.00.0356
+// Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInterface.cpp - Released 2019-01-21T12:06:41Z
+// MorphologicalTransformationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -1015,15 +1015,17 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
    //
 
    w.SetSizer( Global_Sizer );
-   w.AdjustToContents();
-   w.SetFixedSize();
 
-   //
+   w.EnsureLayoutUpdated();
+   w.AdjustToContents();
 
    int editWidth1 = Interlacing_SpinBox.Width();
    Iterations_SpinBox.SetMinWidth( editWidth1 );
    Amount_NumericControl.edit.SetMinWidth( editWidth1 );
    Selection_NumericControl.edit.SetMinWidth( editWidth1 );
+
+   w.AdjustToContents();
+   w.SetFixedSize();
 }
 
 // ----------------------------------------------------------------------------
@@ -1031,4 +1033,4 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF MorphologicalTransformationInterface.cpp - Released 2019-09-29T12:27:57Z

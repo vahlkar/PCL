@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EProcess.cpp - Released 2019-01-21T12:06:41Z
+// B3EProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -69,11 +69,11 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-B3EProcess* TheB3EProcess = 0;
+B3EProcess* TheB3EProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-B3EProcess::B3EProcess() : MetaProcess()
+B3EProcess::B3EProcess()
 {
    TheB3EProcess = this;
 
@@ -169,7 +169,7 @@ ProcessImplementation* B3EProcess::Create() const
 ProcessImplementation* B3EProcess::Clone( const ProcessImplementation& p ) const
 {
    const B3EInstance* instPtr = dynamic_cast<const B3EInstance*>( &p );
-   return (instPtr != 0) ? new B3EInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new B3EInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -280,4 +280,4 @@ int B3EProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EProcess.cpp - Released 2019-01-21T12:06:41Z
+// EOF B3EProcess.cpp - Released 2019-09-29T12:27:57Z

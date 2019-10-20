@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0405
+// Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesParameters.cpp - Released 2019-01-21T12:06:41Z
+// PreferencesParameters.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -126,6 +126,8 @@ IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  expandRecentlyUsedAtStartup )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  expandMostUsedAtStartup )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  expandFavoritesAtStartup )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  openURLsWithInternalBrowser )
+IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  openResourcesOnNewWebBrowserWindows )
+IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  privateWebBrowsingMode )
 IMPLEMENT_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile01 )
 IMPLEMENT_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile02 )
 IMPLEMENT_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile03 )
@@ -171,6 +173,7 @@ IMPLEMENT_TABLE_METAPARAMETER   ( ImageWindow, swapDirectories )
 IMPLEMENT_ROW_STRING_METAPARAMETER( ImageWindow, swapDirectory )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( ImageWindow, swapCompression )
 IMPLEMENT_STRING_METAPARAMETER  ( ImageWindow, downloadsDirectory )
+IMPLEMENT_STRING_METAPARAMETER  ( ImageWindow, proxyURL )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( ImageWindow, followDownloadLocations )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( ImageWindow, verboseNetworkOperations )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( ImageWindow, showCaptionCurrentChannels )
@@ -221,4 +224,4 @@ IMPLEMENT_BOOLEAN_METAPARAMETER ( Process, enableLaunchStatistics )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.cpp - Released 2019-01-21T12:06:41Z
+// EOF PreferencesParameters.cpp - Released 2019-09-29T12:27:57Z

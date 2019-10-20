@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0927
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 01.01.00.0228
+// Standard INDIClient Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// IINDIProperty.h - Released 2018-11-23T18:45:59Z
+// IIndigoProperty.h - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2018 Klaus Kretzschmar
+// Copyright (c) 2014-2019 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -50,14 +50,12 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-
-
 #ifndef __IndigoProperty_h
 #define __IIndigoProperty_h
 
 #include<memory>
 
-#include "indigo_bus.h"
+#include "indigo/indigo_bus.h"
 
 #include <pcl/Exception.h>
 #include <pcl/String.h>
@@ -345,4 +343,4 @@ public:
 #endif   // __IIndigoProperty_h
 
 // ----------------------------------------------------------------------------
-// EOF IIndigoProperty.h - Released 2018-11-23T18:45:59Z
+// EOF IIndigoProperty.h - Released 2019-09-29T12:27:58Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0404
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// CropProcess.cpp - Released 2019-01-21T12:06:41Z
+// CropProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -68,7 +68,7 @@ CropProcess* TheCropProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-CropProcess::CropProcess() : MetaProcess()
+CropProcess::CropProcess()
 {
    TheCropProcess = this;
 
@@ -88,40 +88,56 @@ CropProcess::CropProcess() : MetaProcess()
    TheCRNoGUIMessagesParameter = new NoGUIMessages( this );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString CropProcess::Id() const
 {
    return "Crop";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString CropProcess::Category() const
 {
    return "Geometry";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 CropProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String CropProcess::Description() const
 {
    return "";
 }
 
+// ----------------------------------------------------------------------------
+
 const char** CropProcess::IconImageXPM() const
 {
    return CropIcon_XPM;
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* CropProcess::DefaultInterface() const
 {
    return TheCropInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* CropProcess::Create() const
 {
    return new CropInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* CropProcess::Clone( const ProcessImplementation& p ) const
 {
@@ -134,4 +150,4 @@ ProcessImplementation* CropProcess::Clone( const ProcessImplementation& p ) cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropProcess.cpp - Released 2019-01-21T12:06:41Z
+// EOF CropProcess.cpp - Released 2019-09-29T12:27:57Z

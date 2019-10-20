@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Version.cpp - Released 2019-01-21T12:06:21Z
+// pcl/Version.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -77,14 +77,14 @@ int Version::Minor()
 
 int Version::Release()
 {
-   return 11;
+   return 16;
 }
 
 // ----------------------------------------------------------------------------
 
 int Version::Build()
 {
-   return 938;
+   return 950;
 }
 
 // ----------------------------------------------------------------------------
@@ -105,7 +105,7 @@ String Version::LanguageCode()
 
 String Version::AsString()
 {
-   String v = String().Format( "PCL %02d.%02d.%02d.%04d", Major(), Minor(), Release(), Build() );
+   String v = String().Format( "PCL %d.%d.%d", Major(), Minor(), Release() );
    if ( BetaRelease() > 0 )
       v.Append( String().Format( " beta %d", BetaRelease() ) );
    return v;
@@ -243,8 +243,8 @@ String PixInsightVersion::Codename()
 String PixInsightVersion::AsString( bool withCodename )
 {
    Initialize();
-   String v = String().Format( "PixInsight %s%02d.%02d.%02d.%04d",
-               LE() ? "LE " : "", Major(), Minor(), Release(), Build() );
+   String v = String().Format( "PixInsight %s%d.%d.%d",
+               LE() ? "LE " : "", Major(), Minor(), Release() );
    if ( BetaRelease() != 0 )
       v.Append( String().Format( " %s%d", (BetaRelease() < 0) ? "RC" : "beta ", Abs( BetaRelease() ) ) );
    if ( withCodename )
@@ -259,4 +259,4 @@ String PixInsightVersion::AsString( bool withCodename )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Version.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/Version.cpp - Released 2019-09-29T12:27:33Z

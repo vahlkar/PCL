@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationParameters.h - Released 2019-01-21T12:06:41Z
+// FluxCalibrationParameters.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -79,12 +79,12 @@ public:
 
    virtual IsoString Id() const = 0;
 
-   virtual size_type NumberOfElements() const
+   size_type NumberOfElements() const override
    {
       return NumberOfItems;
    }
 
-   virtual IsoString ElementId( size_type index ) const
+   IsoString ElementId( size_type index ) const override
    {
       switch ( index )
       {
@@ -95,12 +95,12 @@ public:
       }
    }
 
-   virtual int ElementValue( size_type index ) const
+   int ElementValue( size_type index ) const override
    {
       return int( index );
    }
 
-   virtual size_type DefaultValueIndex() const
+   size_type DefaultValueIndex() const override
    {
       return Default;
    }
@@ -115,12 +115,10 @@ public:
 
    FCWavelengthValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern FCWavelengthValue* TheFCWavelengthValueParameter;
@@ -132,7 +130,8 @@ class FCWavelengthMode : public FCParameterMode
 public:
 
    FCWavelengthMode( MetaProcess* P );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FCWavelengthMode* TheFCWavelengthModeParameter;
@@ -145,9 +144,9 @@ public:
 
    FCWavelengthKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern FCWavelengthKeyword* TheFCWavelengthKeywordParameter;
@@ -161,13 +160,11 @@ public:
 
    FCTransmissivityValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern FCTransmissivityValue* TheFCTransmissivityValueParameter;
@@ -179,7 +176,8 @@ class FCTransmissivityMode : public FCParameterMode
 public:
 
    FCTransmissivityMode( MetaProcess* P );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FCTransmissivityMode* TheFCTransmissivityModeParameter;
@@ -192,9 +190,9 @@ public:
 
    FCTransmissivityKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern FCTransmissivityKeyword* TheFCTransmissivityKeywordParameter;
@@ -208,12 +206,10 @@ public:
 
    FCFilterWidthValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern FCFilterWidthValue* TheFCFilterWidthValueParameter;
@@ -225,7 +221,8 @@ class FCFilterWidthMode : public FCParameterMode
 public:
 
    FCFilterWidthMode( MetaProcess* P );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FCFilterWidthMode* TheFCFilterWidthModeParameter;
@@ -238,9 +235,9 @@ public:
 
    FCFilterWidthKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern FCFilterWidthKeyword* TheFCFilterWidthKeywordParameter;
@@ -254,12 +251,10 @@ public:
 
    FCApertureValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern FCApertureValue* TheFCApertureValueParameter;
@@ -271,7 +266,8 @@ class FCApertureMode : public FCParameterMode
 public:
 
    FCApertureMode( MetaProcess* P );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FCApertureMode* TheFCApertureModeParameter;
@@ -284,9 +280,9 @@ public:
 
    FCApertureKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern FCApertureKeyword* TheFCApertureKeywordParameter;
@@ -300,12 +296,10 @@ public:
 
    FCCentralObstructionValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern FCCentralObstructionValue* TheFCCentralObstructionValueParameter;
@@ -317,7 +311,8 @@ class FCCentralObstructionMode : public FCParameterMode
 public:
 
    FCCentralObstructionMode( MetaProcess* P );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FCCentralObstructionMode* TheFCCentralObstructionModeParameter;
@@ -330,9 +325,9 @@ public:
 
    FCCentralObstructionKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern FCCentralObstructionKeyword* TheFCCentralObstructionKeywordParameter;
@@ -346,12 +341,10 @@ public:
 
    FCExposureTimeValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern FCExposureTimeValue* TheFCExposureTimeValueParameter;
@@ -363,7 +356,8 @@ class FCExposureTimeMode : public FCParameterMode
 public:
 
    FCExposureTimeMode( MetaProcess* P );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FCExposureTimeMode* TheFCExposureTimeModeParameter;
@@ -376,9 +370,9 @@ public:
 
    FCExposureTimeKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern FCExposureTimeKeyword* TheFCExposureTimeKeywordParameter;
@@ -392,13 +386,11 @@ public:
 
    FCAtmosphericExtinctionValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern FCAtmosphericExtinctionValue* TheFCAtmosphericExtinctionValueParameter;
@@ -410,7 +402,8 @@ class FCAtmosphericExtinctionMode : public FCParameterMode
 public:
 
    FCAtmosphericExtinctionMode( MetaProcess* P );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FCAtmosphericExtinctionMode* TheFCAtmosphericExtinctionModeParameter;
@@ -423,9 +416,9 @@ public:
 
    FCAtmosphericExtinctionKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern FCAtmosphericExtinctionKeyword* TheFCAtmosphericExtinctionKeywordParameter;
@@ -439,12 +432,10 @@ public:
 
    FCSensorGainValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern FCSensorGainValue* TheFCSensorGainValueParameter;
@@ -456,7 +447,8 @@ class FCSensorGainMode : public FCParameterMode
 public:
 
    FCSensorGainMode( MetaProcess* P );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FCSensorGainMode* TheFCSensorGainModeParameter;
@@ -469,9 +461,9 @@ public:
 
    FCSensorGainKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern FCSensorGainKeyword* TheFCSensorGainKeywordParameter;
@@ -485,13 +477,11 @@ public:
 
    FCQuantumEfficiencyValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern FCQuantumEfficiencyValue* TheFCQuantumEfficiencyValueParameter;
@@ -503,7 +493,8 @@ class FCQuantumEfficiencyMode : public FCParameterMode
 public:
 
    FCQuantumEfficiencyMode( MetaProcess* P );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FCQuantumEfficiencyMode* TheFCQuantumEfficiencyModeParameter;
@@ -516,9 +507,9 @@ public:
 
    FCQuantumEfficiencyKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern FCQuantumEfficiencyKeyword* TheFCQuantumEfficiencyKeywordParameter;
@@ -533,4 +524,4 @@ PCL_END_LOCAL
 #endif   // __FluxCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationParameters.h - Released 2019-01-21T12:06:41Z
+// EOF FluxCalibrationParameters.h - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 01.02.06.0214
+// Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentModule.cpp - Released 2019-01-21T12:06:42Z
+// CometAlignmentModule.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -51,15 +51,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     02
-#define MODULE_VERSION_REVISION  06
-#define MODULE_VERSION_BUILD     0214
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     2
+#define MODULE_VERSION_REVISION  6
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "CometAlignmentModule.h"
 #include "CometAlignmentProcess.h"
@@ -70,7 +70,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-CometAlignmentModule::CometAlignmentModule() : MetaModule()
+CometAlignmentModule::CometAlignmentModule()
 {
 }
 
@@ -136,18 +136,6 @@ void CometAlignmentModule::GetReleaseDate( int& year, int& month, int& day ) con
    day   = MODULE_RELEASE_DAY;
 }
 
-#define READABLE_VERSION_NUMBERS_1( a, b, c, d )  #a + '.' + #b + '.' + #c + '.' + #d
-#define READABLE_VERSION_NUMBERS( a, b, c, d ) READABLE_VERSION_NUMBERS_1( a, b, c, d )
-
-String CometAlignmentModule::ReadableVersion()
-{
-   return String( "CometAlignment module " ) +
-            READABLE_VERSION_NUMBERS( MODULE_VERSION_MAJOR,
-                                      MODULE_VERSION_MINOR,
-                                      MODULE_VERSION_REVISION,
-                                      MODULE_VERSION_BUILD );
-}
-
 // ----------------------------------------------------------------------------
 
 } // pcl
@@ -167,4 +155,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentModule.cpp - Released 2019-01-21T12:06:42Z
+// EOF CometAlignmentModule.cpp - Released 2019-09-29T12:27:58Z

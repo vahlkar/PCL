@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 01.04.01.0362
+// Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2019-01-21T12:06:41Z
+// ImageCalibrationInstance.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -226,7 +226,7 @@ private:
    int32           outputPedestal;  // additive in 16-bit DN to ensure positivity
    pcl_bool        overwriteExistingFiles;
    pcl_enum        onError;
-   pcl_bool        noGUIMessages;
+   pcl_bool        noGUIMessages;   // ### DEPRECATED
 
    // Read-only output properties
    struct OutputData
@@ -273,4 +273,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2019-01-21T12:06:41Z
+// EOF ImageCalibrationInstance.h - Released 2019-09-29T12:27:57Z

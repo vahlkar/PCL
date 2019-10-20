@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Blink Process Module Version 01.02.02.0300
+// Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkVideoDialog.cpp - Released 2019-01-21T12:06:42Z
+// BlinkVideoDialog.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -473,12 +473,8 @@ void BlinkVideoDialog::__Dialog_Return( Dialog& sender, int retVal )
 }
 
 BlinkVideoDialog::BlinkVideoDialog( BlinkInterface* parent ) :
-   Dialog(),
    m_parent( parent ),
-   m_frameCount( 0 ),
-   m_framesDone(),
-   m_command(),
-   m_timestamp()
+   m_frameCount( 0 )
 {
    pcl::Font fnt = this->Font();
    int labelWidth1 = fnt.Width( String( "Frame extension:" ) + 'T' );
@@ -609,6 +605,8 @@ BlinkVideoDialog::BlinkVideoDialog( BlinkInterface* parent ) :
 
    SetSizer( Global_Sizer );
 
+   EnsureLayoutUpdated();
+
    SetWindowTitle( DIALOG_TITLE );
 
    m_videoEncoder.OnStarted( (ExternalProcess::process_event_handler)&BlinkVideoDialog::__Process_Started, *this );
@@ -628,4 +626,4 @@ BlinkVideoDialog::BlinkVideoDialog( BlinkInterface* parent ) :
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkVideoDialog.cpp - Released 2019-01-21T12:06:42Z
+// EOF BlinkVideoDialog.cpp - Released 2019-09-29T12:27:58Z

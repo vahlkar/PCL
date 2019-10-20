@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG File Format Module Version 01.00.04.0368
+// Standard JPEG File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// JPEGInstance.h - Released 2019-01-21T12:06:31Z
+// JPEGInstance.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -72,36 +72,36 @@ public:
 
    virtual ~JPEGInstance() noexcept( false );
 
-   virtual ImageDescriptionArray Open( const String& filePath, const IsoString& hints );
-   virtual bool IsOpen() const;
-   virtual String FilePath() const;
-   virtual void Close();
+   ImageDescriptionArray Open( const String& filePath, const IsoString& hints ) override;
+   bool IsOpen() const override;
+   String FilePath() const override;
+   void Close() override;
 
-   virtual void* FormatSpecificData() const;
-   virtual String ImageFormatInfo() const;
+   void* FormatSpecificData() const override;
+   String ImageFormatInfo() const override;
 
-   virtual ICCProfile ReadICCProfile();
+   ICCProfile ReadICCProfile() override;
 
-   virtual void ReadImage( Image& );
-   virtual void ReadImage( DImage& );
-   virtual void ReadImage( UInt8Image& );
-   virtual void ReadImage( UInt16Image& );
-   virtual void ReadImage( UInt32Image& );
+   void ReadImage( Image& ) override;
+   void ReadImage( DImage& ) override;
+   void ReadImage( UInt8Image& ) override;
+   void ReadImage( UInt16Image& ) override;
+   void ReadImage( UInt32Image& ) override;
 
-   virtual bool QueryOptions( Array<ImageOptions>& options, Array<void*>& formatOptions );
-   virtual void Create( const String& filePath, int numberOfImages, const IsoString& hints );
-   virtual void SetOptions( const ImageOptions& options );
-   virtual void SetFormatSpecificData( const void* data );
+   bool QueryOptions( Array<ImageOptions>& options, Array<void*>& formatOptions ) override;
+   void Create( const String& filePath, int numberOfImages, const IsoString& hints ) override;
+   void SetOptions( const ImageOptions& options ) override;
+   void SetFormatSpecificData( const void* data ) override;
 
-   virtual void WriteICCProfile( const ICCProfile& );
+   void WriteICCProfile( const ICCProfile& ) override;
 
-   virtual void WriteImage( const Image& );
-   virtual void WriteImage( const DImage& );
-   virtual void WriteImage( const UInt8Image& );
-   virtual void WriteImage( const UInt16Image& );
-   virtual void WriteImage( const UInt32Image& );
+   void WriteImage( const Image& ) override;
+   void WriteImage( const DImage& ) override;
+   void WriteImage( const UInt8Image& ) override;
+   void WriteImage( const UInt16Image& ) override;
+   void WriteImage( const UInt32Image& ) override;
 
-   virtual bool WasLossyWrite() const;
+   bool WasLossyWrite() const override;
 
 private:
 
@@ -118,4 +118,4 @@ private:
 #endif   // __JPEGInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEGInstance.h - Released 2019-01-21T12:06:31Z
+// EOF JPEGInstance.h - Released 2019-09-29T12:27:43Z

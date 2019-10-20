@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 01.02.08.0405
+// Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2019-01-21T12:06:41Z
+// PreferencesProcess.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -71,7 +71,7 @@ PreferencesProcess* ThePreferencesProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-PreferencesProcess::PreferencesProcess() : MetaProcess()
+PreferencesProcess::PreferencesProcess()
 {
    ThePreferencesProcess = this;
 
@@ -143,6 +143,8 @@ PreferencesProcess::PreferencesProcess() : MetaProcess()
    new METAPARAMETER_ID( MainWindow,  expandMostUsedAtStartup )( this );
    new METAPARAMETER_ID( MainWindow,  expandFavoritesAtStartup )( this );
    new METAPARAMETER_ID( MainWindow,  openURLsWithInternalBrowser )( this );
+   new METAPARAMETER_ID( MainWindow,  openResourcesOnNewWebBrowserWindows )( this );
+   new METAPARAMETER_ID( MainWindow,  privateWebBrowsingMode )( this );
    new METAPARAMETER_ID( MainWindow,  wallpaperFile01 )( this );
    new METAPARAMETER_ID( MainWindow,  wallpaperFile02 )( this );
    new METAPARAMETER_ID( MainWindow,  wallpaperFile03 )( this );
@@ -188,6 +190,7 @@ PreferencesProcess::PreferencesProcess() : MetaProcess()
    new METAPARAMETER_ID( ImageWindow, swapDirectory )( METAPARAMETER_INSTANCE_ID( ImageWindow, swapDirectories ) );
    new METAPARAMETER_ID( ImageWindow, swapCompression )( this );
    new METAPARAMETER_ID( ImageWindow, downloadsDirectory )( this );
+   new METAPARAMETER_ID( ImageWindow, proxyURL )( this );
    new METAPARAMETER_ID( ImageWindow, followDownloadLocations )( this );
    new METAPARAMETER_ID( ImageWindow, verboseNetworkOperations )( this );
    new METAPARAMETER_ID( ImageWindow, showCaptionCurrentChannels )( this );
@@ -375,4 +378,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2019-01-21T12:06:41Z
+// EOF PreferencesProcess.cpp - Released 2019-09-29T12:27:57Z

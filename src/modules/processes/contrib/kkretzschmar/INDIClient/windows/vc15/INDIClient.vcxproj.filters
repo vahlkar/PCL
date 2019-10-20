@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:44.805Z
+# Generated on .... 2019-09-30T11:28:15.080Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,125 +16,131 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>39d77d5d-eeb9-4f5a-a93f-1897bbaaca0a</UniqueIdentifier>
+      <UniqueIdentifier>e02b22a4-8d57-480a-9bf6-6262d8da391e</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>82c56ffe-6a5a-4b5f-b562-ae0b44d85457</UniqueIdentifier>
+      <UniqueIdentifier>83e7498c-8b95-4096-8ed1-f9ac1b59aeb2</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Alignment.cpp">
-      <Filter>Source Files</Filter>
+        <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\INDICCDFrameInstance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDICCDFrameInterface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDICCDFrameParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDICCDFrameProcess.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIClientModule.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIDeviceControllerInstance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIDeviceControllerInterface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIDeviceControllerParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIDeviceControllerProcess.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIMountInstance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIMountInterface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIMountParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INDIMountProcess.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\IINDIProperty.cpp">
+        <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\IIndigoProperty.cpp">
-      <Filter>Source Files</Filter>
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDICCDFrameInstance.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDICCDFrameInterface.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDICCDFrameParameters.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDICCDFrameProcess.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIClient.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIClientModule.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIDeviceControllerInstance.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIDeviceControllerInterface.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIDeviceControllerParameters.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIDeviceControllerProcess.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIMountInstance.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIMountInterface.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIMountParameters.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INDIMountProcess.cpp">
+        <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\IndigoClient.cpp">
-      <Filter>Source Files</Filter>
+        <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Alignment.h">
-      <Filter>Header Files</Filter>
+        <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\DeviceConfigBase.h">
-      <Filter>Header Files</Filter>
+        <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INDICCDFrameInstance.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDICCDFrameInterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDICCDFrameParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDICCDFrameProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIClientModule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIDeviceControllerInstance.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIDeviceControllerInterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIDeviceControllerParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIDeviceControllerProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIMountInstance.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIMountInterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIMountParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIMountProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INDIParamListTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\ModuleParameterRegistration.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\IINDIProperty.h">
+        <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\IIndigoProperty.h">
-      <Filter>Header Files</Filter>
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDICCDFrameInstance.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDICCDFrameInterface.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDICCDFrameParameters.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDICCDFrameProcess.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIClient.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIClientModule.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIDeviceControllerInstance.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIDeviceControllerInterface.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIDeviceControllerParameters.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIDeviceControllerProcess.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIMountInstance.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIMountInterface.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIMountParameters.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIMountProcess.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INDIParamListTypes.h">
+        <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\IndigoClient.h">
-      <Filter>Header Files</Filter>
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ModuleParameterRegistration.h">
+        <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0433
+// Standard FITS File Format Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// FITSOptionsDialog.h - Released 2019-01-21T12:06:31Z
+// FITSOptionsDialog.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -73,10 +73,6 @@ public:
 
    FITSOptionsDialog( const ImageOptions&, const FITSImageOptions& );
 
-   virtual ~FITSOptionsDialog()
-   {
-   }
-
    ImageOptions     options;
    FITSImageOptions fitsOptions;
 
@@ -118,4 +114,4 @@ private:
 #endif   // __FITSOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSOptionsDialog.h - Released 2019-01-21T12:06:31Z
+// EOF FITSOptionsDialog.h - Released 2019-09-29T12:27:43Z

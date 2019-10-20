@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Graphics.h - Released 2019-01-21T12:06:07Z
+// pcl/Graphics.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -657,9 +657,7 @@ public:
    /*!
     * Constructs an inactive graphics context.
     */
-   Graphics() : GraphicsContextBase()
-   {
-   }
+   Graphics() = default;
 
    /*!
     * Constructs an active graphics context, ready to draw on the specified
@@ -1396,7 +1394,7 @@ public:
 
    /*! #
     */
-   void DrawTiledBitmap( const pcl::Rect& r, const Bitmap& bm, const pcl::Point& offset = pcl::Point() )
+   void DrawTiledBitmap( const pcl::Rect& r, const Bitmap& bm, const pcl::Point& offset = pcl::Point( 0 ) )
    {
       DrawTiledBitmap( r.x0, r.y0, r.x1, r.y1, bm, offset.x, offset.y );
    }
@@ -1471,9 +1469,7 @@ public:
    /*!
     * Constructs an inactive vector graphics context.
     */
-   VectorGraphics() : GraphicsContextBase()
-   {
-   }
+   VectorGraphics() = default;
 
    /*!
     * Constructs an active vector graphics context, ready to draw on the
@@ -2318,4 +2314,4 @@ private:
 #endif   // __PCL_Graphics_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Graphics.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Graphics.h - Released 2019-09-29T12:27:26Z

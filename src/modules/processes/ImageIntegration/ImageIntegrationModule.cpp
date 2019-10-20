@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationModule.cpp - Released 2019-01-21T12:06:41Z
+// ImageIntegrationModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     16
-#define MODULE_VERSION_REVISION  01
-#define MODULE_VERSION_BUILD     0472
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     19
+#define MODULE_VERSION_REVISION  1
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     10
+#define MODULE_RELEASE_DAY       15
 
 #include "DrizzleIntegrationInstance.h"
 #include "DrizzleIntegrationInterface.h"
@@ -77,7 +77,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ImageIntegrationModule::ImageIntegrationModule() : MetaModule()
+ImageIntegrationModule::ImageIntegrationModule()
 {
 }
 
@@ -124,7 +124,7 @@ String ImageIntegrationModule::Author() const
 
 String ImageIntegrationModule::Copyright() const
 {
-   return "Copyright (c) 2009-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2009-2019 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -206,4 +206,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationModule.cpp - Released 2019-01-21T12:06:41Z
+// EOF ImageIntegrationModule.cpp - Released 2019-09-29T12:27:57Z

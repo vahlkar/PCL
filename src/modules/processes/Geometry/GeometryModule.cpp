@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 01.02.02.0404
+// Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// GeometryModule.cpp - Released 2019-01-21T12:06:41Z
+// GeometryModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -50,16 +50,17 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     02
-#define MODULE_VERSION_REVISION  02
-#define MODULE_VERSION_BUILD     0404
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     2
+#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
+#include <pcl/AstrometricMetadata.h>
 #include <pcl/Console.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/MessageBox.h>
@@ -87,7 +88,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GeometryModule::GeometryModule() : MetaModule()
+GeometryModule::GeometryModule()
 {
 }
 
@@ -134,7 +135,7 @@ String GeometryModule::Author() const
 
 String GeometryModule::Copyright() const
 {
-   return "Copyright (c) 2005-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -184,15 +185,24 @@ void GeometryModule::OnLoad()
 
 // ----------------------------------------------------------------------------
 
-static SortedIsoStringList s_astrometryKeywords;
-
 bool WarnOnAstrometryMetadataOrPreviewsOrMask( const ImageWindow& window, const IsoString& processId, bool noGUIMessages )
 {
-   if ( window.HasPreviews() || window.HasMaskReferences() || !window.Mask().IsNull() )
+   bool hasAstrometry = window.HasAstrometricSolution();
+   bool hasPreviews = window.HasPreviews();
+   bool hasMaskReferences = window.HasMaskReferences();
+   bool hasMask = !window.Mask().IsNull();
+
+   if ( hasAstrometry || hasPreviews || hasMaskReferences || hasMask )
    {
       if ( !noGUIMessages )
          if ( MessageBox( "<p>" + window.MainView().Id() + "</p>"
-                          "<p>Existing previews and mask references will be deleted.</p>"
+                          "<p>The following items will be deleted as a result of the geometric transformation:</p>"
+                          "<ul>"
+                          + (hasAstrometry ?     "<li>Astrometric solution</li>" : "")
+                          + (hasPreviews ?       "<li>Previews</li>" : "")
+                          + (hasMaskReferences ? "<li>Mask references</li>" : "")
+                          + (hasMask ?           "<li>Mask</li>" : "")
+                          + "</ul>"
                           "<p><b>Some of these side effects could be irreversible. Proceed?</b></p>",
                           processId,
                           StdIcon::Warning,
@@ -201,45 +211,16 @@ bool WarnOnAstrometryMetadataOrPreviewsOrMask( const ImageWindow& window, const 
             return false;
          }
 
-      Console().WarningLn( "<end><cbr><br>** Warning: " + processId + ": Existing previews and/or mask references will be deleted." );
+      Console console;
+      if ( hasAstrometry )
+         console.WarningLn( "<end><cbr><br>** Warning: " + processId + ": Existing astrometric solution will be deleted." );
+      if ( hasPreviews )
+         console.WarningLn( "** Warning: " + processId + ": Existing previews will be deleted." );
+      if ( hasMaskReferences )
+         console.WarningLn( "** Warning: " + processId + ": Existing mask references will be deleted." );
+      if ( hasMaskReferences )
+         console.WarningLn( "** Warning: " + processId + ": Existing mask will be removed." );
    }
-
-   if ( s_astrometryKeywords.IsEmpty() )
-      s_astrometryKeywords << "CTYPE1"
-                           << "CTYPE2"
-                           << "CRPIX1"
-                           << "CRPIX2"
-                           << "CRVAL1"
-                           << "CRVAL2"
-                           << "CD1_1"
-                           << "CD1_2"
-                           << "CD2_1"
-                           << "CD2_2"
-                           << "CDELT1"
-                           << "CDELT2"
-                           << "CROTA1"
-                           << "CROTA2"
-                           << "REFSPLINE"; // a custom keyword set by the ImageSolver script
-
-   FITSKeywordArray keywords;
-   window.GetKeywords( keywords );
-   for ( auto k : keywords )
-      if ( s_astrometryKeywords.Contains( k.name ) )
-      {
-         if ( !noGUIMessages )
-            if ( MessageBox( "<p>" + window.MainView().Id() + "</p>"
-                             "<p>The image contains WCS keywords that will be deleted by the geometric transformation.</p>"
-                             "<p><b>This side effect could be irreversible. Proceed?</b></p>",
-                             processId,
-                             StdIcon::Warning,
-                             StdButton::No, StdButton::Yes ).Execute() != StdButton::Yes )
-            {
-               return false;
-            }
-
-         Console().WarningLn( "<end><cbr><br>** Warning: " + processId + ": Existing WCS keywords will be deleted." );
-         break;
-      }
 
    return true;
 }
@@ -248,28 +229,24 @@ bool WarnOnAstrometryMetadataOrPreviewsOrMask( const ImageWindow& window, const 
 
 void DeleteAstrometryMetadataAndPreviewsAndMask( ImageWindow& window )
 {
+   DeleteAstrometryMetadataAndPreviews( window );
    window.RemoveMaskReferences();
    window.RemoveMask();
-   DeleteAstrometryMetadataAndPreviews( window );
 }
 
 // ----------------------------------------------------------------------------
 
 void DeleteAstrometryMetadataAndPreviews( ImageWindow& window )
 {
+   window.ClearAstrometricSolution();
+
+   FITSKeywordArray keywords = window.Keywords();
+   AstrometricMetadata::RemoveKeywords( keywords );
+   window.SetKeywords( keywords );
+
+   AstrometricMetadata::RemoveProperties( window );
+
    window.DeletePreviews();
-
-   FITSKeywordArray keywords, newKeywords;
-   window.GetKeywords( keywords );
-   for ( auto k : keywords )
-      if ( !s_astrometryKeywords.Contains( k.name ) )
-         newKeywords << k;
-   if ( newKeywords.Length() < keywords.Length() )
-      window.SetKeywords( newKeywords );
-
-   // Delete a custom property generated by the ImageSolver script.
-   if ( window.MainView().HasProperty( "Transformation_ImageToProjection" ) )
-      window.MainView().DeleteProperty( "Transformation_ImageToProjection" );
 }
 
 // ----------------------------------------------------------------------------
@@ -302,4 +279,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GeometryModule.cpp - Released 2019-01-21T12:06:41Z
+// EOF GeometryModule.cpp - Released 2019-09-29T12:27:57Z

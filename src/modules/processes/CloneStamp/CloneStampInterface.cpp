@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CloneStamp Process Module Version 01.00.02.0361
+// Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInterface.cpp - Released 2019-01-21T12:06:41Z
+// CloneStampInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -68,9 +68,11 @@ namespace pcl
 
 CloneStampInterface* TheCloneStampInterface = nullptr;
 
-static CloneStampInterface::source_view_list sourceViews;
+// ----------------------------------------------------------------------------
 
-const int tileSize = 64;
+static CloneStampInterface::source_view_list s_sourceViews;
+
+const int s_tileSize = 64;
 
 // Half size of center mark in logical viewport coordinates
 #define CENTER_RADIUS 5
@@ -98,25 +100,23 @@ CloneStampInterface::ViewRef::ViewRef( const View& v, int ) :
 
 CloneStampInterface::ViewRef::~ViewRef()
 {
-   if ( refCount >= 0 && !view.IsNull() )
-      view.RemoveFromDynamicTargets();
+   if ( refCount >= 0 )
+      if ( !view.IsNull() )
+         view.RemoveFromDynamicTargets();
 }
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 CloneStampInterface::ClonerAction::ClonerAction( View& view, const BrushData& b, const Point& d ) :
-   source( nullptr ),
    brush( b ),
-   delta( d ),
-   cloner(),
-   bounds( 0 )
+   delta( d )
 {
    if ( !view.IsNull() )
    {
-      source_view_list::const_iterator i = sourceViews.Search( ViewRef( view, 0 ) );
-      if ( i == sourceViews.End() )
-         sourceViews.Add( source = new ViewRef( view ) );
+      source_view_list::const_iterator i = s_sourceViews.Search( ViewRef( view, 0 ) );
+      if ( i == s_sourceViews.End() )
+         s_sourceViews.Add( source = new ViewRef( view ) );
       else
       {
          source = *i;
@@ -126,7 +126,11 @@ CloneStampInterface::ClonerAction::ClonerAction( View& view, const BrushData& b,
 }
 
 CloneStampInterface::ClonerAction::ClonerAction( const ClonerAction& x ) :
-source( x.source ), brush( x.brush ), delta( x.delta ), cloner( x.cloner ), bounds( x.bounds )
+   source( x.source ),
+   brush( x.brush ),
+   delta( x.delta ),
+   cloner( x.cloner ),
+   bounds( x.bounds )
 {
    if ( source != nullptr )
       ++source->refCount;
@@ -137,7 +141,7 @@ CloneStampInterface::ClonerAction::~ClonerAction()
    if ( source != nullptr )
    {
       if ( --source->refCount == 0 )
-         sourceViews.Destroy( *source );
+         s_sourceViews.Destroy( *source );
       source = nullptr;
    }
 }
@@ -163,28 +167,27 @@ void CloneStampInterface::ClonerAction::UpdateBounds()
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void CloneStampInterface::StoreRect( const Rect& _r )
+void CloneStampInterface::StoreRect( const Rect& rect )
 {
    ImageVariant image = targetView->Image();
-   Rect r( _r );
-
+   Rect r( rect );
    if ( r.Intersect( image.Bounds() ) )
    {
       image.ResetChannelRange();
 
-      int row0 = r.y0/tileSize;
-      int row1 = (r.y1 - 1)/tileSize;
+      int row0 = r.y0/s_tileSize;
+      int row1 = (r.y1 - 1)/s_tileSize;
 
-      int col0 = r.x0/tileSize;
-      int col1 = (r.x1 - 1)/tileSize;
+      int col0 = r.x0/s_tileSize;
+      int col1 = (r.x1 - 1)/s_tileSize;
 
       for ( int i = row0; i <= row1; ++i )
          for ( int j = col0, k = tileCols*i + col0; j <= col1; ++j, ++k )
             if ( !swapTiles[k] )
             {
-               int x0 = j*tileSize;
-               int y0 = i*tileSize;
-               image.SelectRectangle( x0, y0, x0+tileSize, y0+tileSize );
+               int x0 = j*s_tileSize;
+               int y0 = i*s_tileSize;
+               image.SelectRectangle( x0, y0, x0+s_tileSize, y0+s_tileSize );
                swapTiles[k].CopyImage( image );
             }
    }
@@ -219,20 +222,19 @@ static void RestoreTile( ImageVariant& image, const ImageVariant& tile )
       }
 }
 
-void CloneStampInterface::RestoreRect( const Rect& _r )
+void CloneStampInterface::RestoreRect( const Rect& rect )
 {
    ImageVariant image = targetView->Image();
-   Rect r( _r );
-
+   Rect r( rect );
    if ( r.Intersect( image.Bounds() ) )
    {
       image.ResetChannelRange();
 
-      int row0 = r.y0/tileSize;
-      int row1 = (r.y1 - 1)/tileSize;
+      int row0 = r.y0/s_tileSize;
+      int row1 = (r.y1 - 1)/s_tileSize;
 
-      int col0 = r.x0/tileSize;
-      int col1 = (r.x1 - 1)/tileSize;
+      int col0 = r.x0/s_tileSize;
+      int col1 = (r.x1 - 1)/s_tileSize;
 
       for ( int i = row0; i <= row1; ++i )
          for ( int j = col0, k = tileCols*i + col0; j <= col1; ++j, ++k )
@@ -241,8 +243,8 @@ void CloneStampInterface::RestoreRect( const Rect& _r )
 
             if ( tile )
             {
-               int x0 = j*tileSize;
-               int y0 = i*tileSize;
+               int x0 = j*s_tileSize;
+               int y0 = i*s_tileSize;
                image.SelectPoint( Max( r.x0, x0 ), Max( r.y0, y0 ) );
                tile.SelectRectangle( r.x0-x0, r.y0-y0, r.x1-x0, r.y1-y0 );
                RestoreTile( image, tile );
@@ -298,7 +300,7 @@ void CloneStampInterface::XchgTiles()
       for ( int j = 0; j < tileCols; ++j, ++k )
          if ( swapTiles[k] )
          {
-            image.SelectPoint( j*tileSize, i*tileSize );
+            image.SelectPoint( j*s_tileSize, i*s_tileSize );
             XchgTile( image, swapTiles[k] );
          }
 }
@@ -470,26 +472,28 @@ void CloneStampInterface::ExportInstance( CloneStampInstance& instance ) const
    if ( targetView != nullptr )
    {
       uint32 actionIdx = 0;
-      for ( action_list::const_iterator i = done.Begin(); i != done.End(); ++i, ++actionIdx )
+      for ( const ClonerAction& action : done )
       {
-         CloneStampInstance::ActionData action;
-         if ( i->source != nullptr )
+         CloneStampInstance::ActionData newAction;
+         if ( action.source != nullptr )
          {
-            action.sourceId = i->source->view.Id();
-            i->source->view.GetSize( action.sourceWidth, action.sourceHeight );
+            newAction.sourceId = action.source->view.Id();
+            action.source->view.GetSize( newAction.sourceWidth, newAction.sourceHeight );
          }
 
-         action.sourcePos = i->cloner.Begin()->targetPos - i->delta;
-         action.brush = i->brush;
+         newAction.sourcePos = action.cloner.Begin()->targetPos - action.delta;
+         newAction.brush = action.brush;
 
-         instance.actions.Add( action );
+         instance.actions.Add( newAction );
 
-         for ( cloner_sequence::const_iterator j = i->cloner.Begin(); j != i->cloner.End(); ++j )
+         for ( const auto& data : action.cloner )
          {
-            ClonerData data( *j );
-            data.actionIdx = actionIdx;
-            instance.cloner.Add( data );
+            ClonerData newData( data );
+            newData.actionIdx = actionIdx;
+            instance.cloner.Add( newData );
          }
+
+         ++actionIdx;
       }
 
       targetView->GetSize( instance.width, instance.height );
@@ -500,6 +504,8 @@ void CloneStampInterface::ExportInstance( CloneStampInstance& instance ) const
    instance.color = color;
    instance.boundsColor = boundsColor;
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::Reset()
 {
@@ -533,6 +539,8 @@ void CloneStampInterface::Reset()
    //action_list::DeleteFreeList();
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::SelectTarget( View& view )
 {
    Reset();
@@ -546,16 +554,18 @@ void CloneStampInterface::SelectTarget( View& view )
 
    ImageVariant image = targetView->Image();
 
-   tileRows = image.Height()/tileSize;
-   if ( image.Height()%tileSize != 0 )
+   tileRows = image.Height()/s_tileSize;
+   if ( image.Height()%s_tileSize != 0 )
       ++tileRows;
 
-   tileCols = image.Width()/tileSize;
-   if ( image.Width()%tileSize != 0 )
+   tileCols = image.Width()/s_tileSize;
+   if ( image.Width()%s_tileSize != 0 )
       ++tileCols;
 
    swapTiles.Add( ImageVariant(), tileRows*tileCols );
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::SelectSource( View& view )
 {
@@ -577,12 +587,13 @@ void CloneStampInterface::SelectSource( View& view )
    initialized = true;
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::UpdateViews()
 {
    if ( targetView != nullptr )
    {
       ImageWindow targetWindow = targetView->Window();
-
       double d2 = targetWindow.ViewportScalarToImage( targetWindow.DisplayPixelRatio()/2 );
 
       if ( onTarget )
@@ -617,12 +628,16 @@ void CloneStampInterface::UpdateViews()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::RegenerateView()
 {
    if ( targetView != nullptr )
       targetView->Window().RegenerateImageRect( Rect( Point( targetPos ) - int( brush.radius ),
                                                       Point( targetPos ) + (int( brush.radius ) + 1) ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::JumpToCurrentAction()
 {
@@ -641,47 +656,32 @@ void CloneStampInterface::JumpToCurrentAction()
       }
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::Broadcast()
 {
    if ( targetView != nullptr )
       BroadcastImageUpdated( *targetView );
 }
 
+// ----------------------------------------------------------------------------
+
 Rect CloneStampInterface::Bounds() const
 {
    if ( done.IsEmpty() )
       return Rect( 0 );
 
-   Rect r = done.Begin()->bounds;
-   for ( action_list::const_iterator i = done.Begin(); ++i != done.End(); )
-      r.Unite( i->bounds );
-
-   return r;
+   Rect rect = done.Begin()->bounds;
+   for ( const auto& action : done )
+      rect.Unite( action.bounds );
+   return rect;
 }
 
 // ----------------------------------------------------------------------------
 
 CloneStampInterface::CloneStampInterface() :
-   ProcessInterface(),
-   targetView( nullptr ),
-   sourceView( nullptr ),
-   brush(),
-   delta( 0 ),
-   targetPos( 0 ),
-   selectingSource( true ),
-   selectingTarget( false ),
-   executing( false ),
-   onTarget( false ),
-   dragging( false ),
-   imageChanged( false ),
-   regenRect( 0 ),
    color( uint32( TheCSColorParameter->DefaultValue() ) ),
-   boundsColor( uint32( TheCSBoundsColorParameter->DefaultValue() ) ),
-   showBounds( false ),
-   swapTiles(),
-   done(),
-   undone(),
-   GUI( nullptr )
+   boundsColor( uint32( TheCSBoundsColorParameter->DefaultValue() ) )
 {
    TheCloneStampInterface = this;
 }
@@ -917,48 +917,48 @@ bool CloneStampInterface::ImportProcess( const ProcessImplementation& p )
       double tsy = (instance->height > 0) ? double( targetView->Height() )/instance->height : 1.0;
 
       uint32 actionIdx = 0;
-      for ( CloneStampInstance::action_sequence::const_iterator i = instance->actions.Begin();
-            i != instance->actions.End();
-            ++i, ++actionIdx )
+      for ( const auto& action : instance->actions )
       {
          ImageWindow w = ImageWindow::Null();
 
-         if ( !i->sourceId.IsEmpty() )
+         if ( !action.sourceId.IsEmpty() )
          {
-            w = ImageWindow::WindowById( i->sourceId );
+            w = ImageWindow::WindowById( action.sourceId );
             if ( w.IsNull() )
-               throw Error( "Source image not found: " + i->sourceId );
+               throw Error( "Source image not found: " + action.sourceId );
          }
 
          View view = w.IsNull() ? View::Null() : w.MainView();
 
-         double ssx = (view.IsNull() || i->sourceWidth <= 0) ? tsx : double( view.Width() )/i->sourceWidth;
-         double ssy = (view.IsNull() || i->sourceHeight <= 0) ? tsy : double( view.Height() )/i->sourceHeight;
+         double ssx = (view.IsNull() || action.sourceWidth <= 0) ? tsx : double( view.Width() )/action.sourceWidth;
+         double ssy = (view.IsNull() || action.sourceHeight <= 0) ? tsy : double( view.Height() )/action.sourceHeight;
 
-         BrushData br( i->brush );
+         BrushData br( action.brush );
          br.radius = RoundInt( Max( tsx, tsy ) * br.radius );
 
          done.Add( ClonerAction( view, br, 0 ) );
-         ClonerAction& action = *done.ReverseBegin();
+         ClonerAction& newAction = *done.ReverseBegin();
 
-         for ( cloner_sequence::const_iterator j = instance->cloner.Begin(); j != instance->cloner.End(); ++j )
-            if ( j->actionIdx == actionIdx )
+         for ( const auto& data : instance->cloner )
+            if ( data.actionIdx == actionIdx )
             {
-               ClonerData cj( *j );
+               ClonerData newData( data );
 
-               if ( action.cloner.IsEmpty() )
+               if ( newAction.cloner.IsEmpty() )
                {
-                  action.delta.x = RoundInt( tsx*cj.targetPos.x - ssx*i->sourcePos.x );
-                  action.delta.y = RoundInt( tsy*cj.targetPos.y - ssy*i->sourcePos.y );
+                  newAction.delta.x = RoundInt( tsx*newData.targetPos.x - ssx*action.sourcePos.x );
+                  newAction.delta.y = RoundInt( tsy*newData.targetPos.y - ssy*action.sourcePos.y );
                }
 
-               cj.targetPos.x = RoundInt( tsx*cj.targetPos.x );
-               cj.targetPos.y = RoundInt( tsy*cj.targetPos.y );
+               newData.targetPos.x = RoundInt( tsx*newData.targetPos.x );
+               newData.targetPos.y = RoundInt( tsy*newData.targetPos.y );
 
-               action.cloner.Add( cj );
+               newAction.cloner.Add( newData );
             }
 
-         action.UpdateBounds();
+         newAction.UpdateBounds();
+
+         ++actionIdx;
       }
 
       if ( !done.IsEmpty() )
@@ -967,9 +967,9 @@ bool CloneStampInterface::ImportProcess( const ProcessImplementation& p )
 
          brush = action.brush;
          delta = action.delta;
-
-         if ( action.source != nullptr && !action.source->view.IsNull() )
-            sourceView = new View( action.source->view );
+         if ( action.source != nullptr )
+            if ( !action.source->view.IsNull() )
+               sourceView = new View( action.source->view );
 
          initialized = true;
          selectingTarget = true;
@@ -1205,11 +1205,11 @@ void CloneStampInterface::DynamicMouseMove( View& v, const DPoint& p, unsigned b
 
          if ( r.Intersect( image.Bounds() ) )
          {
-            int row0 = r.y0/tileSize;
-            int row1 = (r.y1 - 1)/tileSize;
+            int row0 = r.y0/s_tileSize;
+            int row1 = (r.y1 - 1)/s_tileSize;
 
-            int col0 = r.x0/tileSize;
-            int col1 = (r.x1 - 1)/tileSize;
+            int col0 = r.x0/s_tileSize;
+            int col1 = (r.x1 - 1)/s_tileSize;
 
             for ( int r = row0; r <= row1; ++r )
                for ( int c = col0, k = tileCols*r + col0; c <= col1; ++c, ++k )
@@ -1219,9 +1219,9 @@ void CloneStampInterface::DynamicMouseMove( View& v, const DPoint& p, unsigned b
 
                      if ( !swapTiles[k] )
                      {
-                        int x0 = c*tileSize;
-                        int y0 = r*tileSize;
-                        image.SelectRectangle( x0, y0, x0+tileSize, y0+tileSize );
+                        int x0 = c*s_tileSize;
+                        int y0 = r*s_tileSize;
+                        image.SelectRectangle( x0, y0, x0+s_tileSize, y0+s_tileSize );
                         swapTiles[k].CopyImage( image );
                      }
                   }
@@ -1834,6 +1834,8 @@ CloneStampInterface::GUIData::GUIData( CloneStampInterface& w )
    Global_Sizer.Add( History_Sizer );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 
@@ -1851,4 +1853,4 @@ CloneStampInterface::GUIData::GUIData( CloneStampInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF CloneStampInterface.cpp - Released 2019-09-29T12:27:57Z

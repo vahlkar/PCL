@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Version.h - Released 2019-01-21T12:06:07Z
+// pcl/Version.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -117,6 +117,10 @@ public:
 
    /*!
     * Returns the current PCL build number.
+    *
+    * \note Since core version 1.8.7 build numbers have been deprecated. They
+    * are maintained exclusively for compatibility with previous versions and
+    * existing code.
     */
    static int Build();
 
@@ -145,7 +149,7 @@ public:
    }
 
    /*!
-    * Returns a readable representation of the current PCL version.
+    * Returns a human-readable representation of the current PCL version.
     */
    static String AsString();
 };
@@ -204,6 +208,10 @@ public:
 
    /*!
     * Returns the build number of the PixInsight core application.
+    *
+    * \note Since core version 1.8.7 build numbers have been deprecated. They
+    * are maintained exclusively for compatibility with previous versions and
+    * existing code.
     */
    static int Build();
 
@@ -259,7 +267,7 @@ public:
    }
 
    /*!
-    * Returns a readable representation of the PixInsight core version.
+    * Returns a human-readable representation of the PixInsight core version.
     *
     * \param withCodename  If this parameter is true, the returned version
     *                      string will include the codename of the current
@@ -278,4 +286,4 @@ public:
 #endif   // __PCL_Version_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Version.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Version.h - Released 2019-09-29T12:27:26Z

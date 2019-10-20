@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard IntensityTransformations Process Module Version 01.07.01.0430
+// Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInterface.cpp - Released 2019-01-21T12:06:41Z
+// ColorSaturationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -910,6 +910,9 @@ void ColorSaturationInterface::PlotCursor( Graphics& g, const Rect& r )
 
 void ColorSaturationInterface::__Curve_Paint( Control& sender, const pcl::Rect& updateRect )
 {
+   if ( GUI == nullptr )
+      return;
+
    if ( m_viewportDirty )
       RegenerateViewport();
 
@@ -947,14 +950,15 @@ void ColorSaturationInterface::__Curve_Paint( Control& sender, const pcl::Rect& 
 void ColorSaturationInterface::__Curve_Resize( Control& sender,
    int /*newWidth*/, int /*newHeight*/, int /*oldWidth*/, int /*oldHeight*/ )
 {
-   if ( sender == GUI->Curve_ScrollBox.Viewport() )
-   {
-      m_viewportBitmap = Bitmap::Null();
-      m_viewportDirty = true;
+   if ( GUI != nullptr )
+      if ( sender == GUI->Curve_ScrollBox.Viewport() )
+      {
+         m_viewportBitmap = Bitmap::Null();
+         m_viewportDirty = true;
 
-      if ( !m_settingUp )
-         SetZoom( m_zoomX, m_zoomY );
-   }
+         if ( !m_settingUp )
+            SetZoom( m_zoomX, m_zoomY );
+      }
 }
 
 void ColorSaturationInterface::__Curve_ScrollPosUpdated( ScrollBox& sender, int pos )
@@ -1879,6 +1883,8 @@ ColorSaturationInterface::GUIData::GUIData( ColorSaturationInterface& w )
    Global_Sizer.Add( HueShift_NumericControl );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 
    //
@@ -1893,4 +1899,4 @@ ColorSaturationInterface::GUIData::GUIData( ColorSaturationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF ColorSaturationInterface.cpp - Released 2019-09-29T12:27:57Z

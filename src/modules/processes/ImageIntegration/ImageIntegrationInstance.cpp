@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// ImageIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -52,6 +52,7 @@
 
 #include "ImageIntegrationInstance.h"
 #include "IntegrationCache.h"
+#include "SystemMemory.h"
 
 #include <pcl/ATrousWaveletTransform.h>
 #include <pcl/AutoPointer.h>
@@ -63,6 +64,7 @@
 #include <pcl/HistogramTransformation.h>
 #include <pcl/ICCProfile.h>
 #include <pcl/ImageWindow.h>
+#include <pcl/IntegrationMetadata.h>
 #include <pcl/LinearFit.h>
 #include <pcl/LocalNormalizationData.h>
 #include <pcl/MetaModule.h>
@@ -99,6 +101,7 @@ ImageIntegrationInstance::ImageIntegrationInstance( const MetaProcess* m ) :
    p_pcClipHigh( TheIIPercentileHighParameter->DefaultValue() ),
    p_sigmaLow( TheIISigmaLowParameter->DefaultValue() ),
    p_sigmaHigh( TheIISigmaHighParameter->DefaultValue() ),
+   p_winsorizationCutoff( TheIIWinsorizationCutoffParameter->DefaultValue() ),
    p_linearFitLow( TheIILinearFitLowParameter->DefaultValue() ),
    p_linearFitHigh( TheIILinearFitHighParameter->DefaultValue() ),
    p_ccdGain( TheIICCDGainParameter->DefaultValue() ),
@@ -125,12 +128,15 @@ ImageIntegrationInstance::ImageIntegrationInstance( const MetaProcess* m ) :
    p_closePreviousImages( TheIIClosePreviousImagesParameter->DefaultValue() ),
    p_bufferSizeMB( TheIIBufferSizeParameter->DefaultValue() ),
    p_stackSizeMB( TheIIStackSizeParameter->DefaultValue() ),
+   p_autoMemorySize( TheIIAutoMemorySizeParameter->DefaultValue() ),
+   p_autoMemoryLimit( TheIIAutoMemoryLimitParameter->DefaultValue() ),
    p_useROI( TheIIUseROIParameter->DefaultValue() ),
-   p_roi( 0 ),
    p_useCache( TheIIUseCacheParameter->DefaultValue() ),
    p_evaluateNoise( TheIIEvaluateNoiseParameter->DefaultValue() ),
    p_mrsMinDataFraction( TheIIMRSMinDataFractionParameter->DefaultValue() ),
-   p_noGUIMessages( TheIINoGUIMessagesParameter->DefaultValue() ),
+   p_subtractPedestals( TheIISubtractPedestalsParameter->DefaultValue() ),
+   p_truncateOnOutOfRange( TheIITruncateOnOutOfRangeParameter->DefaultValue() ),
+   p_noGUIMessages( TheIINoGUIMessagesParameter->DefaultValue() ), // ### DEPRECATED
    p_useFileThreads( TheIIUseFileThreadsParameter->DefaultValue() ),
    p_fileThreadOverload( TheIIFileThreadOverloadParameter->DefaultValue() )
 {
@@ -167,6 +173,7 @@ void ImageIntegrationInstance::Assign( const ProcessImplementation& p )
       p_pcClipHigh                        = x->p_pcClipHigh;
       p_sigmaLow                          = x->p_sigmaLow;
       p_sigmaHigh                         = x->p_sigmaHigh;
+      p_winsorizationCutoff               = x->p_winsorizationCutoff;
       p_linearFitLow                      = x->p_linearFitLow;
       p_linearFitHigh                     = x->p_linearFitHigh;
       p_ccdGain                           = x->p_ccdGain;
@@ -193,11 +200,15 @@ void ImageIntegrationInstance::Assign( const ProcessImplementation& p )
       p_closePreviousImages               = x->p_closePreviousImages;
       p_bufferSizeMB                      = x->p_bufferSizeMB;
       p_stackSizeMB                       = x->p_stackSizeMB;
+      p_autoMemorySize                    = x->p_autoMemorySize;
+      p_autoMemoryLimit                   = x->p_autoMemoryLimit;
       p_useROI                            = x->p_useROI;
       p_roi                               = x->p_roi;
       p_useCache                          = x->p_useCache;
       p_evaluateNoise                     = x->p_evaluateNoise;
       p_mrsMinDataFraction                = x->p_mrsMinDataFraction;
+      p_subtractPedestals                 = x->p_subtractPedestals;
+      p_truncateOnOutOfRange              = x->p_truncateOnOutOfRange;
       p_noGUIMessages                     = x->p_noGUIMessages;
       p_useFileThreads                    = x->p_useFileThreads;
       p_fileThreadOverload                = x->p_fileThreadOverload;
@@ -471,317 +482,13 @@ static DVector EvaluateIKSS( const GenericImage<P>& image, double low = 0, doubl
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-template <typename T>
-struct Definable
-{
-   T    value;
-   bool defined = false;
-   bool consistent = true;
-
-   Definable() = default;
-   Definable( const Definable& ) = default;
-
-   T& operator =( const T& x )
-   {
-      value = x;
-      defined = consistent = true;
-      return value;
-   }
-
-   Definable& operator =( const Definable& other )
-   {
-      if ( consistent )
-         if ( other.defined )
-         {
-            if ( defined )
-            {
-               if ( value != other.value )
-                  consistent = false;
-            }
-            else
-            {
-               value = other.value;
-               defined = true;
-            }
-         }
-         else
-         {
-            if ( defined )
-               consistent = false;
-         }
-
-      return *this;
-   }
-
-   Definable& operator +=( const Definable& other )
-   {
-      if ( consistent )
-         if ( other.defined )
-         {
-            if ( defined )
-               value += other.value;
-            else
-            {
-               value = other.value;
-               defined = true;
-            }
-         }
-         else
-         {
-            if ( defined )
-               consistent = false;
-         }
-
-      return *this;
-   }
-
-   bool ConsistentlyDefined( const String& what = String() ) const
-   {
-      if ( defined )
-      {
-         if ( consistent )
-            return true;
-         if ( !what.IsEmpty() )
-            Console().WarningLn( "<end><cbr>** Warning: Inconsistent " + what + " value(s) - metadata not generated." );
-      }
-      return false;
-   }
-
-   String ToString() const
-   {
-      return defined ? String( value ) : String();
-   }
-};
-
-// ----------------------------------------------------------------------------
-
+/*
+ * Metadata, descriptive statistics and pixel data of an image being
+ * integrated.
+ */
 class IntegrationFile
 {
 public:
-
-   constexpr static char16_type ItemSeparator = char16_type( 0x2028 );  // Unicode Line Separator
-   constexpr static char16_type TokenSeparator = char16_type( 0x2029 ); // Unicode Paragraph Separator
-
-   struct FileMetadata
-   {
-      Definable<String>    author;
-      Definable<String>    observer;
-      Definable<String>    instrumentName;
-      Definable<String>    frameType;
-      Definable<String>    filterName;
-      Definable<double>    pedestal;
-      Definable<double>    expTime;
-      Definable<double>    sensorTemp;
-      Definable<double>    xPixSize;
-      Definable<double>    yPixSize;
-      Definable<unsigned>  xBinning;
-      Definable<unsigned>  yBinning;
-      Definable<unsigned>  xOrigin;
-      Definable<unsigned>  yOrigin;
-      Definable<String>    telescopeName;
-      Definable<double>    focalLength;   // mm
-      Definable<double>    aperture;      // mm
-      Definable<double>    apertureArea;  // mm^2
-      Definable<String>    objectName;
-      Definable<TimePoint> observationTime;
-      Definable<double>    ra;            // deg (-180,+180]
-      Definable<double>    dec;           // deg [-90,+90]
-      Definable<double>    equinox;
-
-      FileMetadata() = default;
-      FileMetadata( const FileMetadata& ) = default;
-
-      FileMetadata( const FITSKeywordArray& keywords )
-      {
-         for ( auto k : keywords )
-         {
-            try
-            {
-               IsoString value = k.StripValueDelimiters();
-               if ( k.name == "AUTHOR" )
-                  author = String( value );
-               else if ( k.name == "OBSERVER" )
-                  observer = String( value );
-               else if ( k.name == "INSTRUME" )
-                  instrumentName = String( value );
-               else if ( k.name == "IMAGETYP" || k.name == "FRAME" )
-                  frameType = String( value );
-               else if ( k.name == "FILTER" || k.name == "INSFLNAM" )
-                  filterName = String( value );
-               else if ( k.name == "PEDESTAL" )
-                  pedestal = value.ToDouble();
-               else if ( k.name == "EXPTIME" || k.name == "EXPOSURE" )
-                  expTime = Round( value.ToDouble(), 3 ); // 1 ms
-               else if ( k.name == "CCD-TEMP" )
-                  sensorTemp = Round( value.ToDouble(), 1 ); // 0.1 C
-               else if ( k.name == "PIXSIZE1" )
-                  xPixSize = value.ToDouble();
-               else if ( k.name == "PIXSIZE2" )
-                  yPixSize = value.ToDouble();
-               else if ( k.name == "PIXSIZE" )
-                  xPixSize = yPixSize = value.ToDouble();
-               else if ( k.name == "XBINNING" || k.name == "CCDBINX" )
-                  xBinning = unsigned( Max( 1.0, value.ToDouble() ) );
-               else if ( k.name == "YBINNING" || k.name == "CCDBINY" )
-                  yBinning = unsigned( Max( 1.0, value.ToDouble() ) );
-               else if ( k.name == "BINNING" )
-                  xBinning = yBinning = unsigned( Max( 1.0, value.ToDouble() ) );
-               else if ( k.name == "XORGSUBF" )
-                  xOrigin = unsigned( Max( 0.0, value.ToDouble() ) );
-               else if ( k.name == "YORGSUBF" )
-                  yOrigin = unsigned( Max( 0.0, value.ToDouble() ) );
-               else if ( k.name == "TELESCOP" )
-                  telescopeName = String( value );
-               else if ( k.name == "FOCALLEN" )
-                  focalLength = value.ToDouble();
-               else if ( k.name == "APTDIA" )
-                  aperture = value.ToDouble();
-               else if ( k.name == "APTAREA" )
-                  apertureArea = value.ToDouble();
-               else if ( k.name == "OBJNAME" || k.name == "OBJECT" )
-                  objectName = String( value );
-               else if ( k.name == "DATE-OBS" )
-                  observationTime = TimePoint( value );
-               else if ( k.name == "OBJCTRA" )
-               {
-                  ra = value.SexagesimalToDouble( ' ' )*15;
-                  if ( ra.value > 180 )
-                     ra.value -= 360;
-               }
-               else if ( k.name == "OBJCTDEC" )
-                  dec = value.SexagesimalToDouble( ' ' );
-               else if ( k.name == "EQUINOX" )
-                  equinox = value.ToDouble();
-            }
-            catch ( Exception& x )
-            {
-               Console().CriticalLn( "<end><cbr>*** Error: Parsing " + k.name + " FITS keyword: " + x.Message() );
-            }
-            catch ( ... )
-            {
-               throw;
-            }
-         }
-
-         if ( !equinox.defined )
-            if ( ra.defined )
-               if ( dec.defined )
-                  equinox = 2000.0;
-
-         m_valid = true;
-      }
-
-      FileMetadata( const String& data )
-      {
-         if ( !data.IsEmpty() )
-         {
-            try
-            {
-               StringList items;
-               data.Break( items, ItemSeparator );
-               for ( const String& item : items )
-               {
-                  StringList tokens;
-                  item.Break( tokens, TokenSeparator );
-                  if ( tokens.Length() != 2 )
-                     throw 0;
-                  if ( !tokens[1].IsEmpty() )
-                     if (      tokens[0] == "author" )
-                        author = tokens[1];
-                     else if ( tokens[0] == "observer" )
-                        observer = tokens[1];
-                     else if ( tokens[0] == "instrumentName" )
-                        instrumentName = tokens[1];
-                     else if ( tokens[0] == "frameType" )
-                        frameType = tokens[1];
-                     else if ( tokens[0] == "filterName" )
-                        filterName = tokens[1];
-                     else if ( tokens[0] == "pedestal" )
-                        pedestal = tokens[1].ToDouble();
-                     else if ( tokens[0] == "expTime" )
-                        expTime = tokens[1].ToDouble();
-                     else if ( tokens[0] == "sensorTemp" )
-                        sensorTemp = tokens[1].ToDouble();
-                     else if ( tokens[0] == "xPixSize" )
-                        xPixSize = tokens[1].ToDouble();
-                     else if ( tokens[0] == "yPixSize" )
-                        yPixSize = tokens[1].ToDouble();
-                     else if ( tokens[0] == "xBinning" )
-                        xBinning = tokens[1].ToUInt();
-                     else if ( tokens[0] == "yBinning" )
-                        yBinning = tokens[1].ToUInt();
-                     else if ( tokens[0] == "xOrigin" )
-                        xOrigin = tokens[1].ToUInt();
-                     else if ( tokens[0] == "yOrigin" )
-                        yOrigin = tokens[1].ToUInt();
-                     else if ( tokens[0] == "telescopeName" )
-                        telescopeName = tokens[1];
-                     else if ( tokens[0] == "focalLength" )
-                        focalLength = tokens[1].ToDouble();
-                     else if ( tokens[0] == "aperture" )
-                        aperture = tokens[1].ToDouble();
-                     else if ( tokens[0] == "apertureArea" )
-                        apertureArea = tokens[1].ToDouble();
-                     else if ( tokens[0] == "objectName" )
-                        objectName = tokens[1];
-                     else if ( tokens[0] == "observationTime" )
-                        observationTime = TimePoint( tokens[1] );
-                     else if ( tokens[0] == "ra" )
-                        ra = tokens[1].ToDouble();
-                     else if ( tokens[0] == "dec" )
-                        dec = tokens[1].ToDouble();
-                     else if ( tokens[0] == "equinox" )
-                        equinox = tokens[1].ToDouble();
-               }
-
-               m_valid = true;
-            }
-            catch ( ... )
-            {
-               Console().CriticalLn( "<end><cbr>*** Error: Corrupted integration cache metadata." );
-            }
-         }
-      }
-
-      String ToString() const
-      {
-         if ( !IsValid() )
-            return String();
-
-         return String() <<                  "author"          << TokenSeparator << author.ToString()
-                         << ItemSeparator << "observer"        << TokenSeparator << observer.ToString()
-                         << ItemSeparator << "instrumentName"  << TokenSeparator << instrumentName.ToString()
-                         << ItemSeparator << "frameType"       << TokenSeparator << frameType.ToString()
-                         << ItemSeparator << "filterName"      << TokenSeparator << filterName.ToString()
-                         << ItemSeparator << "pedestal"        << TokenSeparator << pedestal.ToString()
-                         << ItemSeparator << "expTime"         << TokenSeparator << expTime.ToString()
-                         << ItemSeparator << "sensorTemp"      << TokenSeparator << sensorTemp.ToString()
-                         << ItemSeparator << "xPixSize"        << TokenSeparator << xPixSize.ToString()
-                         << ItemSeparator << "yPixSize"        << TokenSeparator << yPixSize.ToString()
-                         << ItemSeparator << "xBinning"        << TokenSeparator << xBinning.ToString()
-                         << ItemSeparator << "yBinning"        << TokenSeparator << yBinning.ToString()
-                         << ItemSeparator << "xOrigin"         << TokenSeparator << xOrigin.ToString()
-                         << ItemSeparator << "yOrigin"         << TokenSeparator << yOrigin.ToString()
-                         << ItemSeparator << "telescopeName"   << TokenSeparator << telescopeName.ToString()
-                         << ItemSeparator << "focalLength"     << TokenSeparator << focalLength.ToString()
-                         << ItemSeparator << "aperture"        << TokenSeparator << aperture.ToString()
-                         << ItemSeparator << "apertureArea"    << TokenSeparator << apertureArea.ToString()
-                         << ItemSeparator << "objectName"      << TokenSeparator << objectName.ToString()
-                         << ItemSeparator << "observationTime" << TokenSeparator << observationTime.ToString()
-                         << ItemSeparator << "ra"              << TokenSeparator << ra.ToString()
-                         << ItemSeparator << "dec"             << TokenSeparator << dec.ToString()
-                         << ItemSeparator << "equinox"         << TokenSeparator << equinox.ToString();
-      }
-
-      bool IsValid() const
-      {
-         return m_valid;
-      }
-
-   private:
-
-      bool m_valid = false;
-   };
 
    static void OpenFiles( const ImageIntegrationInstance& );
 
@@ -937,12 +644,12 @@ public:
       return m_hasLocalNormalization ? m_localNormalization( z, x, y, c ) : z;
    }
 
-   const FileMetadata& Metadata() const
+   const IntegrationMetadata& Metadata() const
    {
       return m_metadata;
    }
 
-   static FileMetadata SummaryMetadata();
+   static IntegrationMetadata SummaryMetadata();
 
    const UInt8Image& RejectionMap() const
    {
@@ -1008,6 +715,16 @@ public:
       return s_bufferRows;
    }
 
+   static size_type AvailableMemory()
+   {
+      return s_availableMemory;
+   }
+
+   static size_type TotalBufferSize()
+   {
+      return s_files.Length() * s_bufferRows * s_width * sizeof( float );
+   }
+
    static void UpdateBuffers( int startRow, int channel )
    {
       for ( IntegrationFile* file : s_files )
@@ -1047,7 +764,8 @@ private:
    DVector                         m_weight;
    LocalNormalizationData          m_localNormalization;
    bool                            m_hasLocalNormalization = false;
-   FileMetadata                    m_metadata;
+   IntegrationMetadata             m_metadata;
+   const ImageIntegrationInstance* m_instance = nullptr;
 
    static file_list                s_files;
    static Rect                     s_roi;
@@ -1056,6 +774,7 @@ private:
    static int                      s_numberOfChannels;
    static bool                     s_isColor;
    static bool                     s_incremental;
+   static size_type                s_availableMemory;
    static int                      s_bufferRows;
 
    struct ThreadIndex
@@ -1075,12 +794,11 @@ private:
          m_file( s_files[index.fileIndex] ),
          m_item( instance.p_images[index.itemIndex] ),
          m_instance( instance ),
-         m_isReference( isReference ),
-         m_success( false )
+         m_isReference( isReference )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          try
          {
@@ -1122,11 +840,11 @@ private:
 
    private:
 
-            IntegrationFile*                     m_file;
+            IntegrationFile*                     m_file = nullptr;
       const ImageIntegrationInstance::ImageItem  m_item;
       const ImageIntegrationInstance&            m_instance;
-            bool                                 m_isReference : 1;
-            bool                                 m_success     : 1;
+            bool                                 m_isReference = false;
+            bool                                 m_success = false;
             String                               m_errorInfo;
    };
 
@@ -1141,8 +859,19 @@ private:
       if ( s_incremental )
       {
          startRow += s_roi.y0;
-         if ( !m_file->ReadSamples( *m_buffer, startRow, Min( s_bufferRows, s_roi.y1 - startRow ), channel ) )
+         int totalRows = Min( s_bufferRows, s_roi.y1 - startRow );
+         if ( !m_file->ReadSamples( *m_buffer, startRow, totalRows, channel ) )
             throw CaughtException();
+
+         if ( m_instance->p_subtractPedestals )
+            if ( m_metadata.IsValid() )
+               if ( m_metadata.pedestal.IsDefined() )
+               {
+                  double p = m_metadata.pedestal()/65535.0;
+                  for ( int i = 0; i < totalRows; ++i )
+                     for ( int j = 0; j < s_width; ++j )
+                        m_buffer[i][j] -= p;
+               }
       }
       else
          m_currentChannel = channel;
@@ -1173,6 +902,7 @@ int IntegrationFile::s_height = 0;
 int IntegrationFile::s_numberOfChannels = 0;
 bool IntegrationFile::s_isColor = false;
 bool IntegrationFile::s_incremental = false;
+size_type IntegrationFile::s_availableMemory = 0;
 int IntegrationFile::s_bufferRows = 0;
 
 // ----------------------------------------------------------------------------
@@ -1313,8 +1043,9 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
                             const ImageIntegrationInstance& instance, bool isReference )
 {
    Console console;
-
    console.WriteLn( "<end><cbr><raw>" + path + "</raw>" );
+
+   m_instance = &instance;
 
    if ( !nmlPath.IsEmpty() )
    {
@@ -1366,12 +1097,22 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
       s_numberOfChannels = images[0].info.numberOfChannels;
       s_isColor = images[0].info.colorSpace != ColorSpace::Gray;
 
+      s_availableMemory = AvailablePhysicalMemory();
+
       s_incremental = format.CanReadIncrementally();
       if ( s_incremental )
-         s_bufferRows = Range( int( (uint64( instance.p_bufferSizeMB )*1024*1024)/(s_width * sizeof( float )) ), 1, s_roi.Height() );
+      {
+         size_type bufferSize = 0;
+         if ( instance.p_autoMemorySize )
+            bufferSize = size_type( double( instance.p_autoMemoryLimit ) * s_availableMemory / s_files.Length() );
+         if ( bufferSize == 0 )
+            bufferSize = size_type( instance.p_bufferSizeMB )*1024*1024;
+         s_bufferRows = Range( int( bufferSize/(s_width * sizeof( float )) ), 1, s_roi.Height() );
+      }
       else
       {
-         console.NoteLn( "<end><cbr><br>* Incremental image integration disabled due to lack of file format support: " + format.Name() + "<br>" );
+         console.WarningLn( "<end><cbr><br>** Warning: Incremental file reading disabled because of lack of file format support: "
+                            + format.Name() + "<br>" );
          s_bufferRows = s_roi.Height();
       }
    }
@@ -1385,15 +1126,6 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
            s_height != images[0].info.height ||
            s_numberOfChannels != images[0].info.numberOfChannels )
          throw Error( m_file->FilePath() + ": Incompatible image geometry." );
-   }
-
-   if ( s_incremental )
-      m_buffer = FMatrix( s_bufferRows, s_width );
-   else
-   {
-      m_image = new Image( (void*)0, 0, 0 ); // shared image
-      if ( !m_file->ReadImage( *m_image ) )
-         throw CaughtException();
    }
 
    m_nmlPath      = String();
@@ -1413,7 +1145,39 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
    m_location     = DVector();
    m_dispersion   = DVector();
    m_noise        = DVector();
-   m_metadata     = FileMetadata();
+   m_metadata     = IntegrationMetadata();
+
+   if ( instance.p_useCache )
+      if ( GetFromCache( path ) )
+         console.NoteLn( "<end><cbr>* Retrieved data from file cache." );
+
+   if ( !m_metadata.IsValid() )
+   {
+      PropertyArray properties;
+      if ( format.CanStoreImageProperties() )
+         properties = m_file->ReadImageProperties();
+
+      FITSKeywordArray keywords;
+      if ( format.CanStoreKeywords() )
+         if ( !m_file->ReadFITSKeywords( keywords ) )
+            throw CaughtException();
+
+      m_metadata = IntegrationMetadata( properties, keywords );
+   }
+
+   if ( s_incremental )
+      m_buffer = FMatrix( s_bufferRows, s_width );
+   else
+   {
+      m_image = new Image( (void*)0, 0, 0 ); // shared image
+      if ( !m_file->ReadImage( *m_image ) )
+         throw CaughtException();
+
+      if ( instance.p_subtractPedestals )
+         if ( m_metadata.IsValid() )
+            if ( m_metadata.pedestal.IsDefined() )
+               *m_image -= m_metadata.pedestal()/65535.0;
+   }
 
    bool generateOutput = instance.p_generateIntegratedImage || instance.p_generateDrizzleData;
 
@@ -1449,10 +1213,6 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
    bool needMean =                generateOutput &&
                                   instance.p_weightMode == IIWeightMode::AverageWeight;
 
-   if ( instance.p_useCache )
-      if ( GetFromCache( path ) )
-         console.NoteLn( "<end><cbr>* Retrieved data from file cache." );
-
    bool doMean   = m_mean.IsEmpty()   && needMean;
    bool doMedian = m_median.IsEmpty() && needMedian;
    bool doAvgDev = m_avgDev.IsEmpty() && needAvgDev;
@@ -1473,6 +1233,11 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
          m_image = new Image( (void*)0, 0, 0 ); // shared image
          if ( !m_file->ReadImage( *m_image ) )
             throw CaughtException();
+
+         if ( instance.p_subtractPedestals )
+            if ( m_metadata.IsValid() )
+               if ( m_metadata.pedestal.IsDefined() )
+                  *m_image -= m_metadata.pedestal()/65535.0;
       }
 
       m_image->SetStatusCallback( &spin );
@@ -1597,15 +1362,6 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
       m_image.Destroy();
    else
       m_image->ResetSelections();
-
-   if ( !m_metadata.IsValid() )
-      if ( format.CanStoreKeywords() )
-      {
-         FITSKeywordArray keywords;
-         if ( !m_file->ReadFITSKeywords( keywords ) )
-            throw CaughtException();
-         m_metadata = FileMetadata( keywords );
-      }
 
    if ( instance.p_useCache )
       AddToCache( path );
@@ -1779,6 +1535,17 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
 
 void IntegrationFile::ToDrizzleData( DrizzleData& drz ) const
 {
+   if ( m_metadata.IsValid() )
+   {
+      IntegrationMetadata metadata( m_metadata );
+      if ( m_instance->p_subtractPedestals )
+         if ( metadata.pedestal.IsDefined() )
+         {
+            drz.SetPedestal( metadata.pedestal()/65535.0 );
+            metadata.pedestal.Undefine();
+         }
+      drz.SetMetadata( metadata.Serialize() );
+   }
    drz.SetLocation( m_location );
    drz.SetReferenceLocation( s_files[0]->m_location );
    drz.SetScale( m_scale );
@@ -1789,62 +1556,12 @@ void IntegrationFile::ToDrizzleData( DrizzleData& drz ) const
 
 // ----------------------------------------------------------------------------
 
-IntegrationFile::FileMetadata IntegrationFile::SummaryMetadata()
+IntegrationMetadata IntegrationFile::SummaryMetadata()
 {
-   FileMetadata summary;
+   Array<IntegrationMetadata> items;
    for ( const IntegrationFile* file : s_files )
-   {
-      const FileMetadata& metadata = file->Metadata();
-      if ( metadata.IsValid() )
-      {
-         if ( summary.IsValid() )
-         {
-            summary.author           = metadata.author;
-            summary.observer         = metadata.observer;
-            summary.instrumentName   = metadata.instrumentName;
-            summary.frameType        = metadata.frameType;
-            summary.filterName       = metadata.filterName;
-            summary.pedestal         = metadata.pedestal;
-            summary.expTime         += metadata.expTime;
-            summary.sensorTemp       = metadata.sensorTemp;
-            summary.xPixSize         = metadata.xPixSize;
-            summary.yPixSize         = metadata.yPixSize;
-            summary.xBinning         = metadata.xBinning;
-            summary.yBinning         = metadata.yBinning;
-            summary.xOrigin          = metadata.xOrigin;
-            summary.yOrigin          = metadata.yOrigin;
-            summary.telescopeName    = metadata.telescopeName;
-            summary.focalLength      = metadata.focalLength;
-            summary.aperture         = metadata.aperture;
-            summary.apertureArea     = metadata.apertureArea;
-            summary.objectName       = metadata.objectName;
-            summary.observationTime  = metadata.observationTime;
-            summary.ra              += metadata.ra;
-            summary.dec             += metadata.dec;
-            summary.equinox          = metadata.equinox;
-         }
-         else
-            summary = metadata;
-      }
-      else
-      {
-         if ( summary.IsValid() )
-         {
-            Console().WarningLn( "<end><cbr>** Warning: Corrupted or invalid integration metadata item(s)." );
-            return FileMetadata();
-         }
-      }
-   }
-
-   if ( summary.IsValid() )
-   {
-      if ( summary.ra.defined )
-         summary.ra.value /= s_files.Length();
-      if ( summary.dec.defined )
-         summary.dec.value /= s_files.Length();
-   }
-
-   return summary;
+      items << file->Metadata();
+   return IntegrationMetadata::Summary( items );
 }
 
 // ----------------------------------------------------------------------------
@@ -1855,16 +1572,15 @@ double IntegrationFile::KeywordValue( const IsoString& keyName )
    if ( !m_file->ReadFITSKeywords( keywords ) )
       throw CaughtException();
 
-   for ( FITSKeywordArray::const_iterator i = keywords.Begin(); i != keywords.End(); ++i )
-      if ( !i->name.CompareIC( keyName ) )
+   for ( const FITSHeaderKeyword& keyword : keywords )
+      if ( !keyword.name.CompareIC( keyName ) )
       {
-         if ( i->IsNumeric() )
+         if ( keyword.IsNumeric() )
          {
             double v;
-            if ( i->GetNumericValue( v ) )
+            if ( keyword.GetNumericValue( v ) )
                return v;
          }
-
          break;
       }
 
@@ -1886,7 +1602,7 @@ void IntegrationFile::ResetCacheableData()
    m_ikss     = DVector();
    m_iksl     = DVector();
    m_noise    = DVector();
-   m_metadata = FileMetadata();
+   m_metadata = IntegrationMetadata();
 }
 
 // ----------------------------------------------------------------------------
@@ -1905,7 +1621,7 @@ void IntegrationFile::AddToCache( const String& path ) const
    item.ikss     = m_ikss;
    item.iksl     = m_iksl;
    item.noise    = m_noise;
-   item.metadata = m_metadata.ToString();
+   item.metadata = m_metadata.Serialize();
    TheIntegrationCache->Add( item );
 }
 
@@ -1930,7 +1646,7 @@ bool IntegrationFile::GetFromCache( const String& path )
    m_ikss     = item.ikss;
    m_iksl     = item.iksl;
    m_noise    = item.noise;
-   m_metadata = FileMetadata( item.metadata );
+   m_metadata = IntegrationMetadata( item.metadata );
 
    return
    (m_mean.IsEmpty()   || m_mean.Length()   == s_numberOfChannels) &&
@@ -2046,7 +1762,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
@@ -2259,7 +1975,7 @@ public:
       return pcl::Median( d.Begin(), d.End() );
    }
 
-   static void RejectionWinsorization( double& mean, double& sigma, const RejectionDataItem* r, int n )
+   static void RejectionWinsorization( double& mean, double& sigma, const RejectionDataItem* r, int n, float cutoffPoint )
    {
       if ( n < 2 )
       {
@@ -2282,16 +1998,30 @@ public:
          double t0 = mean - 1.5*sigma;
          double t1 = mean + 1.5*sigma;
 
-         for ( int i = 0; i < n; ++i )
-            if ( v[i] < t0 )
-               v[i] = t0;
-            else if ( v[i] > t1 )
-               v[i] = t1;
+         if ( cutoffPoint > 0 )
+         {
+            double c0 = mean - cutoffPoint*sigma;
+            double c1 = mean + cutoffPoint*sigma;
+            for ( int i = 0; i < n; ++i )
+               if ( v[i] < t0 )
+                  v[i] = (v[i] > c0) ? t0 : mean;
+               else if ( v[i] > t1 )
+                  v[i] = (v[i] < c1) ? t1 : mean;
+         }
+         else
+         {
+            for ( int i = 0; i < n; ++i )
+               if ( v[i] < t0 )
+                  v[i] = t0;
+               else if ( v[i] > t1 )
+                  v[i] = t1;
+         }
 
          double s0 = sigma;
          sigma = 1.134*v.StdDev();
-         if ( ++it > 1 && Abs( s0 - sigma )/s0 < 0.0005 )
-            break;
+         if ( ++it > 1 )
+            if ( Abs( s0 - sigma )/s0 < 0.0005 )
+               break;
       }
    }
 
@@ -2350,7 +2080,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
    };
 
    class RangeRejectionThread : public RejectionThread
@@ -2362,7 +2092,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
    };
 
    class MinMaxRejectionThread : public RejectionThread
@@ -2374,7 +2104,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
    };
 
    class PercentileClipRejectionThread : public RejectionThread
@@ -2386,7 +2116,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
    };
 
    class SigmaClipRejectionThread : public RejectionThread
@@ -2398,7 +2128,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
    };
 
    class WinsorizedSigmaClipRejectionThread : public RejectionThread
@@ -2410,7 +2140,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
    };
 
    class AveragedSigmaClipRejectionThread : public RejectionThread
@@ -2422,9 +2152,9 @@ private:
       {
       }
 
-      virtual void PreRun();
-      virtual void Run();
-      virtual void PostRun();
+      void PreRun() override;
+      void Run() override;
+      void PostRun() override;
 
    private:
 
@@ -2448,7 +2178,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
    };
 
    class CCDClipRejectionThread : public RejectionThread
@@ -2460,9 +2190,9 @@ private:
       {
       }
 
-      virtual void PreRun();
-      virtual void Run();
-      virtual void PostRun();
+      void PreRun() override;
+      void Run() override;
+      void PostRun() override;
 
    private:
 
@@ -2826,12 +2556,17 @@ void RejectionEngine::WinsorizedSigmaClipRejectionThread::Run()
          RejectionDataItem* r = R->DataPtr()[i];
          Sort( r, r + n );
 
-         for ( ;; )
+         for ( int it = 0; ; ++it )
          {
             double mean, sigma;
-            RejectionWinsorization( mean, sigma, r, n );
+            RejectionWinsorization( mean, sigma, r, n, (it > 0) ? 0 : I.p_winsorizationCutoff );
             if ( 1 + sigma == 1 )
                break;
+
+            // N.B. Winsorization cut off may alter sample order.
+            if ( it == 0 )
+               if ( I.p_winsorizationCutoff > 1.5 )
+                  Sort( r, r + n );
 
             int nc = 0;
 
@@ -3029,8 +2764,8 @@ void RejectionEngine::LinearFitRejectionThread::Run()
                break;
             }
 
-            double sigma = 2*L.adev; // mult. by 2 to compatibilize with sigma clipping
-            if ( 1 + sigma == 1 )
+            double s = 2 * L.adev * Sqrt( 1 + L.b*L.b ); // 2 * to compatibilize with sigma clipping
+            if ( 1 + s == 1 )
                break;
 
             int nc = 0;
@@ -3041,13 +2776,13 @@ void RejectionEngine::LinearFitRejectionThread::Run()
                if ( r[j].value < y )
                {
                   if ( I.p_clipLow )
-                     if ( (y - r[j].value)/sigma >= I.p_linearFitLow )
+                     if ( (y - r[j].value)/s >= I.p_linearFitLow )
                         r[j].rejectLow = true, ++nc;
                }
                else
                {
                   if ( I.p_clipHigh )
-                     if ( (r[j].value - y)/sigma >= I.p_linearFitHigh )
+                     if ( (r[j].value - y)/s >= I.p_linearFitHigh )
                         r[j].rejectHigh = true, ++nc;
                }
             }
@@ -3239,7 +2974,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
@@ -3445,7 +3180,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
@@ -3660,7 +3395,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
@@ -3782,7 +3517,7 @@ private:
       {
       }
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
@@ -3963,6 +3698,8 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
       case IIRejection::WinsorizedSigmaClip:
       case IIRejection::AveragedSigmaClip:
          rejectionParameters.Format( "sigma_low=%.3f sigma_high=%.3f", instance.p_sigmaLow, instance.p_sigmaHigh );
+         if ( instance.p_rejection == IIRejection::WinsorizedSigmaClip )
+            rejectionParameters.AppendFormat( " cutoff=%.3f", instance.p_winsorizationCutoff );
          break;
       case IIRejection::LinearFit:
          rejectionParameters.Format( "lfit_low=%.3f lfit_high=%.3f", instance.p_linearFitLow, instance.p_linearFitHigh );
@@ -4026,8 +3763,6 @@ String ImageIntegrationInstance::IntegrationDescription() const
 
 bool ImageIntegrationInstance::ExecuteGlobal()
 {
-   Exception::DisableGUIOutput( p_noGUIMessages );
-
    o_output = OutputData();
 
    ImageWindow resultWindow, lowRejectionMapWindow, highRejectionMapWindow, slopeMapWindow;
@@ -4058,6 +3793,7 @@ bool ImageIntegrationInstance::ExecuteGlobal()
 
       console.WriteLn( String().Format( "<end><cbr><br>Integration of %d images:", IntegrationFile::NumberOfFiles() ) );
       console.WriteLn( IntegrationDescription() );
+      console.Flush();
 
       ImageVariant result;
       if ( p_generateIntegratedImage )
@@ -4092,18 +3828,36 @@ bool ImageIntegrationInstance::ExecuteGlobal()
 
       int totalStacks;
       {
-         size_type stackSize = size_type( IntegrationFile::Width() ) * (
-                                    IntegrationFile::NumberOfFiles()*sizeof( RejectionDataItem )
+         size_type stackSize = size_type( IntegrationFile::Width() ) *
+                                 (IntegrationFile::NumberOfFiles()*sizeof( RejectionDataItem )
                                   + sizeof( int )
-                                  + ((p_rejection == IIRejection::LinearFit) ? sizeof( float ) : 0) );
-         size_type stackBufferSize = p_stackSizeMB;
-         if ( sizeof( void* ) == 4 )
-            stackBufferSize = Min( stackBufferSize, size_type( 4096 ) );
-         stackBufferSize *= 1024*1024;
-         totalStacks = int( Min( Max( size_type( 1 ), stackBufferSize/stackSize ),
+                                  + ((p_rejection == IIRejection::LinearFit) ? sizeof( float ) : 0));
+
+         size_type stackBufferSize = 0;
+         if ( p_autoMemorySize )
+         {
+            size_type totalAvailable = size_type( double( p_autoMemoryLimit ) * IntegrationFile::AvailableMemory() );
+            if ( totalAvailable > IntegrationFile::TotalBufferSize() )
+               stackBufferSize = totalAvailable - IntegrationFile::TotalBufferSize();
+         }
+         else
+            stackBufferSize = size_type( p_stackSizeMB )*1024*1024;
+
+         totalStacks = int( Min( Max( size_type( Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 ) ),
+                                      stackBufferSize/stackSize ),
                                  size_type( IntegrationFile::BufferRows() ) ) );
-         console.WriteLn( String().Format( "<end><cbr><br>* Using %d concurrent pixel stack(s) = %.2f MiB",
-                                           totalStacks, totalStacks*stackSize/1024/1024.0 ) );
+
+         if ( IntegrationFile::AvailableMemory() == 0 )
+            console.WarningLn( "<end><cbr><br>** Warning: Unable to get available physical memory." );
+         else
+            console.NoteLn( String().Format( "<end><cbr><br>* Available physical memory: %.3f GiB",
+                                             IntegrationFile::AvailableMemory()/1024/1024/1024.0 ) );
+
+         console.NoteLn( String().Format( "* Allocated pixel buffer: %d rows, %.3f GiB",
+                                          IntegrationFile::BufferRows(),
+                                          IntegrationFile::TotalBufferSize()/1024/1024/1024.0 ) );
+         console.NoteLn( String().Format( "* Using %d concurrent pixel stack(s), %.3f GiB<br>",
+                                          totalStacks, totalStacks*stackSize/1024/1024/1024.0 ) );
       }
 
       o_output.imageData.Add( OutputData::ImageData(), IntegrationFile::NumberOfFiles() );
@@ -4540,7 +4294,25 @@ bool ImageIntegrationInstance::ExecuteGlobal()
 
       if ( p_generateIntegratedImage )
       {
-         result.Normalize();
+         /*
+          * Rescale or truncate the result if out-of-bounds.
+          * This should not happen with properly calibrated data sets.
+          */
+         {
+            double v0, v1;
+            result.GetExtremeSampleValues( v0, v1 );
+            if ( v0 < 0 || v1 > 1 ) // v0 < 0 check for completeness/future; should be impossible.
+            {
+               console.WarningLn( "<end><cbr><br>** Warning: "
+                                 + String( p_truncateOnOutOfRange ? "Truncating" : "Rescaling" )
+                                 + " output image. Integration range: "
+                                 + String().Format( "[%.7e,%.7e]", v0, v1 ) );
+               if ( p_truncateOnOutOfRange )
+                  result.Truncate();
+               else
+                  result.Rescale();
+            }
+         }
 
          if ( p_evaluateNoise )
          {
@@ -4630,122 +4402,18 @@ bool ImageIntegrationInstance::ExecuteGlobal()
       if ( p_generateIntegratedImage )
       {
          /*
-          * Update FITS keywords.
-          * ### FIXME: This should be optional and disabled by default.
-          * ### TODO: Implement generation of XISF properties ASAP.
+          * Update image properties and FITS keywords.
           */
+         PropertyArray properties;
          FITSKeywordArray keywords = resultWindow.Keywords();
 
          /*
           * Consistently defined metadata.
           */
-         IntegrationFile::FileMetadata metadata = IntegrationFile::SummaryMetadata();
-         if ( metadata.IsValid() )
-         {
-            if ( metadata.author.ConsistentlyDefined( "author" ) )
-               keywords << FITSHeaderKeyword( "AUTHOR", metadata.author.value.SingleQuoted(), "Author of the data" );
-
-            if ( metadata.observer.ConsistentlyDefined( "observer" ) )
-               keywords << FITSHeaderKeyword( "OBSERVER", metadata.observer.value.SingleQuoted(), "Observer who acquired the data" );
-
-            if ( metadata.instrumentName.ConsistentlyDefined( "instrument name" ) )
-               keywords << FITSHeaderKeyword( "INSTRUME", metadata.instrumentName.value.SingleQuoted(), "Name of instrument" );
-
-            if ( metadata.frameType.ConsistentlyDefined( "image type" ) )
-               keywords << FITSHeaderKeyword( "IMAGETYP", metadata.frameType.value.SingleQuoted(), "Type of integrated image" );
-
-            if ( metadata.filterName.ConsistentlyDefined( "filter name" ) )
-               keywords << FITSHeaderKeyword( "FILTER", metadata.filterName.value.SingleQuoted(), "Name of filter" );
-
-            if ( metadata.pedestal.ConsistentlyDefined( "pedestal" ) )
-               if ( metadata.pedestal.value > 0 )
-               {
-                  keywords << FITSHeaderKeyword( "HISTORY",
-                                                 IsoString(),
-                                                 IsoString().Format( "ImageIntegration.outputPedestal: %.4g DN", metadata.pedestal.value ) )
-                           << FITSHeaderKeyword( "PEDESTAL",
-                                                 IsoString().Format( "%.4g", metadata.pedestal.value ),
-                                                 "Value in DN added to enforce positivity" );
-                  console.NoteLn( String().Format( "* PEDESTAL keyword created with value: %.4g DN", metadata.pedestal.value ) );
-               }
-
-            if ( metadata.xPixSize.ConsistentlyDefined( "pixel x-size" ) )
-            {
-               if ( metadata.yPixSize.ConsistentlyDefined( "pixel y-size" ) )
-                  if ( metadata.xPixSize.value == metadata.yPixSize.value )
-                  {
-                     keywords << FITSHeaderKeyword( "PIXSIZE", IsoString( metadata.xPixSize.value ), "Pixel size in microns" );
-                     goto __noYPixSize;
-                  }
-
-               keywords << FITSHeaderKeyword( "PIXSIZE1", IsoString( metadata.xPixSize.value ), "Pixel size in microns, X axis" );
-            }
-
-            if ( metadata.yPixSize.ConsistentlyDefined( "pixel y-size" ) )
-               keywords << FITSHeaderKeyword( "PIXSIZE2", IsoString( metadata.yPixSize.value ), "Pixel size in microns, Y axis" );
-__noYPixSize:
-
-            if ( metadata.xBinning.ConsistentlyDefined( "pixel x-binning" ) )
-            {
-               if ( metadata.yBinning.ConsistentlyDefined( "pixel y-binning" ) )
-                  if ( metadata.xBinning.value == metadata.yBinning.value )
-                  {
-                     keywords << FITSHeaderKeyword( "BINNING", IsoString( metadata.xBinning.value ), "Pixel binning factor" );
-                     metadata.yBinning.defined = false;
-                     goto __noYBinning;
-                  }
-
-               keywords << FITSHeaderKeyword( "XBINNING", IsoString( metadata.xBinning.value ), "Pixel binning factor, X axis" );
-            }
-
-            if ( metadata.yBinning.ConsistentlyDefined( "pixel y-binning" ) )
-               keywords << FITSHeaderKeyword( "YBINNING", IsoString( metadata.yBinning.value ), "Pixel binning factor, Y axis" );
-__noYBinning:
-
-            if ( metadata.xOrigin.ConsistentlyDefined( "subframe x-origin" ) )
-               keywords << FITSHeaderKeyword( "XORGSUBF", IsoString( metadata.xOrigin.value ), "Subframe origin, X axis" );
-
-            if ( metadata.yOrigin.ConsistentlyDefined( "subframe y-origin" ) )
-               keywords << FITSHeaderKeyword( "YORGSUBF", IsoString( metadata.yOrigin.value ), "Subframe origin, Y axis" );
-
-            if ( metadata.telescopeName.ConsistentlyDefined( "telescope name" ) )
-               keywords << FITSHeaderKeyword( "TELESCOP", metadata.telescopeName.value.SingleQuoted(), "Name of telescope" );
-
-            if ( metadata.focalLength.ConsistentlyDefined( "focal length" ) )
-               keywords << FITSHeaderKeyword( "FOCALLEN", IsoString( metadata.focalLength.value ), "Effective focal length in mm" );
-
-            if ( metadata.aperture.ConsistentlyDefined( "aperture diameter" ) )
-               keywords << FITSHeaderKeyword( "APTDIA", IsoString( metadata.aperture.value ), "Effective aperture diameter in mm" );
-
-            if ( metadata.apertureArea.ConsistentlyDefined( "aperture area" ) )
-               keywords << FITSHeaderKeyword( "APTAREA", IsoString( metadata.apertureArea.value ), "Effective aperture area in square mm" );
-
-            if ( metadata.objectName.ConsistentlyDefined( "object name" ) )
-               keywords << FITSHeaderKeyword( "OBJECT", metadata.objectName.value.SingleQuoted(), "Name of observed object" );
-
-            if ( metadata.ra.ConsistentlyDefined( "right ascension" ) )
-            {
-               double ra = metadata.ra.value;
-               if ( ra < 0 )
-                  ra += 360;
-               ra /= 15;
-               SexagesimalConversionOptions options( 3/*items*/, 3/*precision*/, false/*sign*/, 0/*width*/, ' '/*separator*/ );
-               keywords << FITSHeaderKeyword( "OBJCTRA",
-                                              IsoString::ToSexagesimal( ra, options ).SingleQuoted(),
-                                              "Approximate right ascension in hours" );
-            }
-
-            if ( metadata.dec.ConsistentlyDefined( "declination" ) )
-            {
-               SexagesimalConversionOptions options( 3/*items*/, 2/*precision*/, true/*sign*/, 0/*width*/, ' '/*separator*/ );
-               keywords << FITSHeaderKeyword( "OBJCTDEC",
-                                              IsoString::ToSexagesimal( metadata.dec.value, options ).SingleQuoted(),
-                                              "Approximate declination in degrees" );
-            }
-
-            if ( metadata.equinox.ConsistentlyDefined( "equinox" ) )
-               keywords << FITSHeaderKeyword( "EQUINOX", IsoString( metadata.equinox.value ), "Equinox of celestial coordinates" );
-         }
+         IntegrationMetadata metadata = IntegrationFile::SummaryMetadata();
+         if ( p_subtractPedestals )
+            metadata.pedestal.Undefine();
+         metadata.UpdatePropertiesAndKeywords( properties, keywords );
 
          /*
           * Integration HISTORY keywords.
@@ -4833,6 +4501,15 @@ __noYBinning:
                                               IsoString().Format( "Gaussian noise estimate for channel #%d", i ) );
          }
 
+         if ( !p_subtractPedestals )
+            if ( metadata.IsValid() )
+               if ( metadata.pedestal.IsConsistentlyDefined() )
+               {
+                  keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                       IsoString().Format( "ImageIntegration.outputPedestal: %.4f DN", metadata.pedestal() ) );
+                  console.NoteLn( String().Format( "<end><cbr>* PEDESTAL keyword created with value = %.4f DN", metadata.pedestal() ) );
+               }
+
          /*
           * Per-image HISTORY keywords.
           */
@@ -4900,6 +4577,7 @@ __noYBinning:
          }
 
          resultWindow.SetKeywords( keywords );
+         resultWindow.MainView().SetStorableProperties( properties, false/*notify*/ );
          resultWindow.Show();
 
          /*
@@ -4938,8 +4616,6 @@ __noYBinning:
                   console.WarningLn( "** Warning: Drizzle data file not found: " + F.DrizzleDataPath() );
                   continue;
                }
-
-               Exception::DisableGUIOutput( p_noGUIMessages );
 
                Module->ProcessEvents();
 
@@ -5060,6 +4736,8 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_sigmaLow;
    if ( p == TheIISigmaHighParameter )
       return &p_sigmaHigh;
+   if ( p == TheIIWinsorizationCutoffParameter )
+      return &p_winsorizationCutoff;
    if ( p == TheIILinearFitLowParameter )
       return &p_linearFitLow;
    if ( p == TheIILinearFitHighParameter )
@@ -5112,6 +4790,10 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_bufferSizeMB;
    if ( p == TheIIStackSizeParameter )
       return &p_stackSizeMB;
+   if ( p == TheIIAutoMemorySizeParameter )
+      return &p_autoMemorySize;
+   if ( p == TheIIAutoMemoryLimitParameter )
+      return &p_autoMemoryLimit;
    if ( p == TheIIUseROIParameter )
       return &p_useROI;
    if ( p == TheIIROIX0Parameter )
@@ -5128,6 +4810,10 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_evaluateNoise;
    if ( p == TheIIMRSMinDataFractionParameter )
       return &p_mrsMinDataFraction;
+   if ( p == TheIISubtractPedestalsParameter )
+      return &p_subtractPedestals;
+   if ( p == TheIITruncateOnOutOfRangeParameter )
+      return &p_truncateOnOutOfRange;
    if ( p == TheIINoGUIMessagesParameter )
       return &p_noGUIMessages;
    if ( p == TheIIUseFileThreadsParameter )
@@ -5348,4 +5034,4 @@ size_type ImageIntegrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF ImageIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z

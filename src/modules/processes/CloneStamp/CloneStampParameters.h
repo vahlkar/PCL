@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CloneStamp Process Module Version 01.00.02.0361
+// Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampParameters.h - Released 2019-01-21T12:06:41Z
+// CloneStampParameters.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -68,7 +68,7 @@ public:
 
    CSClonerTable( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CSClonerTable* TheCSClonerTableParameter;
@@ -81,7 +81,7 @@ public:
 
    CSActionIndex( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CSActionIndex* TheCSActionIndexParameter;
@@ -94,7 +94,7 @@ public:
 
    CSTargetX( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CSTargetX* TheCSTargetXParameter;
@@ -107,7 +107,7 @@ public:
 
    CSTargetY( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CSTargetY* TheCSTargetYParameter;
@@ -121,7 +121,7 @@ public:
 
    CSActionTable( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CSActionTable* TheCSActionTableParameter;
@@ -134,9 +134,9 @@ public:
 
    CSSourceIdentifier( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern CSSourceIdentifier* TheCSSourceIdentifierParameter;
@@ -149,9 +149,8 @@ public:
 
    CSSourceWidth( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
 };
 
 extern CSSourceWidth* TheCSSourceWidthParameter;
@@ -164,9 +163,8 @@ public:
 
    CSSourceHeight( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
 };
 
 extern CSSourceHeight* TheCSSourceHeightParameter;
@@ -179,7 +177,7 @@ public:
 
    CSSourceX( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CSSourceX* TheCSSourceXParameter;
@@ -192,7 +190,7 @@ public:
 
    CSSourceY( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CSSourceY* TheCSSourceYParameter;
@@ -205,11 +203,10 @@ public:
 
    CSRadius( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CSRadius* TheCSRadiusParameter;
@@ -222,11 +219,10 @@ public:
 
    CSSoftness( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CSSoftness* TheCSSoftnessParameter;
@@ -239,11 +235,10 @@ public:
 
    CSOpacity( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CSOpacity* TheCSOpacityParameter;
@@ -257,7 +252,7 @@ public:
 
    CSWidth( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CSWidth* TheCSWidthParameter;
@@ -270,7 +265,7 @@ public:
 
    CSHeight( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CSHeight* TheCSHeightParameter;
@@ -283,8 +278,8 @@ public:
 
    CSColor( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
 };
 
 extern CSColor* TheCSColorParameter;
@@ -297,8 +292,8 @@ public:
 
    CSBoundsColor( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
 };
 
 extern CSBoundsColor* TheCSBoundsColorParameter;
@@ -312,4 +307,4 @@ PCL_END_LOCAL
 #endif   // __CloneStampParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampParameters.h - Released 2019-01-21T12:06:41Z
+// EOF CloneStampParameters.h - Released 2019-09-29T12:27:57Z

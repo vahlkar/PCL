@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.03.0336
+// Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// ColorCalibrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// ColorCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -712,4 +712,4 @@ size_type ColorCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF ColorCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z

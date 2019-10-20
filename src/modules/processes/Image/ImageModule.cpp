@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 01.03.00.0437
+// Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ImageModule.cpp - Released 2019-01-21T12:06:41Z
+// ImageModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     03
-#define MODULE_VERSION_REVISION  00
-#define MODULE_VERSION_BUILD     0437
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     3
+#define MODULE_VERSION_REVISION  1
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "ImageModule.h"
 #include "NewImageProcess.h"
@@ -126,7 +126,7 @@ String ImageModule::Author() const
 
 String ImageModule::Copyright() const
 {
-   return "Copyright (c) 2005-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -203,4 +203,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageModule.cpp - Released 2019-01-21T12:06:41Z
+// EOF ImageModule.cpp - Released 2019-09-29T12:27:57Z

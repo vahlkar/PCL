@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationParameters.h - Released 2019-01-21T12:06:41Z
+// DrizzleIntegrationParameters.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -68,7 +68,7 @@ public:
 
    DZInputData( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern DZInputData* TheDZInputDataParameter;
@@ -81,8 +81,8 @@ public:
 
    DZItemEnabled( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DZItemEnabled* TheDZItemEnabledParameter;
@@ -95,7 +95,7 @@ public:
 
    DZItemPath( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern DZItemPath* TheDZItemPathParameter;
@@ -108,7 +108,7 @@ public:
 
    DZLocalNormalizationDataPath( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern DZLocalNormalizationDataPath* TheDZLocalNormalizationDataPathParameter;
@@ -121,7 +121,7 @@ public:
 
    DZInputHints( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern DZInputHints* TheDZInputHintsParameter;
@@ -134,7 +134,7 @@ public:
 
    DZInputDirectory( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern DZInputDirectory* TheDZInputDirectoryParameter;
@@ -147,11 +147,11 @@ public:
 
    DZScale( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern DZScale* TheDZScaleParameter;
@@ -164,11 +164,11 @@ public:
 
    DZDropShrink( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern DZDropShrink* TheDZDropShrinkParameter;
@@ -193,11 +193,11 @@ public:
 
    DZKernelFunction( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 
    static bool IsIntegratedKernel( pcl_enum k )
    {
@@ -215,10 +215,10 @@ public:
 
    DZKernelGridSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern DZKernelGridSize* TheDZKernelGridSizeParameter;
@@ -231,11 +231,11 @@ public:
 
    DZOriginX( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern DZOriginX* TheDZOriginXParameter;
@@ -248,11 +248,11 @@ public:
 
    DZOriginY( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern DZOriginY* TheDZOriginYParameter;
@@ -265,8 +265,8 @@ public:
 
    DZEnableCFA( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DZEnableCFA* TheDZEnableCFAParameter;
@@ -279,7 +279,7 @@ public:
 
    DZCFAPattern( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern DZCFAPattern* TheDZCFAPatternParameter;
@@ -292,8 +292,8 @@ public:
 
    DZEnableRejection( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DZEnableRejection* TheDZEnableRejectionParameter;
@@ -306,8 +306,8 @@ public:
 
    DZEnableImageWeighting( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DZEnableImageWeighting* TheDZEnableImageWeightingParameter;
@@ -320,11 +320,25 @@ public:
 
    DZEnableSurfaceSplines( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DZEnableSurfaceSplines* TheDZEnableSurfaceSplinesParameter;
+
+// ----------------------------------------------------------------------------
+
+class DZEnableLocalDistortion : public MetaBoolean
+{
+public:
+
+   DZEnableLocalDistortion( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DZEnableLocalDistortion* TheDZEnableLocalDistortionParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -334,8 +348,8 @@ public:
 
    DZEnableLocalNormalization( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DZEnableLocalNormalization* TheDZEnableLocalNormalizationParameter;
@@ -348,8 +362,8 @@ public:
 
    DZUseROI( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DZUseROI* TheDZUseROIParameter;
@@ -362,10 +376,10 @@ public:
 
    DZROIX0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern DZROIX0* TheDZROIX0Parameter;
@@ -378,10 +392,10 @@ public:
 
    DZROIY0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern DZROIY0* TheDZROIY0Parameter;
@@ -394,10 +408,10 @@ public:
 
    DZROIX1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern DZROIX1* TheDZROIX1Parameter;
@@ -410,10 +424,10 @@ public:
 
    DZROIY1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern DZROIY1* TheDZROIY1Parameter;
@@ -426,8 +440,8 @@ public:
 
    DZClosePreviousImages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DZClosePreviousImages* TheDZClosePreviousImagesParameter;
@@ -440,8 +454,8 @@ public:
 
    DZNoGUIMessages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DZNoGUIMessages* TheDZNoGUIMessagesParameter;
@@ -460,11 +474,11 @@ public:
 
    DZOnError( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern DZOnError* TheDZOnErrorParameter;
@@ -481,8 +495,8 @@ public:
 
    DZIntegrationImageId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZIntegrationImageId* TheDZIntegrationImageIdParameter;
@@ -495,8 +509,8 @@ public:
 
    DZWeightImageId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZWeightImageId* TheDZWeightImageIdParameter;
@@ -509,8 +523,8 @@ public:
 
    DZNumberOfChannels( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZNumberOfChannels* TheDZNumberOfChannelsParameter;
@@ -523,8 +537,8 @@ public:
 
    DZOutputPixels( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZOutputPixels* TheDZOutputPixelsParameter;
@@ -537,8 +551,8 @@ public:
 
    DZIntegratedPixels( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZIntegratedPixels* TheDZIntegratedPixelsParameter;
@@ -551,8 +565,8 @@ public:
 
    DZTotalRejectedLowRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZTotalRejectedLowRK* TheDZTotalRejectedLowRKParameter;
@@ -563,8 +577,8 @@ public:
 
    DZTotalRejectedLowG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZTotalRejectedLowG* TheDZTotalRejectedLowGParameter;
@@ -575,8 +589,8 @@ public:
 
    DZTotalRejectedLowB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZTotalRejectedLowB* TheDZTotalRejectedLowBParameter;
@@ -589,8 +603,8 @@ public:
 
    DZTotalRejectedHighRK( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZTotalRejectedHighRK* TheDZTotalRejectedHighRKParameter;
@@ -601,8 +615,8 @@ public:
 
    DZTotalRejectedHighG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZTotalRejectedHighG* TheDZTotalRejectedHighGParameter;
@@ -613,8 +627,8 @@ public:
 
    DZTotalRejectedHighB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZTotalRejectedHighB* TheDZTotalRejectedHighBParameter;
@@ -627,9 +641,9 @@ public:
 
    DZOutputData( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZOutputData* TheDZOutputDataParameter;
@@ -642,8 +656,8 @@ public:
 
    DZImageData( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageData* TheDZImageDataParameter;
@@ -656,8 +670,8 @@ public:
 
    DZImageFilePath( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageFilePath* TheDZImageFilePathParameter;
@@ -670,9 +684,9 @@ public:
 
    DZImageWeightRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageWeightRK* TheDZImageWeightRKParameter;
@@ -683,9 +697,9 @@ public:
 
    DZImageWeightG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageWeightG* TheDZImageWeightGParameter;
@@ -696,9 +710,9 @@ public:
 
    DZImageWeightB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageWeightB* TheDZImageWeightBParameter;
@@ -711,10 +725,10 @@ public:
 
    DZImageLocationRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageLocationRK* TheDZImageLocationRKParameter;
@@ -725,10 +739,10 @@ public:
 
    DZImageLocationG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageLocationG* TheDZImageLocationGParameter;
@@ -739,10 +753,10 @@ public:
 
    DZImageLocationB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageLocationB* TheDZImageLocationBParameter;
@@ -755,10 +769,10 @@ public:
 
    DZImageReferenceLocationRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageReferenceLocationRK* TheDZImageReferenceLocationRKParameter;
@@ -769,10 +783,10 @@ public:
 
    DZImageReferenceLocationG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageReferenceLocationG* TheDZImageReferenceLocationGParameter;
@@ -783,10 +797,10 @@ public:
 
    DZImageReferenceLocationB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageReferenceLocationB* TheDZImageReferenceLocationBParameter;
@@ -799,10 +813,10 @@ public:
 
    DZImageScaleRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageScaleRK* TheDZImageScaleRKParameter;
@@ -813,10 +827,10 @@ public:
 
    DZImageScaleG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageScaleG* TheDZImageScaleGParameter;
@@ -827,10 +841,10 @@ public:
 
    DZImageScaleB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageScaleB* TheDZImageScaleBParameter;
@@ -843,8 +857,8 @@ public:
 
    DZImageRejectedLowRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageRejectedLowRK* TheDZImageRejectedLowRKParameter;
@@ -855,8 +869,8 @@ public:
 
    DZImageRejectedLowG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageRejectedLowG* TheDZImageRejectedLowGParameter;
@@ -867,8 +881,8 @@ public:
 
    DZImageRejectedLowB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageRejectedLowB* TheDZImageRejectedLowBParameter;
@@ -881,8 +895,8 @@ public:
 
    DZImageRejectedHighRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageRejectedHighRK* TheDZImageRejectedHighRKParameter;
@@ -893,8 +907,8 @@ public:
 
    DZImageRejectedHighG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageRejectedHighG* TheDZImageRejectedHighGParameter;
@@ -905,8 +919,8 @@ public:
 
    DZImageRejectedHighB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageRejectedHighB* TheDZImageRejectedHighBParameter;
@@ -919,9 +933,9 @@ public:
 
    DZImageOutputData( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern DZImageOutputData* TheDZImageOutputDataParameter;
@@ -935,4 +949,4 @@ PCL_END_LOCAL
 #endif   // __DrizzleIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationParameters.h - Released 2019-01-21T12:06:41Z
+// EOF DrizzleIntegrationParameters.h - Released 2019-09-29T12:27:57Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG File Format Module Version 01.00.04.0368
+// Standard JPEG File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// JPEGModule.cpp - Released 2019-01-21T12:06:31Z
+// JPEGModule.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  04
-#define MODULE_VERSION_BUILD     0368
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  4
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "JPEGModule.h"
 #include "JPEGFormat.h"
@@ -68,9 +68,11 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-JPEGModule::JPEGModule() : MetaModule()
+JPEGModule::JPEGModule()
 {
 }
+
+// -------------------------------------------------------------------------
 
 const char* JPEGModule::Version() const
 {
@@ -81,35 +83,49 @@ const char* JPEGModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// -------------------------------------------------------------------------
+
 IsoString JPEGModule::Name() const
 {
    return "JPEG";
 }
+
+// -------------------------------------------------------------------------
 
 String JPEGModule::Description() const
 {
    return "PixInsight Standard JPEG File Format Module";
 }
 
+// -------------------------------------------------------------------------
+
 String JPEGModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String JPEGModule::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// -------------------------------------------------------------------------
+
 String JPEGModule::Copyright() const
 {
-   return "Copyright (c) 2005-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String JPEGModule::TradeMarks() const
 {
    return "PixInsight";
 }
+
+// -------------------------------------------------------------------------
 
 String JPEGModule::OriginalFileName() const
 {
@@ -126,6 +142,8 @@ String JPEGModule::OriginalFileName() const
    return "JPEG-pxm.dll";
 #endif
 }
+
+// -------------------------------------------------------------------------
 
 void JPEGModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -149,4 +167,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF JPEGModule.cpp - Released 2019-01-21T12:06:31Z
+// EOF JPEGModule.cpp - Released 2019-09-29T12:27:43Z

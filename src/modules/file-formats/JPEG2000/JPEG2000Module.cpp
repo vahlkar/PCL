@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG2000 File Format Module Version 01.00.02.0351
+// Standard JPEG2000 File Format Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// JPEG2000Module.cpp - Released 2019-01-21T12:06:31Z
+// JPEG2000Module.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  02
-#define MODULE_VERSION_BUILD     0351
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "JPEG2000Module.h"
 #include "JPEG2000Format.h"
@@ -68,9 +68,11 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-JPEG2000Module::JPEG2000Module() : MetaModule()
+JPEG2000Module::JPEG2000Module()
 {
 }
+
+// -------------------------------------------------------------------------
 
 const char* JPEG2000Module::Version() const
 {
@@ -81,35 +83,49 @@ const char* JPEG2000Module::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// -------------------------------------------------------------------------
+
 IsoString JPEG2000Module::Name() const
 {
    return "JPEG2000";
 }
+
+// -------------------------------------------------------------------------
 
 String JPEG2000Module::Description() const
 {
    return "PixInsight Standard JPEG2000 File Format Module";
 }
 
+// -------------------------------------------------------------------------
+
 String JPEG2000Module::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String JPEG2000Module::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// -------------------------------------------------------------------------
+
 String JPEG2000Module::Copyright() const
 {
-   return "Copyright (c) 2006-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2006-2019 Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String JPEG2000Module::TradeMarks() const
 {
    return "PixInsight";
 }
+
+// -------------------------------------------------------------------------
 
 String JPEG2000Module::OriginalFileName() const
 {
@@ -126,6 +142,8 @@ String JPEG2000Module::OriginalFileName() const
    return "JPEG2000-pxm.dll";
 #endif
 }
+
+// -------------------------------------------------------------------------
 
 void JPEG2000Module::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -152,4 +170,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Module.cpp - Released 2019-01-21T12:06:31Z
+// EOF JPEG2000Module.cpp - Released 2019-09-29T12:27:43Z

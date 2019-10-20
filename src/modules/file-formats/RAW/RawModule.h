@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 01.05.02.0428
+// Standard RAW File Format Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// RawModule.h - Released 2019-01-21T12:06:31Z
+// RawModule.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -64,19 +64,17 @@ class RawModule : public MetaModule
 {
 public:
 
-   RawModule();
+   RawModule() = default;
 
-   virtual const char* Version() const;
-   virtual IsoString Name() const;
-   virtual String Description() const;
-   virtual String Company() const;
-   virtual String Author() const;
-   virtual String Copyright() const;
-   virtual String TradeMarks() const;
-   virtual String OriginalFileName() const;
-   virtual void GetReleaseDate( int& year, int& month, int& day ) const;
-
-   static IsoString ReadableVersion(); // for reference from RawInstance
+   const char* Version() const override;
+   IsoString Name() const override;
+   String Description() const override;
+   String Company() const override;
+   String Author() const override;
+   String Copyright() const override;
+   String TradeMarks() const override;
+   String OriginalFileName() const override;
+   void GetReleaseDate( int& year, int& month, int& day ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -86,4 +84,4 @@ public:
 #endif   // __RawModule_h
 
 // ----------------------------------------------------------------------------
-// EOF RawModule.h - Released 2019-01-21T12:06:31Z
+// EOF RawModule.h - Released 2019-09-29T12:27:43Z

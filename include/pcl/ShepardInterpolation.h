@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/ShepardInterpolation.h - Released 2019-01-21T12:06:07Z
+// pcl/ShepardInterpolation.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -57,27 +57,52 @@
 #include <pcl/Defs.h>
 #include <pcl/Diagnostics.h>
 
-#include <pcl/BicubicInterpolation.h>
-#include <pcl/ParallelProcess.h>
 #include <pcl/QuadTree.h>
 #include <pcl/Vector.h>
+
+#ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
+#  include <pcl/Console.h>
+#endif
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
+/*
+ * Default normalized search radius for local Shepard interpolation. This is an
+ * initial search radius relative to the unit circle for the adaptive quadtree
+ * search algorithm.
+ */
+#define __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS  0.10
+
+/*
+ * Default power parameter for local Shepard interpolation. Larger values tend
+ * to yield more accurate interpolation devices. Small powers lead to more
+ * approximating (smoothing) devices. The chosen default value is intermediate.
+ */
+#define __PCL_SHEPARD_DEFAULT_POWER          4
+
+/*
+ * Default regularization (smoothing) factor for local Shepard interpolation,
+ * in the range [0,1). This is a clipping fraction for Winsorization of nearby
+ * function values in the point interpolation routine.
+ */
+#define __PCL_SHEPARD_DEFAULT_REGULARIZATION 0
+
+// ----------------------------------------------------------------------------
+
 /*!
  * \class ShepardInterpolation
- * \brief Two-dimensional surface interpolation with the local Shepard method
+ * \brief Two-dimensional surface interpolation with the local Shepard method.
  *
  * %ShepardInterpolation implements the Shepard method of function
  * interpolation/approximation for arbitrarily distributed input nodes in two
  * dimensions.
  *
  * This class implements local Shepard interpolation with Franke-Little
- * weights, quadtree structures for fast rectangular search of input nodes, and
- * an adaptive local interpolation search routine.
+ * weights, quadtree structures for fast rectangular search of input nodes,
+ * optional regularization, and an adaptive local interpolation search routine.
  *
  * \b References
  *
@@ -88,7 +113,13 @@ namespace pcl
  * Franke, Richard (1982). <em>Scattered data interpolation: tests of some
  * methods</em>. Mathematics of Computation 38 (1982), pp. 181-200.
  *
- * \sa ShepardInterpolation, SurfacePolynomial
+ * Hanan Samet, <em>Foundations of Multidimensional and Metric Data
+ * Structures,</em> Morgan Kaufmann, 2006, Section 1.4.
+ *
+ * Mark de Berg et al, <em>Computational Geometry: Algorithms and Applications
+ * Third Edition,</em> Springer, 2010, Chapter 14.
+ *
+ * \sa SurfaceSpline, SurfacePolynomial, QuadTree
  */
 template <typename T>
 class PCL_CLASS ShepardInterpolation
@@ -98,17 +129,27 @@ public:
    /*!
     * Represents a vector of coordinates or function values.
     */
-   typedef GenericVector<T>               vector_type;
+   typedef GenericVector<T>                  vector_type;
 
    /*!
     * The numeric type used to represent coordinates and function values.
     */
-   typedef typename vector_type::scalar   scalar;
+   typedef typename vector_type::scalar      scalar;
 
    /*!
     * The class used to implement fast coordinate search operations.
     */
-   typedef QuadTree<vector_type>          search_tree;
+   typedef QuadTree<vector_type>             search_tree;
+
+   /*!
+    * The class used to specify interpolation regions.
+    */
+   typedef typename search_tree::rectangle   search_rect;
+
+   /*!
+    * The maximum number of interpolation points in a leaf quadtree node.
+    */
+   constexpr static int BucketCapacity = 16;
 
    /*!
     * Default constructor. Constructs an empty %ShepardInterpolation object.
@@ -117,7 +158,8 @@ public:
 
    /*!
     * Copy constructor. Copy construction is disabled because this class uses
-    * internal data structures that cannot be copy-constructed.
+    * internal data structures that cannot be copy-constructed. However,
+    * %ShepardInterpolation implements move construction and move assignment.
     */
    ShepardInterpolation( const ShepardInterpolation& ) = delete;
 
@@ -135,7 +177,8 @@ public:
 
    /*!
     * Copy assignment operator. Copy assignment is disabled because this class
-    * uses internal data structures that cannot be copy-assigned.
+    * uses internal data structures that cannot be copy-assigned. However,
+    * %ShepardInterpolation implements move assignment and move construction.
     */
    ShepardInterpolation& operator =( const ShepardInterpolation& ) = delete;
 
@@ -156,7 +199,7 @@ public:
    /*!
     * Sets the <em>power parameter</em> of the local Shepard interpolation.
     *
-    * \param m Power parameter. Must be > 0.
+    * \param m    Power parameter. Must be > 0.
     *
     * The power parameter is a positive real > 0 that defines the behavior of
     * the interpolation/approximation function. For large values of \a m, the
@@ -164,10 +207,10 @@ public:
     * around input nodes, and hence is more local. For values of \a m &le; 2,
     * the surface is more global, that is, interpolated values are more
     * influenced by nodes far away from the interpolation coordinates. The
-    * default power parameter value is 2.
+    * default power parameter value is 4.
     *
-    * If the specified value of \a m is invalid (&le; 0), the default value
-    * \a m = 2 will be set.
+    * If an invalid value \a m &le; 0 is specified, the default \a m = 4 power
+    * parameter value will be set.
     *
     * Calling this member function does not reset this %ShepardInterpolation
     * object, since no internal structures built upon initialization depend on
@@ -177,7 +220,7 @@ public:
    void SetPower( int m )
    {
       PCL_PRECONDITION( m > 0 )
-      m_mu = Max( 1, m );
+      m_mu = (m > 0) ? m : __PCL_SHEPARD_DEFAULT_POWER;
    }
 
    /*!
@@ -191,25 +234,25 @@ public:
    }
 
    /*!
-    * Sets the search radius of the local Shepard interpolation.
+    * Sets the normalized search radius of the local Shepard interpolation.
     *
-    * \param R Search radius in the range (0,1].
+    * \param R    Search radius in the range (0,1].
     *
     * The search radius defines a distance from the interpolation point where
-    * input nodes will be used to compute an interpolated function value.
-    * Larger values of \a R will construct more global interpolation surfaces,
-    * while smaller values will tend to generate more local interpolations.
-    * Smaller search radii will also lead to faster interpolation devices,
-    * since the the computational complexity is reduced as the number of input
-    * nodes used for each interpolation point decreases.
+    * existing input nodes will be used to compute an interpolated function
+    * value. Larger values of \a R will construct more global interpolation
+    * surfaces, while smaller values will tend to yield more local
+    * interpolations. Smaller search radii will also lead to faster
+    * interpolation devices, since the computational complexity is reduced as
+    * the number of input nodes used for each interpolation point decreases.
     *
     * The search radius parameter is normalized to the (0,1] range in this
     * implementation, where 1 represents the largest distance between two
-    * input nodes, that is, the size of the entire interpolation region. The
-    * default search radius is 0.2.
+    * distinct input nodes, or equivalently, the size of the interpolation
+    * region. The default search radius is 0.1.
     *
-    * If the specified value of \a R is invalid (&le; 0), the default value
-    * \a R = 0.2 will be set.
+    * If an invalid value \a R &le; 0 is specified, the default \a R = 0.1
+    * search radius parameter value will be set.
     *
     * Calling this member function does not reset this %ShepardInterpolation
     * object, since no internal structures built upon initialization depend on
@@ -219,13 +262,12 @@ public:
    void SetRadius( double R )
    {
       PCL_PRECONDITION( R > 0 )
-      m_R = (R < 0 || 1 + R == 1) ? 0.2 : R;
+      m_R = (R < 0 || 1 + R == 1) ? __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS : R;
    }
 
    /*!
-    * Returns the current search radius of this local Shepard interpolation.
-    *
-    * See SetRadius() for more information.
+    * Returns the current normalized search radius of this local Shepard
+    * interpolation. See SetRadius() for more information.
     */
    double Radius() const
    {
@@ -233,7 +275,39 @@ public:
    }
 
    /*!
-    * Generation of a two-dimensional surface polynomial.
+    * Sets the <em>smoothing factor</em> of the local Shepard interpolation.
+    *
+    * \param r    Smoothing factor in the range [0,1).
+    *
+    * For \a r > 0, a regularized local interpolation will be applied. The \a r
+    * argument represents a fraction of the count of nearby function samples
+    * that will be Winsorized, that is, replaced with their r-th nearest value
+    * at the top and the tail of the interpolation sample.
+    *
+    * For \a r = 0, a normal (unsmoothed) local Shepard interpolation scheme is
+    * used. This is the default state for newly created instances of
+    * %ShepardInterpolation.
+    *
+    * If an invalid value \a r < 0 or \a r &ge; 1 is specified, the default
+    * \a r = 0 smoothing factor will be set.
+    */
+   void SetSmoothing( float r )
+   {
+      PCL_PRECONDITION( r >= 0 && r < 1 )
+      m_r = (r < 0 || r >= 1) ? __PCL_SHEPARD_DEFAULT_REGULARIZATION : r;
+   }
+
+   /*!
+    * Returns the <em>smoothing factor</em> of this local Shepard
+    * interpolation. See SetSmoothing() for more information.
+    */
+   float Smoothing() const
+   {
+      return m_r;
+   }
+
+   /*!
+    * Generation of a two-dimensional surface approximation.
     *
     * \param x       X node coordinates.
     *
@@ -241,69 +315,81 @@ public:
     *
     * \param z       Node values.
     *
-    * \param n       Number of nodes. Must be >= 3.
+    * \param n       Number of nodes. There must be at least three distinct
+    *                input nodes.
     *
-    * The input nodes can be arbitrarily distributed, and they don't need to
-    * follow any specific order. However, all nodes must be distinct with
+    * The input nodes can be arbitrarily distributed and don't need to follow
+    * any specific order. However, all node points should be distinct with
     * respect to the machine epsilon for the floating point type T.
+    *
+    * This initialization function includes a sanitization routine. If there
+    * are duplicate points in the specified set of input nodes, only the first
+    * occurrence of each duplicate will be kept to build the interpolation
+    * surface, and the rest of duplicate points will be ignored. Two points are
+    * considered equal if their coordinates don't differ more than the machine
+    * epsilon for the floating point type T.
     */
    void Initialize( const T* x, const T* y, const T* z, int n )
    {
-      PCL_PRECONDITION( x != nullptr && y != nullptr && z != nullptr )
-      PCL_PRECONDITION( n > 2 )
+      DoInitialize( nullptr/*rect*/, x, y, z, n );
+   }
 
-      if ( n < 3 )
-         throw Error( "At least three input nodes are required in ShepardInterpolation::Initialize()" );
-
-      Clear();
-
-      // Find mean coordinate values
-      m_x0 = m_y0 = 0;
-      for ( int i = 0; i < n; ++i )
-      {
-         m_x0 += x[i];
-         m_y0 += y[i];
-      }
-      m_x0 /= n;
-      m_y0 /= n;
-
-      // Find radius of unit circle
-      m_r0 = 0;
-      for ( int i = 0; i < n; ++i )
-      {
-         double dx = m_x0 - x[i];
-         double dy = m_y0 - y[i];
-         double r = Sqrt( dx*dx + dy*dy );
-         if ( r > m_r0 )
-            m_r0 = r;
-      }
-      if ( 1 + m_r0 == 1 )
-         throw Error( "ShepardInterpolation::Initialize(): Empty or insignificant interpolation space" );
-
-      m_r0 = 1/m_r0;
-
-      // Transform coordinates to unit circle
-      Array<vector_type> V;
-      for ( int i = 0; i < n; ++i )
-         V << vector_type( m_r0*(x[i] - m_x0), m_r0*(y[i] - m_y0), z[i] );
-
-      // Build the search tree
-      m_T.Build( V, 16 );
+   /*!
+    * Generation of a two-dimensional surface approximation with a prescribed
+    * rectangular interpolation region.
+    *
+    * \param rect    The rectangular region for interpolation.
+    *
+    * \param x       X node coordinates.
+    *
+    * \param y       Y node coordinates.
+    *
+    * \param z       Node values.
+    *
+    * \param n       Number of nodes. There must be at least three distinct
+    *                input nodes within the specified interpolation region.
+    *
+    * The input nodes can be arbitrarily distributed and don't need to follow
+    * any specific order. However, all node points should be distinct with
+    * respect to the machine epsilon for the floating point type T.
+    *
+    * This initialization function includes a sanitization routine. If there
+    * are duplicate points in the specified set of input nodes, only the first
+    * occurrence of each duplicate will be kept to build the interpolation
+    * surface, and the rest of duplicate points will be ignored. Two points are
+    * considered equal if their coordinates don't differ more than the machine
+    * epsilon for the floating point type T.
+    *
+    * This function will only take into account input nodes located within the
+    * specified region \a rect; all points outside this region will be ignored.
+    * A prescribed interpolation region is useful to ensure that the
+    * approximation surface can be evaluated on the entire region, for example
+    * to represent images or other data sets, not necessarily bounded by the
+    * extreme coordinates in the set of input nodes. Specifying a region also
+    * allows to use a reduced subset of the available data, to accelerate
+    * calculations.
+    */
+   void Initialize( const search_rect& rect, const T* x, const T* y, const T* z, int n )
+   {
+      DoInitialize( &rect, x, y, z, n );
    }
 
    /*!
     * Two-dimensional surface interpolation/approximation with the local
-    * Shepard method. Returns an interpolated function value at the specified
+    * Shepard method. Returns an approximated function value at the specified
     * \a x and \a y coordinates.
     *
-    * The interpolation function includes an adaptive search routine. The
-    * specified search radius is used as an initial parameter. If less than
+    * The interpolation function uses an adaptive point search routine. The
+    * current search radius is used as an initial parameter. If less than
     * three input nodes are found within the search radius distance from the
     * desired interpolation point, the radius is increased and a new search is
-    * performed. This is repeated until at least three nodes are found. This
-    * improves the use of this class for extrapolation, for example to replace
-    * zero or undefined pixel sample values at the borders of an image with
-    * statistically plausible values.
+    * performed. This is repeated until at least three nodes are found around
+    * the specified interpolation point.
+    *
+    * In degenerate cases where no valid solution can be found, zero is
+    * returned conventionally. These cases are rare and may only happen if the
+    * input nodes are very close together with respect to the machine epsilon
+    * for the numeric type T.
     */
    T operator ()( double x, double y ) const
    {
@@ -312,32 +398,77 @@ public:
       const double dx = m_r0*(x - m_x0);
       const double dy = m_r0*(y - m_y0);
 
-      for ( double R = m_R; ; R += R )
+      for ( double R = m_R; ; R += m_R )
       {
          int m = 0;
-         double R2 = R*R, W = 0, z = 0;
+         double R2 = R*R;
+         Array<DPoint> V;
          m_T.Search( DRect( dx-R, dy-R, dx+R, dy+R ),
-            [&]( const vector_type& v, void* )
-            {
-               double x = dx - v[0];
-               double y = dy - v[1];
-               double r2 = x*x + y*y;
-               if ( r2 < R2 )
-               {
-                  ++m;
-                  double w = 1 - Sqrt( r2 )/R;
-                  for ( int i = 1; i < m_mu; ++i )
-                     w *= w;
-                  W += w;
-                  z += w*v[2];
-               }
-            },
-            nullptr );
+                     [&]( const vector_type& v, void* )
+                     {
+                        double x = dx - v[0];
+                        double y = dy - v[1];
+                        double r2 = x*x + y*y;
+                        if ( r2 < R2 )
+                        {
+                           ++m;
+                           double w = PowI( 1 - Sqrt( r2 )/R, m_mu );
+                           /*
+                            * N.B. The equivalent code below is about 400 times
+                            * slower than the above call to PowI() for m_mu=16.
+                            * Measured on a TR 2990WX.
+                            *
+                           double w = 1 - Sqrt( r2 )/R;
+                           for ( int i = 1; i < m_mu; ++i )
+                              w *= w;
+                            */
+                           V << DPoint( w, w*v[2] );
+                        }
+                     },
+                     nullptr );
          if ( m >= 3 )
-            return T( z/W );
+         {
+            if ( m_r > 0 )
+            {
+               /*
+                * Regularization by Winsorization of the weighted sample.
+                */
+               int r = Min( TruncInt( m_r * m ), (m >> 1) - (m & 1)^1 );
+               if ( r > 0 )
+               {
+                  V.Sort( []( const DPoint& v1, const DPoint& v2 )
+                     {
+                        return v1.y < v2.y;
+                     } );
+                  for ( int i = 0; i < r; ++i )
+                  {
+                     V[i].y = V[r].y;
+                     V[m-i-1].y = V[m-r-1].y;
+                  }
+               }
+            }
+            DPoint Wz( 0 );
+            for ( const DPoint& v : V )
+               Wz += v;
+            if ( 1 + Wz.x != 1 )
+               return T( Wz.y/Wz.x );
+            if ( R >= 1 )
+               break; // degenerate!
+         }
       }
 
-      return 0; // !?
+      return 0; // empty!?
+   }
+
+   /*!
+    * Returns an interpolated/approximated function value at the specified
+    * \a p.x and \a p.y point coordinates. See operator()( double, double ) for
+    * more information.
+    */
+   template <typename Tp>
+   T operator ()( const GenericPoint<Tp>& p ) const
+   {
+      return operator ()( double( p.x ), double( p.y ) );
    }
 
    /*!
@@ -354,115 +485,295 @@ protected:
    double      m_r0 = 1;   // scaling factor for normalization of node coordinates
    double      m_x0 = 0;   // zero offset for normalization of X node coordinates
    double      m_y0 = 0;   // zero offset for normalization of Y node coordinates
-   int         m_mu = 2;   // power parameter (leveling factor)
-   double      m_R  = 0.2; // initial search radius
-   search_tree m_T;        // input coordinates and function values
+   int         m_mu = __PCL_SHEPARD_DEFAULT_POWER;          // power parameter (leveling factor)
+   double      m_R  = __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS;  // initial search radius
+   float       m_r  = __PCL_SHEPARD_DEFAULT_REGULARIZATION; // regularization (clipping fraction)
+   search_tree m_T;        // tree points store input coordinates and function values
+
+   /*!
+    * Performs input data normalization and sanitization. Builds the point
+    * search quadtree with normalized node coordinates.
+    * \internal
+    */
+   void DoInitialize( const search_rect* rect, const T* x, const T* y, const T* z, int n )
+   {
+      PCL_PRECONDITION( x != nullptr && y != nullptr && z != nullptr )
+      PCL_PRECONDITION( n > 2 )
+
+      if ( n < 3 )
+         throw Error( "ShepardInterpolation::Initialize(): At least three input nodes must be specified." );
+
+      Clear();
+
+      try
+      {
+         if ( rect == nullptr )
+         {
+            /*
+             * Find mean coordinate values.
+             */
+            m_x0 = m_y0 = 0;
+            for ( int i = 0; i < n; ++i )
+            {
+               m_x0 += x[i];
+               m_y0 += y[i];
+            }
+            m_x0 /= n;
+            m_y0 /= n;
+
+            /*
+             * Find radius of unit circle.
+             */
+            m_r0 = 0;
+            for ( int i = 0; i < n; ++i )
+            {
+               double dx = x[i] - m_x0;
+               double dy = y[i] - m_y0;
+               double r = Sqrt( dx*dx + dy*dy );
+               if ( r > m_r0 )
+                  m_r0 = r;
+            }
+         }
+         else
+         {
+            m_x0 = rect->CenterX();
+            m_y0 = rect->CenterY();
+            m_r0 = rect->Diagonal()/2;
+         }
+
+         if ( 1 + m_r0 == 1 )
+            throw Error( "ShepardInterpolation::Initialize(): Empty or insignificant interpolation space." );
+         m_r0 = 1/m_r0;
+
+         /*
+          * Build working vector. Transform coordinates to the unit circle.
+          */
+         Array<vector_type> V;
+         for ( int i = 0; i < n; ++i )
+            V << vector_type( m_r0*(x[i] - m_x0), m_r0*(y[i] - m_y0), z[i] );
+
+         /*
+          * Find and remove duplicate input nodes. Two nodes are equal if their
+          * coordinates don't differ more than the machine epsilon for the
+          * floating point type T.
+          */
+         V.Sort(  []( const vector_type& p, const vector_type& q )
+                  {
+                     return (p[0] != q[0]) ? p[0] < q[0] : p[1] < q[1];
+                  } );
+         Array<int> remove;
+         for ( int i = 0, j = 1; j < n; ++i, ++j )
+            if ( Abs( V[i][0] - V[j][0] ) <= std::numeric_limits<T>::epsilon() )
+               if ( Abs( V[i][1] - V[j][1] ) <= std::numeric_limits<T>::epsilon() )
+                  remove << i;
+         if ( !remove.IsEmpty() )
+         {
+            Array<vector_type> U;
+            int i = 0;
+            for ( int j : remove )
+            {
+               for ( ; i < j; ++i )
+                  U << V[i];
+               ++i;
+            }
+            for ( ; i < n; ++i )
+               U << V[i];
+            if ( U.Length() < 3 )
+               throw Error( "ShepardInterpolation::Initialize(): Less than three input nodes left after sanitization." );
+            V = U;
+         }
+
+         /*
+          * Build the point search tree.
+          */
+         if ( rect == nullptr )
+            m_T.Build( V, BucketCapacity );
+         else
+         {
+            m_T.Build( *rect, V, BucketCapacity );
+            if ( m_T.Length() < 3 )
+               throw Error( "ShepardInterpolation::Initialize(): Less than three input nodes in the specified search region." );
+         }
+      }
+      catch ( ... )
+      {
+         Clear();
+         throw;
+      }
+   }
 };
 
 // ----------------------------------------------------------------------------
 
 /*!
- * \class GridShepardInterpolation
- * \brief Discretized scalar surface Shepard interpolation/approximation in two
- *        dimensions
+ * \class PointShepardInterpolation
+ * \brief Vector Shepard interpolation/approximation in two dimensions
  *
- * This class performs the same tasks as ShepardInterpolation, but allows for
- * much faster interpolation (maybe orders of magnitude faster, depending on
- * interpolation vector lengths) with negligible accuracy loss in most
- * practical applications.
+ * The template parameter P represents an interpolation point in two
+ * dimensions. The type P must implement P::x and P::y data members accessible
+ * from the current %PointShepardInterpolation template specialization. These
+ * members must provide the values of the horizontal and vertical coordinates,
+ * respectively, of an interpolation point. In addition, the scalar types of
+ * the P::x and P::y point members must support conversion to double semantics.
  */
-class GridShepardInterpolation : public ParallelProcess
+template <class P = DPoint>
+class PCL_CLASS PointShepardInterpolation
 {
 public:
+
+   /*!
+    * Represents an interpolation point in two dimensions.
+    */
+   typedef P                           point;
+
+   /*!
+    * Represents a sequence of interpolation points.
+    */
+   typedef Array<point>                point_list;
+
+   /*!
+    * Represents a coordinate interpolating/approximating surface.
+    */
+   typedef ShepardInterpolation<double> surface;
 
    /*!
     * Default constructor. Yields an empty instance that cannot be used without
     * initialization.
     */
-   GridShepardInterpolation() = default;
+   PointShepardInterpolation() = default;
 
    /*!
     * Copy constructor.
     */
-   GridShepardInterpolation( const GridShepardInterpolation& ) = default;
+   PointShepardInterpolation( const PointShepardInterpolation& ) = default;
 
    /*!
     * Move constructor.
     */
-   GridShepardInterpolation( GridShepardInterpolation&& ) = default;
+   PointShepardInterpolation( PointShepardInterpolation&& ) = default;
 
    /*!
-    * Copy assignment operator. Returns a reference to this object.
+    * Constructs a %PointShepardInterpolation object initialized for the
+    * specified input data and interpolation parameters.
+    *
+    * See the corresponding Initialize() member function for a detailed
+    * description of parameters.
     */
-   GridShepardInterpolation& operator =( const GridShepardInterpolation& ) = default;
+   PointShepardInterpolation( const point_list& P1, const point_list& P2,
+                              int power = __PCL_SHEPARD_DEFAULT_POWER,
+                              double radius = __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS )
+   {
+      Initialize( P1, P2, power, radius );
+   }
+
+   /*!
+    * Constructs a %PointShepardInterpolation object initialized with
+    * prescribed point surface interpolations.
+    *
+    * See the corresponding Initialize() member function for a more detailed
+    * description of parameters and their required conditions.
+    */
+   PointShepardInterpolation( const surface& Sx, const surface& Sy )
+   {
+      Initialize( Sx, Sy );
+   }
+
+   /*!
+    * Copy assignment operator. Copy assignment has been disabled for this
+    * class because the ShepardInterpolation class does not implement copy
+    * assignment.
+    */
+   PointShepardInterpolation& operator =( const PointShepardInterpolation& ) = delete;
 
    /*!
     * Move assignment operator. Returns a reference to this object.
     */
-   GridShepardInterpolation& operator =( GridShepardInterpolation&& ) = default;
+   PointShepardInterpolation& operator =( PointShepardInterpolation&& ) = default;
 
    /*!
-    * Initializes this %GridShepardInterpolation object for the specified input
-    * data and interpolation parameters.
+    * Initializes this %PointShepardInterpolation object for the specified
+    * input data and interpolation parameters.
     *
-    * \param rect    Reference rectangle. Interpolation will be initialized
-    *                within the boundaries of this rectangle at discrete
-    *                \a delta coordinate intervals.
+    * \param P1         A sequence of distinct interpolation node points.
     *
-    * \param delta   Grid distance for calculation of discrete function values.
-    *                Must be > 0.
+    * \param P2         A sequence of interpolation values. For each point in
+    *                   \a P1, the coordinates of its counterpart point in
+    *                   \a P2 will be used as the interpolation node values in
+    *                   the X and Y directions.
     *
-    * \param S       Reference to a ShepardInterpolation object that will be
-    *                used as the underlying interpolation to compute
-    *                interpolated values at discrete coordinate intervals. This
-    *                object must be previously initialized and must be valid.
+    * \param power      Power parameter. Must be > 0. The default value is 4.
+    *                   See ShepardInterpolation::SetPower() for a complete
+    *                   description of this parameter.
     *
-    * \param verbose If true, this function will write information to the
-    *                standard PixInsight console to provide some feedback to
-    *                the user during the (potentially long) initialization
-    *                process. If false, no feedback will be provided.
+    * \param radius     Normalized search radius. Must be > 0. The default
+    *                   value is 0.1. See ShepardInterpolation::SetRadius() for
+    *                   a complete description of this parameter.
     *
-    * If parallel processing is allowed for this object, this function executes
-    * the interpolation initialization process using multiple concurrent
-    * threads (see EnableParallelProcessing()).
+    * \param smoothing  Smoothing factor. Must be in the range [0,1). The
+    *                   default value is zero. See
+    *                   ShepardInterpolation::SetSmoothing() for a complete
+    *                   description of this parameter.
+    *
+    * The input nodes can be arbitrarily distributed and don't need to follow
+    * any specific order. However, all node points should be distinct with
+    * respect to the machine epsilon for the floating point type used to
+    * represent coordinates.
+    *
+    * See the ShepardInterpolation::Initialize() member function for a complete
+    * description of this initialization process.
     */
-   template <typename T>
-   void Initialize( const Rect& rect, int delta, const ShepardInterpolation<T>& S, bool verbose = true )
+   void Initialize( const point_list& P1, const point_list& P2,
+                    int power = __PCL_SHEPARD_DEFAULT_POWER,
+                    double radius = __PCL_SHEPARD_DEFAULT_SEARCH_RADIUS,
+                    float smoothing = __PCL_SHEPARD_DEFAULT_REGULARIZATION )
    {
-      m_rect = rect;
-      m_delta = Max( 1, delta );
+      PCL_PRECONDITION( P1.Length() >= 3 )
+      PCL_PRECONDITION( P1.Length() <= P2.Length() )
+      PCL_PRECONDITION( power > 0 )
+      PCL_PRECONDITION( radius > 0 )
+      PCL_PRECONDITION( smoothing >= 0 && smoothing < 1 )
 
-      int w = m_rect.Width();
-      int h = m_rect.Height();
-      int rows = 1 + h/m_delta + ((h%m_delta) ? 1 : 0);
-      int cols = 1 + w/m_delta + ((w%m_delta) ? 1 : 0);
+      m_Sx.Clear();
+      m_Sy.Clear();
 
-      m_G = DMatrix( rows, cols );
+      m_Sx.SetPower( power );
+      m_Sy.SetPower( power );
 
-      if ( verbose )
-         Console().WriteLn( "<end><cbr>Building 2D Shepard interpolation grid...<flush>" );
+      m_Sx.SetRadius( radius );
+      m_Sy.SetRadius( radius );
 
-      int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( rows, 1 ) ) : 1;
-      int rowsPerThread = rows/numberOfThreads;
-      ReferenceArray<GridInitializationThread<T> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new GridInitializationThread<T>( *this, S,
-                                 i*rowsPerThread,
-                                 (j < numberOfThreads) ? j*rowsPerThread : rows ) );
-      int n = 0;
-      if ( numberOfThreads > 1 )
+      m_Sx.SetSmoothing( smoothing );
+      m_Sy.SetSmoothing( smoothing );
+
+      if ( P1.Length() < 3 || P2.Length() < 3 )
+         throw Error( "PointShepardInterpolation::Initialize(): At least three input nodes must be specified." );
+
+      if ( P2.Length() < P1.Length() )
+         throw Error( "PointShepardInterpolation::Initialize(): Incompatible point array lengths." );
+
+      DVector X( int( P1.Length() ) ),
+              Y( int( P1.Length() ) ),
+              Zx( int( P1.Length() ) ),
+              Zy( int( P1.Length() ) );
+      for ( int i = 0; i < X.Length(); ++i )
       {
-         for ( GridInitializationThread<T>& thread : threads )
-            thread.Start( ThreadPriority::DefaultMax, n++ );
-         for ( GridInitializationThread<T>& thread : threads )
-            thread.Wait();
+          X[i] = P1[i].x;
+          Y[i] = P1[i].y;
+         Zx[i] = P2[i].x;
+         Zy[i] = P2[i].y;
       }
-      else
-         threads[0].Run();
+      m_Sx.Initialize( X.Begin(), Y.Begin(), Zx.Begin(), X.Length() );
+      m_Sy.Initialize( X.Begin(), Y.Begin(), Zy.Begin(), X.Length() );
+   }
 
-      threads.Destroy();
-
-      m_I.Initialize( m_G.Begin(), cols, rows );
+   /*!
+    * Deallocates internal structures, yielding an empty object that cannot be
+    * used before a new call to Initialize().
+    */
+   void Clear()
+   {
+      m_Sx.Clear();
+      m_Sy.Clear();
    }
 
    /*!
@@ -471,86 +782,54 @@ public:
     */
    bool IsValid() const
    {
-      return !m_G.IsEmpty();
+      return m_Sx.IsValid() && m_Sy.IsValid();
    }
 
    /*!
-    * Returns the current interpolation reference rectangle. See Initialize()
-    * for more information.
+    * Returns a reference to the internal object used for interpolation in the
+    * X plane direction.
     */
-   const Rect& ReferenceRect() const
+   const surface& SurfaceX() const
    {
-      return m_rect;
+      return m_Sx;
    }
 
    /*!
-    * Returns the current grid distance for calculation of discrete function
-    * values. See Initialize() for more information.
+    * Returns a reference to the internal object used for interpolation in the
+    * Y plane direction.
     */
-   int Delta() const
+   const surface& SurfaceY() const
    {
-      return m_delta;
+      return m_Sy;
    }
 
    /*!
-    * Returns an interpolated function value at the specified coordinates.
+    * Returns an interpolated point at the specified coordinates.
     */
    template <typename T>
-   double operator ()( T x, T y ) const
+   DPoint operator ()( T x, T y ) const
    {
-      double fx = (double( x ) - m_rect.x0)/m_delta;
-      double fy = (double( y ) - m_rect.y0)/m_delta;
-      return m_I( fx, fy );
+      return DPoint( m_Sx( x, y ), m_Sy( x, y ) );
    }
 
    /*!
-    * Returns an interpolated function value at \a p.x and \a p.y coordinates.
+    * Returns an interpolated point at the given \a p.x and \a p.y coordinates.
     */
    template <typename T>
-   double operator ()( const GenericPoint<T>& p ) const
+   DPoint operator ()( const GenericPoint<T>& p ) const
    {
       return operator ()( p.x, p.y );
    }
 
 private:
 
-   /*!
-    * N.B.: Here we need a smooth interpolation function without negative
-    * lobes, in order to prevent small-scale oscillations. Other options are
-    * BilinearInterpolation and CubicBSplineFilter.
+   /*
+    * The surface interpolations in the X and Y plane directions.
     */
-   typedef BicubicBSplineInterpolation<double> grid_interpolation;
+   surface m_Sx, m_Sy;
 
-   Rect               m_rect = Rect( 0 );
-   int                m_delta = 0;
-   DMatrix            m_G;
-   grid_interpolation m_I;
-
-   template <typename T>
-   class GridInitializationThread : public Thread
-   {
-   public:
-
-      typedef ShepardInterpolation<T> scalar_interpolation;
-
-      GridInitializationThread( GridShepardInterpolation& grid, const scalar_interpolation& sephard, int startRow, int endRow ) :
-         m_grid( grid ), m_sephard( sephard ), m_startRow( startRow ), m_endRow( endRow )
-      {
-      }
-
-      PCL_HOT_FUNCTION void Run() override
-      {
-         for ( int i = m_startRow; i < m_endRow; ++i )
-            for ( int j = 0, dx = 0, y = m_grid.m_rect.y0 + i*m_grid.m_delta; j < m_grid.m_G.Cols(); ++j, dx += m_grid.m_delta )
-               m_grid.m_G[i][j] = m_sephard( m_grid.m_rect.x0 + dx, y );
-      }
-
-   private:
-
-            GridShepardInterpolation& m_grid;
-      const scalar_interpolation&     m_sephard;
-            int                       m_startRow, m_endRow;
-   };
+   friend class DrizzleData;
+   friend class DrizzleDataDecoder;
 };
 
 // ----------------------------------------------------------------------------
@@ -560,4 +839,4 @@ private:
 #endif   // __PCL_ShepardInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ShepardInterpolation.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/ShepardInterpolation.h - Released 2019-09-29T12:27:26Z

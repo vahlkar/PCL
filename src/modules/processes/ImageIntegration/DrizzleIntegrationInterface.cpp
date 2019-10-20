@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInterface.cpp - Released 2019-01-21T12:06:41Z
+// DrizzleIntegrationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -317,6 +317,7 @@ void DrizzleIntegrationInterface::UpdateIntegrationControls()
    GUI->EnableRejection_CheckBox.SetChecked( m_instance.p_enableRejection );
    GUI->EnableImageWeighting_CheckBox.SetChecked( m_instance.p_enableImageWeighting );
    GUI->EnableSurfaceSplines_CheckBox.SetChecked( m_instance.p_enableSurfaceSplines );
+   GUI->EnableLocalDistortion_CheckBox.SetChecked( m_instance.p_enableLocalDistortion );
    GUI->EnableLocalNormalization_CheckBox.SetChecked( m_instance.p_enableLocalNormalization );
    GUI->ClosePreviousImages_CheckBox.SetChecked( m_instance.p_closePreviousImages );
 
@@ -326,6 +327,8 @@ void DrizzleIntegrationInterface::UpdateIntegrationControls()
 
    GUI->CFAPattern_Label.Enable( m_instance.p_enableCFA );
    GUI->CFAPattern_ComboBox.Enable( m_instance.p_enableCFA );
+
+   GUI->EnableLocalDistortion_CheckBox.Enable( m_instance.p_enableSurfaceSplines );
 }
 
 // ----------------------------------------------------------------------------
@@ -594,6 +597,11 @@ void DrizzleIntegrationInterface::__Click( Button& sender, bool checked )
    else if ( sender == GUI->EnableSurfaceSplines_CheckBox )
    {
       m_instance.p_enableSurfaceSplines = checked;
+      UpdateIntegrationControls();
+   }
+   else if ( sender == GUI->EnableLocalDistortion_CheckBox )
+   {
+      m_instance.p_enableLocalDistortion = checked;
    }
    else if ( sender == GUI->EnableLocalNormalization_CheckBox )
    {
@@ -880,7 +888,6 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    InputData_Sizer.Add( InputButtons_Sizer );
 
    InputData_Control.SetSizer( InputData_Sizer );
-   InputData_Control.AdjustToContents();
 
    //
 
@@ -944,7 +951,6 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    FormatHints_Sizer.Add( InputDirectory_Sizer );
 
    FormatHints_Control.SetSizer( FormatHints_Sizer );
-   FormatHints_Control.AdjustToContents();
 
    //
 
@@ -1041,7 +1047,8 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
 
    EnableCFA_CheckBox.SetText( "Enable CFA drizzle" );
    EnableCFA_CheckBox.SetToolTip( "<p>Perform a drizzle integration process to generate an RGB color image from monochrome "
-      "raw frames mosaiced with color filter arrays (CFA). This process is also known as <i>Bayer drizzle</i>.</p>"
+      "raw frames mosaiced with color filter arrays (CFA). This process is also known as <i>Bayer drizzle</i>, although this "
+      "implementation also supports XTrans CFA frames, besides Bayer patterns.</p>"
       "<p>If the default Auto option is selected for the <i>CFA pattern</i> parameter (see below), DrizzleIntegration will "
       "retrieve CFA patterns from input .xdrz files. These patterns are gathered by the Debayer process and generated in "
       ".xdrz files by image registration processes such as StarAlignment or CometAlignment.</p>"
@@ -1053,17 +1060,20 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    EnableCFA_Sizer.Add( EnableCFA_CheckBox );
    EnableCFA_Sizer.AddStretch();
 
+   const char* cfaPatternToolTip = "<p>CFA (Color Filter Array) pattern used for CFA drizzle, when the <i>enable CFA drizzle</i> "
+      "option (see above) is checked.</p>"
+      "<p>Select the default Auto option to retrieve CFA patterns automatically from input .xdrz files, or select one of the "
+      "supported CFA patterns to force it, overriding the information that may be provided by .xdrz files.</p>";
+
    CFAPattern_Label.SetText( "CFA pattern:" );
    CFAPattern_Label.SetFixedWidth( labelWidth1 );
    CFAPattern_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-   CFAPattern_Label.SetToolTip( "<p>CFA (Color Filter Array) pattern used for CFA drizzle, when the <i>enable CFA drizzle</i> "
-   "option (see above) is checked.</p>"
-   "<p>Select the default Auto option to retrieve CFA patterns automatically from input .xdrz files, or select one of the supported "
-   "CFA patterns to force it, overriding the information that may be provided by .xdrz files.</p>" );
+   CFAPattern_Label.SetToolTip( cfaPatternToolTip );
 
    CFAPattern_ComboBox.AddItem( "Auto" );
    for ( size_type i = 1; i < ItemsInArray( s_cfaPatterns ); ++i )
       CFAPattern_ComboBox.AddItem( String( s_cfaPatterns[i] ) );
+   CFAPattern_ComboBox.SetToolTip( cfaPatternToolTip );
 
    CFAPattern_Sizer.SetSpacing( 4 );
    CFAPattern_Sizer.Add( CFAPattern_Label );
@@ -1106,6 +1116,17 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    EnableSurfaceSplines_Sizer.Add( EnableSurfaceSplines_CheckBox );
    EnableSurfaceSplines_Sizer.AddStretch();
 
+   EnableLocalDistortion_CheckBox.SetText( "Enable local distortion" );
+   EnableLocalDistortion_CheckBox.SetToolTip( "<p>If the input drizzle files include local distortion models for image "
+      "registration, apply them. Local distortion models are computed by the StarAlignment tool, and their application "
+      "requires the use of thin plate splines for image registration. If this option is disabled, existing local distortion "
+      "models will be ignored. This can be useful for comparison and test purposes.</p>" );
+   EnableLocalDistortion_CheckBox.OnClick( (Button::click_event_handler)&DrizzleIntegrationInterface::__Click, w );
+
+   EnableLocalDistortion_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   EnableLocalDistortion_Sizer.Add( EnableLocalDistortion_CheckBox );
+   EnableLocalDistortion_Sizer.AddStretch();
+
    EnableLocalNormalization_CheckBox.SetText( "Enable local normalization" );
    EnableLocalNormalization_CheckBox.SetToolTip( "<p>For input drizzle files that have been associated with local normalization "
       "data files (.xnml files), apply local normalization for output instead of the default scale + zero offset global "
@@ -1136,11 +1157,11 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    Integration_Sizer.Add( EnableRejection_Sizer );
    Integration_Sizer.Add( EnableImageWeighting_Sizer );
    Integration_Sizer.Add( EnableSurfaceSplines_Sizer );
+   Integration_Sizer.Add( EnableLocalDistortion_Sizer );
    Integration_Sizer.Add( EnableLocalNormalization_Sizer );
    Integration_Sizer.Add( ClosePreviousImages_Sizer );
 
    Integration_Control.SetSizer( Integration_Sizer );
-   Integration_Control.AdjustToContents();
 
    //
 
@@ -1242,7 +1263,6 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    ROI_Sizer.Add( ROIHeight_Sizer );
 
    ROI_Control.SetSizer( ROI_Sizer );
-   ROI_Control.AdjustToContents();
    ROI_Control.OnViewDrag( (Control::view_drag_event_handler)&DrizzleIntegrationInterface::__ViewDrag, w );
    ROI_Control.OnViewDrop( (Control::view_drop_event_handler)&DrizzleIntegrationInterface::__ViewDrop, w );
 
@@ -1260,6 +1280,9 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    Global_Sizer.Add( ROI_Control );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
+   w.AdjustToContents();
    w.SetFixedWidth();
 
    FormatHints_Control.Hide();
@@ -1273,4 +1296,4 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF DrizzleIntegrationInterface.cpp - Released 2019-09-29T12:27:57Z

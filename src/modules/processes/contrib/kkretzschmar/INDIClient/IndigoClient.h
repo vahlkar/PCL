@@ -1,12 +1,12 @@
 //     ____   ______ __
-//    / __  / ____// /
+//    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     ____//_____/   PCL
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard  Process Module Version
+// Standard INDIClient Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// : - Released 08.12.2018
+// IndigoClient.h - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -58,8 +58,8 @@
 #include<functional>
 #include<iostream>
 
-#include "indigo_client.h"
-#include "indigo_names.h"
+#include "indigo/indigo_client.h"
+#include "indigo/indigo_names.h"
 
 class IndigoClient
 {
@@ -119,3 +119,6 @@ public:
 };
 
 #endif // INDIGOCLIENT_H
+
+// ----------------------------------------------------------------------------
+// EOF IndigoClient.h - Released 2019-09-29T12:27:58Z

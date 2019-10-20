@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard GradientDomain Process Module Version 00.06.04.0240
+// Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionInterface.cpp - Released 2019-01-21T12:06:42Z
+// GradientsHdrCompositionInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -490,7 +490,6 @@ GradientsHdrCompositionInterface::GUIData::GUIData( GradientsHdrCompositionInter
    TargetImages_Sizer.Add( TargetButtons_Sizer );
 
    TargetImages_Control.SetSizer( TargetImages_Sizer );
-   TargetImages_Control.AdjustToContents();
 
    Parameters_SectionBar.SetTitle( "Parameters" );
    Parameters_SectionBar.SetSection( Parameters_Control );
@@ -558,7 +557,6 @@ GradientsHdrCompositionInterface::GUIData::GUIData( GradientsHdrCompositionInter
    Parameters_Sizer.Add(GenerateMask_Sizer);
 
    Parameters_Control.SetSizer(Parameters_Sizer);
-   Parameters_Control.AdjustToContents();
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
@@ -568,8 +566,10 @@ GradientsHdrCompositionInterface::GUIData::GUIData( GradientsHdrCompositionInter
    Global_Sizer.Add( Parameters_Control );
 
    w.SetSizer( Global_Sizer );
-   w.SetFixedWidth();
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
+   w.SetFixedWidth();
 }
 
 // ----------------------------------------------------------------------------
@@ -577,4 +577,4 @@ GradientsHdrCompositionInterface::GUIData::GUIData( GradientsHdrCompositionInter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF GradientsHdrCompositionInterface.cpp - Released 2019-09-29T12:27:58Z

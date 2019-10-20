@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.03.0336
+// Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2019-01-21T12:06:41Z
+// PhotometricColorCalibrationInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -212,17 +212,16 @@ private:
    String    m_objectName;
    String    m_objectType;
    String    m_spectralType;
-   double    m_vmag;     // flux in the V filter
-   double    m_RA;       // in degrees
-   double    m_Dec;      // in degrees
-   double    m_muRA;     // in mas/year
-   double    m_muDec;    // in mas/year
-   double    m_parallax; // in mas
-   double    m_radVel;   // in AU/year
-   bool      m_valid;
-   bool      m_downloading;
-   bool      m_abort;
-   bool      m_firstTimeShown;
+   double    m_vmag = 0;     // flux in the V filter
+   double    m_RA = 0;       // in degrees
+   double    m_Dec = 0;      // in degrees
+   double    m_muRA = 0;     // in mas/year
+   double    m_muDec = 0;    // in mas/year
+   double    m_parallax = 0; // in mas
+   double    m_radVel = 0;   // in AU/year
+   bool      m_valid = false;
+   bool      m_downloading = false;
+   bool      m_abort = false;
    IsoString m_downloadData;
 
    void e_Show( Control& sender );
@@ -237,16 +236,7 @@ private:
 
 // ----------------------------------------------------------------------------
 
-CoordinateSearchDialog::CoordinateSearchDialog() :
-   m_RA( 0 ),
-   m_Dec( 0 ),
-   m_muRA( 0 ),
-   m_muDec( 0 ),
-   m_parallax( 0 ),
-   m_valid( false ),
-   m_downloading( false ),
-   m_abort( false ),
-   m_firstTimeShown( true )
+CoordinateSearchDialog::CoordinateSearchDialog()
 {
    const char* objectNameToolTip =
       "<p>Name or identifier of the object to search for. Examples: M31, Pleiades, NGC 253, Orion Nebula, Antares.</p>";
@@ -304,21 +294,11 @@ CoordinateSearchDialog::CoordinateSearchDialog() :
 
    SetSizer( Global_Sizer );
 
+   EnsureLayoutUpdated();
+   AdjustToContents();
+   SetMinSize();
+
    SetWindowTitle( "Online Coordinate Search" );
-
-   OnShow( (Control::event_handler)&CoordinateSearchDialog::e_Show, *this );
-}
-
-// ----------------------------------------------------------------------------
-
-void CoordinateSearchDialog::e_Show( Control& )
-{
-   if ( m_firstTimeShown )
-   {
-      m_firstTimeShown = false;
-      AdjustToContents();
-      SetMinSize();
-   }
 }
 
 // ----------------------------------------------------------------------------
@@ -638,17 +618,10 @@ bool PhotometricColorCalibrationInterface::ImportProcess( const ProcessImplement
 
 void PhotometricColorCalibrationInterface::UpdateControls()
 {
-   if ( PhotometricColorCalibrationProcess::HasValidWhiteReferences() )
-   {
-      int itemIndex = PhotometricColorCalibrationProcess::FindWhiteReferenceById( m_instance.p_whiteReferenceId );
-      if ( itemIndex < 0 )
-      {
-         itemIndex = int( PhotometricColorCalibrationProcess::WhiteReferences().Length() );
-         if ( GUI->WhiteReference_ComboBox.NumberOfItems() < itemIndex )
-            GUI->WhiteReference_ComboBox.AddItem( "<custom reference>" );
-      }
-      GUI->WhiteReference_ComboBox.SetCurrentItem( itemIndex );
-   }
+   bool broadband = m_instance.p_workingMode == PCCWorkingMode::Broadband;
+   bool narrowband = m_instance.p_workingMode == PCCWorkingMode::Narrowband;
+
+   GUI->WorkingMode_ComboBox.SetCurrentItem( m_instance.p_workingMode );
 
    int itemIndex = -1;
    for ( size_type i = 0; i < s_servers.Length(); ++i )
@@ -666,6 +639,43 @@ void PhotometricColorCalibrationInterface::UpdateControls()
    GUI->Server_ComboBox.SetCurrentItem( itemIndex );
    GUI->Server_ComboBox.SetToolTip( m_instance.p_serverURL );
 
+   if ( PhotometricColorCalibrationProcess::HasValidWhiteReferences() )
+   {
+      itemIndex = PhotometricColorCalibrationProcess::FindWhiteReferenceById( m_instance.p_whiteReferenceId );
+      if ( itemIndex < 0 )
+      {
+         itemIndex = int( PhotometricColorCalibrationProcess::WhiteReferences().Length() );
+         if ( GUI->WhiteReference_ComboBox.NumberOfItems() < itemIndex )
+            GUI->WhiteReference_ComboBox.AddItem( "<custom reference>" );
+      }
+      GUI->WhiteReference_ComboBox.SetCurrentItem( itemIndex );
+
+      GUI->WhiteReference_Label.Enable( broadband );
+      GUI->WhiteReference_ComboBox.Enable( broadband );
+   }
+
+   GUI->FilterWavelengthTitle_Label.Enable( narrowband );
+
+   GUI->FilterBandwidthTitle_Label.Enable( narrowband );
+
+   GUI->RedFilterWavelength_NumericEdit.SetValue( m_instance.p_redFilterWavelength );
+   GUI->RedFilterWavelength_NumericEdit.Enable( narrowband );
+
+   GUI->RedFilterBandwidth_NumericEdit.SetValue( m_instance.p_redFilterBandwidth );
+   GUI->RedFilterBandwidth_NumericEdit.Enable( narrowband );
+
+   GUI->GreenFilterWavelength_NumericEdit.SetValue( m_instance.p_greenFilterWavelength );
+   GUI->GreenFilterWavelength_NumericEdit.Enable( narrowband );
+
+   GUI->GreenFilterBandwidth_NumericEdit.SetValue( m_instance.p_greenFilterBandwidth );
+   GUI->GreenFilterBandwidth_NumericEdit.Enable( narrowband );
+
+   GUI->BlueFilterWavelength_NumericEdit.SetValue( m_instance.p_blueFilterWavelength );
+   GUI->BlueFilterWavelength_NumericEdit.Enable( narrowband );
+
+   GUI->BlueFilterBandwidth_NumericEdit.SetValue( m_instance.p_blueFilterBandwidth );
+   GUI->BlueFilterBandwidth_NumericEdit.Enable( narrowband );
+
    GUI->ApplyColorCalibration_CheckBox.SetChecked( m_instance.p_applyCalibration );
 
    GUI->RA_Edit.SetText( RAToString( m_instance.p_centerRA ) );
@@ -679,6 +689,7 @@ void PhotometricColorCalibrationInterface::UpdateControls()
    GUI->Epoch_Edit.SetText( EpochToString( m_instance.p_epochJD ) );
 
    GUI->FocalLength_NumericEdit.SetValue( m_instance.p_focalLength );
+
    GUI->PixelSize_NumericEdit.SetValue( m_instance.p_pixelSize );
 
    GUI->SolverAutoCatalog_CheckBox.SetChecked( m_instance.p_solverAutoCatalog );
@@ -1001,7 +1012,19 @@ void PhotometricColorCalibrationInterface::e_EditCompleted( Edit& sender )
 
 void PhotometricColorCalibrationInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
-   if ( sender == GUI->WhiteReference_ComboBox )
+   if ( sender == GUI->WorkingMode_ComboBox )
+   {
+      m_instance.p_workingMode = itemIndex;
+      UpdateControls();
+   }
+   else if ( sender == GUI->Server_ComboBox )
+   {
+      if ( itemIndex >= 0 )
+         if ( size_type( itemIndex ) < s_servers.Length() )
+            m_instance.p_serverURL = s_servers[itemIndex].url;
+      GUI->Server_ComboBox.SetToolTip( m_instance.p_serverURL );
+   }
+   else if ( sender == GUI->WhiteReference_ComboBox )
    {
       if ( itemIndex >= 0 )
          if ( size_type( itemIndex ) < PhotometricColorCalibrationProcess::WhiteReferences().Length() )
@@ -1014,13 +1037,6 @@ void PhotometricColorCalibrationInterface::e_ItemSelected( ComboBox& sender, int
             m_instance.p_zeroPointJB_JV = PhotometricColorCalibrationProcess::ZeroPoint().JB_JV;
             m_instance.p_zeroPointSr_JV = PhotometricColorCalibrationProcess::ZeroPoint().Sr_JV;
          }
-   }
-   else if ( sender == GUI->Server_ComboBox )
-   {
-      if ( itemIndex >= 0 )
-         if ( size_type( itemIndex ) < s_servers.Length() )
-            m_instance.p_serverURL = s_servers[itemIndex].url;
-      GUI->Server_ComboBox.SetToolTip( m_instance.p_serverURL );
    }
    else if ( sender == GUI->SolverCatalog_ComboBox )
    {
@@ -1219,7 +1235,31 @@ void PhotometricColorCalibrationInterface::e_GroupCheck( GroupBox& sender, bool 
 
 void PhotometricColorCalibrationInterface::e_EditValueUpdated( NumericEdit& sender, double value )
 {
-   if ( sender == GUI->FocalLength_NumericEdit )
+   if ( sender == GUI->RedFilterWavelength_NumericEdit )
+   {
+      m_instance.p_redFilterWavelength = value;
+   }
+   else if ( sender == GUI->RedFilterBandwidth_NumericEdit )
+   {
+      m_instance.p_redFilterBandwidth = value;
+   }
+   else if ( sender == GUI->GreenFilterWavelength_NumericEdit )
+   {
+      m_instance.p_greenFilterWavelength = value;
+   }
+   else if ( sender == GUI->GreenFilterBandwidth_NumericEdit )
+   {
+      m_instance.p_greenFilterBandwidth = value;
+   }
+   else if ( sender == GUI->BlueFilterWavelength_NumericEdit )
+   {
+      m_instance.p_blueFilterWavelength = value;
+   }
+   else if ( sender == GUI->BlueFilterBandwidth_NumericEdit )
+   {
+      m_instance.p_blueFilterBandwidth = value;
+   }
+   else if ( sender == GUI->FocalLength_NumericEdit )
    {
       m_instance.p_focalLength = value;
    }
@@ -1341,7 +1381,44 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    int editWidth1 = fnt.Width( "2000-01-01T12:00:00Zmm" );
    int editWidth2 = fnt.Width( "9999999999m" );
    int editWidth3 = fnt.Width( "9999999m" );
+   int editWidth4 = fnt.Width( "Wavelengthm" );
    int ui4 = w.LogicalPixelsToPhysical( 4 );
+
+   //
+
+   const char* workingModeToolTip = "<p><b>Broadband:</b> Calibrate the color of a picture acquired with broadband RGB "
+      "filters. In this mode, the color calibration process equalizes the emissions of the specified white reference in "
+      "the RGB filters. This means that, after performing the color calibration, the entire light coming from the white "
+      "reference would have a proportion of 1:1:1. Please note that we base the color calibration on the photometry of "
+      "the stars detected inside the image; this photometry indicates the RGB weights needed to neutralize a white "
+      "reference model, so we actually don't need an instance of the white reference inside the image.</p>"
+      "<p><b>Narrowband:</b> Calibrate the color of a picture acquired with narrowband filters. Each color channel of the "
+      "image should contain a single-waveband filter. This function equalizes the photons of the nebular emission lines in "
+      "the different filters. As a result, the proportion of the emission line strengths, as emitted by the object, is "
+      "preserved in the image. The wavelength and bandwidth of the narrowband filters should be specified. Although these "
+      "parameters are completely arbitrary, the most commonly used narrowband filters are the ones below:</p>"
+      "<ul>"
+      "<li>H-beta:  486.1 nm</li>"
+      "<li>O-III:   500.7 nm</li>"
+      "<li>H-alpha: 656.3 nm</li>"
+      "<li>N-II:    658.5 nm</li>"
+      "<li>S-II:    673.3 nm"
+      "</ul></p>";
+
+   WorkingMode_Label.SetText( "Working mode:" );
+   WorkingMode_Label.SetFixedWidth( labelWidth1 );
+   WorkingMode_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   WorkingMode_Label.SetToolTip( workingModeToolTip );
+
+   WorkingMode_ComboBox.AddItem( "Broadband" );
+   WorkingMode_ComboBox.AddItem( "Narrowband" );
+   WorkingMode_ComboBox.SetToolTip( workingModeToolTip );
+   WorkingMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&PhotometricColorCalibrationInterface::e_ItemSelected, w );
+
+   WorkingMode_Sizer.SetSpacing( 4 );
+   WorkingMode_Sizer.Add( WorkingMode_Label );
+   WorkingMode_Sizer.Add( WorkingMode_ComboBox );
+   WorkingMode_Sizer.AddStretch();
 
    //
 
@@ -1373,6 +1450,107 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
       WhiteReference_Label.Hide();
       WhiteReference_ComboBox.Hide();
    }
+
+   //
+
+   FilterWavelengthTitle_Label.SetText( "Wavelength" );
+   FilterWavelengthTitle_Label.SetFixedWidth( editWidth4 );
+   FilterWavelengthTitle_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
+   FilterWavelengthTitle_Label.SetStyleSheet( "*{ font-style: italic; }" );
+   FilterWavelengthTitle_Label.SetToolTip( "<p>Filter central wavelength in nanometers.</p>" );
+
+   FilterBandwidthTitle_Label.SetText( "Bandwidth" );
+   FilterBandwidthTitle_Label.SetFixedWidth( editWidth4 );
+   FilterBandwidthTitle_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
+   FilterBandwidthTitle_Label.SetStyleSheet( "*{ font-style: italic; }" );
+   FilterBandwidthTitle_Label.SetToolTip( "<p>Filter bandwidth in nanometers.</p>" );
+
+   FiltersTitle_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   FiltersTitle_Sizer.Add( FilterWavelengthTitle_Label );
+   FiltersTitle_Sizer.AddSpacing( 8 );
+   FiltersTitle_Sizer.Add( FilterBandwidthTitle_Label );
+   FiltersTitle_Sizer.AddStretch();
+
+   //
+
+   RedFilterWavelength_NumericEdit.SetReal();
+   RedFilterWavelength_NumericEdit.SetPrecision( 2 );
+   RedFilterWavelength_NumericEdit.EnableFixedPrecision();
+   RedFilterWavelength_NumericEdit.SetRange( ThePCCRedFilterWavelengthParameter->MinimumValue(), ThePCCRedFilterWavelengthParameter->MaximumValue() );
+   RedFilterWavelength_NumericEdit.label.SetText( "Red filter:" );
+   RedFilterWavelength_NumericEdit.label.SetToolTip( "<p>Red filter parameters.</p>" );
+   RedFilterWavelength_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   RedFilterWavelength_NumericEdit.edit.SetFixedWidth( editWidth4 );
+   RedFilterWavelength_NumericEdit.SetToolTip( "<p>Red filter, central wavelength (nm).</p>" );
+   RedFilterWavelength_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&PhotometricColorCalibrationInterface::e_EditValueUpdated, w );
+
+   RedFilterBandwidth_NumericEdit.SetReal();
+   RedFilterBandwidth_NumericEdit.SetPrecision( 2 );
+   RedFilterBandwidth_NumericEdit.EnableFixedPrecision();
+   RedFilterBandwidth_NumericEdit.SetRange( ThePCCRedFilterBandwidthParameter->MinimumValue(), ThePCCRedFilterBandwidthParameter->MaximumValue() );
+   RedFilterBandwidth_NumericEdit.label.Hide();
+   RedFilterBandwidth_NumericEdit.edit.SetFixedWidth( editWidth4 );
+   RedFilterBandwidth_NumericEdit.SetToolTip( "<p>Red filter, bandwidth (nm).</p>" );
+   RedFilterBandwidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&PhotometricColorCalibrationInterface::e_EditValueUpdated, w );
+
+   RedFilter_Sizer.Add( RedFilterWavelength_NumericEdit );
+   RedFilter_Sizer.AddSpacing( 8 );
+   RedFilter_Sizer.Add( RedFilterBandwidth_NumericEdit );
+   RedFilter_Sizer.AddStretch();
+
+   //
+
+   GreenFilterWavelength_NumericEdit.SetReal();
+   GreenFilterWavelength_NumericEdit.SetPrecision( 2 );
+   GreenFilterWavelength_NumericEdit.EnableFixedPrecision();
+   GreenFilterWavelength_NumericEdit.SetRange( ThePCCGreenFilterWavelengthParameter->MinimumValue(), ThePCCGreenFilterWavelengthParameter->MaximumValue() );
+   GreenFilterWavelength_NumericEdit.label.SetText( "Green filter:" );
+   GreenFilterWavelength_NumericEdit.label.SetToolTip( "<p>Green filter parameters.</p>" );
+   GreenFilterWavelength_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   GreenFilterWavelength_NumericEdit.edit.SetFixedWidth( editWidth4 );
+   GreenFilterWavelength_NumericEdit.SetToolTip( "<p>Green filter, central wavelength (nm).</p>" );
+   GreenFilterWavelength_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&PhotometricColorCalibrationInterface::e_EditValueUpdated, w );
+
+   GreenFilterBandwidth_NumericEdit.SetReal();
+   GreenFilterBandwidth_NumericEdit.SetPrecision( 2 );
+   GreenFilterBandwidth_NumericEdit.EnableFixedPrecision();
+   GreenFilterBandwidth_NumericEdit.SetRange( ThePCCGreenFilterBandwidthParameter->MinimumValue(), ThePCCGreenFilterBandwidthParameter->MaximumValue() );
+   GreenFilterBandwidth_NumericEdit.label.Hide();
+   GreenFilterBandwidth_NumericEdit.edit.SetFixedWidth( editWidth4 );
+   GreenFilterBandwidth_NumericEdit.SetToolTip( "<p>Green filter, bandwidth (nm).</p>" );
+   GreenFilterBandwidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&PhotometricColorCalibrationInterface::e_EditValueUpdated, w );
+
+   GreenFilter_Sizer.Add( GreenFilterWavelength_NumericEdit );
+   GreenFilter_Sizer.AddSpacing( 8 );
+   GreenFilter_Sizer.Add( GreenFilterBandwidth_NumericEdit );
+   GreenFilter_Sizer.AddStretch();
+
+   //
+
+   BlueFilterWavelength_NumericEdit.SetReal();
+   BlueFilterWavelength_NumericEdit.SetPrecision( 2 );
+   BlueFilterWavelength_NumericEdit.EnableFixedPrecision();
+   BlueFilterWavelength_NumericEdit.SetRange( ThePCCBlueFilterWavelengthParameter->MinimumValue(), ThePCCBlueFilterWavelengthParameter->MaximumValue() );
+   BlueFilterWavelength_NumericEdit.label.SetText( "Blue filter:" );
+   BlueFilterWavelength_NumericEdit.label.SetToolTip( "<p>Blue filter parameters.</p>" );
+   BlueFilterWavelength_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   BlueFilterWavelength_NumericEdit.edit.SetFixedWidth( editWidth4 );
+   BlueFilterWavelength_NumericEdit.SetToolTip( "<p>Blue filter, central wavelength (nm).</p>" );
+   BlueFilterWavelength_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&PhotometricColorCalibrationInterface::e_EditValueUpdated, w );
+
+   BlueFilterBandwidth_NumericEdit.SetReal();
+   BlueFilterBandwidth_NumericEdit.SetPrecision( 2 );
+   BlueFilterBandwidth_NumericEdit.EnableFixedPrecision();
+   BlueFilterBandwidth_NumericEdit.SetRange( ThePCCBlueFilterBandwidthParameter->MinimumValue(), ThePCCBlueFilterBandwidthParameter->MaximumValue() );
+   BlueFilterBandwidth_NumericEdit.label.Hide();
+   BlueFilterBandwidth_NumericEdit.edit.SetFixedWidth( editWidth4 );
+   BlueFilterBandwidth_NumericEdit.SetToolTip( "<p>Blue filter, bandwidth (nm).</p>" );
+   BlueFilterBandwidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&PhotometricColorCalibrationInterface::e_EditValueUpdated, w );
+
+   BlueFilter_Sizer.Add( BlueFilterWavelength_NumericEdit );
+   BlueFilter_Sizer.AddSpacing( 8 );
+   BlueFilter_Sizer.Add( BlueFilterBandwidth_NumericEdit );
+   BlueFilter_Sizer.AddStretch();
 
    //
 
@@ -1409,6 +1587,14 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    ImageParameters_SectionBar.SetTitle( "Image Parameters" );
    ImageParameters_SectionBar.SetSection( ImageParameters_Control );
+   ImageParameters_SectionBar.SetToolTip( "<p>The parameters in this section will only be used when a new astrometric "
+      "solution has to be calculated (e.g., because no solution is available, or because the <i>force plate solving</i> "
+      "option is enabled) and at least one of the following conditions is true:</p>"
+      "<ul>"
+      "<li>The target image does not have the necessary metadata items: Center coordinates, observation date and image scale.</li>"
+      "<li>Both the <i>force plate solving</i> and <i>ignore existing metadata</i> options are enabled.</p>"
+      "</ul>"
+      "<p>In other cases existing metadata in the target image will take precedence over the values specified in this section.</p>" );
 
    //
 
@@ -1579,7 +1765,6 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    ImageParameters_Sizer.AddStretch();
 
    ImageParameters_Control.SetSizer( ImageParameters_Sizer );
-   ImageParameters_Control.AdjustToContents();
 
    //
 
@@ -1720,7 +1905,6 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    PlateSolverParameters_Sizer.Add( IgnorePositionAndScale_Sizer );
 
    PlateSolverParameters_Control.SetSizer( PlateSolverParameters_Sizer );
-   PlateSolverParameters_Control.AdjustToContents();
 
    //
 
@@ -1817,7 +2001,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    SplineSmoothing_NumericControl.label.SetText( "Spline smoothing:" );
    SplineSmoothing_NumericControl.label.SetFixedWidth( labelWidth1 );
-   SplineSmoothing_NumericControl.slider.SetRange( 0, 50 );
+   SplineSmoothing_NumericControl.slider.SetRange( 0, 1000 );
    SplineSmoothing_NumericControl.slider.SetScaledMinWidth( 250 );
    SplineSmoothing_NumericControl.SetReal();
    SplineSmoothing_NumericControl.SetRange( ThePCCSolverSplineSmoothingParameter->MinimumValue(), ThePCCSolverSplineSmoothingParameter->MaximumValue() );
@@ -1838,7 +2022,6 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    AdvancedPlateSolverParameters_Sizer.Add( SplineSmoothing_NumericControl );
 
    AdvancedPlateSolverParameters_Control.SetSizer( AdvancedPlateSolverParameters_Sizer );
-   AdvancedPlateSolverParameters_Control.AdjustToContents();
 
    //
 
@@ -2024,7 +2207,6 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    PhotometryParameters_Sizer.Add( GenerateGraphs_Sizer );
 
    PhotometryParameters_Control.SetSizer( PhotometryParameters_Sizer );
-   PhotometryParameters_Control.AdjustToContents();
 
    //
 
@@ -2207,14 +2389,17 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    BackgroundReference_Sizer.Add( BackgroundROI_GroupBox );
 
    BackgroundReference_Control.SetSizer( BackgroundReference_Sizer );
-   BackgroundReference_Control.AdjustToContents();
 
    //
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 4 );
-
+   Global_Sizer.Add( WorkingMode_Sizer );
    Global_Sizer.Add( WhiteReference_Sizer );
+   Global_Sizer.Add( FiltersTitle_Sizer );
+   Global_Sizer.Add( RedFilter_Sizer );
+   Global_Sizer.Add( GreenFilter_Sizer );
+   Global_Sizer.Add( BlueFilter_Sizer );
    Global_Sizer.Add( Server_Sizer );
    Global_Sizer.Add( ApplyColorCalibration_Sizer );
    Global_Sizer.Add( ImageParameters_SectionBar );
@@ -2230,6 +2415,8 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    //
 
+   w.SetSizer( Global_Sizer );
+
    /*
     * N.B.: Using a separate view as background reference with PCC is an
     * "advanced" (that is, usually wrong) option. So we'll hide these controls
@@ -2239,9 +2426,9 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    BackgroundReferenceView_Edit.Hide();
    BackgroundReferenceView_ToolButton.Hide();
 
-   w.SetSizer( Global_Sizer );
-   w.AdjustToContents();
    AdvancedPlateSolverParameters_Control.Hide();
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedSize();
 }
@@ -2251,4 +2438,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2019-09-29T12:27:57Z

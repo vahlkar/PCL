@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 01.04.02.0025
+// Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2019-01-21T12:06:42Z
+// SubframeSelectorInterface.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -826,7 +826,6 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SubframeImages_Sizer.Add( SubframeButtons_Sizer );
 
    SubframeImages_Control.SetSizer( SubframeImages_Sizer );
-   SubframeImages_Control.AdjustToContents();
 
    //
 
@@ -948,7 +947,6 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SystemParameters_Sizer.Add( SystemParameters_DataUnit_Sizer );
 
    SystemParameters_Control.SetSizer( SystemParameters_Sizer );
-   SystemParameters_Control.AdjustToContents();
 
    //
 
@@ -1158,7 +1156,6 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_Sizer.Add( StarDetectorParameters_Pedestal_Sizer );
 
    StarDetectorParameters_Control.SetSizer( StarDetectorParameters_Sizer );
-   StarDetectorParameters_Control.AdjustToContents();
 
    //
 
@@ -1242,7 +1239,6 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    StarDetectorParameters_ROI_Sizer.Add( StarDetectorParameters_ROIRow2_Sizer );
 
    StarDetectorParameters_ROI_Control.SetSizer( StarDetectorParameters_ROI_Sizer );
-   StarDetectorParameters_ROI_Control.AdjustToContents();
 
    //
 
@@ -1375,7 +1371,6 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    OutputFiles_Sizer.Add( OutputMisc_Sizer );
 
    OutputFiles_Control.SetSizer( OutputFiles_Sizer );
-   OutputFiles_Control.AdjustToContents();
 
    //
 
@@ -1401,6 +1396,7 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    FormatHints_Control.Hide();
    StarDetectorParameters_ROI_Control.Hide();
 
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 
    w.OnHide( (Control::event_handler)&SubframeSelectorInterface::e_Hide, w );
@@ -1411,4 +1407,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2019-01-21T12:06:42Z
+// EOF SubframeSelectorInterface.cpp - Released 2019-09-29T12:27:58Z

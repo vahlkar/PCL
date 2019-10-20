@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/UIScaling.h - Released 2019-01-21T12:06:07Z
+// pcl/UIScaling.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -285,8 +285,8 @@ String UIScaledStyleSheet( double displayScalingFactor, double resourceScalingFa
       if ( !urlSections.IsEmpty() )
       {
          int index = UIResourceScalingIndex( resourceScalingFactor );
-         for ( Array<PCL_UIStringSection>::const_iterator i = urlSections.ReverseBegin(); i != urlSections.ReverseEnd(); --i )
-            cssCode.Replace( i->pos, i->len, String( UIScaledResourceForIndex( index, cssCode.Substring( i->pos, i->len ) ) ) );
+         for ( const PCL_UIStringSection& s : ReverseIterable( urlSections ) )
+            cssCode.Replace( s.pos, s.len, String( UIScaledResourceForIndex( index, cssCode.Substring( s.pos, s.len ) ) ) );
       }
    }
 
@@ -307,11 +307,11 @@ String UIScaledStyleSheet( double displayScalingFactor, double resourceScalingFa
          if ( p < q )
             pxSections.Add( PCL_UIStringSection( p, q ) );
       }
-      for ( Array<PCL_UIStringSection>::const_iterator i = pxSections.ReverseBegin(); i != pxSections.ReverseEnd(); --i )
+      for ( const PCL_UIStringSection& s : ReverseIterable( pxSections ) )
       {
          double px;
-         if ( cssCode.Substring( i->pos, i->len ).TryToDouble( px ) )
-            cssCode.Replace( i->pos, i->len, String().Format( "%d", RoundInt( px * displayScalingFactor ) ) );
+         if ( cssCode.Substring( s.pos, s.len ).TryToDouble( px ) )
+            cssCode.Replace( s.pos, s.len, String().Format( "%d", RoundInt( px * displayScalingFactor ) ) );
       }
 
       /*
@@ -338,11 +338,11 @@ String UIScaledStyleSheet( double displayScalingFactor, double resourceScalingFa
             if ( p < q )
                ptSections.Add( PCL_UIStringSection( p, q ) );
          }
-         for ( Array<PCL_UIStringSection>::const_iterator i = ptSections.ReverseBegin(); i != ptSections.ReverseEnd(); --i )
+         for ( const PCL_UIStringSection& s : ReverseIterable( ptSections ) )
          {
             double pt;
-            if ( cssCode.Substring( i->pos, i->len ).TryToDouble( pt ) )
-               cssCode.Replace( i->pos, i->len+2, String().Format( "%dpx", RoundInt( displayScalingFactor*pt*fontDPI/72 ) ) );
+            if ( cssCode.Substring( s.pos, s.len ).TryToDouble( pt ) )
+               cssCode.Replace( s.pos, s.len+2, String().Format( "%dpx", RoundInt( displayScalingFactor*pt*fontDPI/72 ) ) );
          }
       }
    }
@@ -359,4 +359,4 @@ String UIScaledStyleSheet( double displayScalingFactor, double resourceScalingFa
 #endif   // __PCL_UIScaling_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UIScaling.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/UIScaling.h - Released 2019-09-29T12:27:26Z

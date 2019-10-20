@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 01.05.02.0428
+// Standard RAW File Format Module Version 1.5.2
 // ----------------------------------------------------------------------------
-// RawInstance.cpp - Released 2019-01-21T12:06:31Z
+// RawInstance.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -876,7 +876,7 @@ FITSKeywordArray RawInstance::ReadFITSKeywords()
                                   "Decoded with " + PixInsightVersion::AsString().ToIsoString() )
             << FITSHeaderKeyword( "COMMENT",
                                   IsoString(),
-                                  "Decoded with " + RawModule::ReadableVersion() )
+                                  "Decoded with " + Module->ReadableVersion() )
             << FITSHeaderKeyword( "COMMENT",
                                   IsoString(),
                                   IsoString( "Decoded with LibRaw version " ) + LibRaw::version() );
@@ -1459,4 +1459,4 @@ UInt8Image RawInstance::ReadThumbnail()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.cpp - Released 2019-01-21T12:06:31Z
+// EOF RawInstance.cpp - Released 2019-09-29T12:27:43Z

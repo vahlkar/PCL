@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CometAlignment Process Module Version 01.02.06.0214
+// Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentInstance.cpp - Released 2019-01-21T12:06:42Z
+// CometAlignmentInstance.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -53,20 +53,20 @@
 
 #include "CometAlignmentInstance.h"
 #include "CometAlignmentInterface.h"
-#include "CometAlignmentModule.h" // for ReadableVersion()
 
+#include <pcl/Algebra.h>
+#include <pcl/DrizzleData.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileFormat.h>
+#include <pcl/Homography.h>
 #include <pcl/ICCProfile.h>
 #include <pcl/LinearFit.h>
-#include <pcl/MetaModule.h> // for ProcessEvents()
+#include <pcl/MetaModule.h>
 #include <pcl/SpinStatus.h>
 #include <pcl/StdStatus.h>
 #include <pcl/Translation.h>
 #include <pcl/Vector.h>
 #include <pcl/Version.h>
-#include <pcl/DrizzleData.h>
-#include <pcl/Algebra.h>
 
 namespace pcl
 {
@@ -398,65 +398,6 @@ Matrix DeltaToMatrix(const DPoint delta)
 		0.0, 1.0, delta.y,
 		0.0, 0.0, 1.0);
 }
-/*
- * Homography transformation
- */
-class Homography
-{
-public:
-
-   Homography() : H( Matrix::UnitMatrix( 3 ) )
-   {
-   }
-
-   Homography( const Matrix& aH ) : H( aH )
-   {
-   }
-
-   Homography( const Homography& h ) : H( h.H )
-   {
-   }
-
-   template <typename T>
-   DPoint operator ()( T x, T y ) const
-   {
-      double w = H[2][0]*x + H[2][1]*y + H[2][2];
-      PCL_CHECK( 1 + w != 1 )
-      return DPoint( (H[0][0]*x + H[0][1]*y + H[0][2])/w,
-                     (H[1][0]*x + H[1][1]*y + H[1][2])/w );
-   }
-
-   template <typename T>
-   DPoint operator ()( const GenericPoint<T>& p ) const
-   {
-      return operator ()( p.x, p.y );
-   }
-
-   Homography Inverse() const
-   {
-      return Homography( H.Inverse() );
-   }
-
-   operator const Matrix&() const
-   {
-      return H;
-   }
-
-   bool IsValid() const
-   {
-      return !H.IsEmpty();
-   }
-
-   void EnsureUnique()
-   {
-      H.EnsureUnique();
-   }
-
-private:
-
-   Matrix H;
-
-};
 
 // ----------------------------------------------------------------------------
 
@@ -671,9 +612,9 @@ public:
       }
    }
 
-   const ImageVariant* TargetImage () const
+   const ImageVariant& TargetImage () const
    {
-      return target;
+      return *target;
    }
 
    String TargetPath () const
@@ -721,12 +662,12 @@ public:
       return LFSet;
    }
 
-   const ImageVariant StarAligned() const
+   const ImageVariant& StarAligned() const
    {
       return saImg;
    }
 
-   const ImageVariant CometAligned() const
+   const ImageVariant& CometAligned() const
    {
       return caImg;
    }
@@ -1060,33 +1001,34 @@ void LFReport(const LinearFitEngine::linear_fit_set L)
 		Console().WriteLn( String().Format( "&sigma;<sub>%d</sub> = %+.6f", c, L[c].adev ) );
 	}
 }
-void CometAlignmentInstance::Save(const ImageVariant* img, CAThread* t, const int8 mode)
+
+void CometAlignmentInstance::Save( const ImageVariant& image, CAThread* t, const int8 mode )
 {
-	Console console;
+   Console console;
 
-	const String inputImgPath(t->TargetPath());		//source image path
-	bool drizzle(t->isDrizzle());					//true == drizle used
-	bool operand(!p_subtractFile.IsEmpty());		//true == operand used
-	DPoint delta(t->Delta());						//comet movement delta
+   const String inputImgPath(t->TargetPath());  // source image path
+   bool drizzle(t->isDrizzle());                // true == drizle used
+   bool operand(!p_subtractFile.IsEmpty());     // true == operand used
+   DPoint delta(t->Delta());                    // comet movement delta
 
-	LinearFitEngine::linear_fit_set L;				//LinearFit result
+   LinearFitEngine::linear_fit_set L;           // LinearFit result
 
-	if ( operand && p_enableLinearFit && mode==0 )
-	{
+   if ( operand && p_enableLinearFit && mode==0 )
+   {
       L = t->GetLinearFitSet();
-	  LFReport(L);
-	}
+      LFReport(L);
+   }
 
-	String postfix(p_postfix);
-	if(operand && drizzle)
-	{
-		switch(mode)
-		{
-		case 0: postfix.Clear(); break; //new not registred pureStar or pureComet image
-		case 1: postfix = "_r"; break;	//new pureStarRegistred image
-		case 2: postfix = "_r"+p_postfix; break;	//new pureCometRegistred image
-		}
-	}
+   String postfix(p_postfix);
+   if(operand && drizzle)
+   {
+      switch(mode)
+      {
+      case 0: postfix.Clear(); break; //new not registred pureStar or pureComet image
+      case 1: postfix = "_r"; break;	//new pureStarRegistred image
+      case 2: postfix = "_r"+p_postfix; break;	//new pureCometRegistred image
+      }
+   }
 
    String outputImgPath = OutputImgPath (inputImgPath, postfix); //convert inputImgPath to output image
    console.WriteLn ("Create " + outputImgPath);
@@ -1100,35 +1042,36 @@ void CometAlignmentInstance::Save(const ImageVariant* img, CAThread* t, const in
    ImageOptions options = data.options; // get resolution, etc.
    outputFile.SetOptions (options);
 
-   if (data.fsData != 0)
-      if (outputFormat.ValidateFormatSpecificData (data.fsData)) outputFile.SetFormatSpecificData (data.fsData);
+   if ( data.fsData != nullptr )
+      if ( outputFormat.ValidateFormatSpecificData( data.fsData ) )
+         outputFile.SetFormatSpecificData( data.fsData );
 
-   if (outputFormat.CanStoreKeywords ())
+   if ( outputFormat.CanStoreKeywords() )
    {
       FITSKeywordArray keywords = data.keywords;
-      keywords.Add (FITSHeaderKeyword ("COMMENT", IsoString (), "CometAlignment with " + PixInsightVersion::AsString ()));
-      keywords.Add (FITSHeaderKeyword ("COMMENT", IsoString (), "CometAlignment with " + CometAlignmentModule::ReadableVersion ()));
+      keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), "CometAlignment with " + PixInsightVersion::AsString() ) );
+      keywords.Add( FITSHeaderKeyword( "COMMENT", IsoString(), "CometAlignment with " + Module->ReadableVersion() ) );
       if (!p_subtractFile.IsEmpty())
       {
-         keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), "CometAlignment.Subtract: " + IsoString( p_subtractFile ) ) );
-         keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), "CometAlignment.Mode: " + IsoString( p_subtractMode ? "true" : "false" ) ) );
-         keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), "CometAlignment.LinearFit: " + IsoString( p_enableLinearFit ? "true" : "false" ) ) );
-         keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), "CometAlignment.RejectLow: " + IsoString( p_rejectLow ) ) );
-         keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), "CometAlignment.RejectHigh: " + IsoString( p_rejectHigh ) ) );
-         if (p_enableLinearFit)
+         keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "CometAlignment.Subtract: " + IsoString( p_subtractFile ) ) );
+         keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "CometAlignment.Mode: " + IsoString( p_subtractMode ? "true" : "false" ) ) );
+         keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "CometAlignment.LinearFit: " + IsoString( p_enableLinearFit ? "true" : "false" ) ) );
+         keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "CometAlignment.RejectLow: " + IsoString( p_rejectLow ) ) );
+         keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "CometAlignment.RejectHigh: " + IsoString( p_rejectHigh ) ) );
+         if ( p_enableLinearFit )
          {
-            keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), "CometAlignment.Linear fit functions:" ) );
+            keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "CometAlignment.Linear fit functions:" ) );
             for ( int c = 0; c < L.Length(); ++c )
             {
-               keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), IsoString().Format( "y%d = %+.6f %c %.6f * x%d", c, L[c].a, (L[c].b < 0) ? '-' : '+', Abs( L[c].b ), c ) ) );
-               keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), IsoString().Format( "sigma%d = %+.6f", c, L[c].adev ) ) );
+               keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "y%d = %+.6f %c %.6f * x%d", c, L[c].a, (L[c].b < 0) ? '-' : '+', Abs( L[c].b ), c ) ) );
+               keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), IsoString().Format( "sigma%d = %+.6f", c, L[c].adev ) ) );
             }
          }
-         keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), "CometAlignment.Normalize: " + IsoString( p_normalize ? "true" : "false") ) );
+         keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "CometAlignment.Normalize: " + IsoString( p_normalize ? "true" : "false") ) );
       }
 
-	  keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), "CometAlignment.X: " + IsoString(delta.x)));
-      keywords.Add (FITSHeaderKeyword ("HISTORY", IsoString (), "CometAlignment.Y:" +IsoString(delta.y)));
+   keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "CometAlignment.X: " + IsoString( delta.x ) ) );
+      keywords.Add( FITSHeaderKeyword( "HISTORY", IsoString(), "CometAlignment.Y:" +IsoString( delta.y ) ) );
 
       outputFile.WriteFITSKeywords( keywords );
    }
@@ -1139,38 +1082,37 @@ void CometAlignmentInstance::Save(const ImageVariant* img, CAThread* t, const in
       if (outputFormat.CanStoreICCProfiles ()) outputFile.WriteICCProfile( data.profile );
       else console.WarningLn ("** Warning: The output format cannot store ICC profiles - original profile not embedded.");
 
-   SaveImageFile (*img, outputFile);
+   SaveImageFile( image, outputFile );
 
    console.WriteLn ("Close file.");
    outputFile.Close ();
 
-   if(drizzle)
+   if ( drizzle )
    {
-	   if(operand && mode==0) //new not registred drizzle integrable image writen
-		   t->TargetPath(outputImgPath);//store path to CAThread
-	   else // create .xdrz file
-		   UpdateSADrizzleFileForCA( inputImgPath, outputImgPath, delta,
-                                   t->DrzMatrix(), t->DrzSrcCFAFilePath(), t->DrzSrcCFAPattern(),
-                                   !p_subtractFile.IsEmpty(), mode, img->Width(), img->Height() );
+      if(operand && mode==0) //new not registred drizzle integrable image writen
+         t->TargetPath(outputImgPath);//store path to CAThread
+      else // create .xdrz file
+         UpdateSADrizzleFileForCA( inputImgPath, outputImgPath, delta,
+                                 t->DrzMatrix(), t->DrzSrcCFAFilePath(), t->DrzSrcCFAPattern(),
+                                 !p_subtractFile.IsEmpty(), mode, image.Width(), image.Height() );
    }
 }
-void CometAlignmentInstance::SaveImage ( CAThread* t)
+
+void CometAlignmentInstance::SaveImage( CAThread* t )
 {
-	Save(t->TargetImage(), t, 0);			//Save result image
+   Save( t->TargetImage(), t, 0 );    // Save result image
 
-	if(t->StarAligned())					//Save PureStarAligned
+   if ( t->StarAligned() )            // Save PureStarAligned
    {
-      ImageVariant* img = new ImageVariant(t->StarAligned());
-		Save(img, t, 1);
-      delete img, img = 0;
-   }
-	if(t->CometAligned())					//Save PureCometAligned
-   {
-      ImageVariant* img = new ImageVariant(t->StarAligned());
-		Save(img, t, 2);
-      delete img, img = 0;
+      ImageVariant image( t->StarAligned() );
+      Save( image, t, 1 );
    }
 
+   if ( t->CometAligned() )           // Save PureCometAligned
+   {
+      ImageVariant image( t->CometAligned() );
+      Save( image, t, 2 );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -1287,8 +1229,6 @@ bool CometAlignmentInstance::ExecuteGlobal ()
 
    try //try 1
    {
-      Exception::EnableConsoleOutput ();
-      Exception::DisableGUIOutput ();
       console.EnableAbort ();
 
       m_OperandImage = LoadOperandImage (p_subtractFile);
@@ -1512,9 +1452,6 @@ bool CometAlignmentInstance::ExecuteGlobal ()
       console.NoteLn (String ().Format ("<br>===== CometAlignment: %u succeeded, %u skipped, %u canceled =====",
                                         succeeded, skipped, total - succeeded));
 
-      Exception::DisableConsoleOutput ();
-      Exception::EnableGUIOutput ();
-
       if (m_OperandImage != 0)
          delete m_OperandImage, m_OperandImage = 0;
 
@@ -1533,8 +1470,6 @@ bool CometAlignmentInstance::ExecuteGlobal ()
    }
    catch (...)
    {
-      Exception::DisableConsoleOutput ();
-      Exception::EnableGUIOutput ();
       if (m_OperandImage != 0) delete m_OperandImage, m_OperandImage = 0;
 
 	  monitor.Clear();
@@ -1679,4 +1614,4 @@ size_type CometAlignmentInstance::ParameterLength (const MetaParameter* p, size_
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInstance.cpp - Released 2019-01-21T12:06:42Z
+// EOF CometAlignmentInstance.cpp - Released 2019-09-29T12:27:58Z

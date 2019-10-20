@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 01.03.03.0336
+// Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.cpp - Released 2019-01-21T12:06:41Z
+// PhotometricColorCalibrationParameters.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -60,6 +60,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
+PCCWorkingMode*                    ThePCCWorkingModeParameter = nullptr;
+PCCApplyCalibration*               ThePCCApplyCalibrationParameter = nullptr;
+
+PCCRedFilterWavelength*            ThePCCRedFilterWavelengthParameter = nullptr;
+PCCRedFilterBandwidth*             ThePCCRedFilterBandwidthParameter = nullptr;
+PCCGreenFilterWavelength*          ThePCCGreenFilterWavelengthParameter = nullptr;
+PCCGreenFilterBandwidth*           ThePCCGreenFilterBandwidthParameter = nullptr;
+PCCBlueFilterWavelength*           ThePCCBlueFilterWavelengthParameter = nullptr;
+PCCBlueFilterBandwidth*            ThePCCBlueFilterBandwidthParameter = nullptr;
+
 PCCWhiteReferenceId*               ThePCCWhiteReferenceIdParameter = nullptr;
 PCCWhiteReferenceName*             ThePCCWhiteReferenceNameParameter = nullptr;
 PCCWhiteReferenceSr_JV*            ThePCCWhiteReferenceSr_JVParameter = nullptr;
@@ -99,8 +109,6 @@ PCCPhotShowDetectedStars*          ThePCCPhotShowDetectedStarsParameter = nullpt
 PCCPhotShowBackgroundModels*       ThePCCPhotShowBackgroundModelsParameter = nullptr;
 PCCPhotGenerateGraphs*             ThePCCPhotGenerateGraphsParameter = nullptr;
 
-PCCApplyCalibration*               ThePCCApplyCalibrationParameter = nullptr;
-
 PCCNeutralizeBackground*           ThePCCNeutralizeBackgroundParameter = nullptr;
 PCCBackgroundReferenceViewId*      ThePCCBackgroundReferenceViewIdParameter = nullptr;
 PCCBackgroundLow*                  ThePCCBackgroundLowParameter = nullptr;
@@ -110,6 +118,192 @@ PCCBackgroundROIX0*                ThePCCBackgroundROIX0Parameter = nullptr;
 PCCBackgroundROIY0*                ThePCCBackgroundROIY0Parameter = nullptr;
 PCCBackgroundROIX1*                ThePCCBackgroundROIX1Parameter = nullptr;
 PCCBackgroundROIY1*                ThePCCBackgroundROIY1Parameter = nullptr;
+
+// ----------------------------------------------------------------------------
+
+PCCWorkingMode::PCCWorkingMode( MetaProcess* P ) : MetaEnumeration( P )
+{
+   ThePCCWorkingModeParameter = this;
+}
+
+IsoString PCCWorkingMode::Id() const
+{
+   return "workingMode";
+}
+
+size_type PCCWorkingMode::NumberOfElements() const
+{
+   return NumberOfItems;
+}
+
+IsoString PCCWorkingMode::ElementId( size_type index ) const
+{
+   switch ( index )
+   {
+   default:
+   case Broadband:  return "WorkingMode_Broadband";
+   case Narrowband: return "WorkingMode_Narrowband";
+   }
+}
+
+int PCCWorkingMode::ElementValue( size_type index ) const
+{
+   return int( index );
+}
+
+size_type PCCWorkingMode::DefaultValueIndex() const
+{
+   return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+PCCApplyCalibration::PCCApplyCalibration( MetaProcess* P ) : MetaBoolean( P )
+{
+   ThePCCApplyCalibrationParameter = this;
+}
+
+IsoString PCCApplyCalibration::Id() const
+{
+   return "applyCalibration";
+}
+
+bool PCCApplyCalibration::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+PCCRedFilterWavelength::PCCRedFilterWavelength( MetaProcess* P ) : MetaFloat( P )
+{
+   ThePCCRedFilterWavelengthParameter = this;
+}
+
+IsoString PCCRedFilterWavelength::Id() const
+{
+   return "redFilterWavelength";
+}
+
+int PCCRedFilterWavelength::Precision() const
+{
+   return 1;
+}
+
+double PCCRedFilterWavelength::DefaultValue() const
+{
+   return 656.3; // nm
+}
+
+// ----------------------------------------------------------------------------
+
+PCCRedFilterBandwidth::PCCRedFilterBandwidth( MetaProcess* P ) : MetaFloat( P )
+{
+   ThePCCRedFilterBandwidthParameter = this;
+}
+
+IsoString PCCRedFilterBandwidth::Id() const
+{
+   return "redFilterBandwidth";
+}
+
+int PCCRedFilterBandwidth::Precision() const
+{
+   return 1;
+}
+
+double PCCRedFilterBandwidth::DefaultValue() const
+{
+   return 3.0; // nm
+}
+
+// ----------------------------------------------------------------------------
+
+PCCGreenFilterWavelength::PCCGreenFilterWavelength( MetaProcess* P ) : MetaFloat( P )
+{
+   ThePCCGreenFilterWavelengthParameter = this;
+}
+
+IsoString PCCGreenFilterWavelength::Id() const
+{
+   return "greenFilterWavelength";
+}
+
+int PCCGreenFilterWavelength::Precision() const
+{
+   return 1;
+}
+
+double PCCGreenFilterWavelength::DefaultValue() const
+{
+   return 500.7; // nm
+}
+
+// ----------------------------------------------------------------------------
+
+PCCGreenFilterBandwidth::PCCGreenFilterBandwidth( MetaProcess* P ) : MetaFloat( P )
+{
+   ThePCCGreenFilterBandwidthParameter = this;
+}
+
+IsoString PCCGreenFilterBandwidth::Id() const
+{
+   return "greenFilterBandwidth";
+}
+
+int PCCGreenFilterBandwidth::Precision() const
+{
+   return 1;
+}
+
+double PCCGreenFilterBandwidth::DefaultValue() const
+{
+   return 3.0; // nm
+}
+
+// ----------------------------------------------------------------------------
+
+PCCBlueFilterWavelength::PCCBlueFilterWavelength( MetaProcess* P ) : MetaFloat( P )
+{
+   ThePCCBlueFilterWavelengthParameter = this;
+}
+
+IsoString PCCBlueFilterWavelength::Id() const
+{
+   return "blueFilterWavelength";
+}
+
+int PCCBlueFilterWavelength::Precision() const
+{
+   return 1;
+}
+
+double PCCBlueFilterWavelength::DefaultValue() const
+{
+   return 500.7; // nm
+}
+
+// ----------------------------------------------------------------------------
+
+PCCBlueFilterBandwidth::PCCBlueFilterBandwidth( MetaProcess* P ) : MetaFloat( P )
+{
+   ThePCCBlueFilterBandwidthParameter = this;
+}
+
+IsoString PCCBlueFilterBandwidth::Id() const
+{
+   return "blueFilterBandwidth";
+}
+
+int PCCBlueFilterBandwidth::Precision() const
+{
+   return 1;
+}
+
+double PCCBlueFilterBandwidth::DefaultValue() const
+{
+   return 3.0; // nm
+}
 
 // ----------------------------------------------------------------------------
 
@@ -127,7 +321,7 @@ String PCCWhiteReferenceId::DefaultValue() const
 {
    if ( API )
    {
-      PhotometricColorCalibrationProcess::InitializeWhiteReferences( false/*interactive*/ );
+      PhotometricColorCalibrationProcess::InitializeWhiteReferences();
       if ( PhotometricColorCalibrationProcess::HasValidWhiteReferences() )
          return PhotometricColorCalibrationProcess::DefaultWhiteReference().id;
    }
@@ -150,7 +344,7 @@ String PCCWhiteReferenceName::DefaultValue() const
 {
    if ( API )
    {
-      PhotometricColorCalibrationProcess::InitializeWhiteReferences( false/*interactive*/ );
+      PhotometricColorCalibrationProcess::InitializeWhiteReferences();
       if ( PhotometricColorCalibrationProcess::HasValidWhiteReferences() )
          return PhotometricColorCalibrationProcess::DefaultWhiteReference().name;
    }
@@ -178,7 +372,7 @@ double PCCWhiteReferenceSr_JV::DefaultValue() const
 {
    if ( API )
    {
-      PhotometricColorCalibrationProcess::InitializeWhiteReferences( false/*interactive*/ );
+      PhotometricColorCalibrationProcess::InitializeWhiteReferences();
       if ( PhotometricColorCalibrationProcess::HasValidWhiteReferences() )
          return PhotometricColorCalibrationProcess::DefaultWhiteReference().Sr_JV;
    }
@@ -206,7 +400,7 @@ double PCCWhiteReferenceJB_JV::DefaultValue() const
 {
    if ( API )
    {
-      PhotometricColorCalibrationProcess::InitializeWhiteReferences( false/*interactive*/ );
+      PhotometricColorCalibrationProcess::InitializeWhiteReferences();
       if ( PhotometricColorCalibrationProcess::HasValidWhiteReferences() )
          return PhotometricColorCalibrationProcess::DefaultWhiteReference().JB_JV;
    }
@@ -234,7 +428,7 @@ double PCCZeroPointSr_JV::DefaultValue() const
 {
    if ( API )
    {
-      PhotometricColorCalibrationProcess::InitializeWhiteReferences( false/*interactive*/ );
+      PhotometricColorCalibrationProcess::InitializeWhiteReferences();
       if ( PhotometricColorCalibrationProcess::HasValidWhiteReferences() )
          return PhotometricColorCalibrationProcess::ZeroPoint().Sr_JV;
    }
@@ -262,7 +456,7 @@ double PCCZeroPointJB_JV::DefaultValue() const
 {
    if ( API )
    {
-      PhotometricColorCalibrationProcess::InitializeWhiteReferences( false/*interactive*/ );
+      PhotometricColorCalibrationProcess::InitializeWhiteReferences();
       if ( PhotometricColorCalibrationProcess::HasValidWhiteReferences() )
          return PhotometricColorCalibrationProcess::ZeroPoint().JB_JV;
    }
@@ -494,7 +688,7 @@ IsoString PCCSolverCatalogName::Id() const
 
 String PCCSolverCatalogName::DefaultValue() const
 {
-   return "PPMXL";
+   return "Gaia";
 }
 
 // ----------------------------------------------------------------------------
@@ -717,7 +911,7 @@ IsoString PCCSolverSplineSmoothing::Id() const
 
 int PCCSolverSplineSmoothing::Precision() const
 {
-   return 2;
+   return 3;
 }
 
 double PCCSolverSplineSmoothing::MinimumValue() const
@@ -732,7 +926,7 @@ double PCCSolverSplineSmoothing::MaximumValue() const
 
 double PCCSolverSplineSmoothing::DefaultValue() const
 {
-   return 0.05;
+   return 0.025;
 }
 
 // ----------------------------------------------------------------------------
@@ -1016,23 +1210,6 @@ bool PCCPhotGenerateGraphs::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-PCCApplyCalibration::PCCApplyCalibration( MetaProcess* P ) : MetaBoolean( P )
-{
-   ThePCCApplyCalibrationParameter = this;
-}
-
-IsoString PCCApplyCalibration::Id() const
-{
-   return "applyCalibration";
-}
-
-bool PCCApplyCalibration::DefaultValue() const
-{
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
 PCCNeutralizeBackground::PCCNeutralizeBackground( MetaProcess* P ) : MetaBoolean( P )
 {
    ThePCCNeutralizeBackgroundParameter = this;
@@ -1254,4 +1431,4 @@ double PCCBackgroundROIY1::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.cpp - Released 2019-01-21T12:06:41Z
+// EOF PhotometricColorCalibrationParameters.cpp - Released 2019-09-29T12:27:57Z

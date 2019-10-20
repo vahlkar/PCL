@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInstance.cpp - Released 2019-01-21T12:06:41Z
+// B3EInstance.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -70,7 +70,6 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 B3EInstance::InputViewParameters::InputViewParameters() :
-   id(),
    center( 0 ),
    subtractBackground( TheB3ESubstractBackground1Parameter->DefaultValue() ),
    backgroundReferenceViewId(),
@@ -82,6 +81,7 @@ B3EInstance::InputViewParameters::InputViewParameters() :
 {
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 B3EInstance::B3EInstance( const MetaProcess* m ) :
@@ -97,11 +97,15 @@ B3EInstance::B3EInstance( const MetaProcess* m ) :
 {
 }
 
+// ----------------------------------------------------------------------------
+
 B3EInstance::B3EInstance( const B3EInstance& x ) :
    ProcessImplementation( x )
 {
    Assign( x );
 }
+
+// ----------------------------------------------------------------------------
 
 void B3EInstance::Assign( const ProcessImplementation& p )
 {
@@ -121,10 +125,14 @@ void B3EInstance::Assign( const ProcessImplementation& p )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 UndoFlags B3EInstance::UndoMode( const View& ) const
 {
    return UndoFlag::Keywords | UndoFlag::PixelData;
 }
+
+// ----------------------------------------------------------------------------
 
 bool B3EInstance::Validate( String& info )
 {
@@ -185,11 +193,15 @@ bool B3EInstance::Validate( String& info )
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool B3EInstance::CanExecuteOn( const View&, String& whyNot ) const
 {
    whyNot = "B3E can only be executed in the global context.";
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool B3EInstance::CanExecuteGlobal( String& whyNot ) const
 {
@@ -499,6 +511,9 @@ private:
    bool   closerToA : 1; // xc is closer to xa than to xb
 };
 
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
 static bool GetFluxConversionParameters( double& flxRange, double& flxMin, const View& v )
 {
    flxMin = 0;
@@ -527,6 +542,8 @@ static bool GetFluxConversionParameters( double& flxRange, double& flxMin, const
    return foundFlxMin && foundFlxRange;
 }
 
+// ----------------------------------------------------------------------------
+
 static void SetKeyword( ImageWindow& w, const IsoString& name, double value, const IsoString& comment )
 {
    FITSHeaderKeyword keyword( name,
@@ -538,12 +555,16 @@ static void SetKeyword( ImageWindow& w, const IsoString& name, double value, con
    w.SetKeywords( keywords );
 }
 
+// ----------------------------------------------------------------------------
+
 static IsoString ValidFullId( const IsoString& id )
 {
    IsoString validId( id );
    validId.ReplaceString( "->", "_" );
    return validId;
 }
+
+// ----------------------------------------------------------------------------
 
 template <class P>
 static void MakeBackgroundMask( UInt8Image& mask, const GenericImage<P>& image, float low, float high )
@@ -594,6 +615,8 @@ static void MakeBackgroundMask( UInt8Image& mask, const ImageVariant& image, flo
          break;
       }
 }
+
+// ----------------------------------------------------------------------------
 
 double B3EInstance::EvaluateBackground( const InputViewParameters& imgParams )
 {
@@ -648,6 +671,9 @@ double B3EInstance::EvaluateBackground( const InputViewParameters& imgParams )
    console.WriteLn( String().Format( "<end><cbr>* Mean background: %.5g", bg ) );
    return bg;
 }
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 bool B3EInstance::ExecuteGlobal()
 {
@@ -810,6 +836,8 @@ bool B3EInstance::ExecuteGlobal()
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 void* B3EInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
    if ( p == TheB3EInputViewId1Parameter )
@@ -879,8 +907,10 @@ void* B3EInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/
    if ( p == TheB3EOutputBackgroundReferenceMask2Parameter )
       return &p_inputView[1].outputBackgroundReferenceMask;
 
-   return 0;
+   return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool B3EInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
@@ -932,6 +962,8 @@ bool B3EInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type B3EInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheB3EInputViewId1Parameter )
@@ -956,4 +988,4 @@ size_type B3EInstance::ParameterLength( const MetaParameter* p, size_type tableR
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EInstance.cpp - Released 2019-01-21T12:06:41Z
+// EOF B3EInstance.cpp - Released 2019-09-29T12:27:57Z

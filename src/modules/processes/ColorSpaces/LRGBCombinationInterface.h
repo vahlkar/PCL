@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0374
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// LRGBCombinationInterface.h - Released 2019-01-21T12:06:41Z
+// LRGBCombinationInterface.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -76,22 +76,17 @@ public:
    LRGBCombinationInterface();
    virtual ~LRGBCombinationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   InterfaceFeatures Features() const;
-
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-   virtual bool ImportProcess( const ProcessImplementation& );
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
@@ -162,15 +157,11 @@ private:
    void __ChannelId_GetFocus( Control& sender );
    void __ChannelId_EditCompleted( Edit& sender );
    void __Channel_SelectSource_Click( Button& sender, bool checked );
-
    void __Channel_Weight_ValueUpdated( NumericEdit& sender, double value );
    void __ClipHighlights_Click( Button& sender, bool checked );
-
    void __MTF_ValueUpdated( NumericEdit& sender, double value );
-
    void __NoiseReduction_Check( SectionBar& sender, bool checked );
    void __NoiseReduction_ValueUpdated( SpinBox& sender, int value );
-
    void __ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
    void __ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
 
@@ -191,4 +182,4 @@ PCL_END_LOCAL
 #endif   // __LRGBCombinationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInterface.h - Released 2019-01-21T12:06:41Z
+// EOF LRGBCombinationInterface.h - Released 2019-09-29T12:27:57Z

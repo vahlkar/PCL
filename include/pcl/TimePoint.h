@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.h - Released 2019-01-21T12:06:07Z
+// pcl/TimePoint.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -230,6 +230,24 @@ public:
    constexpr bool IsValid() const
    {
       return ((m_jdi > 0) ? m_jdi : -m_jdi) < 2147438065;
+   }
+
+   /*!
+    * Extracts the individual date components.
+    *
+    * \param[out] year     Reference to a variable that will receive the year
+    *                      component of this time point.
+    *
+    * \param[out] month    Reference to a variable that will receive the month
+    *                      component of this time point, in the range [1,12].
+    *
+    * \param[out] day      Reference to a variable that will receive the day
+    *                      component of this time point, in the range [1,31].
+    */
+   void GetComplexTime( int& year, int& month, int& day ) const
+   {
+      double dum;
+      JDToComplexTime( year, month, day, dum, m_jdi, m_jdf );
    }
 
    /*!
@@ -1188,4 +1206,4 @@ inline TimePoint operator -( const TimePoint& t, double d )
 #endif   // __PCL_TimePoint_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/TimePoint.h - Released 2019-09-29T12:27:26Z

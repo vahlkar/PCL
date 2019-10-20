@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/ProjectionFactory.cpp - Released 2019-01-21T12:06:21Z
+// pcl/ProjectionFactory.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -156,4 +156,4 @@ ProjectionBase* ProjectionFactory::Create( const WCSKeywords& wcs )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProjectionFactory.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/ProjectionFactory.cpp - Released 2019-09-29T12:27:33Z

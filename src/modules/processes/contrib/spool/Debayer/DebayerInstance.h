@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Debayer Process Module Version 01.08.00.0327
+// Standard Debayer Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// DebayerInstance.h - Released 2019-01-21T12:06:42Z
+// DebayerInstance.h - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -114,7 +114,7 @@ private:
    pcl_bool   p_showImages;        // optional for view execution only
    String     p_cfaSourceFilePath; // ...
    item_list  p_targets;
-   pcl_bool   p_noGUIMessages;
+   pcl_bool   p_noGUIMessages; // ### DEPRECATED
 
    // Format hints
    String      p_inputHints;
@@ -153,10 +153,11 @@ private:
    pcl_enum BayerPatternFromTarget( const View& ) const;
    pcl_enum BayerPatternFromTarget( FileFormatInstance& ) const;
    static pcl_enum BayerPatternFromTargetProperty( const Variant& );
+   static pcl_enum BayerPatternFromTargetPropertyValue( const IsoString&, int dx = 0, int dy = 0 );
 
    IsoString CFAPatternIdFromTarget( const View&, bool xtrans ) const;
    IsoString CFAPatternIdFromTarget( FileFormatInstance&, bool xtrans ) const;
-   static IsoString CFAPatternIdFromTargetProperty( const Variant& );
+   static IsoString CFAPatternIdFromTargetProperty( const Variant&, int dx = 0, int dy = 0 );
 
    static bool IsXTransCFAFromTarget( const View& );
    static bool IsXTransCFAFromTarget( FileFormatInstance& );
@@ -188,4 +189,4 @@ private:
 #endif   // __DebayerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.h - Released 2019-01-21T12:06:42Z
+// EOF DebayerInstance.h - Released 2019-09-29T12:27:58Z

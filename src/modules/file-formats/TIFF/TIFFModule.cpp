@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard TIFF File Format Module Version 01.00.07.0369
+// Standard TIFF File Format Module Version 1.0.7
 // ----------------------------------------------------------------------------
-// TIFFModule.cpp - Released 2019-01-21T12:06:31Z
+// TIFFModule.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  07
-#define MODULE_VERSION_BUILD     0369
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  7
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "TIFFModule.h"
 #include "TIFFFormat.h"
@@ -68,9 +68,11 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-TIFFModule::TIFFModule() : MetaModule()
+TIFFModule::TIFFModule()
 {
 }
+
+// -------------------------------------------------------------------------
 
 const char* TIFFModule::Version() const
 {
@@ -81,35 +83,49 @@ const char* TIFFModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// -------------------------------------------------------------------------
+
 IsoString TIFFModule::Name() const
 {
    return "TIFF";
 }
+
+// -------------------------------------------------------------------------
 
 String TIFFModule::Description() const
 {
    return "PixInsight Standard TIFF File Format Module";
 }
 
+// -------------------------------------------------------------------------
+
 String TIFFModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String TIFFModule::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// -------------------------------------------------------------------------
+
 String TIFFModule::Copyright() const
 {
-   return "Copyright (c) 2005-2018, Pleiades Astrophoto";
+   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
 }
+
+// -------------------------------------------------------------------------
 
 String TIFFModule::TradeMarks() const
 {
    return "PixInsight";
 }
+
+// -------------------------------------------------------------------------
 
 String TIFFModule::OriginalFileName() const
 {
@@ -126,6 +142,8 @@ String TIFFModule::OriginalFileName() const
    return "TIFF-pxm.dll";
 #endif
 }
+
+// -------------------------------------------------------------------------
 
 void TIFFModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -149,4 +167,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF TIFFModule.cpp - Released 2019-01-21T12:06:31Z
+// EOF TIFFModule.cpp - Released 2019-09-29T12:27:43Z

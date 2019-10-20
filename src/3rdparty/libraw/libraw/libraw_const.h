@@ -1,6 +1,6 @@
 /* -*- C++ -*-
  * File: libraw_const.h
- * Copyright 2008-2018 LibRaw LLC (info@libraw.org)
+ * Copyright 2008-2019 LibRaw LLC (info@libraw.org)
  * Created: Sat Mar  8 , 2008
  * LibRaw error codes
 LibRaw is free software; you can redistribute it and/or modify
@@ -20,9 +20,7 @@ it under the terms of the one of two licenses as you choose:
 #define LIBRAW_DEFAULT_ADJUST_MAXIMUM_THRESHOLD 0.75
 #define LIBRAW_DEFAULT_AUTO_BRIGHTNESS_THRESHOLD 0.01
 /* limit allocation size, default is 2Gb */
-#ifndef LIBRAW_MAX_ALLOC_MB
-#define LIBRAW_MAX_ALLOC_MB 2048L
-#endif
+#define LIBRAW_MAX_ALLOC_MB_DEFAULT 2048L
 
 /* Check if enough file space exists before tag read */
 #ifndef LIBRAW_NO_IOSPACE_CHECK
@@ -38,6 +36,7 @@ LIBRAW_MEMPOOL_CHECK define will result in error on pool overflow */
 #endif
 
 #define LIBRAW_IFD_MAXCOUNT 10
+#define LIBRAW_MAX_METADATA_BLOCKS 1024
 
 enum LibRaw_openbayer_patterns
 {
@@ -50,17 +49,29 @@ enum LibRaw_openbayer_patterns
 enum LibRaw_dngfields_marks
 {
   LIBRAW_DNGFM_FORWARDMATRIX = 1,
-  LIBRAW_DNGFM_ILLUMINANT = 2,
-  LIBRAW_DNGFM_COLORMATRIX = 4,
-  LIBRAW_DNGFM_CALIBRATION = 8,
-  LIBRAW_DNGFM_ANALOGBALANCE = 16,
-  LIBRAW_DNGFM_BLACK = 32,
-  LIBRAW_DNGFM_WHITE = 64,
-  LIBRAW_DNGFM_OPCODE2 = 128,
-  LIBRAW_DNGFM_LINTABLE = 256,
-  LIBRAW_DNGFM_CROPORIGIN = 512,
-  LIBRAW_DNGFM_CROPSIZE = 1024,
-  LIBRAW_DNGFM_PREVIEWCS = 2048
+  LIBRAW_DNGFM_ILLUMINANT = 1<<1,
+  LIBRAW_DNGFM_COLORMATRIX = 1<<2,
+  LIBRAW_DNGFM_CALIBRATION = 1<<3,
+  LIBRAW_DNGFM_ANALOGBALANCE = 1<<4,
+  LIBRAW_DNGFM_BLACK = 1<<5,
+  LIBRAW_DNGFM_WHITE = 1<<6,
+  LIBRAW_DNGFM_OPCODE2 = 1<<7,
+  LIBRAW_DNGFM_LINTABLE = 1<<8,
+  LIBRAW_DNGFM_CROPORIGIN = 1<<9,
+  LIBRAW_DNGFM_CROPSIZE = 1<<10,
+  LIBRAW_DNGFM_PREVIEWCS = 1<<11,
+  LIBRAW_DNGFM_ASSHOTNEUTRAL = 1<<12,
+  LIBRAW_DNGFM_BASELINEEXPOSURE = 1<<13,
+  LIBRAW_DNGFM_LINEARRESPONSELIMIT = 1<<14
+};
+
+enum LibRaw_As_Shot_WB_Applied_codes
+{
+  LIBRAW_ASWB_APPLIED = 1,
+  LIBRAW_ASWB_CANON = 2,
+  LIBRAW_ASWB_NIKON = 4,
+  LIBRAW_ASWB_NIKON_SRAW = 8,
+  LIBRAW_ASWB_PENTAX = 16
 };
 
 enum LibRaw_whitebalance_code
@@ -95,6 +106,7 @@ enum LibRaw_whitebalance_code
   LIBRAW_WBI_D50 = 23,
   LIBRAW_WBI_StudioTungsten = 24,
   LIBRAW_WBI_Sunset = 64,
+  LIBRAW_WBI_HT_Mercury = 67,
   LIBRAW_WBI_Auto = 82,
   LIBRAW_WBI_Custom = 83,
   LIBRAW_WBI_Auto1 = 85,
@@ -103,7 +115,7 @@ enum LibRaw_whitebalance_code
   LIBRAW_WBI_Auto4 = 88,
   LIBRAW_WBI_Custom1 = 90,
   LIBRAW_WBI_Custom2 = 91,
-  LIBRAW_WBI_Custom3 = 93,
+  LIBRAW_WBI_Custom3 = 92,
   LIBRAW_WBI_Custom4 = 93,
   LIBRAW_WBI_Custom5 = 94,
   LIBRAW_WBI_Custom6 = 95,
@@ -163,10 +175,13 @@ enum LibRaw_camera_mounts
   LIBRAW_MOUNT_Samsung_NX = 17,
   LIBRAW_MOUNT_RicohModule = 18,
   LIBRAW_MOUNT_Samsung_NX_M = 19,
-  LIBRAW_MOUNT_Leica_T = 20,
+  LIBRAW_MOUNT_Leica_L = 20, /* camera mount, takes SL and TL lenses */
   LIBRAW_MOUNT_Contax_N = 21,
   LIBRAW_MOUNT_Sigma_X3F = 22,
-  LIBRAW_MOUNT_Leica_SL = 23,
+  LIBRAW_MOUNT_Leica_TL = 23,
+  LIBRAW_MOUNT_Leica_SL = 24,
+  LIBRAW_MOUNT_Nikon_Z = 25,
+  LIBRAW_MOUNT_Canon_RF = 26,
   LIBRAW_MOUNT_FixedLens = 99
 };
 
@@ -177,7 +192,16 @@ enum LibRaw_camera_formats
   LIBRAW_FORMAT_MF = 3,
   LIBRAW_FORMAT_APSH = 4,
   LIBRAW_FORMAT_1INCH = 5,
-  LIBRAW_FORMAT_FT = 8
+  LIBRAW_FORMAT_1div2p3INCH = 6,
+  LIBRAW_FORMAT_FT = 8,
+  LIBRAW_FORMAT_Leica_DMR = 15
+};
+
+enum LibRaw_lens_focal_types
+{
+  LIBRAW_FT_UNDEFINED = 0,
+  LIBRAW_FT_FIXED = 1,
+  LIBRAW_FT_ZOOM = 2
 };
 
 enum LibRaw_sony_cameratypes
@@ -209,7 +233,10 @@ enum LibRaw_processing_options
   LIBRAW_PROCESSING_NO_ROTATE_FOR_KODAK_THUMBNAILS = 1 << 11,
   LIBRAW_PROCESSING_USE_DNG_DEFAULT_CROP = 1 << 12,
   LIBRAW_PROCESSING_USE_PPM16_THUMBS = 1 << 13,
-  LIBRAW_PROCESSING_CHECK_DNG_ILLUMINANT = 1 << 15
+  LIBRAW_PROCESSING_SKIP_MAKERNOTES = 1 << 14,
+  LIBRAW_PROCESSING_CHECK_DNG_ILLUMINANT = 1 << 15,
+  LIBRAW_PROCESSING_DNGSDK_ZEROCOPY = 1 << 16,
+  LIBRAW_PROCESSING_ZEROFILTERS_FOR_MONOCHROMETIFFS = 1 << 17,
 };
 
 enum LibRaw_decoder_flags

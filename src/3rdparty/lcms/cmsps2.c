@@ -78,8 +78,8 @@
    Matrix-shaper based
    -------------------
 
-   This is implemented both with /CIEBasedABC or /CIEBasedDEF on dependig
-   of profile implementation. Since here there are no interpolation tables, I do
+   This is implemented both with /CIEBasedABC or /CIEBasedDEF depending on the
+   profile implementation. Since here there are no interpolation tables, I do
    the conversion directly to XYZ
 
 
@@ -582,7 +582,7 @@ void EmitNGamma(cmsIOHANDLER* m, cmsUInt32Number n, cmsToneCurve* g[])
 //  component. -1 is used to mark beginning of whole block.
 
 static
-int OutputValueSampler(register const cmsUInt16Number In[], register cmsUInt16Number Out[], register void* Cargo)
+int OutputValueSampler(CMSREGISTER const cmsUInt16Number In[], CMSREGISTER cmsUInt16Number Out[], CMSREGISTER void* Cargo)
 {
     cmsPsSamplerCargo* sc = (cmsPsSamplerCargo*) Cargo;
     cmsUInt32Number i;
@@ -982,7 +982,7 @@ int WriteInputMatrixShaper(cmsIOHANDLER* m, cmsHPROFILE hProfile, cmsStage* Matr
             return 0;
         }
 
-        return rc;
+    return rc;
 }
 
 
@@ -1270,7 +1270,7 @@ void EmitXYZ2Lab(cmsIOHANDLER* m)
 // Due to impedance mismatch between XYZ and almost all RGB and CMYK spaces
 // I choose to dump LUTS in Lab instead of XYZ. There is still a lot of wasted
 // space on 3D CLUT, but since space seems not to be a problem here, 33 points
-// would give a reasonable accurancy. Note also that CRD tables must operate in
+// would give a reasonable accuracy. Note also that CRD tables must operate in
 // 8 bits.
 
 static

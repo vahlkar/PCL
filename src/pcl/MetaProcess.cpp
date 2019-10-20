@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/MetaProcess.cpp - Released 2019-01-21T12:06:21Z
+// pcl/MetaProcess.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -341,7 +341,7 @@ public:
       try
       {
          Exception::EnableConsoleOutput();
-         Exception::EnableGUIOutput();
+         Exception::DisableGUIOutput();
 
          pcl::View v( hv );
          api_bool retVal = (api_bool)instance->BeforeExecution( v );
@@ -369,7 +369,7 @@ public:
       try
       {
          Exception::EnableConsoleOutput();
-         Exception::EnableGUIOutput();
+         Exception::DisableGUIOutput();
 
          pcl::View v( hv );
          api_bool retVal = (api_bool)instance->ExecuteOn( v );
@@ -397,7 +397,7 @@ public:
       try
       {
          Exception::EnableConsoleOutput();
-         Exception::EnableGUIOutput();
+         Exception::DisableGUIOutput();
 
          pcl::View v( hv );
          instance->AfterExecution( v );
@@ -439,7 +439,7 @@ public:
       try
       {
          Exception::EnableConsoleOutput();
-         Exception::EnableGUIOutput();
+         Exception::DisableGUIOutput();
 
          api_bool retVal = (api_bool)instance->BeforeGlobalExecution();
 
@@ -466,7 +466,7 @@ public:
       try
       {
          Exception::EnableConsoleOutput();
-         Exception::EnableGUIOutput();
+         Exception::DisableGUIOutput();
 
          api_bool retVal = (api_bool)instance->ExecuteGlobal();
 
@@ -493,7 +493,7 @@ public:
       try
       {
          Exception::EnableConsoleOutput();
-         Exception::EnableGUIOutput();
+         Exception::DisableGUIOutput();
 
          instance->AfterGlobalExecution();
 
@@ -609,7 +609,7 @@ public:
          try
          {
             Exception::EnableConsoleOutput();
-            Exception::EnableGUIOutput();
+            Exception::DisableGUIOutput();
 
             api_bool retVal = (api_bool)instance->ExecuteOn( image, hints );
 
@@ -913,4 +913,4 @@ void MetaProcess::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaProcess.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/MetaProcess.cpp - Released 2019-09-29T12:27:33Z

@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:43.813Z
+# Generated on .... 2019-09-30T11:28:14.294Z
 # Project id ...... SubframeSelector
 # Project type .... Module
 # Platform ........ MacOSX/g++

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG File Format Module Version 01.00.04.0368
+// Standard JPEG File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// JPEGFormat.h - Released 2019-01-21T12:06:31Z
+// JPEGFormat.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -68,31 +68,31 @@ public:
 
    JPEGFormat();
 
-   virtual IsoString Name() const;
+   IsoString Name() const override;
 
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
 
-   virtual uint32 Version() const;
+   uint32 Version() const override;
 
-   virtual String Description() const;
-   virtual String Implementation() const;
+   String Description() const override;
+   String Implementation() const override;
 
-   virtual String IconImageFile() const;
+   String IconImageFile() const override;
 
-   virtual bool CanStore16Bit() const;
-   virtual bool CanStoreAlphaChannels() const;
-   virtual bool CanStoreResolution() const;
-   virtual bool CanStoreICCProfiles() const;
-   virtual bool CanEditPreferences() const;
-   virtual bool UsesFormatSpecificData() const;
+   bool CanStore16Bit() const override;
+   bool CanStoreAlphaChannels() const override;
+   bool CanStoreResolution() const override;
+   bool CanStoreICCProfiles() const override;
+   bool CanEditPreferences() const override;
+   bool UsesFormatSpecificData() const override;
 
-   virtual bool ValidateFormatSpecificData( const void* data ) const;
-   virtual void DisposeFormatSpecificData( void* data ) const;
+   bool ValidateFormatSpecificData( const void* data ) const override;
+   void DisposeFormatSpecificData( void* data ) const override;
 
-   virtual FileFormatImplementation* Create() const;
+   FileFormatImplementation* Create() const override;
 
-   virtual bool EditPreferences() const;
+   bool EditPreferences() const override;
 
    // JPEG format-specific data
 
@@ -126,4 +126,4 @@ public:
 #endif   // __JPEGFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEGFormat.h - Released 2019-01-21T12:06:31Z
+// EOF JPEGFormat.h - Released 2019-09-29T12:27:43Z

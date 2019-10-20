@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Flux Process Module Version 01.00.01.0210
+// Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxModule.cpp - Released 2019-01-21T12:06:41Z
+// FluxModule.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -50,15 +50,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  01
-#define MODULE_VERSION_BUILD     0210
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  1
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "FluxModule.h"
 #include "B3EProcess.h"
@@ -71,9 +71,11 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FluxModule::FluxModule() : MetaModule()
+FluxModule::FluxModule()
 {
 }
+
+// ----------------------------------------------------------------------------
 
 const char* FluxModule::Version() const
 {
@@ -84,35 +86,49 @@ const char* FluxModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString FluxModule::Name() const
 {
    return "Flux";
 }
+
+// ----------------------------------------------------------------------------
 
 String FluxModule::Description() const
 {
    return "PixInsight Flux Process Module"; // Replace with your own description
 }
 
+// ----------------------------------------------------------------------------
+
 String FluxModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String FluxModule::Author() const
 {
    return "PTeam";
 }
 
+// ----------------------------------------------------------------------------
+
 String FluxModule::Copyright() const
 {
-   return "Copyright (c) 2012-2018 Pleiades Astrophoto";
+   return "Copyright (c) 2012-2019 Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String FluxModule::TradeMarks() const
 {
    return "PixInsight";
 }
+
+// ----------------------------------------------------------------------------
 
 String FluxModule::OriginalFileName() const
 {
@@ -129,6 +145,8 @@ String FluxModule::OriginalFileName() const
    return "Flux-pxm.dll";
 #endif
 }
+
+// ----------------------------------------------------------------------------
 
 void FluxModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -157,4 +175,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF FluxModule.cpp - Released 2019-01-21T12:06:41Z
+// EOF FluxModule.cpp - Released 2019-09-29T12:27:57Z

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.109
+# PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-01-21T12:08:18.572Z
+# Generated on .... 2019-09-30T11:27:51.811Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -30,7 +30,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CC4ABD8C-0F0A-41D0-BC72-E3B12BB9C982}</ProjectGuid>
+    <ProjectGuid>{EA0D7A27-F862-40F2-8D38-DFCC3AE80A71}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -112,6 +112,7 @@
       <DebugInformationFormat></DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR64)\PCL-pxi.lib</OutputFile>
@@ -139,6 +140,7 @@
       <DebugInformationFormat></DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR32)\PCL-pxi.lib</OutputFile>
@@ -161,6 +163,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR64)\PCL-pxi.lib</OutputFile>
@@ -180,6 +183,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR32)\PCL-pxi.lib</OutputFile>
@@ -215,7 +219,6 @@
     <ClCompile Include="..\..\Control.cpp"/>
     <ClCompile Include="..\..\Convolution.cpp"/>
     <ClCompile Include="..\..\Crop.cpp"/>
-    <ClCompile Include="..\..\CubicSplineInterpolation.cpp"/>
     <ClCompile Include="..\..\Cursor.cpp"/>
     <ClCompile Include="..\..\Diagnostics.cpp"/>
     <ClCompile Include="..\..\Dialog.cpp"/>
@@ -259,6 +262,7 @@
     <ClCompile Include="..\..\ImageWindow.cpp"/>
     <ClCompile Include="..\..\ImageWindow_CM.cpp"/>
     <ClCompile Include="..\..\IntegerResample.cpp"/>
+    <ClCompile Include="..\..\IntegrationMetadata.cpp"/>
     <ClCompile Include="..\..\JPLEphemeris.cpp"/>
     <ClCompile Include="..\..\JulianDay.cpp"/>
     <ClCompile Include="..\..\KernelFilter.cpp"/>
@@ -283,6 +287,7 @@
     <ClCompile Include="..\..\NetworkTransfer.cpp"/>
     <ClCompile Include="..\..\NumericControl.cpp"/>
     <ClCompile Include="..\..\OrthographicProjection.cpp"/>
+    <ClCompile Include="..\..\PSFFit.cpp"/>
     <ClCompile Include="..\..\Pen.cpp"/>
     <ClCompile Include="..\..\PolarTransform.cpp"/>
     <ClCompile Include="..\..\Position.cpp"/>
@@ -326,6 +331,7 @@
     <ClCompile Include="..\..\StatusMonitor.cpp"/>
     <ClCompile Include="..\..\StdStatus.cpp"/>
     <ClCompile Include="..\..\String.cpp"/>
+    <ClCompile Include="..\..\SurfaceSimplifier.cpp"/>
     <ClCompile Include="..\..\SurfaceSpline.cpp"/>
     <ClCompile Include="..\..\TabBox.cpp"/>
     <ClCompile Include="..\..\TextBox.cpp"/>

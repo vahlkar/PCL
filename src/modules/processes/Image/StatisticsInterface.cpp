@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 01.03.00.0437
+// Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// StatisticsInterface.cpp - Released 2019-01-21T12:06:41Z
+// StatisticsInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -168,6 +168,8 @@ StatisticsTextDialog::StatisticsTextDialog( const String& text )
    Global_Sizer.Add( Buttons_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
    AdjustToContents();
 
    SetWindowTitle( "Statistics - Text View" );
@@ -386,6 +388,8 @@ StatisticsOptionsDialog::StatisticsOptionsDialog()
    Global_Sizer.Add( Buttons_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
    AdjustToContents();
    SetFixedSize();
 
@@ -693,7 +697,8 @@ void StatisticsInterface::ImageUpdated( const View& view )
 {
    if ( GUI != nullptr )
       if ( view == m_currentView )
-         UpdateControls();
+         if ( view.CanRead() )
+            UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
@@ -702,10 +707,11 @@ void StatisticsInterface::ImageFocused( const View& view )
 {
    if ( GUI != nullptr )
       if ( IsTrackViewActive() )
-      {
-         GUI->AllViews_ViewList.SelectView( view ); // normally not necessary, but we can invoke this f() directly
-         UpdateControls();
-      }
+         if ( view.CanRead() )
+         {
+            GUI->AllViews_ViewList.SelectView( view ); // normally not necessary, but we can invoke this f() directly
+            UpdateControls();
+         }
 }
 
 // ----------------------------------------------------------------------------
@@ -730,12 +736,13 @@ void StatisticsInterface::ViewPropertyDeleted( const View& view, const IsoString
 {
    if ( GUI != nullptr )
       if ( view == m_currentView )
-         if ( ViewPropertyRequired( property ) )
-         {
-            DeactivateTrackView();
-            GUI->AllViews_ViewList.SelectView( View::Null() );
-            UpdateControls();
-         }
+         if ( view.CanRead() )
+            if ( ViewPropertyRequired( property ) )
+            {
+               DeactivateTrackView();
+               GUI->AllViews_ViewList.SelectView( View::Null() );
+               UpdateControls();
+            }
 }
 
 // ----------------------------------------------------------------------------
@@ -1397,6 +1404,8 @@ StatisticsInterface::GUIData::GUIData( StatisticsInterface& w )
    Global_Sizer.Add( Data_TreeBox );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 }
 
@@ -1405,4 +1414,4 @@ StatisticsInterface::GUIData::GUIData( StatisticsInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF StatisticsInterface.cpp - Released 2019-09-29T12:27:57Z

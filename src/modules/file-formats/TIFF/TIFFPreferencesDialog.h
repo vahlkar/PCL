@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard TIFF File Format Module Version 01.00.07.0369
+// Standard TIFF File Format Module Version 1.0.7
 // ----------------------------------------------------------------------------
-// TIFFPreferencesDialog.h - Released 2019-01-21T12:06:31Z
+// TIFFPreferencesDialog.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -78,10 +78,6 @@ public:
       const TIFFFormat::OutOfRangePolicyOptions&,
       const TIFFFormat::EmbeddingOverrides&, const TIFFImageOptions& );
 
-   virtual ~TIFFPreferencesDialog()
-   {
-   }
-
    TIFFFormat::OutOfRangePolicyOptions outOfRange;
    TIFFFormat::EmbeddingOverrides      overrides;
    TIFFImageOptions                    tiffOptions;
@@ -140,4 +136,4 @@ private:
 #endif   // __TIFFPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF TIFFPreferencesDialog.h - Released 2019-01-21T12:06:31Z
+// EOF TIFFPreferencesDialog.h - Released 2019-09-29T12:27:43Z

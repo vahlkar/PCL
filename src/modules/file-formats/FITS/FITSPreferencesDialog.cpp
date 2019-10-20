@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0433
+// Standard FITS File Format Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// FITSPreferencesDialog.cpp - Released 2019-01-21T12:06:31Z
+// FITSPreferencesDialog.cpp - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -61,7 +61,6 @@ namespace pcl
 
 FITSPreferencesDialog::FITSPreferencesDialog( const FITSFormat::OutOfRangePolicyOptions& r,
                                               const FITSFormat::EmbeddingOverrides& o, const FITSImageOptions& f ) :
-   Dialog(),
    outOfRange( r ),
    overrides( o ),
    fitsOptions( f )
@@ -349,6 +348,8 @@ FITSPreferencesDialog::FITSPreferencesDialog( const FITSFormat::OutOfRangePolicy
    Global_Sizer.Add( BottomSection_Sizer );
 
    SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
    AdjustToContents();
    SetFixedSize();
 
@@ -418,4 +419,4 @@ void FITSPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSPreferencesDialog.cpp - Released 2019-01-21T12:06:31Z
+// EOF FITSPreferencesDialog.cpp - Released 2019-09-29T12:27:43Z

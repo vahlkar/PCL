@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 01.01.05.0433
+// Standard FITS File Format Module Version 1.1.5
 // ----------------------------------------------------------------------------
-// FITSFormat.h - Released 2019-01-21T12:06:31Z
+// FITSFormat.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -68,41 +68,33 @@ public:
 
    FITSFormat();
 
-   virtual IsoString Name() const;
-
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-   virtual String Implementation() const;
-   virtual String Status() const;
-
-   virtual String IconImageFile() const;
-
-   virtual bool CanReadIncrementally() const;
-   virtual bool CanWriteIncrementally() const;
-   virtual bool CanStore32Bit() const;
-   virtual bool CanStore64Bit() const;
-   virtual bool CanStoreFloat() const;
-   virtual bool CanStoreDouble() const;
-   virtual bool CanStoreResolution() const;
-   virtual bool CanStoreKeywords() const;
-   virtual bool CanStoreICCProfiles() const;
-   virtual bool CanStoreThumbnails() const;
-   virtual bool CanStoreImageProperties() const;
-   virtual bool SupportsMultipleImages() const;
-   virtual bool CanEditPreferences() const;
-   virtual bool UsesFormatSpecificData() const;
-   virtual bool IsDeprecated() const;
-
-   virtual bool ValidateFormatSpecificData( const void* data ) const;
-   virtual void DisposeFormatSpecificData( void* data ) const;
-
-   virtual FileFormatImplementation* Create() const;
-
-   virtual bool EditPreferences() const;
+   IsoString Name() const override;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String Implementation() const override;
+   String Status() const override;
+   String IconImageFile() const override;
+   bool CanReadIncrementally() const override;
+   bool CanWriteIncrementally() const override;
+   bool CanStore32Bit() const override;
+   bool CanStore64Bit() const override;
+   bool CanStoreFloat() const override;
+   bool CanStoreDouble() const override;
+   bool CanStoreResolution() const override;
+   bool CanStoreKeywords() const override;
+   bool CanStoreICCProfiles() const override;
+   bool CanStoreThumbnails() const override;
+   bool CanStoreImageProperties() const override;
+   bool SupportsMultipleImages() const override;
+   bool CanEditPreferences() const override;
+   bool UsesFormatSpecificData() const override;
+   bool IsDeprecated() const override;
+   bool ValidateFormatSpecificData( const void* data ) const override;
+   void DisposeFormatSpecificData( void* data ) const override;
+   FileFormatImplementation* Create() const override;
+   bool EditPreferences() const override;
 
    // FITS format-specific data
 
@@ -171,4 +163,4 @@ public:
 #endif   // __FITSFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.h - Released 2019-01-21T12:06:31Z
+// EOF FITSFormat.h - Released 2019-09-29T12:27:43Z

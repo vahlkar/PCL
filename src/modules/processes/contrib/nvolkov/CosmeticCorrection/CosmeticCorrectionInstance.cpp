@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard CosmeticCorrection Process Module Version 01.02.05.0226
+// Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInstance.cpp - Released 2019-01-21T12:06:42Z
+// CosmeticCorrectionInstance.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -52,7 +52,6 @@
 // ----------------------------------------------------------------------------
 
 #include "CosmeticCorrectionInstance.h"
-#include "CosmeticCorrectionModule.h" // for ReadableVersion()
 
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileFormat.h>
@@ -755,8 +754,9 @@ namespace pcl
 
    inline DarkImg CosmeticCorrectionInstance::GetDark(const String& filePath)
    {
-      Console().WriteLn("<end><cbr>Loading MasterDark image:<flush>");
+      Console().WriteLn("<end><cbr>Loading MasterDark image:");
       Console().WriteLn(filePath);
+      Module->ProcessEvents();
 
       FileFormat format(File::ExtractExtension(filePath), true, false);
       FileFormatInstance file(format);
@@ -967,7 +967,7 @@ namespace pcl
       {
          FITSKeywordArray keywords = inputData.keywords;
          keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "CosmeticCorrection with " + PixInsightVersion::AsString() )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(), CosmeticCorrectionModule::ReadableVersion() )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(), Module->ReadableVersion() )
                   << FITSHeaderKeyword( "HISTORY", IsoString(), "CosmeticCorrection: Total corrected pixels = " + IsoString( t->Count() ) );
          outputFile.WriteFITSKeywords( keywords );
       }
@@ -1004,8 +1004,6 @@ namespace pcl
 
         try //try 1
         {
-            Exception::EnableConsoleOutput();
-            Exception::DisableGUIOutput();
             console.EnableAbort();
 
             PrepareMasterDarkMaps();
@@ -1307,4 +1305,4 @@ namespace pcl
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInstance.cpp - Released 2019-01-21T12:06:42Z
+// EOF CosmeticCorrectionInstance.cpp - Released 2019-09-29T12:27:58Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.h - Released 2019-01-21T12:06:07Z
+// pcl/ImageVariant.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -2699,7 +2699,7 @@ public:
    // -------------------------------------------------------------------------
 
 #define __GET_EXTREME_SAMPLE_VALUES( I ) \
-   static_cast<const pcl::I&>( **this ).GetColumn( min, max, rect, firstChannel, lastChannel, maxProcessors )
+   static_cast<const pcl::I&>( **this ).GetExtremeSampleValues( min, max, rect, firstChannel, lastChannel, maxProcessors )
 
    /*!
     * Obtains the extreme values among a subset of pixel samples of this image.
@@ -7040,4 +7040,4 @@ GenericImage<P>& GenericImage<P>::SetLightness( const ImageVariant& L, const Poi
 #endif   // __PCL_ImageVariant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/ImageVariant.h - Released 2019-09-29T12:27:26Z

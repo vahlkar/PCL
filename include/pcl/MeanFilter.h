@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/MeanFilter.h - Released 2019-01-21T12:06:07Z
+// pcl/MeanFilter.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -179,4 +179,4 @@ private:
 #endif   // __PCL_MeanFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MeanFilter.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/MeanFilter.h - Released 2019-09-29T12:27:26Z

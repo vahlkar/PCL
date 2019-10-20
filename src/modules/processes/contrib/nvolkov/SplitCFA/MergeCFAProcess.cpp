@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard SplitCFA Process Module Version 01.00.06.0191
+// Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAProcess.cpp - Released 2019-01-21T12:06:42Z
+// MergeCFAProcess.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -54,7 +54,6 @@
 #include "MergeCFAProcess.h"
 #include "MergeCFAParameters.h"
 #include "MergeCFAInterface.h"
-#include "SplitCFAModule.h" // for SplitCFAModule::ReadableVersion();
 
 #include <pcl/Console.h>
 #include <pcl/Arguments.h>
@@ -74,7 +73,7 @@ MergeCFAProcess* TheMergeCFAProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-MergeCFAProcess::MergeCFAProcess() : MetaProcess()
+MergeCFAProcess::MergeCFAProcess()
 {
    TheMergeCFAProcess = this;
 
@@ -111,10 +110,10 @@ uint32 MergeCFAProcess::Version() const
 
 String MergeCFAProcess::Description() const
 {
-   return SplitCFAModule::ReadableVersion() +
-           "<html><p>The module combine one CFA Bayer( [ R ] [ G ] [ G ] [ B ] ) from sub images ( names [ 0 ] [ 1 ] [ 2 ] [ 3 ] ).<br/>"
-           "<html><p>For more detailed information, please refer to the Release Information board on PixInsight Forum:<br/>"
-           "http://pixinsight.com/forum/index.php?topic=6249.0</html>";
+   return
+   "<html>"
+   "<p>Combines one CFA Bayer( [ R ] [ G ] [ G ] [ B ] ) from subimages ( names [ 0 ] [ 1 ] [ 2 ] [ 3 ] ).</p>"
+   "</html>";
 }
 
 // ----------------------------------------------------------------------------
@@ -150,4 +149,4 @@ ProcessImplementation* MergeCFAProcess::Clone( const ProcessImplementation& p ) 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAProcess.cpp - Released 2019-01-21T12:06:42Z
+// EOF MergeCFAProcess.cpp - Released 2019-09-29T12:27:58Z

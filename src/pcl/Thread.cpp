@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Thread.cpp - Released 2019-01-21T12:06:21Z
+// pcl/Thread.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -125,13 +125,18 @@ public:
    {
       try
       {
-         volatile AutoCounter counter;
+         if ( !T->IsStealth() )
+         {
+            volatile AutoCounter counter;
 
-         if ( s_enableAffinity )
-            if ( T->m_processorIndex >= 0 )
-               T->SetAffinity( T->m_processorIndex );
+            if ( s_enableAffinity )
+               if ( T->m_processorIndex >= 0 )
+                  T->SetAffinity( T->m_processorIndex );
 
-         T->Run();
+            T->Run();
+         }
+         else
+            T->Run();
       }
       catch ( ... )
       {
@@ -446,31 +451,32 @@ void* Thread::CloneHandle() const
 
 int Thread::NumberOfThreads( size_type N, size_type overheadLimit )
 {
-   if ( API != nullptr )
-   {
-      static AtomicInt numberOfProcessors;
-      int nf = numberOfProcessors.Load();
-      if ( nf == 0 )
+   if ( N > overheadLimit )
+      if ( API != nullptr )
       {
-         static Mutex mutex;
-         volatile AutoLock lock( mutex );
-         if ( (nf = numberOfProcessors.Load()) == 0 )
-            numberOfProcessors.Store( nf = Max( 1, PixInsightSettings::GlobalInteger( "System/NumberOfProcessors" ) ) );
-      }
+         static AtomicInt numberOfProcessors;
+         int processorsAvailable = numberOfProcessors.Load();
+         if ( processorsAvailable == 0 )
+         {
+            static Mutex mutex;
+            volatile AutoLock lock( mutex );
+            processorsAvailable = numberOfProcessors.Load();
+            if ( processorsAvailable == 0 )
+            {
+               processorsAvailable = Max( 1, PixInsightSettings::GlobalInteger( "System/NumberOfProcessors" ) );
+               numberOfProcessors.Store( processorsAvailable );
+            }
+         }
 
-      int nr = NumberOfRunningThreads();
-      if ( nr > 0 )
-         nf -= nr - 1;
-
-      if ( nf > 1 &&
-         N > overheadLimit &&
-         PixInsightSettings::GlobalFlag( "Process/EnableParallelProcessing" ) &&
-         PixInsightSettings::GlobalFlag( "Process/EnableParallelModuleProcessing" ) )
-      {
-         size_type np = Min( nf, PixInsightSettings::GlobalInteger( "Process/MaxProcessors" ) );
-         return Max( 1, int( Min( np, N/Max( overheadLimit, N/np ) ) ) );
+         processorsAvailable -= NumberOfRunningThreads();
+         if ( processorsAvailable > 1 )
+            if ( PixInsightSettings::GlobalFlag( "Process/EnableParallelModuleProcessing" ) )
+               if ( PixInsightSettings::GlobalFlag( "Process/EnableParallelProcessing" ) )
+               {
+                  size_type threadsAvailable = Min( processorsAvailable, PixInsightSettings::GlobalInteger( "Process/MaxProcessors" ) );
+                  return Max( 1, int( Min( threadsAvailable, N/Max( overheadLimit, N/threadsAvailable ) ) ) );
+               }
       }
-   }
 
    return 1;
 }
@@ -488,4 +494,4 @@ void PCL_FUNC Sleep( unsigned ms )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Thread.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/Thread.cpp - Released 2019-09-29T12:27:33Z

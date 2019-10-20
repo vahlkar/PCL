@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard XISF File Format Module Version 01.00.09.0187
+// Standard XISF File Format Module Version 1.0.9
 // ----------------------------------------------------------------------------
-// XISFFormat.h - Released 2019-01-21T12:06:31Z
+// XISFFormat.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -67,47 +67,47 @@ public:
 
    XISFFormat();
 
-   virtual IsoString Name() const;
+   IsoString Name() const override;
 
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
 
-   virtual uint32 Version() const;
+   uint32 Version() const override;
 
-   virtual String Description() const;
-   virtual String Implementation() const;
+   String Description() const override;
+   String Implementation() const override;
 
-   virtual String IconImageFile() const;
+   String IconImageFile() const override;
 
-   virtual bool CanReadIncrementally() const;
-   virtual bool CanWriteIncrementally() const;
-   virtual bool CanStore32Bit() const;
-   virtual bool CanStore64Bit() const;
-   virtual bool CanStoreFloat() const;
-   virtual bool CanStoreDouble() const;
-   virtual bool CanStoreComplex() const;
-   virtual bool CanStoreDComplex() const;
-   virtual bool CanStoreResolution() const;
-   virtual bool CanStoreKeywords() const;
-   virtual bool CanStoreICCProfiles() const;
-   virtual bool CanStoreThumbnails() const;
-   virtual bool CanStoreProperties() const;
-   virtual bool CanStoreImageProperties() const;
-   virtual bool CanStoreRGBWS() const;
-   virtual bool CanStoreDisplayFunctions() const;
-   virtual bool CanStoreColorFilterArrays() const;
-   virtual bool SupportsCompression() const;
-   virtual bool SupportsMultipleImages() const;
-   virtual bool SupportsViewProperties() const;
-   virtual bool CanEditPreferences() const;
-   virtual bool UsesFormatSpecificData() const;
+   bool CanReadIncrementally() const override;
+   bool CanWriteIncrementally() const override;
+   bool CanStore32Bit() const override;
+   bool CanStore64Bit() const override;
+   bool CanStoreFloat() const override;
+   bool CanStoreDouble() const override;
+   bool CanStoreComplex() const override;
+   bool CanStoreDComplex() const override;
+   bool CanStoreResolution() const override;
+   bool CanStoreKeywords() const override;
+   bool CanStoreICCProfiles() const override;
+   bool CanStoreThumbnails() const override;
+   bool CanStoreProperties() const override;
+   bool CanStoreImageProperties() const override;
+   bool CanStoreRGBWS() const override;
+   bool CanStoreDisplayFunctions() const override;
+   bool CanStoreColorFilterArrays() const override;
+   bool SupportsCompression() const override;
+   bool SupportsMultipleImages() const override;
+   bool SupportsViewProperties() const override;
+   bool CanEditPreferences() const override;
+   bool UsesFormatSpecificData() const override;
 
-   virtual FileFormatImplementation* Create() const;
+   FileFormatImplementation* Create() const override;
 
-   virtual bool EditPreferences() const;
+   bool EditPreferences() const override;
 
-   virtual bool ValidateFormatSpecificData( const void* data ) const;
-   virtual void DisposeFormatSpecificData( void* data ) const;
+   bool ValidateFormatSpecificData( const void* data ) const override;
+   void DisposeFormatSpecificData( void* data ) const override;
 
    struct FormatOptions
    {
@@ -151,4 +151,4 @@ public:
 #endif   // __XISFFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.h - Released 2019-01-21T12:06:31Z
+// EOF XISFFormat.h - Released 2019-09-29T12:27:43Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard JPEG2000 File Format Module Version 01.00.02.0351
+// Standard JPEG2000 File Format Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// JPEG2000Format.h - Released 2019-01-21T12:06:31Z
+// JPEG2000Format.h - Released 2019-09-29T12:27:43Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -71,27 +71,27 @@ public:
 
    JPCFormat();
 
-   virtual IsoString Name() const;
+   IsoString Name() const override;
 
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
 
-   virtual uint32 Version() const;
+   uint32 Version() const override;
 
-   virtual String Description() const;
-   virtual String Implementation() const;
+   String Description() const override;
+   String Implementation() const override;
 
-   virtual String IconImageFile() const;
+   String IconImageFile() const override;
 
-   virtual bool CanEditPreferences() const;
-   virtual bool UsesFormatSpecificData() const;
+   bool CanEditPreferences() const override;
+   bool UsesFormatSpecificData() const override;
 
-   virtual bool ValidateFormatSpecificData( const void* data ) const;
-   virtual void DisposeFormatSpecificData( void* data ) const;
+   bool ValidateFormatSpecificData( const void* data ) const override;
+   void DisposeFormatSpecificData( void* data ) const override;
 
-   virtual FileFormatImplementation* Create() const;
+   FileFormatImplementation* Create() const override;
 
-   virtual bool EditPreferences() const;
+   bool EditPreferences() const override;
 
    static JPEG2000ImageOptions DefaultOptions();
 };
@@ -105,21 +105,21 @@ public:
 
    JP2Format();
 
-   virtual IsoString Name() const;
+   IsoString Name() const override;
 
-   virtual StringList FileExtensions() const;
-   virtual IsoStringList MimeTypes() const;
+   StringList FileExtensions() const override;
+   IsoStringList MimeTypes() const override;
 
-   virtual String Description() const;
+   String Description() const override;
 
-   virtual String IconImageFile() const;
+   String IconImageFile() const override;
 
-   virtual bool CanStoreICCProfiles() const;
-   virtual bool CanStoreResolution() const;
+   bool CanStoreICCProfiles() const override;
+   bool CanStoreResolution() const override;
 
-   virtual FileFormatImplementation* Create() const;
+   FileFormatImplementation* Create() const override;
 
-   virtual bool EditPreferences() const;
+   bool EditPreferences() const override;
 
    static JPEG2000ImageOptions DefaultOptions();
 
@@ -153,4 +153,4 @@ struct JPEG2000FormatOptions
 #endif   // __JPEG2000Format_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Format.h - Released 2019-01-21T12:06:31Z
+// EOF JPEG2000Format.h - Released 2019-09-29T12:27:43Z

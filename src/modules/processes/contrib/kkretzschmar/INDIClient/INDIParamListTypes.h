@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 01.01.00.0238
+// Standard INDIClient Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// INDIParamListTypes.h - Released 2019-01-21T12:06:42Z
+// INDIParamListTypes.h - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2018 Klaus Kretzschmar
+// Copyright (c) 2014-2019 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@
 #ifndef __INDIParamListTypes_h
 #define __INDIParamListTypes_h
 
-#include "indigo_bus.h"
+#include "indigo/indigo_bus.h"
 
 #include <pcl/Array.h>
 #include <pcl/String.h>
@@ -204,4 +204,4 @@ typedef Array<INDINewPropertyListItem> INDINewPropertyListItemArray;
 #endif   // __INDIParamListTypes_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIParamListTypes.h - Released 2019-01-21T12:06:42Z
+// EOF INDIParamListTypes.h - Released 2019-09-29T12:27:58Z

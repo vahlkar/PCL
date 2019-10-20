@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/CubicSplineInterpolation.h - Released 2019-01-21T12:06:07Z
+// pcl/CubicSplineInterpolation.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -64,64 +64,29 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-/*!
- * \class CubicSplineInterpolationBase
- * \brief Base class of interpolating cubic splines in one dimension
- * \internal
- */
-class CubicSplineInterpolationBase
-{
-protected:
-
-   CubicSplineInterpolationBase() = default;
-
-   CubicSplineInterpolationBase( const CubicSplineInterpolationBase& ) = default;
-
-   virtual ~CubicSplineInterpolationBase()
-   {
-   }
-
-   /*
-    * Cubic splines with prescribed, monotonically increasing x-values.
-    */
-   static void Generate( float* dy2, const float* fx, const float* fy, float dy1, float dyn, int n );
-   static void Generate( double* dy2, const double* fx, const double* fy, double dy1, double dyn, int n );
-   static void Generate( float* dy2, const float* fx, const float* fy, int n );
-   static void Generate( double* dy2, const double* fx, const double* fy, int n );
-   static float Interpolate( const float* fx, const float* fy, const float* dy2, int n, double x, int32& k );
-   static double Interpolate( const double* fx, const double* fy, const double* dy2, int n, double x, int32& k );
-
-   /*
-    * Cubic splines with implicit x[i] = i for i = {0,1,...,n-1}
-    */
-   static void Generate( float* dy2, const float* fy, int n );
-   static void Generate( double* dy2, const double* fy, int n );
-   static void Generate( float* dy2, const uint8* fy, int n );
-   static void Generate( float* dy2, const uint16* fy, int n );
-   static void Generate( double* dy2, const uint32* fy, int n );
-   static float Interpolate( const float* fy, const float* dy2, int n, double x );
-   static double Interpolate( const double* fy, const double* dy2, int n, double x );
-   static float Interpolate( const uint8* fy, const float* dy2, int n, double x );
-   static float Interpolate( const uint16* fy, const float* dy2, int n, double x );
-   static double Interpolate( const uint32* fy, const double* dy2, int n, double x );
-};
+#define m_x this->m_x
+#define m_y this->m_y
 
 /*!
  * \class CubicSplineInterpolation
  * \brief Generic interpolating cubic spline
  *
- * ### TODO: Write a description for %CubicSplineInterpolation.
+ * Interpolation with piecewise cubic polynomials. Spline interpolation is
+ * usually preferred to interpolation with high-degree polynomials, which are
+ * subject to oscillations caused by the Runge's phenomenon.
+ *
+ * \sa AkimaInterpolation, LinearInterpolation
  */
-template <typename T>
-class PCL_CLASS CubicSplineInterpolation : public UnidimensionalInterpolation<T>,
-                                           private CubicSplineInterpolationBase
+template <typename T = double>
+class PCL_CLASS CubicSplineInterpolation : public UnidimensionalInterpolation<T>
 {
 public:
 
    typedef typename UnidimensionalInterpolation<T>::vector_type vector_type;
 
    /*!
-    * Constructs a %CubicSplineInterpolation instance.
+    * Constructs an empty %CubicSplineInterpolation instance, which cannot be
+    * used for interpolation prior to initialization.
     */
    CubicSplineInterpolation() = default;
 
@@ -129,6 +94,11 @@ public:
     * Copy constructor.
     */
    CubicSplineInterpolation( const CubicSplineInterpolation& ) = default;
+
+   /*!
+    * Move constructor.
+    */
+   CubicSplineInterpolation( CubicSplineInterpolation&& ) = default;
 
    /*!
     * Virtual destructor.
@@ -146,7 +116,7 @@ public:
     * \param[out] yn    First derivative of the interpolating cubic spline at
     *                   the last data point x[n-1].
     */
-   void GetBoundaryConditions( T& y1, T& yn ) const
+   void GetBoundaryConditions( double& y1, double& yn ) const
    {
       y1 = m_dy1;
       yn = m_dyn;
@@ -161,7 +131,7 @@ public:
     * \param yn   First derivative of the interpolating cubic spline at the
     *             last data point x[n-1].
     */
-   void SetBoundaryConditions( T y1, T yn )
+   void SetBoundaryConditions( double y1, double yn )
    {
       Clear();
       m_dy1 = y1;
@@ -190,29 +160,89 @@ public:
    void Initialize( const vector_type& x, const vector_type& y ) override
    {
       if ( y.Length() < 2 )
-         throw Error( "Need two or more data points in CubicSplineInterpolation::Initialize()" );
+         throw Error( "CubicSplineInterpolation::Initialize(): Less than two data points specified." );
 
       try
       {
          Clear();
          UnidimensionalInterpolation<T>::Initialize( x, y );
-         m_dy2 = vector_type( this->Length() );
-         m_current = -1;   // prepare for 1st interpolation
 
-         if ( this->m_x )
+         int n = this->Length();
+         m_dy2 = DVector( n );
+         m_current = -1; // prepare for 1st interpolation
+         DVector w( n ); // working vector
+
+         if ( m_x )
          {
-            // Cubic spline with explicit x[i] for i = {0,...,n-1}
+            /*
+             * Cubic splines with explicit x[i] for i = {0,...,n-1}.
+             */
             if ( m_dy1 == 0 && m_dyn == 0 )
-               // Natural cubic spline
-               Generate( m_dy2.Begin(), this->m_x.Begin(), this->m_y.Begin(), this->m_y.Length() );
+            {
+               /*
+                * Natural cubic spline.
+                */
+               m_dy2[0] = m_dy2[n-1] = w[0] = 0;
+
+               for ( int i = 1; i < n-1; ++i )
+               {
+                  double s = (double( m_x[i] ) - double( m_x[i-1] )) / (double( m_x[i+1] ) - double( m_x[i-1] ));
+                  double p = s*m_dy2[i-1] + 2;
+                  m_dy2[i] = (s - 1)/p;
+                  w[i] = (double( m_y[i+1] ) - double( m_y[i  ] )) / (double( m_x[i+1] ) - double( m_x[i  ] ))
+                       - (double( m_y[i  ] ) - double( m_y[i-1] )) / (double( m_x[i  ] ) - double( m_x[i-1] ));
+                  w[i] = (6*w[i]/(double( m_x[i+1] ) - double( m_x[i-1] )) - s*w[i-1])/p;
+               }
+
+               for ( int i = n-2; i > 0; --i ) // N.B. w[0] is not defined
+                  m_dy2[i] = m_dy2[i]*m_dy2[i+1] + w[i];
+            }
             else
-               // Cubic spline with specified end point derivatives
-               Generate( m_dy2.Begin(), this->m_x.Begin(), this->m_y.Begin(), m_dy1, m_dyn, this->m_y.Length() );
+            {
+               /*
+                * Cubic spline with prescribed end point derivatives.
+                */
+               w[0] = 3/(double( m_x[1] ) - double( m_x[0] ))
+                    * ((double( m_y[1] ) - double( m_y[0] ))/(double( m_x[1] ) - double( m_x[0] )) - m_dy1);
+
+               m_dy2[0] = -0.5;
+
+               for ( int i = 1; i < n-1; ++i )
+               {
+                  double s = (double( m_x[i] ) - double( m_x[i-1] )) / (double( m_x[i+1] ) - double( m_x[i-1] ));
+                  double p = s*m_dy2[i-1] + 2;
+                  m_dy2[i] = (s - 1)/p;
+                  w[i] = (double( m_y[i+1] ) - double( m_y[i  ] )) / (double( m_x[i+1] ) - double( m_x[i  ] ))
+                       - (double( m_y[i  ] ) - double( m_y[i-1] )) / (double( m_x[i  ] ) - double( m_x[i-1] ));
+                  w[i] = (6*w[i]/(double( m_x[i+1] ) - double( m_x[i-1] )) - s*w[i-1])/p;
+               }
+
+               m_dy2[n-1] = (3/(double( m_x[n-1] ) - double( m_x[n-2] ))
+                             * (m_dyn - (double( m_y[n-1] ) - double( m_y[n-2] ))/(double( m_x[n-1] ) - double( m_x[n-2] ))) - w[n-2]/2)
+                          / (1 + m_dy2[n-2]/2);
+
+               for ( int i = n-2; i >= 0; --i )
+                  m_dy2[i] = m_dy2[i]*m_dy2[i+1] + w[i];
+            }
          }
          else
          {
-            // Natural cubic spline with implicit x[i] = i for i = {0,1,...,n-1}
-            Generate( m_dy2.Begin(), this->m_y.Begin(), this->m_y.Length() );
+            /*
+             * Natural cubic spline with
+             * implicit x[i] = i for i = {0,1,...,n-1}.
+             */
+            m_dy2[0] = m_dy2[n-1] = w[0] = 0;
+
+            for ( int i = 1; i < n-1; ++i )
+            {
+               double p = m_dy2[i-1]/2 + 2;
+               m_dy2[i] = -0.5/p;
+               w[i] = double( m_y[i+1] ) - 2*double( m_y[i] ) + double( m_y[i-1] );
+               w[i] = (3*w[i] - w[i-1]/2)/p;
+            }
+
+            for ( int i = n-2; i > 0; --i ) // N.B. w[0] is not defined
+               m_dy2[i] = m_dy2[i]*m_dy2[i+1] + w[i];
          }
       }
       catch ( ... )
@@ -230,12 +260,61 @@ public:
    {
       PCL_PRECONDITION( IsValid() )
 
-      if ( this->m_x )
-         // Cubic spline with explicit x[i] for i = {0,...,n-1}
-         return Interpolate( this->m_x.Begin(), this->m_y.Begin(), m_dy2.Begin(), this->m_y.Length(), x, m_current );
+      int n = this->Length();
+
+      if ( m_x )
+      {
+         /*
+          * Cubic spline with explicit x[i] for i = {0,...,n-1}.
+          */
+
+         /*
+          * Bracket the evaluation point x by binary search of the closest
+          * pair of data points, if needed. m_current < 0 signals first-time
+          * evaluation since initialization.
+          */
+         int j0 = m_current, j1;
+         if ( j0 < 0 || x < m_x[j0] || m_x[j0+1] < x )
+            for ( j0 = 0, j1 = n-1; j1-j0 > 1; )
+            {
+               int m = (j0 + j1) >> 1;
+               if ( x < m_x[m] )
+                  j1 = m;
+               else
+                  j0 = m;
+            }
+         else
+            j1 = j0 + 1;
+         m_current = j0;
+
+         /*
+          * Distance h between the closest neighbors. Will be zero (or
+          * insignificant) if two or more x values are equal with respect to
+          * the machine epsilon for type T.
+          */
+         double h = double( m_x[j1] ) - double( m_x[j0] );
+         if ( 1 + h == 1 )
+            return 0.5*(double( m_y[j0] ) + double( m_y[j1] ));
+
+         double a = (double( m_x[j1] ) - x)/h;
+         double b = (x - double( m_x[j0] ))/h;
+         return a*double( m_y[j0] )
+              + b*double( m_y[j1] )
+              + ((a*a*a - a)*m_dy2[j0] + (b*b*b - b)*m_dy2[j1])*h*h/6;
+      }
       else
-         // Natural cubic spline with implicit x[i] = i for i = {0,1,...,n-1}
-         return Interpolate( this->m_y.Begin(), m_dy2.Begin(), this->m_y.Length(), x );
+      {
+         /*
+          * Natural cubic spline with implicit x[i] = i for i = {0,1,...,n-1}.
+          */
+         int j0 = pcl::Range( pcl::TruncInt( x ), 0, n-1 );
+         int j1 = pcl::Min( n-1, j0+1 );
+         double a = j1 - x;
+         double b = x - j0;
+         return a*double( m_y[j0] )
+              + b*double( m_y[j1] )
+              + ((a*a*a - a)*m_dy2[j0] + (b*b*b - b)*m_dy2[j1])/6;
+      }
    }
 
    /*!
@@ -259,11 +338,14 @@ public:
 
 private:
 
-           T           m_dy1 = 0;     // 1st derivative of spline at the first data point
-           T           m_dyn = 0;     // 1st derivative of spline at the last data point
-           vector_type m_dy2;         // second derivatives of the interpolating function at x[i]
-   mutable int32       m_current = 0; // index of the current interpolation segment
+           double  m_dy1 = 0;      // 1st derivative of spline at the first data point
+           double  m_dyn = 0;      // 1st derivative of spline at the last data point
+           DVector m_dy2;          // second derivatives of the interpolating function at x[i]
+   mutable int     m_current = -1; // index of the current interpolation segment
 };
+
+#undef m_x
+#undef m_y
 
 // ----------------------------------------------------------------------------
 
@@ -272,4 +354,4 @@ private:
 #endif  // __PCL_CubicSplineInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/CubicSplineInterpolation.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/CubicSplineInterpolation.h - Released 2019-09-29T12:27:26Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 01.16.01.0472
+// Standard ImageIntegration Process Module Version 1.18.0
 // ----------------------------------------------------------------------------
-// HDRCompositionParameters.h - Released 2019-01-21T12:06:41Z
+// HDRCompositionParameters.h - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -68,7 +68,7 @@ public:
 
    HCImages( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern HCImages* TheHCImagesParameter;
@@ -81,8 +81,8 @@ public:
 
    HCImageEnabled( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern HCImageEnabled* TheHCImageEnabledParameter;
@@ -95,7 +95,7 @@ public:
 
    HCImagePath( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern HCImagePath* TheHCImagePathParameter;
@@ -108,7 +108,7 @@ public:
 
    HCInputHints( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern HCInputHints* TheHCInputHintsParameter;
@@ -121,11 +121,11 @@ public:
 
    HCMaskBinarizingThreshold( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HCMaskBinarizingThreshold* TheHCMaskBinarizingThresholdParameter;
@@ -138,10 +138,10 @@ public:
 
    HCMaskSmoothness( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HCMaskSmoothness* TheHCMaskSmoothnessParameter;
@@ -154,10 +154,10 @@ public:
 
    HCMaskGrowth( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HCMaskGrowth* TheHCMaskGrowthParameter;
@@ -170,10 +170,10 @@ public:
 
    HCReplaceLargeScales( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HCReplaceLargeScales* TheHCReplaceLargeScalesParameter;
@@ -186,8 +186,8 @@ public:
 
    HCAutoExposures( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern HCAutoExposures* TheHCAutoExposuresParameter;
@@ -200,8 +200,8 @@ public:
 
    HCRejectBlack( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern HCRejectBlack* TheHCRejectBlackParameter;
@@ -214,8 +214,8 @@ public:
 
    HCUseFittingRegion( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern HCUseFittingRegion* TheHCUseFittingRegionParameter;
@@ -228,10 +228,10 @@ public:
 
    HCFittingRectX0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HCFittingRectX0* TheHCFittingRectX0Parameter;
@@ -244,10 +244,10 @@ public:
 
    HCFittingRectY0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HCFittingRectY0* TheHCFittingRectY0Parameter;
@@ -260,10 +260,10 @@ public:
 
    HCFittingRectX1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HCFittingRectX1* TheHCFittingRectX1Parameter;
@@ -276,10 +276,10 @@ public:
 
    HCFittingRectY1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HCFittingRectY1* TheHCFittingRectY1Parameter;
@@ -292,8 +292,8 @@ public:
 
    HCGenerate64BitResult( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern HCGenerate64BitResult* TheHCGenerate64BitResultParameter;
@@ -306,8 +306,8 @@ public:
 
    HCOutputMasks( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern HCOutputMasks* TheHCOutputMasksParameter;
@@ -320,8 +320,8 @@ public:
 
    HCClosePreviousImages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern HCClosePreviousImages* TheHCClosePreviousImagesParameter;
@@ -335,4 +335,4 @@ PCL_END_LOCAL
 #endif   // __HDRCompositionParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionParameters.h - Released 2019-01-21T12:06:41Z
+// EOF HDRCompositionParameters.h - Released 2019-09-29T12:27:57Z

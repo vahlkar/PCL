@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 01.01.00.0238
+// Standard INDIClient Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// INDIMountParameters.cpp - Released 2019-01-21T12:06:42Z
+// INDIMountParameters.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2018 Klaus Kretzschmar
+// Copyright (c) 2014-2019 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -163,4 +163,4 @@ DEFINE_UINT32_PARAMETER_CLASS(IMCAlignmentConfig,"alignmentConfig",0,1,2047);
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountParameters.cpp - Released 2019-01-21T12:06:42Z
+// EOF INDIMountParameters.cpp - Released 2019-09-29T12:27:58Z

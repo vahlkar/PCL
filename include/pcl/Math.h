@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2019-01-21T12:06:07Z
+// pcl/Math.h - Released 2019-09-29T12:27:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -62,8 +62,9 @@
 #include <pcl/Sort.h>
 #include <pcl/Utility.h>
 
-# include <cmath>
-# include <cstdlib>
+#include <cmath>
+#include <cstdlib>
+#include <limits>
 
 #ifdef _MSC_VER
 #  include <intrin.h> // for __cpuid()
@@ -2280,7 +2281,10 @@ template <typename T> inline double SumOfSquares( const T* i, const T* j )
 {
    double Q = 0;
    for ( ; i < j; ++i )
-      Q += double( *i ) * *i;
+   {
+      double f = double( *i );
+      Q += f*f;
+   }
    return Q;
 }
 
@@ -2301,7 +2305,8 @@ template <typename T> inline double StableSumOfSquares( const T* i, const T* j )
    double eps = 0;
    for ( ; i < j; ++i )
    {
-      double y = double( *i ) * *i - eps;
+      double f = double( *i );
+      double y = f*f - eps;
       double t = sum + y;
       eps = (t - sum) - y;
       sum = t;
@@ -2873,7 +2878,7 @@ template <typename T> inline double MAD( const T* i, const T* j )
    double m = pcl::Median( d, d+n );
    p = d;
    for ( const T* f = i; f < j; ++f, ++p )
-      *p = Abs( *f - m );
+      *p = Abs( double( *f ) - m );
    m = pcl::Median( d, d+n );
    delete [] d;
    return m;
@@ -2922,8 +2927,8 @@ template <typename T> double Sn( T* x, T* xn )
 
    pcl::Sort( x, xn );
 
-   T* a2 = new T[ n ];
-   a2[0] = x[n >> 1] - x[0];                          // *
+   double* a2 = new double[ n ];
+   a2[0] = double( x[n >> 1] ) - double( x[0] );                                 // *
 
    distance_type nh = (n + 1) >> 1;
 
@@ -2957,8 +2962,8 @@ template <typename T> double Sn( T* x, T* xn )
             }
             else
             {
-               T medA = x[i-1] - x[i-2 - tryA + Amin];// *
-               T medB = x[tryB + i-1] - x[i-1];       // *
+               double medA = double( x[i-1] ) - double( x[i-2 - tryA + Amin] );  // *
+               double medB = double( x[tryB + i-1] ) - double( x[i-1] );         // *
                if ( medA >= medB )
                {
                   rightA = tryA;
@@ -2971,12 +2976,12 @@ template <typename T> double Sn( T* x, T* xn )
       }
 
       if ( leftA > Amax )
-         a2[i-1] = x[leftB + i-1] - x[i-1];           // *
+         a2[i-1] = double( x[leftB + i-1] ) - double( x[i-1] );                  // *
       else
       {
-         T medA = x[i-1] - x[i-2 - leftA + Amin];     // *
-         T medB = x[leftB + i-1] - x[i-1];
-         a2[i-1] = pcl::Min( medA, medB );            // *
+         double medA = double( x[i-1] ) - double( x[i-2 - leftA + Amin] );       // *
+         double medB = double( x[leftB + i-1] ) - double( x[i-1] );
+         a2[i-1] = pcl::Min( medA, medB );                                       // *
       }
    }
 
@@ -3010,8 +3015,8 @@ template <typename T> double Sn( T* x, T* xn )
             }
             else
             {
-               T medA = x[i + tryA - Amin] - x[i-1];  // *
-               T medB = x[i-1] - x[i-1 - tryB];       // *
+               double medA = double( x[i + tryA - Amin] ) - double( x[i-1] );    // *
+               double medB = double( x[i-1] ) - double( x[i-1 - tryB] );         // *
                if ( medA >= medB )
                {
                   rightA = tryA;
@@ -3024,16 +3029,16 @@ template <typename T> double Sn( T* x, T* xn )
       }
 
       if ( leftA > Amax )
-         a2[i-1] = x[i-1] - x[i-1 - leftB];           // *
+         a2[i-1] = double( x[i-1] ) - double( x[i-1 - leftB] );                  // *
       else
       {
-         T medA = x[i + leftA - Amin] - x[i-1];       // *
-         T medB = x[i-1] - x[i-1 - leftB];            // *
+         double medA = double( x[i + leftA - Amin] ) - double( x[i-1] );         // *
+         double medB = double( x[i-1] ) - double( x[i-1 - leftB] );              // *
          a2[i-1] = pcl::Min( medA, medB );            // *
       }
    }
 
-   a2[n-1] = x[n-1] - x[nh-1];                        // *
+   a2[n-1] = double( x[n-1] ) - double( x[nh-1] );                               // *
 
    /*
     * Correction for a finite sample
@@ -3052,7 +3057,7 @@ template <typename T> double Sn( T* x, T* xn )
    default: cn = (n & 1) ? n/(n - 0.9) : 1.0; break;
    }
 
-   double sn = cn * double( *pcl::Select( a2, a2+n, nh-1 ) );
+   double sn = cn * *pcl::Select( a2, a2+n, nh-1 );
 
    delete [] a2;
    return sn;
@@ -3161,7 +3166,7 @@ template <typename T> double Qn( T* x, T* xn )
    if ( n < 2 )
       return 0;
 
-   T*             y      = new T[ n ];
+   double*        y      = new double[ n ];
    double*        work   = new double[ n ];
    double*        acand  = new double[ n ];
    distance_type* iwcand = new distance_type[ n ];
@@ -3175,9 +3180,9 @@ template <typename T> double Qn( T* x, T* xn )
    distance_type k = (h*(h - 1)) >> 1;
    for ( distance_type i = 0; i < n; ++i )
    {
-      y[i] = x[i];
-      left[i] = n - i + 1; // *
-      right[i] = (i <= h) ? n : n - i + h; // the original code is "right[i] = n"
+      y[i] = double( x[i] );
+      left[i] = n - i + 1;                                                       // *
+      right[i] = (i <= h) ? n : n - i + h; // N.B. The original code is "right[i] = n"
    }
 
    pcl::Sort( y, y+n );
@@ -3191,8 +3196,8 @@ template <typename T> double Qn( T* x, T* xn )
 
    while ( nR-nL > n )
    {
-      distance_type j = 0; // *
-      for ( distance_type i = 1; i < n; ++i ) // *
+      distance_type j = 0;                                                       // *
+      for ( distance_type i = 1; i < n; ++i )                                    // *
          if ( left[i] <= right[i] )
          {
             weight[j] = right[i] - left[i] + 1;
@@ -3201,14 +3206,14 @@ template <typename T> double Qn( T* x, T* xn )
          }
       qn = __pcl_whimed__( work, weight, j, acand, iwcand );
 
-      for ( distance_type i = n-1, j = 0; i >= 0; --i ) // *
+      for ( distance_type i = n-1, j = 0; i >= 0; --i )                          // *
       {
          while ( j < n && double( y[i] ) - y[n-j-1] < qn )
             ++j;
          P[i] = j;
       }
 
-      for ( distance_type i = 0, j = n+1; i < n; ++i ) // *
+      for ( distance_type i = 0, j = n+1; i < n; ++i )                           // *
       {
          while ( double( y[i] ) - y[n-j+1] > qn )
             --j;
@@ -3247,8 +3252,8 @@ template <typename T> double Qn( T* x, T* xn )
       distance_type j = 0;
       for ( distance_type i = 1; i < n; ++i )
          for ( distance_type jj = left[i]; jj <= right[i]; ++jj, ++j )
-            work[j] = double( y[i] ) - y[n-jj]; // *
-      qn = *pcl::Select( work, work+j, knew-nL-1 ); // *
+            work[j] = double( y[i] ) - y[n-jj];                                  // *
+      qn = *pcl::Select( work, work+j, knew-nL-1 );                              // *
    }
 
    /*
@@ -3325,7 +3330,7 @@ double BiweightMidvariance( const T* x, const T* xn, double center, double sigma
    double num = 0, den = 0;
    for ( ; x < xn; ++x )
    {
-      double xc = *x - center;
+      double xc = double( *x ) - center;
       double y = xc/kd;
       if ( Abs( y ) < 1 )
       {
@@ -3678,4 +3683,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 )
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2019-01-21T12:06:07Z
+// EOF pcl/Math.h - Released 2019-09-29T12:27:26Z

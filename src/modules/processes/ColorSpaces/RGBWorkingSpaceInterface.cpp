@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 01.01.00.0374
+// Standard ColorSpaces Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceInterface.cpp - Released 2019-01-21T12:06:41Z
+// RGBWorkingSpaceInterface.cpp - Released 2019-09-29T12:27:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -510,12 +510,15 @@ RGBWorkingSpaceInterface::GUIData::GUIData( RGBWorkingSpaceInterface& w )
    //
 
    RxyTitle_Label.SetText( "Red" );
+   RxyTitle_Label.SetStyleSheet( "*{ font-style: italic; }" );
    RxyTitle_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
 
    GxyTitle_Label.SetText( "Green" );
+   GxyTitle_Label.SetStyleSheet( "*{ font-style: italic; }" );
    GxyTitle_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
 
    BxyTitle_Label.SetText( "Blue" );
+   BxyTitle_Label.SetStyleSheet( "*{ font-style: italic; }" );
    BxyTitle_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
 
    xyTitle_Sizer.SetSpacing( 4 );
@@ -671,6 +674,8 @@ RGBWorkingSpaceInterface::GUIData::GUIData( RGBWorkingSpaceInterface& w )
    Global_Sizer.Add( LoadGlobalRGBWS_Sizer );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
 
    RxyTitle_Label.SetFixedWidth( Rx_NumericEdit.edit.MinWidth() );
@@ -682,7 +687,7 @@ RGBWorkingSpaceInterface::GUIData::GUIData( RGBWorkingSpaceInterface& w )
    ChromaticityCoordinates_Control.Hide();
    Gamma_Control.Hide();
 
-   int btnWidth = fnt.Width( "Apply Global RGBWS" ) + 32;
+   int btnWidth = fnt.Width( "mmApply Global RGBWSmm" );
    LoadDefaultRGBWS_PushButton.SetFixedWidth( btnWidth );
    LoadGlobalRGBWS_PushButton.SetFixedWidth( btnWidth );
 
@@ -695,4 +700,4 @@ RGBWorkingSpaceInterface::GUIData::GUIData( RGBWorkingSpaceInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceInterface.cpp - Released 2019-01-21T12:06:41Z
+// EOF RGBWorkingSpaceInterface.cpp - Released 2019-09-29T12:27:57Z

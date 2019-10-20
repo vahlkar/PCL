@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 01.01.00.0238
+// Standard INDIClient Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// INDIMountInstance.cpp - Released 2019-01-21T12:06:42Z
+// INDIMountInstance.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2018 Klaus Kretzschmar
+// Copyright (c) 2014-2019 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -618,13 +618,7 @@ void INDIMountInstance::GetPierSide() {
             break;
          }
       }
-      /*else
-      {
-         // pier side fallback
-         // If the INDI mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
-         double hourAngle = AlignmentModel::RangeShiftHourAngle(o_currentLST - o_currentRA);
-         p_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
-      }*/
+      
 
 }
 
@@ -1042,4 +1036,4 @@ void AbstractINDIMountExecution::Abort()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInstance.cpp - Released 2019-01-21T12:06:42Z
+// EOF INDIMountInstance.cpp - Released 2019-09-29T12:27:58Z

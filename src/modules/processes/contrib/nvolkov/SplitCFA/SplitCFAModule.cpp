@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// Standard SplitCFA Process Module Version 01.00.06.0191
+// Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAModule.cpp - Released 2019-01-21T12:06:42Z
+// SplitCFAModule.cpp - Released 2019-09-29T12:27:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -51,15 +51,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#define MODULE_VERSION_MAJOR     01
-#define MODULE_VERSION_MINOR     00
-#define MODULE_VERSION_REVISION  06
-#define MODULE_VERSION_BUILD     0191
+#define MODULE_VERSION_MAJOR     1
+#define MODULE_VERSION_MINOR     0
+#define MODULE_VERSION_REVISION  6
+#define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       21
+#define MODULE_RELEASE_MONTH     9
+#define MODULE_RELEASE_DAY       29
 
 #include "MergeCFAInterface.h"
 #include "MergeCFAProcess.h"
@@ -72,7 +72,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SplitCFAModule::SplitCFAModule() : MetaModule()
+SplitCFAModule::SplitCFAModule()
 {
 }
 
@@ -138,18 +138,6 @@ void SplitCFAModule::GetReleaseDate( int& year, int& month, int& day ) const
    day   = MODULE_RELEASE_DAY;
 }
 
-#define READABLE_VERSION_NUMBERS_1( a, b, c, d )  #a + '.' + #b + '.' + #c + '.' + #d
-#define READABLE_VERSION_NUMBERS( a, b, c, d ) READABLE_VERSION_NUMBERS_1( a, b, c, d )
-
-String SplitCFAModule::ReadableVersion()
-{
-   return String( "SplitCFA module " ) +
-            READABLE_VERSION_NUMBERS( MODULE_VERSION_MAJOR,
-                                      MODULE_VERSION_MINOR,
-                                      MODULE_VERSION_REVISION,
-                                      MODULE_VERSION_BUILD );
-}
-
 // ----------------------------------------------------------------------------
 
 } // pcl
@@ -170,4 +158,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAModule.cpp - Released 2019-01-21T12:06:42Z
+// EOF SplitCFAModule.cpp - Released 2019-09-29T12:27:58Z

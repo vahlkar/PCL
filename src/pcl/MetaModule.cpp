@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.11.0938
+// /_/     \____//_____/   PCL 2.1.16
 // ----------------------------------------------------------------------------
-// pcl/MetaModule.cpp - Released 2019-01-21T12:06:21Z
+// pcl/MetaModule.cpp - Released 2019-09-29T12:27:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -81,7 +81,7 @@ MetaModule::~MetaModule()
 }
 
 /*
- * ### REMOVEME - deprecated function
+ * ### REMOVE - deprecated function
  */
 const char* MetaModule::UniqueId() const
 {
@@ -137,7 +137,7 @@ void MetaModule::GetVersion( int& major, int& minor, int& release, int& build,
 
    // Split the string of version numbers into tokens separated by dots
    StringList tokens;
-   vs.Break( tokens, '.', false/*trim*/, LengthOfVersionMarker );
+   vs.Break( tokens, '.', false/*trim*/, LengthOfVersionMarker/*startIndex*/ );
 
    // Required: MM.mm.rr.bbbb.LLL
    // Optional: .<status>
@@ -175,7 +175,10 @@ IsoString MetaModule::ReadableVersion() const
    int major, minor, release, build;
    IsoString dum1, dum2;
    GetVersion( major, minor, release, build, dum1, dum2 );
-   return Name() + IsoString().Format( " module version %02d.%02d.%02d.%04d", major, minor, release, build );
+   IsoString version = Name() + IsoString().Format( " module version %d.%d.%d", major, minor, release );
+   if ( build > 0 )
+      version.AppendFormat( "-%d", build );
+   return version;
 }
 
 // ----------------------------------------------------------------------------
@@ -230,12 +233,13 @@ public:
                if ( (*Module)[i] != nullptr )
                {
                   const ProcessInterface* iface = dynamic_cast<const ProcessInterface*>( (*Module)[i] );
-                  if ( iface != nullptr && iface->LaunchCount() != 0 )
-                  {
-                     if ( iface->IsAutoSaveGeometryEnabled() )
-                        iface->SaveGeometry();
-                     iface->SaveSettings();
-                  }
+                  if ( iface != nullptr )
+                     if ( iface->LaunchCount() != 0 )
+                     {
+                        if ( iface->IsAutoSaveGeometryEnabled() )
+                           iface->SaveGeometry();
+                        iface->SaveSettings();
+                     }
                }
       }
       ERROR_HANDLER
@@ -290,4 +294,4 @@ void MetaModule::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaModule.cpp - Released 2019-01-21T12:06:21Z
+// EOF pcl/MetaModule.cpp - Released 2019-09-29T12:27:33Z
