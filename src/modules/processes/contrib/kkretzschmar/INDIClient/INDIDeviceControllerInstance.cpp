@@ -157,7 +157,7 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
             indi = INDIClient::NewClient( p_serverHostName.ToUTF8(), p_serverPort );
             if ( p_verbosity > 0 )
             {
-               console.NoteLn( "<end><cbr>INDI Control Client --- (C) Klaus Kretzschmar, 2014-2016" );
+               console.NoteLn( "<end><cbr>Indigo Control Client --- (C) Klaus Kretzschmar, 2014-2016" );
                console.Flush();
             }
          }
@@ -167,17 +167,17 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
          if ( !indi->IsServerConnected(errMesg) )
          {
             if (!errMesg.str().empty()){
-               throw Error( "INDIDeviceControllerInstance: Connection to INDI server " + p_serverHostName + ", port=" + String( p_serverPort ) + IsoString(" lost. Possible reason: " + IsoString(errMesg.str().c_str())) );
+               throw Error( "IndigoDeviceControllerInstance: Connection to Indigo server " + p_serverHostName + ", port=" + String( p_serverPort ) + IsoString(" lost. Possible reason: " + IsoString(errMesg.str().c_str())) );
             }
 
             indi->connectServer(errMesg);
             Sleep(100);
             if ( !indi->IsServerConnected(errMesg) )
-               throw Error( "INDIDeviceControllerInstance: Failure to connect to INDI server " + p_serverHostName + ", port=" + String( p_serverPort ) );
+               throw Error( "IndigoDeviceControllerInstance: Failure to connect to Indigo server " + p_serverHostName + ", port=" + String( p_serverPort ) );
 
             if ( p_verbosity > 0 )
             {
-               console.NoteLn( "* Successfully connected to INDI server " + p_serverHostName + ", port=" + String( p_serverPort ) );
+               console.NoteLn( "* Successfully connected to Indigo server " + p_serverHostName + ", port=" + String( p_serverPort ) );
                console.Flush();
             }
          }
@@ -195,7 +195,7 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
                String element( PropertyUtils::Element( p_getCommandParameters ) );
                INDIPropertyListItem item;
                if ( !indi->GetPropertyItem( device, property, element, item ) && !isTryGet)
-                  throw Error( "INDIDeviceControllerInstance: Could not get value of property '" + String( p_getCommandParameters ) + "'" );
+                  throw Error( "IndigoDeviceControllerInstance: Could not get value of property '" + String( p_getCommandParameters ) + "'" );
                o_getCommandResult = item.PropertyValue;
                if ( p_verbosity > 1 )
                   console.WriteLn( "<end><cbr>Device=" + device +
@@ -210,7 +210,7 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
                   INDINewPropertyItem newProperty;
                   GetNewPropertyListItemParametersFromKey( newListProperty, newProperty );
                   if ( !indi->SendNewPropertyItem( newProperty, false/*async*/ ) )
-                     throw Error( "INDIDeviceControllerInstance: Failure to send new property values." );
+                     throw Error( "IndigoDeviceControllerInstance: Failure to send new property values." );
                }
                p_newProperties.Clear();
             }
@@ -221,12 +221,12 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
                   INDINewPropertyItem newProperty;
                   GetNewPropertyListItemParametersFromKey( newListProperty, newProperty );
                   if ( !indi->SendNewPropertyItem( newProperty, true/*async*/ ) )
-                     throw Error( "INDIDeviceControllerInstance: Failure to send new property values (asynchronous)." );
+                     throw Error( "IndigoDeviceControllerInstance: Failure to send new property values (asynchronous)." );
                }
                p_newProperties.Clear();
             }
             else
-               throw Error( "INDIDeviceControllerInstance: Unknown command '" + p_serverCommand + "'" );
+               throw Error( "IndigoDeviceControllerInstance: Unknown command '" + p_serverCommand + "'" );
 
             console.Flush();
          }
@@ -244,7 +244,7 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
                indi->SetVerbosity( p_verbosity );
                indi->disconnectServer();
                if ( p_verbosity > 0 )
-                  console.NoteLn( "* Disconnected from INDI server " + p_serverHostName + ", port=" + String( p_serverPort ) );
+                  console.NoteLn( "* Disconnected from Indigo server " + p_serverHostName + ", port=" + String( p_serverPort ) );
             }
 
             INDIClient::DestroyClient();

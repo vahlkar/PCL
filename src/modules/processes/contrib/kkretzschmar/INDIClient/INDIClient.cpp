@@ -78,7 +78,7 @@ INDIClient* INDIClient::TheClient()
 INDIClient* INDIClient::TheClientOrDie()
 {
    if ( s_indiClient == nullptr )
-      throw Error( "The INDI device controller has not been initialized" );
+      throw Error( "The Indigo device controller has not been initialized" );
    return s_indiClient;
 }
 
@@ -169,7 +169,7 @@ bool INDIClient::SendNewPropertyItem( const INDINewPropertyItem& newItem, bool a
       if ( verbosity > 1 )
       {
          console.WriteLn( "<end><cbr><br>------------------------------------------------------------------------------" );
-         console.WriteLn( "Sending new property element to INDI server '" + HostName() + ':' + IsoString( Port() ) + "':" );
+         console.WriteLn( "Sending new property element to Indigo server '" + HostName() + ':' + IsoString( Port() ) + "':" );
       }
 
       if ( newItem.Device.IsEmpty() || newItem.Property.IsEmpty() || newItem.ElementValues.IsEmpty() || newItem.PropertyType.IsEmpty() )
@@ -308,7 +308,7 @@ bool INDIClient::SendNewPropertyItem( const INDINewPropertyItem& newItem, bool a
                   case INDIGO_ALERT_STATE:
                      throw String( "Failure to send '"
                            + newItem.Device + '.' + newItem.Property + '.' + elementValue.Element
-                           + "' property newItem. Message from INDI server: " + CurrentServerMessage().m_message );
+                           + "' property newItem. Message from Indigo server: " + CurrentServerMessage().m_message );
                   default:
                      break;
                   }

@@ -204,13 +204,13 @@ bool INDICCDFrameInstance::ValidateDevice( bool throwErrors ) const
          if ( !indi->HasPropertyItem( device.DeviceName, CCD_FRAME_PROPERTY_NAME, CCD_FRAME_WIDTH_ITEM_NAME ) ) // is this a camera device?
          {
             if ( throwErrors )
-               throw Error( '\'' + p_deviceName + "' does not seem to be a valid INDI CCD device" );
+               throw Error( '\'' + p_deviceName + "' does not seem to be a valid Indigo CCD device" );
             return false;
          }
          return true;
       }
    if ( throwErrors )
-      throw Error( "INDI device not available: '" + p_deviceName + "'" );
+      throw Error( "Indigo device not available: '" + p_deviceName + "'" );
    return false;
 }
 
@@ -277,7 +277,7 @@ String INDICCDFrameInstance::TelescopeDeviceName( bool throwErrors ) const
       deviceName = TheINDIMountInterface->CurrentDeviceName();
       if ( deviceName.IsEmpty() )
          if ( throwErrors )
-            throw Error( "Cannot retrieve required telescope device: The INDI Mount Controller interface has no selected device" );
+            throw Error( "Cannot retrieve required telescope device: The Indigo Mount Controller interface has no selected device" );
       break;
    default:
    case ICFTelescopeSelection::MountControllerOrActiveTelescope:
@@ -288,7 +288,7 @@ String INDICCDFrameInstance::TelescopeDeviceName( bool throwErrors ) const
             deviceName = item.PropertyValue.Trimmed();
          if ( deviceName.IsEmpty() )
             if ( throwErrors )
-               throw Error( "Cannot retrieve required telescope device: No telescope device is available or selected on the INDI server and/or INDI Mount Controller interface" );
+               throw Error( "Cannot retrieve required telescope device: No telescope device is available or selected on the Indigo server and/or Indigo Mount Controller interface" );
       }
       break;
    case ICFTelescopeSelection::TelescopeDeviceName:
@@ -309,13 +309,13 @@ String INDICCDFrameInstance::TelescopeDeviceName( bool throwErrors ) const
             if ( !indi->HasPropertyItem( deviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME ) ) // is this a mount device?
             {
                if ( throwErrors )
-                  throw Error( "The required device '" + deviceName + "' does not seem to be a valid INDI mount device" );
+                  throw Error( "The required device '" + deviceName + "' does not seem to be a valid Indigo mount device" );
                deviceName.Clear();
             }
             return deviceName;
          }
       if ( throwErrors )
-         throw Error( "Required INDI device not available: '" + deviceName + '\'' );
+         throw Error( "Required Indigo device not available: '" + deviceName + '\'' );
    }
 
    return String();
@@ -491,17 +491,17 @@ private:
    {
       m_monitor.Complete();
 
-      // Print latest INDI server message
+      // Print latest Indigo server message
       if ( INDIClient::TheClient()->Verbosity() > 1 )
       {
          String message = INDIClient::TheClient()->CurrentServerMessage().m_message;
          if ( !message.IsEmpty() && INDIClient::TheClient()->CurrentServerMessage().m_messageSeverity == INDIGO_ALERT_STATE ) {
-             m_console.CriticalLn( "<end><cbr><br>* Latest INDI server log entry: ERROR: " );
+             m_console.CriticalLn( "<end><cbr><br>* Latest Indigo server log entry: ERROR: " );
              m_console.CriticalLn( message );
              m_console.WriteLn();
          }
          else {
-            m_console.NoteLn( "<end><cbr><br>* Latest INDI server log entry:" );
+            m_console.NoteLn( "<end><cbr><br>* Latest Indigo server log entry:" );
             m_console.NoteLn( message );
             m_console.WriteLn();
          }
@@ -513,7 +513,7 @@ private:
       if ( m_waitMonitor.IsInitialized() )
          ++m_waitMonitor;
       else
-         m_waitMonitor.Initialize( "Waiting for INDI server" );
+         m_waitMonitor.Initialize( "Waiting for Indigo server" );
    }
 
    virtual void NewFrameEvent( ImageWindow& window, bool reusedWindow, bool geometryChanged )
@@ -1048,7 +1048,7 @@ void AbstractINDICCDFrameExecution::Perform()
    INDIClient* indi = INDIClient::TheClientOrDie();
 
    if ( !indi->HasDevices() )
-      throw Error( "No INDI device has been connected." );
+      throw Error( "No Indigo device has been connected." );
 
    try
    {
@@ -1110,7 +1110,7 @@ void AbstractINDICCDFrameExecution::Perform()
 
          if ( !indi->SendNewPropertyItem( m_instance.p_deviceName, CCD_EXPOSURE_PROPERTY_NAME, "INDI_NUMBER", CCD_EXPOSURE_ITEM_NAME, m_instance.p_exposureTime, true/*async*/ ) )
          {
-            ExposureErrorEvent( "Failure to send new property values to INDI server" );
+            ExposureErrorEvent( "Failure to send new property values to Indigo server" );
             ++m_errorCount;
             continue; // ### TODO: Implement a p_onError process parameter
          }

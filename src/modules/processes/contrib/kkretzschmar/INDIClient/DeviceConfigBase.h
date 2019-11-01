@@ -72,7 +72,7 @@ public:
    ConfigDialogBase( const String& deviceName ) : m_device( deviceName )
    {
       SaveConfig_Button.SetText( "Save" );
-      SaveConfig_Button.SetToolTip( "<p>Stores the current configuration on the INDI server.</p>" );
+      SaveConfig_Button.SetToolTip( "<p>Stores the current configuration on the Indigo server.</p>" );
       SaveConfig_Button.SetIcon( ScaledResource( ":/icons/save.png" ) );
       SaveConfig_Button.OnClick( (Button::click_event_handler)&ConfigDialogBase::e_Click, *this );
 

@@ -103,21 +103,21 @@ INDIMountProcess::INDIMountProcess()
 
 IsoString INDIMountProcess::Id() const
 {
-   return "INDIMount";
+   return "IndigoMount";
 }
 
 // ----------------------------------------------------------------------------
 
 IsoString INDIMountProcess::Category() const
 {
-   return "INDI,Instrumentation";
+   return "Instrumentation";
 }
 
 // ----------------------------------------------------------------------------
 
 uint32 INDIMountProcess::Version() const
 {
-   return 0x100; // required
+   return 0x200; // required
 }
 
 // ----------------------------------------------------------------------------
@@ -126,7 +126,7 @@ String INDIMountProcess::Description() const
 {
    return
    "<html>"
-   "<p>Control INDI Mount devices./p>"
+   "<p>Control Indigo Mount devices./p>"
    "</html>";
 }
 

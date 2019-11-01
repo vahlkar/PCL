@@ -1277,7 +1277,7 @@ INDIMountInterface::~INDIMountInterface()
 
 IsoString INDIMountInterface::Id() const
 {
-   return "INDIMount";
+   return "IndigoMount";
 }
 
 // ----------------------------------------------------------------------------
@@ -1316,7 +1316,7 @@ bool INDIMountInterface::Launch( const MetaProcess& P, const ProcessImplementati
    if ( GUI == nullptr )
    {
       GUI = new GUIData(*this );
-      SetWindowTitle( "INDI Mount Controller" );
+      SetWindowTitle( "Indigo Mount Controller" );
       ResetInstance();
       UpdateControls();
    }
@@ -1543,14 +1543,14 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    ServerParameters_SectionBar.SetTitle( "Device Properties" );
    ServerParameters_SectionBar.SetSection( ServerParameters_Control );
 
-   MountDevice_Label.SetText( "INDI Mount device:" );
-   MountDevice_Label.SetToolTip( "<p>Select an INDI Mount device.</p>" );
+   MountDevice_Label.SetText( "Indigo Mount device:" );
+   MountDevice_Label.SetToolTip( "<p>Select an Indigo Mount device.</p>" );
    MountDevice_Label.SetMinWidth( labelWidth1 );
    MountDevice_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
    MountDeviceConfig_ToolButton.SetIcon( w.ScaledResource( ":/icons/wrench.png" ) );
    MountDeviceConfig_ToolButton.SetScaledFixedSize( 22, 22 );
-   MountDeviceConfig_ToolButton.SetToolTip( "<p>Configure INDI mount device</p>" );
+   MountDeviceConfig_ToolButton.SetToolTip( "<p>Configure Indigo mount device</p>" );
 
    MountDeviceConfig_ToolButton.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
 
@@ -1928,7 +1928,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
 
    const char* slewSpeedTooltipText =
       "<p>Predefined slew rates, in ascending speed order: Guide, Centering, Find, Maximum.</p>"
-      "<p>There might be more device-specific slew rates, which can be selected with INDI Device Controller.</p>";
+      "<p>There might be more device-specific slew rates, which can be selected with Indigo Device Controller.</p>";
 
    SlewSpeed_Label.SetText( "Slew speed:" );
    SlewSpeed_Label.SetToolTip( slewSpeedTooltipText );
@@ -2013,7 +2013,7 @@ void INDIMountInterface::e_Timer( Timer& sender )
          }
       }
       else
-         GUI->MountDevice_Combo.AddItem( "<INDI Server Not Connected>" );
+         GUI->MountDevice_Combo.AddItem( "<Indigo Server Not Connected>" );
 
       m_device.Clear();
 
@@ -2069,7 +2069,7 @@ __device_found:
             else
             {
                // pier side fallback
-               // If the INDI mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
+               // If the Indigo mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
                double hourAngle = AlignmentModel::RangeShiftHourAngle(time_lst - coord_ra);
                m_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
             }

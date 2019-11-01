@@ -50,7 +50,8 @@
 #include "Asserts.jsh"
 #include "INDI-helper.jsh"
 
-#define CCD_DEVICE_NAME "CCD Imager Simulator @ localhost"
+#define CCD_DEVICE_NAME "CCD Imager Simulator @ localhost" // Indigo server simulator device nam
+//#define CCD_DEVICE_NAME "CCD Simulator @ klaus-Inspiron-1720" // INDI server simulator device name
 
 function INDICCDControllerTests( parent )
 {
@@ -60,7 +61,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testAcquireExposureDefault()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          // execute in the global context
          assertTrue( ccdController.executeGlobal() );
@@ -93,7 +94,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testExposureTime()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          ccdController.exposureTime = 2;
          // execute in the global context
@@ -115,7 +116,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testBinning()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          ccdController.binningX = 2;
          ccdController.binningY = 2;
@@ -139,7 +140,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testFrameTypeBias()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          ccdController.frameType = 1;
          // execute in the global context
@@ -161,7 +162,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testFrameTypeDark()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          ccdController.frameType = 2;
          // execute in the global context
@@ -184,7 +185,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testFrameTypeFlat()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          ccdController.frameType = 3;
          // execute in the global context
@@ -206,7 +207,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testExposureCount()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          ccdController.exposureCount = 2;
          // execute in the global context
@@ -221,7 +222,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testuploadModeServer()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          ccdController.serverUploadDirectory = Settings.readGlobal( "ImageWindow/DownloadsDirectory", DataType_UCString ) + '/';
          ccdController.uploadMode = 1; // UploadMode_Server
@@ -240,7 +241,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testuploadModeServerAndClient()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          ccdController.serverUploadDirectory = Settings.readGlobal( "ImageWindow/DownloadsDirectory", DataType_UCString ) + '/';
          ccdController.uploadMode = 2; // UploadMode_ServerAndClient
@@ -264,7 +265,7 @@ function INDICCDControllerTests( parent )
    this.add(
       function testuploadServerFileNameTemplate()
       {
-         let ccdController = new INDICCDFrame;
+         let ccdController = new IndigoCCDFrame;
          ccdController.deviceName = CCD_DEVICE_NAME;
          ccdController.serverUploadDirectory = Settings.readGlobal( "ImageWindow/DownloadsDirectory", DataType_UCString ) + '/';
          ccdController.uploadMode = 1; // UploadMode_Server

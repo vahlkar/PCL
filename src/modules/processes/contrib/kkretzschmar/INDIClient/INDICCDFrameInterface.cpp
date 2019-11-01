@@ -165,7 +165,7 @@ FilterConfigDialog::FilterConfigDialog( const String& deviceName ) :
 
    FilterRename_ToolButton.SetIcon( ScaledResource( ":/icons/write.png" ) );
    FilterRename_ToolButton.SetScaledFixedSize( 22, 22 );
-   FilterRename_ToolButton.SetToolTip( "<p>Configure INDI filter slot name</p>" );
+   FilterRename_ToolButton.SetToolTip( "<p>Configure Indigo filter slot name</p>" );
    FilterRename_ToolButton.OnClick( (Button::click_event_handler)&FilterConfigDialog::e_Click, *this );
 
    FilterToolBox_Sizer.SetSpacing( 8 );
@@ -244,7 +244,7 @@ INDICCDFrameInterface::~INDICCDFrameInterface()
 
 IsoString INDICCDFrameInterface::Id() const
 {
-   return "INDICCDFrame";
+   return "IndigoCCDFrame";
 }
 
 // ----------------------------------------------------------------------------
@@ -283,7 +283,7 @@ bool INDICCDFrameInterface::Launch( const MetaProcess& P, const ProcessImplement
    if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
-      SetWindowTitle( "INDI CCD Controller" );
+      SetWindowTitle( "Indigo CCD Controller" );
       ResetInstance();
       UpdateControls();
    }
@@ -392,14 +392,14 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ServerParameters_SectionBar.SetTitle( "Device Properties" );
    ServerParameters_SectionBar.SetSection( ServerParameters_Control );
 
-   CCDDevice_Label.SetText( "INDI CCD device:" );
-   CCDDevice_Label.SetToolTip( "<p>Select an INDI CCD device.</p>" );
+   CCDDevice_Label.SetText( "Indigo CCD device:" );
+   CCDDevice_Label.SetToolTip( "<p>Select an Indigo CCD device.</p>" );
    CCDDevice_Label.SetMinWidth( labelWidth1 );
    CCDDevice_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
    FilterConfig_ToolButton.SetIcon(w.ScaledResource(":/icons/wrench.png"));
    FilterConfig_ToolButton.SetScaledFixedSize(22, 22);
-   FilterConfig_ToolButton.SetToolTip("<p>Configure INDI filter wheel device</p>");
+   FilterConfig_ToolButton.SetToolTip("<p>Configure Indigo filter wheel device</p>");
    FilterConfig_ToolButton.OnClick((Button::click_event_handler) &INDICCDFrameInterface::e_Click, w);
    FilterConfig_ToolButton.Disable();
 
@@ -539,7 +539,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    const char* uploadModeToolTipText =
       "<p>Upload to client: The frame will be uploaded to the client and displayed on a new image window. "
       "The frame will not be stored on the client's file system.</p>"
-      "<p>Upload to server: The frame will be stored on the file system of the INDI server. "
+      "<p>Upload to server: The frame will be stored on the file system of the Indigo server. "
       "The server upload directory and file name template can be specified. "
       "The frame will not be uploaded to the client.</p>"
       "<p>Upload both: The frame will be stored on the server's file system, then uploaded to the client and displayed.</p>";
@@ -551,7 +551,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    UploadMode_Label.Disable();
 
    UploadMode_Combo.AddItem( "Upload to client only" );
-   UploadMode_Combo.AddItem( "Upload to INDI server only" );
+   UploadMode_Combo.AddItem( "Upload to Indigo server only" );
    UploadMode_Combo.AddItem( "Upload both: Client and server" );
    UploadMode_Combo.AdjustToContents();
    UploadMode_Combo.OnItemSelected( (ComboBox::item_event_handler)&INDICCDFrameInterface::e_ItemSelected, w );
@@ -564,7 +564,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    UploadMode_HSizer.AddStretch();
 
    const char* uploadDirToolTipText =
-      "<p>The directory where newly acquired CCD frames will be stored on the INDI server.</p>";
+      "<p>The directory where newly acquired CCD frames will be stored on the Indigo server.</p>";
 
    ServerUploadDir_Label.SetText( "Server upload directory:" );
    ServerUploadDir_Label.SetToolTip( uploadDirToolTipText );
@@ -637,7 +637,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
       "<p>for the second light frame of a series with exposure time of 300 seconds at binning 2x2.</p>";
 
    const String serverFileNameTemplateToolTipText =
-      String( "<p>A template to build the file names of newly acquired frames stored on the INDI server.</p>" )
+      String( "<p>A template to build the file names of newly acquired frames stored on the Indigo server.</p>" )
       + fileNameTemplateToolTipText;
 
    ServerFileNameTemplate_Label.SetText( "Server file name template:" );
@@ -747,7 +747,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ClientDownloadDir_HSizer.Add( ClientDownloadDir_ToolButton );
 
    const String clientFileNameTemplateToolTipText =
-      String( "<p>A template to build the file names of newly acquired frames stored on the INDI client.</p>" )
+      String( "<p>A template to build the file names of newly acquired frames stored on the Indigo client.</p>" )
       + fileNameTemplateToolTipText;
 
    ClientFileNameTemplate_Label.SetText( "Client file name template:" );
@@ -766,7 +766,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 
    const char* clientOutputFormatHintsToolTipText =
       "<p><i>Format hints</i> allow you to override global file format settings for image files used by specific processes. "
-      "In INDICCDFrame, output hints allow you to control the way newly acquired image files are generated on the INDI client.</p>"
+      "In INDICCDFrame, output hints allow you to control the way newly acquired image files are generated on the Indigo client.</p>"
       "<p>For example, you can use the \"compression-codec zlib\" hint to force the XISF format support module to compress "
       "images using the Zlib data compression algorithm. To gain more control on compression, you can use the \"compression-level <i>n</i>\""
       "hint to specify a compression level <i>n</i> in the range from 0 (default compression) to 100 (maximum compression). See the XISF "
@@ -890,15 +890,15 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
       "<p>This parameter tells INDICCDFrame how to select the telescope used for acquisition of light frames:</p>"
 
       "<p><b>No telescope.</b> Newly acquired light frames won't have any property or keyword related to accurate observation "
-      "coordinates. The OBJCTRA and OBJCDEC FITS keywords provided by INDI will be left intact. This option is <i>not recommended</i> "
+      "coordinates. The OBJCTRA and OBJCDEC FITS keywords provided by Indigo will be left intact. This option is <i>not recommended</i> "
       "unless you are acquiring test frames with a camera on a table, for example.</p>"
 
-      "<p><b>Active telescope</b> Select the device specified as the ACTIVE_DEVICES/ACTIVE_TELESCOPE property of the INDI CCD device "
+      "<p><b>Active telescope</b> Select the device specified as the ACTIVE_DEVICES/ACTIVE_TELESCOPE property of the Indigo CCD device "
       "being used. You must define this property manually with the name of the appropriate telescope device.</p>"
 
-      "<p><b>Mount controller telescope.</b> Use the device currently selected in the INDI Mount Controller interface.</p>"
+      "<p><b>Mount controller telescope.</b> Use the device currently selected in the Indigo Mount Controller interface.</p>"
 
-      "<p><b>Mount controller or active telescope.</b> Use the INDI Mount Controller device if available, or the "
+      "<p><b>Mount controller or active telescope.</b> Use the Indigo Mount Controller device if available, or the "
       "ACTIVE_DEVICES/ACTIVE_TELESCOPE device otherwise. This is the default option.</p>"
 
       "<p>When a telescope device is available, it is used to retrieve its current EOD (epoch of date) coordinates, just before "
@@ -907,7 +907,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
       "and stellar aberration. The computed coordinates are directly comparable to standard catalog positions, irrespective of the "
       "date of acquisition. Once these coordinates are computed for each acquired image, they are stored as standard XISF properties "
       "(Observation:Center:RA and Observation:Center:Dec). For compatibility with legacy applications, the same coordinates replace "
-      "the OBJCTRA and OBJCTDEC FITS keywords provided by the INDI server.</p>";
+      "the OBJCTRA and OBJCTDEC FITS keywords provided by the Indigo server.</p>";
 
    TelescopeDevice_Label.SetText( "Telescope device:" );
    TelescopeDevice_Label.SetToolTip( telescopeDeviceToolTip );
@@ -1065,7 +1065,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          }
       }
       else
-         GUI->CCDDevice_Combo.AddItem( "<INDI Server Not Connected>" );
+         GUI->CCDDevice_Combo.AddItem( "<Indigo Server Not Connected>" );
 
       m_device.Clear();
 
@@ -1456,7 +1456,7 @@ private:
       if ( m_abortRequested )
          AbstractINDICCDFrameExecution::Abort();
 
-      m_iface->GUI->ExposureInfo_Label.SetText( "Waiting for INDI server" );
+      m_iface->GUI->ExposureInfo_Label.SetText( "Waiting for Indigo server" );
       m_iface->ProcessEvents();
    }
 

@@ -544,14 +544,14 @@ bool INDIMountInstance::ValidateDevice( bool throwErrors ) const
          if ( !indi->HasPropertyItem( device.DeviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME ) ) // is this a mount device?
          {
             if ( throwErrors )
-               throw Error( '\'' + p_deviceName + "' does not seem to be a valid INDI Mount device" );
+               throw Error( '\'' + p_deviceName + "' does not seem to be a valid Indigo Mount device" );
             return false;
          }
          return true;
       }
 
    if ( throwErrors )
-      throw Error( "INDI device not available: '" + p_deviceName + "'" );
+      throw Error( "Indigo device not available: '" + p_deviceName + "'" );
    return false;
 }
 
@@ -681,7 +681,7 @@ void AbstractINDIMountExecution::Perform()
    INDIClient* indi = INDIClient::TheClientOrDie();
 
    if ( !indi->HasDevices() )
-      throw Error( "No INDI device has been connected." );
+      throw Error( "No Indigo device has been connected." );
 
    try
    {
@@ -998,7 +998,7 @@ void AbstractINDIMountExecution::Perform()
     	 break;
       }
       default:
-         throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown INDI Mount command." );
+         throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown Indigo Mount command." );
       }
    }
    catch ( ... )

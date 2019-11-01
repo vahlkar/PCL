@@ -51,7 +51,7 @@
 #include "INDI-helper.jsh"
 #include "CoordUtils.jsh"
 
-#define MOUNT_DEVICE_NAME "Mount Simulator @ localhost"
+#define MOUNT_DEVICE_NAME "Mount Simulator @ localhost" // Indigo simulator device name
 
 function INDIMountControllerTests( parent )
 {
@@ -61,7 +61,7 @@ function INDIMountControllerTests( parent )
    this.add(
       function testUnpark()
       {
-         let mountController = new INDIMount;
+         let mountController = new IndigoMount;
          mountController.deviceName = MOUNT_DEVICE_NAME;
          // execute in the global context to unpark
          assertTrue( mountController.executeGlobal() );
@@ -71,7 +71,7 @@ function INDIMountControllerTests( parent )
    this.add(
       function testMoveNorthSouth()
       {
-         let mountController = new INDIMount;
+         let mountController = new IndigoMount;
          mountController.deviceName = MOUNT_DEVICE_NAME;
          // execute in the global context to unpark
          assertTrue( mountController.executeGlobal() );
@@ -109,7 +109,7 @@ function INDIMountControllerTests( parent )
    this.add(
       function testMoveWestEast()
       {
-         let mountController = new INDIMount;
+         let mountController = new IndigoMount;
          mountController.deviceName = MOUNT_DEVICE_NAME;
          // execute in the global context to unpark
          assertTrue( mountController.executeGlobal() );
@@ -145,7 +145,7 @@ function INDIMountControllerTests( parent )
    this.add(
       function testGoto()
       {
-         let mountController = new INDIMount;
+         let mountController = new IndigoMount;
          mountController.deviceName = MOUNT_DEVICE_NAME;
          // execute in the global context to unpark
          assertTrue( mountController.executeGlobal() );
@@ -171,7 +171,7 @@ function INDIMountControllerTests( parent )
          let pointingModelFile = currentDir + "/TestPointingModelTmp.xtpm";
          let pointingModelFileCreated = currentDir + "/TestPointingModelCreated.xtpm";
 
-         let mountController=new INDIMount;
+         let mountController=new IndigoMount;
          mountController.deviceName=MOUNT_DEVICE_NAME;
          mountController.alignmentModelFile=pointingModelFile;
          assertTrue(File.exists(mountController.alignmentModelFile));
@@ -251,17 +251,15 @@ function INDIMountControllerTests( parent )
    this.add(
       function testParking()
       {
-         let mountController = new INDIMount;
+         let mountController = new IndigoMount;
          mountController.deviceName = MOUNT_DEVICE_NAME;
          // set park command
          mountController.Command = 1; // Park
-         mountController.targetRA = 0;
-         mountController.targetDec = +90;
          // execute in the global context
          assertTrue( mountController.executeGlobal() );
          // check current coordinates
-         expectEqualsWithPrecision( 0.0, mountController.currentRA, 0.1 );
-         expectEqualsWithPrecision( +90.0, mountController.currentDec, 0.1 );
+         expectEqualsWithPrecision( 12.0, mountController.currentLST - mountController.currentRA, 0.1 );
+         expectEqualsWithPrecision( 0.0, mountController.currentDec, 0.1 );
       }
    );
 }
