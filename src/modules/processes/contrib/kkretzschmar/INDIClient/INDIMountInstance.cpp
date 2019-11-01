@@ -618,6 +618,8 @@ void INDIMountInstance::GetPierSide() {
             break;
          }
       }
+      
+
 }
 
  bool INDIMountInstance::isForceCounterWeightUp() const {
@@ -859,7 +861,7 @@ void AbstractINDIMountExecution::Perform()
     	  // Apply corrected position to simulate an unaligned telescope
     	  double trueTargetRa = targetRA;
     	  double trueTargetDec = targetDec;
-        m_instance.GetPierSide();
+          m_instance.GetPierSide();
     	  ApplyPointingModelCorrection(aModel.Ptr(), trueTargetRa, trueTargetDec);
 
           StartMountEvent( targetRA, m_instance.o_currentRA, targetDec, m_instance.o_currentDec, m_instance.p_command );

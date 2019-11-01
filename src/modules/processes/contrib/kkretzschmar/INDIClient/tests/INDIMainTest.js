@@ -57,6 +57,7 @@ function INDICCDTestSuite()
    this.__base__( "INDICCDTestSuite" );
 
    this.deviceController = new IndigoDeviceController;
+   this.deviceController.serverHostName = "localhost"
    this.timer = new ElapsedTime;
 
    this.add( new INDICCDControllerTests( this ) );
@@ -136,7 +137,12 @@ function INDIMountTestSuite()
    this.__base__ = Test;
    this.__base__( "INDIMountTestSuite" );
 
+<<<<<<< HEAD
    this.deviceController = new IndigoDeviceController;
+=======
+   this.deviceController = new INDIDeviceController;
+   this.deviceController.serverHostName = "klaus-Inspiron-1720"
+>>>>>>> 7c912548af71aec64089d296987ff43fbbe876ba
    this.timer = new ElapsedTime;
 
    this.add( new INDIMountControllerTests( this ) );

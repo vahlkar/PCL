@@ -1279,6 +1279,10 @@ void AbstractINDICCDFrameExecution::Perform()
 
                         // Compute GCRS / J2000.0 coordinates from telescope
                         // true / EOD coordinates if epoch == JNow
+						// Note: The EOD coordinates consider the proper motion of the target objects, 
+						//       if they were acquired via the coordinate search dialog. Since we do not
+						//       have these information here the resulting J2000 coordinate will have this
+						//       mismatch.  
 						data.ra = Deg(telescopeRA);
 						data.dec = Deg(telescopeDec);
 						data.equinox = 2000.0;
@@ -1292,7 +1296,7 @@ void AbstractINDICCDFrameExecution::Perform()
 						}
 						else
 						{
-							// fallback: if EPOCH property is not defined assume JNoe
+							// fallback: if EPOCH property is not defined assume JNow
 							computeApparentPositions = true;
 						}
 
