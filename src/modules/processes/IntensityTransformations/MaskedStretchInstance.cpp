@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// MaskedStretchInstance.cpp - Released 2019-09-29T12:27:57Z
+// MaskedStretchInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -235,20 +235,12 @@ private:
    template <class P>
    void Apply( GenericImage<P>& image, const MaskedStretchInstance& instance, const DVector& m )
    {
-      size_type N = image.NumberOfPixels();
-      int numberOfThreads = Thread::NumberOfThreads( N, 16 );
-      size_type pixelsPerThread = N/numberOfThreads;
-
+      Array<size_type> L = Thread::OptimalThreadLoads( image.NumberOfPixels(), 16/*overheadLimit*/ );
       AbstractImage::ThreadData data( image, image.Status().Total() );
-
       ReferenceArray<MaskedStretchThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new MaskedStretchThread<P>( instance, data, image, m,
-                                                  i*pixelsPerThread,
-                                                  (j < numberOfThreads) ? j*pixelsPerThread : N ) );
-
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads.Add( new MaskedStretchThread<P>( instance, data, image, m, n, n + L[i] ) );
       AbstractImage::RunThreads( threads, data );
-
       threads.Destroy();
 
       image.Status() = data.status;
@@ -259,18 +251,20 @@ private:
    {
    public:
 
-      MaskedStretchThread( const MaskedStretchInstance& instance, const AbstractImage::ThreadData& data,
-                           GenericImage<P>& image, const DVector& m, size_type start, size_type end ) :
+      MaskedStretchThread( const MaskedStretchInstance& instance,
+                           const AbstractImage::ThreadData& data,
+                           GenericImage<P>& image,
+                           const DVector& m,
+                           size_type start, size_type end ) :
          m_instance( instance ),
          m_data( data ),
          m_image( image ),
          m_m( m ),
-         m_start( start ),
-         m_end( end )
+         m_start( start ), m_end( end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -279,7 +273,6 @@ private:
          const RGBColorSystem& rgbws = m_image.RGBWorkingSpace();
 
          for ( int it = 0; it < m_instance.p_numberOfIterations; ++it )
-         {
             if ( n == 1 )
             {
                typename GenericImage<P>::sample_iterator i( m_image ); i += m_start;
@@ -326,7 +319,6 @@ private:
                   UPDATE_THREAD_MONITOR( 65536 )
                }
             }
-         }
       }
 
    private:
@@ -503,4 +495,4 @@ size_type MaskedStretchInstance::ParameterLength( const MetaParameter* p, size_t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF MaskedStretchInstance.cpp - Released 2019-11-07T11:00:22Z

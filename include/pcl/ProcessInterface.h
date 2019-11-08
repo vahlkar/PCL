@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.h - Released 2019-09-29T12:27:26Z
+// pcl/ProcessInterface.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -986,9 +986,9 @@ public:
     * this interface is the owner of the Real-Time Preview system.
     *
     * \param[in,out] image  Reference to a shared image where the real-time
-    *                   rendition would be generated. This image contains the
-    *                   pixel data of a view selected for real-time previewing.
-    *                   A subsequent call to GenerateRealTimePreview() would
+    *                   rendition would be generated. This image contains pixel
+    *                   data of a view selected for real-time previewing. A
+    *                   subsequent call to GenerateRealTimePreview() would
     *                   receive a reference to an image with the same pixel
     *                   data, for effective real-time preview generation.
     *
@@ -996,6 +996,14 @@ public:
     *                   Real-Time Preview system of the core application. The
     *                   passed \a image contains a representation of the image
     *                   in this view.
+    *
+    * \param rect       Current real-time region in \a view image coordinates.
+    *                   If a nonempty rectangle is received through this
+    *                   parameter, then the input \a image contains a
+    *                   representation of the corresponding rectangular region
+    *                   of the \a view's image. If this parameter is an empty
+    *                   rectangle, it must be ignored and \a image is a
+    *                   representation of the entire \a view's image.
     *
     * \param zoomLevel  Indicates the integer zoom ratio that has been applied
     *                   to the specified \a image, with respect to the original
@@ -1015,14 +1023,15 @@ public:
     * If this function returns true, a subsequent call to
     * GenerateRealTimePreview() will occur when appropriate.
     *
-    * Both the passed \a image and \a view <em>cannot be modified</em> in any
-    * way by this function.
+    * The passed \a image, \a view and \a rect objects <em>cannot be
+    * modified</em> in any way by this function.
     *
     * \note The default implementation of this function returns false.
     *
     * \sa GenerateRealTimePreview(), CancelRealTimePreview(), RealTimePreview
     */
-   virtual bool RequiresRealTimePreviewUpdate( const UInt16Image& image, const View& view, int zoomLevel ) const
+   virtual bool RequiresRealTimePreviewUpdate( const UInt16Image& image, const View& view,
+                                               const Rect& rect, int zoomLevel ) const
    {
       return false;
    }
@@ -1032,16 +1041,23 @@ public:
     *
     * \param[in,out] image Reference to a shared image where the real-time
     *                   rendition must be generated. On input, this image
-    *                   contains the pixel data of a view selected for
-    *                   real-time previewing. On output, this image must be
-    *                   transformed to represent a preview of the current
-    *                   process instance being edited on this process
-    *                   interface.
+    *                   contains pixel data of a view selected for real-time
+    *                   previewing. On output, this image must be transformed
+    *                   to represent a preview of the current process instance
+    *                   being edited on this process interface.
     *
     * \param view       Reference to a view that is currently selected in the
     *                   Real-Time Preview system of the core application. The
     *                   passed \a image contains a representation of the image
     *                   in this view.
+    *
+    * \param rect       Current real-time region in \a view image coordinates.
+    *                   If a nonempty rectangle is received through this
+    *                   parameter, then the input \a image contains a
+    *                   representation of the corresponding rectangular region
+    *                   of the \a view's image. If this parameter is an empty
+    *                   rectangle, it must be ignored and \a image is a
+    *                   representation of the entire \a view's image.
     *
     * \param zoomLevel  Indicates the integer zoom ratio that has been applied
     *                   to the specified \a image, with respect to the original
@@ -1069,9 +1085,9 @@ public:
     * indicate that the \a image has not been altered by this function, and
     * hence that the current real-time preview update should be aborted.
     *
-    * The passed \a view <em>cannot be modified</em> in any way by this
-    * function. This means that a reimplementation of this function <em>cannot
-    * be used to modify a view indirectly</em> - we mean it!
+    * The passed \a view and \a rect objects <em>cannot be modified</em> in any
+    * way by this function. A reimplementation of this function <em>cannot be
+    * used to modify a view indirectly</em> - we mean it!
     *
     * \note The default implementation of this function returns false without
     * modifying the passed \a image.
@@ -1079,7 +1095,8 @@ public:
     * \sa RequiresRealTimePreviewUpdate(), CancelRealTimePreview(),
     * RealTimePreview
     */
-   virtual bool GenerateRealTimePreview( UInt16Image& image, const View& view, int zoomLevel, String& info ) const
+   virtual bool GenerateRealTimePreview( UInt16Image& image, const View& view,
+                                         const Rect& rect, int zoomLevel, String& info ) const
    {
       return false;
    }
@@ -2498,4 +2515,4 @@ private:
 #endif   // __PCL_ProcessInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/ProcessInterface.h - Released 2019-11-07T10:59:34Z

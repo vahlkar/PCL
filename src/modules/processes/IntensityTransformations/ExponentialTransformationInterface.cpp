@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInterface.cpp - Released 2019-09-29T12:27:57Z
+// ExponentialTransformationInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -62,7 +62,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ExponentialTransformationInterface* TheExponentialTransformationInterface = 0;
+ExponentialTransformationInterface* TheExponentialTransformationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -71,16 +71,17 @@ ExponentialTransformationInterface* TheExponentialTransformationInterface = 0;
 // ----------------------------------------------------------------------------
 
 ExponentialTransformationInterface::ExponentialTransformationInterface() :
-ProcessInterface(),
-instance( TheExponentialTransformationProcess ), m_realTimeThread( 0 ), GUI( 0 )
+   instance( TheExponentialTransformationProcess )
 {
    TheExponentialTransformationInterface = this;
 }
 
+// ----------------------------------------------------------------------------
+
 ExponentialTransformationInterface::~ExponentialTransformationInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -122,7 +123,7 @@ void ExponentialTransformationInterface::ApplyInstance() const
 
 void ExponentialTransformationInterface::RealTimePreviewUpdated( bool active )
 {
-   if ( GUI != 0 )
+   if ( GUI != nullptr )
       if ( active )
          RealTimePreview::SetOwner( *this ); // implicitly updates the r-t preview
       else
@@ -141,7 +142,7 @@ void ExponentialTransformationInterface::ResetInstance()
 
 bool ExponentialTransformationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "ExponentialTransformation" );
@@ -189,7 +190,7 @@ bool ExponentialTransformationInterface::ImportProcess( const ProcessImplementat
 
 // ----------------------------------------------------------------------------
 
-bool ExponentialTransformationInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int/*zoomLevel*/ ) const
+bool ExponentialTransformationInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int ) const
 {
    return true;
 }
@@ -197,7 +198,7 @@ bool ExponentialTransformationInterface::RequiresRealTimePreviewUpdate( const UI
 // ----------------------------------------------------------------------------
 
 ExponentialTransformationInterface::RealTimeThread::RealTimeThread() :
-Thread(), m_instance( TheExponentialTransformationProcess )
+   m_instance( TheExponentialTransformationProcess )
 {
 }
 
@@ -217,7 +218,7 @@ void ExponentialTransformationInterface::RealTimeThread::Run()
    m_image.ResetSelections();
 }
 
-bool ExponentialTransformationInterface::GenerateRealTimePreview( UInt16Image& image, const View& view, int zoomLevel, String& ) const
+bool ExponentialTransformationInterface::GenerateRealTimePreview( UInt16Image& image, const View& view, const Rect&, int zoomLevel, String& ) const
 {
    m_realTimeThread = new RealTimeThread;
 
@@ -240,7 +241,7 @@ bool ExponentialTransformationInterface::GenerateRealTimePreview( UInt16Image& i
             m_realTimeThread->Wait();
 
             delete m_realTimeThread;
-            m_realTimeThread = 0;
+            m_realTimeThread = nullptr;
             return false;
          }
       }
@@ -250,7 +251,7 @@ bool ExponentialTransformationInterface::GenerateRealTimePreview( UInt16Image& i
          image.Assign( m_realTimeThread->m_image );
 
          delete m_realTimeThread;
-         m_realTimeThread = 0;
+         m_realTimeThread = nullptr;
          return true;
       }
    }
@@ -271,7 +272,7 @@ void ExponentialTransformationInterface::UpdateRealTimePreview()
 {
    if ( IsRealTimePreviewActive() )
    {
-      if ( m_realTimeThread != 0 )
+      if ( m_realTimeThread != nullptr )
          m_realTimeThread->Abort();
       GUI->UpdateRealTimePreview_Timer.Start();
    }
@@ -304,7 +305,7 @@ void ExponentialTransformationInterface::__LightnessMask_ButtonClick( Button& /*
 
 void ExponentialTransformationInterface::__UpdateRealTimePreview_Timer( Timer& sender )
 {
-   if ( m_realTimeThread != 0 )
+   if ( m_realTimeThread != nullptr )
       if ( m_realTimeThread->IsActive() )
          return;
 
@@ -391,4 +392,4 @@ ExponentialTransformationInterface::GUIData::GUIData( ExponentialTransformationI
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF ExponentialTransformationInterface.cpp - Released 2019-11-07T11:00:22Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.20.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.h - Released 2019-09-29T12:27:57Z
+// ImageIntegrationInstance.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -134,6 +134,9 @@ private:
 
    float       p_linearFitLow;  // low linear fit tolerance, in sigma units
    float       p_linearFitHigh; // high linear fit tolerance, in sigma units
+
+   float       p_esdOutliersFraction;  // maximum fraction of outliers for ESD rejection
+   float       p_esdAlpha;             // type I error probability for ESD rejection
 
    float       p_ccdGain;       // CCD gain in e-/ADU
    float       p_ccdReadNoise;  // CCD read noise in e-
@@ -323,4 +326,4 @@ private:
 #endif   // __ImageIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.h - Released 2019-09-29T12:27:57Z
+// EOF ImageIntegrationInstance.h - Released 2019-11-07T11:00:22Z

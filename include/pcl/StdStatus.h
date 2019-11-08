@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/StdStatus.h - Released 2019-09-29T12:27:26Z
+// pcl/StdStatus.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,7 +93,8 @@ namespace pcl
  * events. In this way the application's GUI can be responsive if the user
  * requests aborting or suspending the monitored process.
  *
- * \sa StatusCallback, StatusMonitor, Console, SpinStatus, MuteStatus
+ * \sa StatusCallback, StatusMonitor, Console, SpinStatus, ProgressBarStatus,
+ * MuteStatus
  */
 class PCL_CLASS StandardStatus : public StatusCallback
 {
@@ -198,4 +199,4 @@ private:
 #endif   // __PCL_StdStatus_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StdStatus.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/StdStatus.h - Released 2019-11-07T10:59:34Z

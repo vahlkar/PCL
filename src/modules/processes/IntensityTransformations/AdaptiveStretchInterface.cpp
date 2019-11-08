@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInterface.cpp - Released 2019-09-29T12:27:57Z
+// AdaptiveStretchInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -190,7 +190,7 @@ bool AdaptiveStretchInterface::ImportProcess( const ProcessImplementation& p )
 
 // ----------------------------------------------------------------------------
 
-bool AdaptiveStretchInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const
+bool AdaptiveStretchInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int ) const
 {
    return true;
 }
@@ -221,7 +221,7 @@ void AdaptiveStretchInterface::RealTimeThread::Run()
 
 // ----------------------------------------------------------------------------
 
-bool AdaptiveStretchInterface::GenerateRealTimePreview( UInt16Image& image, const View& view, int, String& ) const
+bool AdaptiveStretchInterface::GenerateRealTimePreview( UInt16Image& image, const View& view, const Rect&, int, String& ) const
 {
    m_realTimeThread = new RealTimeThread( view );
 
@@ -586,4 +586,4 @@ AdaptiveStretchInterface::GUIData::GUIData( AdaptiveStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF AdaptiveStretchInterface.cpp - Released 2019-11-07T11:00:22Z

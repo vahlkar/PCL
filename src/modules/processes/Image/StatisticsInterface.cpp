@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// StatisticsInterface.cpp - Released 2019-09-29T12:27:57Z
+// StatisticsInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -145,7 +145,7 @@ StatisticsTextDialog::StatisticsTextDialog( const String& text )
 
    Text_TextBox.SetStyleSheet( ScaledStyleSheet(
          "QWidget {"
-            "font-family: DejaVu Sans Mono, Monospace;"
+            "font-family: Hack, DejaVu Sans Mono, Monospace;"
             "font-size: 10pt;"
          "}"
       ) );
@@ -1381,7 +1381,7 @@ StatisticsInterface::GUIData::GUIData( StatisticsInterface& w )
    Data_TreeBox.EnableAlternateRowColor();
    Data_TreeBox.SetStyleSheet( w.ScaledStyleSheet(
          "QTreeView {"
-            "font-family: DejaVu Sans Mono, Monospace;"
+            "font-family: Hack, DejaVu Sans Mono, Monospace;"
             "font-size: 9pt;"
          "}"
          "QTreeView::item {"
@@ -1414,4 +1414,4 @@ StatisticsInterface::GUIData::GUIData( StatisticsInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF StatisticsInterface.cpp - Released 2019-11-07T11:00:22Z

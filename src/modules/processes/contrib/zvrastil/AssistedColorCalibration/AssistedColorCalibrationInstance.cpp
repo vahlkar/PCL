@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationInstance.cpp - Released 2019-09-29T12:27:58Z
+// AssistedColorCalibrationInstance.cpp - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
@@ -139,13 +139,17 @@ public:
                                    const AbstractImage::ThreadData& data,
                                    GenericImage<P>& a_image,
                                    bool prev, double* br, double lCorr, size_type p0, size_type p1 ) :
-   Thread(),
-   T( instance ), m_data( data ), image( a_image ),
-   isPreview(prev), start( p0 ), end( p1 ), backRef(br), luminanceCorrection(lCorr)
+      T( instance ),
+      m_data( data ),
+      image( a_image ),
+      isPreview( prev ),
+      start( p0 ), end( p1 ),
+      backRef( br ),
+      luminanceCorrection( lCorr )
    {
    }
 
-   virtual void Run()
+   void Run() override
    {
       INIT_THREAD_MONITOR()
 
@@ -272,20 +276,13 @@ static void ApplyAssistedColorCalibration( GenericImage<P>& image, const Assiste
 
    // prepare parallel processing
    size_type N = image.NumberOfPixels();
-
-   size_type numberOfThreads = Thread::NumberOfThreads( N, 16 );
-   size_type pixelsPerThread = N/numberOfThreads;
-
    image.Status().Initialize( "Assisted color calibration", N );
 
+   Array<size_type> L = Thread::OptimalThreadLoads( N, 16/*overheadLimit*/ );
    AbstractImage::ThreadData data( image, N );
-
-   // create processing threads
    ReferenceArray<AssistedColorCalibrationThread<P> > threads;
-   for ( size_type i = 0, p = 0; i < numberOfThreads; ++i, p += pixelsPerThread )
-      threads.Add( new AssistedColorCalibrationThread<P>( T, data, image,
-                              isPreview, backRef, luminanceCorrection, p, Min( p + pixelsPerThread, N ) ) );
-
+   for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+      threads.Add( new AssistedColorCalibrationThread<P>( T, data, image, isPreview, backRef, luminanceCorrection, n, n + L[i] ) );
    AbstractImage::RunThreads( threads, data );
    threads.Destroy();
 
@@ -500,4 +497,4 @@ double AssistedColorCalibrationInstance::GetSaturationBoost() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationInstance.cpp - Released 2019-09-29T12:27:58Z
+// EOF AssistedColorCalibrationInstance.cpp - Released 2019-11-07T11:00:23Z

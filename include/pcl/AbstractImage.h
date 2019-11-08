@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/AbstractImage.h - Released 2019-09-29T12:27:26Z
+// pcl/AbstractImage.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -801,9 +801,7 @@ public:
 
    /*!
     * Returns the maximum number of threads that this image can use
-    * concurrently to process a set of items, taking into account if parallel
-    * processing is currently enabled for this image, as well as the maximum
-    * number of processors allowed.
+    * concurrently to process a set of items.
     *
     * \param count            Number of <em>processing units</em>. A processing
     *             unit can be a single pixel, a row of pixels, or any suitable
@@ -821,8 +819,11 @@ public:
     *             thread would have to process less processing units than this
     *             value. The default overhead limit is 16 processing units.
     *
-    * Refer the Thread::NumberOfThreads() for detailed and important
-    * information on the values returned by this member function.
+    * This function takes into account if parallel processing is currently
+    * enabled for this image, as well as the maximum number of processors
+    * allowed for the calling process.
+    *
+    * \sa Thread::NumberOfThreads()
     */
    int NumberOfThreads( size_type count, int maxProcessors = 0, size_type overheadLimit = 16u ) const
    {
@@ -832,9 +833,7 @@ public:
 
    /*!
     * Returns the maximum number of threads that this image can use
-    * concurrently to process a set of pixel rows, taking into account if
-    * parallel processing is currently enabled for this image, as well as the
-    * maximum number of processors allowed.
+    * concurrently to process a set of pixel rows.
     *
     * \param rowCount         Number of pixel rows to be processed. If zero or
     *             a negative value is specified, the height of the image in
@@ -857,12 +856,65 @@ public:
     *             thread can process, based on this value and on the specified
     *             \a rowWidth (or the image's width if zero is passed for that
     *             parameter). The default overhead limit is 1024 pixels.
+    *
+    * This function takes into account if parallel processing is currently
+    * enabled for this image, as well as the maximum number of processors
+    * allowed for the calling process.
+    *
+    * \sa NumberOfThreads(), Thread::NumberOfThreads()
     */
    int NumberOfThreadsForRows( int rowCount = 0, int rowWidth = 0, int maxProcessors = 0, size_type overheadLimitPx = 1024u ) const
    {
       return NumberOfThreads( (rowCount > 0) ? rowCount : Height(),
                               maxProcessors,
                               pcl::Max( size_type( 1 ), size_type( overheadLimitPx/((rowWidth > 0) ? rowWidth : Width()) ) ) );
+   }
+
+   /*!
+    * Returns a list of per-thread counts optimized for parallel processing of
+    * a set of pixel rows.
+    *
+    * \param rowCount         Number of pixel rows to be processed. If zero or
+    *             a negative value is specified, the height of the image in
+    *             pixels will be used. The default value is zero.
+    *
+    * \param rowWidth         Width in pixels of the ROI being processed. If
+    *             zero or a negative value is specified, the width of the image
+    *             in pixels is used. The default value is zero.
+    *
+    * \param maxProcessors    If a value greater than zero is specified, it is
+    *             the maximum number of processors allowed, which takes
+    *             precedence over the current limit set for this image (see the
+    *             MaxProcessors() and SetMaxProcessors() member functions). If
+    *             zero or a negative value is specified, it is ignored and the
+    *             current MaxProcessors() limit is applied. The default value
+    *             is zero.
+    *
+    * \param overheadLimitPx  Thread overhead limit in pixels. The function
+    *             will calculate the minimum number of pixel rows that a single
+    *             thread can process, based on this value and on the specified
+    *             \a rowWidth (or the image's width if zero is passed for that
+    *             parameter). The default overhead limit is 1024 pixels.
+    *
+    * This function takes into account if parallel processing is currently
+    * enabled for this image, as well as the maximum number of processors
+    * allowed for the calling process.
+    *
+    * This function returns a dynamic array of unsigned integers, where each
+    * element is the number of pixel rows that the corresponding thread should
+    * process in order to make an optimal usage of the processor resources
+    * currently available. The length of the returned array is the maximum
+    * number of threads that the calling process should execute concurrently to
+    * process the specified number of pixel rows, with the specified overhead
+    * limit and maximum number of processors.
+    *
+    * \sa Thread::OptimalThreadLoads()
+    */
+   Array<size_type> OptimalThreadRows( int rowCount = 0, int rowWidth = 0, int maxProcessors = 0, size_type overheadLimitPx = 1024u ) const
+   {
+      return Thread::OptimalThreadLoads( (rowCount > 0) ? rowCount : Height(),
+                                         pcl::Max( size_type( 1 ), size_type( overheadLimitPx/((rowWidth > 0) ? rowWidth : Width()) ) ),
+                                         m_parallel ? ((maxProcessors > 0) ? maxProcessors : m_maxProcessors) : 1 );
    }
 
    // -------------------------------------------------------------------------
@@ -1342,4 +1394,4 @@ protected:
 #endif   // __PCL_AbstractImage_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AbstractImage.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/AbstractImage.h - Released 2019-11-07T10:59:34Z

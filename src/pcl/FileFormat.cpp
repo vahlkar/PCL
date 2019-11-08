@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/FileFormat.cpp - Released 2019-09-29T12:27:33Z
+// pcl/FileFormat.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -64,18 +64,15 @@ class FileFormatPrivate
 {
 public:
 
-   meta_format_handle      handle;
+   meta_format_handle      handle = nullptr;
    api_format_capabilities capabilities;
 
-   FileFormatPrivate() :
-      handle( nullptr )
+   FileFormatPrivate()
    {
       ZeroCaps();
    }
 
-   FileFormatPrivate( const FileFormatPrivate* x ) :
-      handle( nullptr ),
-      capabilities()
+   FileFormatPrivate( const FileFormatPrivate* x )
    {
       if ( x != nullptr )
       {
@@ -113,7 +110,7 @@ private:
    {
       // Strict aliasing safe code
 #ifndef _MSC_VER
-      // ### FIXME - VC++ 2015 says that api_format_capabilities is larger than 8 bytes !?
+      // ### FIXME - VC++ 2015 says that api_format_capabilities is larger than 8 bytes - however it is not !?
       static_assert( sizeof( api_format_capabilities ) <= sizeof( uint64 ), "Invalid sizeof( api_format_capabilities )" );
 #endif
       union { api_format_capabilities capabilities; uint64 u; } v;
@@ -124,8 +121,7 @@ private:
 
 // ----------------------------------------------------------------------------
 
-FileFormat::FileFormat( const String& nameExtOrMime, bool toRead, bool toWrite ) :
-   FileFormatBase()
+FileFormat::FileFormat( const String& nameExtOrMime, bool toRead, bool toWrite )
 {
    if ( nameExtOrMime.IsEmpty() )
       throw Error( "FileFormat: Empty format name, file extension or MIME type specified" );
@@ -159,14 +155,12 @@ FileFormat::FileFormat( const String& nameExtOrMime, bool toRead, bool toWrite )
    m_data->GetCapabilities();
 }
 
-FileFormat::FileFormat( const FileFormat& fmt ) :
-   FileFormatBase()
+FileFormat::FileFormat( const FileFormat& fmt )
 {
    m_data = new FileFormatPrivate( fmt.m_data );
 }
 
-FileFormat::FileFormat( const void* handle ) :
-   FileFormatBase()
+FileFormat::FileFormat( const void* handle )
 {
    if ( handle == nullptr )
       throw Error( "FileFormat: Null file format handle" );
@@ -671,4 +665,4 @@ StringList FileFormat::EphemerisFiles( const String& dirPath, bool recursive, bo
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormat.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/FileFormat.cpp - Released 2019-11-07T10:59:44Z

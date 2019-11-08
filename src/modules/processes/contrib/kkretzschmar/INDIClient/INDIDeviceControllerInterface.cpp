@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInterface.cpp - Released 2019-09-29T12:27:58Z
+// INDIDeviceControllerInterface.cpp - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -644,7 +644,7 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
    Devices_TreeBox.DisableMultipleSelections();
    Devices_TreeBox.SetStyleSheet( w.ScaledStyleSheet(
          "QTreeView {"
-            "font-family: DejaVu Sans Mono, Monospace;"
+            "font-family: Hack, DejaVu Sans Mono, Monospace;"
             "font-size: 9pt;"
          "}"
       ) );
@@ -1094,4 +1094,4 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInterface.cpp - Released 2019-09-29T12:27:58Z
+// EOF INDIDeviceControllerInterface.cpp - Released 2019-11-07T11:00:23Z

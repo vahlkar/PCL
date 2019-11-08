@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.20.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z
+// DrizzleIntegrationInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1573,20 +1573,15 @@ void DrizzleIntegrationEngine::Perform()
                   }
             threadData.status.Initialize( "Integrating pixels", m_height );
 
-            int numberOfThreads = Thread::NumberOfThreads( m_height, Max( 1, 4096/m_width ) );
-            int rowsPerThread = m_height/numberOfThreads;
-
+            Array<size_type> L = Thread::OptimalThreadLoads( m_height, Max( 1, 4096/m_width )/*overheadLimit*/ );
             ReferenceArray<DrizzleThread> threads;
-            for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-               threads.Add( new DrizzleThread( threadData,
-                                               i*rowsPerThread,
-                                               (j < numberOfThreads) ? j*rowsPerThread : m_height ) );
-
+            for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+               threads.Add( new DrizzleThread( threadData, n, n + int( L[i] ) ) );
             AbstractImage::RunThreads( threads, threadData );
 
             double outputData = 0;
-            for ( int i = 0; i < numberOfThreads; ++i )
-               outputData += threads[i].totalDropArea;
+            for ( const auto& thread : threads )
+               outputData += thread.totalDropArea;
             outputData /= roi.Area();
             double inputData = outputData/m_instance.p_dropShrink/m_instance.p_dropShrink;
             outputData *= m_pixelSize*m_pixelSize;
@@ -2046,4 +2041,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2019-11-07T11:00:22Z

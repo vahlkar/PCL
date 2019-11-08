@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.1
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsInstance.cpp - Released 2019-09-29T12:27:57Z
+// ExtractAlphaChannelsInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -197,7 +197,6 @@ static void ExtractAllAlphaChannels( GenericImage<P>& image, bool extractChannel
                data[c] = nullptr;
 
                w.Show();
-               w.ZoomToFit( false );
             }
 
             Console().WriteLn( String().Format( "%d alpha channel(s) extracted and deleted.", n ) );
@@ -224,7 +223,6 @@ static void ExtractAllAlphaChannels( GenericImage<P>& image, bool extractChannel
                static_cast<GenericImage<P>&>( *w.MainView().Image() ) = image;
 
                w.Show();
-               w.ZoomToFit( false );
 
                Console().WriteLn( String().Format( "%d alpha channel(s) extracted.", n ) );
             }
@@ -306,7 +304,6 @@ static void ExtractActiveAlphaChannel( GenericImage<P>& image, bool extractChann
 
             static_cast<GenericImage<P>&>( *w.MainView().Image() ).ImportData( data, image.Width(), image.Height() );
             w.Show();
-            w.ZoomToFit( false );
 
             Console().WriteLn( "Active alpha channel extracted and deleted." );
          }
@@ -328,7 +325,6 @@ static void ExtractActiveAlphaChannel( GenericImage<P>& image, bool extractChann
             static_cast<GenericImage<P>&>( *w.MainView().Image() ) = image;
 
             w.Show();
-            w.ZoomToFit( false );
 
             Console().WriteLn( "Active alpha channel extracted." );
          }
@@ -434,7 +430,6 @@ static void ExtractListOfAlphaChannels( GenericImage<P>& image, const SortedArra
                   data[i] = nullptr;
 
                   w.Show();
-                  w.ZoomToFit( false );
                }
 
             Console().WriteLn( String().Format( "%d alpha channel(s) extracted and deleted.", count ) );
@@ -470,7 +465,6 @@ static void ExtractListOfAlphaChannels( GenericImage<P>& image, const SortedArra
                   static_cast<GenericImage<P>&>( *w.MainView().Image() ) = image;
 
                   w.Show();
-                  w.ZoomToFit( false );
 
                   ++count;
                }
@@ -627,4 +621,4 @@ void ExtractAlphaChannelsInstance::ParseChannelList( SortedArray<int>& list, con
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF ExtractAlphaChannelsInstance.cpp - Released 2019-11-07T11:00:22Z

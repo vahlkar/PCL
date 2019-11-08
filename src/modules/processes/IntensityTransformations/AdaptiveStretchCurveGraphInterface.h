@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchCurveGraphInterface.h - Released 2019-09-29T12:27:57Z
+// AdaptiveStretchCurveGraphInterface.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -74,21 +74,21 @@ public:
    AdaptiveStretchCurveGraphInterface();
    virtual ~AdaptiveStretchCurveGraphInterface();
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual MetaProcess* Process() const;
+   MetaProcess* Process() const override;
 
-   const char** IconImageXPM() const;
-   virtual InterfaceFeatures Features() const;
+   const char** IconImageXPM() const override;
+   InterfaceFeatures Features() const override;
 
-   virtual bool IsInstanceGenerator() const;
-   virtual bool CanImportInstances() const;
+   bool IsInstanceGenerator() const override;
+   bool CanImportInstances() const override;
 
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
    using ProcessInterface::Launch;
 
-   virtual void SaveSettings() const;
-   virtual void LoadSettings();
+   void SaveSettings() const override;
+   void LoadSettings() override;
 
    void UpdateGraph( const StretchCurve& curve );
 
@@ -143,7 +143,11 @@ private:
    void __Hide( Control& );
 };
 
+// ----------------------------------------------------------------------------
+
+PCL_BEGIN_LOCAL
 extern AdaptiveStretchCurveGraphInterface* TheAdaptiveStretchCurveGraphInterface;
+PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
@@ -152,4 +156,4 @@ extern AdaptiveStretchCurveGraphInterface* TheAdaptiveStretchCurveGraphInterface
 #endif   // __AdaptiveStretchCurveGraphInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchCurveGraphInterface.h - Released 2019-09-29T12:27:57Z
+// EOF AdaptiveStretchCurveGraphInterface.h - Released 2019-11-07T11:00:22Z

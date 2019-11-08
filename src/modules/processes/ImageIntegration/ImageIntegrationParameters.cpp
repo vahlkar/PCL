@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.20.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2019-09-29T12:27:57Z
+// ImageIntegrationParameters.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -80,6 +80,8 @@ IISigmaHigh*                         TheIISigmaHighParameter = nullptr;
 IIWinsorizationCutoff*               TheIIWinsorizationCutoffParameter = nullptr;
 IILinearFitLow*                      TheIILinearFitLowParameter = nullptr;
 IILinearFitHigh*                     TheIILinearFitHighParameter = nullptr;
+IIESDOutliersFraction*               TheIIESDOutliersFractionParameter = nullptr;
+IIESDAlpha*                          TheIIESDAlphaParameter = nullptr;
 IICCDGain*                           TheIICCDGainParameter = nullptr;
 IICCDReadNoise*                      TheIICCDReadNoiseParameter = nullptr;
 IICCDScaleNoise*                     TheIICCDScaleNoiseParameter = nullptr;
@@ -465,6 +467,7 @@ IsoString IIRejection::ElementId( size_type i ) const
    case AveragedSigmaClip:   return "AveragedSigmaClip";
    case LinearFit:           return "LinearFit";
    case CCDClip:             return "CCDClip";
+   case ESD:                 return "Rejection_ESD";
    }
 }
 
@@ -783,6 +786,70 @@ double IILinearFitHigh::MinimumValue() const
 double IILinearFitHigh::MaximumValue() const
 {
    return 10;
+}
+
+// ----------------------------------------------------------------------------
+
+IIESDOutliersFraction::IIESDOutliersFraction( MetaProcess* P ) : MetaFloat( P )
+{
+   TheIIESDOutliersFractionParameter = this;
+}
+
+IsoString IIESDOutliersFraction::Id() const
+{
+   return "esdOutliersFraction";
+}
+
+int IIESDOutliersFraction::Precision() const
+{
+   return 2;
+}
+
+double IIESDOutliersFraction::DefaultValue() const
+{
+   return 0.30;
+}
+
+double IIESDOutliersFraction::MinimumValue() const
+{
+   return 0;
+}
+
+double IIESDOutliersFraction::MaximumValue() const
+{
+   return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+IIESDAlpha::IIESDAlpha( MetaProcess* P ) : MetaFloat( P )
+{
+   TheIIESDAlphaParameter = this;
+}
+
+IsoString IIESDAlpha::Id() const
+{
+   return "esdAlpha";
+}
+
+int IIESDAlpha::Precision() const
+{
+   return 2;
+}
+
+double IIESDAlpha::DefaultValue() const
+{
+   return 0.05;
+}
+
+double IIESDAlpha::MinimumValue() const
+{
+   return 0;
+}
+
+double IIESDAlpha::MaximumValue() const
+{
+   return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -2590,4 +2657,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2019-09-29T12:27:57Z
+// EOF ImageIntegrationParameters.cpp - Released 2019-11-07T11:00:22Z

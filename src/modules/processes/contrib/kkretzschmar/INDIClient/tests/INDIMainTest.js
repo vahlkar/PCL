@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 // PixInsight JavaScript Runtime API - PJSR Version 1.0
 // ----------------------------------------------------------------------------
-// INDIMainTest.js - Released 2019-09-29T12:27:58Z
+// INDIMainTest.js - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 //
 //
@@ -216,4 +216,4 @@ INDIMountTestSuite.prototype = new Test;
 (new INDIMountTestSuite).run();
 
 // ----------------------------------------------------------------------------
-// EOF INDIMainTest.js - Released 2019-09-29T12:27:58Z
+// EOF INDIMainTest.js - Released 2019-11-07T11:00:23Z

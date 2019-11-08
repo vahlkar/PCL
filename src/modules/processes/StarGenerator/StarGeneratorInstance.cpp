@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInstance.cpp - Released 2019-09-29T12:27:58Z
+// StarGeneratorInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -227,14 +227,10 @@ public:
          try
          {
             ImageVariant img = window.MainView().Image();
-
             PlotStars( img, stars, starSigma );
-
             if ( instance.nonlinear )
                ApplyMTF( img );
-
             window.Show();
-            window.ZoomToFit();
          }
          catch ( ... )
          {
@@ -356,23 +352,15 @@ private:
       monitor.SetCallback( &status );
       monitor.Initialize( "Rendering stars", N );
 
-      int numberOfThreads = Thread::NumberOfThreads( N, 16 );
-      size_type starsPerThread = N/numberOfThreads;
-
+      Array<size_type> L = Thread::OptimalThreadLoads( N, 16/*overheadLimit*/ );
       ThreadData<P> data( image, star, projection, stars, monitor );
-
       ReferenceArray<PlotThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new PlotThread<P>( data,
-                                         i*starsPerThread,
-                                         (j < numberOfThreads) ? j*starsPerThread : N ) );
-
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new PlotThread<P>( data, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
-
       N = 0;
-      for ( int i = 0; i < numberOfThreads; ++i )
-         N += threads[i].N;
-
+      for ( const auto& thread : threads )
+         N += thread.N;
       threads.Destroy();
 
       Console().WriteLn( String().Format( "<end><cbr>%u stars in projection", N ) );
@@ -386,11 +374,11 @@ private:
                   const Projection& a_projection,
                   const StarDatabase::star_list& a_stars,
                   StatusMonitor& a_monitor ) :
-      AbstractImage::ThreadData( a_monitor, a_stars.Length() ),
-      image( a_image ),
-      star( a_star ),
-      projection( a_projection ),
-      stars( a_stars )
+         AbstractImage::ThreadData( a_monitor, a_stars.Length() ),
+         image( a_image ),
+         star( a_star ),
+         projection( a_projection ),
+         stars( a_stars )
       {
       }
 
@@ -408,12 +396,13 @@ private:
       size_type N;
 
       PlotThread( ThreadData<P>& data, size_type first, size_type end ) :
-      Thread(),
-      N( 0 ), m_data( data ), m_first( first ), m_end( end )
+         N( 0 ),
+         m_data( data ),
+         m_first( first ), m_end( end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -466,15 +455,15 @@ private:
       if ( image.IsFloatSample() )
          switch ( image.BitsPerSample() )
          {
-         case 32 : ApplyMTF( static_cast<Image&>( *image ) ); break;
-         case 64 : ApplyMTF( static_cast<DImage&>( *image ) ); break;
+         case 32: ApplyMTF( static_cast<Image&>( *image ) ); break;
+         case 64: ApplyMTF( static_cast<DImage&>( *image ) ); break;
          }
       else
          switch ( image.BitsPerSample() )
          {
-         case  8 : ApplyMTF( static_cast<UInt8Image&>( *image ) ); break;
-         case 16 : ApplyMTF( static_cast<UInt16Image&>( *image ) ); break;
-         case 32 : ApplyMTF( static_cast<UInt32Image&>( *image ) ); break;
+         case  8: ApplyMTF( static_cast<UInt8Image&>( *image ) ); break;
+         case 16: ApplyMTF( static_cast<UInt16Image&>( *image ) ); break;
+         case 32: ApplyMTF( static_cast<UInt32Image&>( *image ) ); break;
          }
    }
 
@@ -582,4 +571,4 @@ size_type StarGeneratorInstance::ParameterLength( const MetaParameter* p, size_t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInstance.cpp - Released 2019-09-29T12:27:58Z
+// EOF StarGeneratorInstance.cpp - Released 2019-11-07T11:00:22Z

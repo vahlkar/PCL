@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Point.h - Released 2019-09-29T12:27:26Z
+// pcl/Point.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1479,4 +1479,4 @@ typedef F64Point                    DPoint;
 #endif  // __PCL_Point_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Point.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/Point.h - Released 2019-11-07T10:59:34Z

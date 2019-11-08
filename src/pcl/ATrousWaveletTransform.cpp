@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/ATrousWaveletTransform.cpp - Released 2019-09-29T12:27:33Z
+// pcl/ATrousWaveletTransform.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -321,7 +321,7 @@ public:
       size_type N = image.NumberOfSelectedPixels();
       if ( N < 9 )
       {
-         if ( nn != 0 )
+         if ( nn != nullptr )
             *nn = 0;
          return 0;
       }
@@ -331,19 +331,16 @@ public:
          sigma = pcl::StdDev( data.I, data.I+N );
          if ( 1 + sigma == 1 )
          {
-            if ( nn != 0 )
+            if ( nn != nullptr )
                *nn = 0;
             return 0;
          }
       }
 
+      Array<size_type> L = pcl::Thread::OptimalThreadLoads( N, 16/*overheadLimit*/, parallel ? maxProcessors : 1 );
       ReferenceArray<Thread<P> > threads;
-
-      int numberOfThreads = parallel ? Min( maxProcessors, pcl::Thread::NumberOfThreads( N, 16 ) ) : 1;
-      size_type pixelsPerThread = N/numberOfThreads;
-
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new Thread<P>( data, i*pixelsPerThread, (j < numberOfThreads) ? j*pixelsPerThread : N ) );
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads.Add( new Thread<P>( data, n, n + L[i] ) );
 
       Array<float> S( N );
       size_type n = 0;
@@ -357,11 +354,11 @@ public:
          AbstractImage::RunThreads( threads, data );
 
          n = 0;
-         for ( int i = 0; i < numberOfThreads; ++i )
-            if ( threads[i].n > 0 )
+         for ( auto thread : threads )
+            if ( thread.n > 0 )
             {
-               memcpy( S.At( n ), threads[i].S.Begin(), threads[i].n*sizeof( float ) );
-               n += threads[i].n;
+               memcpy( S.At( n ), thread.S.Begin(), thread.n*sizeof( float ) );
+               n += thread.n;
             }
 
          if ( n < 2 )
@@ -394,9 +391,9 @@ public:
       if ( statusInitialized )
          image.Status().Complete();
 
-      if ( nn != 0 )
+      if ( nn != nullptr )
          *nn = n;
-      return sigma/0.974; // correct for 2% systematic bias
+      return sigma/0.974; // correction for 2% systematic bias
    }
 
 private:
@@ -540,4 +537,4 @@ void ATrousWaveletTransform::ValidateScalingFunction() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ATrousWaveletTransform.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/ATrousWaveletTransform.cpp - Released 2019-11-07T10:59:44Z

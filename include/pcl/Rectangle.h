@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Rectangle.h - Released 2019-09-29T12:27:26Z
+// pcl/Rectangle.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1000,14 +1000,77 @@ public:
     * Causes this rectangle to include a rectangle specified by its individual
     * coordinates.
     *
-    * \param left,top      Upper left corner coordinates of a rectangle that will
-    *             be included by this rectangle.
+    * \param left,top      Upper left corner coordinates of a rectangle that
+    *                      will be included by this rectangle.
     *
-    * \param right,bottom  Lower right corner coordinates of a rectangle that will
-    *             be included by this rectangle.
+    * \param right,bottom  Lower right corner coordinates of a rectangle that
+    *                      will be included by this rectangle.
     */
    template <typename T1>
    void Unite( T1 left, T1 top, T1 right, T1 bottom )
+   {
+      if ( right < left )
+         Swap( left, right );
+      if ( bottom < top )
+         Swap( top, bottom );
+
+      if ( x0 <= x1 )
+      {
+         x0 = pcl::Min( x0, component( left ) );
+         x1 = pcl::Max( x1, component( right ) );
+      }
+      else
+      {
+         x0 = pcl::Max( x0, component( right ) );
+         x1 = pcl::Min( x1, component( left ) );
+      }
+
+      if ( y0 <= y1 )
+      {
+         y0 = pcl::Min( y0, component( top ) );
+         y1 = pcl::Max( y1, component( bottom ) );
+      }
+      else
+      {
+         y0 = pcl::Max( y0, component( bottom ) );
+         y1 = pcl::Min( y1, component( top ) );
+      }
+   }
+
+   /*!
+    * Causes this rectangle to include a given rectangle \a r, by adjusting its
+    * coordinates as necessary.
+    *
+    * To produce a valid result, this function assumes that both this and the
+    * specified object \a r are ordered rectangles.
+    */
+   template <typename T1>
+   void UniteFast( const GenericRectangle<T1>& r )
+   {
+      UniteFast( r.x0, r.y0, r.x1, r.y1 );
+   }
+
+   /*!
+    * Causes this rectangle to include a rectangle specified by its individual
+    * coordinates.
+    *
+    * \param left,top      Upper left corner coordinates of a rectangle that
+    *                      will be included by this rectangle.
+    *
+    * \param right,bottom  Lower right corner coordinates of a rectangle that
+    *                      will be included by this rectangle.
+    *
+    * For a valid result, this function assumes the following conditions:
+    *
+    * \li The specified set \a left, \a top, \a right and \a bottom must define
+    * an ordered rectangle, that is, the conditions \a left &le; \a right and
+    * \a top &le; \a bottom must hold.
+    *
+    * \li This rectangle must be ordered, that is, the conditions x0 &le; x1
+    * and y0 &le; y1 must hold.
+    */
+   template <typename T1>
+   void UniteFast( T1 left, T1 top, T1 right, T1 bottom )
    {
       x0 = pcl::Min( x0, component( left ) );
       y0 = pcl::Min( y0, component( top ) );
@@ -1023,6 +1086,20 @@ public:
    {
       GenericRectangle r1 = *this;
       r1.Unite( r );
+      return r1;
+   }
+
+   /*!
+    * Returns a rectangle that includes this one and another rectangle \a r.
+    *
+    * To give a valid result, this function assumes that both this and the
+    * specified object \a r are ordered rectangles.
+    */
+   template <typename T1>
+   GenericRectangle UnionFast( const GenericRectangle<T1>& r ) const
+   {
+      GenericRectangle r1 = *this;
+      r1.UniteFast( r );
       return r1;
    }
 
@@ -1059,7 +1136,11 @@ public:
 
    /*!
     * Causes this rectangle to be equal to its intersection with a given
-    * rectangle \a r, by adjusting coordinates as necessary.
+    * rectangle \a r.
+    *
+    * Returns true iff the resulting intersection is a nonempty rectangle, i.e.
+    * iff this->x0 != this->x1 and this->y0 != this->y1 after calling this
+    * function.
     */
    template <typename T1>
    bool Intersect( const GenericRectangle<T1>& r )
@@ -1069,22 +1150,99 @@ public:
 
    /*!
     * Causes this rectangle to be equal to its intersection with a rectangle
-    * pecified by its individual coordinates.
+    * specified by its individual coordinates.
     *
-    * \param left,top      Upper left corner coordinates of a rectangle that will
-    *             intersect this rectangle.
+    * \param left,top      Upper left corner coordinates of a rectangle that
+    *                      will intersect this rectangle.
     *
     * \param right,bottom  Lower right corner coordinates of a rectangle that will
-    *             intersect this rectangle.
+    *                      intersect this rectangle.
+    *
+    * Returns true iff the resulting intersection is a nonempty rectangle, i.e.
+    * iff this->x0 != this->x1 and this->y0 != this->y1 after calling this
+    * function.
     */
    template <typename T1>
    bool Intersect( T1 left, T1 top, T1 right, T1 bottom )
+   {
+      if ( right < left )
+         Swap( left, right );
+      if ( bottom < top )
+         Swap( top, bottom );
+
+      if ( x0 <= x1 )
+      {
+         x0 = pcl::Max( x0, component( left ) );
+         x1 = pcl::Min( x1, component( right ) );
+      }
+      else
+      {
+         x0 = pcl::Min( x0, component( right ) );
+         x1 = pcl::Max( x1, component( left ) );
+      }
+
+      if ( y0 <= y1 )
+      {
+         y0 = pcl::Max( y0, component( top ) );
+         y1 = pcl::Min( y1, component( bottom ) );
+      }
+      else
+      {
+         y0 = pcl::Min( y0, component( bottom ) );
+         y1 = pcl::Max( y1, component( top ) );
+      }
+
+      return IsRect();
+   }
+
+   /*!
+    * Causes this rectangle to be equal to its intersection with a given
+    * rectangle \a r.
+    *
+    * Returns true iff the resulting intersection is a nonempty rectangle, i.e.
+    * iff this->x0 != this->x1 and this->y0 != this->y1 after calling this
+    * function.
+    *
+    * To produce a valid result, this function assumes that both this and the
+    * specified object \a r are ordered rectangles.
+    */
+   template <typename T1>
+   bool IntersectFast( const GenericRectangle<T1>& r )
+   {
+      return IntersectFast( r.x0, r.y0, r.x1, r.y1 );
+   }
+
+   /*!
+    * Causes this rectangle to be equal to its intersection with a rectangle
+    * specified by its individual coordinates.
+    *
+    * \param left,top      Upper left corner coordinates of a rectangle that
+    *                      will intersect this rectangle.
+    *
+    * \param right,bottom  Lower right corner coordinates of a rectangle that will
+    *                      intersect this rectangle.
+    *
+    * Returns true iff the resulting intersection is a nonempty rectangle, i.e.
+    * iff this->x0 != this->x1 and this->y0 != this->y1 after calling this
+    * function.
+    *
+    * For a valid result, this function assumes the following conditions:
+    *
+    * \li The specified set \a left, \a top, \a right and \a bottom must define
+    * an ordered rectangle, that is, the conditions \a left &le; \a right and
+    * \a top &le; \a bottom must hold.
+    *
+    * \li This rectangle must be ordered, that is, the conditions x0 &le; x1
+    * and y0 &le; y1 must hold.
+    */
+   template <typename T1>
+   bool IntersectFast( T1 left, T1 top, T1 right, T1 bottom )
    {
       x0 = pcl::Max( x0, component( left ) );
       y0 = pcl::Max( y0, component( top ) );
       x1 = pcl::Min( x1, component( right ) );
       y1 = pcl::Min( y1, component( bottom ) );
-      return IsNormal();
+      return IsRect();
    }
 
    /*!
@@ -1096,6 +1254,21 @@ public:
    {
       GenericRectangle r1 = *this;
       (void)r1.Intersect( r );
+      return r1;
+   }
+
+   /*!
+    * Returns a rectangle equal to the intersection of this rectangle and
+    * another rectangle \a r.
+    *
+    * To give a valid result, this function assumes that both this and the
+    * specified object \a r are ordered rectangles.
+    */
+   template <typename T1>
+   GenericRectangle IntersectionFast( const GenericRectangle<T1>& r ) const
+   {
+      GenericRectangle r1 = *this;
+      (void)r1.IntersectFast( r );
       return r1;
    }
 
@@ -2846,4 +3019,4 @@ typedef F64Rect                     DRect;
 #endif  // __PCL_Rectangle_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rectangle.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/Rectangle.h - Released 2019-11-07T10:59:34Z

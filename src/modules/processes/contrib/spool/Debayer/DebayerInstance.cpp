@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.1
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2019-09-29T12:27:58Z
+// DebayerInstance.cpp - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -90,9 +90,9 @@ namespace pcl
  * vectors) for performance reasons.
  */
 // Separable filter coefficients
-const float __5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
+const float s_5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
 // Gaussian noise scaling factors
-const float __5x5B3Spline_kj[] =
+const float s_5x5B3Spline_kj[] =
 { 0.8907F, 0.2007F, 0.0856F, 0.0413F, 0.0205F, 0.0103F, 0.0052F, 0.0026F, 0.0013F, 0.0007F };
 
 // ----------------------------------------------------------------------------
@@ -209,13 +209,13 @@ public:
       image.ResetSelections();
    }
 
-   virtual void Run()
+   void Run() override
    {
       MuteStatus status;
       m_image.SetStatusCallback( &status );
       m_image.Status().DisableInitialization();
 
-      SeparableFilter H( __5x5B3Spline_hv, __5x5B3Spline_hv, 5 );
+      SeparableFilter H( s_5x5B3Spline_hv, s_5x5B3Spline_hv, 5 );
 
       switch ( m_algorithm )
       {
@@ -225,7 +225,7 @@ public:
             W.EnableParallelProcessing( m_numberOfSubthreads > 1, m_numberOfSubthreads );
             W << m_image;
             size_type N;
-            noiseEstimate = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/__5x5B3Spline_kj[0];
+            noiseEstimate = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/s_5x5B3Spline_kj[0];
             noiseFraction = float( double( N )/m_image.NumberOfPixels() );
             noiseAlgorithm = "K-Sigma";
          }
@@ -244,10 +244,10 @@ public:
                size_type N;
                if ( n == 4 )
                {
-                  s0 = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/__5x5B3Spline_kj[0];
+                  s0 = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/s_5x5B3Spline_kj[0];
                   f0 = float( double( N )/m_image.NumberOfPixels() );
                }
-               noiseEstimate = W.NoiseMRS( ImageVariant( &m_image ), __5x5B3Spline_kj, s0, 3, &N );
+               noiseEstimate = W.NoiseMRS( ImageVariant( &m_image ), s_5x5B3Spline_kj, s0, 3, &N );
                noiseFraction = float( double( N )/m_image.NumberOfPixels() );
 
                if ( noiseEstimate > 0 && noiseFraction >= 0.01F )
@@ -517,7 +517,7 @@ private:
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -644,7 +644,7 @@ private:
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          /*
           * http://winfij.homeip.net/maximdl/bilineardebayer.html
@@ -730,7 +730,7 @@ private:
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          // http://openfmi.net/plugins/scmsvn/cgi-bin/viewcvs.cgi/*checkout*/books/Chang.pdf?content-type=text%2Fplain&rev=15&root=interpol
 
@@ -1005,18 +1005,13 @@ private:
       int target_h = source.Height() >> 1;
 
       m_output.AllocateData( target_w, target_h, 3, ColorSpace::RGB );
-
       m_output.Status().Initialize( "SuperPixel demosaicing", target_h );
 
-      int numberOfThreads = Thread::NumberOfThreads( target_h, 1 );
-      int rowsPerThread = target_h/numberOfThreads;
-      AbstractImage::ThreadData data( m_output, target_h );
+      Array<size_type> L = Thread::OptimalThreadLoads( target_h );
       ReferenceArray<SuperPixelThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new SuperPixelThread<P>( data, m_output, source, m_bayerPattern,
-                                               i*rowsPerThread,
-                                               (j < numberOfThreads) ? j*rowsPerThread : target_h ) );
-
+      AbstractImage::ThreadData data( m_output, target_h );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new SuperPixelThread<P>( data, m_output, source, m_bayerPattern, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
@@ -1049,18 +1044,15 @@ private:
       int target_h = source.Height();
 
       m_output.AllocateData( target_w, target_h, 3, ColorSpace::RGB );
-
       m_output.Status().Initialize( "Bilinear demosaicing", target_h-2 );
 
-      int numberOfThreads = Thread::NumberOfThreads( target_h-2, 1 );
-      int rowsPerThread = (target_h - 2)/numberOfThreads;
-      AbstractImage::ThreadData data( m_output, target_h-2 );
+      Array<size_type> L = Thread::OptimalThreadLoads( target_h-2 );
       ReferenceArray<BilinearThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+      AbstractImage::ThreadData data( m_output, target_h-2 );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
          threads.Add( new BilinearThread<P>( data, m_output, source, m_bayerPattern,
-                                             i*rowsPerThread + 1,
-                                             (j < numberOfThreads) ? j*rowsPerThread + 1 : target_h-1 ) );
-
+                                             1 + n,
+                                             1 + n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
@@ -1101,18 +1093,15 @@ private:
       int target_h = source.Height();
 
       m_output.AllocateData( target_w, target_h, 3, ColorSpace::RGB );
-
       m_output.Status().Initialize( "VNG demosaicing", target_h-4 );
 
-      int numberOfThreads = Thread::NumberOfThreads( target_h-4, 1 );
-      int rowsPerThread = (target_h - 4)/numberOfThreads;
-      AbstractImage::ThreadData data( m_output, target_h-4 );
+      Array<size_type> L = Thread::OptimalThreadLoads( target_h-4 );
       ReferenceArray<VNGThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+      AbstractImage::ThreadData data( m_output, target_h-4 );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
          threads.Add( new VNGThread<P>( data, m_output, source, m_bayerPattern,
-                                        i*rowsPerThread + 2,
-                                        (j < numberOfThreads) ? j*rowsPerThread + 2 : target_h-2 ) );
-
+                                        2 + n,
+                                        2 + n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
@@ -1933,13 +1922,11 @@ private:
 
       int numberOfTiles = ((m_height - 3)/(TS - 16) + ((m_height - 3)%(TS - 16) != 0))
                         * ((m_width - 3)/(TS - 16) + ((m_width - 3)%(TS - 16) != 0));
-      int numberOfThreads = Thread::NumberOfThreads( numberOfTiles, 1 );
-      int tilesPerThread = numberOfTiles/numberOfThreads;
-      AbstractImage::ThreadData data( m_monitor, numberOfTiles * (4 + 4*m_passes) );
+      Array<size_type> L = Thread::OptimalThreadLoads( numberOfTiles );
       ReferenceArray<XTransThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new XTransThread( *this, data, i*tilesPerThread,
-                                        (j < numberOfThreads) ? j*tilesPerThread : numberOfTiles ) );
+      AbstractImage::ThreadData data( m_monitor, numberOfTiles * (4 + 4*m_passes) );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new XTransThread( *this, data, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
@@ -2718,10 +2705,7 @@ bool DebayerInstance::ExecuteOn( View& view )
    outputWindow.SetKeywords( keywords );
 
    if ( p_showImages )
-   {
       outputWindow.Show();
-      outputWindow.ZoomToFit( false/*allowZoomIn*/ );
-   }
 
    o_imageId = outputWindow.MainView().Id();
 
@@ -3580,4 +3564,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2019-09-29T12:27:58Z
+// EOF DebayerInstance.cpp - Released 2019-11-07T11:00:23Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// JPEG2000Module.cpp - Released 2019-09-29T12:27:43Z
+// JPEG2000Module.cpp - Released 2019-11-07T11:00:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     9
-#define MODULE_RELEASE_DAY       29
+#define MODULE_RELEASE_MONTH     11
+#define MODULE_RELEASE_DAY       7
 
 #include "JPEG2000Module.h"
 #include "JPEG2000Format.h"
@@ -170,4 +170,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Module.cpp - Released 2019-09-29T12:27:43Z
+// EOF JPEG2000Module.cpp - Released 2019-11-07T11:00:12Z

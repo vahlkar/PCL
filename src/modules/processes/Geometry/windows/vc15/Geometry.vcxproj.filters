@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.112
+# PixInsight Makefile Generator Script v1.113
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-09-30T11:28:07.473Z
+# Generated on .... 2019-11-07T11:04:41.337Z
 # Project id ...... Geometry
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>3bd72908-6ba9-416e-a8fb-06b1bab55ef2</UniqueIdentifier>
+      <UniqueIdentifier>7fefad94-e1c7-447c-875a-0d1de0796471</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>4ed6b140-d420-4d81-af91-8f769aeef31a</UniqueIdentifier>
+      <UniqueIdentifier>5ef59a33-d07a-4f0a-a1e2-c4e130b61a8c</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>cf462e06-d086-4d64-985e-59fff1fc354b</UniqueIdentifier>
+      <UniqueIdentifier>091ff5da-1290-4db4-b465-091a42262d5e</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// SuperbiasInstance.cpp - Released 2019-09-29T12:27:57Z
+// SuperbiasInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -264,13 +264,8 @@ bool SuperbiasInstance::ExecuteOn( View& view )
       S.Truncate();
 
       if ( !resultWindow1.IsNull() )
-      {
          resultWindow1.Show();
-         resultWindow1.ZoomToFit( false/*allowZoomIn*/ );
-      }
-
       resultWindow.Show();
-      resultWindow.ZoomToFit( false/*allowZoomIn*/ );
 
       return true;
    }
@@ -376,4 +371,4 @@ size_type SuperbiasInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF SuperbiasInstance.cpp - Released 2019-11-07T11:00:22Z

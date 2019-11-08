@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.20.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2019-09-29T12:27:57Z
+// ImageIntegrationParameters.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -284,6 +284,7 @@ public:
           AveragedSigmaClip,
           LinearFit,
           CCDClip,
+          ESD,
           NumberOfRejectionAlgorithms,
           Default = NoRejection };
 
@@ -470,6 +471,40 @@ public:
 };
 
 extern IILinearFitHigh* TheIILinearFitHighParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIESDOutliersFraction : public MetaFloat
+{
+public:
+
+   IIESDOutliersFraction( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIESDOutliersFraction* TheIIESDOutliersFractionParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIESDAlpha : public MetaFloat
+{
+public:
+
+   IIESDAlpha( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIESDAlpha* TheIIESDAlphaParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1724,4 +1759,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2019-09-29T12:27:57Z
+// EOF ImageIntegrationParameters.h - Released 2019-11-07T11:00:22Z

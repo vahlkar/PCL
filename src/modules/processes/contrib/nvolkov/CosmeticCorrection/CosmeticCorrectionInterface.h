@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInterface.h - Released 2019-09-29T12:27:58Z
+// CosmeticCorrectionInterface.h - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -79,34 +79,34 @@ public:
    CosmeticCorrectionInterface();
    virtual ~CosmeticCorrectionInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   //virtual const char** IconImageXPM() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   //const char** IconImageXPM() const override;
 
-   virtual InterfaceFeatures Features() const;
-   virtual void ApplyInstance() const;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
 
-   virtual void RealTimePreviewUpdated( bool active );
-   virtual void ResetInstance();
+   void RealTimePreviewUpdated( bool active ) override;
+   void ResetInstance() override;
 
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
 
-   virtual ProcessImplementation* NewProcess() const;
+   ProcessImplementation* NewProcess() const override;
 
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
 
-   virtual bool ImportProcess( const ProcessImplementation& );
+   bool ImportProcess( const ProcessImplementation& ) override;
 
-   virtual bool WantsReadoutNotifications() const;
-   virtual void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A );
+   bool WantsReadoutNotifications() const override;
+   void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A ) override;
 
-   virtual bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const;
-   virtual bool GenerateRealTimePreview( UInt16Image&, const View&, int zoomLevel, String& info ) const;
-   virtual bool WantsRealTimePreviewNotifications() const;
-   virtual void RealTimePreviewOwnerChanged( ProcessInterface& );
+   bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect& rect, int zoomLevel ) const override;
+   bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect& rect, int zoomLevel, String& info ) const override;
+   bool WantsRealTimePreviewNotifications() const override;
+   void RealTimePreviewOwnerChanged( ProcessInterface& ) override;
 
-   virtual void SaveSettings() const;
+   void SaveSettings() const override;
 
 private:
 
@@ -237,7 +237,7 @@ private:
 
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
    // Workbench
 
@@ -326,4 +326,4 @@ PCL_END_LOCAL
 #endif   // __CosmeticCorrectionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInterface.h - Released 2019-09-29T12:27:58Z
+// EOF CosmeticCorrectionInterface.h - Released 2019-11-07T11:00:23Z

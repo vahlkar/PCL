@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.cpp - Released 2019-09-29T12:27:57Z
+// DynamicCropInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -235,7 +235,7 @@ public:
 
       typename GenericImage<P>::color_space colorSpace = image.ColorSpace();
 
-      typename P::sample** f0 = 0;
+      typename P::sample** f0 = nullptr;
 
       typename P::sample fillValues[ 4 ];
       for ( int c = 0; c < 4; ++c )
@@ -245,8 +245,7 @@ public:
 
       StatusMonitor status = image.Status();
 
-      int numberOfThreads = pcl::Thread::NumberOfThreads( data.m_height, 16 );
-      int rowsPerThread = data.m_height/numberOfThreads;
+      Array<size_type> L = pcl::Thread::OptimalThreadLoads( data.m_height, 16/*overheadLimit*/ );
 
       try
       {
@@ -274,7 +273,7 @@ public:
                info.AppendFormat( ", rotate %+d deg", data.m_fastDegrees );
          }
 
-         size_type N = size_type( numberOfChannels )*data.m_width*data.m_height;
+         size_type N = size_type( numberOfChannels ) * data.m_width * data.m_height;
          status.Initialize( info, N );
 
          f0 = image.ReleaseData();
@@ -288,14 +287,14 @@ public:
             if ( rotate || data.m_scale )
             {
                AbstractImage::ThreadData threadData( status, N );
+
                ReferenceArray<Thread<P> > threads;
-               for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+               for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
                   threads.Add( new Thread<P>( threadData, data,
                                               interpolate ? interpolation->NewInterpolator<P>(
                                                       data.m_f0, data.m_sourceWidth, data.m_sourceHeight ) : nullptr,
-                                              i*rowsPerThread,
-                                              (j < numberOfThreads) ? j*rowsPerThread : data.m_height ) );
-
+                                              n,
+                                              n + int( L[i] ) ) );
                AbstractImage::RunThreads( threads, threadData );
                threads.Destroy();
 
@@ -395,13 +394,13 @@ private:
       Thread( AbstractImage::ThreadData& data,
               const DynamicCropData<P>& cropData,
               PixelInterpolation::Interpolator<P>* interpolator, int startRow, int endRow ) :
-         pcl::Thread(),
-         m_data( data ), m_cropData( cropData ),
+         m_data( data ),
+         m_cropData( cropData ),
          m_interpolator( interpolator ), m_startRow( startRow ), m_endRow( endRow )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -411,7 +410,6 @@ private:
          double h2 = 0.5*m_cropData.m_height;
 
          for ( int i = m_startRow; i < m_endRow; ++i )
-         {
             for ( int j = 0; j < m_cropData.m_width; ++j, ++f )
             {
                double dx, dy;
@@ -462,7 +460,6 @@ private:
 
                UPDATE_THREAD_MONITOR( 65536 )
             }
-         }
       }
 
    private:
@@ -572,4 +569,4 @@ void* DynamicCropInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF DynamicCropInstance.cpp - Released 2019-11-07T11:00:22Z

@@ -21,7 +21,6 @@ The official reference documentation for PCL has been generated automatically fr
 
 Currently the PCL documentation is fairly complete, although there are still some classes and functions lacking detailed descriptions. If you find errors or inaccuracies in our documentation, we'd like to hear you to get them fixed. If you want to collaborate with us to enhance the existing PCL documentation, you are also welcome.
 
-
 ## PCL Repository
 
 This PCL repository includes all standard PCL headers and source code, along with all third-party libraries required to build PCL on the user's machine. The repository also contains the complete source code of all standard PixInsight modules that have been released as open-source products, most of them under PCLL license.
@@ -98,9 +97,9 @@ Here is a list of subdirectories, along with descriptions of the files therein. 
 
 ## Supported Compilers
 
-The current version of PCL has been built and tested with:
+The current version of PCL has been built with:
 
-   * Ubuntu 18.04 LTS: GCC C/C++ compiler 9.1.0.
+   * Ubuntu 18.04 LTS: GCC C/C++ compiler 9.2.1.
    * FreeBSD 12.0: Clang C/C++ compiler, default system compiler version.
    * macOS 10.14.6: Clang C/C++ compiler with Xcode 11.0, as provided by Apple.
    * Windows 10: Microsoft Visual C++ 2017 Community Edition.

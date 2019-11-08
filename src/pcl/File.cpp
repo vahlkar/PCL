@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/File.cpp - Released 2019-09-29T12:27:33Z
+// pcl/File.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -75,7 +75,6 @@
 #include <pcl/FileInfo.h>
 #include <pcl/Arguments.h>
 #include <pcl/Math.h>
-#include <pcl/Random.h>
 #include <pcl/TimePoint.h>
 
 #define CHECK_OPEN_FILE( fp )                                                                         \
@@ -2517,4 +2516,4 @@ bool File::IsValidHandle( handle h ) const
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/File.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/File.cpp - Released 2019-11-07T10:59:44Z

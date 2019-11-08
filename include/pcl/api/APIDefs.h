@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2019-09-29T12:27:26Z
+// pcl/APIDefs.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -756,8 +756,8 @@ typedef api_bool              (api_func* interface_dynamic_keyboard_routine)    
 typedef api_bool              (api_func* interface_dynamic_wheel_routine)             ( interface_handle, view_handle, double, double, int32, api_mouse_buttons, api_key_modifiers );
 typedef api_bool              (api_func* interface_dynamic_update_query_routine)      ( const_interface_handle, const_view_handle, double, double, double, double );
 typedef void                  (api_func* interface_dynamic_paint_routine)             ( const_interface_handle, const_view_handle, graphics_handle, double, double, double, double );
-typedef api_bool              (api_func* interface_real_time_update_query_routine)    ( const_interface_handle, const_image_handle, const_view_handle, int32 );
-typedef api_bool              (api_func* interface_real_time_generation_routine)      ( const_interface_handle, image_handle, const_view_handle, int32, char16_type*, uint32 );
+typedef api_bool              (api_func* interface_real_time_update_query_routine)    ( const_interface_handle, const_image_handle, const_view_handle, int32, int32, int32, int32, int32 );
+typedef api_bool              (api_func* interface_real_time_generation_routine)      ( const_interface_handle, image_handle, const_view_handle, int32, int32, int32, int32, int32, char16_type*, uint32 );
 typedef void                  (api_func* interface_real_time_cancel_routine)          ( interface_handle );
 
 /*
@@ -942,4 +942,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/APIDefs.h - Released 2019-11-07T10:59:34Z

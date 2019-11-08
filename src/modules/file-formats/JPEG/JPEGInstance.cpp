@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// JPEGInstance.cpp - Released 2019-09-29T12:27:43Z
+// JPEGInstance.cpp - Released 2019-11-07T11:00:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -436,4 +436,4 @@ bool JPEGInstance::WasLossyWrite() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGInstance.cpp - Released 2019-09-29T12:27:43Z
+// EOF JPEGInstance.cpp - Released 2019-11-07T11:00:12Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInterface.h - Released 2019-09-29T12:27:57Z
+// ConvolutionInterface.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -82,34 +82,34 @@ public:
    ConvolutionInterface();
    virtual ~ConvolutionInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
 
-   virtual InterfaceFeatures Features() const;
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-   virtual void RealTimePreviewUpdated( bool active );
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   void RealTimePreviewUpdated( bool active ) override;
 
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned&/*flags*/ );
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned&/*flags*/ ) override;
 
-   virtual ProcessImplementation* NewProcess() const;
+   ProcessImplementation* NewProcess() const override;
 
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
 
-   virtual bool ImportProcess( const ProcessImplementation& );
+   bool ImportProcess( const ProcessImplementation& ) override;
 
-   virtual bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const;
-   virtual bool GenerateRealTimePreview( UInt16Image&, const View&, int zoomLevel, String& info ) const;
+   bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const override;
+   bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const override;
 
-   virtual void SaveSettings() const;
-   virtual void LoadSettings();
+   void SaveSettings() const override;
+   void LoadSettings() override;
 
-   virtual bool WantsImageNotifications() const;
-   virtual void ImageUpdated( const View& );
-   virtual void ImageRenamed( const View& );
-   virtual void ImageDeleted( const View& );
+   bool WantsImageNotifications() const override;
+   void ImageUpdated( const View& ) override;
+   void ImageRenamed( const View& ) override;
+   void ImageDeleted( const View& ) override;
 
 private:
 
@@ -227,4 +227,4 @@ PCL_END_LOCAL
 #endif   // __ConvolutionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInterface.h - Released 2019-09-29T12:27:57Z
+// EOF ConvolutionInterface.h - Released 2019-11-07T11:00:22Z

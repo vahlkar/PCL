@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInstance.cpp - Released 2019-09-29T12:27:57Z
+// ExponentialTransformationInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -163,13 +163,10 @@ public:
       }
 
       size_type N = image.NumberOfPixels();
-      int numberOfThreads = Thread::NumberOfThreads( N, 16 );
-      size_type pixelsPerThread = N/numberOfThreads;
 
       image.Status().Initialize( instance.TypeAsString() + " transformation", image.NumberOfNominalSamples() );
 
       ThreadData data( image, image.NumberOfNominalSamples() );
-
       if ( instance.order == 1 )
          data.iorder = 1;
       else if ( instance.order == 2 )
@@ -187,13 +184,13 @@ public:
       else
          data.iorder = 0;
 
+      Array<size_type> L = pcl::Thread::OptimalThreadLoads( N, 16/*overheadLimit*/ );
       ReferenceArray<ExponentialThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new ExponentialThread<P>( instance, data, image, mask,
-                                                i*pixelsPerThread,
-                                                (j < numberOfThreads) ? j*pixelsPerThread : N ) );
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads.Add( new ExponentialThread<P>( instance, data, image, mask, n, n + L[i] ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
+
       image.Status() = data.status;
    }
 
@@ -214,13 +211,20 @@ private:
    {
    public:
 
-      ExponentialThread( const ExponentialTransformationInstance& instance, const ThreadData& data,
-                         GenericImage<P>& image, const Image* mask, size_type start, size_type end ) :
-      Thread(), m_instance( instance ), m_data( data ), m_image( image ), m_mask( mask ), m_start( start ), m_end( end )
+      ExponentialThread( const ExponentialTransformationInstance& instance,
+                         const ThreadData& data,
+                         GenericImage<P>& image,
+                         const Image* mask,
+                         size_type start, size_type end ) :
+         m_instance( instance ),
+         m_data( data ),
+         m_image( image ),
+         m_mask( mask ),
+         m_start( start ), m_end( end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -377,4 +381,4 @@ String ExponentialTransformationInstance::TypeAsString() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF ExponentialTransformationInstance.cpp - Released 2019-11-07T11:00:22Z

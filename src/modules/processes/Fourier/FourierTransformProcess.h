@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformProcess.h - Released 2019-09-29T12:27:57Z
+// FourierTransformProcess.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -92,4 +92,4 @@ extern FourierTransformProcess* TheFourierTransformProcess;
 #endif   // __FourierTransformProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformProcess.h - Released 2019-09-29T12:27:57Z
+// EOF FourierTransformProcess.h - Released 2019-11-07T11:00:22Z

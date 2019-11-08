@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard BMP File Format Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// BMPInstance.cpp - Released 2019-09-29T12:27:43Z
+// BMPInstance.cpp - Released 2019-11-07T11:00:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -284,4 +284,4 @@ void BitmapInstance::WriteImage( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BMPInstance.cpp - Released 2019-09-29T12:27:43Z
+// EOF BMPInstance.cpp - Released 2019-11-07T11:00:12Z

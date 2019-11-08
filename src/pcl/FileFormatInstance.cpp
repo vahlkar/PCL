@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/FileFormatInstance.cpp - Released 2019-09-29T12:27:33Z
+// pcl/FileFormatInstance.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1193,4 +1193,4 @@ void* FileFormatInstance::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormatInstance.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/FileFormatInstance.cpp - Released 2019-11-07T10:59:44Z

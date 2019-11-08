@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// LinearFitProcess.cpp - Released 2019-09-29T12:27:57Z
+// LinearFitProcess.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -274,4 +274,4 @@ int LinearFitProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitProcess.cpp - Released 2019-09-29T12:27:57Z
+// EOF LinearFitProcess.cpp - Released 2019-11-07T11:00:22Z

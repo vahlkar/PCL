@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Thread.h - Released 2019-09-29T12:27:26Z
+// pcl/Thread.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -207,7 +207,7 @@ public:
     * \e CPU \e affinity.
     *
     * The affinity of a thread defines the set of logical processors on which
-    * the thread is eligible to run. Thread affinity allows to improve
+    * the thread is eligible to run. %Thread affinity allows to improve
     * execution speed by restricting each thread to run on a separate
     * processor. This prevents the performance cost caused by the cache
     * invalidation that occurs when a process ceases to execute on one
@@ -403,7 +403,7 @@ public:
     * unsigned integer number that can be set for an active thread by calling
     * its SetStatus() member function.
     *
-    * Thread status is primarily intended as an efficient mechanism to send
+    * %Thread status is primarily intended as an efficient mechanism to send
     * custom messages to running threads, for thread synchronization or other
     * control purposes.
     *
@@ -570,10 +570,10 @@ public:
     *             be a single pixel, a row of pixels, or any suitable item,
     *             according to the task being performed by the caller.
     *
-    * \param overheadLimit    Thread overhead limit in processing units. The
+    * \param overheadLimit    %Thread overhead limit in processing units. The
     *             function returns a maximum number of threads such that no
     *             thread would have to process less processing units than this
-    *             value. The default overhead limit is 16 processing units.
+    *             value. The default overhead limit is one processing unit.
     *
     * This function takes into account the number of existing processors in
     * the system, as well as the maximum number of processors currently allowed
@@ -606,7 +606,7 @@ public:
     * <em>logical processors</em> in the system. These include all physical
     * processors in multiprocessor systems, as well as all existing processor
     * cores in multicore processors, and virtual processors in systems with
-    * HyperThreading technology.
+    * HyperThreading or equivalent technology.
     *
     * Since version 1.8.0 of the PixInsight core application, nested
     * parallelism is fully supported. This means that multiple threads can be
@@ -617,13 +617,61 @@ public:
     * global variables in the table above). In any event, the calling module is
     * entirely responsible to comply with these restrictions.
     *
-    * \note A module must always call this function before trying to execute
-    * multiple threads concurrently in any execution context, and should never
-    * try to run more threads simultaneously than the amount returned by this
-    * function. Failure to follow these rules will invalidate a module for
-    * certification.
+    * \note A module must never try to run more threads concurrently than the
+    * amount returned by this function. Failure to follow this rule will
+    * invalidate a module for certification.
     */
-   static int NumberOfThreads( size_type count, size_type overheadLimit = 16u );
+   static int NumberOfThreads( size_type count, size_type overheadLimit = 1u );
+
+   /*!
+    * Returns a list of per-thread counts optimized for parallel processing of
+    * a set of items.
+    *
+    * \param count   Number of <em>processing units</em>. A processing unit can
+    *             be a single pixel, a row of pixels, or any suitable item,
+    *             according to the task being performed by the caller.
+    *
+    * \param overheadLimit    %Thread overhead limit in processing units. The
+    *             function returns a list with a maximum length such that no
+    *             thread would have to process less processing units than this
+    *             value. The default overhead limit is one processing unit.
+    *
+    * \param maxThreads    Maximum number of threads to use. The length of the
+    *             returned list will be at most either this value, or the
+    *             maximum number of threads currently allowed for the calling
+    *             process, whichever is less. The default value of this
+    *             parameter does not impose a practical limit.
+    *
+    * This function takes into account the number of existing logical
+    * processors in the system, as well as the maximum number of processors
+    * currently allowed for external processes by the PixInsight core
+    * application, and the number of threads currently active. See the
+    * NumberOfThreads() static member function for more information on thread
+    * execution and the global settings governing their use in PixInsight.
+    *
+    * This function returns a dynamic array of unsigned integers, where each
+    * element is the number of items that the corresponding thread should
+    * process in order to make an optimal usage of the processor resources
+    * currently available. The length of the returned array is the maximum
+    * number of threads that the calling process should execute concurrently to
+    * process the specified number of items, with the specified overhead limit
+    * and maximum number of processors.
+    *
+    * \note In the current implementation of this function, the returned array
+    * tends to spread the total work load uniformly across the threads
+    * available. Future implementations may consider additional factors,
+    * including the possibility of using new global settings specific for
+    * thread execution optimization. For this reason, under normal conditions a
+    * module should always use the result of calling this function to define
+    * a thread execution schedule.
+    *
+    * \note A module must never try to run more threads concurrently than the
+    * length of the array returned by this function. Failure to follow this
+    * rule will invalidate a module for certification.
+    */
+   static Array<size_type> OptimalThreadLoads( size_type count,
+                                               size_type overheadLimit = 1u,
+                                               int maxThreads = PCL_MAX_PROCESSORS );
 
 private:
 
@@ -663,4 +711,4 @@ void PCL_FUNC Sleep( unsigned ms );
 #endif   // __PCL_Thread_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Thread.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/Thread.h - Released 2019-11-07T10:59:34Z

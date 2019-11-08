@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInterface.cpp - Released 2019-09-29T12:27:57Z
+// UnsharpMaskInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -193,7 +193,7 @@ bool UnsharpMaskInterface::ImportProcess( const ProcessImplementation& p )
 
 // ----------------------------------------------------------------------------
 
-bool UnsharpMaskInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const
+bool UnsharpMaskInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const
 {
    return true;
 }
@@ -217,7 +217,7 @@ void UnsharpMaskInterface::RealTimeThread::Run()
    m_instance.Preview( m_image );
 }
 
-bool UnsharpMaskInterface::GenerateRealTimePreview( UInt16Image& image, const View&, int zoomLevel, String& ) const
+bool UnsharpMaskInterface::GenerateRealTimePreview( UInt16Image& image, const View&, const Rect&, int zoomLevel, String& ) const
 {
    m_realTimeThread = new RealTimeThread;
 
@@ -620,4 +620,4 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF UnsharpMaskInterface.cpp - Released 2019-11-07T11:00:22Z

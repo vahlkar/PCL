@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrInterface.h - Released 2019-09-29T12:27:58Z
+// GradientsHdrInterface.h - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -58,10 +58,9 @@ namespace pcl
     virtual const char** IconImageXPM() const;
     virtual InterfaceFeatures Features() const;
 
-    // realtime preview
     virtual void RealTimePreviewUpdated( bool active );
-    virtual bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const;
-    virtual bool GenerateRealTimePreview( UInt16Image&, const View&, int zoomLevel, String& info ) const;
+    virtual bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const;
+    virtual bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const;
 
     virtual void ApplyInstance() const;
     virtual void ResetInstance();
@@ -126,4 +125,4 @@ namespace pcl
 #endif   // __GradientsHdrInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrInterface.h - Released 2019-09-29T12:27:58Z
+// EOF GradientsHdrInterface.h - Released 2019-11-07T11:00:23Z

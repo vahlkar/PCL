@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformInstance.cpp - Released 2019-09-29T12:27:57Z
+// FourierTransformInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -199,10 +199,7 @@ private:
       SetMetadataAndRescaleDFTComponent( img2, w2, id2, w0, h0 );
 
       w2.Show();
-      w2.ZoomToFit( false/*allowMagnification*/ );
-
       w1.Show();
-      w1.ZoomToFit( false/*allowMagnification*/ );
    }
 
    template <class P2>
@@ -244,26 +241,26 @@ private:
    {
    public:
 
-      TransferMagnitudeAndPhaseDataThread( GenericImage<P3>& _M,
-                                           GenericImage<P3>& _P,
-                                           const GenericImage<P2>& _C,
-                                           size_type _start, size_type _end ) :
-         M( _M ),
-         P( _P ),
-         C( _C ),
-         start( _start ),
-         end( _end )
+      TransferMagnitudeAndPhaseDataThread( GenericImage<P3>& M,
+                                           GenericImage<P3>& P,
+                                           const GenericImage<P2>& C,
+                                           size_type start, size_type end ) :
+         m_M( M ),
+         m_P( P ),
+         m_C( C ),
+         m_start( start ),
+         m_end( end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
-         for ( int ch = 0; ch < C.NumberOfChannels(); ++ch )
+         for ( int ch = 0; ch < m_C.NumberOfChannels(); ++ch )
          {
-            const typename P2::sample* c  = C[ch] + start;
-            const typename P2::sample* cN = C[ch] + end;
-                  typename P3::sample* m  = M[ch] + start;
-                  typename P3::sample* p  = P[ch] + start;
+            const typename P2::sample* c  = m_C[ch] + m_start;
+            const typename P2::sample* cN = m_C[ch] + m_end;
+                  typename P3::sample* m  = m_M[ch] + m_start;
+                  typename P3::sample* p  = m_P[ch] + m_start;
             do
             {
                *m++ = c->Mag();
@@ -274,28 +271,24 @@ private:
       }
 
    private:
-
-      GenericImage<P3>& M;
-      GenericImage<P3>& P;
-      const GenericImage<P2>& C;
-      size_type start, end;
+            GenericImage<P3>& m_M;
+            GenericImage<P3>& m_P;
+      const GenericImage<P2>& m_C;
+            size_type         m_start, m_end;
    };
 
    template <class P2, class P3>
    static void TransferMagnitudeAndPhaseData( GenericImage<P3>& M, GenericImage<P3>& P, const GenericImage<P2>& C )
    {
       size_type N = C.NumberOfPixels();
-      int numberOfThreads = Thread::NumberOfThreads( N, 1024 );
-      int pixelsPerThread = N/numberOfThreads;
-
+      Array<size_type> L = Thread::OptimalThreadLoads( N, 256/*overheadLimit*/ );
       IndirectArray<TransferMagnitudeAndPhaseDataThread<P2, P3> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new TransferMagnitudeAndPhaseDataThread<P2, P3>( M, P, C,
-                                    i*pixelsPerThread, (j < numberOfThreads) ? j*pixelsPerThread : N ) );
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads.Add( new TransferMagnitudeAndPhaseDataThread<P2, P3>( M, P, C, n, n + L[i] ) );
 
-      for ( int i = 0; i < numberOfThreads; ++i )
+      for ( size_type i = 0; i < threads.Length(); ++i )
          threads[i]->Start( ThreadPriority::DefaultMax, i );
-      for ( int i = 0; i < numberOfThreads; ++i )
+      for ( size_type i = 0; i < threads.Length(); ++i )
          threads[i]->Wait();
 
       threads.Destroy();
@@ -382,4 +375,4 @@ void* FourierTransformInstance::LockParameter( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF FourierTransformInstance.cpp - Released 2019-11-07T11:00:22Z

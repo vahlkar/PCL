@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Histogram.cpp - Released 2019-09-29T12:27:33Z
+// pcl/Histogram.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -92,16 +92,18 @@ public:
       if ( image->Status().IsInitializationEnabled() )
          image->Status().Initialize( "Histogram generation", N );
 
-      int numberOfThreads = parallel ? Min( maxProcessors, Thread::NumberOfThreads( height, Max( 1, 1024/width ) ) ) : 1;
-      int rowsPerThread = height/numberOfThreads;
-      bool useAffinity = parallel && Thread::IsRootThread();
+      Array<size_type> L = Thread::OptimalThreadLoads( height,
+                                                       Max( 1, 1024/width )/*overheadLimit*/,
+                                                       parallel ? maxProcessors : 1 );
+      int numberOfThreads = int( L.Length() );
+      bool useAffinity = numberOfThreads > 1 && Thread::IsRootThread();
 
       double min = 0, max = 1;
       if ( image.IsFloatSample() )
       {
          ReferenceArray<RealMinMaxThread> threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-            threads.Add( new RealMinMaxThread( image, r, channel, i*rowsPerThread, (j < numberOfThreads) ? j*rowsPerThread : height ) );
+         for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
+            threads.Add( new RealMinMaxThread( image, r, channel, n, n + int( L[i] ) ) );
 
          if ( numberOfThreads > 1 )
          {
@@ -135,9 +137,8 @@ public:
       image->Status() += N1;
 
       ReferenceArray<HistogramThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new HistogramThread( image, r, channel, histogram.Length(), min, max,
-                                           i*rowsPerThread, (j < numberOfThreads) ? j*rowsPerThread : height ) );
+      for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
+         threads.Add( new HistogramThread( image, r, channel, histogram.Length(), min, max, n, n + int( L[i] ) ) );
       if ( numberOfThreads > 1 )
       {
          for ( int i = 0; i < numberOfThreads; ++i )
@@ -344,4 +345,4 @@ const pcl::ImageVariant& Histogram::operator <<( const pcl::ImageVariant& v )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Histogram.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/Histogram.cpp - Released 2019-11-07T10:59:44Z

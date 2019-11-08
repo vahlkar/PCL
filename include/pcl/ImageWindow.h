@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.h - Released 2019-09-29T12:27:26Z
+// pcl/ImageWindow.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1823,11 +1823,35 @@ public:
     * image in this image window, changing its size as necessary, but not its
     * position on its parent workspace.
     *
-    * If the \a allowMagnification argument is false, this function will not
-    * select a zoom factor greater than one, even if doing so would be possible
-    * without exceeding the visible area of its parent workspace.
+    * \param optimalFit    If true, the PixInsight core application will try to
+    *                      find an optimal zoom factor to fit the entire image
+    *                      window within the visible area of its parent
+    *                      workspace without causing too much obstruction of
+    *                      sibling windows and icons. This option is enabled by
+    *                      default.
+    *
+    * \param allowMagnification  If false, this function will not select a zoom
+    *                      factor greater than one, even if doing so would be
+    *                      possible for this window without exceeding the
+    *                      visible area of its parent workspace. This option is
+    *                      true by default.
+    *
+    * \param allowAnimations     If false, no graphical animation effects (such
+    *                      as fading effects) will be applied to the image
+    *                      window when resized, bypassing global preferences
+    *                      settings. Animations are enabled by default.
+    *
+    * \param noLimits      If true, the window will be resized ignoring the
+    *                      current maximization limit set for its parent
+    *                      workspace, making possible to occupy the entire
+    *                      visible area of the workspace, just to the limits of
+    *                      the main application window. This option is disabled
+    *                      by default.
     */
-   void ZoomToFit( bool allowMagnification = true );
+   void ZoomToFit( bool optimalFit = true,
+                   bool allowMagnification = true,
+                   bool allowAnimations = true,
+                   bool noLimits = false );
 
    /*!
     * Returns the current zoom factor in the viewport of this image window.
@@ -1974,12 +1998,25 @@ public:
    bool IsVisible() const;
 
    /*!
-    * Shows this image window, if it was previously hidden.
+    * Shows this image window on its parent workspace.
+    *
+    * \param fitWindow     If true, this function will call ZoomToFit() with
+    *                      default parameters after showing the window on its
+    *                      parent workspace. This is useful to ensure that a
+    *                      newly created image window will be displayed
+    *                      optimally as soon as it is shown for the first time.
+    *                      This option is enabled by default.
+    *
+    * Image windows are normally visible in PixInsight. Under normal working
+    * conditions, an image window can only be hidden if it has never been shown
+    * since it was created, or if it has been hidden explicitly, which can only
+    * happen programmatically.
     */
-   void Show();
+   void Show( bool fitWindow = true );
 
    /*!
-    * Hides this image window, if it was previously visible.
+    * Hides this image window if it is currently visible on its parent
+    * workspace.
     */
    void Hide();
 
@@ -2869,4 +2906,4 @@ private:
 #endif   // __PCL_ImageWindow_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/ImageWindow.h - Released 2019-11-07T10:59:34Z

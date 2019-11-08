@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkInterface.cpp - Released 2019-09-29T12:27:58Z
+// BlinkInterface.cpp - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -58,6 +58,7 @@
 
 #include <pcl/AutoPointer.h>
 #include <pcl/Console.h>
+#include <pcl/DisplayFunction.h>
 #include <pcl/ElapsedTime.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileDialog.h>
@@ -67,10 +68,11 @@
 #include <pcl/Graphics.h>
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
+#include <pcl/ProgressBarStatus.h>
 #include <pcl/Random.h>
 #include <pcl/Settings.h>
-#include <pcl/StdStatus.h>  // for progress monitor
-#include <pcl/Version.h>    // for PixInsightVersion
+#include <pcl/StdStatus.h>
+#include <pcl/Version.h>
 #include <pcl/View.h>
 
 #define WHEEL_STEP_ANGLE   PixInsightSettings::GlobalInteger( "ImageWindow/WheelStepAngle" )
@@ -93,21 +95,15 @@ static int PreviewSize = 202;
 /*
  * Blinking speed in seconds
  */
-static const float g_blinkingDelaySecs[] = { 0.0F, 0.05F, 0.1F, 0.2F, 0.3F, 0.5F, 0.7F , 1.0F, 2.0F , 5.0F };
-//static const char *g_framePerSecond[] =    { "25",  "20", "10",  "5", "3" , "2" , "1.5", "1" , "0.5", "0.2" }; // FramePerSsecond for avi converter
-
-/*
- * AutoSTF parameters
- */
-static const double g_stfShadowsClipping = -2.80 * 1.4826; // in MAD units from the median
-static const double g_stfTargetBackground = 0.25;
+static const float g_delaySecs[] = { 0.0F, 0.01F, 0.02F, 0.05F, 0.1F, 0.2F, 0.3F, 0.5F, 0.75F, 1.0F, 2.0F, 5.0F };
 
 // ----------------------------------------------------------------------------
 
 template <class P>
 static bool LoadImage_P( GenericImage<P>& image, const String& filePath )
 {
-   Console().WriteLn( "<end><cbr><br>* Read file: " + filePath );
+   Console console;
+   console.WriteLn( "<end><cbr><br>* Reading file: " + filePath );
    FileFormat format( File::ExtractExtension( filePath ), true/*toRead*/, false/*toWrite*/ );
    FileFormatInstance file( format );
 
@@ -120,7 +116,7 @@ static bool LoadImage_P( GenericImage<P>& image, const String& filePath )
       if ( images.IsEmpty() )
          throw Error( filePath + ": Empty image file." );
       if ( images.Length() > 1 )
-         Console().NoteLn( String().Format( "<end><cbr>* Ignoring %u additional image(s) in input file.", images.Length()-1 ) );
+         console.WarningLn( "<end><cbr>** Warning: Ignoring " + String( images.Length()-1 ) + " additional image(s) in input file." );
       if ( !file.SelectImage( 0 ) )
          throw CaughtException();
       if ( !file.ReadImage( image ) )
@@ -148,7 +144,9 @@ static bool LoadImage_P( GenericImage<P>& image, const String& filePath )
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // BlinkInterface::FileData Implementation
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 BlinkInterface::FileData::FileData( FileFormatInstance& file,
@@ -158,16 +156,8 @@ BlinkInterface::FileData::FileData( FileFormatInstance& file,
                                     bool realPixelData ) :
    m_filePath( path ),
    m_image( image ),
-   m_format( nullptr ),
-   m_fsData( nullptr ),
    m_options( description.options ),
    m_info( description.info ),
-   m_keywords(),
-   m_profile(),
-   m_statSTF(),
-   m_statReal(),
-   m_statRealRect( 0 ),
-   m_isSTFStatisticsEqualToReal( false ),
    m_isRealPixelData( realPixelData )
 {
    m_format = new FileFormat( file.Format() );
@@ -181,6 +171,8 @@ BlinkInterface::FileData::FileData( FileFormatInstance& file,
    if ( m_format->CanStoreICCProfiles() )
       file.ReadICCProfile( m_profile );
 }
+
+// ----------------------------------------------------------------------------
 
 BlinkInterface::FileData::~FileData()
 {
@@ -196,30 +188,15 @@ BlinkInterface::FileData::~FileData()
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // BlinkInterface::BlinkData Implementation
 // ----------------------------------------------------------------------------
-
-BlinkInterface::BlinkData::BlinkData() :
-   m_screenRect( 0 ),
-   m_statRect( 0 ),
-   m_filesData(),
-   m_screen( ImageWindow::Null() ),
-   m_info(),
-   m_options(),
-   m_currentImage( 0 ),
-   m_blinkMaster( 0 ),
-   m_isBlinkMaster( false )
-{
-}
-
-BlinkInterface::BlinkData::~BlinkData()
-{
-   Clear();
-}
+// ----------------------------------------------------------------------------
 
 bool BlinkInterface::BlinkData::Add( const String& filePath )
 {
-   Console().WriteLn( "<end><cbr>" + filePath );
+   Console console;
+   console.WriteLn( "<end><cbr>" + filePath );
    FileFormat format( File::ExtractExtension( filePath ), true/*toRead*/, false/*toWrite*/ );
    FileFormatInstance file( format );
 
@@ -232,11 +209,12 @@ bool BlinkInterface::BlinkData::Add( const String& filePath )
       if ( images.IsEmpty() )
          throw Error( filePath + ": Empty image file." );
       if ( images.Length() > 1 )
-         throw Error( filePath + ": Multiple images cannot be used in the current version (push me if you need them)." );
+         console.WarningLn( "<end><cbr>** Warning: " + filePath +
+               ": Multiple images not supported; ignoring " + String( images.Length()-1 ) + " additional image(s)." );
       if ( !file.SelectImage( 0 ) )
          throw CaughtException();
       if ( !CheckGeomery( images[0] ) )
-         throw Error( "Wrong image geometry" );
+         throw Error( filePath + ": Mismatched image geometry." );
 
       AutoPointer<blink_image> image( new blink_image );
 
@@ -268,6 +246,8 @@ bool BlinkInterface::BlinkData::Add( const String& filePath )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::BlinkData::Remove( int row )
 {
    const int fileNumber = FileNumberGet( row );
@@ -293,6 +273,8 @@ void BlinkInterface::BlinkData::Remove( int row )
    CheckScreen();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::BlinkData::Clear()
 {
    m_filesData.Destroy();
@@ -303,17 +285,18 @@ void BlinkInterface::BlinkData::Clear()
    CheckScreen();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::BlinkData::GetStatsForSTF( int fileNumber )
 {
    FileData& fd = m_filesData[fileNumber];
    if ( !fd.m_statSTF.IsEmpty() )
       return;
 
-   Console().Show();
    StandardStatus callback;
    StatusMonitor m;
    m.SetCallback( &callback );
-   m.Initialize( "<end><cbr><br>* Blink: Calculating statistics", fd.m_image->NumberOfNominalChannels() );
+   m.Initialize( "\nBlink: Calculating statistics", fd.m_image->NumberOfNominalChannels() );
    ProcessEvents();
 
    for( int c = 0; c < fd.m_image->NumberOfNominalChannels(); c++, ++m )
@@ -332,6 +315,8 @@ void BlinkInterface::BlinkData::GetStatsForSTF( int fileNumber )
    fd.m_isSTFStatisticsEqualToReal = fd.m_isRealPixelData;
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::BlinkData::AutoSTF()
 {
    if ( !CheckScreen() )
@@ -341,121 +326,108 @@ void BlinkInterface::BlinkData::AutoSTF()
 
    const int fileNumber = FileNumberGet( m_currentImage );
    const stats_list& S = m_filesData[fileNumber].m_statSTF;
-
    int n = m_filesData[fileNumber].m_image->NumberOfNominalChannels();
-   double c0 = 0, m = 0;
-
-   View::stf_list stf( 4 );
-
-   if ( n == 1 || TheBlinkInterface->GUI->RGBLinked_Button.IsChecked() )
+   DisplayFunction DF;
+   DF.SetLinkedRGB( TheBlinkInterface->GUI->RGBLinked_Button.IsChecked() );
+   Vector sigma( n ), center( n );
+   for ( int c = 0; c < n; ++c )
    {
-      for ( int c = 0; c < n; c++ )
-      {
-         if ( 1 + S[c].MAD() != 1 )
-            c0 += S[c].Median() + g_stfShadowsClipping * S[c].MAD();
-         m += S[c].Median();
-      }
-      c0 = Range( c0/n, 0.0, 1.0 );
-      m = HistogramTransformation::MTF( g_stfTargetBackground, m/n - c0 );
-      for ( int i = 0; i < 3; i++ )
-      {
-         stf[i].SetMidtonesBalance( m );
-         stf[i].SetClipping( c0, 1 );
-         stf[i].SetRange( 0, 1 );
-      }
+      sigma[c] = 1.4826*S[c].MAD();
+      center[c] = S[c].Median();
    }
-   else
-   {
-      for ( int c = 0; c < n; c++ )
-      {
-         c0 = (1 +  S[c].MAD() != 1) ? Range( S[c].Median() + g_stfShadowsClipping * S[c].MAD(), 0.0, 1.0 ) : 0.0;
-         m = HistogramTransformation::MTF( g_stfTargetBackground, S[c].Median() - c0 );
-         stf[c].SetMidtonesBalance( m );
-         stf[c].SetClipping( c0, 1 );
-         stf[c].SetRange( 0, 1 );
-      }
-   }
+   DF.ComputeAutoStretch( sigma, center );
 
-   stf[3].SetMidtonesBalance( 0.5 );
-   stf[3].SetClipping( 0, 1 );
-   stf[3].SetRange( 0, 1 );
-
-   m_screen.MainView().SetScreenTransferFunctions( stf );
+   m_screen.MainView().SetScreenTransferFunctions( DF.HistogramTransformations() );
 
    EnableSTF();
 }
 
+// ----------------------------------------------------------------------------
+
+void BlinkInterface::AutoHTThread::Run()
+{
+   INIT_THREAD_MONITOR()
+
+   for ( int i = m_startIndex; i < m_endIndex; ++i )
+   {
+      m_blinkData.GetStatsForSTF( i );
+      FileData& fd = m_blinkData.m_filesData[i];
+      int n = fd.m_image->NumberOfNominalChannels();
+      DisplayFunction DF;
+      DF.SetLinkedRGB( TheBlinkInterface->GUI->RGBLinked_Button.IsChecked() );
+      Vector sigma( n ), center( n );
+      for ( int c = 0; c < n; ++c )
+      {
+         sigma[c] = 1.4826*fd.m_statSTF[c].MAD();
+         center[c] = fd.m_statSTF[c].Median();
+      }
+      DF.ComputeAutoStretch( sigma, center );
+      DF >> *fd.m_image;
+
+      UPDATE_THREAD_MONITOR( 1 )
+   }
+}
+
 void BlinkInterface::BlinkData::AutoHT()
 {
-   Console().Show();
-   Console().WriteLn( "<end><cbr><br>* Blink: Applying automatic histogram transformations" );
-   ProcessEvents();
+   ProgressBarStatus status( "Blink" );
+   StatusMonitor monitor;
+   monitor.SetCallback( &status );
+   monitor.Initialize( "Applying automatic display functions...", m_filesData.Length() );
 
-   for ( int fileNumber = 0; fileNumber < int( m_filesData.Length() ); fileNumber++ )
+   AbstractImage::ThreadData data( monitor, m_filesData.Length() );
+   Array<size_type> L = Thread::OptimalThreadLoads( m_filesData.Length() );
+   ReferenceArray<AutoHTThread> threads;
+   for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+      threads.Add( new AutoHTThread( data, *this, n, n + int( L[i] ) ) );
+   try
    {
-      GetStatsForSTF( fileNumber );
-      FileData& fd = m_filesData[fileNumber];
-
-      Console().WriteLn( fd.m_filePath );
-      ProcessEvents();
-
-      int n = fd.m_image->NumberOfNominalChannels();
-      double c0 = 0, m = 0;
-      if ( n == 1 || TheBlinkInterface->GUI->RGBLinked_Button.IsChecked() )
-      {
-         for ( int c = 0; c < n; c++ )
-         {
-            const ImageStatistics& S = fd.m_statSTF[c];
-            if ( 1 + S.MAD() != 1 )
-               c0 += S.Median() + g_stfShadowsClipping * S.MAD();
-            m += S.Median();
-         }
-         c0 = Range( c0/n, 0.0, 1.0 );
-         m = HistogramTransformation::MTF( g_stfTargetBackground, m/n - c0 );
-         for ( int c = 0; c < n; c++ )
-         {
-            HistogramTransformation H( m, c0, 1, 0, 1 );
-            fd.m_image->SelectChannel( c );
-            H >> *fd.m_image;
-            ProcessEvents();
-         }
-      }
-      else
-      {
-         for ( int c = 0; c < n; c++ )
-         {
-            const ImageStatistics& S = fd.m_statSTF[c];
-            c0 = (1 + S.MAD() != 1) ? Range( S.Median() + g_stfShadowsClipping * S.MAD(), 0.0, 1.0 ) : 0.0;
-            m = HistogramTransformation::MTF( g_stfTargetBackground, S.Median() - c0 );
-            HistogramTransformation H( m, c0, 1, 0, 1 );
-            fd.m_image->SelectChannel( c );
-            H >> *fd.m_image;
-            ProcessEvents();
-         }
-      }
-
-      fd.m_image->ResetChannelRange();
+      AbstractImage::RunThreads( threads, data );
+      threads.Destroy();
+      DisableSTF();
+      UpdateScreen();
    }
-
-   DisableSTF();
-   UpdateScreen();
-
-   Console().Hide();
+   catch ( ... )
+   {
+      ResetHT();
+      try
+      {
+         throw;
+      }
+      catch ( ProcessAborted& )
+      {
+      }
+      catch ( ... )
+      {
+         throw;
+      }
+   }
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::BlinkData::ResetHT()
 {
-   Console().Show();
+   Console console;
+   console.Show();
+   console.NoteLn( "<end><cbr><br><br>* Blink: Reloading data..." );
 
-   for ( int fileNumber = 0; fileNumber < int( m_filesData.Length() ); fileNumber++ )
+   ProgressBarStatus status( "Blink" );
+   StatusMonitor monitor;
+   monitor.SetCallback( &status );
+   monitor.Initialize( "Reloading data...", m_filesData.Length() );
+
+   for ( int fileNumber = 0; fileNumber < int( m_filesData.Length() ); ++fileNumber, ++monitor )
       if ( !LoadImage_P( *m_filesData[fileNumber].m_image, m_filesData[fileNumber].m_filePath ) )
          throw CaughtException();
 
+   console.Hide();
+
    DisableSTF();
    UpdateScreen();
-
-   //Console().Hide();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::BlinkData::EnableSTF()
 {
@@ -468,6 +440,8 @@ void BlinkInterface::BlinkData::EnableSTF()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::BlinkData::DisableSTF()
 {
    if ( !m_screen.IsNull() )
@@ -478,6 +452,8 @@ void BlinkInterface::BlinkData::DisableSTF()
          i->DisableScreenTransferFunctions();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 bool BlinkInterface::BlinkData::CheckScreen()
 {
@@ -494,6 +470,8 @@ bool BlinkInterface::BlinkData::CheckScreen()
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool BlinkInterface::BlinkData::CheckGeomery( const ImageDescription& description )
 {
    const Rect imageBounds( description.info.width, description.info.height );
@@ -506,14 +484,16 @@ bool BlinkInterface::BlinkData::CheckGeomery( const ImageDescription& descriptio
    }
    else if ( imageBounds != m_screenRect )
    {
-      Console().WarningLn( String().Format( "<end><cbr>*** Wrong image geometry: %dx%d pixels, expected %dx%d.",
-                                          imageBounds.Width(), imageBounds.Height(),
-                                          m_screenRect.Width(), m_screenRect.Height() ) );
+      Console().CriticalLn( String().Format( "<end><cbr>*** Error: Blink: Mismatched image geometry: Got %dx%d pixels, expected %dx%d.",
+                                             imageBounds.Width(), imageBounds.Height(),
+                                             m_screenRect.Width(), m_screenRect.Height() ) );
       return false;
    }
 
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::BlinkData::Next()
 {
@@ -533,6 +513,8 @@ void BlinkInterface::BlinkData::Next()
    Update();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::BlinkData::Prev()
 {
    const int wasCurrent = m_currentImage;
@@ -548,6 +530,8 @@ void BlinkInterface::BlinkData::Prev()
    }
    Update();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::BlinkData::UpdateScreen( int fileNumber )
 {
@@ -565,7 +549,6 @@ void BlinkInterface::BlinkData::UpdateScreen( int fileNumber )
 
       m_screen.BringToFront();
       m_screen.Show();
-      m_screen.ZoomToFit();
    }
 
    FileData& fd = m_filesData[fileNumber];
@@ -581,11 +564,15 @@ void BlinkInterface::BlinkData::UpdateScreen( int fileNumber )
    m_screen.Regenerate();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::BlinkData::Update( int row )
 {
    UpdateScreen( row );
    TheBlinkInterface->GUI->Files_TreeBox.SetCurrentNode( TheBlinkInterface->GUI->Files_TreeBox.Child( row ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::BlinkData::ShowNextImage()
 {
@@ -616,75 +603,80 @@ void BlinkInterface::BlinkData::ShowNextImage()
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // BlinkInterface Implementation
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 BlinkInterface* TheBlinkInterface = nullptr;
 
-BlinkInterface::BlinkInterface() :
-   ProcessInterface(),
-   GUI( nullptr ),
-   m_blink(),
-   m_previewBmp( Bitmap::Null() ),
-   m_isRunning( false ),
-   m_wheelSteps( 0 ),
-   m_sortChannels( true ),    // mode: sort by channel(true) or not(false)?
-   m_cropMode( false ),       // true = Statistics only for Green rectangle
-   m_digits0_1( 6 ),          // digits after dot for range 0-1
-   m_digits0_65535( 3 ),      // digits after dot for range 0-65535
-   m_range0_65535( true ),    // true = use range 0-65535. false = use range 0-1
-   m_writeStatsFile( false ), // true = write a text file with statistical data
-#ifdef __PCL_WINDOWS
-   m_program( "ffmpeg.exe" ), // video encoder program
-#else
-   m_program( "ffmpeg" ),
-#endif
-   m_frameOutputDir(),
-   m_frameExtension( ".png" ),
-   m_deleteVideoFrames( false )
+// ----------------------------------------------------------------------------
+
+BlinkInterface::BlinkInterface()
 {
    TheBlinkInterface = this;
+
+#ifdef __PCL_WINDOWS
+   m_program = "ffmpeg.exe";
+#else
+   m_program = "ffmpeg";
+#endif
    m_outputFileName = Id();
    // Default video encoder arguments
    m_arguments= "-y -r 25 -i " + m_outputFileName + "%05d" + m_frameExtension + ' ' + m_outputFileName + ".avi";
 }
 
+// ----------------------------------------------------------------------------
+
 BlinkInterface::~BlinkInterface()
 {
    if ( GUI != nullptr )
       delete GUI, GUI = nullptr;
-   m_blink.Clear();
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString BlinkInterface::Id() const
 {
    return "Blink";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* BlinkInterface::Process() const
 {
    return TheBlinkProcess;
 }
+
+// ----------------------------------------------------------------------------
 
 const char** BlinkInterface::IconImageXPM() const
 {
    return BlinkIcon_XPM;
 }
 
+// ----------------------------------------------------------------------------
+
 InterfaceFeatures BlinkInterface::Features() const
 {
    return InterfaceFeature::None;
 }
+
+// ----------------------------------------------------------------------------
 
 bool BlinkInterface::IsInstanceGenerator() const
 {
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool BlinkInterface::CanImportInstances() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool BlinkInterface::Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -701,6 +693,8 @@ bool BlinkInterface::Launch( const MetaProcess&, const ProcessImplementation*, b
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::SaveSettings() const
 {
    Settings::Write( SettingsKey() + "_SortChannels",      m_sortChannels );
@@ -715,6 +709,8 @@ void BlinkInterface::SaveSettings() const
    //SaveVideoSettings();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::SaveVideoSettings() const
 {
    Settings::Write( SettingsKey() + "_Program",           m_program );
@@ -723,6 +719,8 @@ void BlinkInterface::SaveVideoSettings() const
    Settings::Write( SettingsKey() + "_FrameExtension",    m_frameExtension );
    Settings::Write( SettingsKey() + "_DeleteVideoFrames", m_deleteVideoFrames );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::LoadSettings()
 {
@@ -736,6 +734,8 @@ void BlinkInterface::LoadSettings()
    LoadVideoSettings();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::LoadVideoSettings()
 {
    Settings::Read( SettingsKey() + "_Program",            m_program );
@@ -745,10 +745,14 @@ void BlinkInterface::LoadVideoSettings()
    Settings::Read( SettingsKey() + "_DeleteVideoFrames",  m_deleteVideoFrames );
 }
 
+// ----------------------------------------------------------------------------
+
 bool BlinkInterface::WantsImageNotifications() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::ImageCreated( const View& view )
 {
@@ -764,6 +768,8 @@ void BlinkInterface::ImageCreated( const View& view )
             else
                view.LockForWrite();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::ImageDeleted( const View& view )
 {
@@ -819,6 +825,8 @@ void BlinkInterface::Init()
 
    Enable();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::TranslucentPlanets()
 {
@@ -893,6 +901,8 @@ void BlinkInterface::TranslucentPlanets()
    g.DrawLine( PreviewSize-1, PreviewSize-1, 0, PreviewSize-1 );
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::Image2Preview()
 {
    blink_image image( *m_blink.m_filesData[0].m_image );
@@ -900,31 +910,26 @@ void BlinkInterface::Image2Preview()
    if ( GUI->AutoSTF_Button.IsChecked() )
    {
       m_blink.GetStatsForSTF( 0 );
-
+      const stats_list& S = m_blink.m_filesData[0].m_statSTF;
       int n = image.NumberOfNominalChannels();
-      double c0 = 0, m = 0;
-      for ( int c = 0; c < n; c++ )
+      DisplayFunction DF;
+      DF.SetLinkedRGB( TheBlinkInterface->GUI->RGBLinked_Button.IsChecked() );
+      Vector sigma( n ), center( n );
+      for ( int c = 0; c < n; ++c )
       {
-         const ImageStatistics& S = m_blink.m_filesData[0].m_statSTF[c];
-         if ( 1 + S.MAD() != 1 )
-            c0 += S.Median() + g_stfShadowsClipping * S.MAD();
-         m += S.Median();
+         sigma[c] = 1.4826*S[c].MAD();
+         center[c] = S[c].Median();
       }
-      c0 = Range( c0/n, 0.0, 1.0 );
-      m = HistogramTransformation::MTF( g_stfTargetBackground, m/n - c0 );
-      for ( int c = 0; c < n; c++ )
-      {
-         HistogramTransformation H( m, c0, 1, 0, 1 );
-         image.SelectChannel( c );
-         H >> image;
-      }
-      image.ResetChannelRange();
+      DF.ComputeAutoStretch( sigma, center );
+      DF >> image;
    }
 
    int w = (image.Width() > image.Height()) ? PreviewSize : RoundInt( float( PreviewSize )*image.Width()/image.Height() );
    int h = (image.Height() > image.Width()) ? PreviewSize : RoundInt( float( PreviewSize )*image.Height()/image.Width() );
    m_previewBmp = Bitmap::Render( &image ).ScaledToSize( w, h ); // fit big Image to small Preview
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::GeneratePreview()
 {
@@ -935,6 +940,8 @@ void BlinkInterface::GeneratePreview()
 
    GUI->Preview_ScrollBox.SetFixedSize( m_previewBmp.Width(), m_previewBmp.Height() );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::UpdateFileNumbers()
 {
@@ -949,43 +956,66 @@ void BlinkInterface::UpdateFileNumbers()
    GUI->Files_TreeBox.EnableHeaderSorting();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::AddFiles( const StringList& files )
 {
    if ( !files.IsEmpty() )
    {
-      Console().Show();
-      Console().WriteLn( String().Format( "<end><cbr><br>* Blink: Loading %u file(s)", files.Length() ) );
+      size_type N = files.Length();
+
+      Console console;
+      console.Show();
+      console.NoteLn( "<end><cbr><br><br>* Blink: Loading " + String( N ) + " file(s)" );
+
+      ProgressBarStatus status( "Blink" );
+      StatusMonitor monitor;
+      monitor.SetCallback( &status );
+      monitor.Initialize( "Loading data...", N );
 
       GUI->Files_TreeBox.DisableUpdates();
 
-      ElapsedTime timer;  // to calculate execution time
-
-      for ( const String& file : files )
+      try
       {
-         if ( !m_blink.Add( file ) )  // add the file to BlinkData
-            continue;                 // skip the file on error
+         ElapsedTime timer;  // to calculate execution time
 
-         TreeBox::Node* node = new TreeBox::Node( GUI->Files_TreeBox ); // add new item in Files_TreeBox
-         node->Check();                                                 // check new file items
-         node->SetText( 0, File::ExtractName( file ) );                 // show only the file name
-         node->SetText( 1, String( GUI->Files_TreeBox.NumberOfChildren()-1 ) ); // Store file #
+         for ( const String& file : files )
+         {
+            if ( !m_blink.Add( file ) )  // add the file to BlinkData
+               continue;                 // skip the file on error
 
-         ProcessEvents();
+            TreeBox::Node* node = new TreeBox::Node( GUI->Files_TreeBox ); // add new item in Files_TreeBox
+            node->Check();                                                 // check new file items
+            node->SetText( 0, File::ExtractName( file ) );                 // show only the file name
+            node->SetText( 1, String( GUI->Files_TreeBox.NumberOfChildren()-1 ) ); // Store file #
+
+            ProcessEvents();
+
+            ++monitor;
+         }
+
+         //GUI->Files_TreeBox.AdjustToContents(); ### don't do this, since it resizes the whole interface!
+         GUI->Files_TreeBox.AdjustColumnWidthToContents( 0 );
+         GUI->Files_TreeBox.AdjustColumnWidthToContents( 1 );
+
+         UpdateFileNumbers();
+         GUI->Files_TreeBox.EnableUpdates();
+
+         console.WriteLn( "<end><cbr><br>Loaded in " + timer.ToString() );
+         console.Hide();
+
+         Init();
       }
-
-      //GUI->Files_TreeBox.AdjustToContents(); ### don't do this, since it resizes the whole interface!
-      GUI->Files_TreeBox.AdjustColumnWidthToContents( 0 );
-      GUI->Files_TreeBox.AdjustColumnWidthToContents( 1 );
-
-      UpdateFileNumbers();
-      GUI->Files_TreeBox.EnableUpdates();
-
-      Console().WriteLn( String().Format( "<end><cbr><br>Loaded in %.3f seconds.", timer() ) );
-      Console().Hide();
-
-      Init();
+      catch ( ... )
+      {
+         GUI->Files_TreeBox.EnableUpdates();
+         FileCloseAll();
+         throw;
+      }
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::FileAdd()
 {
@@ -996,6 +1026,8 @@ void BlinkInterface::FileAdd()
    if ( d.Execute() )
       AddFiles( d.FileNames() );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::FileCopyTo()
 {
@@ -1008,25 +1040,38 @@ void BlinkInterface::FileCopyTo()
       return;
    }
 
+   size_type N = GUI->Files_TreeBox.SelectedNodes().Length();
+
+   Console console;
+   console.Show();
+   console.NoteLn( "<end><cbr><br><br>* Blink/Copy: " + String( N ) + " file(s) selected." );
+
+   ProgressBarStatus status( "Blink" );
+   StatusMonitor monitor;
+   monitor.SetCallback( &status );
+   monitor.Initialize( "Copying files...", N );
+
    try
    {
-      Console().Show();
-
-      Console().WriteLn( "<end><cbr><br>* Blink: " + String( GUI->Files_TreeBox.SelectedNodes().Length() ) + " files selected." );
-      for ( int row = 0; row < GUI->Files_TreeBox.NumberOfChildren(); row++ )
+      for ( int row = 0; row < GUI->Files_TreeBox.NumberOfChildren(); ++row )
          if ( GUI->Files_TreeBox.Child( row )->IsSelected() )
          {
             const int fileNumber = FileNumberGet( row );
             const String fromFilePath = m_blink.m_filesData[fileNumber].m_filePath;
             const String toFilePath = UniqueFilePath( fromFilePath, dir );
-            Console().WriteLn( "Copy from " + fromFilePath + " to " + toFilePath );
+            console.WriteLn( "Copy from " + fromFilePath + " to " + toFilePath );
             ProcessEvents();
             File::CopyFile( toFilePath, fromFilePath );
+            ++monitor;
          }
-      Console().WriteLn( "Done." );
 
-      Console().Hide();
+      console.WriteLn( "Done." );
+      console.Hide();
+
       Continue();
+   }
+   catch ( ProcessAborted& )
+   {
    }
    catch ( ... )
    {
@@ -1040,6 +1085,8 @@ void BlinkInterface::FileCopyTo()
       Exception::DisableConsoleOutput();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::FileMoveTo()
 {
@@ -1052,26 +1099,39 @@ void BlinkInterface::FileMoveTo()
       return;
    }
 
+   size_type N = GUI->Files_TreeBox.SelectedNodes().Length();
+
+   Console console;
+   console.Show();
+   console.NoteLn( "<end><cbr><br><br>* Blink/Move: " + String( N ) + " file(s) selected." );
+
+   ProgressBarStatus status( "Blink" );
+   StatusMonitor monitor;
+   monitor.SetCallback( &status );
+   monitor.Initialize( "Moving files...", N );
+
    try
    {
-      Console().Show();
-
-      Console().WriteLn( "<end><cbr><br>* Blink: " + String( GUI->Files_TreeBox.SelectedNodes().Length() ) + " files selected." );
       for ( int row = 0; row < GUI->Files_TreeBox.NumberOfChildren(); row++ )
          if ( GUI->Files_TreeBox.Child( row )->IsSelected() )
          {
             const int fileNumber = FileNumberGet( row );
             const String fromFilePath = m_blink.m_filesData[fileNumber].m_filePath;
             const String toFilePath = UniqueFilePath( fromFilePath, dir );
-            Console().WriteLn( "Move from " + fromFilePath + " to " + toFilePath );
+            console.WriteLn( "Move from " + fromFilePath + " to " + toFilePath );
             ProcessEvents();
             File::MoveFile( toFilePath, fromFilePath );
             m_blink.m_filesData[fileNumber].m_filePath = toFilePath; // update file path
+            ++monitor;
          }
-      Console().WriteLn( "Done." );
 
-      Console().Hide();
+      console.WriteLn( "Done." );
+      console.Hide();
+
       Continue();
+   }
+   catch ( ProcessAborted& )
+   {
    }
    catch ( ... )
    {
@@ -1086,6 +1146,8 @@ void BlinkInterface::FileMoveTo()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 Rect BlinkInterface::GetCropRect()
 {
    if ( m_blink.m_screen.SelectedPreview().IsNull() )
@@ -1096,6 +1158,8 @@ Rect BlinkInterface::GetCropRect()
       return m_blink.m_screen.SelectedPreview().Bounds().MovedTo( p );
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::CropToVideo()
 {
@@ -1112,6 +1176,8 @@ void BlinkInterface::CropToVideo()
    dialog.Execute();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::FileCropTo()
 {
    if ( m_blink.m_screen.IsNull() )
@@ -1122,29 +1188,35 @@ void BlinkInterface::FileCropTo()
       return;
    }
 
+   Pause();
+
+   Rect r( GetCropRect() );
+   if ( r == m_blink.m_screenRect )
+   {
+      pcl::MessageBox( "<p>The entire image has been selected. "
+                        "Either create a partial preview in BlinkScreen, or zoom in the image to define a valid cropping region.</p>",
+                        "Blink", StdIcon::Information ).Execute();
+      return;
+   }
+
+   const String dir( SelectDirectory( "Blink/Crop: Select Output Directory" ) );
+   if ( dir.IsEmpty() )
+      return;
+
+   size_type N = GUI->Files_TreeBox.SelectedNodes().Length();
+
+   Console console;
+   console.Show();
+   console.NoteLn( "<end><cbr><br><br>Blink/Crop: " + String( N ) + " file(s) selected." );
+
+   ProgressBarStatus status( "Blink" );
+   StatusMonitor monitor;
+   monitor.SetCallback( &status );
+   monitor.Initialize( "Writing cropped files...", N );
+
    try
    {
-      Pause();
-
-      Rect r( GetCropRect() );
-
-      if ( r == m_blink.m_screenRect )
-      {
-         pcl::MessageBox( "<p>The entire image has been selected - "
-                           "Create a partial preview in BlinkScreen, or zoom in the image to define a valid cropping region?</p>",
-                           "Blink", StdIcon::Information ).Execute();
-         return;
-      }
-
-      const String dir( SelectDirectory( "Blink/Crop: Select Output Directory" ) );
-      if ( dir.IsEmpty() )
-         return;
-
-      Console().Show();
-
-      Console().WriteLn( "<end><cbr><br>Blink: " + String( GUI->Files_TreeBox.SelectedNodes().Length() ) + " files selected." );
-      for ( int row = 0; row < GUI->Files_TreeBox.NumberOfChildren(); row++ )
-      {
+      for ( int row = 0; row < GUI->Files_TreeBox.NumberOfChildren(); ++row )
          if ( GUI->Files_TreeBox.Child( row )->IsSelected() )
          {
             const int fileNumber = FileNumberGet( row );
@@ -1161,7 +1233,7 @@ void BlinkInterface::FileCropTo()
             }
             else
             {
-               DImage tmp;
+               Image tmp;
                if ( !LoadImage_P( tmp, fd.m_filePath ) )
                   throw CaughtException();
 
@@ -1172,13 +1244,19 @@ void BlinkInterface::FileCropTo()
 
             if ( !outputFile.Close() )
                throw CaughtException();
-            ProcessEvents();
-         }
-      }
-      Console().WriteLn( "Done." );
 
-      Console().Hide();
+            ProcessEvents();
+
+            ++monitor;
+         }
+
+      console.WriteLn( "Done." );
+      console.Hide();
+
       Continue();
+   }
+   catch ( ProcessAborted& )
+   {
    }
    catch ( ... )
    {
@@ -1192,6 +1270,8 @@ void BlinkInterface::FileCropTo()
       Exception::DisableConsoleOutput();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::FileCloseSelected()
 {
@@ -1220,15 +1300,18 @@ void BlinkInterface::FileCloseSelected()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::FileCloseAll()
 {
-   Console().Write( "<end><cbr><br>* Blink: Releasing memory ... " );
+   Console().NoteLn( "<end><cbr><br><br>* Blink: Releasing memory... " );
    Stop();
    m_blink.Clear();
    ResetFilesTreeBox();
    Init();
-   Console().WriteLn( "done." );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::FileStatistics()
 {
@@ -1237,6 +1320,8 @@ void BlinkInterface::FileStatistics()
    dialog.Execute();
    Continue();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::DisableButtonsIfRunning()
 {
@@ -1252,6 +1337,8 @@ void BlinkInterface::DisableButtonsIfRunning()
    GUI->Statistics_button.Disable( m_isRunning );
    GUI->CropToVideo_button.Disable( m_isRunning );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::Play()
 {
@@ -1275,6 +1362,8 @@ void BlinkInterface::Play()
    m_isRunning = true;
    GUI->UpdateAnimation_Timer.Start();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::Stop()
 {
@@ -1302,6 +1391,8 @@ void BlinkInterface::Stop()
    DisableButtonsIfRunning();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::Pause()
 {
    if ( !m_blink.m_filesData.IsEmpty() )
@@ -1309,6 +1400,8 @@ void BlinkInterface::Pause()
    if ( m_isRunning )
       GUI->UpdateAnimation_Timer.Stop();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::Continue()
 {
@@ -1389,11 +1482,15 @@ void BlinkInterface::__Brightness_Click( Button& sender, bool checked )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::__Files_NodeSelectionUpdated( TreeBox& sender )
 {
    m_blink.m_currentImage = sender.ChildIndex( sender.CurrentNode() );
    m_blink.UpdateScreen();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__Files_NodeUpdated( TreeBox& sender, TreeBox::Node& node, int col  )
 {
@@ -1405,6 +1502,8 @@ void BlinkInterface::__Files_NodeUpdated( TreeBox& sender, TreeBox::Node& node, 
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::__Files_MouseWheel( Control& sender, const Point& pos, int delta, unsigned buttons, unsigned modifiers )
 {
    if ( delta > 0 )
@@ -1412,6 +1511,8 @@ void BlinkInterface::__Files_MouseWheel( Control& sender, const Point& pos, int 
    else
       m_blink.Next();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__Files_NodeDoubleClicked( TreeBox& sender, TreeBox::Node& node, int col  )
 {
@@ -1429,6 +1530,8 @@ void BlinkInterface::__Files_NodeDoubleClicked( TreeBox& sender, TreeBox::Node& 
    m_blink.m_blinkMaster = sender.ChildIndex( &node );
    node.SetIcon( 0, Bitmap( ScaledResource( ":/icons/repeat.png" ) ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__FileButton_Click( Button& sender, bool /*checked*/ )
 {
@@ -1450,12 +1553,16 @@ void BlinkInterface::__FileButton_Click( Button& sender, bool /*checked*/ )
       CropToVideo();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::__Delay_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
-   GUI->UpdateAnimation_Timer.SetInterval( g_blinkingDelaySecs[itemIndex] );
+   GUI->UpdateAnimation_Timer.SetInterval( g_delaySecs[itemIndex] );
    if ( m_isRunning )
       GUI->UpdateAnimation_Timer.Start();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__ActionButton_Click( Button& sender, bool /*checked*/ )
 {
@@ -1473,6 +1580,8 @@ void BlinkInterface::__ActionButton_Click( Button& sender, bool /*checked*/ )
    else if ( sender == GUI->PreviousImage_Button )
       m_blink.Prev();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__ScrollControl_Paint( Control& sender, const Rect& r )
 {
@@ -1517,6 +1626,8 @@ void BlinkInterface::__ScrollControl_Paint( Control& sender, const Rect& r )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::__ScrollControl_MouseWheel( Control& sender, const Point& pos, int delta, unsigned buttons, unsigned modifiers )
 {
    if ( m_blink.m_screen.IsNull() || m_blink.m_filesData.IsEmpty() )
@@ -1538,6 +1649,8 @@ void BlinkInterface::__ScrollControl_MouseWheel( Control& sender, const Point& p
       sender.Update();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__ScrollControl_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
 {
@@ -1561,6 +1674,8 @@ void BlinkInterface::__ScrollControl_MousePress( Control& sender, const Point& p
    sender.Update();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::__ScrollControl_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
 {
    if ( m_blink.m_screen.IsNull() || m_blink.m_filesData.IsEmpty() )
@@ -1574,6 +1689,8 @@ void BlinkInterface::__ScrollControl_MouseMove( Control& sender, const Point& po
 
    sender.Update();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__FilePanelHideButton_Click( Button& sender, bool /*checked*/ )
 {
@@ -1600,11 +1717,15 @@ void BlinkInterface::__FilePanelHideButton_Click( Button& sender, bool /*checked
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::__FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles )
 {
    if ( sender == GUI->Files_TreeBox.Viewport() )
       wantsFiles = true;
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers )
 {
@@ -1623,6 +1744,8 @@ void BlinkInterface::__FileDrop( Control& sender, const Point& pos, const String
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::__Show( Control& /*sender*/ )
 {
    // If necessary, generate the preview bitmap
@@ -1632,6 +1755,8 @@ void BlinkInterface::__Show( Control& /*sender*/ )
    GUI->UpdatePreview_Timer.Start();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::__Hide( Control& /*sender*/ )
 {
    // Stop periodic preview refreshing
@@ -1639,6 +1764,8 @@ void BlinkInterface::__Hide( Control& /*sender*/ )
    // Stop animation
    Stop();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__UpdateAnimation_Timer( Timer& timer )
 {
@@ -1650,6 +1777,8 @@ void BlinkInterface::__UpdateAnimation_Timer( Timer& timer )
    else
       Stop();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkInterface::__UpdatePreview_Timer( Timer& timer )
 {
@@ -1688,6 +1817,8 @@ bool BlinkInterface::LoadImage( ImageVariant& image, const String& filePath )
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 String BlinkInterface::SelectDirectory( const String& caption, const String& initialPath )
 {
    GetDirectoryDialog d;
@@ -1697,6 +1828,8 @@ String BlinkInterface::SelectDirectory( const String& caption, const String& ini
       return d.Directory();
    return String();
 }
+
+// ----------------------------------------------------------------------------
 
 String BlinkInterface::UniqueFilePath( const String& fileName, const String& dir )
 {
@@ -1715,6 +1848,8 @@ String BlinkInterface::UniqueFilePath( const String& fileName, const String& dir
    }
 }
 
+// ----------------------------------------------------------------------------
+
 int BlinkInterface::FileNumberGet( const int row ) //extract file # from GUI TreeBox
 {
    return TheBlinkInterface->GUI->Files_TreeBox.Child( row )->Text( 1 ).ToInt( 10 );
@@ -1728,6 +1863,8 @@ String BlinkInterface::RowToStringFileNumber( const int row ) //Convert fileNumb
    TheBlinkInterface->GUI->Files_TreeBox.Child( row )->SetText( 2, s );
    return s;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatInstance BlinkInterface::CreateImageFile( int index, const String& history, const String& dir )
 {
@@ -1744,7 +1881,7 @@ FileFormatInstance BlinkInterface::CreateImageFile( int index, const String& his
    filePath = UniqueFilePath( File::ChangeExtension( filePath, extension ), dir );
    FileFormat outputFormat( extension, false/*toRead*/, true/*toWrite*/ );
    FileFormatInstance outputFile( outputFormat );
-   Console().WriteLn( "<end><cbr><raw>* Creating file: " + filePath + "</raw>" );
+   Console().WriteLn( "<end><cbr>* Creating file: <raw>" + filePath + "</raw>" );
    if ( !outputFile.Create( filePath ) )
       throw CaughtException();
 
@@ -1771,6 +1908,8 @@ FileFormatInstance BlinkInterface::CreateImageFile( int index, const String& his
    return outputFile;
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkInterface::ResetFilesTreeBox()
 {
    GUI->Files_TreeBox.Clear();
@@ -1781,6 +1920,7 @@ void BlinkInterface::ResetFilesTreeBox()
    GUI->Files_TreeBox.HideColumn( 2 ); // hidden column to store string representation of link from GUI to fileData
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 BlinkInterface::GUIData::GUIData( BlinkInterface& w )
@@ -1836,9 +1976,9 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    NextImage_Button.SetToolTip( "Next image" );
    NextImage_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__ActionButton_Click, w );
 
-   for ( int i = 0 ; i < int( ItemsInArray( g_blinkingDelaySecs ) ); i++ )
-      BlinkingDelay_ComboBox.AddItem( String().Format( "%.2f sec", g_blinkingDelaySecs[i] ) );
-   BlinkingDelay_ComboBox.SetToolTip( "Minimum delay between images" );
+   for ( float d : g_delaySecs )
+      BlinkingDelay_ComboBox.AddItem( String().Format( "%.2f sec", d ) );
+   BlinkingDelay_ComboBox.SetToolTip( "<p>Minimum delay between successive blinking images.</p>" );
    BlinkingDelay_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&BlinkInterface::__Delay_ItemSelected, w );
 
    ShowTreeBox_Button.SetIcon( Bitmap( w.ScaledResource( ":/process-interface/contract.png" ) ) );
@@ -1861,7 +2001,7 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 
    const char* selectionNoteToolTip =
       "<p>Note: <i>Checked</i> is not the same as <i>selected</i>. "
-         "To select more then one image use Shift or Ctrl + arow keys or click.</p>";
+         "To select more then one image use Shift or Ctrl/Cmd + arow keys or click.</p>";
 
    Files_TreeBox.SetNumberOfColumns( 3 );
    Files_TreeBox.SetScaledMinWidth( 250 );
@@ -1989,7 +2129,16 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    w.OnHide( (Control::event_handler)&BlinkInterface::__Hide, w );
 
    UpdateAnimation_Timer.SetSingleShot();
-   UpdateAnimation_Timer.SetInterval( 0.0 ); // deliver as soon as the event queue gets empty
+
+   int delayItemIndex = int( LinearSearch( g_delaySecs, g_delaySecs+ItemsInArray( g_delaySecs ), 0.05F ) - g_delaySecs );
+   if ( delayItemIndex < BlinkingDelay_ComboBox.NumberOfItems() )
+   {
+      UpdateAnimation_Timer.SetInterval( 0.05 );
+      BlinkingDelay_ComboBox.SetCurrentItem( delayItemIndex );
+   }
+   else
+      UpdateAnimation_Timer.SetInterval( 0.0 ); // deliver as soon as the event queue gets empty
+
    UpdateAnimation_Timer.OnTimer( (Timer::timer_event_handler)&BlinkInterface::__UpdateAnimation_Timer, w );
 
    UpdatePreview_Timer.SetSingleShot();
@@ -2002,4 +2151,4 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.cpp - Released 2019-09-29T12:27:58Z
+// EOF BlinkInterface.cpp - Released 2019-11-07T11:00:23Z

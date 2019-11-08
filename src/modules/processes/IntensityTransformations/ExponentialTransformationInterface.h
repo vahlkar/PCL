@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInterface.h - Released 2019-09-29T12:27:57Z
+// ExponentialTransformationInterface.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -77,26 +77,26 @@ public:
    ExponentialTransformationInterface();
    virtual ~ExponentialTransformationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
 
-   virtual InterfaceFeatures Features() const;
-   virtual void ApplyInstance() const;
-   virtual void RealTimePreviewUpdated( bool active );
-   virtual void ResetInstance();
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void RealTimePreviewUpdated( bool active ) override;
+   void ResetInstance() override;
 
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
 
-   virtual ProcessImplementation* NewProcess() const;
+   ProcessImplementation* NewProcess() const override;
 
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
 
-   virtual bool ImportProcess( const ProcessImplementation& );
+   bool ImportProcess( const ProcessImplementation& ) override;
 
-   virtual bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const;
-   virtual bool GenerateRealTimePreview( UInt16Image&, const View&, int zoomLevel, String& info ) const;
+   bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const override;
+   bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const override;
 
 private:
 
@@ -112,14 +112,14 @@ private:
 
       void Reset( const UInt16Image&, const ExponentialTransformationInstance& );
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
       ExponentialTransformationInstance m_instance;
    };
 
-   mutable RealTimeThread* m_realTimeThread;
+   mutable RealTimeThread* m_realTimeThread = nullptr;
 
    struct GUIData
    {
@@ -137,7 +137,7 @@ private:
       Timer UpdateRealTimePreview_Timer;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
    void UpdateControls();
    void UpdateRealTimePreview();
@@ -163,4 +163,4 @@ PCL_END_LOCAL
 #endif   // __ExponentialTransformationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInterface.h - Released 2019-09-29T12:27:57Z
+// EOF ExponentialTransformationInterface.h - Released 2019-11-07T11:00:22Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Compression.cpp - Released 2019-09-29T12:27:33Z
+// pcl/Compression.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -108,15 +108,14 @@ public:
             m_data = S.Begin();
          }
 
-      int numberOfThreads = m_compression.IsParallelProcessingEnabled() ?
-               Min( m_compression.MaxProcessors(), pcl::Thread::NumberOfThreads( m_numberOfSubblocks + 1, 1 ) ) : 1;
-      int subblocksPerThread = int( m_numberOfSubblocks + 1 )/numberOfThreads;
+      Array<size_type> L = Thread::OptimalThreadLoads( m_numberOfSubblocks + 1,
+                                          1/*overheadLimit*/,
+                                          m_compression.IsParallelProcessingEnabled() ? m_compression.MaxProcessors() : 1 );
+      int numberOfThreads = int( L.Length() );
 
       ReferenceArray<CompressionThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new CompressionThread( *this,
-                                             i*subblocksPerThread,
-                                             (j < numberOfThreads) ? j*subblocksPerThread : m_numberOfSubblocks + 1 ) );
+      for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
+         threads.Add( new CompressionThread( *this, n, n + int( L[i] ) ) );
       m_errors.Clear();
 
       T.Reset();
@@ -289,20 +288,19 @@ public:
 
       m_uncompressedData = reinterpret_cast<ByteArray::iterator>( data );
 
-      int numberOfThreads = m_compression.IsParallelProcessingEnabled() ?
-               Min( m_compression.MaxProcessors(), pcl::Thread::NumberOfThreads( subblocks.Length(), 1 ) ) : 1;
-      int subblocksPerThread = int( subblocks.Length() )/numberOfThreads;
+      Array<size_type> L = Thread::OptimalThreadLoads( subblocks.Length(),
+                                          1/*overheadLimit*/,
+                                          m_compression.IsParallelProcessingEnabled() ? m_compression.MaxProcessors() : 1 );
+      int numberOfThreads = int( L.Length() );
 
       ReferenceArray<DecompressionThread> threads;
       size_type offset = 0;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+      for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
       {
-         Compression::subblock_list::const_iterator begin = subblocks.At( i*subblocksPerThread );
-         Compression::subblock_list::const_iterator end = (j < numberOfThreads) ? subblocks.At( j*subblocksPerThread ) : subblocks.End();
-
+         Compression::subblock_list::const_iterator begin = subblocks.At( n );
+         Compression::subblock_list::const_iterator end = subblocks.At( n + int( L[i] ) );
          threads << new DecompressionThread( *this, offset, begin, end );
-
-         if ( j < numberOfThreads )
+         if ( i < numberOfThreads-1 )
             for ( Compression::subblock_list::const_iterator i = begin; i != end; ++i )
                offset += i->uncompressedSize;
       }
@@ -746,4 +744,4 @@ size_type LZ4HCCompression::UncompressBlock( void* outputData, size_type maxOutp
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Compression.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/Compression.cpp - Released 2019-11-07T10:59:44Z

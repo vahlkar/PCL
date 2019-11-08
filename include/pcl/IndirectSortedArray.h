@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/IndirectSortedArray.h - Released 2019-09-29T12:27:26Z
+// pcl/IndirectSortedArray.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1311,4 +1311,4 @@ IndirectSortedArray<T,A>& operator <<( IndirectSortedArray<T,A>&& x1, const Indi
 #endif  // __PCL_IndirectSortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectSortedArray.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/IndirectSortedArray.h - Released 2019-11-07T10:59:34Z

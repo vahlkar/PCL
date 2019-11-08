@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.cpp - Released 2019-09-29T12:27:33Z
+// pcl/ProcessInterface.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -243,7 +243,8 @@ public:
       ERROR_HANDLER
    }
 
-   static api_bool api_func Launch( interface_handle hi, meta_process_handle hP, const_process_handle hp, api_bool* dynamic, uint32* flags )
+   static api_bool api_func Launch( interface_handle hi, meta_process_handle hP,
+                                    const_process_handle hp, api_bool* dynamic, uint32* flags )
    {
 #define iface  reinterpret_cast<ProcessInterface*>( hi )
       try
@@ -307,16 +308,19 @@ public:
       return 0;
    }
 
-   static api_bool api_func ValidateProcess( const_interface_handle hi, const_process_handle hp, char16_type* whyNot, uint32 maxLen )
+   static api_bool api_func ValidateProcess( const_interface_handle hi, const_process_handle hp,
+                                             char16_type* whyNot, uint32 maxLen )
    {
       try
       {
          String whyNotStr;
          bool ok = reinterpret_cast<const ProcessInterface*>( hi )->ValidateProcess(
                                        *reinterpret_cast<const ProcessImplementation*>( hp ), whyNotStr );
-
-         if ( !ok && !whyNotStr.IsEmpty() && whyNot != 0 && maxLen != 0 )
-               whyNotStr.c_copy( whyNot, maxLen );
+         if ( !ok )
+            if ( !whyNotStr.IsEmpty() )
+               if ( whyNot != nullptr )
+                  if ( maxLen > 0 )
+                     whyNotStr.c_copy( whyNot, maxLen );
 
          return api_bool( ok );
       }
@@ -416,33 +420,37 @@ public:
       ERROR_HANDLER
    }
 
-   static api_bool api_func RequiresRealTimePreviewUpdate(
-                        const_interface_handle hi, const_image_handle himg, const_view_handle hv, int32 z )
+   static api_bool api_func RequiresRealTimePreviewUpdate( const_interface_handle hi,
+                                                           const_image_handle himg, const_view_handle hv,
+                                                           int32 x0, int32 y0, int32 x1, int32 y1, int32 z )
    {
       try
       {
-         UInt16Image img( const_cast<image_handle>( himg ) );
+         UInt16Image image( const_cast<image_handle>( himg ) );
          View view( hv );
-         return reinterpret_cast<const ProcessInterface*>( hi )->RequiresRealTimePreviewUpdate( img, view, z );
+         return reinterpret_cast<const ProcessInterface*>( hi )->RequiresRealTimePreviewUpdate( image, view,
+                                                                              Rect( x0, y0, x1, y1 ), z );
       }
       ERROR_HANDLER
       return api_false;
    }
 
-   static api_bool api_func GenerateRealTimePreview(
-                        const_interface_handle hi, image_handle himg, const_view_handle hv,
-                        int32 z, char16_type* info, uint32 maxLen )
+   static api_bool api_func GenerateRealTimePreview( const_interface_handle hi,
+                                                     image_handle himg, const_view_handle hv,
+                                                     int32 x0, int32 y0, int32 x1, int32 y1, int32 z,
+                                                     char16_type* info, uint32 maxLen )
    {
       try
       {
-         UInt16Image img( himg );
+         UInt16Image image( himg );
          View view( hv );
          String infoStr;
-         bool ok = reinterpret_cast<const ProcessInterface*>( hi )->GenerateRealTimePreview( img, view, z, infoStr );
-
-         if ( !infoStr.IsEmpty() && info != 0 && maxLen != 0 )
-            infoStr.c_copy( info, maxLen );
-
+         bool ok = reinterpret_cast<const ProcessInterface*>( hi )->GenerateRealTimePreview( image, view,
+                                                                              Rect( x0, y0, x1, y1 ), z, infoStr );
+         if ( !infoStr.IsEmpty() )
+            if ( info != nullptr )
+               if ( maxLen > 0 )
+                  infoStr.c_copy( info, maxLen );
          return api_bool( ok );
       }
       ERROR_HANDLER
@@ -502,8 +510,8 @@ public:
    }
 
    static api_bool api_func DynamicMouseMove( interface_handle hi, view_handle hv,
-                                       double x, double y,
-                                       api_mouse_buttons buttons, api_key_modifiers modifiers )
+                                              double x, double y,
+                                              api_mouse_buttons buttons, api_key_modifiers modifiers )
    {
       try
       {
@@ -517,7 +525,9 @@ public:
    }
 
    static api_bool api_func DynamicMousePress( interface_handle hi, view_handle hv,
-      double x, double y, api_mouse_button button, api_mouse_buttons buttons, api_key_modifiers modifiers )
+                                               double x, double y,
+                                               api_mouse_button button, api_mouse_buttons buttons,
+                                               api_key_modifiers modifiers )
    {
       try
       {
@@ -531,8 +541,9 @@ public:
    }
 
    static api_bool api_func DynamicMouseRelease( interface_handle hi, view_handle hv,
-                                       double x, double y,
-                                       api_mouse_button button, api_mouse_buttons buttons, api_key_modifiers modifiers )
+                                                 double x, double y,
+                                                 api_mouse_button button, api_mouse_buttons buttons,
+                                                 api_key_modifiers modifiers )
    {
       try
       {
@@ -546,8 +557,8 @@ public:
    }
 
    static api_bool api_func DynamicMouseDoubleClick( interface_handle hi, view_handle hv,
-                                       double x, double y,
-                                       api_mouse_buttons buttons, api_key_modifiers modifiers )
+                                                     double x, double y,
+                                                     api_mouse_buttons buttons, api_key_modifiers modifiers )
    {
       try
       {
@@ -560,7 +571,8 @@ public:
       return api_false;
    }
 
-   static api_bool api_func DynamicKeyPress( interface_handle hi, view_handle hv, api_key_code key, api_key_modifiers modifiers )
+   static api_bool api_func DynamicKeyPress( interface_handle hi, view_handle hv,
+                                             api_key_code key, api_key_modifiers modifiers )
    {
       try
       {
@@ -571,7 +583,8 @@ public:
       return api_false;
    }
 
-   static api_bool api_func DynamicKeyRelease( interface_handle hi, view_handle hv, api_key_code key, api_key_modifiers modifiers )
+   static api_bool api_func DynamicKeyRelease( interface_handle hi, view_handle hv,
+                                               api_key_code key, api_key_modifiers modifiers )
    {
       try
       {
@@ -583,8 +596,8 @@ public:
    }
 
    static api_bool api_func DynamicMouseWheel( interface_handle hi, view_handle hv,
-                                       double x, double y, int32 wheelDelta,
-                                       api_mouse_buttons buttons, api_key_modifiers modifiers )
+                                               double x, double y, int32 wheelDelta,
+                                               api_mouse_buttons buttons, api_key_modifiers modifiers )
    {
       try
       {
@@ -597,7 +610,7 @@ public:
    }
 
    static api_bool api_func RequiresDynamicUpdate( const_interface_handle hi, const_view_handle hv,
-                                       double x0, double y0, double x1, double y1 )
+                                                   double x0, double y0, double x1, double y1 )
    {
       try
       {
@@ -610,7 +623,7 @@ public:
    }
 
    static void api_func DynamicPaint( const_interface_handle hi, const_view_handle hv, graphics_handle hg,
-                                       double x0, double y0, double x1, double y1 )
+                                      double x0, double y0, double x1, double y1 )
    {
       try
       {
@@ -876,7 +889,8 @@ public:
       ERROR_HANDLER
    }
 
-   static void api_func UpdateReadout( interface_handle hi, const_view_handle hv, double x, double y, double R, double G, double B, double A )
+   static void api_func UpdateReadout( interface_handle hi, const_view_handle hv,
+                                       double x, double y, double R, double G, double B, double A )
    {
       try
       {
@@ -1207,4 +1221,4 @@ void ProcessInterface::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/ProcessInterface.cpp - Released 2019-11-07T10:59:44Z

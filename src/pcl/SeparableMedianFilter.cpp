@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/SeparableMedianFilter.cpp - Released 2019-09-29T12:27:33Z
+// pcl/SeparableMedianFilter.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -88,27 +88,20 @@ public:
 
       for ( int dir = 0; dir < 2; ++dir )
       {
-         int numberOfItems = dir ? image.SelectedRectangle().Width() : image.SelectedRectangle().Height();
-         int numberOfThreads = filter.IsParallelProcessingEnabled() ?
-                  Min( filter.MaxProcessors(), pcl::Thread::NumberOfThreads( numberOfItems, 4 ) ) : 1;
-         int itemsPerThread = numberOfItems/numberOfThreads;
-
          AbstractImage::ThreadData threadData( image.Status(), dir ? N2 : N1 );
-
+         int numberOfItems = dir ? image.SelectedRectangle().Width() : image.SelectedRectangle().Height();
+         Array<size_type> L = pcl::Thread::OptimalThreadLoads( numberOfItems,
+                                                1/*overheadLimit*/,
+                                                filter.IsParallelProcessingEnabled() ? filter.MaxProcessors() : 1 );
          ReferenceArray<Thread<P> > threads;
          int i0 = dir ? image.SelectedRectangle().x0 : image.SelectedRectangle().y0;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         {
-            int firstItem = i0 + i*itemsPerThread;
-            int endItem   = i0 + ((j < numberOfThreads) ? j*itemsPerThread : numberOfItems);
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
             if ( dir )
-               threads.Add( new SeparableMedianFilterColThread<P>( threadData, image, filter, firstItem, endItem ) );
+               threads.Add( new SeparableMedianFilterColThread<P>( threadData, image, filter, i0 + n, i0 + n + int( L[i] ) ) );
             else
-               threads.Add( new SeparableMedianFilterRowThread<P>( threadData, image, filter, firstItem, endItem ) );
-         }
+               threads.Add( new SeparableMedianFilterRowThread<P>( threadData, image, filter, i0 + n, i0 + n + int( L[i] ) ) );
 
          AbstractImage::RunThreads( threads, threadData );
-
          threads.Destroy();
 
          image.Status() = threadData.status;
@@ -346,4 +339,4 @@ void SeparableMedianFilter::Apply( UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableMedianFilter.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/SeparableMedianFilter.cpp - Released 2019-11-07T10:59:44Z

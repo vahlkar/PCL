@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/MuteStatus.h - Released 2019-09-29T12:27:26Z
+// pcl/MuteStatus.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -87,7 +87,7 @@ namespace pcl
  * may require even more computing time than the processes themselves.
  *
  * \sa StatusCallback, StatusMonitor, StandardStatus, SpinStatus,
- * RealTimeProgressStatus, Console
+ * ProgressBarStatus, RealTimeProgressStatus, Console
  */
 class PCL_CLASS MuteStatus : public StatusCallback
 {
@@ -186,4 +186,4 @@ private:
 #endif   // __PCL_MuteStatus_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MuteStatus.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/MuteStatus.h - Released 2019-11-07T10:59:34Z

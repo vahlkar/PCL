@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeInterface.h - Released 2019-09-29T12:27:57Z
+// BinarizeInterface.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -77,31 +77,31 @@ public:
    BinarizeInterface();
    virtual ~BinarizeInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
 
-   virtual InterfaceFeatures Features() const;
+   InterfaceFeatures Features() const override;
 
-   virtual void RealTimePreviewUpdated( bool active );
+   void RealTimePreviewUpdated( bool active ) override;
 
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
+   void ApplyInstance() const override;
+   void ResetInstance() override;
 
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
 
-   virtual ProcessImplementation* NewProcess() const;
+   ProcessImplementation* NewProcess() const override;
 
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
 
-   virtual bool ImportProcess( const ProcessImplementation& );
+   bool ImportProcess( const ProcessImplementation& ) override;
 
-   virtual bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const;
-   virtual bool GenerateRealTimePreview( UInt16Image&, const View&, int zoomLevel, String& info ) const;
+   bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const override;
+   bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const override;
 
-   virtual bool WantsReadoutNotifications() const;
-   virtual void UpdateReadout( const View&, const pcl::DPoint&, double R, double G, double B, double A );
+   bool WantsReadoutNotifications() const override;
+   void UpdateReadout( const View&, const pcl::DPoint&, double R, double G, double B, double A ) override;
 
 private:
 
@@ -117,14 +117,14 @@ private:
 
       void Reset( const UInt16Image&, const BinarizeInstance& );
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
       BinarizeInstance m_instance;
    };
 
-   mutable RealTimeThread* m_realTimeThread;
+   mutable RealTimeThread* m_realTimeThread = nullptr;
 
    struct GUIData
    {
@@ -146,7 +146,7 @@ private:
       Timer UpdateRealTimePreview_Timer;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
    void UpdateControls();
    void UpdateValues( Edit&, Slider&, double );
@@ -173,4 +173,4 @@ PCL_END_LOCAL
 #endif   // __BinarizeInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeInterface.h - Released 2019-09-29T12:27:57Z
+// EOF BinarizeInterface.h - Released 2019-11-07T11:00:22Z
