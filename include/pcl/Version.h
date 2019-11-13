@@ -207,11 +207,16 @@ public:
    static int Release();
 
    /*!
+    * Returns the revision version number of the PixInsight core application.
+    */
+   static int Revision();
+
+   /*!
     * Returns the build number of the PixInsight core application.
     *
-    * \note Since core version 1.8.7 build numbers have been deprecated. They
-    * are maintained exclusively for compatibility with previous versions and
-    * existing code.
+    * \deprecated Since core version 1.8.7 build numbers have been deprecated.
+    * They are maintained exclusively for compatibility with previous versions
+    * and existing code.
     */
    static int Build();
 
@@ -267,10 +272,11 @@ public:
    }
 
    /*!
-    * Returns a human-readable representation of the PixInsight core version.
+    * Returns a human-readable textual representation of the current PixInsight
+    * core version.
     *
     * \param withCodename  If this parameter is true, the returned version
-    *                      string will include the codename of the current
+    *                      string will include the codename of the running
     *                      PixInsight core application. The default value of
     *                      this parameter is false.
     */

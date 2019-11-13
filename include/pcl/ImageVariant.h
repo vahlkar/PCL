@@ -6908,17 +6908,13 @@ public:
 
 #ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
 
-   pi::SharedImage* GetSharedImage() const
-   {
-      return m_shared;
-   }
-
    bool IsShared() const
    {
       return m_shared != nullptr;
    }
 
    // Implemented in SharedImage.cpp
+   pi::SharedImage* GetSharedImage( bool rdOnly = false ) const;
    pi::SharedImage* NewSharedImage( void* owner, bool rdOnly = false );
 
 #endif

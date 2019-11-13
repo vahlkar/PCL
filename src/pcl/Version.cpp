@@ -117,7 +117,7 @@ String Version::AsString()
 static int s_major = 0;
 static int s_minor = 0;
 static int s_release = 0;
-static int s_build = 0;
+static int s_revision = 0;
 static int s_beta = 0;
 static bool s_confidential = false;
 static bool s_le = false;
@@ -139,17 +139,16 @@ static void Initialize()
       {
          if ( API != nullptr )
          {
-            uint32 M, m, r, b, beta, conf, le;
+            uint32 major, minor, release, revision, beta, conf, le;
             char lang[ 8 ];
-
-            (*API->Global->GetPixInsightVersion)( &M, &m, &r, &b, &beta, &conf, &le, lang );
-            s_major = int( M );
-            s_minor = int( m );
-            s_release = int( r );
-            s_build = int( b );
+            (*API->Global->GetPixInsightVersion)( &major, &minor, &release, &revision, &beta, &conf, &le, lang );
+            s_major = int( major );
+            s_minor = int( minor );
+            s_release = int( release );
+            s_revision = int( revision );
             s_beta = int( beta );
-            s_confidential = conf != 0;
-            s_le = le != 0;
+            s_confidential = conf != 0u;
+            s_le = le != 0u;
             s_language = lang;
 
             char16_type* s = (*API->Global->GetPixInsightCodename)( ModuleHandle() );
@@ -192,10 +191,17 @@ int PixInsightVersion::Release()
 
 // ----------------------------------------------------------------------------
 
-int PixInsightVersion::Build()
+int PixInsightVersion::Revision()
 {
    Initialize();
-   return s_build;
+   return s_revision;
+}
+
+// ----------------------------------------------------------------------------
+
+int PixInsightVersion::Build()
+{
+   return 1494; // kept fixed since core version 1.8.8-1
 }
 
 // ----------------------------------------------------------------------------
@@ -245,8 +251,10 @@ String PixInsightVersion::AsString( bool withCodename )
    Initialize();
    String v = String().Format( "PixInsight %s%d.%d.%d",
                LE() ? "LE " : "", Major(), Minor(), Release() );
+   if ( Revision() != 0 )
+      v.AppendFormat( "-%d", Revision() );
    if ( BetaRelease() != 0 )
-      v.Append( String().Format( " %s%d", (BetaRelease() < 0) ? "RC" : "beta ", Abs( BetaRelease() ) ) );
+      v.AppendFormat( " %s%d", (BetaRelease() < 0) ? "RC" : "beta ", Abs( BetaRelease() ) );
    if ( withCodename )
       v.Append( ' ' + Codename() );
    if ( Confidential() )

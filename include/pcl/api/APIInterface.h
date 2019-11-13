@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2019-11-07T10:59:34Z
+// pcl/APIInterface.h - Released 2019-11-13T11:22:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0165
+#define PCL_API_Version 0x0166
 
 extern "C"
 {
@@ -68,7 +68,9 @@ struct api_context GlobalContext
    /*
     * Version information
     */
-   void        (api_func* GetPixInsightVersion)( uint32* major, uint32* minor, uint32* release, uint32* build, uint32* betaRelease, uint32* confidentialRelease, uint32* leVersion, char* langCode );
+   void        (api_func* GetPixInsightVersion)( uint32* major, uint32* minor, uint32* release, uint32* revision,
+                                                 uint32* betaRelease, uint32* confidentialRelease,
+                                                 uint32* leVersion, char* langCode );
    // ### Returns a string allocated by the caller module.
    char16_type*(api_func* GetPixInsightCodename)( api_handle );
 
@@ -3016,4 +3018,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2019-11-07T10:59:34Z
+// EOF pcl/APIInterface.h - Released 2019-11-13T11:22:34Z
