@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.1
+// Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierInstance.cpp - Released 2019-11-07T11:00:22Z
+// ImageIdentifierInstance.cpp - Released 2019-11-13T20:00:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -180,4 +180,4 @@ size_type ImageIdentifierInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInstance.cpp - Released 2019-11-07T11:00:22Z
+// EOF ImageIdentifierInstance.cpp - Released 2019-11-13T20:00:10Z

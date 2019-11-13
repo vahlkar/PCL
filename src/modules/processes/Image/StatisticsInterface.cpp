@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.1
+// Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StatisticsInterface.cpp - Released 2019-11-07T11:00:22Z
+// StatisticsInterface.cpp - Released 2019-11-13T20:00:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -720,7 +720,11 @@ void StatisticsInterface::ImageDeleted( const View& view )
 {
    if ( GUI != nullptr )
       if ( view == m_currentView )
+      {
+         DeactivateTrackView();
+         GUI->AllViews_ViewList.SelectView( View::Null() );
          UpdateControls();
+      }
 }
 
 // ----------------------------------------------------------------------------
@@ -1180,9 +1184,9 @@ void StatisticsInterface::UpdateControls()
    if ( m_doNorm )
       new StatisticsTreeNode( GUI->Data_TreeBox, "norm",          m_norm,          realFormat, precision, scale );
    if ( m_doSumOfSquares )
-      new StatisticsTreeNode( GUI->Data_TreeBox, "sumOfSquares",  m_sumOfSquares,  realFormat, precision, scale );
+      new StatisticsTreeNode( GUI->Data_TreeBox, "sumOfSquares",  m_sumOfSquares,  realFormat, precision, scale*scale );
    if ( m_doMeanOfSquares )
-      new StatisticsTreeNode( GUI->Data_TreeBox, "meanOfSquares", m_meanOfSquares, realFormat, precision, scale );
+      new StatisticsTreeNode( GUI->Data_TreeBox, "meanOfSquares", m_meanOfSquares, realFormat, precision, scale*scale );
    if ( m_doMedian )
       new StatisticsTreeNode( GUI->Data_TreeBox, "median",        m_median,        realFormat, precision, scale );
    if ( m_doVariance )
@@ -1414,4 +1418,4 @@ StatisticsInterface::GUIData::GUIData( StatisticsInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsInterface.cpp - Released 2019-11-07T11:00:22Z
+// EOF StatisticsInterface.cpp - Released 2019-11-13T20:00:10Z

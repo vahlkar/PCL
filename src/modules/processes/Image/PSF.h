@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.1
+// Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// PSF.h - Released 2019-11-07T11:00:22Z
+// PSF.h - Released 2019-11-13T20:00:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -247,4 +247,4 @@ inline double PSFData::FWHM( int function, double sigma, double beta )
 #endif   // __PSF_h
 
 // ----------------------------------------------------------------------------
-// EOF PSF.h - Released 2019-11-07T11:00:22Z
+// EOF PSF.h - Released 2019-11-13T20:00:10Z
