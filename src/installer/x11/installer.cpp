@@ -7,7 +7,7 @@
 // ----------------------------------------------------------------------------
 // This file is part of PixInsight X11 UNIX/Linux Installer
 // ----------------------------------------------------------------------------
-// 2019/11/05 16:43:54 UTC
+// 2019/11/13 13:18:17 UTC
 // installer.cpp
 // ----------------------------------------------------------------------------
 // Copyright (c) 2013-2019 Pleiades Astrophoto S.L.
@@ -599,6 +599,7 @@ bool PixInsightX11Installer::DoInstall()
                             "image/x-tga;"
                             "image/x-adobe-dng;"
                             "image/x-canon-cr2;"
+                            "image/x-canon-cr3;"
                             "image/x-canon-crw;"
                             "image/x-fuji-raf;"
                             "image/x-kodak-dcr;image/x-kodak-k25;image/x-kodak-kdc;"
@@ -892,13 +893,26 @@ bool PixInsightX11Installer::DoShowHelp()
 
 // ----------------------------------------------------------------------------
 
+#ifdef _S1_
+# undef _S1_
+#endif
+#ifdef _S_
+# undef _S_
+#endif
+#define _S1_( x ) #x
+#define _S_( x ) _S1_( x )
+
 String PixInsightX11Installer::VersionString()
 {
-   return String().Format( "%d.%d.%d ",
-            PI_VERSION_MAJOR, PI_VERSION_MINOR, PI_VERSION_RELEASE ) << PI_VERSION_CODENAME;
+   String version = _S_( PI_VERSION_MAJOR ) "." _S_( PI_VERSION_MINOR ) "." _S_( PI_VERSION_RELEASE );
+#if ( PI_VERSION_REVISION > 0 )
+      version << "-" _S_( PI_VERSION_REVISION );
+#endif
+   return version << " " PI_VERSION_CODENAME;
 }
 
 // ----------------------------------------------------------------------------
+
 void PixInsightX11Installer::ShowLogo()
 {
    std::cout <<
@@ -909,7 +923,7 @@ void PixInsightX11Installer::ShowLogo()
    "\n/_/     /_/  /_/|_| /___/ /_/ /_//____/ /_/  _\\__, / /_/ /_/\\__/"
    "\n                                             /____/"
    "\n----------------------------------------------------------------------"
-   "\nPixInsight X11 UNIX/Linux installer version " << VersionString() <<
+   "\nPixInsight X11 UNIX/Linux installer / Core version " << VersionString() <<
    "\nCopyright (C) 2003-" PI_VERSION_YEAR " Pleiades Astrophoto. All Rights Reserved"
    "\n----------------------------------------------------------------------"
    "\n";
@@ -1203,5 +1217,5 @@ int main( int argc, const char** argv )
 }
 
 // ----------------------------------------------------------------------------
-// 2019/11/05 16:43:54 UTC
+// 2019/11/13 13:18:17 UTC
 // installer.cpp
