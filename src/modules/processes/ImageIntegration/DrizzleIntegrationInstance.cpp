@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.20.0
+// Standard ImageIntegration Process Module Version 1.21.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2019-11-07T11:00:22Z
+// DrizzleIntegrationInstance.cpp - Released 2019-11-18T11:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1270,17 +1270,33 @@ private:
    {
       Image::pixel_iterator r( static_cast<Image&>( *result ) );
       Image::pixel_iterator w( static_cast<Image&>( *weight ) );
-      float wm = static_cast<Image&>( *weight ).MaximumSampleValue();
-      float s2 = m_instance.p_dropShrink*m_instance.p_dropShrink;
+      double wm = static_cast<Image&>( *weight ).MaximumSampleValue();
+      double s2 = m_instance.p_dropShrink*m_instance.p_dropShrink;
+      double rmax = 0, rmin = 1;
       for ( ; r; ++r, ++w )
          for ( int i = 0; i < result.NumberOfChannels(); ++i )
          {
-            float ws = w[i] / s2;
+            double ws = w[i] / s2;
             if ( 1 + ws != 1 )
-               if ( (r[i] /= ws) > 1 )
-                  r[i] = 1;
+            {
+               r[i] /= ws;
+               if ( r[i] < rmin )
+                  rmin = r[i];
+               if ( r[i] > rmax )
+                  rmax = r[i];
+            }
             w[i] /= wm;
          }
+
+      m_instance.o_output.outputRangeLow = rmin;
+      m_instance.o_output.outputRangeHigh = rmax;
+
+      if ( rmax > 1 )
+      {
+         Console().NoteLn( "<end><cbr><br>* Normalizing output image. Integration range: "
+                           + String().Format( "[%.8e,%.8e]", rmin, rmax ) );
+         result /= rmax;
+      }
    }
 };
 
@@ -1690,7 +1706,7 @@ void DrizzleIntegrationEngine::Perform()
 
       Normalize( resultImage, weightImage );
 
-      console.WriteLn( String().Format( "<end><cbr><br>Total output data : %.3f", totalOutputData ) );
+      console.NoteLn( String().Format( "<end><cbr><br>* Total output data : %.3f", totalOutputData ) );
 
       m_instance.o_output.integrationImageId = resultWindow.MainView().Id();
       m_instance.o_output.weightImageId = weightWindow.MainView().Id();
@@ -1760,7 +1776,13 @@ void DrizzleIntegrationEngine::Perform()
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      IsoString().Format( "DrizzleIntegration.integratedPixels: %lu", m_instance.o_output.integratedPixels ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                     IsoString().Format( "DrizzleIntegration.outputData: %.3f", totalOutputData ) );
+                                     IsoString().Format( "DrizzleIntegration.outputData: %.3f", totalOutputData ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                     IsoString().Format( "DrizzleIntegration.outputRangeLow: %.8e", m_instance.o_output.outputRangeLow ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                     IsoString().Format( "DrizzleIntegration.outputRangeHigh: %.8e", m_instance.o_output.outputRangeHigh ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(), // compatibility with ImageIntegration
+                                     "DrizzleIntegration.outputRangeOperation: normalize" );
 
       if ( metadata.IsValid() )
          if ( metadata.pedestal.IsConsistentlyDefined() )
@@ -2041,4 +2063,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2019-11-07T11:00:22Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2019-11-18T11:59:44Z

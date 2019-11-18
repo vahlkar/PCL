@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.20.0
+// Standard ImageIntegration Process Module Version 1.21.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.h - Released 2019-11-07T11:00:22Z
+// ImageIntegrationInterface.h - Released 2019-11-18T11:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -314,4 +314,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.h - Released 2019-11-07T11:00:22Z
+// EOF ImageIntegrationInterface.h - Released 2019-11-18T11:59:44Z

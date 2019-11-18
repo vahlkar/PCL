@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.20.0
+// Standard ImageIntegration Process Module Version 1.21.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.h - Released 2019-11-07T11:00:22Z
+// DrizzleIntegrationInstance.h - Released 2019-11-18T11:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -137,6 +137,8 @@ private:
       int32      numberOfChannels  = 0;  // number of pixel components
       uint64     outputPixels      = 0;  // area of the integrated image in square pixels
       uint64     integratedPixels  = 0;  // total integrated source pixels
+      double     outputRangeLow    = 0;  // output range, lower bound
+      double     outputRangeHigh   = 0;  // output range, upper bound
       UI64Vector totalRejectedLow  = UI64Vector( 0, 3 );  // per-channel total low rejected pixels
       UI64Vector totalRejectedHigh = UI64Vector( 0, 3 );  // per-channel total high rejected pixels
       float      outputData        = 0;  // total data gathered in input image units
@@ -180,4 +182,4 @@ private:
 #endif   // __DrizzleIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.h - Released 2019-11-07T11:00:22Z
+// EOF DrizzleIntegrationInstance.h - Released 2019-11-18T11:59:44Z

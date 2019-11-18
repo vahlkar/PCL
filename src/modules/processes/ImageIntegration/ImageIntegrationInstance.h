@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.20.0
+// Standard ImageIntegration Process Module Version 1.21.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.h - Released 2019-11-07T11:00:22Z
+// ImageIntegrationInstance.h - Released 2019-11-18T11:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -200,11 +200,13 @@ private:
       String     highRejectionMapImageId;  // identifier of the output high rejection map image
       String     slopeMapImageId;          // identifier of the output slope map image
       int32      numberOfChannels          = 0; // number of nominal channels (1 or 3)
-      uint64     numberOfPixels            = 0; // area of the integrated image in pixels
-      uint64     totalPixels               = 0; // total integrated pixels (area*numberOfFiles)
+      uint64     numberOfPixels            = 0u; // area of the integrated image in pixels
+      uint64     totalPixels               = 0u; // total integrated pixels (area*numberOfFiles)
 
       // Per-channel data for the final integrated image
 
+      double     outputRangeLow            = 0; // output range, lower bound
+      double     outputRangeHigh           = 0; // output range, upper bound
       UI64Vector totalRejectedLow          = UI64Vector( 0, 3 ); // low rejected pixels
       UI64Vector totalRejectedHigh         = UI64Vector( 0, 3 ); // high rejected pixels
       DVector    finalNoiseEstimates       = DVector( 0, 3 );    // noise estimates for the integrated image
@@ -326,4 +328,4 @@ private:
 #endif   // __ImageIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.h - Released 2019-11-07T11:00:22Z
+// EOF ImageIntegrationInstance.h - Released 2019-11-18T11:59:44Z

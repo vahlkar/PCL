@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.20.0
+// Standard ImageIntegration Process Module Version 1.21.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2019-11-07T11:00:22Z
+// ImageIntegrationParameters.h - Released 2019-11-18T11:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1201,6 +1201,38 @@ extern IITotalPixels* TheIITotalPixelsParameter;
 
 // ----------------------------------------------------------------------------
 
+class IIOutputRangeLow : public MetaDouble
+{
+public:
+
+   IIOutputRangeLow( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIOutputRangeLow* TheIIOutputRangeLowParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIOutputRangeHigh : public MetaDouble
+{
+public:
+
+   IIOutputRangeHigh( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern IIOutputRangeHigh* TheIIOutputRangeHighParameter;
+
+// ----------------------------------------------------------------------------
+
 class IITotalRejectedLowRK : public MetaUInt64
 {
 public:
@@ -1759,4 +1791,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2019-11-07T11:00:22Z
+// EOF ImageIntegrationParameters.h - Released 2019-11-18T11:59:44Z

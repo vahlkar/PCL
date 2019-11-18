@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.20.0
+// Standard ImageIntegration Process Module Version 1.21.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2019-11-07T11:00:22Z
+// ImageIntegrationInstance.cpp - Released 2019-11-18T11:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -4516,22 +4516,42 @@ bool ImageIntegrationInstance::ExecuteGlobal()
       if ( p_generateIntegratedImage )
       {
          /*
-          * Rescale or truncate the result if out-of-bounds.
-          * This should not happen with properly calibrated data sets.
+          * Normalize/rescale or truncate the result if out-of-bounds.
           */
+         result.GetExtremeSampleValues( o_output.outputRangeLow, o_output.outputRangeHigh );
+         if ( o_output.outputRangeLow < 0 || o_output.outputRangeHigh > 1 ) // low < 0 check for completeness/future; should be impossible.
          {
-            double v0, v1;
-            result.GetExtremeSampleValues( v0, v1 );
-            if ( v0 < 0 || v1 > 1 ) // v0 < 0 check for completeness/future; should be impossible.
+            console.NoteLn( "<end><cbr><br>* "
+               + String( p_truncateOnOutOfRange ? "Truncating" : ((o_output.outputRangeLow < 0) ? "Rescaling" : "Normalizing") )
+               + " output image. Integration range: "
+               + String().Format( "[%.8e,%.8e]", o_output.outputRangeLow, o_output.outputRangeHigh ) );
+
+            if ( p_truncateOnOutOfRange )
             {
-               console.WarningLn( "<end><cbr><br>** Warning: "
-                                 + String( p_truncateOnOutOfRange ? "Truncating" : "Rescaling" )
-                                 + " output image. Integration range: "
-                                 + String().Format( "[%.7e,%.7e]", v0, v1 ) );
-               if ( p_truncateOnOutOfRange )
-                  result.Truncate();
-               else
-                  result.Rescale();
+               /*
+                * Truncate to [0,1]
+                *
+                * x' = max( 0, min( x, 1 ) )
+                */
+               result.Truncate();
+            }
+            else if ( o_output.outputRangeLow < 0 )
+            {
+               /*
+                * Rescale to [0,1], including an additive term:
+                *
+                * x' = (x - low)/(high - low)
+                */
+               result.Rescale();
+            }
+            else
+            {
+               /*
+                * Normalize to [0,1], purely multiplicative:
+                *
+                * x' = x/high
+                */
+               result /= o_output.outputRangeHigh;
             }
          }
 
@@ -4672,7 +4692,14 @@ bool ImageIntegrationInstance::ExecuteGlobal()
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
                                         IsoString().Format( "ImageIntegration.numberOfImages: %d", IntegrationFile::NumberOfFiles() ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "ImageIntegration.totalPixels: %lu", o_output.totalPixels ) );
+                                        IsoString().Format( "ImageIntegration.totalPixels: %lu", o_output.totalPixels ) )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                        IsoString().Format( "ImageIntegration.outputRangeLow: %.8e", o_output.outputRangeLow ) )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                        IsoString().Format( "ImageIntegration.outputRangeHigh: %.8e", o_output.outputRangeHigh ) )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                        IsoString( "ImageIntegration.outputRangeOperation: " )
+                                        + (p_truncateOnOutOfRange ? "truncate" : ((o_output.outputRangeLow < 0) ? "rescale" : "normalize")) );
 
          IsoString totalRejectedLow = IsoString().Format( "ImageIntegration.totalRejectedLow: %lu(%.3f%%)",
                                  o_output.totalRejectedLow[0], 100.0*o_output.totalRejectedLow[0]/o_output.totalPixels );
@@ -5061,6 +5088,11 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
    if ( p == TheIITotalPixelsParameter )
       return &o_output.totalPixels;
 
+   if ( p == TheIIOutputRangeLowParameter )
+      return &o_output.outputRangeLow;
+   if ( p == TheIIOutputRangeHighParameter )
+      return &o_output.outputRangeHigh;
+
    if ( p == TheIITotalRejectedLowRKParameter )
       return o_output.totalRejectedLow.At( 0 );
    if ( p == TheIITotalRejectedLowGParameter )
@@ -5259,4 +5291,4 @@ size_type ImageIntegrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2019-11-07T11:00:22Z
+// EOF ImageIntegrationInstance.cpp - Released 2019-11-18T11:59:44Z

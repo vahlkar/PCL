@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.20.0
+// Standard ImageIntegration Process Module Version 1.21.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2019-11-07T11:00:22Z
+// ImageIntegrationParameters.cpp - Released 2019-11-18T11:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -129,6 +129,8 @@ IISlopeMapImageId*                   TheIISlopeMapImageIdParameter = nullptr;
 IINumberOfChannels*                  TheIINumberOfChannelsParameter = nullptr;
 IINumberOfPixels*                    TheIINumberOfPixelsParameter = nullptr;
 IITotalPixels*                       TheIITotalPixelsParameter = nullptr;
+IIOutputRangeLow*                    TheIIOutputRangeLowParameter = nullptr;
+IIOutputRangeHigh*                   TheIIOutputRangeHighParameter = nullptr;
 IITotalRejectedLowRK*                TheIITotalRejectedLowRKParameter = nullptr;
 IITotalRejectedLowG*                 TheIITotalRejectedLowGParameter = nullptr;
 IITotalRejectedLowB*                 TheIITotalRejectedLowBParameter = nullptr;
@@ -1860,6 +1862,60 @@ bool IITotalPixels::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
+IIOutputRangeLow::IIOutputRangeLow( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIOutputRangeLowParameter = this;
+}
+
+IsoString IIOutputRangeLow::Id() const
+{
+   return "outputRangeLow";
+}
+
+int IIOutputRangeLow::Precision() const
+{
+   return 15;
+}
+
+bool IIOutputRangeLow::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIOutputRangeLow::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIOutputRangeHigh::IIOutputRangeHigh( MetaProcess* P ) : MetaDouble( P )
+{
+   TheIIOutputRangeHighParameter = this;
+}
+
+IsoString IIOutputRangeHigh::Id() const
+{
+   return "outputRangeHigh";
+}
+
+int IIOutputRangeHigh::Precision() const
+{
+   return 15;
+}
+
+bool IIOutputRangeHigh::ScientificNotation() const
+{
+   return true;
+}
+
+bool IIOutputRangeHigh::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 IITotalRejectedLowRK::IITotalRejectedLowRK( MetaProcess* P ) : MetaUInt64( P )
 {
    TheIITotalRejectedLowRKParameter = this;
@@ -2657,4 +2713,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2019-11-07T11:00:22Z
+// EOF ImageIntegrationParameters.cpp - Released 2019-11-18T11:59:44Z

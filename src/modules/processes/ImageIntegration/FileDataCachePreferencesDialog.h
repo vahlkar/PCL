@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.20.0
+// Standard ImageIntegration Process Module Version 1.21.0
 // ----------------------------------------------------------------------------
-// FileDataCachePreferencesDialog.h - Released 2019-11-07T11:00:22Z
+// FileDataCachePreferencesDialog.h - Released 2019-11-18T11:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -107,4 +107,4 @@ private:
 #endif   // __FileDataCachePreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCachePreferencesDialog.h - Released 2019-11-07T11:00:22Z
+// EOF FileDataCachePreferencesDialog.h - Released 2019-11-18T11:59:44Z
