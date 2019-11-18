@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.21.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationParameters.cpp - Released 2019-11-18T11:59:44Z
+// DrizzleIntegrationParameters.cpp - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -90,6 +90,8 @@ DZWeightImageId*              TheDZWeightImageIdParameter = nullptr;
 DZNumberOfChannels*           TheDZNumberOfChannelsParameter = nullptr;
 DZOutputPixels*               TheDZOutputPixelsParameter = nullptr;
 DZIntegratedPixels*           TheDZIntegratedPixelsParameter = nullptr;
+DZOutputRangeLow*             TheDZOutputRangeLowParameter = nullptr;
+DZOutputRangeHigh*            TheDZOutputRangeHighParameter = nullptr;
 DZTotalRejectedLowRK*         TheDZTotalRejectedLowRKParameter = nullptr;
 DZTotalRejectedLowG*          TheDZTotalRejectedLowGParameter = nullptr;
 DZTotalRejectedLowB*          TheDZTotalRejectedLowBParameter = nullptr;
@@ -797,6 +799,60 @@ bool DZIntegratedPixels::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
+DZOutputRangeLow::DZOutputRangeLow( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDZOutputRangeLowParameter = this;
+}
+
+IsoString DZOutputRangeLow::Id() const
+{
+   return "outputRangeLow";
+}
+
+int DZOutputRangeLow::Precision() const
+{
+   return -15;
+}
+
+bool DZOutputRangeLow::ScientificNotation() const
+{
+   return true;
+}
+
+bool DZOutputRangeLow::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DZOutputRangeHigh::DZOutputRangeHigh( MetaProcess* P ) : MetaDouble( P )
+{
+   TheDZOutputRangeHighParameter = this;
+}
+
+IsoString DZOutputRangeHigh::Id() const
+{
+   return "outputRangeHigh";
+}
+
+int DZOutputRangeHigh::Precision() const
+{
+   return -15;
+}
+
+bool DZOutputRangeHigh::ScientificNotation() const
+{
+   return true;
+}
+
+bool DZOutputRangeHigh::IsReadOnly() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 DZTotalRejectedLowRK::DZTotalRejectedLowRK( MetaProcess* P ) : MetaUInt64( P )
 {
    TheDZTotalRejectedLowRKParameter = this;
@@ -1359,4 +1415,4 @@ bool DZImageOutputData::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationParameters.cpp - Released 2019-11-18T11:59:44Z
+// EOF DrizzleIntegrationParameters.cpp - Released 2019-11-18T16:52:32Z

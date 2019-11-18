@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.21.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// HDRCompositionParameters.h - Released 2019-11-18T11:59:44Z
+// HDRCompositionParameters.h - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -335,4 +335,4 @@ PCL_END_LOCAL
 #endif   // __HDRCompositionParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionParameters.h - Released 2019-11-18T11:59:44Z
+// EOF HDRCompositionParameters.h - Released 2019-11-18T16:52:32Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.21.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2019-11-18T11:59:44Z
+// ImageIntegrationInstance.cpp - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -4696,10 +4696,12 @@ bool ImageIntegrationInstance::ExecuteGlobal()
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
                                         IsoString().Format( "ImageIntegration.outputRangeLow: %.8e", o_output.outputRangeLow ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "ImageIntegration.outputRangeHigh: %.8e", o_output.outputRangeHigh ) )
-                  << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString( "ImageIntegration.outputRangeOperation: " )
-                                        + (p_truncateOnOutOfRange ? "truncate" : ((o_output.outputRangeLow < 0) ? "rescale" : "normalize")) );
+                                        IsoString().Format( "ImageIntegration.outputRangeHigh: %.8e", o_output.outputRangeHigh ) );
+
+         if ( o_output.outputRangeLow < 0 || o_output.outputRangeHigh > 1 )
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                       IsoString( "ImageIntegration.outputRangeOperation: " )
+                                       + (p_truncateOnOutOfRange ? "truncate" : ((o_output.outputRangeLow < 0) ? "rescale" : "normalize")) );
 
          IsoString totalRejectedLow = IsoString().Format( "ImageIntegration.totalRejectedLow: %lu(%.3f%%)",
                                  o_output.totalRejectedLow[0], 100.0*o_output.totalRejectedLow[0]/o_output.totalPixels );
@@ -5291,4 +5293,4 @@ size_type ImageIntegrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2019-11-18T11:59:44Z
+// EOF ImageIntegrationInstance.cpp - Released 2019-11-18T16:52:32Z

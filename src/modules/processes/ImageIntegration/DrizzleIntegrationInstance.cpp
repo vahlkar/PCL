@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.21.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2019-11-18T11:59:44Z
+// DrizzleIntegrationInstance.cpp - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1780,9 +1780,11 @@ void DrizzleIntegrationEngine::Perform()
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      IsoString().Format( "DrizzleIntegration.outputRangeLow: %.8e", m_instance.o_output.outputRangeLow ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                     IsoString().Format( "DrizzleIntegration.outputRangeHigh: %.8e", m_instance.o_output.outputRangeHigh ) )
-               << FITSHeaderKeyword( "HISTORY", IsoString(), // compatibility with ImageIntegration
-                                     "DrizzleIntegration.outputRangeOperation: normalize" );
+                                     IsoString().Format( "DrizzleIntegration.outputRangeHigh: %.8e", m_instance.o_output.outputRangeHigh ) );
+
+      if ( m_instance.o_output.outputRangeHigh > 1 )
+         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), // compatibility with ImageIntegration
+                                        "DrizzleIntegration.outputRangeOperation: normalize" );
 
       if ( metadata.IsValid() )
          if ( metadata.pedestal.IsConsistentlyDefined() )
@@ -1900,6 +1902,10 @@ void* DrizzleIntegrationInstance::LockParameter( const MetaParameter* p, size_ty
       return &o_output.outputPixels;
    if ( p == TheDZIntegratedPixelsParameter )
       return &o_output.integratedPixels;
+   if ( p == TheDZOutputRangeLowParameter )
+      return &o_output.outputRangeLow;
+   if ( p == TheDZOutputRangeHighParameter )
+      return &o_output.outputRangeHigh;
    if ( p == TheDZTotalRejectedLowRKParameter )
       return o_output.totalRejectedLow.At( 0 );
    if ( p == TheDZTotalRejectedLowGParameter )
@@ -2063,4 +2069,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2019-11-18T11:59:44Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2019-11-18T16:52:32Z

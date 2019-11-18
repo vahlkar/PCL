@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.21.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2019-11-18T11:59:44Z
+// ImageIntegrationParameters.cpp - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1874,7 +1874,7 @@ IsoString IIOutputRangeLow::Id() const
 
 int IIOutputRangeLow::Precision() const
 {
-   return 15;
+   return -15;
 }
 
 bool IIOutputRangeLow::ScientificNotation() const
@@ -1901,7 +1901,7 @@ IsoString IIOutputRangeHigh::Id() const
 
 int IIOutputRangeHigh::Precision() const
 {
-   return 15;
+   return -15;
 }
 
 bool IIOutputRangeHigh::ScientificNotation() const
@@ -2713,4 +2713,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2019-11-18T11:59:44Z
+// EOF ImageIntegrationParameters.cpp - Released 2019-11-18T16:52:32Z
