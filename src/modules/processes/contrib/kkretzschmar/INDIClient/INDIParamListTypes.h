@@ -113,6 +113,14 @@ struct INDIPropertyListItem
    }
 };
 
+struct BelongsToSameDevice {
+
+    bool operator() (const INDIPropertyListItem& left, const INDIPropertyListItem& right)
+    {
+        return left.Device == right.Device;
+    }
+};
+
 struct ElementValue
 {
    String Element;
@@ -192,6 +200,8 @@ struct INDINewPropertyListItem
              NewPropertyValue == rhs.NewPropertyValue;
    }
 };
+
+
 
 typedef Array<INDIDeviceListItem>      INDIDeviceListItemArray;
 typedef Array<INDIPropertyListItem>    INDIPropertyListItemArray;

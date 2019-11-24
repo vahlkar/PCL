@@ -509,6 +509,7 @@ private:
    };
 
    void ApplyToPropertyList( indigo_property*, const PropertyListMutator& );
+   void RemoveAllPropertiesForDevice( const String& deviceName );
 };
 
 // ----------------------------------------------------------------------------
