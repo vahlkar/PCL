@@ -73,6 +73,10 @@ function INDICCDTestSuite()
       this.timer.reset();
    };
 
+   this.stopTimer = function ()
+   {
+      this.timer.stop();
+   };
    this.timeout = function()
    {
       if ( this.timer.value > 10 )
@@ -100,6 +104,7 @@ function INDICCDTestSuite()
          if ( indexOfDevice( (new IndigoDeviceController).devices, CCD_DEVICE_NAME ) >= 0 )
             break;
       }
+      this.stopTime();
 
       // Wait for another 500 ms to allow for all device and property lists to
       // update completely.

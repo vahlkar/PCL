@@ -1619,6 +1619,7 @@ void AbstractINDICCDFrameExecution::Perform()
    catch ( ... )
    {
       m_running = false;
+      EndAcquisitionEvent();
 
       try
       {

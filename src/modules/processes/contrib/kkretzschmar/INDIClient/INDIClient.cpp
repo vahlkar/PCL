@@ -289,7 +289,7 @@ bool INDIClient::SendNewPropertyItem( const INDINewPropertyItem& newItem, bool a
       // In synchronous calls, wait until the server has processed all of our
       // property update requests.
       if ( !async ) {
-         for ( ;; ) {
+         for ( ; IsDeviceConnected(newItem.Device.ToIsoString()) ; ) {
             Module->ProcessEvents();
             if ( console.AbortRequested() )
                throw ProcessAborted();
@@ -316,6 +316,12 @@ bool INDIClient::SendNewPropertyItem( const INDINewPropertyItem& newItem, bool a
 
             if ( requestsDone == newItem.ElementValues.Length() )
                break;
+         }
+         if (!IsDeviceConnected(newItem.Device.ToIsoString()))
+         {
+             console.CriticalLn("<end><cbr><br>------------------------------------------------------------------------------" );
+             console.CriticalLn("Device '" + newItem.Device + "' is not connected.");
+             return false;
          }
       }
 
