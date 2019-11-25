@@ -210,9 +210,12 @@ public:
    /*!
     * Returns a 64-bit, monotonically nondecreasing time stamp.
     *
-    * The returned value is the time elapsed in nanoseconds since an arbitrary,
+    * The returned value is the time elapsed in seconds since an arbitrary,
     * platform-dependent starting time that will remain invariant during the
     * current execution of the calling module.
+    *
+    * With the current implementation, accuracy of timestamps should be better
+    * than one microsecond on all supported platforms.
     */
    static double TimeStamp()
    {
