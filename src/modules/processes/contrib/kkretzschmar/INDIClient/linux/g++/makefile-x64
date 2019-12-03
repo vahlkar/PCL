@@ -2,11 +2,23 @@
 # PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-09-30T11:28:14.944Z
+# Generated on .... 2019-12-03T23:36:35.927Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Linux/g++
 # Configuration ... Release/x64
+# --------------------------------------------------------------------
+# Additional preprocessor definitions:
+# INDIGO_LINUX=1
+# --------------------------------------------------------------------
+# Additional include search directories:
+# $(INDIGODIR)/indigo_libs
+# --------------------------------------------------------------------
+# Additional library search directories:
+# "$(INDIGODIR)/build/lib//x64
+# --------------------------------------------------------------------
+# Additional libraries:
+# indigo
 ######################################################################
 
 OBJ_DIR="$(PCLSRCDIR)/modules/processes/contrib/kkretzschmar/INDIClient/linux/g++/x64/Release"
@@ -20,7 +32,6 @@ all: $(OBJ_DIR)/INDIClient-pxm.so
 
 SRC_FILES= \
 ../../Alignment.cpp \
-../../IINDIProperty.cpp \
 ../../IIndigoProperty.cpp \
 ../../INDICCDFrameInstance.cpp \
 ../../INDICCDFrameInterface.cpp \
@@ -44,7 +55,6 @@ SRC_FILES= \
 
 OBJ_FILES= \
 ./x64/Release/Alignment.o \
-./x64/Release/IINDIProperty.o \
 ./x64/Release/IIndigoProperty.o \
 ./x64/Release/INDICCDFrameInstance.o \
 ./x64/Release/INDICCDFrameInterface.o \
@@ -68,7 +78,6 @@ OBJ_FILES= \
 
 DEP_FILES= \
 ./x64/Release/Alignment.d \
-./x64/Release/IINDIProperty.d \
 ./x64/Release/IIndigoProperty.d \
 ./x64/Release/INDICCDFrameInstance.d \
 ./x64/Release/INDICCDFrameInterface.d \
@@ -93,7 +102,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/INDIClient-pxm.so: $(OBJ_FILES)
-	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -o $(OBJ_DIR)/INDIClient-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -s -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -L"$(INDIGODIR)/build/lib/" -o $(OBJ_DIR)/INDIClient-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -lindigo
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -105,6 +114,6 @@ post-build:
 	cp $(OBJ_DIR)/INDIClient-pxm.so $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver1 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D"INDIGO_LINUX=1" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(INDIGODIR)/indigo_libs" -mtune=znver1 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

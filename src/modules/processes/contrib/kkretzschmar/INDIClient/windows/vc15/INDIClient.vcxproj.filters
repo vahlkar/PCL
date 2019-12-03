@@ -4,26 +4,35 @@
 # PixInsight Makefile Generator Script v1.112
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-10-20T10:45:45.432Z
+# Generated on .... 2019-12-03T23:37:29.626Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc15
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional preprocessor definitions:
+# INDIGO_WINDOWS=1
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional include search directories:
+# $(INDIGODIR)/indigo_libs
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional library search directories:
+# "$(INDIGODIR)/build/lib/
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional libraries:
+# indigo
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>3d65a1f9-31b4-4f8b-8ddb-53a021b3bb06</UniqueIdentifier>
+      <UniqueIdentifier>c6b256f1-c88e-4b79-a3c3-774309dce9dd</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>c005936a-3a73-4728-8c9c-89245117eac9</UniqueIdentifier>
+      <UniqueIdentifier>139b7f34-fdb1-4c9c-98a2-213b02f26663</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Alignment.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\IINDIProperty.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\IIndigoProperty.cpp">
@@ -80,9 +89,6 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\DeviceConfigBase.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\IINDIProperty.h">
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\IIndigoProperty.h">
