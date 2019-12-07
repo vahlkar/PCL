@@ -2,11 +2,7 @@
 # PixInsight Makefile Generator Script v1.115
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-<<<<<<< HEAD
 # Generated on .... 2019-12-03T23:36:35.927Z
-=======
-# Generated on .... 2019-11-29T09:40:50.605Z
->>>>>>> c64b3a7ffa51c6f45f70c8ece17d6e1880eadd6f
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Linux/g++
@@ -106,11 +102,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/INDIClient-pxm.so: $(OBJ_FILES)
-<<<<<<< HEAD
 	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -s -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -L"$(INDIGODIR)/build/lib/" -o $(OBJ_DIR)/INDIClient-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -lindigo
-=======
-	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/INDIClient-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
->>>>>>> c64b3a7ffa51c6f45f70c8ece17d6e1880eadd6f
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
