@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Random.h - Released 2019-09-29T12:27:26Z
+// pcl/Random.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -115,6 +115,9 @@ class FastMersenneTwister;
 /*!
  * \class RandomNumberGenerator
  * \brief Mersenne Twister (MT19937) pseudo-random number generator.
+ *
+ * \deprecated This class has been deprecated. Use the XoShiRo256ss and
+ * XoRoShiRo1024ss classes for all newly produced code.
  *
  * Generation of pseudo-random numbers with user-selectable range and
  * probability distributions.
@@ -262,6 +265,9 @@ private:
  * \class XorShift1024
  * \brief Implementation of the XorShift1024* pseudo-random number generator.
  *
+ * \deprecated This class has been deprecated. Use the XoShiRo256ss and
+ * XoRoShiRo1024ss classes for all newly produced code.
+ *
  * Generation of pseudo-random uniform deviates using the xorshift1024*
  * generator developed in 2014 by Sebastiano Vigna. This is a fast, top-quality
  * generator with a period of 2^1024-1, passing strong statistical test suites.
@@ -289,12 +295,12 @@ private:
  *
  * \ingroup random_numbers
  */
-class XorShift1024
+class PCL_CLASS XorShift1024
 {
 public:
 
    /*!
-    * Constructs a %XorShift1024 random generator.
+    * Constructs a %XorShift1024 pseudo-random number generator.
     *
     * \param seed    64-bit initialization seed. If this parameter is zero, a
     *                unique random seed will be generated automatically. The
@@ -308,7 +314,7 @@ public:
    /*!
     * Returns a double precision uniform random deviate in the [0,1) range.
     */
-   double operator()()
+   double operator ()()
    {
       return 5.4210108624275221703311e-20 * UI64(); // 1.0/(2^64 -1)
    }
@@ -388,9 +394,450 @@ private:
 
 // ----------------------------------------------------------------------------
 
+/*!
+ * \class XoRoShiRo1024ss
+ * \brief Base class of xoshiro and xoroshiro pseudo-random number generators.
+ */
+class PCL_CLASS XoShiRoBase
+{
+public:
+
+   /*!
+    * Default constructor.
+    */
+   XoShiRoBase() = default;
+
+protected:
+
+   /*!
+    * \internal
+    * The left rotation function used by the generator.
+    */
+   static uint64 RotL( const uint64 x, int k )
+   {
+      return (x << k) | (x >> (64 - k));
+   }
+
+   /*!
+    * \internal
+    * The SplitMix64 generator used for state space initialization, as
+    * recommended by Blackman/Vigna.
+    */
+   static uint64 SplitMix64( uint64& x )
+   {
+      uint64 z = (x += 0x9e3779b97f4a7c15);
+      z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9;
+      z = (z ^ (z >> 27)) * 0x94d049bb133111eb;
+      return z ^ (z >> 31);
+   }
+
+   /*!
+    * \internal
+    * Conversion of a 64-bit unsigned inteter to 64-bit floating point with
+    * uniform probability over the entire 53-bit significant digits.
+    * See: http://prng.di.unimi.it/#remarks
+    */
+   static double UI64ToDouble( uint64 x )
+   {
+      return (x >> 11) * 0x1.0p-53;
+   }
+};
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \class XoShiRo256ss
+ * \brief Implementation of the xoshiro256** pseudo-random number generator.
+ *
+ * Generation of pseudo-random uniform deviates using the xoroshiro1024**
+ * generator developed in 2019 by David Blackman and Sebastiano Vigna. This is
+ * a fast, top-quality generator with a period of 2^256-1, passing strong
+ * statistical test suites&mdash;actually, it passes all tests we are aware of.
+ *
+ * Examples of use:
+ *
+ * \code
+ * XoShiRo256ss X; // initialized automatically
+ * // ...
+ * double x = X();      // x = random uniform deviate in the range [0,1)
+ * uint64 y = X.UI64(); // y = 64-bit unsigned integer random uniform deviate
+ * uint32 z = X.UI32(); // z = 32-bit unsigned integer random uniform deviate
+ * uint32 t = X.UIN( 100 ); // t = integer uniform deviate in the range [0,99]
+ * \endcode
+ *
+ * <b>References</b>
+ *
+ * David Blackman and Sebastiano Vigna (2019), <em>Scrambled linear
+ * pseudorandom number generators</em> (preprint).
+ *
+ * See also: http://prng.di.unimi.it/
+ *
+ * \ingroup random_numbers
+ */
+class PCL_CLASS XoShiRo256ss : public XoShiRoBase
+{
+public:
+
+   /*!
+    * Constructs a %XoShiRo256ss pseudo-random number generator.
+    *
+    * \param seed    64-bit initialization seed. If this parameter is zero, a
+    *                unique random seed will be generated automatically. The
+    *                default value is zero.
+    */
+   XoShiRo256ss( uint64 seed = 0 )
+   {
+      Initialize( seed );
+   }
+
+   /*!
+    * Returns a double precision uniform random deviate in the [0,1) range.
+    */
+   double operator ()()
+   {
+      return UI64ToDouble( UI64() );
+   }
+
+   /*!
+    * Returns a 64-bit unsigned integer uniform random deviate.
+    */
+   uint64 UI64()
+   {
+      const uint64 result = RotL( m_s[1]*5, 7 ) * 9;
+      const uint64 t = m_s[1] << 17;
+      m_s[2] ^= m_s[0];
+      m_s[3] ^= m_s[1];
+      m_s[1] ^= m_s[2];
+      m_s[0] ^= m_s[3];
+      m_s[2] ^= t;
+      m_s[3] = RotL( m_s[3], 45 );
+      return result;
+   }
+
+   /*!
+    * Returns a 32-bit unsigned integer uniform random deviate.
+    */
+   uint32 UI32()
+   {
+      return uint32( UI64() );
+   }
+
+   /*!
+    * Returns a 64-bit unsigned integer uniform random deviate in the range
+    * [0,n-1].
+    */
+   uint64 UI64N( uint64 n )
+   {
+      return UI64() % n;
+   }
+
+   /*!
+    * Returns an unsigned integer uniform random deviate in the range [0,n-1].
+    */
+   uint32 UIN( uint32 n )
+   {
+      return UI64() % n;
+   }
+
+   /*!
+    * A synonym for UIN().
+    */
+   uint32 UI32N( uint32 n )
+   {
+      return UIN( n );
+   }
+
+   /*!
+    * Reinitializes this generator with a new \a seed.
+    *
+    * If the specified \a seed is zero, a unique, high-quality random seed will
+    * be generated automatically by calling RandomSeed64().
+    */
+   void Initialize( uint64 x )
+   {
+      if ( x == 0 )
+         x = RandomSeed64();
+      // Use a SplitMix64 generator to initialize the state space.
+      for ( int i = 0; i < 4; ++i )
+         m_s[i] = SplitMix64( x );
+   }
+
+private:
+
+   uint64 m_s[ 4 ];
+};
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \class XoRoShiRo1024ss
+ * \brief Implementation of the xoroshiro1024** pseudo-random number generator.
+ *
+ * Generation of pseudo-random uniform deviates using the xoroshiro1024**
+ * generator developed in 2019 by David Blackman and Sebastiano Vigna. This is
+ * a fast, top-quality generator with a period of 2^1024-1, passing strong
+ * statistical test suites&mdash;actually, it passes all tests we are aware of.
+ *
+ * Examples of use:
+ *
+ * \code
+ * XoRoShiRo1024ss X; // initialized automatically
+ * // ...
+ * double x = X();      // x = random uniform deviate in the range [0,1)
+ * uint64 y = X.UI64(); // y = 64-bit unsigned integer random uniform deviate
+ * uint32 z = X.UI32(); // z = 32-bit unsigned integer random uniform deviate
+ * uint32 t = X.UIN( 100 ); // t = integer uniform deviate in the range [0,99]
+ * \endcode
+ *
+ * <b>References</b>
+ *
+ * David Blackman and Sebastiano Vigna (2019), <em>Scrambled linear
+ * pseudorandom number generators</em> (preprint).
+ *
+ * See also: http://prng.di.unimi.it/
+ *
+ * \ingroup random_numbers
+ */
+class PCL_CLASS XoRoShiRo1024ss : public XoShiRoBase
+{
+public:
+
+   /*!
+    * Constructs a %XoRoShiRo1024ss pseudo-random number generator.
+    *
+    * \param seed    64-bit initialization seed. If this parameter is zero, a
+    *                unique random seed will be generated automatically. The
+    *                default value is zero.
+    */
+   XoRoShiRo1024ss( uint64 seed = 0 )
+   {
+      Initialize( seed );
+   }
+
+   /*!
+    * Returns a double precision uniform random deviate in the [0,1) range.
+    */
+   double operator ()()
+   {
+      return UI64ToDouble( UI64() );
+   }
+
+   /*!
+    * Returns a 64-bit unsigned integer uniform random deviate.
+    */
+   uint64 UI64()
+   {
+      const int q = m_p;
+      const uint64 s0 = m_s[m_p = (m_p + 1) & 15];
+      uint64 s15 = m_s[q];
+      const uint64 result = RotL( s0*5, 7 ) * 9;
+      s15 ^= s0;
+      m_s[q] = RotL( s0, 25 ) ^ s15 ^ (s15 << 27);
+      m_s[m_p] = RotL( s15, 36 );
+      return result;
+   }
+
+   /*!
+    * Returns a 32-bit unsigned integer uniform random deviate.
+    */
+   uint32 UI32()
+   {
+      return uint32( UI64() );
+   }
+
+   /*!
+    * Returns a 64-bit unsigned integer uniform random deviate in the range
+    * [0,n-1].
+    */
+   uint64 UI64N( uint64 n )
+   {
+      return UI64() % n;
+   }
+
+   /*!
+    * Returns an unsigned integer uniform random deviate in the range [0,n-1].
+    */
+   uint32 UIN( uint32 n )
+   {
+      return UI64() % n;
+   }
+
+   /*!
+    * A synonym for UIN().
+    */
+   uint32 UI32N( uint32 n )
+   {
+      return UIN( n );
+   }
+
+   /*!
+    * Reinitializes this generator with a new \a seed.
+    *
+    * If the specified \a seed is zero, a unique, high-quality random seed will
+    * be generated automatically by calling RandomSeed64().
+    */
+   void Initialize( uint64 x )
+   {
+      if ( x == 0 )
+         x = RandomSeed64();
+      // Use a SplitMix64 generator to initialize the state space.
+      for ( int i = 0; i < 16; ++i )
+         m_s[i] = SplitMix64( x );
+      m_p = 0;
+   }
+
+private:
+
+   uint64 m_s[ 16 ];
+   int    m_p;
+};
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \class NormalRandomDeviates
+ * \brief Generation of random normal (Gaussian) deviates.
+ * \ingroup random_numbers
+ */
+template <class RNG>
+class PCL_CLASS NormalRandomDeviates
+{
+public:
+
+   /*!
+    * Constructs a %NormalRandomDeviates objects using the specified
+    * pseudo-random number generator \a R.
+    */
+   NormalRandomDeviates( RNG& R ) : m_R( R )
+   {
+   }
+
+   /*!
+    * Returns a random deviate from a Gaussian distribution with zero mean and
+    * unit standard deviation.
+    */
+   double operator ()()
+   {
+      /*
+       * Marsaglia polar method.
+       */
+      double x;
+      if ( m_first )
+      {
+         do
+         {
+            double u1 = m_R();
+            double u2 = m_R();
+            m_v1 = 2*u1 - 1;
+            m_v2 = 2*u2 - 1;
+            m_s = m_v1*m_v1 + m_v2*m_v2;
+         }
+         while ( m_s >= 1 || m_s <= std::numeric_limits<double>::epsilon() );
+
+         x = m_v1 * Sqrt( -2*Ln( m_s )/m_s );
+      }
+      else
+         x = m_v2 * Sqrt( -2*Ln( m_s )/m_s );
+
+      m_first = !m_first;
+      return x;
+   }
+
+private:
+
+   RNG&   m_R;
+   double m_v1 = 0;
+   double m_v2 = 0;
+   double m_s = 0;
+   bool   m_first = true;
+};
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \class PoissonRandomDeviates
+ * \brief Generation of random Poisson deviates.
+ * \ingroup random_numbers
+ */
+template <class RNG>
+class PCL_CLASS PoissonRandomDeviates
+{
+public:
+
+   /*!
+    * Constructs a %PoissonRandomDeviates objects using the specified
+    * pseudo-random number generator \a R.
+    */
+   PoissonRandomDeviates( RNG& R ) : m_R( R )
+   {
+   }
+
+   /*!
+    * Returns a random Poisson deviate for the specified \a value.
+    */
+   int operator ()( double value )
+   {
+      if ( value < 30 )
+      {
+         /*
+          * Implementation of the algorithm by Donald E. Knuth, 1969.
+          *
+          * This algorithm is slow (unusable) for large values.
+          */
+         double p = 1, L = Exp( -value );
+         int k = 0;
+         do
+         {
+            ++k;
+            p *= m_R();
+         }
+         while ( p > L );
+         return k-1;
+      }
+
+      /*
+       * Code adapted from 'Random number generation in C++', by John D. Cook:
+       *
+       * https://www.johndcook.com/blog/cpp_random_number_generation/
+       *
+       * The algorithm is from "The Computer Generation of Poisson Random
+       * Variables" by A. C. Atkinson, Journal of the Royal Statistical
+       * Society Series C (Applied Statistics) Vol. 28, No. 1. (1979)
+       *
+       * This algorithm is slow (unusable) for small values.
+       */
+      double c = 0.767 - 3.36/value;
+      double beta = Const<double>::pi()/Sqrt( 3*value );
+      double alpha = beta*value;
+      double k = Ln( c ) - value - Ln( beta );
+      for ( ;; )
+      {
+         double u = m_R();
+         double x = (alpha - Ln( (1 - u)/u ))/beta;
+         int n = int( Floor( x + 0.5 ) );
+         if ( n < 0 )
+            continue;
+         double v = m_R();
+         double y = alpha - beta*x;
+         double temp = 1 + Exp( y );
+         double lhs = y + Ln( v/temp/temp );
+         double rhs = k + n*Ln( value ) - m_F.Ln( n );
+         if ( lhs <= rhs )
+            return n;
+      }
+   }
+
+private:
+
+   RNG&         m_R;
+   Fact<double> m_F;
+};
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 #endif   // __PCL_Random_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Random.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/Random.h - Released 2019-11-07T10:59:34Z

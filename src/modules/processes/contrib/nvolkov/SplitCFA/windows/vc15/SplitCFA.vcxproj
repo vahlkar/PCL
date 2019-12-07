@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.112
+# PixInsight Makefile Generator Script v1.115
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-09-30T11:28:16.348Z
+# Generated on .... 2019-11-29T09:40:52.188Z
 # Project id ...... SplitCFA
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{684A6234-80F6-4914-900B-5C437ACEF100}</ProjectGuid>
+    <ProjectGuid>{F17C2404-CB18-447A-8BDA-16C81F7CED83}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

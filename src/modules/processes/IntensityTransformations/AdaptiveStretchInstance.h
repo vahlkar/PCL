@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInstance.h - Released 2019-09-29T12:27:57Z
+// AdaptiveStretchInstance.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -70,15 +70,10 @@ class StretchCurve : public FVector
 {
 public:
 
-   StretchCurve() : FVector()
-   {
-   }
+   StretchCurve() = default;
+   StretchCurve( const StretchCurve& ) = default;
 
    StretchCurve( int n ) : FVector( n )
-   {
-   }
-
-   StretchCurve( const StretchCurve& x ) : FVector( x )
    {
    }
 
@@ -108,14 +103,14 @@ public:
    AdaptiveStretchInstance( const MetaProcess* );
    AdaptiveStretchInstance( const AdaptiveStretchInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type /*tableRow*/ );
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type /*tableRow*/ ) override;
 
    // Reimplemented to launch the auxiliary graph interface.
-   virtual ProcessInterface* SelectInterface() const;
+   ProcessInterface* SelectInterface() const override;
 
    StretchCurve Preview( UInt16Image&, const View& ) const;
 
@@ -141,4 +136,4 @@ private:
 #endif   // __AdaptiveStretchInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInstance.h - Released 2019-09-29T12:27:57Z
+// EOF AdaptiveStretchInstance.h - Released 2019-11-07T11:00:22Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/HistogramTransformation.cpp - Released 2019-09-29T12:27:33Z
+// pcl/HistogramTransformation.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -259,17 +259,18 @@ private:
 
 void HistogramTransformation::Make24BitLUT( uint8* lut ) const
 {
-   if ( lut == 0 )
+   if ( lut == nullptr )
       return;
 
-   int numberOfThreads = m_parallel ? Min( int( m_maxProcessors ), Thread::NumberOfThreads( uint24_max+1, 256 ) ) : 1;
-   int itemsPerThread = (uint24_max + 1)/numberOfThreads;
+   Array<size_type> L = Thread::OptimalThreadLoads( uint24_max+1,
+                                                    256/*overheadLimit*/,
+                                                    m_parallel ? int( m_maxProcessors ) : 1 );
+   int numberOfThreads = int( L.Length() );
    bool useAffinity = m_parallel && Thread::IsRootThread();
 
    ReferenceArray<LUT2408Thread> threads;
-   for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-      threads.Add( new LUT2408Thread( lut, *this,
-                                      i*itemsPerThread, (j < numberOfThreads) ? j*itemsPerThread : uint24_max+1 ) );
+   for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
+      threads.Add( new LUT2408Thread( lut, *this, n, n + int( L[i] ) ) );
    if ( numberOfThreads > 1 )
    {
       for ( int i = 0; i < numberOfThreads; ++i )
@@ -323,17 +324,18 @@ private:
 
 void HistogramTransformation::Make24BitLUT( uint16* lut ) const
 {
-   if ( lut == 0 )
+   if ( lut == nullptr )
       return;
 
-   int numberOfThreads = m_parallel ? Min( int( m_maxProcessors ), Thread::NumberOfThreads( uint24_max+1, 256 ) ) : 1;
-   int itemsPerThread = (uint24_max + 1)/numberOfThreads;
+   Array<size_type> L = Thread::OptimalThreadLoads( uint24_max+1,
+                                                    256/*overheadLimit*/,
+                                                    m_parallel ? int( m_maxProcessors ) : 1 );
+   int numberOfThreads = int( L.Length() );
    bool useAffinity = m_parallel && Thread::IsRootThread();
 
    ReferenceArray<LUT2416Thread> threads;
-   for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-      threads.Add( new LUT2416Thread( lut, *this,
-                                      i*itemsPerThread, (j < numberOfThreads) ? j*itemsPerThread : uint24_max+1 ) );
+   for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
+      threads.Add( new LUT2416Thread( lut, *this, n, n + int( L[i] ) ) );
    if ( numberOfThreads > 1 )
    {
       for ( int i = 0; i < numberOfThreads; ++i )
@@ -365,9 +367,9 @@ public:
       Rect r = image.SelectedRectangle();
       int h = r.Height();
 
-      int numberOfThreads = H.IsParallelProcessingEnabled() ? Min( H.MaxProcessors(), pcl::Thread::NumberOfThreads( h, 1 ) ) : 1;
-      int rowsPerThread = h/numberOfThreads;
-
+      Array<size_type> L = pcl::Thread::OptimalThreadLoads( h,
+                                                            1/*overheadLimit*/,
+                                                            H.IsParallelProcessingEnabled() ? H.MaxProcessors() : 1 );
       size_type N = image.NumberOfSelectedSamples();
       if ( image.Status().IsInitializationEnabled() )
          image.Status().Initialize( "Histogram transformation", N );
@@ -375,8 +377,8 @@ public:
       ThreadData<P> data( image, H, N );
 
       ReferenceArray<Thread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new Thread<P>( data, i*rowsPerThread, (j < numberOfThreads) ? j*rowsPerThread : h ) );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new Thread<P>( data, n, n + int( L[i] ) ) );
 
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
@@ -494,4 +496,4 @@ void HistogramTransformation::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/HistogramTransformation.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/HistogramTransformation.cpp - Released 2019-11-07T10:59:44Z

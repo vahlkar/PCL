@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchCurveGraphInterface.cpp - Released 2019-09-29T12:27:57Z
+// AdaptiveStretchCurveGraphInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,7 +68,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-AdaptiveStretchCurveGraphInterface* TheAdaptiveStretchCurveGraphInterface = 0;
+AdaptiveStretchCurveGraphInterface* TheAdaptiveStretchCurveGraphInterface = nullptr;
 
 static int s_sizeItems[] = { 400, 500, 600, 800, 1000 };
 
@@ -345,7 +345,6 @@ void AdaptiveStretchCurveGraphInterface::__Click( Button& sender, bool checked )
 
       window.BringToFront();
       window.Show();
-      window.ZoomToFit( false/*allowMagnification*/ );
    }
    else if ( sender == GUI->Edit_ToolButton )
    {
@@ -444,4 +443,4 @@ AdaptiveStretchCurveGraphInterface::GUIData::GUIData( AdaptiveStretchCurveGraphI
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchCurveGraphInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF AdaptiveStretchCurveGraphInterface.cpp - Released 2019-11-07T11:00:22Z

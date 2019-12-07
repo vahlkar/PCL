@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationIcon.xpm - Released 2019-09-29T12:27:57Z
+// PhotometricColorCalibrationIcon.xpm - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -243,4 +243,4 @@ static const char *PhotometricColorCalibrationIcon_XPM[]={
 "QtQtQtQtQtQtQtQtQtQtQtQtQtQtQtQtQtQtQtQtQtQtQtQt"};
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationIcon.xpm - Released 2019-09-29T12:27:57Z
+// EOF PhotometricColorCalibrationIcon.xpm - Released 2019-11-07T11:00:22Z

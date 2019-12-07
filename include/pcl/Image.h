@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Image.h - Released 2019-09-29T12:27:26Z
+// pcl/Image.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -10773,16 +10773,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing minimum sample value", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<MinThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new MinThread( *this, r, firstChannel, lastChannel,
-                                     i*rowsPerThread,
-                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new MinThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( MinThread& thread : threads )
@@ -10854,16 +10850,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing maximum sample value", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<MaxThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new MaxThread( *this, r, firstChannel, lastChannel,
-                                     i*rowsPerThread,
-                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new MaxThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( MaxThread& thread : threads )
@@ -10949,16 +10941,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing extreme sample values", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<MinMaxThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new MinMaxThread( *this, r, firstChannel, lastChannel,
-                                     i*rowsPerThread,
-                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new MinMaxThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( MinMaxThread& thread : threads )
@@ -11048,16 +11036,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Locating minimum sample value", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<MinPosThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new MinPosThread( *this, r, firstChannel, lastChannel,
-                                     i*rowsPerThread,
-                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new MinPosThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( MinPosThread& thread : threads )
@@ -11194,16 +11178,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Locating maximum sample value", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<MaxPosThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new MaxPosThread( *this, r, firstChannel, lastChannel,
-                                     i*rowsPerThread,
-                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new MaxPosThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( MaxPosThread& thread : threads )
@@ -11354,16 +11334,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Locating extreme sample values", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<MinMaxPosThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new MinMaxPosThread( *this, r, firstChannel, lastChannel,
-                                           i*rowsPerThread,
-                                           (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new MinMaxPosThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( MinMaxPosThread& thread : threads )
@@ -11497,16 +11473,12 @@ public:
          return uint64( r.Width() ) * uint64( r.Height() ) * uint64( 1 + lastChannel - firstChannel );
       }
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<CountThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new CountThread( *this, r, firstChannel, lastChannel,
-                                       i*rowsPerThread,
-                                       (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new CountThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( CountThread& thread : threads )
@@ -11565,16 +11537,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing mean sample value", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<SumThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new SumThread( *this, r, firstChannel, lastChannel,
-                                     i*rowsPerThread,
-                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new SumThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( SumThread& thread : threads )
@@ -11650,16 +11618,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing median sample value", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<SmpThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new SmpThread( *this, r, firstChannel, lastChannel,
-                                     i*rowsPerThread,
-                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new SmpThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( SmpThread& thread : threads )
@@ -11745,16 +11709,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing variance", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<SumThread> sumThreads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         sumThreads.Add( new SumThread( *this, r, firstChannel, lastChannel,
-                                        i*rowsPerThread,
-                                        (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         sumThreads.Add( new SumThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( sumThreads.Length() > 1 )
       {
          int n = 0;
          for ( SumThread& thread : sumThreads )
@@ -11784,11 +11744,9 @@ public:
       double mean = s/n;
 
       ReferenceArray<VarThread> varThreads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         varThreads.Add( new VarThread( *this, mean, r, firstChannel, lastChannel,
-                                        i*rowsPerThread,
-                                        (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         varThreads.Add( new VarThread( *this, mean, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( varThreads.Length() > 1 )
       {
          int n = 0;
          for ( VarThread& thread : varThreads )
@@ -11896,16 +11854,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing average absolute deviation", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<SumAbsDevThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new SumAbsDevThread( *this, center, r, firstChannel, lastChannel,
-                                           i*rowsPerThread,
-                                           (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new SumAbsDevThread( *this, center, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( SumAbsDevThread& thread : threads )
@@ -11989,16 +11943,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing median absolute deviation", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<SmpAbsDevThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new SmpAbsDevThread( *this, center, r, firstChannel, lastChannel,
-                                           i*rowsPerThread,
-                                           (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new SmpAbsDevThread( *this, center, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( SmpAbsDevThread& thread : threads )
@@ -12092,16 +12042,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing biweight midvariance", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<BWMVThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new BWMVThread( *this, center, kd, r, firstChannel, lastChannel,
-                                      i*rowsPerThread,
-                                      (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new BWMVThread( *this, center, kd, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( BWMVThread& thread : threads )
@@ -12190,16 +12136,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing percentage bend midvariance", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<DSmpThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new DSmpThread( *this, r, firstChannel, lastChannel,
-                                      i*rowsPerThread,
-                                      (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new DSmpThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( DSmpThread& thread : threads )
@@ -12278,16 +12220,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing Sn scale estimate", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<DSmpThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new DSmpThread( *this, r, firstChannel, lastChannel,
-                                      i*rowsPerThread,
-                                      (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new DSmpThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( DSmpThread& thread : threads )
@@ -12365,16 +12303,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing Qn scale estimate", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<DSmpThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new DSmpThread( *this, r, firstChannel, lastChannel,
-                                      i*rowsPerThread,
-                                      (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new DSmpThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( DSmpThread& thread : threads )
@@ -12448,16 +12382,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing norm", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<SumThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new SumThread( *this, r, firstChannel, lastChannel,
-                                     i*rowsPerThread,
-                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new SumThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( SumThread& thread : threads )
@@ -12524,16 +12454,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing modulus", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<SumAbsThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new SumAbsThread( *this, r, firstChannel, lastChannel,
-                                     i*rowsPerThread,
-                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new SumAbsThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( SumAbsThread& thread : threads )
@@ -12598,16 +12524,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing sum of squares", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<SumSqrThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new SumSqrThread( *this, r, firstChannel, lastChannel,
-                                        i*rowsPerThread,
-                                        (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new SumSqrThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( SumSqrThread& thread : threads )
@@ -12672,16 +12594,12 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing mean of squares", N );
 
-      int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-      int rowsPerThread = r.Height()/numberOfThreads;
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
-
       ReferenceArray<SumSqrThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new SumSqrThread( *this, r, firstChannel, lastChannel,
-                                        i*rowsPerThread,
-                                        (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
-      if ( numberOfThreads > 1 )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new SumSqrThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
       {
          int n = 0;
          for ( SumSqrThread& thread : threads )
@@ -13556,16 +13474,13 @@ public:
          n += 2;
       }
 
-      int numberOfThreads = this->NumberOfThreads( N, maxProcessors );
-      size_type pixelsPerThread = N/numberOfThreads;
-
+      Array<size_type> L = Thread::OptimalThreadLoads( N,
+                                       16u/*overheadLimit*/,
+                                       m_parallel ? ((maxProcessors > 0) ? maxProcessors : m_maxProcessors) : 1 );
       ThreadData data( *this, N );
-
       ReferenceArray<ColorSpaceConversionThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new ColorSpaceConversionThread( *this, data, colorSpace,
-                                                      i*pixelsPerThread,
-                                                      (j < numberOfThreads) ? j*pixelsPerThread : N ) );
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads.Add( new ColorSpaceConversionThread( *this, data, colorSpace, n, n + L[i] ) );
       RunThreads( threads, data );
       threads.Destroy();
 
@@ -13718,16 +13633,11 @@ public:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Computing CIE Y component", N );
 
-         int numberOfThreads = this->NumberOfThreadsForRows( Y.Height(), Y.Width(), maxProcessors );
-         int rowsPerThread = Y.Height()/numberOfThreads;
-
+         Array<size_type> L = OptimalThreadRows( Y.Height(), Y.Width(), maxProcessors );
          ThreadData data( *this, N );
-
          ReferenceArray<GetLuminanceThread<P1> > threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-            threads.Add( new GetLuminanceThread<P1>( Y, *this, data, r,
-                                                     i*rowsPerThread,
-                                                     (j < numberOfThreads) ? j*rowsPerThread : Y.Height() ) );
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads.Add( new GetLuminanceThread<P1>( Y, *this, data, r, n, n + int( L[i] ) ) );
          RunThreads( threads, data );
          threads.Destroy();
 
@@ -13851,16 +13761,11 @@ public:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Computing CIE L* component", N );
 
-         int numberOfThreads = this->NumberOfThreadsForRows( L.Height(), L.Width(), maxProcessors );
-         int rowsPerThread = L.Height()/numberOfThreads;
-
+         Array<size_type> R = OptimalThreadRows( L.Height(), L.Width(), maxProcessors );
          ThreadData data( *this, N );
-
          ReferenceArray<GetLightnessThread<P1> > threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-            threads.Add( new GetLightnessThread<P1>( L, *this, data, r,
-                                                     i*rowsPerThread,
-                                                     (j < numberOfThreads) ? j*rowsPerThread : L.Height() ) );
+         for ( int i = 0, n = 0; i < int( R.Length() ); n += int( R[i++] ) )
+            threads.Add( new GetLightnessThread<P1>( L, *this, data, r, n, n + int( R[i] ) ) );
          RunThreads( threads, data );
          threads.Destroy();
 
@@ -13975,16 +13880,11 @@ public:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Computing intensity component", N );
 
-         int numberOfThreads = this->NumberOfThreadsForRows( I.Height(), I.Width(), maxProcessors );
-         int rowsPerThread = I.Height()/numberOfThreads;
-
+         Array<size_type> L = OptimalThreadRows( I.Height(), I.Width(), maxProcessors );
          ThreadData data( *this, N );
-
          ReferenceArray<GetIntensityThread<P1> > threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-            threads.Add( new GetIntensityThread<P1>( I, *this, data, r,
-                                                     i*rowsPerThread,
-                                                     (j < numberOfThreads) ? j*rowsPerThread : I.Height() ) );
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads.Add( new GetIntensityThread<P1>( I, *this, data, r, n, n + int( L[i] ) ) );
          RunThreads( threads, data );
          threads.Destroy();
 
@@ -14119,16 +14019,11 @@ public:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Importing CIE Y component", N );
 
-         int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-         int rowsPerThread = r.Height()/numberOfThreads;
-
+         Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
          ThreadData data( *this, N );
-
          ReferenceArray<SetLuminanceThread<P1> > threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-            threads.Add( new SetLuminanceThread<P1>( *this, Y, data, p, r,
-                                                     i*rowsPerThread,
-                                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads.Add( new SetLuminanceThread<P1>( *this, Y, data, p, r, n, n + int( L[i] ) ) );
          RunThreads( threads, data );
          threads.Destroy();
 
@@ -14265,16 +14160,11 @@ public:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Importing CIE L* component", N );
 
-         int numberOfThreads = this->NumberOfThreadsForRows( r.Height(), r.Width(), maxProcessors );
-         int rowsPerThread = r.Height()/numberOfThreads;
-
+         Array<size_type> R = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
          ThreadData data( *this, N );
-
          ReferenceArray<SetLightnessThread<P1> > threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-            threads.Add( new SetLightnessThread<P1>( *this, L, data, p, r,
-                                                     i*rowsPerThread,
-                                                     (j < numberOfThreads) ? j*rowsPerThread : r.Height() ) );
+         for ( int i = 0, n = 0; i < int( R.Length() ); n += int( R[i++] ) )
+            threads.Add( new SetLightnessThread<P1>( *this, L, data, p, r, n, n + int( R[i] ) ) );
          RunThreads( threads, data );
          threads.Destroy();
 
@@ -16538,4 +16428,4 @@ typedef FComplexImage                     ComplexImage;
 #endif   // __PCL_Image_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Image.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/Image.h - Released 2019-11-07T10:59:34Z

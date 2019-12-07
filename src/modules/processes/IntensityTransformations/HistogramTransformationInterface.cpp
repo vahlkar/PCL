@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationInterface.cpp - Released 2019-09-29T12:27:57Z
+// HistogramTransformationInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -325,7 +325,7 @@ bool HistogramTransformationInterface::ImportProcess( const ProcessImplementatio
 
 // ----------------------------------------------------------------------------
 
-bool HistogramTransformationInterface::RequiresRealTimePreviewUpdate( const UInt16Image& img, const View&, int zoomLevel ) const
+bool HistogramTransformationInterface::RequiresRealTimePreviewUpdate( const UInt16Image& img, const View&, const Rect&, int ) const
 {
    return true;
 }
@@ -350,7 +350,7 @@ void HistogramTransformationInterface::RealTimeThread::Run()
    m_instance.Preview( m_image );
 }
 
-bool HistogramTransformationInterface::GenerateRealTimePreview( UInt16Image& image, const View&, int/*zoomLevel*/, String&/*info*/ ) const
+bool HistogramTransformationInterface::GenerateRealTimePreview( UInt16Image& image, const View&, const Rect&, int, String& ) const
 {
    m_realTimeThread = new RealTimeThread;
 
@@ -3191,4 +3191,4 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF HistogramTransformationInterface.cpp - Released 2019-11-07T11:00:22Z

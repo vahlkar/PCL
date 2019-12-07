@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationParameters.h - Released 2019-09-29T12:27:57Z
+// DrizzleIntegrationParameters.h - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -559,6 +559,38 @@ extern DZIntegratedPixels* TheDZIntegratedPixelsParameter;
 
 // ----------------------------------------------------------------------------
 
+class DZOutputRangeLow : public MetaDouble
+{
+public:
+
+   DZOutputRangeLow( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DZOutputRangeLow* TheDZOutputRangeLowParameter;
+
+// ----------------------------------------------------------------------------
+
+class DZOutputRangeHigh : public MetaDouble
+{
+public:
+
+   DZOutputRangeHigh( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
+};
+
+extern DZOutputRangeHigh* TheDZOutputRangeHighParameter;
+
+// ----------------------------------------------------------------------------
+
 class DZTotalRejectedLowRK : public MetaUInt64
 {
 public:
@@ -949,4 +981,4 @@ PCL_END_LOCAL
 #endif   // __DrizzleIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationParameters.h - Released 2019-09-29T12:27:57Z
+// EOF DrizzleIntegrationParameters.h - Released 2019-11-18T16:52:32Z

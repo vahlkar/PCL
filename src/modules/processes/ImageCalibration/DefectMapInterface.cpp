@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// DefectMapInterface.cpp - Released 2019-09-29T12:27:57Z
+// DefectMapInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -338,4 +338,4 @@ DefectMapInterface::GUIData::GUIData( DefectMapInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF DefectMapInterface.cpp - Released 2019-11-07T11:00:22Z

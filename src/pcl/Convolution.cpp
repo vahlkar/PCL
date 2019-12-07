@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Convolution.cpp - Released 2019-09-29T12:27:33Z
+// pcl/Convolution.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -124,10 +124,10 @@ private:
          didFlip = true;
       }
 
-      int numberOfRows = image.SelectedRectangle().Height();
-      int numberOfThreads = convolution.IsParallelProcessingEnabled() ?
-                  Min( convolution.MaxProcessors(), pcl::Thread::NumberOfThreads( numberOfRows, n ) ) : 1;
-      int rowsPerThread = numberOfRows/numberOfThreads;
+      Array<size_type> L = pcl::Thread::OptimalThreadLoads( image.SelectedRectangle().Height(),
+                                       n/*overheadLimit*/,
+                                       convolution.IsParallelProcessingEnabled() ? convolution.MaxProcessors() : 1 );
+      int numberOfThreads = int( L.Length() );
 
       size_type N = image.NumberOfSelectedSamples();
       if ( image.Status().IsInitializationEnabled() )
@@ -136,12 +136,12 @@ private:
       ThreadData<P> data( image, convolution, N );
 
       ReferenceArray<Thread<P> > threads;
-      for ( int i = 0, j = 1, y0 = image.SelectedRectangle().y0; i < numberOfThreads; ++i, ++j )
+      for ( int i = 0, n = 0, y0 = image.SelectedRectangle().y0; i < numberOfThreads; n += int( L[i++] ) )
          threads.Add( new Thread<P>( data,
-                                     y0 + i*rowsPerThread,
-                                     y0 + ((j < numberOfThreads) ? j*rowsPerThread : numberOfRows),
+                                     y0 + n,
+                                     y0 + n + int( L[i] ),
                                      i > 0,
-                                     j < numberOfThreads ) );
+                                     i < numberOfThreads-1 ) );
       try
       {
          AbstractImage::RunThreads( threads, data );
@@ -160,14 +160,14 @@ private:
       int c0 = image.SelectedChannel();
       Point p0 = image.SelectedRectangle().LeftTop();
 
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+      for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
       {
          if ( i > 0 )
             image.Mov( threads[i].UpperOverlappingRegion(),
-                       Point( p0.x, p0.y + i*rowsPerThread ), c0 );
-         if ( j < numberOfThreads )
+                       Point( p0.x, p0.y + n ), c0 );
+         if ( i < numberOfThreads-1 )
             image.Mov( threads[i].LowerOverlappingRegion(),
-                       Point( p0.x, p0.y + j*rowsPerThread - threads[i].LowerOverlappingRegion().Height() ), c0 );
+                       Point( p0.x, p0.y + n + int( L[i] ) - threads[i].LowerOverlappingRegion().Height() ), c0 );
       }
 
       image.Status() = data.status;
@@ -227,7 +227,6 @@ private:
    public:
 
       typedef GenericImage<P>                         region;
-
       typedef GenericMultiVector<typename P::sample>  raw_data;
 
       Thread( ThreadData<P>& data, int startRow, int endRow, bool upperOvRgn, bool lowerOvRgn ) :
@@ -417,7 +416,7 @@ private:
                   ::memcpy( *f0[n-1], *f0[n-2], nf0*P::BytesPerSample() );
                   /*
                    * ### N.B.: Cannot use an assignment operator here because
-                   * all the f0 vectors must be unique.
+                   * all of the f0 vectors must be unique.
                    */
                   //f0[n-1] = f0[n-2];
                }
@@ -442,8 +441,8 @@ private:
       int            m_endRow;
       region         m_upperOvRgn;
       region         m_lowerOvRgn;
-      bool           m_haveUpperOvRgn : 1;
-      bool           m_haveLowerOvRgn : 1;
+      bool           m_haveUpperOvRgn;
+      bool           m_haveLowerOvRgn;
    };
 };
 
@@ -497,4 +496,4 @@ void Convolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Convolution.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/Convolution.cpp - Released 2019-11-07T10:59:44Z

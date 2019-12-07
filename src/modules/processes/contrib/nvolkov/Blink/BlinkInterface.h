@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkInterface.h - Released 2019-09-29T12:27:58Z
+// BlinkInterface.h - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -72,8 +72,6 @@
 #include <pcl/ToolButton.h>
 #include <pcl/TreeBox.h>
 
-//#define debug 1
-
 namespace pcl
 {
 
@@ -118,34 +116,25 @@ public:
 
 private:
 
-
    typedef Array<ImageStatistics>   stats_list;
 
    // -------------------------------------------------------------------------
 
    struct FileData
    {
-#if debug
-      static int        m_total;
-      int               m_id;
-#endif
-
-      String            m_filePath;     // file path of main image
-      blink_image*      m_image;        // main image
-      FileFormat*       m_format;       // the file format of retrieved data
-      const void*       m_fsData;       // format-specific data
-
+      String            m_filePath;          // file path of main image
+      blink_image*      m_image = nullptr;   // main image
+      FileFormat*       m_format = nullptr;  // the file format of retrieved data
+      const void*       m_fsData = nullptr;  // format-specific data
       ImageOptions      m_options;
       ImageInfo         m_info;
-      FITSKeywordArray  m_keywords;     // FITS keywords
-      ICCProfile        m_profile;      // ICC profile
-
-      stats_list        m_statSTF;      // image statistics for STF calculation
-      stats_list        m_statReal;     // image statistics in actual pixel values
-      Rect              m_statRealRect; // geometry of statReal
-
-      bool              m_isSTFStatisticsEqualToReal; // statSTF generated from RealImage
-      bool              m_isRealPixelData; // PixelData in image == RealImage
+      FITSKeywordArray  m_keywords;
+      ICCProfile        m_profile;
+      stats_list        m_statSTF;           // image statistics for STF calculation
+      stats_list        m_statReal;          // image statistics in actual pixel values
+      Rect              m_statRealRect = 0;  // geometry of statReal
+      bool              m_isSTFStatisticsEqualToReal = false; // statSTF generated from RealImage?
+      bool              m_isRealPixelData = false; // PixelData in image == RealImage?
 
       FileData( FileFormatInstance&     file,
                 blink_image*            image,
@@ -153,27 +142,33 @@ private:
                 const String&           filePath,
                 bool                    realPixelData );
 
-      virtual ~FileData();
+      ~FileData();
    };
 
    // -------------------------------------------------------------------------
 
    struct BlinkData
    {
-      BlinkData();
-      virtual ~BlinkData();
+      BlinkData() = default;
+
+      ~BlinkData()
+      {
+         Clear();
+      }
 
       bool Add( const String& filePath ); // Load new image from File
       void Remove( int row );             // Remove one FileData record
       void Clear();                       // Remove all FileData records
 
       void UpdateScreen( int fileNumber );// Regenerate BlinkScreen image window
+
       void UpdateScreen()
       {
          UpdateScreen( FileNumberGet( m_currentImage ) );
       }
 
       void Update( int row );             // Update BlinkScreen + GUI
+
       void Update()
       {
          Update( m_currentImage );
@@ -184,6 +179,7 @@ private:
       void ShowNextImage();
 
       void GetStatsForSTF( int fileNumber ); // Calculate image statistics
+
       void GetStatsForSTF()
       {
          GetStatsForSTF( FileNumberGet( m_currentImage ) );
@@ -203,28 +199,37 @@ private:
          return m_info.colorSpace != ColorSpace::Gray;
       }
 
-      Rect              m_screenRect;     // BlinkScreen geometry
-      Rect              m_statRect;       // statReal geometry
+      bool CheckGeomery( const ImageDescription& description ); // Compare size of new image with Screen size
 
-      ReferenceArray<FileData>  m_filesData;      // Path, Images, FITS keywords, ICC profile, ...
+      Rect                     m_screenRect = 0;   // BlinkScreen geometry
+      Rect                     m_statRect = 0;     // statReal geometry
+      ReferenceArray<FileData> m_filesData;        // Path, Images, FITS keywords, ICC profile, ...
+      ImageWindow              m_screen = ImageWindow::Null(); // BlinkScreen image window
+      ImageInfo                m_info;             // BlinkScreen image info
+      ImageOptions             m_options;          // BlinkScreen image options
+      int                      m_currentImage = 0; // current image index in m_filesData
+      int                      m_blinkMaster = 0;  // Index of blinkMaster
+      bool                     m_isBlinkMaster = false;
+   };
 
-      ImageWindow       m_screen;         // BlinkScreen image window
-      ImageInfo         m_info;           // BlinkScreen image info
-      ImageOptions      m_options;        // BlinkScreen image options
+   // -------------------------------------------------------------------------
 
-      int               m_currentImage;   // current image index in m_filesData
+   class AutoHTThread : public Thread
+   {
+   public:
 
-      int               m_blinkMaster;    // Index of blinkMaster
-      bool              m_isBlinkMaster;  // Set or not?
+      AutoHTThread( const AbstractImage::ThreadData& data, BlinkData& blinkData, int startIndex, int endIndex ) :
+         m_data( data ), m_blinkData( blinkData ), m_startIndex( startIndex ), m_endIndex( endIndex )
+      {
+      }
+
+      void Run() override;
 
    private:
 
-#if debug
-      static int m_total;
-      int        m_id;
-#endif
-
-      bool CheckGeomery( const ImageDescription& description ); // Compare size of new image with Screen size
+      const AbstractImage::ThreadData& m_data;
+            BlinkData&                 m_blinkData;
+            int                        m_startIndex, m_endIndex;
    };
 
    // -------------------------------------------------------------------------
@@ -244,9 +249,6 @@ private:
                ToolButton           RGBLinked_Button;
 
          HorizontalSizer         ActionControl_Sizer;
-#if debug
-            Label                DebugInfo_Label;
-#endif
             ToolButton           PreviousImage_Button;
             ToolButton           Play_Button;
             ToolButton           NextImage_Button;
@@ -272,38 +274,38 @@ private:
 
    // -------------------------------------------------------------------------
 
-   GUIData*    GUI;
+   GUIData*    GUI = nullptr;
    BlinkData   m_blink;
-   Bitmap      m_previewBmp;     // preview image
-   bool        m_isRunning;      // true = show is going
-   int         m_wheelSteps;     // accumulated 1/8-degree wheel steps
+   Bitmap      m_previewBmp = Bitmap::Null();   // preview image
+   bool        m_isRunning = false;       // true = show is going
+   int         m_wheelSteps = 0;          // accumulated 1/8-degree wheel steps
 
    /*
     * Statistics default settings
     */
-   bool        m_sortChannels;   // mode: sort by channel(true) or not(false)?
-   bool        m_cropMode;       // true = Statistics only for Green rectangle
-   int         m_digits0_1;      // digits after dot for range 0-1.
-   int         m_digits0_65535;  // digits after dot for range 0-65535.
-   bool        m_range0_65535;   // true = use range range 0-65535. false = use range range 0-1.
-   bool        m_writeStatsFile; // true = write a text file with statistical data
+   bool        m_sortChannels = true;     // mode: sort by channel(true) or not(false)?
+   bool        m_cropMode = false;        // true = Statistics only for Green rectangle
+   int         m_digits0_1 = 6;           // digits after dot for range 0-1.
+   int         m_digits0_65535 = 3;       // digits after dot for range 0-65535.
+   bool        m_range0_65535 = true;     // true = use range range 0-65535. false = use range range 0-1.
+   bool        m_writeStatsFile = false;  // true = write a text file with statistical data
 
    /*
     * Video generation settings
     */
-   String      m_outputFileName; // file name for output video files
-   String      m_program;        // execute the program
-   String      m_arguments;      // execute with parameters
-   String      m_frameOutputDir; // output directory for frames and video
-   String      m_frameExtension; // file extension for video frames
-   bool        m_deleteVideoFrames; // delete or not temporary video frame files
+   String      m_outputFileName;          // file name for output video files
+   String      m_program;                 // execute the program
+   String      m_arguments;               // execute with parameters
+   String      m_frameOutputDir;          // output directory for frames and video
+   String      m_frameExtension = ".png"; // file extension for video frames
+   bool        m_deleteVideoFrames = false; // delete or not temporary video frame files
 
    /*
     * Worker routines
     */
 
    void Init();                  // enable/disable buttons
-   void TranslucentPlanets();    // nice pic to Preview if 0 file opened
+   void TranslucentPlanets();    // nice pic to Preview if no files open
    void Image2Preview();
    void GeneratePreview();
 
@@ -393,4 +395,4 @@ PCL_END_LOCAL
 #endif   // __BlinkInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.h - Released 2019-09-29T12:27:58Z
+// EOF BlinkInterface.h - Released 2019-11-07T11:00:23Z

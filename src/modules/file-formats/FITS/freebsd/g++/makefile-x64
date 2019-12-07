@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.112
+# PixInsight Makefile Generator Script v1.115
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-09-30T11:28:01.841Z
+# Generated on .... 2019-11-29T09:40:36.185Z
 # Project id ...... FITS
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -63,7 +63,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/FITS-pxm.so: $(OBJ_FILES)
-	clang++ -m64 -fPIC -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -o $(OBJ_DIR)/FITS-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -lcfitsio-pxi
+	clang++ -m64 -fPIC -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/FITS-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -lcfitsio-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean

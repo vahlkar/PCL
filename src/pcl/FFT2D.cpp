@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/FFT2D.cpp - Released 2019-09-29T12:27:33Z
+// pcl/FFT2D.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -132,18 +132,13 @@ public:
       for ( int direction = 0; direction < 2; ++direction ) // FFT of m_rows, m_cols
       {
          int numberOfItems = (direction == 0) ? this->m_rows : this->m_cols;
-         int numberOfThreads = this->m_parallel ? Min( int( this->m_maxProcessors ), pcl::Thread::NumberOfThreads( numberOfItems, 1 ) ) : 1;
-         int itemsPerThread = numberOfItems/numberOfThreads;
-
+         Array<size_type> L = Thread::OptimalThreadLoads( numberOfItems,
+                                                          1/*overheadLimit*/,
+                                                          this->m_parallel ? int( this->m_maxProcessors ) : 1 );
          thread_list threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         {
-            int a = i*itemsPerThread;
-            int b = (j < numberOfThreads) ? j*itemsPerThread : numberOfItems;
-            threads.Add( (direction == 0) ? static_cast<Thread*>( new RowThread( *this, a, b ) ) :
-                                            static_cast<Thread*>( new ColThread( *this, a, b ) ) );
-         }
-
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads.Add( (direction == 0) ? static_cast<Thread*>( new RowThread( *this, n, n + int( L[i] ) ) ) :
+                                            static_cast<Thread*>( new ColThread( *this, n, n + int( L[i] ) ) ) );
          this->RunThreads( threads, numberOfItems );
       }
    }
@@ -289,18 +284,13 @@ public:
       for ( int direction = 0; direction < 2; ++direction ) // FFT of m_rows, m_cols
       {
          int numberOfItems = (direction == 0) ? this->m_rows : this->m_transformCols;
-         int numberOfThreads = this->m_parallel ? Min( int( this->m_maxProcessors ), pcl::Thread::NumberOfThreads( numberOfItems, 1 ) ) : 1;
-         int itemsPerThread = numberOfItems/numberOfThreads;
-
+         Array<size_type> L = Thread::OptimalThreadLoads( numberOfItems,
+                                                          1/*overheadLimit*/,
+                                                          this->m_parallel ? int( this->m_maxProcessors ) : 1 );
          thread_list threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         {
-            int a = i*itemsPerThread;
-            int b = (j < numberOfThreads) ? j*itemsPerThread : numberOfItems;
-            threads.Add( (direction == 0) ? static_cast<Thread*>( new RowThread( *this, a, b ) ) :
-                                            static_cast<Thread*>( new ColThread( *this, a, b ) ) );
-         }
-
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads.Add( (direction == 0) ? static_cast<Thread*>( new RowThread( *this, n, n + int( L[i] ) ) ) :
+                                            static_cast<Thread*>( new ColThread( *this, n, n + int( L[i] ) ) ) );
          this->RunThreads( threads, numberOfItems );
       }
    }
@@ -400,18 +390,13 @@ public:
       for ( int direction = 0; direction < 2; ++direction ) // FFT of m_cols, m_rows
       {
          int numberOfItems = (direction == 0) ? this->m_transformCols : this->m_rows;
-         int numberOfThreads = this->m_parallel ? Min( int( this->m_maxProcessors ), Thread::NumberOfThreads( numberOfItems, 1 ) ) : 1;
-         int itemsPerThread = numberOfItems/numberOfThreads;
-
+         Array<size_type> L = Thread::OptimalThreadLoads( numberOfItems,
+                                                          1/*overheadLimit*/,
+                                                          this->m_parallel ? int( this->m_maxProcessors ) : 1 );
          thread_list threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         {
-            int a = i*itemsPerThread;
-            int b = (j < numberOfThreads) ? j*itemsPerThread : numberOfItems;
-            threads.Add( (direction == 0) ? static_cast<Thread*>( new ColThread( *this, a, b ) ) :
-                                            static_cast<Thread*>( new RowThread( *this, a, b ) ) );
-         }
-
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads.Add( (direction == 0) ? static_cast<Thread*>( new ColThread( *this, n, n + int( L[i] ) ) ) :
+                                            static_cast<Thread*>( new RowThread( *this, n, n + int( L[i] ) ) ) );
          this->RunThreads( threads, numberOfItems );
       }
    }
@@ -527,4 +512,4 @@ void FFT2DBase::Transform( int rows, int cols, double* y, const dcomplex* x, Sta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT2D.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/FFT2D.cpp - Released 2019-11-07T10:59:44Z

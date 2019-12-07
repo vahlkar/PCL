@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionInterface.h - Released 2019-09-29T12:27:57Z
+// ScreenTransferFunctionInterface.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -81,37 +81,37 @@ public:
    ScreenTransferFunctionInterface();
    virtual ~ScreenTransferFunctionInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
 
-   virtual InterfaceFeatures Features() const;
+   InterfaceFeatures Features() const override;
 
-   virtual void ApplyInstance() const;
-   virtual void TrackViewUpdated( bool active );
-   virtual void ResetInstance();
+   void ApplyInstance() const override;
+   void TrackViewUpdated( bool active ) override;
+   void ResetInstance() override;
 
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
 
-   virtual ProcessImplementation* NewProcess() const;
+   ProcessImplementation* NewProcess() const override;
 
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
 
-   virtual bool RequiresInstanceValidation() const;
+   bool RequiresInstanceValidation() const override;
 
-   virtual bool ImportProcess( const ProcessImplementation& );
+   bool ImportProcess( const ProcessImplementation& ) override;
 
-   virtual bool WantsImageNotifications() const;
-   virtual void ImageFocused( const View& );
-   virtual void ImageUpdated( const View& );
-   virtual void ImageSTFEnabled( const View& );
-   virtual void ImageSTFDisabled( const View& );
-   virtual void ImageSTFUpdated( const View& );
-   virtual void ImageRenamed( const View& );
-   virtual void ImageDeleted( const View& );
+   bool WantsImageNotifications() const override;
+   void ImageFocused( const View& ) override;
+   void ImageUpdated( const View& ) override;
+   void ImageSTFEnabled( const View& ) override;
+   void ImageSTFDisabled( const View& ) override;
+   void ImageSTFUpdated( const View& ) override;
+   void ImageRenamed( const View& ) override;
+   void ImageDeleted( const View& ) override;
 
-   virtual bool WantsReadoutNotifications() const;
-   virtual void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A );
+   bool WantsReadoutNotifications() const override;
+   void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A ) override;
 
    working_mode WorkingMode() const
    {
@@ -200,4 +200,4 @@ PCL_END_LOCAL
 #endif   // __ScreenTransferFunctionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionInterface.h - Released 2019-09-29T12:27:57Z
+// EOF ScreenTransferFunctionInterface.h - Released 2019-11-07T11:00:22Z

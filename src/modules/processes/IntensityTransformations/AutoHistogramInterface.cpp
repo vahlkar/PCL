@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramInterface.cpp - Released 2019-09-29T12:27:57Z
+// AutoHistogramInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -64,7 +64,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-AutoHistogramInterface* TheAutoHistogramInterface = 0;
+AutoHistogramInterface* TheAutoHistogramInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -73,15 +73,15 @@ AutoHistogramInterface* TheAutoHistogramInterface = 0;
 // ----------------------------------------------------------------------------
 
 AutoHistogramInterface::AutoHistogramInterface() :
-ProcessInterface(), instance( TheAutoHistogramProcess ), GUI( 0 )
+   instance( TheAutoHistogramProcess )
 {
    TheAutoHistogramInterface = this;
 }
 
 AutoHistogramInterface::~AutoHistogramInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -114,7 +114,7 @@ void AutoHistogramInterface::ResetInstance()
 
 bool AutoHistogramInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "AutoHistogram" );
@@ -157,7 +157,7 @@ bool AutoHistogramInterface::WantsReadoutNotifications() const
 
 void AutoHistogramInterface::UpdateReadout( const View& v, const DPoint&, double R, double G, double B, double /*A*/ )
 {
-   if ( GUI != 0 && IsVisible() && GUI->CaptureReadouts_CheckBox.IsChecked() )
+   if ( GUI != nullptr && IsVisible() && GUI->CaptureReadouts_CheckBox.IsChecked() )
    {
       if ( instance.p_stretchTogether )
       {
@@ -581,4 +581,4 @@ AutoHistogramInterface::GUIData::GUIData( AutoHistogramInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF AutoHistogramInterface.cpp - Released 2019-11-07T11:00:22Z

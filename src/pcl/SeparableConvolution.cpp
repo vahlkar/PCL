@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/SeparableConvolution.cpp - Released 2019-09-29T12:27:33Z
+// pcl/SeparableConvolution.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -117,19 +117,14 @@ private:
       if ( convolution.IsRowConvolutionEnabled() )
       {
          ThreadData<P> data( image, convolution, N1 );
-
          int numberOfRows = image.SelectedRectangle().Height();
-         int numberOfThreads = convolution.IsParallelProcessingEnabled() ?
-                     Min( convolution.MaxProcessors(), Thread::NumberOfThreads( numberOfRows, 4 ) ) : 1;
-         int rowsPerThread = numberOfRows/numberOfThreads;
+         Array<size_type> L = Thread::OptimalThreadLoads( numberOfRows,
+                                          1/*overheadLimit*/,
+                                          convolution.IsParallelProcessingEnabled() ? convolution.MaxProcessors() : 1 );
          ReferenceArray<RowThread<P> > threads;
-         for ( int i = 0, j = 1, y0 = image.SelectedRectangle().y0; i < numberOfThreads; ++i, ++j )
-            threads.Add( new RowThread<P>( data,
-                                           y0 + i*rowsPerThread,
-                                           y0 + ((j < numberOfThreads) ? j*rowsPerThread : numberOfRows) ) );
-
+         for ( int i = 0, n = 0, y0 = image.SelectedRectangle().y0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads.Add( new RowThread<P>( data, y0 + n, y0 + n + int( L[i] ) ) );
          AbstractImage::RunThreads( threads, data );
-
          threads.Destroy();
 
          image.Status() = data.status;
@@ -138,19 +133,14 @@ private:
       if ( convolution.IsColumnConvolutionEnabled() )
       {
          ThreadData<P> data( image, convolution, N2 );
-
          int numberOfCols = image.SelectedRectangle().Width();
-         int numberOfThreads = convolution.IsParallelProcessingEnabled() ?
-                     Min( convolution.MaxProcessors(), Thread::NumberOfThreads( numberOfCols, 4 ) ) : 1;
-         int colsPerThread = numberOfCols/numberOfThreads;
+         Array<size_type> L = Thread::OptimalThreadLoads( numberOfCols,
+                                          1/*overheadLimit*/,
+                                          convolution.IsParallelProcessingEnabled() ? convolution.MaxProcessors() : 1 );
          ReferenceArray<ColThread<P> > threads;
-         for ( int i = 0, j = 1, x0 = image.SelectedRectangle().x0; i < numberOfThreads; ++i, ++j )
-            threads.Add( new ColThread<P>( data,
-                                           x0 + i*colsPerThread,
-                                           x0 + ((j < numberOfThreads) ? j*colsPerThread : numberOfCols) ) );
-
+         for ( int i = 0, n = 0, x0 = image.SelectedRectangle().x0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads.Add( new ColThread<P>( data, x0 + n, x0 + n + int( L[i] ) ) );
          AbstractImage::RunThreads( threads, data );
-
          threads.Destroy();
 
          image.Status() = data.status;
@@ -386,4 +376,4 @@ void SeparableConvolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableConvolution.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/SeparableConvolution.cpp - Released 2019-11-07T10:59:44Z

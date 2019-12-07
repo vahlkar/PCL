@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/ElapsedTime.h - Released 2019-09-29T12:27:26Z
+// pcl/ElapsedTime.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -159,7 +159,7 @@ public:
     */
    double operator ()() const
    {
-      return (TimeStamp() - m_start) * 1.0e-09;
+      return TimeStamp() - m_start;
    }
 
    /*!
@@ -210,11 +210,14 @@ public:
    /*!
     * Returns a 64-bit, monotonically nondecreasing time stamp.
     *
-    * The returned value is the time elapsed in nanoseconds since an arbitrary,
+    * The returned value is the time elapsed in seconds since an arbitrary,
     * platform-dependent starting time that will remain invariant during the
     * current execution of the calling module.
+    *
+    * With the current implementation, accuracy of timestamps should be better
+    * than one microsecond on all supported platforms.
     */
-   static uint64 TimeStamp()
+   static double TimeStamp()
    {
 #if defined( __PCL_LINUX ) || defined( __PCL_FREEBSD )
 
@@ -223,7 +226,7 @@ public:
        */
       timespec ts;
       (void)clock_gettime( PCL_CLOCK_ID, &ts );
-      return uint64( ts.tv_sec )*1000000000ull + ts.tv_nsec;
+      return ts.tv_sec + ts.tv_nsec*1.0e-09;
 
 #endif   // __PCL_LINUX || __PCL_FREEBSD
 
@@ -235,25 +238,26 @@ public:
        * https://developer.apple.com/library/mac/qa/qa1398/_index.html
        * http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
        */
-      static Mutex                     mutex;
-      static AtomicInt                 initialized;
-      static mach_timebase_info_data_t absoluteToNanoseconds = { 0 };
-      static uint64                    offset;
+      static Mutex     mutex;
+      static AtomicInt initialized;
+      static double    absoluteToSeconds;
+      static uint64    offset;
 
       if ( !initialized )
       {
          volatile AutoLock lock( mutex );
          if ( initialized.Load() == 0 )
          {
-            mach_timebase_info( &absoluteToNanoseconds );
+            mach_timebase_info_data_t timeBase = { 0 };
+            mach_timebase_info( &timeBase );
+            absoluteToSeconds = 1.0e-09*(double( timeBase.numer )/timeBase.denom);
             offset = mach_absolute_time();
             initialized.Store( 1 );
          }
       }
 
-      uint64 t = mach_absolute_time() - offset;
-      t *= absoluteToNanoseconds.numer;
-      return t / absoluteToNanoseconds.denom;
+      uint64 t = mach_absolute_time();
+      return (t - offset)*absoluteToSeconds;
 
 #endif   // __PCL_MACOSX
 
@@ -269,7 +273,7 @@ public:
        */
       static Mutex     mutex;
       static AtomicInt initialized;
-      static uint64    performanceFrequency;
+      static double    countsToSeconds;
       static uint64    offset;
 
       if ( !initialized )
@@ -277,7 +281,9 @@ public:
          volatile AutoLock lock( mutex );
          if ( initialized.Load() == 0 )
          {
+            uint64 performanceFrequency;
             QueryPerformanceFrequency( (LARGE_INTEGER*)&performanceFrequency );
+            countsToSeconds = 1.0/performanceFrequency;
             QueryPerformanceCounter( (LARGE_INTEGER*)&offset );
             initialized.Store( 1 );
          }
@@ -285,9 +291,7 @@ public:
 
       uint64 t;
       QueryPerformanceCounter( (LARGE_INTEGER*)&t );
-      t -= offset;
-      t *= 1000000000ull;
-      return t / performanceFrequency;
+      return (t - offset)*countsToSeconds;
 
 #endif   // __PCL_WINDOWS
    }
@@ -335,14 +339,12 @@ public:
     */
    friend double operator -( const ElapsedTime& t1, const ElapsedTime& t2 )
    {
-      if ( t2.m_start <= t1.m_start )
-         return (t1.m_start - t2.m_start) * 1.0e-09;
-      return -((t2.m_start - t1.m_start) * 1.0e-09);
+      return t1.m_start - t2.m_start;
    }
 
 private:
 
-   uint64 m_start; // nanoseconds
+   double m_start; // timestamp in seconds
 
    template <class S>
    static S ToString( double s, S* )
@@ -392,4 +394,4 @@ private:
 #endif   // __PCL_ElapsedTime_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ElapsedTime.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/ElapsedTime.h - Released 2019-11-07T10:59:34Z

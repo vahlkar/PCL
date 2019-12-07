@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/DisplayFunction.h - Released 2019-09-29T12:27:26Z
+// pcl/DisplayFunction.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -178,6 +178,21 @@ public:
       if ( i >= 0 && i < 4 )
          return HistogramTransformation( m_m[i], m_s[i], m_h[i], m_l[i], m_r[i] );
       return HistogramTransformation();
+   }
+
+   /*!
+    * Returns a dynamic array of histogram transformations.
+    *
+    * The returned object contains four HistogramTransformation instances,
+    * where array indexes 0, 1, 2 and 3 correspond to the red/gray, green, blue
+    * and lightness components, respectively.
+    */
+   Array<HistogramTransformation> HistogramTransformations() const
+   {
+      return Array<HistogramTransformation>() << operator[]( 0 )
+                                              << operator[]( 1 )
+                                              << operator[]( 2 )
+                                              << operator[]( 3 );
    }
 
    /*!
@@ -445,4 +460,4 @@ private:
 #endif   // __PCL_DisplayFunction_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/DisplayFunction.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/DisplayFunction.h - Released 2019-11-07T10:59:34Z

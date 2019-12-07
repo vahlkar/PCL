@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Translation.cpp - Released 2019-09-29T12:27:33Z
+// pcl/Translation.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -82,13 +82,12 @@ public:
 
       StatusMonitor status = image.Status();
 
-      int numberOfThreads = T.IsParallelProcessingEnabled() ?
-               Min( T.MaxProcessors(), pcl::Thread::NumberOfThreads( height, 1 ) ) : 1;
-      int rowsPerThread = height/numberOfThreads;
-
+      Array<size_type> L = pcl::Thread::OptimalThreadLoads( height,
+                                                            1/*overheadLimit*/,
+                                                            T.IsParallelProcessingEnabled() ? T.MaxProcessors() : 1 );
       try
       {
-         size_type N = size_type( width )*size_type( height );
+         size_type N = size_type( width ) * size_type( height );
          if ( status.IsInitializationEnabled() )
             status.Initialize( String().Format( "Translate dx=%.3f, dy=%.3f, ",
                         T.Delta().x, T.Delta().y ) + T.Interpolation().Description(),
@@ -104,14 +103,13 @@ public:
             data.fillValue = (c < T.FillValues().Length()) ? P::ToSample( T.FillValues()[c] ) : P::MinSampleValue();
 
             ReferenceArray<Thread<P> > threads;
-            for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+            for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
                threads.Add( new Thread<P>( data,
                                            T.Interpolation().NewInterpolator<P>( f0[c], width, height, T.UsingUnclippedInterpolation() ),
-                                           i*rowsPerThread,
-                                           (j < numberOfThreads) ? j*rowsPerThread : height ) );
+                                           n,
+                                           n + int( L[i] ) ) );
 
             AbstractImage::RunThreads( threads, data );
-
             threads.Destroy();
 
             image.Allocator().Deallocate( f0[c] );
@@ -230,4 +228,4 @@ void Translation::Apply( UInt32Image& img ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Translation.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/Translation.cpp - Released 2019-11-07T10:59:44Z

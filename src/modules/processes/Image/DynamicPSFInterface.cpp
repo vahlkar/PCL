@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.1
+// Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInterface.cpp - Released 2019-09-29T12:27:57Z
+// DynamicPSFInterface.cpp - Released 2019-11-13T20:00:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -355,7 +355,6 @@ private:
          }
 
          w.Show();
-         w.ZoomToFit( false/*allowMagnification*/ );
       }
       else if ( sender == OK_PushButton )
       {
@@ -1489,7 +1488,6 @@ void DynamicPSFInterface::__Click( Button& sender, bool checked )
       R.ToImage( image );
       image.Rescale();
       window.Show();
-      window.ZoomToFit( false/*allowMagnification*/ );
    }
    else if ( sender == GUI->AverageStars_ToolButton )
    {
@@ -2279,23 +2277,22 @@ void DynamicPSFInterface::PSFCollection::Regenerate( float threshold, bool autoA
    else
    {
       ImageVariant image = view.Image();
-      int numberOfThreads = Thread::NumberOfThreads( stars.Length(), 4 );
-      if ( numberOfThreads == 1 )
+      Array<size_type> L = Thread::OptimalThreadLoads( stars.Length() );
+      if ( L.Length() == 1 )
       {
          for ( Star& star : stars )
             star.Regenerate( image, threshold, autoAperture, options );
       }
       else
       {
-         int starsPerThread = stars.Length()/numberOfThreads;
          ReferenceArray<RegenerateThread> threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+         for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
             threads.Add( new RegenerateThread( image, threshold, autoAperture, options,
-                                               stars.At( i*starsPerThread ),
-                                               (j < numberOfThreads) ? stars.At( j*starsPerThread ) : stars.End() ) );
-         for ( int i = 0; i < numberOfThreads; ++i )
+                                               stars.At( n ),
+                                               stars.At( n + L[i] ) ) );
+         for ( int i = 0; i < int( L.Length() ); ++i )
             threads[i].Start( ThreadPriority::DefaultMax, i );
-         for ( int i = 0; i < numberOfThreads; ++i )
+         for ( int i = 0; i < int( L.Length() ); ++i )
             threads[i].Wait();
          threads.Destroy();
       }
@@ -2318,23 +2315,22 @@ void DynamicPSFInterface::PSFCollection::Recalculate( float threshold, bool auto
    else
    {
       ImageVariant image = view.Image();
-      int numberOfThreads = Thread::NumberOfThreads( stars.Length(), 4 );
-      if ( numberOfThreads == 1 )
+      Array<size_type> L = Thread::OptimalThreadLoads( stars.Length() );
+      if ( L.Length() == 1 )
       {
          for ( Star& star : stars )
             star.Recalculate( image, threshold, autoAperture );
       }
       else
       {
-         int starsPerThread = stars.Length()/numberOfThreads;
          ReferenceArray<RecalculateThread> threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+         for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
             threads.Add( new RecalculateThread( image, threshold, autoAperture,
-                                                stars.At( i*starsPerThread ),
-                                                (j < numberOfThreads) ? stars.At( j*starsPerThread ) : stars.End() ) );
-         for ( int i = 0; i < numberOfThreads; ++i )
+                                                stars.At( n ),
+                                                stars.At( n + L[i] ) ) );
+         for ( int i = 0; i < int( L.Length() ); ++i )
             threads[i].Start( ThreadPriority::DefaultMax, i );
-         for ( int i = 0; i < numberOfThreads; ++i )
+         for ( int i = 0; i < int( L.Length() ); ++i )
             threads[i].Wait();
          threads.Destroy();
       }
@@ -2533,7 +2529,7 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
    Data_TreeBox.EnableMultipleSelections();
    Data_TreeBox.SetStyleSheet( w.ScaledStyleSheet(
          "QTreeView {"
-            "font-family: DejaVu Sans Mono, Monospace;"
+            "font-family: Hack, DejaVu Sans Mono, Monospace;"
             "font-size: 9pt;"
          "}"
       ) );
@@ -2900,4 +2896,4 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF DynamicPSFInterface.cpp - Released 2019-11-13T20:00:10Z

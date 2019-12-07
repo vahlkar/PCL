@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// ColorCalibrationInterface.cpp - Released 2019-09-29T12:27:57Z
+// ColorCalibrationInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -108,20 +108,6 @@ void ColorCalibrationInterface::ApplyInstance() const
    instance.LaunchOnCurrentView();
 }
 
-/*
-void ColorCalibrationInterface::RealTimePreviewUpdated( bool active )
-{
-   if ( GUI != nullptr )
-      if ( active )
-      {
-         newRTData = true;
-         RealTimePreview::SetOwner( *this ); // implicitly updates the r-t preview
-      }
-      else
-         RealTimePreview::SetOwner( ProcessInterface::Null() );
-}
-*/
-
 void ColorCalibrationInterface::ResetInstance()
 {
    ColorCalibrationInstance defaultInstance( TheColorCalibrationProcess );
@@ -162,78 +148,9 @@ bool ColorCalibrationInterface::RequiresInstanceValidation() const
 bool ColorCalibrationInterface::ImportProcess( const ProcessImplementation& p )
 {
    instance.Assign( p );
-
    UpdateControls();
-
-   /*
-   if ( IsRealTimePreviewActive() )
-      UpdateRealTimePreview();
-   */
-
    return true;
 }
-
-/*
-bool ColorCalibrationInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const
-{
-   return true;
-}
-
-bool ColorCalibrationInterface::GenerateRealTimePreview( UInt16Image& img, const View& view, int zoomLevel, String& info ) const
-{
-   USMRTStatus status;
-
-   UInt16Image wrk;
-
-   unsigned savedRate = StatusMonitor::RefreshRate();
-   StatusMonitor::SetRefreshRate( 50 );
-
-   bool ok;
-
-   do
-   {
-      newRTData = false;
-      ok = true;
-
-      wrk.Assign( img );
-      wrk.SetStatusCallback( &status );
-
-      ColorCalibrationInstance wrkInstance( instance );
-
-      if ( zoomLevel < 0 )
-         wrkInstance.sigma /= -zoomLevel;
-
-      try
-      {
-         wrkInstance.USM16( wrk );
-      }
-
-      catch ( ProcessAborted& )
-      {
-      }
-
-      catch ( ... )
-      {
-         ok = false;
-         break;
-      }
-
-      if ( !IsRealTimePreviewActive() )
-         ok = false;
-   }
-   while ( ok && newRTData );
-
-   StatusMonitor::SetRefreshRate( savedRate );
-
-   if ( !ok )
-      return false;
-
-   wrk.ResetSelections();
-   img.Assign( wrk );
-
-   return true;
-}
-*/
 
 // ----------------------------------------------------------------------------
 
@@ -1024,4 +941,4 @@ ColorCalibrationInterface::GUIData::GUIData( ColorCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF ColorCalibrationInterface.cpp - Released 2019-11-07T11:00:22Z

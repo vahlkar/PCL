@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2019-09-29T12:27:26Z
+// pcl/APIInterface.h - Released 2019-11-13T11:22:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0163
+#define PCL_API_Version 0x0166
 
 extern "C"
 {
@@ -68,7 +68,9 @@ struct api_context GlobalContext
    /*
     * Version information
     */
-   void        (api_func* GetPixInsightVersion)( uint32* major, uint32* minor, uint32* release, uint32* build, uint32* betaRelease, uint32* confidentialRelease, uint32* leVersion, char* langCode );
+   void        (api_func* GetPixInsightVersion)( uint32* major, uint32* minor, uint32* release, uint32* revision,
+                                                 uint32* betaRelease, uint32* confidentialRelease,
+                                                 uint32* leVersion, char* langCode );
    // ### Returns a string allocated by the caller module.
    char16_type*(api_func* GetPixInsightCodename)( api_handle );
 
@@ -2470,7 +2472,7 @@ struct api_context ImageWindowContext
    void           (api_func* SetImageWindowMaskMode)( window_handle, int32 );
 
    void           (api_func* FitImageWindow)( window_handle );
-   void           (api_func* ZoomImageWindowToFit)( window_handle, api_bool );
+   void           (api_func* ZoomImageWindowToFit)( window_handle, api_bool, api_bool, api_bool, api_bool );
 
    int32          (api_func* GetImageWindowZoomFactor)( const_window_handle );
    void           (api_func* SetImageWindowZoomFactor)( window_handle, int32 );
@@ -2925,54 +2927,54 @@ namespace pcl
  */
 struct APIInterface
 {
-   GlobalContext*                Global;
-   ModuleDefinitionContext*      ModuleDefinition;
-   ProcessDefinitionContext*     ProcessDefinition;
-   InterfaceDefinitionContext*   InterfaceDefinition;
-   FileFormatDefinitionContext*  FileFormatDefinition;
-   ModuleContext*                Module;
-   ProcessContext*               Process;
-   InterfaceContext*             Interface;
-   FileFormatContext*            FileFormat;
-   UIContext*                    UI;
-   ActionContext*                Action;
-   ControlContext*               Control;
-   DialogContext*                Dialog;
-   FrameContext*                 Frame;
-   GroupBoxContext*              GroupBox;
-   TabBoxContext*                TabBox;
-   ButtonContext*                Button;
-   EditContext*                  Edit;
-   TextBoxContext*               TextBox;
-   ComboBoxContext*              ComboBox;
-   SliderContext*                Slider;
-   SpinBoxContext*               SpinBox;
-   LabelContext*                 Label;
-   BitmapBoxContext*             BitmapBox;
-   ScrollBoxContext*             ScrollBox;
-   TreeBoxContext*               TreeBox;
-   TimerContext*                 Timer;
-   ThreadContext*                Thread;
-   MutexContext*                 Mutex;
-   ViewListContext*              ViewList;
-   BitmapContext*                Bitmap;
-   SVGContext*                   SVG;
-   BrushContext*                 Brush;
-   PenContext*                   Pen;
-   FontContext*                  Font;
-   CursorContext*                Cursor;
-   SizerContext*                 Sizer;
-   GraphicsContext*              Graphics;
-   RealTimePreviewContext*       RealTimePreview;
-   NumericalContext*             Numerical;
-   SharedImageContext*           SharedImage;
-   ViewContext*                  View;
-   ImageWindowContext*           ImageWindow;
-   ImageViewContext*             ImageView;
-   CodeEditorContext*            CodeEditor;
-   WebViewContext*               WebView;
-   ExternalProcessContext*       ExternalProcess;
-   NetworkTransferContext*       NetworkTransfer;
+   GlobalContext*                Global = nullptr;
+   ModuleDefinitionContext*      ModuleDefinition = nullptr;
+   ProcessDefinitionContext*     ProcessDefinition = nullptr;
+   InterfaceDefinitionContext*   InterfaceDefinition = nullptr;
+   FileFormatDefinitionContext*  FileFormatDefinition = nullptr;
+   ModuleContext*                Module = nullptr;
+   ProcessContext*               Process = nullptr;
+   InterfaceContext*             Interface = nullptr;
+   FileFormatContext*            FileFormat = nullptr;
+   UIContext*                    UI = nullptr;
+   ActionContext*                Action = nullptr;
+   ControlContext*               Control = nullptr;
+   DialogContext*                Dialog = nullptr;
+   FrameContext*                 Frame = nullptr;
+   GroupBoxContext*              GroupBox = nullptr;
+   TabBoxContext*                TabBox = nullptr;
+   ButtonContext*                Button = nullptr;
+   EditContext*                  Edit = nullptr;
+   TextBoxContext*               TextBox = nullptr;
+   ComboBoxContext*              ComboBox = nullptr;
+   SliderContext*                Slider = nullptr;
+   SpinBoxContext*               SpinBox = nullptr;
+   LabelContext*                 Label = nullptr;
+   BitmapBoxContext*             BitmapBox = nullptr;
+   ScrollBoxContext*             ScrollBox = nullptr;
+   TreeBoxContext*               TreeBox = nullptr;
+   TimerContext*                 Timer = nullptr;
+   ThreadContext*                Thread = nullptr;
+   MutexContext*                 Mutex = nullptr;
+   ViewListContext*              ViewList = nullptr;
+   BitmapContext*                Bitmap = nullptr;
+   SVGContext*                   SVG = nullptr;
+   BrushContext*                 Brush = nullptr;
+   PenContext*                   Pen = nullptr;
+   FontContext*                  Font = nullptr;
+   CursorContext*                Cursor = nullptr;
+   SizerContext*                 Sizer = nullptr;
+   GraphicsContext*              Graphics = nullptr;
+   RealTimePreviewContext*       RealTimePreview = nullptr;
+   NumericalContext*             Numerical = nullptr;
+   SharedImageContext*           SharedImage = nullptr;
+   ViewContext*                  View = nullptr;
+   ImageWindowContext*           ImageWindow = nullptr;
+   ImageViewContext*             ImageView = nullptr;
+   CodeEditorContext*            CodeEditor = nullptr;
+   WebViewContext*               WebView = nullptr;
+   ExternalProcessContext*       ExternalProcess = nullptr;
+   NetworkTransferContext*       NetworkTransfer = nullptr;
 
    // Automatically generated APIInterface.cpp
    APIInterface( function_resolver );
@@ -3016,4 +3018,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/APIInterface.h - Released 2019-11-13T11:22:34Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInterface.cpp - Released 2019-09-29T12:27:58Z
+// CosmeticCorrectionInterface.cpp - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -92,8 +92,7 @@ static uint16 s_coldBad;
 // ----------------------------------------------------------------------------
 CosmeticCorrectionInterface* TheCosmeticCorrectionInterface = nullptr;
 
-CosmeticCorrectionInterface::CosmeticCorrectionInterface() : ProcessInterface(), instance( TheCosmeticCorrectionProcess ),
-   GUI( nullptr )
+CosmeticCorrectionInterface::CosmeticCorrectionInterface() : instance( TheCosmeticCorrectionProcess )
 {
    m_md = 0;
    m_Mean = 0.5;
@@ -307,7 +306,8 @@ void CosmeticCorrectionInterface::RealTimePreviewUpdated( bool active ) //RTP bu
    }
 }
 
-bool CosmeticCorrectionInterface::RequiresRealTimePreviewUpdate( const UInt16Image& img, const View& view, int zoomLevel ) const
+bool CosmeticCorrectionInterface::RequiresRealTimePreviewUpdate( const UInt16Image& img, const View& view,
+                                                                 const Rect& rect, int zoomLevel ) const
 {
    #if debug
    static int runCount = 0;
@@ -324,12 +324,19 @@ bool CosmeticCorrectionInterface::RequiresRealTimePreviewUpdate( const UInt16Ima
    }
 
    // compate subImage geomery of previouse calculation
-   Rect r;
-
-   if ( view.IsMainView() )
-      r = view.Bounds();
+   Rect r = rect;
+   if ( r.IsRect() )
+   {
+      if ( view.IsPreview() )
+         r.MoveTo( view.Window().PreviewRect( view.Id() ).TopLeft() );
+   }
    else
-      r  = view.Window().PreviewRect( view.Id() );
+   {
+      if ( view.IsMainView() )
+         r = view.Bounds();
+      else
+         r = view.Window().PreviewRect( view.Id() );
+   }
 
    int minSize = instance.p_cfa ? 13 : 7;
 
@@ -342,8 +349,6 @@ bool CosmeticCorrectionInterface::RequiresRealTimePreviewUpdate( const UInt16Ima
       Console().Show();
       return false;
    }
-
-
 
    if ( s_rect != r ) // other subImage geometry
    {
@@ -909,7 +914,8 @@ inline void CosmeticCorrectionInterface::RTPMakeSnapshot( const UInt16Image& img
 }
 
 
-bool CosmeticCorrectionInterface::GenerateRealTimePreview( UInt16Image& img, const View& view, int zoomLevel, String& info ) const
+bool CosmeticCorrectionInterface::GenerateRealTimePreview( UInt16Image& img, const View& view,
+                                                           const Rect&, int zoomLevel, String& info ) const
 {
    #if debug
    static int runCount = 0;
@@ -2662,4 +2668,4 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInterface.cpp - Released 2019-09-29T12:27:58Z
+// EOF CosmeticCorrectionInterface.cpp - Released 2019-11-07T11:00:23Z

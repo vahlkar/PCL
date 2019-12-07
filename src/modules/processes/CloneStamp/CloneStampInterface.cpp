@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInterface.cpp - Released 2019-09-29T12:27:57Z
+// CloneStampInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -170,8 +170,8 @@ void CloneStampInterface::ClonerAction::UpdateBounds()
 void CloneStampInterface::StoreRect( const Rect& rect )
 {
    ImageVariant image = targetView->Image();
-   Rect r( rect );
-   if ( r.Intersect( image.Bounds() ) )
+   Rect r = rect.Ordered();
+   if ( r.IntersectFast( image.Bounds() ) )
    {
       image.ResetChannelRange();
 
@@ -225,8 +225,8 @@ static void RestoreTile( ImageVariant& image, const ImageVariant& tile )
 void CloneStampInterface::RestoreRect( const Rect& rect )
 {
    ImageVariant image = targetView->Image();
-   Rect r( rect );
-   if ( r.Intersect( image.Bounds() ) )
+   Rect r = rect.Ordered();
+   if ( r.IntersectFast( image.Bounds() ) )
    {
       image.ResetChannelRange();
 
@@ -1203,7 +1203,7 @@ void CloneStampInterface::DynamicMouseMove( View& v, const DPoint& p, unsigned b
          Rect r( Point( i->targetPos ) - int( action.brush.radius ),
                  Point( i->targetPos ) + (int( action.brush.radius ) + 1) );
 
-         if ( r.Intersect( image.Bounds() ) )
+         if ( r.IntersectFast( image.Bounds() ) )
          {
             int row0 = r.y0/s_tileSize;
             int row1 = (r.y1 - 1)/s_tileSize;
@@ -1853,4 +1853,4 @@ CloneStampInterface::GUIData::GUIData( CloneStampInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF CloneStampInterface.cpp - Released 2019-11-07T11:00:22Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInterface.h - Released 2019-09-29T12:27:58Z
+// ArcsinhStretchInterface.h - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -81,30 +81,30 @@ public:
    ArcsinhStretchInterface();
    virtual ~ArcsinhStretchInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
 
-   virtual InterfaceFeatures Features() const;
+   InterfaceFeatures Features() const override;
 
-   virtual bool WantsRealTimePreviewNotifications() const;
-   virtual void RealTimePreviewOwnerChanged(ProcessInterface& iface);
-   virtual void RealTimePreviewUpdated(bool active);
+   bool WantsRealTimePreviewNotifications() const override;
+   void RealTimePreviewOwnerChanged(ProcessInterface& iface) override;
+   void RealTimePreviewUpdated(bool active) override;
 
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
+   void ApplyInstance() const override;
+   void ResetInstance() override;
 
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
 
-   virtual ProcessImplementation* NewProcess() const;
+   ProcessImplementation* NewProcess() const override;
 
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
 
-   virtual bool ImportProcess( const ProcessImplementation& );
+   bool ImportProcess( const ProcessImplementation& ) override;
 
-   virtual bool RequiresRealTimePreviewUpdate(const UInt16Image&, const View&, int zoomLevel) const;
-   virtual bool GenerateRealTimePreview(UInt16Image&, const View&, int zoomLevel, String& info) const;
+   bool RequiresRealTimePreviewUpdate(const UInt16Image&, const View&, const Rect&, int zoomLevel) const override;
+   bool GenerateRealTimePreview(UInt16Image&, const View&, const Rect&, int zoomLevel, String& info) const override;
 
 private:
 
@@ -185,4 +185,4 @@ PCL_END_LOCAL
 #endif   // __ArcsinhStretchInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInterface.h - Released 2019-09-29T12:27:58Z
+// EOF ArcsinhStretchInterface.h - Released 2019-11-07T11:00:23Z

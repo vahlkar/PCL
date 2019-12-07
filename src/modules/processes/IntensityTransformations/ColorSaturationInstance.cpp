@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInstance.cpp - Released 2019-09-29T12:27:57Z
+// ColorSaturationInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -157,22 +157,17 @@ public:
 
       size_type N = image.NumberOfPixels();
 
-      int numberOfThreads = Thread::NumberOfThreads( N, 16 );
-      size_type pixelsPerThread = N/numberOfThreads;
-
       image.Status().Initialize( "Color saturation transformation, HSVL space", N );
 
       ThreadData data( image, N );
       if ( useLUT )
          data.lut = MakeLUT( instance );
 
+      Array<size_type> L = Thread::OptimalThreadLoads( N, 16/*overheadLimit*/ );
       ReferenceArray<ColorSaturationThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new ColorSaturationThread<P>( instance, data, image,
-                                                    i*pixelsPerThread,
-                                                    (j < numberOfThreads) ? j*pixelsPerThread : N ) );
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads.Add( new ColorSaturationThread<P>( instance, data, image, n, n + L[i] ) );
       AbstractImage::RunThreads( threads, data );
-
       threads.Destroy();
 
       image.Status() = data.status;
@@ -208,7 +203,7 @@ private:
    struct ThreadData : public AbstractImage::ThreadData
    {
       ThreadData( const AbstractImage& image, size_type count ) :
-      AbstractImage::ThreadData( image, count )
+         AbstractImage::ThreadData( image, count )
       {
       }
 
@@ -220,13 +215,18 @@ private:
    {
    public:
 
-      ColorSaturationThread( const ColorSaturationInstance& instance, const ThreadData& data,
-                             GenericImage<P>& image, size_type start, size_type end ) :
-      Thread(), m_instance( instance ), m_data( data ), m_image( image ), m_start( start ), m_end( end )
+      ColorSaturationThread( const ColorSaturationInstance& instance,
+                             const ThreadData& data,
+                             GenericImage<P>& image,
+                             size_type start, size_type end ) :
+         m_instance( instance ),
+         m_data( data ),
+         m_image( image ),
+         m_start( start ), m_end( end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -367,4 +367,4 @@ size_type ColorSaturationInstance::ParameterLength( const MetaParameter* /*p*/, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF ColorSaturationInstance.cpp - Released 2019-11-07T11:00:22Z

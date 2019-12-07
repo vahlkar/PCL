@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2019-09-29T12:27:57Z
+// LocalNormalizationInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -267,7 +267,7 @@ public:
       m_targetImage.SetOwnership( false );
    }
 
-   virtual void Run()
+   void Run() override
    {
       Console console;
 
@@ -362,7 +362,6 @@ private:
       ImageWindow window( 1, 1, 1, P::BitsPerSample(), P::IsFloatSample(), false/*color*/, true/*processing*/, id );
       window.MainView().Image().CopyImage( image );
       window.Show();
-      window.ZoomToFit( false/*zoomIn*/ );
    }
 
    // -------------------------------------------------------------------------
@@ -380,7 +379,7 @@ private:
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          Image::sample_iterator r( m_image, m_channel );
          r.MoveBy( 0, m_startRow );
@@ -449,18 +448,15 @@ private:
          background_model G;
          G.Initialize( image.Bounds(), 16/*delta*/, S, false/*verbose*/ );
 
-         int numberOfThreads = Thread::NumberOfThreads( image.Height(), 4 );
-         int rowsPerThread = image.Height()/numberOfThreads;
+         Array<size_type> L = Thread::OptimalThreadLoads( image.Height() );
          ReferenceArray<FixZeroThread> threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-            threads << new FixZeroThread( image, G, c,
-                                 i*rowsPerThread,
-                                 (j < numberOfThreads) ? j*rowsPerThread : image.Height() );
-         if ( numberOfThreads > 1 )
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads << new FixZeroThread( image, G, c, n, n + int( L[i] ) );
+         if ( threads.Length() > 1 )
          {
-            for ( int i = 0; i < numberOfThreads; ++i )
+            for ( int i = 0; i < int( threads.Length() ); ++i )
                threads[i].Start( ThreadPriority::DefaultMax, i );
-            for ( int i = 0; i < numberOfThreads; ++i )
+            for ( int i = 0; i < int( threads.Length() ); ++i )
                threads[i].Wait();
          }
          else
@@ -502,7 +498,7 @@ private:
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -641,14 +637,11 @@ private:
             UInt8Image Rr( R.Width(), R.Height() );
             UInt8Image Tr( T.Width(), T.Height() );
 
-            int numberOfThreads = Thread::NumberOfThreads( R.Height(), 4 );
-            int rowsPerThread = R.Height()/numberOfThreads;
+            Array<size_type> L = Thread::OptimalThreadLoads( R.Height() );
             AbstractImage::ThreadData data( m_monitor, T.NumberOfPixels() );
             ReferenceArray<RejectThread> threads;
-            for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-               threads << new RejectThread( data, m_instance, Rr, Tr, R, T, Rz[c], Tz[c], c,
-                                    i*rowsPerThread,
-                                    (j < numberOfThreads) ? j*rowsPerThread : R.Height() );
+            for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+               threads << new RejectThread( data, m_instance, Rr, Tr, R, T, Rz[c], Tz[c], c, n, n + int( L[i] ) );
             AbstractImage::RunThreads( threads, data );
             threads.Destroy();
 
@@ -845,7 +838,7 @@ private:
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -913,14 +906,11 @@ private:
       m_A0.AllocateData( R.Width(), R.Height(), R.NumberOfChannels() );
       m_A1.AllocateData( R.Width(), R.Height(), R.NumberOfChannels() );
 
-      int numberOfThreads = Thread::NumberOfThreads( R.NumberOfPixels(), 256 );
-      int pixelsPerThread = R.NumberOfPixels()/numberOfThreads;
+      Array<size_type> L = Thread::OptimalThreadLoads( R.NumberOfPixels(), 256/*overheadLimit*/ );
       AbstractImage::ThreadData data( m_monitor, R.NumberOfSamples() );
       ReferenceArray<BuildThread> threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads << new BuildThread( data, R, T, RB, TB, m_A0, m_A1, m_instance.p_noScale,
-                                     i*pixelsPerThread,
-                                     (j < numberOfThreads) ? j*pixelsPerThread : R.NumberOfPixels() );
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads << new BuildThread( data, R, T, RB, TB, m_A0, m_A1, m_instance.p_noScale, n, n + L[i] );
       AbstractImage::RunThreads( threads, data ); // N
       threads.Destroy();
 
@@ -1004,7 +994,7 @@ private:
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -1054,14 +1044,11 @@ private:
       monitor.SetCallback( &status );
       monitor.Initialize( "Applying local normalization", target.NumberOfSamples() );
 
-      int numberOfThreads = Thread::NumberOfThreads( target.Height(), 4 );
-      int rowsPerThread = target.Height()/numberOfThreads;
+      Array<size_type> L = Thread::OptimalThreadLoads( target.Height() );
       AbstractImage::ThreadData data( monitor, target.NumberOfSamples() );
       ReferenceArray<ApplyThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads << new ApplyThread<P>( data, target, m_A0, m_A1,
-                              i*rowsPerThread,
-                              (j < numberOfThreads) ? j*rowsPerThread : target.Height() );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads << new ApplyThread<P>( data, target, m_A0, m_A1, n, n + int( L[i] ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
    }
@@ -1896,4 +1883,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF LocalNormalizationInstance.cpp - Released 2019-11-07T11:00:22Z

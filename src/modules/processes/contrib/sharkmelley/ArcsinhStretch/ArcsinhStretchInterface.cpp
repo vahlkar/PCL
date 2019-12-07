@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInterface.cpp - Released 2019-09-29T12:27:58Z
+// ArcsinhStretchInterface.cpp - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -72,7 +72,6 @@ ArcsinhStretchInterface* TheArcsinhStretchInterface = nullptr;
 // ----------------------------------------------------------------------------
 
 ArcsinhStretchInterface::ArcsinhStretchInterface() :
-   ProcessInterface(),
    instance( TheArcsinhStretchProcess )
 {
    TheArcsinhStretchInterface = this;
@@ -215,7 +214,7 @@ bool ArcsinhStretchInterface::ImportProcess( const ProcessImplementation& p )
 
 // ----------------------------------------------------------------------------
 
-bool ArcsinhStretchInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const
+bool ArcsinhStretchInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int ) const
 {
    return true;
 }
@@ -249,7 +248,7 @@ void ArcsinhStretchInterface::RealTimeThread::Run()
 
 // ----------------------------------------------------------------------------
 
-bool ArcsinhStretchInterface::GenerateRealTimePreview( UInt16Image& image, const View&, int zoomLevel, String& ) const
+bool ArcsinhStretchInterface::GenerateRealTimePreview( UInt16Image& image, const View&, const Rect&, int, String& ) const
 {
    m_preview_blackpoint_level = double( image.MinimumPixelValue() )/image.MaximumPixelValue(); // mutable m_preview_blackpoint_level
 
@@ -558,4 +557,4 @@ ArcsinhStretchInterface::GUIData::GUIData( ArcsinhStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInterface.cpp - Released 2019-09-29T12:27:58Z
+// EOF ArcsinhStretchInterface.cpp - Released 2019-11-07T11:00:23Z

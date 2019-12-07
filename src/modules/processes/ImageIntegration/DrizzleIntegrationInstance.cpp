@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z
+// DrizzleIntegrationInstance.cpp - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1270,17 +1270,33 @@ private:
    {
       Image::pixel_iterator r( static_cast<Image&>( *result ) );
       Image::pixel_iterator w( static_cast<Image&>( *weight ) );
-      float wm = static_cast<Image&>( *weight ).MaximumSampleValue();
-      float s2 = m_instance.p_dropShrink*m_instance.p_dropShrink;
+      double wm = static_cast<Image&>( *weight ).MaximumSampleValue();
+      double s2 = m_instance.p_dropShrink*m_instance.p_dropShrink;
+      double rmax = 0, rmin = 1;
       for ( ; r; ++r, ++w )
          for ( int i = 0; i < result.NumberOfChannels(); ++i )
          {
-            float ws = w[i] / s2;
+            double ws = w[i] / s2;
             if ( 1 + ws != 1 )
-               if ( (r[i] /= ws) > 1 )
-                  r[i] = 1;
+            {
+               r[i] /= ws;
+               if ( r[i] < rmin )
+                  rmin = r[i];
+               if ( r[i] > rmax )
+                  rmax = r[i];
+            }
             w[i] /= wm;
          }
+
+      m_instance.o_output.outputRangeLow = rmin;
+      m_instance.o_output.outputRangeHigh = rmax;
+
+      if ( rmax > 1 )
+      {
+         Console().NoteLn( "<end><cbr><br>* Normalizing output image. Integration range: "
+                           + String().Format( "[%.8e,%.8e]", rmin, rmax ) );
+         result /= rmax;
+      }
    }
 };
 
@@ -1573,20 +1589,15 @@ void DrizzleIntegrationEngine::Perform()
                   }
             threadData.status.Initialize( "Integrating pixels", m_height );
 
-            int numberOfThreads = Thread::NumberOfThreads( m_height, Max( 1, 4096/m_width ) );
-            int rowsPerThread = m_height/numberOfThreads;
-
+            Array<size_type> L = Thread::OptimalThreadLoads( m_height, Max( 1, 4096/m_width )/*overheadLimit*/ );
             ReferenceArray<DrizzleThread> threads;
-            for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-               threads.Add( new DrizzleThread( threadData,
-                                               i*rowsPerThread,
-                                               (j < numberOfThreads) ? j*rowsPerThread : m_height ) );
-
+            for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+               threads.Add( new DrizzleThread( threadData, n, n + int( L[i] ) ) );
             AbstractImage::RunThreads( threads, threadData );
 
             double outputData = 0;
-            for ( int i = 0; i < numberOfThreads; ++i )
-               outputData += threads[i].totalDropArea;
+            for ( const auto& thread : threads )
+               outputData += thread.totalDropArea;
             outputData /= roi.Area();
             double inputData = outputData/m_instance.p_dropShrink/m_instance.p_dropShrink;
             outputData *= m_pixelSize*m_pixelSize;
@@ -1695,7 +1706,7 @@ void DrizzleIntegrationEngine::Perform()
 
       Normalize( resultImage, weightImage );
 
-      console.WriteLn( String().Format( "<end><cbr><br>Total output data : %.3f", totalOutputData ) );
+      console.NoteLn( String().Format( "<end><cbr><br>* Total output data : %.3f", totalOutputData ) );
 
       m_instance.o_output.integrationImageId = resultWindow.MainView().Id();
       m_instance.o_output.weightImageId = weightWindow.MainView().Id();
@@ -1765,7 +1776,15 @@ void DrizzleIntegrationEngine::Perform()
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      IsoString().Format( "DrizzleIntegration.integratedPixels: %lu", m_instance.o_output.integratedPixels ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                     IsoString().Format( "DrizzleIntegration.outputData: %.3f", totalOutputData ) );
+                                     IsoString().Format( "DrizzleIntegration.outputData: %.3f", totalOutputData ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                     IsoString().Format( "DrizzleIntegration.outputRangeLow: %.8e", m_instance.o_output.outputRangeLow ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                     IsoString().Format( "DrizzleIntegration.outputRangeHigh: %.8e", m_instance.o_output.outputRangeHigh ) );
+
+      if ( m_instance.o_output.outputRangeHigh > 1 )
+         keywords << FITSHeaderKeyword( "HISTORY", IsoString(), // compatibility with ImageIntegration
+                                        "DrizzleIntegration.outputRangeOperation: normalize" );
 
       if ( metadata.IsValid() )
          if ( metadata.pedestal.IsConsistentlyDefined() )
@@ -1883,6 +1902,10 @@ void* DrizzleIntegrationInstance::LockParameter( const MetaParameter* p, size_ty
       return &o_output.outputPixels;
    if ( p == TheDZIntegratedPixelsParameter )
       return &o_output.integratedPixels;
+   if ( p == TheDZOutputRangeLowParameter )
+      return &o_output.outputRangeLow;
+   if ( p == TheDZOutputRangeHighParameter )
+      return &o_output.outputRangeHigh;
    if ( p == TheDZTotalRejectedLowRKParameter )
       return o_output.totalRejectedLow.At( 0 );
    if ( p == TheDZTotalRejectedLowGParameter )
@@ -2046,4 +2069,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2019-11-18T16:52:32Z

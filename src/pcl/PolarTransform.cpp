@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/PolarTransform.cpp - Released 2019-09-29T12:27:33Z
+// pcl/PolarTransform.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -124,11 +124,9 @@ public:
       /*
        * In-place polar or log-polar transform.
        */
-
-      int numberOfThreads = T.IsParallelProcessingEnabled() ?
-               Min( T.MaxProcessors(), pcl::Thread::NumberOfThreads( height, 1 ) ) : 1;
-      int rowsPerThread = height/numberOfThreads;
-
+      Array<size_type> L = pcl::Thread::OptimalThreadLoads( height,
+                                                            1/*overheadLimit*/,
+                                                            T.IsParallelProcessingEnabled() ? T.MaxProcessors() : 1 );
       size_type N = size_type( width )*size_type( height );
       if ( image.Status().IsInitializationEnabled() )
          image.Status().Initialize( String( "In-place " )
@@ -143,14 +141,13 @@ public:
          ThreadData<P> data( result, sin, cos, r, center, width, height, image.Status(), N );
 
          ReferenceArray<Thread<P> > threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
             threads.Add( new Thread<P>( data,
                                         T.Interpolation().NewInterpolator<P>( image[c], width, height, T.UsingUnclippedInterpolation() ),
-                                        i*rowsPerThread,
-                                        (j < numberOfThreads) ? j*rowsPerThread : height ) );
+                                        n,
+                                        n + int( L[i] ) ) );
 
          AbstractImage::RunThreads( threads, data );
-
          threads.Destroy();
 
          ::memcpy( image[c], result.Begin(), image.ChannelSize() );
@@ -296,4 +293,4 @@ void LogPolarTransform::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PolarTransform.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/PolarTransform.cpp - Released 2019-11-07T10:59:44Z

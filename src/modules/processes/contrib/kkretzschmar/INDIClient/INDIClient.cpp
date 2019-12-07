@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// INDIClient.cpp - Released 2019-09-29T12:27:58Z
+// INDIClient.cpp - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -557,4 +557,4 @@ void INDIClient::ApplyToPropertyList( indigo_property* p, const PropertyListMuta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIClient.cpp - Released 2019-09-29T12:27:58Z
+// EOF INDIClient.cpp - Released 2019-11-07T11:00:23Z

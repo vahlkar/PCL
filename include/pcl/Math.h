@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2019-09-29T12:27:26Z
+// pcl/Math.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -75,9 +75,15 @@
 #  include <emmintrin.h>
 #endif
 
-// GCC 4.2 doesn't have sincos() on Mac OS X and FreeBSD
-// MSVC doesn't have sincos() on Windows
-#if !defined( __PCL_MACOSX ) && !defined( __PCL_FREEBSD ) && !defined( __PCL_WINDOWS )
+/*
+ * sincos() is only available as a GNU extension:
+ *
+ * http://man7.org/linux/man-pages/man3/sincos.3.html
+ *
+ * Unfortunately, it is not part of the C++ standard library because of the
+ * anachronic dependency on errno.
+ */
+#if !defined( _MSC_VER ) && !defined( __clang__ ) && defined( __GNUC__ )
 #  define __PCL_HAVE_SINCOS 1
 #endif
 
@@ -577,44 +583,6 @@ template <typename T> inline constexpr T Exp( T x )
 // ----------------------------------------------------------------------------
 
 /*!
- * \class Fact
- * \brief Factorial function.
- *
- * We use a static lookup table to speed up for n <= 60.
- *
- * Example of use:
- *
- * \code double factorialOfEight = Fact<double>()( 8 ); \endcode
- *
- * \ingroup mathematical_functions
- */
-template <typename T> struct PCL_CLASS Fact
-{
-   T operator()( int n ) const
-   {
-      static T f[ 61 ] = { T( 1 ), T( 1 ), T( 2 ), T( 6 ), T( 24 ), T( 120 ) };
-      static int last = 5;
-      PCL_PRECONDITION( 0 <= n )
-      if ( last < n )
-      {
-         int m = Min( n, 60 );
-         T x = f[last];
-         while ( last < m )
-         {
-            x *= ++last;
-            f[last] = x;
-         }
-         while ( m < n )
-            x *= ++m;
-         return x;
-      }
-      return f[n];
-   }
-};
-
-// ----------------------------------------------------------------------------
-
-/*!
  * The floor function: highest integer <= x.
  * \ingroup mathematical_functions
  */
@@ -685,6 +653,61 @@ template <typename T> inline constexpr T Ln( T x )
 {
    return std::log( x );
 }
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \class Fact
+ * \brief Factorial function.
+ *
+ * We use a static lookup table to speed up for n <= 60.
+ *
+ * Example of use:
+ *
+ * \code double factorialOfEight = Fact<double>()( 8 ); \endcode
+ *
+ * \ingroup mathematical_functions
+ */
+template <typename T> struct PCL_CLASS Fact
+{
+   /*!
+    * Returns the factorial of \a n;
+    */
+   T operator()( int n ) const
+   {
+      static T f[ 61 ] = { T( 1 ), T( 1 ), T( 2 ), T( 6 ), T( 24 ), T( 120 ) };
+      static int last = 5;
+      PCL_PRECONDITION( 0 <= n )
+      if ( last < n )
+      {
+         int m = Min( n, 60 );
+         T x = f[last];
+         while ( last < m )
+         {
+            x *= ++last;
+            f[last] = x;
+         }
+         while ( m < n )
+            x *= ++m;
+         return x;
+      }
+      return f[n];
+   }
+
+   /*!
+    * Returns the natural logarithm of the factorial of \a n. For \a n <= 60
+    * computes the logarithm of the factorial function directly. For \a n > 60
+    * computes a series approximation, so that the function won't overflow even
+    * for very large arguments.
+    */
+   T Ln( int n ) const
+   {
+      if ( n <= 60 )
+         return Ln( operator()( n ) );
+      double x = n + 1;
+      return (x - 0.5)*pcl::Ln( x ) - x + 0.5*pcl::Ln( TwoPi() ) + 1/12/x - 1/(360*x*x*x);
+   }
+};
 
 // ----------------------------------------------------------------------------
 
@@ -3412,6 +3435,85 @@ double BendMidvariance( const T* x, const T* xn, double center, double beta = 0.
 // ----------------------------------------------------------------------------
 
 /*!
+ * \defgroup special_functions Special Functions
+ */
+
+/*!
+ * Evaluation of the regularized incomplete beta function I_x( a, b ).
+ *
+ * \param a,b     The a and b parameters of the beta function being evaluated.
+ *
+ * \param x       Function evaluation point. Must be in the range [0,1].
+ *
+ * \param eps     Relative accuracy of the returned function evaluation. The
+ *                default value is 1.0e-8.
+ *
+ * This implementation is adapted from original code by Lewis Van Winkle,
+ * released under zlib license:
+ *
+ * https://codeplea.com/incomplete-beta-function-c
+ * https://github.com/codeplea/incbeta
+ *
+ * Copyright (c) 2016, 2017 Lewis Van Winkle
+ *
+ * \ingroup special_functions
+ */
+inline double IncompleteBeta( double a, double b, double x, double eps = 1.0e-8 )
+{
+   if ( x < 0 || x > 1 )
+      return std::numeric_limits<double>::infinity();
+
+   /*
+    * The continued fraction converges nicely for x < (a+1)/(a+b+2)
+    */
+   if ( x > (a + 1)/(a + b + 2) )
+      return 1 - IncompleteBeta( b, a, 1 - x ); // Use the fact that beta is symmetrical
+
+    /*
+     * Find the first part before the continued fraction.
+     */
+    double lbeta_ab = lgamma( a ) + lgamma( b ) - lgamma( a + b );
+    double front = Exp( Ln( x )*a + Ln( 1 - x )*b - lbeta_ab )/a;
+
+    /*
+     * Use Lentz's algorithm to evaluate the continued fraction.
+     */
+   const double tiny = 1.0e-30;
+   double f = 1, c = 1, d = 0;
+   for ( int i = 0; i <= 200; ++i )
+   {
+      int m = i >> 1;
+      double numerator;
+      if ( i & 1 )
+         numerator = -((a + m)*(a + b + m)*x)/((a + 2*m)*(a + 2*m + 1)); // Odd term
+      else if ( i > 0 )
+         numerator = (m*(b - m)*x)/((a + 2*m - 1)*(a + 2*m)); // Even term
+      else
+         numerator = 1; // First numerator is 1.0
+
+      /*
+       * Do an iteration of Lentz's algorithm.
+       */
+      d = 1 + numerator*d;
+      if ( Abs( d ) < tiny )
+         d = tiny;
+      d = 1/d;
+      c = 1 + numerator/c;
+      if ( Abs( c ) < tiny )
+         c = tiny;
+      double cd = c*d;
+      f *= cd;
+      if ( Abs( 1 - cd ) < eps )
+         return front*(f - 1);
+   }
+
+   // Needed more loops, did not converge.
+   return std::numeric_limits<double>::infinity();
+}
+
+// ----------------------------------------------------------------------------
+
+/*!
  * \defgroup hash_functions Non-Cryptographic Hash Functions
  */
 
@@ -3683,4 +3785,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 )
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/Math.h - Released 2019-11-07T10:59:34Z

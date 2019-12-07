@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/ImageDescription.h - Released 2019-09-29T12:27:26Z
+// pcl/ImageDescription.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -137,4 +137,4 @@ typedef Array<ImageDescription>  ImageDescriptionArray;
 #endif   // __PCL_ImageDescription_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageDescription.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/ImageDescription.h - Released 2019-11-07T10:59:34Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.0
+// Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ChannelSourceSelectionDialog.h - Released 2019-09-29T12:27:57Z
+// ChannelSourceSelectionDialog.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -95,4 +95,4 @@ private:
 #endif   // __ChannelSourceSelectionDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelSourceSelectionDialog.h - Released 2019-09-29T12:27:57Z
+// EOF ChannelSourceSelectionDialog.h - Released 2019-11-07T11:00:22Z

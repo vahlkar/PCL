@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Flags.h - Released 2019-09-29T12:27:26Z
+// pcl/Flags.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -102,9 +102,7 @@ public:
    /*!
     * Constructs an empty (zero) %Flags instance.
     */
-   Flags() : m_flags( 0 )
-   {
-   }
+   Flags() = default;
 
    /*!
     * Constructs a %Flags instance from an enumerated flag value \a e.
@@ -384,7 +382,7 @@ public:
 
 private:
 
-   flag_type m_flags;
+   flag_type m_flags = 0;
 
 #ifndef __PCL_NO_FLAGS_SETTINGS_IO
    friend class Settings;
@@ -406,4 +404,4 @@ private:
 #endif   // __PCL_Flags_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Flags.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/Flags.h - Released 2019-11-07T10:59:34Z

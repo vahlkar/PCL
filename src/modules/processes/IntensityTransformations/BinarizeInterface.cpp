@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeInterface.cpp - Released 2019-09-29T12:27:57Z
+// BinarizeInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -64,7 +64,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-BinarizeInterface* TheBinarizeInterface = 0;
+BinarizeInterface* TheBinarizeInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -73,50 +73,66 @@ BinarizeInterface* TheBinarizeInterface = 0;
 // ----------------------------------------------------------------------------
 
 BinarizeInterface::BinarizeInterface() :
-ProcessInterface(), instance( TheBinarizeProcess ), GUI( 0 )
+   instance( TheBinarizeProcess )
 {
    TheBinarizeInterface = this;
 }
 
+// ----------------------------------------------------------------------------
+
 BinarizeInterface::~BinarizeInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString BinarizeInterface::Id() const
 {
    return "Binarize";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* BinarizeInterface::Process() const
 {
    return TheBinarizeProcess;
 }
+
+// ----------------------------------------------------------------------------
 
 const char** BinarizeInterface::IconImageXPM() const
 {
    return BinarizeIcon_XPM;
 }
 
+// ----------------------------------------------------------------------------
+
 InterfaceFeatures BinarizeInterface::Features() const
 {
    return InterfaceFeature::Default | InterfaceFeature::RealTimeButton;
 }
 
+// ----------------------------------------------------------------------------
+
 void BinarizeInterface::RealTimePreviewUpdated( bool active )
 {
-   if ( GUI != 0 )
+   if ( GUI != nullptr )
       if ( active )
          RealTimePreview::SetOwner( *this ); // implicitly updates the r-t preview
       else
          RealTimePreview::SetOwner( ProcessInterface::Null() );
 }
 
+// ----------------------------------------------------------------------------
+
 void BinarizeInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void BinarizeInterface::ResetInstance()
 {
@@ -124,9 +140,11 @@ void BinarizeInterface::ResetInstance()
    ImportProcess( defaultInstance );
 }
 
+// ----------------------------------------------------------------------------
+
 bool BinarizeInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "Binarize" );
@@ -137,10 +155,14 @@ bool BinarizeInterface::Launch( const MetaProcess& P, const ProcessImplementatio
    return &P == TheBinarizeProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* BinarizeInterface::NewProcess() const
 {
    return new BinarizeInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool BinarizeInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -150,10 +172,14 @@ bool BinarizeInterface::ValidateProcess( const ProcessImplementation& p, String&
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool BinarizeInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool BinarizeInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -162,14 +188,18 @@ bool BinarizeInterface::ImportProcess( const ProcessImplementation& p )
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool BinarizeInterface::WantsReadoutNotifications() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 void BinarizeInterface::UpdateReadout( const View& v, const DPoint&, double R, double G, double B, double /*A*/ )
 {
-   if ( GUI != 0 && IsVisible() )
+   if ( GUI != nullptr && IsVisible() )
    {
       if ( instance.isGlobal )
       {
@@ -191,16 +221,22 @@ void BinarizeInterface::UpdateReadout( const View& v, const DPoint&, double R, d
    }
 }
 
-bool BinarizeInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int ) const
+// ----------------------------------------------------------------------------
+
+bool BinarizeInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int ) const
 {
    return true;
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-BinarizeInterface::RealTimeThread::RealTimeThread() : Thread(), m_instance( TheBinarizeProcess )
+BinarizeInterface::RealTimeThread::RealTimeThread() :
+   m_instance( TheBinarizeProcess )
 {
 }
+
+// ----------------------------------------------------------------------------
 
 void BinarizeInterface::RealTimeThread::Reset( const UInt16Image& image, const BinarizeInstance& instance )
 {
@@ -208,6 +244,8 @@ void BinarizeInterface::RealTimeThread::Reset( const UInt16Image& image, const B
    m_image.Assign( image );
    m_instance.Assign( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 void BinarizeInterface::RealTimeThread::Run()
 {
@@ -217,7 +255,10 @@ void BinarizeInterface::RealTimeThread::Run()
    m_image.ResetSelections();
 }
 
-bool BinarizeInterface::GenerateRealTimePreview( UInt16Image& image, const View&, int, String& ) const
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+bool BinarizeInterface::GenerateRealTimePreview( UInt16Image& image, const View&, const Rect&, int, String& ) const
 {
    m_realTimeThread = new RealTimeThread;
 
@@ -236,7 +277,7 @@ bool BinarizeInterface::GenerateRealTimePreview( UInt16Image& image, const View&
             m_realTimeThread->Wait();
 
             delete m_realTimeThread;
-            m_realTimeThread = 0;
+            m_realTimeThread = nullptr;
             return false;
          }
       }
@@ -246,7 +287,7 @@ bool BinarizeInterface::GenerateRealTimePreview( UInt16Image& image, const View&
          image.Assign( m_realTimeThread->m_image );
 
          delete m_realTimeThread;
-         m_realTimeThread = 0;
+         m_realTimeThread = nullptr;
          return true;
       }
    }
@@ -271,11 +312,13 @@ void BinarizeInterface::UpdateControls()
    GUI->ColorSample_Control.Update();
 }
 
+// ----------------------------------------------------------------------------
+
 void BinarizeInterface::UpdateRealTimePreview()
 {
    if ( IsRealTimePreviewActive() )
    {
-      if ( m_realTimeThread != 0 )
+      if ( m_realTimeThread != nullptr )
          m_realTimeThread->Abort();
       GUI->UpdateRealTimePreview_Timer.Start();
    }
@@ -296,6 +339,8 @@ void BinarizeInterface::__Mode_Click( Button& sender, bool checked )
    UpdateControls();
    UpdateRealTimePreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void BinarizeInterface::__LevelValues_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -320,6 +365,8 @@ void BinarizeInterface::__LevelValues_ValueUpdated( NumericEdit& sender, double 
    UpdateRealTimePreview();
 }
 
+// ----------------------------------------------------------------------------
+
 void BinarizeInterface::__ColorSample_Paint( Control& sender, const Rect& /*updateRect*/ )
 {
    Graphics g( sender );
@@ -328,9 +375,11 @@ void BinarizeInterface::__ColorSample_Paint( Control& sender, const Rect& /*upda
    g.DrawRect( sender.BoundsRect() );
 }
 
+// ----------------------------------------------------------------------------
+
 void BinarizeInterface::__UpdateRealTimePreview_Timer( Timer& sender )
 {
-   if ( m_realTimeThread != 0 )
+   if ( m_realTimeThread != nullptr )
       if ( m_realTimeThread->IsActive() )
          return;
 
@@ -444,4 +493,4 @@ BinarizeInterface::GUIData::GUIData( BinarizeInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF BinarizeInterface.cpp - Released 2019-11-07T11:00:22Z

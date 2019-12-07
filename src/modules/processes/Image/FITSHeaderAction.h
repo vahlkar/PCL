@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.1
+// Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderAction.h - Released 2019-09-29T12:27:57Z
+// FITSHeaderAction.h - Released 2019-11-13T20:00:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -75,4 +75,4 @@ public:
 #endif   // __FITSHeaderActions_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderAction.h - Released 2019-09-29T12:27:57Z
+// EOF FITSHeaderAction.h - Released 2019-11-13T20:00:10Z

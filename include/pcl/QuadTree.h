@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/QuadTree.h - Released 2019-09-29T12:27:26Z
+// pcl/QuadTree.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -801,10 +801,10 @@ private:
       // Prevent geometrically degenerate subtrees. For safety, we enforce
       // minimum region dimensions larger than twice the machine epsilon for
       // the rectangle coordinate type.
-      if ( x2 - rect.x0 <= std::numeric_limits<coordinate>::epsilon() ||
-           rect.x1 - x2 <= std::numeric_limits<coordinate>::epsilon() ||
-           y2 - rect.y0 <= std::numeric_limits<coordinate>::epsilon() ||
-           rect.y1 - y2 <= std::numeric_limits<coordinate>::epsilon() )
+      if ( x2 - rect.x0 < 2*std::numeric_limits<coordinate>::epsilon() ||
+           rect.x1 - x2 < 2*std::numeric_limits<coordinate>::epsilon() ||
+           y2 - rect.y0 < 2*std::numeric_limits<coordinate>::epsilon() ||
+           rect.y1 - y2 < 2*std::numeric_limits<coordinate>::epsilon() )
       {
          return NewLeafNode( rect, points );
       }
@@ -936,10 +936,10 @@ private:
                // Prevent geometrically degenerate subtrees. For safety, we
                // enforce minimum region dimensions larger than twice the
                // machine epsilon for the rectangle coordinate type.
-               if ( x2 - rect.x0 <= std::numeric_limits<coordinate>::epsilon() ||
-                    rect.x1 - x2 <= std::numeric_limits<coordinate>::epsilon() ||
-                    y2 - rect.y0 <= std::numeric_limits<coordinate>::epsilon() ||
-                    rect.y1 - y2 <= std::numeric_limits<coordinate>::epsilon() )
+               if ( x2 - rect.x0 < 2*std::numeric_limits<coordinate>::epsilon() ||
+                    rect.x1 - x2 < 2*std::numeric_limits<coordinate>::epsilon() ||
+                    y2 - rect.y0 < 2*std::numeric_limits<coordinate>::epsilon() ||
+                    rect.y1 - y2 < 2*std::numeric_limits<coordinate>::epsilon() )
                {
                   leaf->points << pt;
                }
@@ -1136,4 +1136,4 @@ private:
 #endif   // __PCL_QuadTree_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/QuadTree.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/QuadTree.h - Released 2019-11-07T10:59:34Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.0
+// Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationInstance.cpp - Released 2019-09-29T12:27:57Z
+// ChannelCombinationInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -610,7 +610,6 @@ bool ChannelCombinationInstance::ExecuteGlobal()
       throw Error( "ChannelCombination: Unable to create output image." );
 
    View outputView = outputWindow.MainView();
-   AutoViewLock lock( outputView );
 
    try
    {
@@ -687,7 +686,6 @@ bool ChannelCombinationInstance::ExecuteGlobal()
       outputWindow.SetKeywords( keywords );
 
       outputWindow.Show();
-      outputWindow.ZoomToFit( false/*allowZoom*/ );
 
       return true;
    }
@@ -747,4 +745,4 @@ size_type ChannelCombinationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF ChannelCombinationInstance.cpp - Released 2019-11-07T11:00:22Z

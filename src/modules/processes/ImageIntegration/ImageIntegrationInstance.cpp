@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z
+// ImageIntegrationInstance.cpp - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -104,6 +104,8 @@ ImageIntegrationInstance::ImageIntegrationInstance( const MetaProcess* m ) :
    p_winsorizationCutoff( TheIIWinsorizationCutoffParameter->DefaultValue() ),
    p_linearFitLow( TheIILinearFitLowParameter->DefaultValue() ),
    p_linearFitHigh( TheIILinearFitHighParameter->DefaultValue() ),
+   p_esdOutliersFraction( TheIIESDOutliersFractionParameter->DefaultValue() ),
+   p_esdAlpha( TheIIESDAlphaParameter->DefaultValue() ),
    p_ccdGain( TheIICCDGainParameter->DefaultValue() ),
    p_ccdReadNoise( TheIICCDReadNoiseParameter->DefaultValue() ),
    p_ccdScaleNoise( TheIICCDScaleNoiseParameter->DefaultValue() ),
@@ -176,6 +178,8 @@ void ImageIntegrationInstance::Assign( const ProcessImplementation& p )
       p_winsorizationCutoff               = x->p_winsorizationCutoff;
       p_linearFitLow                      = x->p_linearFitLow;
       p_linearFitHigh                     = x->p_linearFitHigh;
+      p_esdOutliersFraction               = x->p_esdOutliersFraction;
+      p_esdAlpha                          = x->p_esdAlpha;
       p_ccdGain                           = x->p_ccdGain;
       p_ccdReadNoise                      = x->p_ccdReadNoise;
       p_ccdScaleNoise                     = x->p_ccdScaleNoise;
@@ -1087,7 +1091,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
 
       if ( instance.p_useROI )
       {
-         s_roi = Rect( s_width, s_height ).Intersection( instance.p_roi.Ordered() );
+         s_roi = Rect( s_width, s_height ).Intersection( instance.p_roi );
          if ( !s_roi.IsRect() )
             throw Error( "Invalid ROI coordinates" );
       }
@@ -1676,6 +1680,10 @@ public:
    {
    }
 
+   virtual ~ImageIntegrationEngine()
+   {
+   }
+
 protected:
 
    class EngineThread : public Thread
@@ -1724,14 +1732,9 @@ public:
       ImageIntegrationEngine( instance_, monitor_ ),
       r( r_ ), R( R_ ), N( N_ ), M( M_ )
    {
-      int numberOfThreads = Thread::NumberOfThreads( R.Length(), 1 );
-      int stacksPerThread = R.Length()/numberOfThreads;
-      for ( int i = 0; i < numberOfThreads; ++i )
-      {
-         int k0 = i*stacksPerThread;
-         int k1 = (i == numberOfThreads-1) ? R.Length() : k0+stacksPerThread;
-         threads << new DataLoaderThread( *this, k0, k1 );
-      }
+      Array<size_type> L = Thread::OptimalThreadLoads( R.Length() );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads << new DataLoaderThread( *this, n, n + int( L[i] ) );
    }
 
    virtual ~DataLoaderEngine()
@@ -1838,42 +1841,43 @@ public:
       R( R_ ), N( N_ ), M( M_ ), m( m_ ), s( s_ ), q( q_ ),
       m_y0( y0 ), m_channel( channel )
    {
-      int numberOfThreads = Thread::NumberOfThreads( R.Length(), 1 );
-      int stacksPerThread = R.Length()/numberOfThreads;
+      Array<size_type> L = Thread::OptimalThreadLoads( R.Length() );
 
-      for ( int i = 0; i < numberOfThreads; ++i )
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
       {
-         int k0 = i*stacksPerThread;
-         int k1 = (i == numberOfThreads-1) ? R.Length() : k0+stacksPerThread;
+         int n1 = n + int( L[i] );
 
          if ( instance.p_rejection != IIRejection::NoRejection )
-            normalizeThreads << new NormalizationThread( *this, k0, k1 );
+            normalizeThreads << new NormalizationThread( *this, n, n1 );
 
          if ( instance.p_rangeClipLow || instance.p_rangeClipHigh )
-            rangeThreads << new RangeRejectionThread( *this, k0, k1 );
+            rangeThreads << new RangeRejectionThread( *this, n, n1 );
 
          switch ( instance.p_rejection )
          {
          case IIRejection::MinMax:
-            rejectThreads << new MinMaxRejectionThread( *this, k0, k1 );
+            rejectThreads << new MinMaxRejectionThread( *this, n, n1 );
             break;
          case IIRejection::PercentileClip:
-            rejectThreads << new PercentileClipRejectionThread( *this, k0, k1 );
+            rejectThreads << new PercentileClipRejectionThread( *this, n, n1 );
             break;
          case IIRejection::SigmaClip:
-            rejectThreads << new SigmaClipRejectionThread( *this, k0, k1 );
+            rejectThreads << new SigmaClipRejectionThread( *this, n, n1 );
             break;
          case IIRejection::WinsorizedSigmaClip:
-            rejectThreads << new WinsorizedSigmaClipRejectionThread( *this, k0, k1 );
+            rejectThreads << new WinsorizedSigmaClipRejectionThread( *this, n, n1 );
             break;
          case IIRejection::AveragedSigmaClip:
-            rejectThreads << new AveragedSigmaClipRejectionThread( *this, k0, k1 );
+            rejectThreads << new AveragedSigmaClipRejectionThread( *this, n, n1 );
             break;
          case IIRejection::LinearFit:
-            rejectThreads << new LinearFitRejectionThread( *this, k0, k1 );
+            rejectThreads << new LinearFitRejectionThread( *this, n, n1 );
+            break;
+         case IIRejection::ESD:
+            rejectThreads << new ESDRejectionThread( *this, n, n1 );
             break;
          case IIRejection::CCDClip:
-            rejectThreads << new CCDClipRejectionThread( *this, k0, k1 );
+            rejectThreads << new CCDClipRejectionThread( *this, n, n1 );
             break;
          default:
             break;
@@ -1928,15 +1932,28 @@ public:
       }
    }
 
-   static double RejectionMedian( const RejectionDataItem* r, int n )
+   /*
+    * Arithmetic mean of a pixel sample.
+    *
+    * r.... The sample of rejection items.
+    * n.... Number of unrejected items (sample length).
+    */
+   static double RejectionMean( const RejectionDataItem* r, int n )
    {
-      // Assume that {r0...rn} is already sorted by value.
       if ( n < 2 )
          return 0;
-      int n2 = n >> 1;
-      return (n & 1) ? r[n2].value : (r[n2].value + r[n2-1].value)/2;
+      double s = 0;
+      for ( int i = 0; i < n; ++i )
+         s += r[i].value;
+      return s/n;
    }
 
+   /*
+    * Standard deviation of a pixel sample.
+    *
+    * r.... The sample of rejection items.
+    * n.... Number of unrejected items (sample length).
+    */
    static double RejectionSigma( const RejectionDataItem* r, int n )
    {
       if ( n < 2 )
@@ -1955,6 +1972,28 @@ public:
       return Sqrt( (var - (eps*eps)/n)/(n - 1) );
    }
 
+   /*
+    * Median of a pixel sample.
+    *
+    * r.... The sample of rejection items.
+    * n.... Number of unrejected items (sample length).
+    */
+   static double RejectionMedian( const RejectionDataItem* r, int n )
+   {
+      // Assume that {r0...rn} is already sorted by value.
+      if ( n < 2 )
+         return 0;
+      int n2 = n >> 1;
+      return (n & 1) ? r[n2].value : (r[n2].value + r[n2-1].value)/2;
+   }
+
+   /*
+    * Mean absolute deviation from the median of a pixel sample.
+    *
+    * r....... The sample of rejection items.
+    * n....... Number of unrejected items (sample length).
+    * median.. The median of the (unrejected) sample.
+    */
    static double RejectionADev( const RejectionDataItem* r, int n, double median )
    {
       if ( n < 2 )
@@ -1965,6 +2004,13 @@ public:
       return sd/n;
    }
 
+   /*
+    * Median absolute deviation from the median of a pixel sample.
+    *
+    * r....... The sample of rejection items.
+    * n....... Number of unrejected items (sample length).
+    * median.. The median of the (unrejected) sample.
+    */
    static double RejectionMAD( const RejectionDataItem* r, int n, double median )
    {
       if ( n < 2 )
@@ -1975,6 +2021,17 @@ public:
       return pcl::Median( d.Begin(), d.End() );
    }
 
+   /*
+    * Winsorization of a pixel sample.
+    *
+    * mean.... On output, the Winsorized mean of the sample.
+    * sigma... On output, the Winsorized standard deviation of the sample.
+    * r....... The sample of rejection items.
+    * n....... Number of unrejected items (sample length).
+    * cutoffPoint... Winsorization cutoff point. If cutoffPoint > 0, all sample
+    *          values with absolute value larger than cutoffPoint will be set
+    *          equal to the sample median.
+    */
    static void RejectionWinsorization( double& mean, double& sigma, const RejectionDataItem* r, int n, float cutoffPoint )
    {
       if ( n < 2 )
@@ -2023,6 +2080,75 @@ public:
             if ( Abs( s0 - sigma )/s0 < 0.0005 )
                break;
       }
+   }
+
+   /*
+    * The cumulative distribution function (CDF) of Student's t distribution.
+    *
+    * nu... Degrees of freedom of the distribution.
+    * t.... Evaluation point.
+    */
+   static double t_CDF( double nu, double t )
+   {
+      double p = IncompleteBeta( nu/2, 0.5, nu/(nu + t*t) )/2;
+      return (t < 0) ? p : 1 - p;
+   }
+
+   /*
+    * The upper percentile of Student's t distribution.
+    *
+    * nu... Degrees of freedom of the distribution.
+    * x.... Percentile in the range [0,0.5].
+    * eps.. Relative accuracy of the returned result.
+    *
+    * We implement an adaptive binary search algorithm based on the cumulative
+    * distribution function.
+    *
+    * Returns t(nu,x) such that P(t(nu) > t(nu,x)) = x.
+    */
+   static double t_p( double nu, double x, double eps = 1.0e-9 )
+   {
+      x = Abs( x );
+      if ( x >= 0.5 )
+         return 0;
+      for ( double l = 0, h = 50; ; )
+      {
+         double p = (l + h)/2;
+         double c = 1 - t_CDF( nu, p );
+         if ( Abs( c - x ) < eps )
+            return p;
+         if ( c < x )
+         {
+            h = p;
+            // Check if we are approaching zero asymptotically.
+            if ( h - l < 2*std::numeric_limits<double>::epsilon() )
+               return 0;
+         }
+         else
+         {
+            l = p;
+            // Check if we are exhausting the search space, and double it at
+            // the upper side if necessary.
+            if ( h - l < 1.0e-8 )
+               h *= 2;
+         }
+      }
+   }
+
+   /*
+    * Generalized ESD Test for Outliers - Critical values for two-tailed
+    * outlier detection.
+    *
+    * n....... Sample length.
+    * i....... Test index in the range [0,k-1], where k is the prescribed
+    *          maximum number of outliers.
+    * alpha... The Type I error, or significance level.
+   */
+   static double ESDLambda( int n, int i, double alpha )
+   {
+      double p = alpha/2/(n - i);
+      double t = t_p( n - i - 2, p );
+      return t*(n - i - 1)/Sqrt( (n - i - 2 + t*t)*(n - i) );
    }
 
 private:
@@ -2181,6 +2307,18 @@ private:
       void Run() override;
    };
 
+   class ESDRejectionThread : public RejectionThread
+   {
+   public:
+
+      ESDRejectionThread( RejectionEngine& engine, int firstStack, int endStack ) :
+         RejectionThread( engine, firstStack, endStack )
+      {
+      }
+
+      void Run() override;
+   };
+
    class CCDClipRejectionThread : public RejectionThread
    {
    public:
@@ -2227,6 +2365,7 @@ private:
    friend class WinsorizedSigmaClipRejectionThread;
    friend class AveragedSigmaClipRejectionThread;
    friend class LinearFitRejectionThread;
+   friend class ESDRejectionThread;
    friend class CCDClipRejectionThread;
 };
 
@@ -2264,9 +2403,9 @@ void RejectionEngine::RangeRejectionThread::Run()
           */
          int nr = 0;
          for ( int j = 0; j < n; ++j )
-            if ( I.p_rangeClipLow && r[j].value <= I.p_rangeLow )
+            if ( I.p_rangeClipLow && r[j].raw <= I.p_rangeLow )
                r[j].rejectRangeLow = true, ++nr;
-            else if ( I.p_rangeClipHigh && r[j].value >= I.p_rangeHigh )
+            else if ( I.p_rangeClipHigh && r[j].raw >= I.p_rangeHigh )
                r[j].rejectRangeHigh = true, ++nr;
          N->DataPtr()[i] -= nr;
       }
@@ -2814,6 +2953,108 @@ void RejectionEngine::LinearFitRejectionThread::Run()
 
 // ----------------------------------------------------------------------------
 
+/*
+ * ESD test statistic data.
+ */
+struct ESDT
+{
+   double x;
+   int    i;
+
+   operator double() const
+   {
+      return x;
+   }
+};
+
+void RejectionEngine::ESDRejectionThread::Run()
+{
+   INIT_THREAD_MONITOR()
+
+   RejectionMatrix* R = E.R.ComponentPtr( m_firstStack );
+   IVector* N = E.N.ComponentPtr( m_firstStack );
+
+   for ( int l = m_firstStack; l < m_endStack; ++l, ++R, ++N )
+   {
+      for ( int i = 0; i < R->Rows(); ++i )
+      {
+         int n = N->DataPtr()[i];
+         if ( n < 3 )
+            continue;
+
+         RejectionDataItem* r = R->DataPtr()[i];
+         Sort( r, r + n );
+
+         Array<ESDT> X = Array<ESDT>( size_type( n ) );
+         for ( int i = 0; i < n; ++i )
+         {
+            X[i].x = r[i].value;
+            X[i].i = i;
+         }
+
+         int k = Range( TruncInt( I.p_esdOutliersFraction * n ), 1, n-2 );
+
+         Array<ESDT> T = Array<ESDT>( size_type( k ) );
+         for ( int i = 0; ; )
+         {
+            int n = int( X.Length() );
+            double m = Mean( X.Begin(), X.End() );
+            double s = StdDev( X.Begin(), X.End(), m );
+            Vector r( n );
+            for ( int i = 0; i < n; ++i )
+               r[i] = Abs( X[i].x - m )/s;
+
+            int imax = 0;
+            for ( int i = 1; i < n; ++i )
+               if ( r[i] > r[imax] )
+                  imax = i;
+            T[i].x = r[imax];
+            T[i].i = X[imax].i;
+
+            if ( ++i == k )
+               break;
+
+            Array<ESDT> Y = Array<ESDT>( size_type( n-1 ) );
+            for ( int i = 0, j = 0; i < n; ++i )
+               if ( i != imax )
+                  Y[j++] = X[i];
+            X = Y;
+         }
+
+         int nc;
+         for ( nc = 0; nc < k; ++nc )
+            if ( T[nc].x < ESDLambda( n, nc, I.p_esdAlpha ) )
+               break;
+
+         if ( nc > 0 )
+         {
+            double median = E.RejectionMedian( r, n );
+            for ( int i = 0; i < nc; ++i )
+            {
+               int j = T[i].i;
+               if ( r[j].value > median )
+               {
+                  if ( I.p_clipHigh )
+                     r[j].rejectHigh = true;
+               }
+               else
+               {
+                  if ( I.p_clipLow )
+                     r[j].rejectLow = true;
+               }
+            }
+
+            Sort( r, r + n );
+            N->DataPtr()[i] -= nc;
+         }
+      }
+
+      UPDATE_THREAD_MONITOR( 10 )
+   }
+}
+
+// ----------------------------------------------------------------------------
+
 RejectionEngine::CCDClipRejectionThread::RejectionData::RejectionData( float ccdGain, float ccdReadNoise, float ccdScaleNoise, int bits ) :
    RejectionEngine::RejectionThreadPrivate()
 {
@@ -2935,15 +3176,9 @@ public:
       m_y0( y0 ), m_channel( channel ),
       m_result32( result32 ), m_result64( result64 )
    {
-      int numberOfThreads = Thread::NumberOfThreads( m_R.Length(), 1 );
-      int stacksPerThread = m_R.Length()/numberOfThreads;
-
-      for ( int i = 0; i < numberOfThreads; ++i )
-      {
-         int k0 = i*stacksPerThread;
-         int k1 = (i == numberOfThreads-1) ? m_R.Length() : k0+stacksPerThread;
-         m_threads << new IntegrationThread( *this, k0, k1 );
-      }
+      Array<size_type> L = Thread::OptimalThreadLoads( m_R.Length() );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         m_threads << new IntegrationThread( *this, n, n + int( L[i] ) );
    }
 
    virtual ~IntegrationEngine()
@@ -3141,15 +3376,9 @@ public:
       m_channel( channel ), m_y0( y0 ), m_numberOfRows( numberOfRows ),
       m_result32( result32 ), m_result64( result64 )
    {
-      int numberOfThreads = Thread::NumberOfThreads( m_numberOfRows, 1 );
-      int rowsPerThread = m_numberOfRows/numberOfThreads;
-
-      for ( int i = 0; i < numberOfThreads; ++i )
-      {
-         int firstRow = i*rowsPerThread;
-         int endRow = (i == numberOfThreads-1) ? m_numberOfRows : firstRow+rowsPerThread;
-         m_threads << new IntegrationThread( *this, firstRow, endRow );
-      }
+      Array<size_type> L = Thread::OptimalThreadLoads( m_numberOfRows );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         m_threads << new IntegrationThread( *this, n, n + int( L[i] ) );
    }
 
    virtual ~MapIntegrationEngine()
@@ -3351,15 +3580,9 @@ public:
       ImageIntegrationEngine( instance, monitor ),
       m_high( high ), m_channel( channel ), m_N( N )
    {
-      int numberOfThreads = Thread::NumberOfThreads( IntegrationFile::NumberOfFiles(), 1 );
-      int filesPerThread = IntegrationFile::NumberOfFiles()/numberOfThreads;
-
-      for ( int i = 0; i < numberOfThreads; ++i )
-      {
-         int firstFile = i*filesPerThread;
-         int endFile = (i == numberOfThreads-1) ? IntegrationFile::NumberOfFiles() : firstFile+filesPerThread;
-         m_threads << new GenerationThread( *this, firstFile, endFile );
-      }
+      Array<size_type> L = Thread::OptimalThreadLoads( IntegrationFile::NumberOfFiles() );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         m_threads << new GenerationThread( *this, n, n + int( L[i] ) );
    }
 
    virtual ~LargeScaleRejectionMapGenerationEngine()
@@ -3478,15 +3701,9 @@ public:
       ImageIntegrationEngine( instance, monitor ),
       m_map( map ), m_high( high ), m_channel( channel )
    {
-      int numberOfThreads = Thread::NumberOfThreads( m_map.Height(), 1 );
-      int rowsPerThread = m_map.Height()/numberOfThreads;
-
-      for ( int i = 0; i < numberOfThreads; ++i )
-      {
-         int firstRow = i*rowsPerThread;
-         int endRow = (i == numberOfThreads-1) ? m_map.Height() : firstRow+rowsPerThread;
-         m_threads << new GenerationThread( *this, firstRow, endRow );
-      }
+      Array<size_type> L = Thread::OptimalThreadLoads( m_map.Height() );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         m_threads << new GenerationThread( *this, n, n + int( L[i] ) );
    }
 
    virtual ~RejectionMapGenerationEngine()
@@ -3601,21 +3818,21 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
       switch ( instance.p_combination )
       {
       default:
-      case IICombination::Average: pixelCombination = "average"; break;
-      case IICombination::Median:  pixelCombination = "median"; break;
-      case IICombination::Minimum: pixelCombination = "minimum"; break;
-      case IICombination::Maximum: pixelCombination = "maximum"; break;
+      case IICombination::Average: pixelCombination = "Average"; break;
+      case IICombination::Median:  pixelCombination = "Median"; break;
+      case IICombination::Minimum: pixelCombination = "Minimum"; break;
+      case IICombination::Maximum: pixelCombination = "Maximum"; break;
       }
 
       switch ( instance.p_normalization )
       {
-      case IINormalization::NoNormalization:           outputNormalization = "none"; break;
+      case IINormalization::NoNormalization:           outputNormalization = "None"; break;
       default:
-      case IINormalization::Additive:                  outputNormalization = "additive"; break;
-      case IINormalization::Multiplicative:            outputNormalization = "multiplicative"; break;
-      case IINormalization::AdditiveWithScaling:       outputNormalization = "additive + scaling"; break;
-      case IINormalization::MultiplicativeWithScaling: outputNormalization = "multiplicative + scaling"; break;
-      case IINormalization::LocalNormalization:        outputNormalization = "local"; break;
+      case IINormalization::Additive:                  outputNormalization = "Additive"; break;
+      case IINormalization::Multiplicative:            outputNormalization = "Multiplicative"; break;
+      case IINormalization::AdditiveWithScaling:       outputNormalization = "Additive + scaling"; break;
+      case IINormalization::MultiplicativeWithScaling: outputNormalization = "Multiplicative + scaling"; break;
+      case IINormalization::LocalNormalization:        outputNormalization = "Local"; break;
       }
    }
    else
@@ -3626,26 +3843,26 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
    if ( instance.p_combination == IICombination::Average )
       switch ( instance.p_weightMode )
       {
-      case IIWeightMode::DontCare:              weightMode = "don't care"; break;
-      case IIWeightMode::ExposureTimeWeight:    weightMode = "exposure time"; break;
+      case IIWeightMode::DontCare:              weightMode = "Don't care"; break;
+      case IIWeightMode::ExposureTimeWeight:    weightMode = "Exposure time"; break;
       default:
-      case IIWeightMode::NoiseEvaluationWeight: weightMode = "noise evaluation"; break;
-      case IIWeightMode::SignalWeight:          weightMode = "average absolute deviation"; break;
-      case IIWeightMode::MedianWeight:          weightMode = "median value"; break;
-      case IIWeightMode::AverageWeight:         weightMode = "average value"; break;
-      case IIWeightMode::KeywordWeight:         weightMode = "custom keyword: " + instance.p_weightKeyword; break;
+      case IIWeightMode::NoiseEvaluationWeight: weightMode = "Noise evaluation"; break;
+      case IIWeightMode::SignalWeight:          weightMode = "Average absolute deviation"; break;
+      case IIWeightMode::MedianWeight:          weightMode = "Median value"; break;
+      case IIWeightMode::AverageWeight:         weightMode = "Average value"; break;
+      case IIWeightMode::KeywordWeight:         weightMode = "Custom keyword: " + instance.p_weightKeyword; break;
       }
 
    switch ( instance.p_weightScale )
    {
-   case IIWeightScale::AvgDev: scaleEstimator = "average absolute deviation"; break;
-   case IIWeightScale::MAD:    scaleEstimator = "MAD"; break;
-   case IIWeightScale::BWMV:   scaleEstimator = "biweight midvariance"; break;
-   case IIWeightScale::PBMV:   scaleEstimator = "percentage bend midvariance"; break;
-   case IIWeightScale::Sn:     scaleEstimator = "Sn"; break;
-   case IIWeightScale::Qn:     scaleEstimator = "Qn"; break;
+   case IIWeightScale::AvgDev: scaleEstimator = "Average absolute deviation from the median"; break;
+   case IIWeightScale::MAD:    scaleEstimator = "Median absolute deviation from the median (MAD)"; break;
+   case IIWeightScale::BWMV:   scaleEstimator = "Biweight midvariance"; break;
+   case IIWeightScale::PBMV:   scaleEstimator = "Percentage bend midvariance"; break;
+   case IIWeightScale::Sn:     scaleEstimator = "Sn estimator of Rousseeuw and Croux"; break;
+   case IIWeightScale::Qn:     scaleEstimator = "Qn estimator of Rousseeuw and Croux"; break;
    default:
-   case IIWeightScale::IKSS:   scaleEstimator = "iterative k-sigma / BWMV"; break;
+   case IIWeightScale::IKSS:   scaleEstimator = "Iterative k-sigma / BWMV"; break;
    }
 
    if ( instance.p_rangeClipLow || instance.p_rangeClipHigh )
@@ -3663,13 +3880,14 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
    switch ( instance.p_rejection )
    {
    default:
-   case IIRejection::NoRejection:         pixelRejection = "none"; break;
-   case IIRejection::MinMax:              pixelRejection = "min/max clipping"; break;
-   case IIRejection::PercentileClip:      pixelRejection = "percentile clipping"; break;
-   case IIRejection::SigmaClip:           pixelRejection = "sigma clipping"; break;
+   case IIRejection::NoRejection:         pixelRejection = "None"; break;
+   case IIRejection::MinMax:              pixelRejection = "Min/Max clipping"; break;
+   case IIRejection::PercentileClip:      pixelRejection = "Percentile clipping"; break;
+   case IIRejection::SigmaClip:           pixelRejection = "Sigma clipping"; break;
    case IIRejection::WinsorizedSigmaClip: pixelRejection = "Winsorized sigma clipping"; break;
-   case IIRejection::AveragedSigmaClip:   pixelRejection = "averaged sigma clipping"; break;
-   case IIRejection::LinearFit:           pixelRejection = "linear fit clipping"; break;
+   case IIRejection::AveragedSigmaClip:   pixelRejection = "Averaged sigma clipping"; break;
+   case IIRejection::LinearFit:           pixelRejection = "Linear fit clipping"; break;
+   case IIRejection::ESD:                 pixelRejection = "Generalized extreme Studentized deviate"; break;
    case IIRejection::CCDClip:             pixelRejection = "CCD noise model"; break;
    }
 
@@ -3678,10 +3896,10 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
       switch ( instance.p_rejectionNormalization )
       {
       default: // ?!
-      case IIRejectionNormalization::NoRejectionNormalization:    rejectionNormalization = "none"; break;
-      case IIRejectionNormalization::Scale:                       rejectionNormalization = "scale + zero offset"; break;
-      case IIRejectionNormalization::EqualizeFluxes:              rejectionNormalization = "equalize fluxes"; break;
-      case IIRejectionNormalization::LocalRejectionNormalization: rejectionNormalization = "local"; break;
+      case IIRejectionNormalization::NoRejectionNormalization:    rejectionNormalization = "None"; break;
+      case IIRejectionNormalization::Scale:                       rejectionNormalization = "Scale + zero offset"; break;
+      case IIRejectionNormalization::EqualizeFluxes:              rejectionNormalization = "Equalize fluxes"; break;
+      case IIRejectionNormalization::LocalRejectionNormalization: rejectionNormalization = "Local"; break;
       }
 
       rejectionClippings = "low=" + YesNo( instance.p_clipLow ) + " high=" + YesNo( instance.p_clipHigh );
@@ -3703,6 +3921,9 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
          break;
       case IIRejection::LinearFit:
          rejectionParameters.Format( "lfit_low=%.3f lfit_high=%.3f", instance.p_linearFitLow, instance.p_linearFitHigh );
+         break;
+      case IIRejection::ESD:
+         rejectionParameters.Format( "esd_outliers=%.2f esd_alpha=%.2f", instance.p_esdOutliersFraction, instance.p_esdAlpha );
          break;
       case IIRejection::CCDClip:
          rejectionParameters.Format( "gain=%.2f read_noise=%.2f scale_noise=%.2f",
@@ -4295,22 +4516,42 @@ bool ImageIntegrationInstance::ExecuteGlobal()
       if ( p_generateIntegratedImage )
       {
          /*
-          * Rescale or truncate the result if out-of-bounds.
-          * This should not happen with properly calibrated data sets.
+          * Normalize/rescale or truncate the result if out-of-bounds.
           */
+         result.GetExtremeSampleValues( o_output.outputRangeLow, o_output.outputRangeHigh );
+         if ( o_output.outputRangeLow < 0 || o_output.outputRangeHigh > 1 ) // low < 0 check for completeness/future; should be impossible.
          {
-            double v0, v1;
-            result.GetExtremeSampleValues( v0, v1 );
-            if ( v0 < 0 || v1 > 1 ) // v0 < 0 check for completeness/future; should be impossible.
+            console.NoteLn( "<end><cbr><br>* "
+               + String( p_truncateOnOutOfRange ? "Truncating" : ((o_output.outputRangeLow < 0) ? "Rescaling" : "Normalizing") )
+               + " output image. Integration range: "
+               + String().Format( "[%.8e,%.8e]", o_output.outputRangeLow, o_output.outputRangeHigh ) );
+
+            if ( p_truncateOnOutOfRange )
             {
-               console.WarningLn( "<end><cbr><br>** Warning: "
-                                 + String( p_truncateOnOutOfRange ? "Truncating" : "Rescaling" )
-                                 + " output image. Integration range: "
-                                 + String().Format( "[%.7e,%.7e]", v0, v1 ) );
-               if ( p_truncateOnOutOfRange )
-                  result.Truncate();
-               else
-                  result.Rescale();
+               /*
+                * Truncate to [0,1]
+                *
+                * x' = max( 0, min( x, 1 ) )
+                */
+               result.Truncate();
+            }
+            else if ( o_output.outputRangeLow < 0 )
+            {
+               /*
+                * Rescale to [0,1], including an additive term:
+                *
+                * x' = (x - low)/(high - low)
+                */
+               result.Rescale();
+            }
+            else
+            {
+               /*
+                * Normalize to [0,1], purely multiplicative:
+                *
+                * x' = x/high
+                */
+               result /= o_output.outputRangeHigh;
             }
          }
 
@@ -4451,7 +4692,16 @@ bool ImageIntegrationInstance::ExecuteGlobal()
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
                                         IsoString().Format( "ImageIntegration.numberOfImages: %d", IntegrationFile::NumberOfFiles() ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "ImageIntegration.totalPixels: %lu", o_output.totalPixels ) );
+                                        IsoString().Format( "ImageIntegration.totalPixels: %lu", o_output.totalPixels ) )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                        IsoString().Format( "ImageIntegration.outputRangeLow: %.8e", o_output.outputRangeLow ) )
+                  << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                        IsoString().Format( "ImageIntegration.outputRangeHigh: %.8e", o_output.outputRangeHigh ) );
+
+         if ( o_output.outputRangeLow < 0 || o_output.outputRangeHigh > 1 )
+            keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                       IsoString( "ImageIntegration.outputRangeOperation: " )
+                                       + (p_truncateOnOutOfRange ? "truncate" : ((o_output.outputRangeLow < 0) ? "rescale" : "normalize")) );
 
          IsoString totalRejectedLow = IsoString().Format( "ImageIntegration.totalRejectedLow: %lu(%.3f%%)",
                                  o_output.totalRejectedLow[0], 100.0*o_output.totalRejectedLow[0]/o_output.totalPixels );
@@ -4742,6 +4992,10 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_linearFitLow;
    if ( p == TheIILinearFitHighParameter )
       return &p_linearFitHigh;
+   if ( p == TheIIESDOutliersFractionParameter )
+      return &p_esdOutliersFraction;
+   if ( p == TheIIESDAlphaParameter )
+      return &p_esdAlpha;
    if ( p == TheIICCDGainParameter )
       return &p_ccdGain;
    if ( p == TheIICCDReadNoiseParameter )
@@ -4835,6 +5089,11 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &o_output.numberOfPixels;
    if ( p == TheIITotalPixelsParameter )
       return &o_output.totalPixels;
+
+   if ( p == TheIIOutputRangeLowParameter )
+      return &o_output.outputRangeLow;
+   if ( p == TheIIOutputRangeHighParameter )
+      return &o_output.outputRangeHigh;
 
    if ( p == TheIITotalRejectedLowRKParameter )
       return o_output.totalRejectedLow.At( 0 );
@@ -5034,4 +5293,4 @@ size_type ImageIntegrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF ImageIntegrationInstance.cpp - Released 2019-11-18T16:52:32Z

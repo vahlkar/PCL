@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.h - Released 2019-09-29T12:27:26Z
+// pcl/SurfaceSpline.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1212,19 +1212,32 @@ public:
       }
       else
       {
+         search_rectangle rect = search_coordinate( 0 );
          node_list data;
-         if ( weighted )
-            for ( size_type i = 0; i < P1.Length(); ++i )
-               data << Node( P1[i], P2[i], W[i] );
-         else
-            for ( size_type i = 0; i < P1.Length(); ++i )
-               data << Node( P1[i], P2[i] );
+         for ( size_type i = 0; i < P1.Length(); ++i )
+         {
+            const point& p1 = P1[i];
+            const point& p2 = P2[i];
+            data << (weighted ? Node( p1, p2, W[i] ) : Node( p1, p2 ));
+            if ( p1.x < rect.x0 )
+               rect.x0 = p1.x;
+            else if ( p1.x > rect.x1 )
+               rect.x1 = p1.x;
+            if ( p1.y < rect.y0 )
+               rect.y0 = p1.y;
+            else if ( p1.y > rect.y1 )
+               rect.y1 = p1.y;
+         }
+//          if ( rect.Width() < rect.Height() )
+//             rect.InflateBy( (rect.Height() - rect.Width())/2, search_coordinate( 0 ) );
+//          else
+//             rect.InflateBy( search_coordinate( 0 ), (rect.Width() - rect.Height())/2 );
+
+         m_tree.Build( rect, data, bucketCapacity );
 
          Array<SubsplineData> subsplineData;
-
-         m_tree.Build( data, bucketCapacity );
          m_tree.Traverse(
-            [&]( const search_rectangle& rect, node_list& points, void*& D )
+            [&]( const search_rectangle& rect, const node_list& points, void*& D )
             {
                point_list P1, P2;
                Array<float> PW;
@@ -1236,8 +1249,8 @@ public:
                      PW << p.weight;
                }
 
-               double w = rect.Width();
-               double h = rect.Height();
+               double w = TruncInt( 1.5*rect.Width() );
+               double h = TruncInt( 1.5*rect.Height() );
                node_list Q = node_list()
                   << m_tree.Search( rect.MovedBy(  -w,   -h ) )  // NW
                   << m_tree.Search( rect.MovedBy( 0.0,   -h ) )  // N
@@ -1273,22 +1286,21 @@ public:
             monitor.Initialize( "Building recursive surface subsplines", subsplineData.Length() );
          }
 #endif
+         Array<size_type> L = Thread::OptimalThreadLoads( subsplineData.Length(),
+                                                          1/*overheadLimit*/,
+                                                          m_parallel ? m_maxProcessors : 1 );
          AbstractImage::ThreadData threadData( monitor, subsplineData.Length() );
-
-         int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( subsplineData.Length(), 1 ) ) : 1;
-         int itemsPerThread = subsplineData.Length()/numberOfThreads;
          ReferenceArray<SubsplineGenerationThread> threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
             threads.Add( new SubsplineGenerationThread( threadData,
-                                       subsplineData,
-                                       smoothness,
-                                       order,
-                                       allowExtrapolation,
-                                       maxSplineLength,
-                                       bucketCapacity,
-                                       i*itemsPerThread,
-                                       (j < numberOfThreads) ? j*itemsPerThread : int( subsplineData.Length() ) ) );
-
+                                                        subsplineData,
+                                                        smoothness,
+                                                        order,
+                                                        allowExtrapolation,
+                                                        maxSplineLength,
+                                                        bucketCapacity,
+                                                        n,
+                                                        n + int( L[i] ) ) );
          AbstractImage::RunThreads( threads, threadData );
          threads.Destroy();
       }
@@ -1533,15 +1545,14 @@ private:
    static constexpr search_coordinate SearchDelta =
                         2 * std::numeric_limits<search_coordinate>::epsilon();
 
-
    /*
     * Parallel subspline generation.
     */
    struct SubsplineData
    {
-      point_list   P1, P2;
-      Array<float> PW;
-      void**       nodeData;
+      point_list     P1, P2;
+      Array<float>   PW;
+      mutable void** nodeData;
 
       SubsplineData( const point_list& p1, const point_list& p2, const Array<float>& pw, void*& nd ) :
          P1( p1 ), P2( p2 ), PW( pw ), nodeData( &nd )
@@ -1554,7 +1565,7 @@ private:
    public:
 
       SubsplineGenerationThread( const AbstractImage::ThreadData& data,
-                                 Array<SubsplineData>& subsplineData,
+                                 const Array<SubsplineData>& subsplineData,
                                  float smoothness,
                                  int order,
                                  bool allowExtrapolation,
@@ -1579,7 +1590,7 @@ private:
 
          for ( int i = m_startIndex; i < m_endIndex; ++i )
          {
-            SubsplineData& d = m_subsplineData[i];
+            const SubsplineData& d = m_subsplineData[i];
             AutoPointer<recursive_spline> s(
                new recursive_spline( d.P1, d.P2, m_smoothness, m_order, d.PW,
                                      m_allowExtrapolation,
@@ -1602,7 +1613,7 @@ private:
    private:
 
       const AbstractImage::ThreadData& m_data;
-            Array<SubsplineData>&      m_subsplineData;
+      const Array<SubsplineData>&      m_subsplineData;
             float                      m_smoothness;
             int                        m_order;
             bool                       m_allowExtrapolation;
@@ -1623,4 +1634,4 @@ private:
 #endif   // __PCL_SurfaceSpline_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/SurfaceSpline.h - Released 2019-11-07T10:59:34Z

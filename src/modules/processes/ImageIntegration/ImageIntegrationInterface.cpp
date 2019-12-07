@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2019-09-29T12:27:57Z
+// ImageIntegrationInterface.cpp - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -384,6 +384,8 @@ void ImageIntegrationInterface::UpdateRejectionControls()
 
    bool doesLinearFitRejection = instance.p_rejection == IIRejection::LinearFit;
 
+   bool doesESDRejection = instance.p_rejection == IIRejection::ESD;
+
    bool doesCCDClipRejection = instance.p_rejection == IIRejection::CCDClip;
 
    GUI->RejectionAlgorithm_ComboBox.SetCurrentItem( instance.p_rejection );
@@ -440,6 +442,12 @@ void ImageIntegrationInterface::UpdateRejectionControls()
 
    GUI->LinearFitHigh_NumericControl.Enable( doesLinearFitRejection );
    GUI->LinearFitHigh_NumericControl.SetValue( instance.p_linearFitHigh );
+
+   GUI->ESDOutliersFraction_NumericControl.Enable( doesESDRejection );
+   GUI->ESDOutliersFraction_NumericControl.SetValue( instance.p_esdOutliersFraction );
+
+   GUI->ESDAlpha_NumericControl.Enable( doesESDRejection );
+   GUI->ESDAlpha_NumericControl.SetValue( instance.p_esdAlpha );
 
    GUI->CCDGain_NumericControl.Enable( doesCCDClipRejection );
    GUI->CCDGain_NumericControl.SetValue( instance.p_ccdGain );
@@ -957,6 +965,10 @@ void ImageIntegrationInterface::__Rejection_EditValueUpdated( NumericEdit& sende
       instance.p_linearFitLow = value;
    else if ( sender == GUI->LinearFitHigh_NumericControl )
       instance.p_linearFitHigh = value;
+   else if ( sender == GUI->ESDOutliersFraction_NumericControl )
+      instance.p_esdOutliersFraction = value;
+   else if ( sender == GUI->ESDAlpha_NumericControl )
+      instance.p_esdAlpha = value;
    else if ( sender == GUI->CCDGain_NumericControl )
       instance.p_ccdGain = value;
    else if ( sender == GUI->CCDReadNoise_NumericControl )
@@ -1743,6 +1755,20 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "<i>Winsorization</i>. This algorithm can yield superior rejection of outliers with better preservation "
       "of significant data for large sets of images.</p>"
 
+      "<p><b>Linear fit clipping</b> fits each pixel stack to a straigtht line. The linear fit is optimized "
+      "in the twofold sense of minimizing average absolute deviation and maximizing inliers. This rejection "
+      "algorithm is more robust than sigma clipping for large sets of images, especially in presence of "
+      "additive sky gradients of varying intensity and spatial distribution. For the best performance, use "
+      "this algorithm for large sets of at least 15 images. Five images is the minimum required.</p>"
+
+      "<p>The <b>Generalized Extreme Studentized Deviate (ESD) Test</b> rejection algorithm is an implementation "
+      "of the method described by Bernard Rosner in his 1983 paper <i>Percentage Points for a Generalized ESD "
+      "Many-Outlier procedure</i>, adapted to the image integration task. The ESD algorithm assumes that each "
+      "pixel stack, in absence of outliers, follows an approximately normal (Gaussian) distribution. It aims at "
+      "avoiding <i>masking</i>, a serious issue that occurs when an outlier goes undetected because its value is "
+      "similar to another outlier. The performance of this algorithm can be excellent for large data sets of 25 "
+      "or more images, and especially for very large sets of 50 or more frames. The minimum required is 3 images.</p>"
+
       "<p><b>Percentile clipping</b> rejection is excellent to integrate reduced sets of images, such as "
       "3 to 6 images. This is a single-pass algorithm that rejects pixels outside a fixed range of values "
       "relative to the median of each pixel stack.</p>"
@@ -1751,12 +1777,6 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "tries to derive the gain of an ideal CCD detector from existing pixel data, assuming zero readout noise, "
       "then uses a Poisson noise model to perform rejection. For large sets of images however, sigma clipping "
       "tends to be superior.</p>"
-
-      "<p><b>Linear fit clipping</b> fits each pixel stack to a straigtht line. The linear fit is optimized "
-      "in the twofold sense of minimizing average absolute deviation and maximizing inliers. This rejection "
-      "algorithm is more robust than sigma clipping for large sets of images, especially in presence of "
-      "additive sky gradients of varying intensity and spatial distribution. For the best performance, use "
-      "this algorithm for large sets of at least 15 images. Five images is the minimum required.</p>"
 
       "<p>The <b>min/max</b> method can be used to ensure rejection of extreme values. Min/max performs an "
       "unconditional rejection of a fixed number of pixels from each stack, without any statistical basis. "
@@ -1780,6 +1800,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    RejectionAlgorithm_ComboBox.AddItem( "Averaged Sigma Clipping" );
    RejectionAlgorithm_ComboBox.AddItem( "Linear Fit Clipping" );
    RejectionAlgorithm_ComboBox.AddItem( "CCD Noise Model" );
+   RejectionAlgorithm_ComboBox.AddItem( "Generalized Extreme Studentized Deviate (ESD) Test" );
    RejectionAlgorithm_ComboBox.SetToolTip( rejectionAlgorithmToolTip );
    RejectionAlgorithm_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageIntegrationInterface::__Rejection_ItemSelected, w );
 
@@ -2031,6 +2052,37 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    LinearFitHigh_NumericControl.SetToolTip( "<p>Tolerance of the linear fit clipping algorithm for high pixel values, in sigma units.</p>" );
    LinearFitHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::__Rejection_EditValueUpdated, w );
 
+   ESDOutliersFraction_NumericControl.label.SetText( "ESD outliers:" );
+   ESDOutliersFraction_NumericControl.label.SetFixedWidth( labelWidth1 );
+   ESDOutliersFraction_NumericControl.slider.SetRange( 0, 100 );
+   ESDOutliersFraction_NumericControl.slider.SetScaledMinWidth( 250 );
+   ESDOutliersFraction_NumericControl.SetReal();
+   ESDOutliersFraction_NumericControl.SetRange( TheIIESDOutliersFractionParameter->MinimumValue(), TheIIESDOutliersFractionParameter->MaximumValue() );
+   ESDOutliersFraction_NumericControl.SetPrecision( TheIIESDOutliersFractionParameter->Precision() );
+   ESDOutliersFraction_NumericControl.edit.SetFixedWidth( editWidth2 );
+   ESDOutliersFraction_NumericControl.SetToolTip( "<p>Expected maximum fraction of outliers for the generalized "
+      "ESD rejection algorithm.</p>"
+      "<p>For example, a value of 0.2 applied to a stack of 10 pixels means that the ESD algorithm will be limited "
+      "to detect a maximum of two outlier pixels, or in other words, only 0, 1 or 2 outliers will be detectable in "
+      "such case. The default value is 0.3, which allows the algorithm to detect up to a 30% of outlier pixels in "
+      "each pixel stack.</p>" );
+   ESDOutliersFraction_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::__Rejection_EditValueUpdated, w );
+
+   ESDAlpha_NumericControl.label.SetText( "ESD significance:" );
+   ESDAlpha_NumericControl.label.SetFixedWidth( labelWidth1 );
+   ESDAlpha_NumericControl.slider.SetRange( 0, 100 );
+   ESDAlpha_NumericControl.slider.SetScaledMinWidth( 250 );
+   ESDAlpha_NumericControl.SetReal();
+   ESDAlpha_NumericControl.SetRange( TheIIESDAlphaParameter->MinimumValue(), TheIIESDAlphaParameter->MaximumValue() );
+   ESDAlpha_NumericControl.SetPrecision( TheIIESDAlphaParameter->Precision() );
+   ESDAlpha_NumericControl.edit.SetFixedWidth( editWidth2 );
+   ESDAlpha_NumericControl.SetToolTip( "<p>Probability of making a type I error (false positive) in the generalized "
+      "ESD rejection algorithm.</p>"
+      "<p>This is the significance level of the outlier detection hypothesis test. For example, a significance level "
+      "of 0.01 means that a 1% chance of being wrong when rejecting the null hypothesis (that there are no outliers in "
+      "a given pixel stack) is acceptable. The default value is 0.05 (5% significance level).</p>" );
+   ESDAlpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::__Rejection_EditValueUpdated, w );
+
    RangeLow_NumericControl.label.SetText( "Range low:" );
    RangeLow_NumericControl.label.SetFixedWidth( labelWidth1 );
    RangeLow_NumericControl.slider.SetRange( 0, 100 );
@@ -2065,6 +2117,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Rejection2_Sizer.Add( WinsorizationCutoff_NumericControl );
    Rejection2_Sizer.Add( LinearFitLow_NumericControl );
    Rejection2_Sizer.Add( LinearFitHigh_NumericControl );
+   Rejection2_Sizer.Add( ESDOutliersFraction_NumericControl );
+   Rejection2_Sizer.Add( ESDAlpha_NumericControl );
    Rejection2_Sizer.Add( RangeLow_NumericControl );
    Rejection2_Sizer.Add( RangeHigh_NumericControl );
 
@@ -2382,4 +2436,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF ImageIntegrationInterface.cpp - Released 2019-11-18T16:52:32Z

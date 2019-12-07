@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInstance.cpp - Released 2019-09-29T12:27:58Z
+// LocalHistogramEqualizationInstance.cpp - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
@@ -156,26 +156,14 @@ public:
       imageCopy.EnsureUnique(); // really not necessary, but we'll be safer if this is done
 
       size_type N = image.NumberOfPixels();
-
-      int numberOfThreads = Thread::NumberOfThreads( image.Height(), 1 );
-      int rowsPerThread = image.Height()/numberOfThreads;
-
       image.Status().Initialize( "CLAHE", N );
 
+      Array<size_type> L = Thread::OptimalThreadLoads( image.Height() );
       AbstractImage::ThreadData data( image, N );
-
-      // create processing threads
       ReferenceArray<LocalHistogramEqualizationThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new LocalHistogramEqualizationThread<P>( data,
-                                 instance,
-                                 image,
-                                 imageCopy,
-                                 i*rowsPerThread,
-                                 (j < numberOfThreads) ? j*rowsPerThread : image.Height() ) );
-
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new LocalHistogramEqualizationThread<P>( data, instance, image, imageCopy, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
-
       threads.Destroy();
 
       image.Status() = data.status;
@@ -196,10 +184,9 @@ private:
                                         const GenericImage<P>&                    imageSrc,
                                         int                                       firstRow,
                                         int                                       endRow ) :
-      Thread(),
-      m_data( data ), m_instance( instance ),
-      m_imageDst( imageDst ), m_imageSrc( imageSrc ), m_firstRow( firstRow ), m_endRow( endRow ),
-      kernelMask( 0 ), kernelFront( 0 ), kernelBack( 0 ), histogram( 0 ), clippedHistogram( 0 )
+         m_data( data ), m_instance( instance ),
+         m_imageDst( imageDst ), m_imageSrc( imageSrc ), m_firstRow( firstRow ), m_endRow( endRow ),
+         kernelMask( 0 ), kernelFront( 0 ), kernelBack( 0 ), histogram( 0 ), clippedHistogram( 0 )
       {
          // extract parameters from instance
          histogramSize = m_instance.GetHistogramSize();
@@ -229,7 +216,7 @@ private:
             delete [] clippedHistogram, clippedHistogram = 0;
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -646,4 +633,4 @@ int LocalHistogramEqualizationInstance::GetHistogramSize() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationInstance.cpp - Released 2019-09-29T12:27:58Z
+// EOF LocalHistogramEqualizationInstance.cpp - Released 2019-11-07T11:00:23Z

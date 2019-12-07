@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationProcess.cpp - Released 2019-09-29T12:27:57Z
+// DrizzleIntegrationProcess.cpp - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -105,6 +105,8 @@ DrizzleIntegrationProcess::DrizzleIntegrationProcess()
    new DZNumberOfChannels( this );
    new DZOutputPixels( this );
    new DZIntegratedPixels( this );
+   new DZOutputRangeLow( this );
+   new DZOutputRangeHigh( this );
    new DZTotalRejectedLowRK( this );
    new DZTotalRejectedLowG( this );
    new DZTotalRejectedLowB( this );
@@ -197,4 +199,4 @@ ProcessImplementation* DrizzleIntegrationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationProcess.cpp - Released 2019-09-29T12:27:57Z
+// EOF DrizzleIntegrationProcess.cpp - Released 2019-11-18T16:52:32Z

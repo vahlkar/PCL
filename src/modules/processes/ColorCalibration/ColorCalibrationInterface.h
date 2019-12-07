@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.0
 // ----------------------------------------------------------------------------
-// ColorCalibrationInterface.h - Released 2019-09-29T12:27:57Z
+// ColorCalibrationInterface.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -82,30 +82,17 @@ public:
    ColorCalibrationInterface();
    virtual ~ColorCalibrationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-   virtual void ApplyInstance() const;
-   /*
-   virtual void RealTimePreviewUpdated( bool active );
-   */
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   /*
-   virtual bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const;
-   virtual bool GenerateRealTimePreview( UInt16Image&, const View&, int zoomLevel, String& info ) const;
-   */
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
@@ -179,16 +166,11 @@ private:
                Label             BackgroundROIHeight_Label;
                SpinBox           BackgroundROIHeight_SpinBox;
                PushButton        BackgroundROISelectPreview_Button;
-
-      /*Timer UpdateRealTime_Timer;*/
    };
 
    GUIData* GUI = nullptr;
 
    void UpdateControls();
-   /*
-   void UpdateRealTimePreview();
-   */
 
    void __GetFocus( Control& sender );
    void __EditCompleted( Edit& sender );
@@ -198,9 +180,6 @@ private:
    void __GroupBoxCheck( GroupBox& sender, bool checked );
    void __ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
    void __ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
-   /*
-   void __UpdateRealTime_Timer( Timer& );
-   */
 
    friend struct GUIData;
 };
@@ -218,4 +197,4 @@ PCL_END_LOCAL
 #endif   // __ColorCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationInterface.h - Released 2019-09-29T12:27:57Z
+// EOF ColorCalibrationInterface.h - Released 2019-11-07T11:00:22Z

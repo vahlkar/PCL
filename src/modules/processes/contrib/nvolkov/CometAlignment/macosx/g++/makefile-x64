@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.112
+# PixInsight Makefile Generator Script v1.115
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-09-30T11:28:15.620Z
+# Generated on .... 2019-11-29T09:40:51.365Z
 # Project id ...... CometAlignment
 # Project type .... Module
 # Platform ........ MacOSX/g++
@@ -57,7 +57,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/CometAlignment-pxm.dylib: $(OBJ_FILES)
-	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.12 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/CometAlignment-pxm.dylib -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -o $(OBJ_DIR)/CometAlignment-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.12 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/CometAlignment-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/CometAlignment-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean

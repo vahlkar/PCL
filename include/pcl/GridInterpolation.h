@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/GridInterpolation.h - Released 2019-09-29T12:27:26Z
+// pcl/GridInterpolation.h - Released 2019-11-07T10:59:34Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -186,16 +186,13 @@ public:
       }
 #endif
 
+      Array<size_type> L = Thread::OptimalThreadLoads( rows,
+                                                       1/*overheadLimit*/,
+                                                       m_parallel ? m_maxProcessors : 1 );
       AbstractImage::ThreadData data( monitor, rows );
-
-      int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( rows, 1 ) ) : 1;
-      int rowsPerThread = rows/numberOfThreads;
       ReferenceArray<GridInitializationThread<SI> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new GridInitializationThread<SI>( data, *this, S,
-                                                        i*rowsPerThread,
-                                                        (j < numberOfThreads) ? j*rowsPerThread : rows ) );
-
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new GridInitializationThread<SI>( data, *this, S, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
@@ -489,16 +486,13 @@ public:
       }
 #endif
 
+      Array<size_type> L = Thread::OptimalThreadLoads( rows,
+                                                       1/*overheadLimit*/,
+                                                       m_parallel ? m_maxProcessors : 1 );
       AbstractImage::ThreadData data( monitor, rows );
-
-      int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( rows, 1 ) ) : 1;
-      int rowsPerThread = rows/numberOfThreads;
       ReferenceArray<GridInitializationThread<PSI> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new GridInitializationThread<PSI>( data, *this, PS,
-                                                         i*rowsPerThread,
-                                                         (j < numberOfThreads) ? j*rowsPerThread : rows ) );
-
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new GridInitializationThread<PSI>( data, *this, PS, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
@@ -581,16 +575,13 @@ public:
       }
 #endif
 
+      Array<size_type> L = Thread::OptimalThreadLoads( rows,
+                                                       1/*overheadLimit*/,
+                                                       m_parallel ? m_maxProcessors : 1 );
       AbstractImage::ThreadData data( monitor, rows );
-
-      int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( rows, 1 ) ) : 1;
-      int rowsPerThread = rows/numberOfThreads;
       ReferenceArray<GridInitializationXYThread<SI> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new GridInitializationXYThread<SI>( data, *this, Sx, Sy,
-                                                          i*rowsPerThread,
-                                                          (j < numberOfThreads) ? j*rowsPerThread : rows ) );
-
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new GridInitializationXYThread<SI>( data, *this, Sx, Sy, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
 
@@ -679,16 +670,13 @@ public:
       }
 #endif
 
+      Array<size_type> L = Thread::OptimalThreadLoads( m_Gx.Rows(),
+                                                       1/*overheadLimit*/,
+                                                       m_parallel ? m_maxProcessors : 1 );
       AbstractImage::ThreadData data( monitor, m_Gx.Rows() );
-
-      int numberOfThreads = m_parallel ? Min( m_maxProcessors, Thread::NumberOfThreads( m_Gx.Rows(), 1 ) ) : 1;
-      int rowsPerThread = m_Gx.Rows()/numberOfThreads;
       ReferenceArray<LocalModelThread<PSI> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new LocalModelThread<PSI>( data, *this, PS,
-                                                 i*rowsPerThread,
-                                                 (j < numberOfThreads) ? j*rowsPerThread : m_Gx.Rows() ) );
-
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new LocalModelThread<PSI>( data, *this, PS, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
    }
@@ -919,4 +907,4 @@ private:
 #endif   // __PCL_GridInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GridInterpolation.h - Released 2019-09-29T12:27:26Z
+// EOF pcl/GridInterpolation.h - Released 2019-11-07T10:59:34Z

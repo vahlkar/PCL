@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.112
+# PixInsight Makefile Generator Script v1.115
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-09-30T11:28:07.687Z
+# Generated on .... 2019-11-29T09:40:42.792Z
 # Project id ...... Global
 # Project type .... Module
 # Platform ........ Linux/g++
@@ -87,7 +87,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/Global-pxm.so: $(OBJ_FILES)
-	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -o $(OBJ_DIR)/Global-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/Global-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean

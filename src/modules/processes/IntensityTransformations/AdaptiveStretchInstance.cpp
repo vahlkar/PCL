@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInstance.cpp - Released 2019-09-29T12:27:57Z
+// AdaptiveStretchInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -136,7 +136,7 @@ public:
     */
    template <class P>
    AdaptiveStretchCurve( const GenericImage<P>& image, int numberOfBins, const AdaptiveStretchInstance& instance, int channel = 0 ) :
-   StretchCurve( numberOfBins )
+      StretchCurve( numberOfBins )
    {
       /*
        * Sampling region.
@@ -157,9 +157,8 @@ public:
       rect.x1 = Min( rect.x1, image.Width()-1 );
       rect.y1 = Min( rect.y1, image.Height()-1 );
 
-
-      int numberOfThreads = pcl::Thread::NumberOfThreads( rect.Height(), 16 );
-      int rowsPerThread = rect.Height()/numberOfThreads;
+      Array<size_type> L = pcl::Thread::OptimalThreadLoads( rect.Height() );
+      int numberOfThreads = int( L.Length() );
 
       size_type N = rect.Area() + (instance.p_useProtection ? 2 : 1)*numberOfThreads*numberOfBins;
       image.Status().Initialize( String().Format( "Computing adaptive stretch curve (%.5g points)", double( numberOfBins ) ), N );
@@ -193,9 +192,8 @@ public:
       }
 
       /*
-       * Create and fire curve builder threads.
+       * Create and run curve builder threads.
        */
-
       data.channel = channel;
       data.numberOfBins = numberOfBins;
       data.instance = &instance;
@@ -203,17 +201,13 @@ public:
       data.count = 0;
 
       ReferenceArray<BuilderThread<P> > builderThreads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         builderThreads.Add( new BuilderThread<P>( data, image,
-                                          i*rowsPerThread,
-                                          (j < numberOfThreads) ? j*rowsPerThread : rect.Height() ) );
-
+      for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
+         builderThreads.Add( new BuilderThread<P>( data, image, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( builderThreads, data );
 
       /*
        * Accumulate positive and negative forces from all builderThreads.
        */
-
       partial_force_list partialPositiveForces( numberOfThreads );
       partial_force_list partialNegativeForces( numberOfThreads );
       for ( int i = 0; i < numberOfThreads; ++i )
@@ -221,24 +215,21 @@ public:
          partialPositiveForces[i] = builderThreads[i].positiveForces;
          partialNegativeForces[i] = builderThreads[i].negativeForces;
       }
-
       builderThreads.Destroy();
 
       force_list positiveForces( uint32( 0 ), numberOfBins );
       force_list negativeForces( uint32( 0 ), numberOfBins );
 
-      numberOfThreads = Thread::NumberOfThreads( numberOfBins, 64 );
-      int binsPerThread = numberOfBins/numberOfThreads;
-
+      L = Thread::OptimalThreadLoads( numberOfBins, 64/*overheadLimit*/ );
+      numberOfThreads = int( L.Length() );
       ReferenceArray<AccumulatorThread> accumulatorThreads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
+      for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
          accumulatorThreads.Add( new AccumulatorThread( data,
                                           positiveForces, negativeForces,
                                           partialPositiveForces, partialNegativeForces,
-                                          i*binsPerThread,
-                                          (j < numberOfThreads) ? j*binsPerThread : numberOfBins ) );
+                                          n,
+                                          n + int( L[i] ) ) );
       AbstractImage::RunThreads( accumulatorThreads, data );
-
       accumulatorThreads.Destroy();
 
       image.Status() = data.status;
@@ -295,15 +286,8 @@ public:
          operator[]( k ) /= operator[]( bM );
    }
 
-   AdaptiveStretchCurve( const AdaptiveStretchCurve& x ) : StretchCurve( x )
-   {
-   }
-
-   AdaptiveStretchCurve& operator =( const AdaptiveStretchCurve& x )
-   {
-      FVector::operator =( x );
-      return *this;
-   }
+   AdaptiveStretchCurve( const AdaptiveStretchCurve& ) = default;
+   AdaptiveStretchCurve& operator =( const AdaptiveStretchCurve& ) = default;
 
    double operator ()( double f ) const
    {
@@ -318,19 +302,12 @@ public:
    {
       image.Status().Initialize( "Applying adaptive stretch curve", image.NumberOfNominalSamples() );
 
-      int numberOfThreads = Thread::NumberOfThreads( image.NumberOfPixels(), 64 );
-      int pixelsPerThread = image.NumberOfPixels()/numberOfThreads;
-
+      Array<size_type> L = Thread::OptimalThreadLoads( image.NumberOfPixels(), 64/*overheadLimit*/ );
       ThreadData data( image, image.NumberOfNominalSamples() );
-
       ReferenceArray<TransformationThread<P> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new TransformationThread<P>( data, image, *this,
-                                                   i*pixelsPerThread,
-                                                   (j < numberOfThreads) ? j*pixelsPerThread : image.NumberOfPixels() ) );
-
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads.Add( new TransformationThread<P>( data, image, *this, n, n + L[i] ) );
       AbstractImage::RunThreads( threads, data );
-
       threads.Destroy();
 
       image.Status() = data.status;
@@ -341,7 +318,7 @@ private:
    struct ThreadData : public AbstractImage::ThreadData
    {
       ThreadData( const AbstractImage& image, size_type count ) :
-      AbstractImage::ThreadData( image, count )
+         AbstractImage::ThreadData( image, count )
       {
       }
 
@@ -362,9 +339,10 @@ private:
 
       BuilderThread( const ThreadData& data,
                      const GenericImage<P>& image,
-                     int begin,
-                     int end ) :
-      Thread(), m_data( data ), m_image( image ), m_begin( begin ), m_end( end )
+                     int begin, int end ) :
+         m_data( data ),
+         m_image( image ),
+         m_begin( begin ), m_end( end )
       {
       }
 
@@ -453,11 +431,10 @@ private:
                          const partial_force_list& partialNegativeForces,
                          int                       begin,
                          int                       end ) :
-      Thread(),
-      m_data( data ),
-      m_positiveForces( positiveForces ), m_negativeForces( negativeForces ),
-      m_partialPositiveForces( partialPositiveForces ), m_partialNegativeForces( partialNegativeForces ),
-      m_begin( begin ), m_end( end )
+         m_data( data ),
+         m_positiveForces( positiveForces ), m_negativeForces( negativeForces ),
+         m_partialPositiveForces( partialPositiveForces ), m_partialNegativeForces( partialNegativeForces ),
+         m_begin( begin ), m_end( end )
       {
       }
 
@@ -509,9 +486,11 @@ private:
       TransformationThread( const ThreadData& data,
                             GenericImage<P>& image,
                             const AdaptiveStretchCurve& curve,
-                            int begin,
-                            int end ) :
-      Thread(), m_data( data ), m_image( image ), m_curve( curve ), m_begin( begin ), m_end( end )
+                            size_type begin, size_type end ) :
+         m_data( data ),
+         m_image( image ),
+         m_curve( curve ),
+         m_begin( begin ), m_end( end )
       {
       }
 
@@ -537,7 +516,7 @@ private:
       const ThreadData&           m_data;
             GenericImage<P>&      m_image;
       const AdaptiveStretchCurve& m_curve;
-            int                   m_begin, m_end;
+            size_type             m_begin, m_end;
    };
 };
 
@@ -737,4 +716,4 @@ StretchCurve AdaptiveStretchInstance::Preview( UInt16Image& image, const View& v
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF AdaptiveStretchInstance.cpp - Released 2019-11-07T11:00:22Z

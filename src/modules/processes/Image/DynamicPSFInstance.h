@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard Image Process Module Version 1.3.1
+// Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInstance.h - Released 2019-09-29T12:27:57Z
+// DynamicPSFInstance.h - Released 2019-11-13T20:00:10Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -182,4 +182,4 @@ private:
 #endif   // __DynamicPSFInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInstance.h - Released 2019-09-29T12:27:57Z
+// EOF DynamicPSFInstance.h - Released 2019-11-13T20:00:10Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInterface.h - Released 2019-09-29T12:27:57Z
+// ColorSaturationInterface.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -80,31 +80,31 @@ public:
    ColorSaturationInterface();
    virtual ~ColorSaturationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
 
-   virtual InterfaceFeatures Features() const;
-   virtual void ApplyInstance() const;
-   virtual void RealTimePreviewUpdated( bool active );
-   virtual void ResetInstance();
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void RealTimePreviewUpdated( bool active ) override;
+   void ResetInstance() override;
 
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
 
-   virtual ProcessImplementation* NewProcess() const;
+   ProcessImplementation* NewProcess() const override;
 
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
 
-   virtual bool ImportProcess( const ProcessImplementation& );
+   bool ImportProcess( const ProcessImplementation& ) override;
 
-   virtual bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const;
-   virtual bool GenerateRealTimePreview( UInt16Image&, const View&, int zoomLevel, String& info ) const;
+   bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const override;
+   bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const override;
 
-   virtual bool WantsReadoutNotifications() const;
-   virtual void BeginReadout( const View& v );
-   virtual void UpdateReadout( const View& v, const DPoint& p, double R, double G, double B, double A );
-   virtual void EndReadout( const View& v );
+   bool WantsReadoutNotifications() const override;
+   void BeginReadout( const View& v ) override;
+   void UpdateReadout( const View& v, const DPoint& p, double R, double G, double B, double A ) override;
+   void EndReadout( const View& v ) override;
 
 private:
 
@@ -120,14 +120,14 @@ private:
 
       void Reset( const UInt16Image&, const ColorSaturationInstance& );
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
       ColorSaturationInstance m_instance;
    };
 
-   mutable RealTimeThread* m_realTimeThread;
+   mutable RealTimeThread* m_realTimeThread = nullptr;
 
    struct GUIData
    {
@@ -169,7 +169,7 @@ private:
       Timer UpdateRealTimePreview_Timer;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
    /*
     * Workflow
@@ -352,8 +352,6 @@ private:
    void __HueShift_ValueUpdated( NumericEdit& sender, double value );
    void __UpdateRealTimePreview_Timer( Timer& );
 
-   // -------------------------------------------------------------------------
-
    friend struct GUIData;
 };
 
@@ -370,4 +368,4 @@ PCL_END_LOCAL
 #endif   // __ColorSaturationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInterface.h - Released 2019-09-29T12:27:57Z
+// EOF ColorSaturationInterface.h - Released 2019-11-07T11:00:22Z

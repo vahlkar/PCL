@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformInstance.cpp - Released 2019-09-29T12:27:57Z
+// InverseFourierTransformInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -215,7 +215,6 @@ public:
       }
 
       window.Show();
-      window.ZoomToFit( false/*allowMagnification*/ );
    }
 
 private:
@@ -262,37 +261,37 @@ private:
    {
    public:
 
-      DoFromComponentsThreadBase( const InverseFourierTransformEngine& _engine,
-                                  GenericImage<P1>& _img,
-                                  const GenericImage<P1>& _cmp1,
-                                  const GenericImage<P1>& _cmp2,
-                                  GenericImage<P2>& _C,
-                                  size_type _start, size_type _end ) :
-         engine( _engine ),
-         image( _img ),
-         cmp1( _cmp1 ),
-         cmp2( _cmp2 ),
-         C( _C ),
-         start( _start ),
-         end( _end )
+      DoFromComponentsThreadBase( const InverseFourierTransformEngine& engine,
+                                  GenericImage<P1>& img,
+                                  const GenericImage<P1>& cmp1,
+                                  const GenericImage<P1>& cmp2,
+                                  GenericImage<P2>& C,
+                                  size_type start, size_type end ) :
+         m_engine( engine ),
+         m_image( img ),
+         m_cmp1( cmp1 ),
+         m_cmp2( cmp2 ),
+         m_C( C ),
+         m_start( start ),
+         m_end( end )
       {
-         min1 = engine.min1; max1 = engine.max1;
-         min2 = engine.min2; max2 = engine.max2;
+         m_min1 = m_engine.min1; m_max1 = m_engine.max1;
+         m_min2 = m_engine.min2; m_max2 = m_engine.max2;
       }
 
    protected:
 
-      const InverseFourierTransformEngine& engine;
-      GenericImage<P1>&                    image;
-      const GenericImage<P1>&              cmp1;
-      const GenericImage<P1>&              cmp2;
-      GenericImage<P2>&                    C;
-      double                               min1, max1, min2, max2;
-      size_type                            start, end;
+      const InverseFourierTransformEngine& m_engine;
+      GenericImage<P1>&                    m_image;
+      const GenericImage<P1>&              m_cmp1;
+      const GenericImage<P1>&              m_cmp2;
+      GenericImage<P2>&                    m_C;
+      double                               m_min1, m_max1, m_min2, m_max2;
+      size_type                            m_start, m_end;
    };
 
    template <class P1, class P2>
-   class DoFromRealAndImaginaryComponentsThread : public DoFromComponentsThreadBase<P1, P2>
+   class DoFromRealAndImaginaryComponentsThread : public DoFromComponentsThreadBase<P1,P2>
    {
    public:
 
@@ -306,20 +305,20 @@ private:
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
-         const double delta1 = this->max1 - this->min1;
-         const double delta2 = this->max2 - this->min2;
-         for ( int ch = 0; ch < this->C.NumberOfChannels(); ++ch )
+         const double delta1 = this->m_max1 - this->m_min1;
+         const double delta2 = this->m_max2 - this->m_min2;
+         for ( int ch = 0; ch < this->m_C.NumberOfChannels(); ++ch )
          {
-            const typename P1::sample* f1 = this->cmp1[ch] + this->start;
-            const typename P1::sample* f2 = this->cmp2[ch] + this->start;
-                  typename P2::sample* c  = this->C[ch] + this->start;
-                  typename P2::sample* cN = this->C[ch] + this->end;
+            const typename P1::sample* f1 = this->m_cmp1[ch] + this->m_start;
+            const typename P1::sample* f2 = this->m_cmp2[ch] + this->m_start;
+                  typename P2::sample* c  = this->m_C[ch] + this->m_start;
+                  typename P2::sample* cN = this->m_C[ch] + this->m_end;
             do
             {
-               c->Real() = *f1++ * delta1 + this->min1;
-               c->Imag() = *f2++ * delta2 + this->min2;
+               c->Real() = *f1++ * delta1 + this->m_min1;
+               c->Imag() = *f2++ * delta2 + this->m_min2;
             }
             while ( ++c < cN );
          }
@@ -327,16 +326,7 @@ private:
    };
 
    template <class P1, class P2>
-   void DoFromRealAndImaginaryComponents( GenericImage<P1>& image,
-                                          const GenericImage<P1>& cmp1,
-                                          const GenericImage<P1>& cmp2,
-                                          GenericImage<P2>& C )
-   {
-      DoInverseTransform( image, cmp1, cmp2, C, (DoFromRealAndImaginaryComponentsThread<P1, P2>*)0 );
-   }
-
-   template <class P1, class P2>
-   class DoFromMagnitudeAndPhaseComponentsThread : public DoFromComponentsThreadBase<P1, P2>
+   class DoFromMagnitudeAndPhaseComponentsThread : public DoFromComponentsThreadBase<P1,P2>
    {
    public:
 
@@ -352,18 +342,18 @@ private:
 
       virtual void Run()
       {
-         const double delta1 = this->max1 - this->min1;
-         const double delta2 = this->max2 - this->min2;
-         for ( int ch = 0; ch < this->C.NumberOfChannels(); ++ch )
+         const double delta1 = this->m_max1 - this->m_min1;
+         const double delta2 = this->m_max2 - this->m_min2;
+         for ( int ch = 0; ch < this->m_C.NumberOfChannels(); ++ch )
          {
-            const typename P1::sample* f1 = this->cmp1[ch] + this->start;
-            const typename P1::sample* f2 = this->cmp2[ch] + this->start;
-                  typename P2::sample* c  = this->C[ch] + this->start;
-                  typename P2::sample* cN = this->C[ch] + this->end;
+            const typename P1::sample* f1 = this->m_cmp1[ch] + this->m_start;
+            const typename P1::sample* f2 = this->m_cmp2[ch] + this->m_start;
+                  typename P2::sample* c  = this->m_C[ch] + this->m_start;
+                  typename P2::sample* cN = this->m_C[ch] + this->m_end;
             do
             {
-               *c = Polar( *f1++ * delta1 + this->min1,
-                           *f2++ * delta2 + this->min2 );
+               *c = Polar( *f1++ * delta1 + this->m_min1,
+                           *f2++ * delta2 + this->m_min2 );
             }
             while ( ++c < cN );
          }
@@ -371,12 +361,21 @@ private:
    };
 
    template <class P1, class P2>
+   void DoFromRealAndImaginaryComponents( GenericImage<P1>& image,
+                                          const GenericImage<P1>& cmp1,
+                                          const GenericImage<P1>& cmp2,
+                                          GenericImage<P2>& C )
+   {
+      DoInverseTransform( image, cmp1, cmp2, C, (DoFromRealAndImaginaryComponentsThread<P1,P2>*)0 );
+   }
+
+   template <class P1, class P2>
    void DoFromMagnitudeAndPhaseComponents( GenericImage<P1>& image,
                                            const GenericImage<P1>& cmp1,
                                            const GenericImage<P1>& cmp2,
                                            GenericImage<P2>& C )
    {
-      DoInverseTransform( image, cmp1, cmp2, C, (DoFromMagnitudeAndPhaseComponentsThread<P1, P2>*)0 );
+      DoInverseTransform( image, cmp1, cmp2, C, (DoFromMagnitudeAndPhaseComponentsThread<P1,P2>*)0 );
    }
 
    template <class P1, class P2, class T>
@@ -387,19 +386,15 @@ private:
                             T* )
    {
       size_type N = C.NumberOfPixels();
-      size_type numberOfThreads = Thread::NumberOfThreads( N, 1024 );
-      size_type pixelsPerThread = N/numberOfThreads;
-
+      Array<size_type> L = Thread::OptimalThreadLoads( N, 256/*overheadLimit*/ );
       IndirectArray<T> threads;
-      for ( size_type i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new T( *this, image, cmp1, cmp2, C,
-                             i*pixelsPerThread, (j < numberOfThreads) ? j*pixelsPerThread : N ) );
+      for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
+         threads.Add( new T( *this, image, cmp1, cmp2, C, n, n + L[i] ) );
 
-      for ( size_type i = 0; i < numberOfThreads; ++i )
+      for ( size_type i = 0; i < threads.Length(); ++i )
          threads[i]->Start( ThreadPriority::DefaultMax, i );
-      for ( size_type i = 0; i < numberOfThreads; ++i )
+      for ( size_type i = 0; i < threads.Length(); ++i )
          threads[i]->Wait();
-
       threads.Destroy();
 
       DoInverseTransform( image, C );
@@ -491,6 +486,8 @@ void* InverseFourierTransformInstance::LockParameter( const MetaParameter* p, si
    return nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 bool InverseFourierTransformInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type /*tableRow*/ )
 {
    if ( p == TheIFTIdOfFirstComponentParameter )
@@ -511,6 +508,8 @@ bool InverseFourierTransformInstance::AllocateParameter( size_type sizeOrLength,
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type InverseFourierTransformInstance::ParameterLength( const MetaParameter* p, size_type /*tableRow*/ ) const
 {
    if ( p == TheIFTIdOfFirstComponentParameter )
@@ -526,4 +525,4 @@ size_type InverseFourierTransformInstance::ParameterLength( const MetaParameter*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF InverseFourierTransformInstance.cpp - Released 2019-11-07T11:00:22Z

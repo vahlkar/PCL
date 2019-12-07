@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Thread.cpp - Released 2019-09-29T12:27:33Z
+// pcl/Thread.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -483,6 +483,19 @@ int Thread::NumberOfThreads( size_type N, size_type overheadLimit )
 
 // ----------------------------------------------------------------------------
 
+Array<size_type> Thread::OptimalThreadLoads( size_type N, size_type overheadLimit, int maxThreads )
+{
+   size_type numberOfThreads = Min( NumberOfThreads( N, overheadLimit ), Max( 1, maxThreads ) );
+   size_type itemsPerThread = N/numberOfThreads;
+   size_type remainderItems = N - itemsPerThread*numberOfThreads;
+   Array<size_type> L( numberOfThreads, itemsPerThread );
+   for ( size_type i = 0; remainderItems > 0; ++i, --remainderItems )
+      ++L[i];
+   return L;
+}
+
+// ----------------------------------------------------------------------------
+
 void PCL_FUNC Sleep( unsigned ms )
 {
    //(*API->Thread->SleepThread)( 0, ms );
@@ -494,4 +507,4 @@ void PCL_FUNC Sleep( unsigned ms )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Thread.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/Thread.cpp - Released 2019-11-07T10:59:44Z

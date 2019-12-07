@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInstance.cpp - Released 2019-09-29T12:27:57Z
+// UnsharpMaskInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -218,10 +218,6 @@ private:
    template <class P>
    void Apply( GenericImage<P>& image )
    {
-      size_type N = image.NumberOfPixels();
-      int numberOfThreads = Thread::NumberOfThreads( N, 16 );
-      size_type pixelsPerThread = N/numberOfThreads;
-
       /*
        * For USM filters of size <= 49px, we use separable convolutions in the
        * spatial domain. For larger filters, FFT convolutions are faster. This
@@ -246,8 +242,12 @@ private:
       {
          image.SelectNominalChannels();
          im0 = image;
-         im0.SetStatusCallback( 0 );
+         im0.SetStatusCallback( nullptr );
       }
+
+      size_type N = image.NumberOfPixels();
+      Array<size_type> L = Thread::OptimalThreadLoads( N, 16/*overheadLimit*/ );
+      int numberOfThreads = int( L.Length() );
 
       for ( int ch = 0; ch < image.NumberOfNominalChannels(); ++ch )
       {
@@ -266,10 +266,9 @@ private:
 
          IndirectArray<USMThread<P> > threads;
          typename P::sample* v = image[ch];
-         const typename P::sample* vN = v + N;
          const float* m = *mask;
-         for ( int i = 0; i < numberOfThreads; ++i, v += pixelsPerThread, m += pixelsPerThread )
-            threads.Add( new USMThread<P>( (P*)0, v, (i < numberOfThreads-1) ? v+pixelsPerThread : vN, m, a1, a2 ) );
+         for ( int i = 0; i < numberOfThreads; v += L[i], m += L[i], ++i )
+            threads.Add( new USMThread<P>( (P*)0, v, v + L[i], m, a1, a2 ) );
 
          for ( int i = 0; i < numberOfThreads; ++i )
             threads[i]->Start( ThreadPriority::DefaultMax, i );
@@ -517,4 +516,4 @@ void* UnsharpMaskInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF UnsharpMaskInstance.cpp - Released 2019-11-07T11:00:22Z

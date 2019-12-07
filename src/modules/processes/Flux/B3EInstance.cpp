@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInstance.cpp - Released 2019-09-29T12:27:57Z
+// B3EInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -420,19 +420,16 @@ private:
    {
       size_type N = Ia.NumberOfPixels();
 
-      int numberOfThreads = Thread::NumberOfThreads( N, 16 );
-      size_type pixelsPerThread = N/numberOfThreads;
-
       StandardStatus status;
       StatusMonitor monitor;
       monitor.SetCallback( &status );
       monitor.Initialize( "B3E", N );
 
+      Array<size_type> L = Thread::OptimalThreadLoads( N, 16/*overheadLimit*/ );
       ThreadData<P1,P2> data( *this, It, Ic, Im, Ia, ra, ma, ba, Ib, rb, mb, bb, rc, monitor, N );
       ReferenceArray<B3EThread<P1,P2> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads << new B3EThread<P1,P2>( data, i*pixelsPerThread,
-                                                (j < numberOfThreads) ? j*pixelsPerThread : N );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads << new B3EThread<P1,P2>( data, n, n + int( L[i] ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
    }
@@ -665,7 +662,6 @@ double B3EInstance::EvaluateBackground( const InputViewParameters& imgParams )
       ImageVariant mask = maskWindow.MainView().Image();
       MakeBackgroundMask( static_cast<UInt8Image&>( *mask ), image, imgParams.backgroundLow, imgParams.backgroundHigh );
       maskWindow.Show();
-      maskWindow.ZoomToFit();
    }
 
    console.WriteLn( String().Format( "<end><cbr>* Mean background: %.5g", bg ) );
@@ -819,19 +815,12 @@ bool B3EInstance::ExecuteGlobal()
    if ( p_syntheticImage )
    {
       syntheticImageWindow.Show();
-      syntheticImageWindow.ZoomToFit();
       if ( p_outOfRangeMask )
-      {
          outOfRangeMaskWindow.Show();
-         outOfRangeMaskWindow.ZoomToFit();
-      }
    }
 
    if ( p_thermalMap )
-   {
       thermalMapWindow.Show();
-      thermalMapWindow.ZoomToFit();
-   }
 
    return true;
 }
@@ -988,4 +977,4 @@ size_type B3EInstance::ParameterLength( const MetaParameter* p, size_type tableR
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF B3EInstance.cpp - Released 2019-11-07T11:00:22Z

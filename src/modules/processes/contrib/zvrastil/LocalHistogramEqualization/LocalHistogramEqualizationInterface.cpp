@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInterface.cpp - Released 2019-09-29T12:27:58Z
+// LocalHistogramEqualizationInterface.cpp - Released 2019-11-07T11:00:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
@@ -62,7 +62,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LocalHistogramEqualizationInterface* TheLocalHistogramEqualizationInterface = 0;
+LocalHistogramEqualizationInterface* TheLocalHistogramEqualizationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -71,16 +71,15 @@ LocalHistogramEqualizationInterface* TheLocalHistogramEqualizationInterface = 0;
 // ----------------------------------------------------------------------------
 
 LocalHistogramEqualizationInterface::LocalHistogramEqualizationInterface() :
-ProcessInterface(),
-instance( TheLocalHistogramEqualizationProcess ), m_realTimeThread( 0 ), GUI( 0 )
+   instance( TheLocalHistogramEqualizationProcess )
 {
    TheLocalHistogramEqualizationInterface = this;
 }
 
 LocalHistogramEqualizationInterface::~LocalHistogramEqualizationInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -188,7 +187,7 @@ bool LocalHistogramEqualizationInterface::ImportProcess( const ProcessImplementa
 
 // ----------------------------------------------------------------------------
 
-bool LocalHistogramEqualizationInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int ) const
+bool LocalHistogramEqualizationInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int ) const
 {
    return true;
 }
@@ -213,7 +212,8 @@ void LocalHistogramEqualizationInterface::RealTimeThread::Run()
    m_instance.Preview( m_image );
 }
 
-bool LocalHistogramEqualizationInterface::GenerateRealTimePreview( UInt16Image& image, const View&, int zoomLevel, String& ) const
+bool LocalHistogramEqualizationInterface::GenerateRealTimePreview( UInt16Image& image, const View&,
+                                                                   const Rect&, int zoomLevel, String& ) const
 {
    m_realTimeThread = new RealTimeThread;
 
@@ -236,7 +236,7 @@ bool LocalHistogramEqualizationInterface::GenerateRealTimePreview( UInt16Image& 
             m_realTimeThread->Wait();
 
             delete m_realTimeThread;
-            m_realTimeThread = 0;
+            m_realTimeThread = nullptr;
             return false;
          }
       }
@@ -246,7 +246,7 @@ bool LocalHistogramEqualizationInterface::GenerateRealTimePreview( UInt16Image& 
          image.Assign( m_realTimeThread->m_image );
 
          delete m_realTimeThread;
-         m_realTimeThread = 0;
+         m_realTimeThread = nullptr;
          return true;
       }
    }
@@ -418,4 +418,4 @@ LocalHistogramEqualizationInterface::GUIData::GUIData( LocalHistogramEqualizatio
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationInterface.cpp - Released 2019-09-29T12:27:58Z
+// EOF LocalHistogramEqualizationInterface.cpp - Released 2019-11-07T11:00:23Z

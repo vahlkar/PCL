@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/Render.cpp - Released 2019-09-29T12:27:33Z
+// pcl/Render.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1230,22 +1230,19 @@ bool __Render( Bitmap& bitmap, int x0, int y0, int z, int channel,
 
    int h = (z < 0) ? data.hz : data.h;
 
-   if ( callback == 0 )
+   if ( callback == nullptr )
    {
-      int numberOfThreads = Thread::NumberOfThreads( h, 1 );
+      Array<size_type> L = Thread::OptimalThreadLoads( h );
+      int numberOfThreads = int( L.Length() );
       if ( numberOfThreads > 1 )
       {
-         int rowsPerThread = h/numberOfThreads;
          IndirectArray<RenderThread<P,M> > threads;
-         for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-            threads.Add( new RenderThread<P,M>( &data,
-                                                i*rowsPerThread,
-                                                (j < numberOfThreads) ? j*rowsPerThread : h ) );
+         for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
+            threads.Add( new RenderThread<P,M>( &data, n, n + int( L[i] ) ) );
          for ( int i = 0; i < numberOfThreads; ++i )
             threads[i]->Start( ThreadPriority::DefaultMax, i );
          for ( int i = 0; i < numberOfThreads; ++i )
             threads[i]->Wait();
-
          threads.Destroy();
       }
       else
@@ -1272,21 +1269,18 @@ bool __Render( Bitmap& bitmap, int x0, int y0, int z, int channel,
       {
          int firstRow = step*rowsPerStep;
          int numberOfRows = (step < numberOfSteps-1) ? rowsPerStep : h - firstRow;
-         int numberOfThreads = Thread::NumberOfThreads( numberOfRows, 1 );
 
+         Array<size_type> L = Thread::OptimalThreadLoads( numberOfRows );
+         int numberOfThreads = int( L.Length() );
          if ( numberOfThreads > 1 )
          {
-            int rowsPerThread = numberOfRows/numberOfThreads;
             IndirectArray<RenderThread<P,M> > threads;
-            for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-               threads.Add( new RenderThread<P,M>( &data,
-                                                   firstRow + i*rowsPerThread,
-                                                   firstRow + ((j < numberOfThreads) ? j*rowsPerThread : numberOfRows ) ) );
+            for ( int i = 0, n = 0; i < numberOfThreads; n += int( L[i++] ) )
+               threads.Add( new RenderThread<P,M>( &data, firstRow + n, firstRow + n + int( L[i] ) ) );
             for ( int i = 0; i < numberOfThreads; ++i )
                threads[i]->Start( ThreadPriority::DefaultMax, i );
             for ( int i = 0; i < numberOfThreads; ++i )
                threads[i]->Wait();
-
             threads.Destroy();
          }
          else
@@ -1397,4 +1391,4 @@ bool Render( Bitmap& bitmap, int x, int y, int zoom, int channel,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Render.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/Render.cpp - Released 2019-11-07T10:59:44Z

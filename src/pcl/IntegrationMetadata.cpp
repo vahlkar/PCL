@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/IntegrationMetadata.cpp - Released 2019-09-29T12:27:33Z
+// pcl/IntegrationMetadata.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -150,8 +150,8 @@ IntegrationMetadata::IntegrationMetadata( const PropertyArray& properties, const
             double p = value.ToDouble();
             if ( p < 0 )
             {
-               Console().WarningLn( "<end><cbr>** Warning: Assuming that negative PEDESTAL keyword value '"
-                                    + value + "\' is intended to be added." );
+//                Console().WarningLn( "<end><cbr>** Warning: Assuming that negative PEDESTAL keyword value '"
+//                                     + value + "\' is intended to be added." );
                p = -p;
             }
             pedestal = p;
@@ -835,4 +835,4 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegrationMetadata.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/IntegrationMetadata.cpp - Released 2019-11-07T10:59:44Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/ICCProfileTransformation.cpp - Released 2019-09-29T12:27:33Z
+// pcl/ICCProfileTransformation.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -237,9 +237,9 @@ public:
       Rect r = image.SelectedRectangle();
       int h = r.Height();
 
-      int numberOfThreads = T.IsParallelProcessingEnabled() ? Min( T.MaxProcessors(), pcl::Thread::NumberOfThreads( h, 1 ) ) : 1;
-      int rowsPerThread = h/numberOfThreads;
-
+      Array<size_type> L = pcl::Thread::OptimalThreadLoads( h,
+                                                            1/*overheadLimit*/,
+                                                            T.IsParallelProcessingEnabled() ? T.MaxProcessors() : 1 );
       size_type N = image.NumberOfSelectedPixels();
       if ( image.Status().IsInitializationEnabled() )
          image.Status().Initialize( "In-place ICC color profile transformation", N );
@@ -247,13 +247,10 @@ public:
       ThreadData<P> data( image, T, transformation, N );
 
       ReferenceArray<Thread<P,S> > threads;
-      for ( int i = 0, j = 1; i < numberOfThreads; ++i, ++j )
-         threads.Add( new Thread<P,S>( data,
-                                       i*rowsPerThread,
-                                       (j < numberOfThreads) ? j*rowsPerThread : h ) );
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new Thread<P,S>( data, n, n + int( L[i] ) ) );
 
       AbstractImage::RunThreads( threads, data );
-
       threads.Destroy();
 
       image.Status() = data.status;
@@ -491,4 +488,4 @@ void ICCProofingTransformation::SetGamutWarningColor( RGBA color )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ICCProfileTransformation.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/ICCProfileTransformation.cpp - Released 2019-11-07T10:59:44Z

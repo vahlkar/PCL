@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInterface.cpp - Released 2019-09-29T12:27:57Z
+// ConvolutionInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -260,7 +260,7 @@ bool ConvolutionInterface::ImportProcess( const ProcessImplementation& p )
 
 // ----------------------------------------------------------------------------
 
-bool ConvolutionInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, int zoomLevel ) const
+bool ConvolutionInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const
 {
    return true;
 }
@@ -288,7 +288,7 @@ void ConvolutionInterface::RealTimeThread::Run()
    m_image.ResetSelections();
 }
 
-bool ConvolutionInterface::GenerateRealTimePreview( UInt16Image& image, const View&, int zoomLevel, String& ) const
+bool ConvolutionInterface::GenerateRealTimePreview( UInt16Image& image, const View&, const Rect&, int zoomLevel, String& ) const
 {
    m_realTimeThread = new RealTimeThread;
 
@@ -607,7 +607,6 @@ void ConvolutionInterface::__Library_Click( Button& sender, bool checked )
       ImageVariant image = window.MainView().Image();
       instance.CreateFilterImage( static_cast<Image&>( *image ) );
       window.Show();
-      window.ZoomToFit( false/*allowMagnification*/ );
    }
    else if ( sender == GUI->ViewFilterElements_PushButton )
    {
@@ -1014,4 +1013,4 @@ ConvolutionInterface::GUIData::GUIData( ConvolutionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF ConvolutionInterface.cpp - Released 2019-11-07T11:00:22Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2019-09-29T12:27:57Z
+// PreferencesParameters.h - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -241,8 +241,8 @@ DECLARE_STRING_METAPARAMETER  ( Application, lowResFont,                        
 DECLARE_STRING_METAPARAMETER  ( Application, lowResFont,                          "DejaVu Sans" )
 #endif
 DECLARE_STRING_METAPARAMETER  ( Application, highResFont,                         "DejaVu Sans" )
-DECLARE_STRING_METAPARAMETER  ( Application, lowResMonoFont,                      "DejaVu Sans Mono" )
-DECLARE_STRING_METAPARAMETER  ( Application, highResMonoFont,                     "DejaVu Sans Mono" )
+DECLARE_STRING_METAPARAMETER  ( Application, lowResMonoFont,                      "Hack" )
+DECLARE_STRING_METAPARAMETER  ( Application, highResMonoFont,                     "Hack" )
 DECLARE_STRING_METAPARAMETER  ( Application, fundamentalEphemeridesFile,          "core-fundamental.xeph" )
 DECLARE_STRING_METAPARAMETER  ( Application, shortTermFundamentalEphemeridesFile, "core-fundamental-s.xeph" )
 DECLARE_STRING_METAPARAMETER  ( Application, asteroidEphemeridesFile,             "core-asteroids.xeph" )
@@ -401,4 +401,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2019-09-29T12:27:57Z
+// EOF PreferencesParameters.h - Released 2019-11-07T11:00:22Z

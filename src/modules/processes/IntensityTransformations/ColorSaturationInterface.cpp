@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInterface.cpp - Released 2019-09-29T12:27:57Z
+// ColorSaturationInterface.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,7 +68,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ColorSaturationInterface* TheColorSaturationInterface = 0;
+ColorSaturationInterface* TheColorSaturationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -89,10 +89,9 @@ static const int s_maxScale = 10;
 // ----------------------------------------------------------------------------
 
 ColorSaturationInterface::ColorSaturationInterface() :
-ProcessInterface(),
-instance( TheColorSaturationProcess ), m_realTimeThread( 0 ), GUI( 0 ),
-m_viewportBitmap( Bitmap::Null() ),
-m_viewportDirty( true )
+   instance( TheColorSaturationProcess ),
+   m_viewportBitmap( Bitmap::Null() ),
+   m_viewportDirty( true )
 {
    TheColorSaturationInterface = this;
 
@@ -250,7 +249,7 @@ bool ColorSaturationInterface::ImportProcess( const ProcessImplementation& p )
 
 // ----------------------------------------------------------------------------
 
-bool ColorSaturationInterface::RequiresRealTimePreviewUpdate( const UInt16Image& image, const View&, int /*zoomLevel*/ ) const
+bool ColorSaturationInterface::RequiresRealTimePreviewUpdate( const UInt16Image& image, const View&, const Rect&, int ) const
 {
    return image.IsColor();
 }
@@ -273,7 +272,7 @@ void ColorSaturationInterface::RealTimeThread::Run()
    m_instance.Preview( m_image );
 }
 
-bool ColorSaturationInterface::GenerateRealTimePreview( UInt16Image& image, const View&, int, String& ) const
+bool ColorSaturationInterface::GenerateRealTimePreview( UInt16Image& image, const View&, const Rect&, int, String& ) const
 {
    if ( !image.IsColor() )
       return true;
@@ -1899,4 +1898,4 @@ ColorSaturationInterface::GUIData::GUIData( ColorSaturationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInterface.cpp - Released 2019-09-29T12:27:57Z
+// EOF ColorSaturationInterface.cpp - Released 2019-11-07T11:00:22Z

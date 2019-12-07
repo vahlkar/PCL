@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// pcl/String.cpp - Released 2019-09-29T12:27:33Z
+// pcl/String.cpp - Released 2019-11-07T10:59:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1502,7 +1502,7 @@ static void RandomChars( T* t, size_type n, RandomizationOptions options )
 //  0        11        2         3      3  4         5      5  6  6      7  7      8         9          0
 //  h         L                         U                   H     D         S                           1
 
-   XorShift1024 rg;
+   XoShiRo256ss rg;
 
    if ( options.IsFlagSet( RandomizationOption::FullRange ) )
    {
@@ -2598,4 +2598,4 @@ IsoString IsoString::CurrentLocalISO8601DateTime( const ISO8601ConversionOptions
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.cpp - Released 2019-09-29T12:27:33Z
+// EOF pcl/String.cpp - Released 2019-11-07T10:59:44Z

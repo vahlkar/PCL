@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.4.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z
+// ImageCalibrationInstance.cpp - Released 2019-11-07T11:00:22Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1139,12 +1139,13 @@ ImageCalibrationInstance::BuildOverscanTable() const
  */
 void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstance& file )
 {
+   Console console;
    switch ( pedestalMode )
    {
    case ICPedestalMode::Literal:
       if ( pedestal != 0 )
       {
-         Console().NoteLn( String().Format( "* Subtracting pedestal: %d DN", pedestal ) );
+         console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", pedestal ) );
          image->Apply( pedestal/65535.0, ImageOp::Sub );
       }
       break;
@@ -1164,7 +1165,15 @@ void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstanc
                      break;
          if ( d != 0 )
          {
-            Console().NoteLn( String().Format( "* Subtracting pedestal keyword '%s': %.4f DN", keyName.c_str(), d ) );
+            /*
+             * Silently be compatible with acquisition applications that write
+             * negative PEDESTAL keyword values.
+             */
+            if ( pedestalMode == ICPedestalMode::Keyword )
+               if ( d < 0 )
+                  d = -d;
+
+            console.NoteLn( String().Format( "* Subtracting pedestal keyword '%s': %.4f DN", keyName.c_str(), d ) );
             image->Apply( d/65535.0, ImageOp::Sub );
          }
       }
@@ -1523,11 +1532,21 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
    /*
     * Add FITS header keywords and preserve existing ones, if possible.
     * N.B.: A COMMENT or HISTORY keyword cannot have a value; these keywords
-    * have only the name and comment components.
+    * only have the name and comment components.
     */
    if ( outputFormat.CanStoreKeywords() )
    {
       FITSKeywordArray keywords = data.keywords;
+
+      /*
+       * Remove previously existing PEDESTAL keywords, since we already have
+       * subtracted the appropriate pedestal value before calibration.
+       */
+      for ( size_type i = 0; i < keywords.Length(); )
+         if ( !keywords[i].name.CompareIC( "PEDESTAL" ) )
+            keywords.Remove( keywords.At( i ) );
+         else
+            ++i;
 
       keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Calibration with " + PixInsightVersion::AsString() )
                << FITSHeaderKeyword( "HISTORY", IsoString(), "Calibration with " + Module->ReadableVersion() )
@@ -1636,8 +1655,9 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
       if ( evaluateNoise )
       {
          /*
-          * ### N.B.: Remove other existing NOISExxx keywords.
-          *           Only our NOISExxx keywords must be present in the header.
+          * N.B.: If we have computed noise estimates, remove any previously
+          * existing NOISExxx keywords. Only our new NOISExxx keywords must be
+          * present in the header.
           */
          for ( size_type i = 0; i < keywords.Length(); )
             if ( keywords[i].name.StartsWithIC( "NOISE" ) )
@@ -1665,24 +1685,12 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
       }
 
       if ( outputPedestal != 0 )
-      {
-         /*
-          * ### NB: Remove other existing PEDESTAL keywords.
-          *         *Only* our PEDESTAL keyword must be present in the header.
-          */
-         for ( size_type i = 0; i < keywords.Length(); )
-            if ( !keywords[i].name.CompareIC( "PEDESTAL" ) )
-               keywords.Remove( keywords.At( i ) );
-            else
-               ++i;
-
          keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
                                     IsoString().Format( "ImageCalibration.outputPedestal: %d", outputPedestal ) )
                   << FITSHeaderKeyword( "PEDESTAL",
                                     IsoString( outputPedestal ),
                                     "Value in DN added to enforce positivity" );
-      }
 
       outputFile.WriteFITSKeywords( keywords );
    }
@@ -2777,4 +2785,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2019-09-29T12:27:57Z
+// EOF ImageCalibrationInstance.cpp - Released 2019-11-07T11:00:22Z

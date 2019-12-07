@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// SystemMemory.h - Released 2019-09-29T12:27:57Z
+// SystemMemory.h - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -69,4 +69,4 @@ size_type AvailablePhysicalMemory();
 #endif   // __SystemMemory_h
 
 // ----------------------------------------------------------------------------
-// EOF SystemMemory.h - Released 2019-09-29T12:27:57Z
+// EOF SystemMemory.h - Released 2019-11-18T16:52:32Z

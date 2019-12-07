@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.112
+# PixInsight Makefile Generator Script v1.115
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-09-30T11:27:52.917Z
+# Generated on .... 2019-11-29T09:40:26.981Z
 # Project id ...... jasper
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -16,10 +16,10 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>a2ef8ce5-5869-4fa6-abda-38bba935d0d3</UniqueIdentifier>
+      <UniqueIdentifier>33abfe7f-4165-4049-9a79-525ab3cb12aa</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>3c653dba-d4f0-4fcd-9284-42a38ff8804b</UniqueIdentifier>
+      <UniqueIdentifier>d10badfd-dadd-4cf3-866a-d7c0f9037512</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

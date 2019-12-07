@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.16
+// /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.18.0
+// Standard ImageIntegration Process Module Version 1.21.1
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.cpp - Released 2019-09-29T12:27:57Z
+// ImageIntegrationProcess.cpp - Released 2019-11-18T16:52:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -96,6 +96,8 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIWinsorizationCutoff( this );
    new IILinearFitLow( this );
    new IILinearFitHigh( this );
+   new IIESDOutliersFraction( this );
+   new IIESDAlpha( this );
    new IICCDGain( this );
    new IICCDReadNoise( this );
    new IICCDScaleNoise( this );
@@ -143,6 +145,8 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IINumberOfChannels( this );
    new IINumberOfPixels( this );
    new IITotalPixels( this );
+   new IIOutputRangeLow( this );
+   new IIOutputRangeHigh( this );
    new IITotalRejectedLowRK( this );
    new IITotalRejectedLowG( this );
    new IITotalRejectedLowB( this );
@@ -246,4 +250,4 @@ ProcessImplementation* ImageIntegrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.cpp - Released 2019-09-29T12:27:57Z
+// EOF ImageIntegrationProcess.cpp - Released 2019-11-18T16:52:32Z
