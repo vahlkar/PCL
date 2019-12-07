@@ -366,9 +366,15 @@ String INDICCDFrameInstance::FileNameFromTemplate( const String& fileNameTemplat
                fileName << String().Format( "%.3lf", p_exposureTime );
                break;
             case 'F':
-               if ( indi->GetPropertyItem( p_deviceName, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
-                  if ( indi->GetPropertyItem( p_deviceName, WHEEL_SLOT_NAME_PROPERTY_NAME, "SLOT_NAME_" + item.PropertyValue, item ) )
-                     fileName << item.PropertyValue;
+              {
+                String filterDeviceName = p_extFilterWheelDeviceName != TheICFExternalFilterWheelDeviceNameParameter->DefaultValue() ? p_extFilterWheelDeviceName : p_deviceName;
+                if ( indi->GetPropertyItem( filterDeviceName, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
+                {
+                   item.PropertyValue.Trim();
+                   if ( indi->GetPropertyItem( filterDeviceName, WHEEL_SLOT_NAME_PROPERTY_NAME, "SLOT_NAME_" + item.PropertyValue, item ) )
+                      fileName << item.PropertyValue;
+                }
+              }
                break;
             case 'T':
                if ( indi->GetPropertyItem( p_deviceName, CCD_TEMPERATURE_PROPERTY_NAME, CCD_TEMPERATURE_ITEM_NAME, item ) )
@@ -1394,6 +1400,17 @@ void AbstractINDICCDFrameExecution::Perform()
                      if (!data.geographicHeight.IsDefined())
                         if ( indi->GetPropertyItem( telescopeName, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, item, false/*formatted*/ ))
                            data.geographicHeight = item.PropertyValue.ToDouble();
+
+                     if (!data.geographicHeight.IsDefined())
+                     {
+                       String filterDeviceName = m_instance.p_extFilterWheelDeviceName != TheICFExternalFilterWheelDeviceNameParameter->DefaultValue() ? m_instance.p_extFilterWheelDeviceName : m_instance.p_deviceName;
+                       if ( indi->GetPropertyItem( filterDeviceName, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
+                       {
+                          if ( indi->GetPropertyItem(  filterDeviceName, WHEEL_SLOT_NAME_PROPERTY_NAME, "SLOT_NAME_" + String( item.PropertyValue.ToInt() ), item ) )
+                             data.filterName = item.PropertyValue;
+                       }
+                     }
+
 
                      properties << ImagePropertiesFromImageMetadata( data );
                }

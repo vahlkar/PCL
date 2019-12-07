@@ -1253,7 +1253,9 @@ __device_found:
          const INDIDeviceListItemArray& devices( x );
          for ( auto device : devices )
          {
-            GUI->ExternalFilterDevice_Combo.AddItem(device.DeviceName);
+            // add filter devices to combo box
+             if (indi->HasPropertyItem(device.DeviceName, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME))
+                GUI->ExternalFilterDevice_Combo.AddItem(device.DeviceName);
          }
          GUI->ExternalFilterDevice_Combo.Enable();
          GUI->ExternalFilterDevice_Label.Enable();
@@ -1322,7 +1324,7 @@ void INDICCDFrameInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
    {
       String externalFilterWheelDeviceName = sender.ItemText( itemIndex ).Trimmed();
       // load configuration on server
-      indi->SendNewPropertyItem( externalFilterWheelDeviceName, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON", true/*async*/  );
+      indi->MaybeSendNewPropertyItem( externalFilterWheelDeviceName, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON", true/*async*/  );
    }
 }
 
