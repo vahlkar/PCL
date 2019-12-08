@@ -111,27 +111,28 @@ INDICCDFrameProcess::INDICCDFrameProcess()
    new ICFClientFilePath( TheICFClientFramesParameter );
    new ICFServerFrames( this );
    new ICFServerFrame( TheICFServerFramesParameter );
+   new ICFTelescopeFocalLength( this );
 }
 
 // ----------------------------------------------------------------------------
 
 IsoString INDICCDFrameProcess::Id() const
 {
-   return "INDICCDFrame";
+   return "IndigoCCDFrame";
 }
 
 // ----------------------------------------------------------------------------
 
 IsoString INDICCDFrameProcess::Category() const
 {
-   return "INDI,Instrumentation";
+   return "Instrumentation";
 }
 
 // ----------------------------------------------------------------------------
 
 uint32 INDICCDFrameProcess::Version() const
 {
-   return 0x100;
+   return 0x200;
 }
 
 // ----------------------------------------------------------------------------
@@ -140,7 +141,7 @@ String INDICCDFrameProcess::Description() const
 {
    return
    "<html>"
-   "<p>Acquire frames from INDI CCD devices.</p>"
+   "<p>Acquire frames from Indigo CCD devices.</p>"
    "</html>";
 }
 

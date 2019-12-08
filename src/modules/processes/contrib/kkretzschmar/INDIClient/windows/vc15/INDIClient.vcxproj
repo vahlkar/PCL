@@ -4,13 +4,22 @@
 # PixInsight Makefile Generator Script v1.115
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-11-29T09:40:50.766Z
+# Generated on .... 2019-12-03T23:37:29.624Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc15
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional preprocessor definitions:
-# _CRT_SECURE_NO_WARNINGS
+# INDIGO_WINDOWS=1
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional include search directories:
+# $(INDIGODIR)/indigo_libs
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional library search directories:
+# "$(INDIGODIR)/build/lib/
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional libraries:
+# indigo
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
@@ -33,7 +42,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{58CB790E-DBC9-4D6B-9047-4CE578A8667C}</ProjectGuid>
+    <ProjectGuid>{3C7B2086-A4AF-430A-9D40-A6BD0C4529DF}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -102,8 +111,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;$(INDIGODIR)\indigo_libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;INDIGO_WINDOWS=1;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -118,9 +127,9 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;indigo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\INDIClient-pxm.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(PCLLIBDIR64);"$(INDIGODIR)\build\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
@@ -140,8 +149,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;$(INDIGODIR)\indigo_libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;INDIGO_WINDOWS=1;_NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -157,9 +166,9 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;indigo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR32)\INDIClient-pxm.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PCLLIBDIR32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(PCLLIBDIR32);"$(INDIGODIR)\build\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
@@ -177,8 +186,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;$(INDIGODIR)\indigo_libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;INDIGO_WINDOWS=1;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -191,9 +200,9 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;indigo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\INDIClient-pxm.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(PCLLIBDIR64);"$(INDIGODIR)\build\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
@@ -205,8 +214,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;_CRT_SECURE_NO_WARNINGS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(PCLINCDIR);$(PCLSRCDIR)\3rdparty;$(INDIGODIR)\indigo_libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;UNICODE;__PCL_WINDOWS;__PCL_NO_WIN32_MINIMUM_VERSIONS;INDIGO_WINDOWS=1;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -219,9 +228,9 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;indigo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR32)\INDIClient-pxm.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PCLLIBDIR32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(PCLLIBDIR32);"$(INDIGODIR)\build\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
@@ -232,7 +241,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Alignment.cpp"/>
-    <ClCompile Include="..\..\IINDIProperty.cpp"/>
     <ClCompile Include="..\..\IIndigoProperty.cpp"/>
     <ClCompile Include="..\..\INDICCDFrameInstance.cpp"/>
     <ClCompile Include="..\..\INDICCDFrameInterface.cpp"/>
@@ -253,7 +261,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\Alignment.h"/>
     <ClInclude Include="..\..\DeviceConfigBase.h"/>
-    <ClInclude Include="..\..\IINDIProperty.h"/>
     <ClInclude Include="..\..\IIndigoProperty.h"/>
     <ClInclude Include="..\..\INDICCDFrameInstance.h"/>
     <ClInclude Include="..\..\INDICCDFrameInterface.h"/>

@@ -276,7 +276,7 @@ public:
       case INDIGO_TEXT_VECTOR:   typeTitleChunk = "Text ";   break;
       default:          typeTitleChunk = "";        break;
       }
-      SetWindowTitle( "INDI " + String( typeTitleChunk ) + "Property" );
+      SetWindowTitle( "Indigo " + String( typeTitleChunk ) + "Property" );
 
       SetScaledMinWidth( 500 );
 
@@ -502,7 +502,7 @@ INDIDeviceControllerInterface::~INDIDeviceControllerInterface()
 
 IsoString INDIDeviceControllerInterface::Id() const
 {
-   return "INDIDeviceController";
+   return "IndigoDeviceController";
 }
 
 MetaProcess* INDIDeviceControllerInterface::Process() const
@@ -526,7 +526,7 @@ bool INDIDeviceControllerInterface::Launch( const MetaProcess& P, const ProcessI
    if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
-      SetWindowTitle( "INDI Device Controller" );
+      SetWindowTitle( "Indigo Device Controller" );
       GUI->HostName_Edit.SetText( TheIDCServerHostNameParameter->DefaultValue() );
       GUI->Port_SpinBox.SetValue( int( TheIDCServerPortParameter->DefaultValue() ) );
       UpdateDeviceLists();
@@ -584,7 +584,7 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
 
    String buttonStyle = "QPushButton { text-align: left; min-width: " + String( buttonWidth1 ) + "px; }";
 
-   Server_SectionBar.SetTitle( "INDI Server Connection" );
+   Server_SectionBar.SetTitle( "Indigo Server Connection" );
    Server_SectionBar.SetSection( Server_Control );
    Server_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&INDIDeviceControllerInterface::e_ToggleSection, w );
 
@@ -627,7 +627,7 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
 
    //
 
-   Devices_SectionBar.SetTitle( "INDI Devices" );
+   Devices_SectionBar.SetTitle( "Indigo Devices" );
    Devices_SectionBar.SetSection( Devices_Control );
    Devices_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&INDIDeviceControllerInterface::e_ToggleSection, w );
 
@@ -915,7 +915,7 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
       if ( INDIClient::HasClient() )
          if ( INDIClient::TheClient()->IsServerConnected() )
          {
-            if ( MessageBox( "<p>About to disconnect from INDI server:</p>"
+            if ( MessageBox( "<p>About to disconnect from Indigo server:</p>"
                      "<p>" + INDIClient::TheClient()->HostName() + ":" + IsoString( INDIClient::TheClient()->Port() ) + "</p>"
                      "<p><b>Are you sure?</b></p>",
                      WindowTitle(),
@@ -925,6 +925,11 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
             }
 
             INDIClient::TheClient()->disconnectServer();
+            if ( !INDIClient::TheClient()->IsServerConnected() )
+            {
+               INDIClient::DestroyClient();
+               GUI->ServerMessage_Label.SetText( "Successfully disconnected from server." );
+            }
          }
 
       IsoString hostName8 = GUI->HostName_Edit.Text().Trimmed().ToUTF8();
@@ -938,7 +943,7 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
       std::ostringstream errMesg;
       bool success = INDIClient::TheClient()->connectServer(errMesg);
       if ( ! success )
-         MessageBox( "<p>Failure to connect to INDI server:</p>"
+         MessageBox( "<p>Failure to connect to Indigo server:</p>"
                      "<p>" + GUI->HostName_Edit.Text().Trimmed() + ":" + String( port ) + "</p>"
                      "<p><b>Possible reason: </b></p>" + IsoString(errMesg.str().c_str()),
                      WindowTitle(),
@@ -980,7 +985,7 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
                }
                else
                {
-                  MessageBox( "<p>Unable to find INDI device '" + deviceName + "'</p>",
+                  MessageBox( "<p>Unable to find Indigo device '" + deviceName + "'</p>",
                               WindowTitle(),
                               StdIcon::Error, StdButton::Ok ).Execute();
                }
@@ -1034,7 +1039,7 @@ void INDIDeviceControllerInterface::e_NodeActivated( TreeBox& sender, TreeBox::N
          if ( !deviceName.IsEmpty() )
             if ( INDIClient::TheClient()->IsDeviceConnected(deviceName) )
             {
-               if ( MessageBox( "<p>About to disconnect from INDI device '" + deviceNode->DeviceName() + "'</p>"
+               if ( MessageBox( "<p>About to disconnect from Indigo device '" + deviceNode->DeviceName() + "'</p>"
                         "<p>Are you sure?</p>",
                         WindowTitle(),
                         StdIcon::Warning,
@@ -1085,8 +1090,17 @@ void INDIDeviceControllerInterface::e_NodeSelectionUpdated( TreeBox& sender )
 void INDIDeviceControllerInterface::e_Timer( Timer& sender )
 {
    UpdateDeviceLists();
-   if ( INDIClient::HasClient() )
-      GUI->ServerMessage_Label.SetText( INDIClient::TheClient()->CurrentServerMessage() );
+   if ( INDIClient::HasClient() ) {
+      String message;
+      if (INDIClient::TheClient()->CurrentServerMessage().m_messageSeverity == INDIGO_ALERT_STATE) {
+        message = String().Format("Latest Indigo server log entry: ERROR: %s", INDIClient::TheClient()->CurrentServerMessage().m_message.To7BitASCII().c_str() );
+      } else {
+        message = String().Format("Latest Indigo server log entry: %s", INDIClient::TheClient()->CurrentServerMessage().m_message.To7BitASCII().c_str() );
+
+      }
+
+      GUI->ServerMessage_Label.SetText( message );
+   }
 }
 
 // ----------------------------------------------------------------------------

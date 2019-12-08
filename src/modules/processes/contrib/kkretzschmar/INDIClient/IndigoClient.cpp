@@ -51,11 +51,13 @@
 // ----------------------------------------------------------------------------
 
 #include "IndigoClient.h"
+#ifndef __PCL_WINDOWS
 #include <unistd.h>
+#endif
 #include <string.h>
 
-#include "indigo_json.h"
-#include "indigo_driver_json.h"
+#include "indigo/indigo_json.h"
+#include "indigo/indigo_driver_json.h"
 
 IndigoClient::IndigoClient(const char* clientName) {
    strncpy(m_indigoClient.name, clientName, strlen(clientName));
@@ -67,22 +69,26 @@ IndigoClient::IndigoClient(const char* clientName, const char* host, int32_t por
    strncpy(m_indigoClient.name, clientName, strlen(clientName));
    m_indigoClient.client_context =  reinterpret_cast<void*>(this);
    indigo_start();
+   //indigo_set_log_level(INDIGO_LOG_INFO);
    indigo_attach_client(&m_indigoClient);
 }
 
 IndigoClient::~IndigoClient() {
     indigo_detach_client(&m_indigoClient);
     indigo_stop();
+#ifndef __PCL_WINDOWS
     for (auto iter = m_devices.begin(); iter != m_devices.end(); iter++) {
        indigo_remove_driver(*iter);
     }
+#endif // !_PCL_WINDOWS
+
 }
 
 
 bool IndigoClient::connectServer(std::ostream &errMessage) {
    indigo_server_entry* serverEntry = nullptr;
    indigo_result rc = indigo_connect_server(m_serverHost.c_str(), m_serverHost.c_str(), m_port, &serverEntry);
-   if (rc != INDIGO_OK) {
+   if (rc != INDIGO_OK && rc != INDIGO_DUPLICATED) {
       errMessage <<"Internal error: Server connection failed: rc = "<<rc<<" -- "<<__FILE__<<":"<<__LINE__;
       return false;
    }
@@ -96,7 +102,8 @@ bool IndigoClient::disconnectServer() {
       if (rc != INDIGO_OK){
          return false;
       }
-      while (server->thread_started) {
+      while (server->thread_started) { // check for abort flag
+            // do process events via hook
       }
    }
    return true;
@@ -120,6 +127,7 @@ bool IndigoClient::serverIsConnected(std::ostream& errMessage) const {
    indigo_result rc = indigo_change_property(&m_indigoClient, property);
    return rc == INDIGO_OK;
  }
+
 
  bool IndigoClient::sendNewNumberProperty(char* deviceName,  const char* propertyName, size_t numOfItems, const char** items, const double* values) {
     indigo_property *property = indigo_init_number_property(NULL, deviceName, propertyName, NULL, NULL, static_cast<indigo_property_state>(0), static_cast<indigo_property_perm>(0), numOfItems);
@@ -211,6 +219,9 @@ indigo_result IndigoClient::updateProperty(indigo_client *client, indigo_device 
    if (property == nullptr) {
       return INDIGO_FAILED;
    }
+   if ( message != nullptr) {
+       indigoClient->newMessage(message, property->state);
+   }
    if (property->type == INDIGO_SWITCH_VECTOR) {
       indigoClient->newSwitch(property);
    } else if (property->type == INDIGO_NUMBER_VECTOR){
@@ -232,7 +243,7 @@ indigo_result IndigoClient::updateProperty(indigo_client *client, indigo_device 
 indigo_result IndigoClient::getMessage(indigo_client *client, indigo_device *device, const char *message) {
    IndigoClient* indigoClient = reinterpret_cast<IndigoClient*>(client->client_context);
    if (message != nullptr) {
-      indigoClient->newMessage(message);
+      indigoClient->newMessage(message, INDIGO_OK_STATE);
       return INDIGO_OK;
    }
    return INDIGO_FAILED;
@@ -249,6 +260,7 @@ indigo_server_entry* IndigoClient::getServerEntry(const char* host, int32_t port
 }
 
 bool IndigoClient::loadDeviceDriver(const std::string& driver) {
+#ifndef __PCL_WINDOWS
    indigo_driver_entry* driverEntry = nullptr;
    indigo_result rc = indigo_load_driver(driver.c_str(), true, &driverEntry);
    if (driverEntry != nullptr) {
@@ -256,6 +268,9 @@ bool IndigoClient::loadDeviceDriver(const std::string& driver) {
    }
    indigo_attach_client(&m_indigoClient);
    return true;
+#else
+   return false;
+#endif
 }
 
 bool IndigoClient::connectDevice(const std::string& deviceName)  {

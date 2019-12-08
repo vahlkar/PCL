@@ -65,7 +65,6 @@ REGISTER_MODULE_PARAMETER(IMCCommand);
 REGISTER_MODULE_PARAMETER(IMCSlewRate);
 REGISTER_MODULE_PARAMETER(IMCTargetRA);
 REGISTER_MODULE_PARAMETER(IMCTargetDec);
-REGISTER_MODULE_PARAMETER(IMCComputeApparentPosition);
 REGISTER_MODULE_PARAMETER(IMCCurrentLST);
 REGISTER_MODULE_PARAMETER(IMCCurrentRA);
 REGISTER_MODULE_PARAMETER(IMCCurrentDec);
@@ -106,10 +105,6 @@ DEFINE_DOUBLE_PARAMETER_CLASS(IMCTargetRA,"targetRA",8,0,0,24);
 // ----------------------------------------------------------------------------
 
 DEFINE_DOUBLE_PARAMETER_CLASS(IMCTargetDec,"targetDec",7,0,-90,90);
-
-// ----------------------------------------------------------------------------
-
-DEFINE_BOOLEAN_PARAMETER_CLASS(IMCComputeApparentPosition,"computeApparentPosition",false);
 
 // ----------------------------------------------------------------------------
 

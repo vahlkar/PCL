@@ -106,6 +106,7 @@ INDICCDFrameInstance::INDICCDFrameInstance( const MetaProcess* m ) :
    p_extFilterWheelDeviceName( TheICFExternalFilterWheelDeviceNameParameter->DefaultValue() ),
    p_enableAlignmentCorrection( TheICFEnableAlignmentCorrectionParameter->DefaultValue() ),
    p_alignmentFile( TheICFAlignmentFileParameter->DefaultValue() ),
+   p_telescopeFocalLength( TheICFTelescopeFocalLengthParameter->DefaultValue()),
 
    m_exposureNumber( 0 )
 {
@@ -154,6 +155,7 @@ void INDICCDFrameInstance::Assign( const ProcessImplementation& p )
       p_extFilterWheelDeviceName = x->p_extFilterWheelDeviceName;
       p_enableAlignmentCorrection = x->p_enableAlignmentCorrection;
       p_alignmentFile             = x->p_alignmentFile;
+      p_telescopeFocalLength         = x->p_telescopeFocalLength;
 
       o_clientViewIds            = x->o_clientViewIds;
       o_clientFilePaths          = x->o_clientFilePaths;
@@ -202,13 +204,13 @@ bool INDICCDFrameInstance::ValidateDevice( bool throwErrors ) const
          if ( !indi->HasPropertyItem( device.DeviceName, CCD_FRAME_PROPERTY_NAME, CCD_FRAME_WIDTH_ITEM_NAME ) ) // is this a camera device?
          {
             if ( throwErrors )
-               throw Error( '\'' + p_deviceName + "' does not seem to be a valid INDI CCD device" );
+               throw Error( '\'' + p_deviceName + "' does not seem to be a valid Indigo CCD device" );
             return false;
          }
          return true;
       }
    if ( throwErrors )
-      throw Error( "INDI device not available: '" + p_deviceName + "'" );
+      throw Error( "Indigo device not available: '" + p_deviceName + "'" );
    return false;
 }
 
@@ -232,6 +234,13 @@ void  INDICCDFrameInstance::SetTelescopeAlignmentModelParameter( bool throwError
    default:
       break;
    }
+}
+
+// ----------------------------------------------------------------------------
+
+void INDICCDFrameInstance::SetTelescopeFocalLength( )
+{
+  p_telescopeFocalLength = TheINDIMountInterface->TelescopeFocalLength();
 }
 
 // ----------------------------------------------------------------------------
@@ -268,7 +277,7 @@ String INDICCDFrameInstance::TelescopeDeviceName( bool throwErrors ) const
       deviceName = TheINDIMountInterface->CurrentDeviceName();
       if ( deviceName.IsEmpty() )
          if ( throwErrors )
-            throw Error( "Cannot retrieve required telescope device: The INDI Mount Controller interface has no selected device" );
+            throw Error( "Cannot retrieve required telescope device: The Indigo Mount Controller interface has no selected device" );
       break;
    default:
    case ICFTelescopeSelection::MountControllerOrActiveTelescope:
@@ -279,7 +288,7 @@ String INDICCDFrameInstance::TelescopeDeviceName( bool throwErrors ) const
             deviceName = item.PropertyValue.Trimmed();
          if ( deviceName.IsEmpty() )
             if ( throwErrors )
-               throw Error( "Cannot retrieve required telescope device: No telescope device is available or selected on the INDI server and/or INDI Mount Controller interface" );
+               throw Error( "Cannot retrieve required telescope device: No telescope device is available or selected on the Indigo server and/or Indigo Mount Controller interface" );
       }
       break;
    case ICFTelescopeSelection::TelescopeDeviceName:
@@ -300,13 +309,13 @@ String INDICCDFrameInstance::TelescopeDeviceName( bool throwErrors ) const
             if ( !indi->HasPropertyItem( deviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME ) ) // is this a mount device?
             {
                if ( throwErrors )
-                  throw Error( "The required device '" + deviceName + "' does not seem to be a valid INDI mount device" );
+                  throw Error( "The required device '" + deviceName + "' does not seem to be a valid Indigo mount device" );
                deviceName.Clear();
             }
             return deviceName;
          }
       if ( throwErrors )
-         throw Error( "Required INDI device not available: '" + deviceName + '\'' );
+         throw Error( "Required Indigo device not available: '" + deviceName + '\'' );
    }
 
    return String();
@@ -329,7 +338,7 @@ void INDICCDFrameInstance::SendDeviceProperties( bool async ) const
       indi->MaybeSendNewPropertyItem( p_deviceName, CCD_BIN_PROPERTY_NAME, "INDI_NUMBER", CCD_BIN_HORIZONTAL_ITEM_NAME, p_binningX, CCD_BIN_VERTICAL_ITEM_NAME, p_binningY,async );
 
    if ( p_filterSlot > 0 )
-      indi->MaybeSendNewPropertyItem( p_extFilterWheelDeviceName != TheICFExternalFilterWheelDeviceNameParameter->DefaultValue()  ? p_extFilterWheelDeviceName : p_deviceName, "FILTER_SLOT", "INDI_NUMBER", "FILTER_SLOT_VALUE", p_filterSlot, async );
+      indi->MaybeSendNewPropertyItem( p_extFilterWheelDeviceName != TheICFExternalFilterWheelDeviceNameParameter->DefaultValue()  ? p_extFilterWheelDeviceName : p_deviceName, WHEEL_SLOT_PROPERTY_NAME, "INDI_NUMBER", WHEEL_SLOT_ITEM_NAME, p_filterSlot, async );
 }
 
 // ----------------------------------------------------------------------------
@@ -357,9 +366,15 @@ String INDICCDFrameInstance::FileNameFromTemplate( const String& fileNameTemplat
                fileName << String().Format( "%.3lf", p_exposureTime );
                break;
             case 'F':
-               if ( indi->GetPropertyItem( p_deviceName, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
-                  if ( indi->GetPropertyItem( p_deviceName, WHEEL_SLOT_NAME_PROPERTY_NAME, "SLOT_NAME_" + item.PropertyValue, item ) )
-                     fileName << item.PropertyValue;
+              {
+                String filterDeviceName = p_extFilterWheelDeviceName != TheICFExternalFilterWheelDeviceNameParameter->DefaultValue() ? p_extFilterWheelDeviceName : p_deviceName;
+                if ( indi->GetPropertyItem( filterDeviceName, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
+                {
+                   item.PropertyValue.Trim();
+                   if ( indi->GetPropertyItem( filterDeviceName, WHEEL_SLOT_NAME_PROPERTY_NAME, "SLOT_NAME_" + item.PropertyValue, item ) )
+                      fileName << item.PropertyValue;
+                }
+              }
                break;
             case 'T':
                if ( indi->GetPropertyItem( p_deviceName, CCD_TEMPERATURE_PROPERTY_NAME, CCD_TEMPERATURE_ITEM_NAME, item ) )
@@ -482,13 +497,17 @@ private:
    {
       m_monitor.Complete();
 
-      // Print latest INDI server message
+      // Print latest Indigo server message
       if ( INDIClient::TheClient()->Verbosity() > 1 )
       {
-         String message = INDIClient::TheClient()->CurrentServerMessage();
-         if ( !message.IsEmpty() )
-         {
-            m_console.NoteLn( "<end><cbr><br>* Latest INDI server log entry:" );
+         String message = INDIClient::TheClient()->CurrentServerMessage().m_message;
+         if ( !message.IsEmpty() && INDIClient::TheClient()->CurrentServerMessage().m_messageSeverity == INDIGO_ALERT_STATE ) {
+             m_console.CriticalLn( "<end><cbr><br>* Latest Indigo server log entry: ERROR: " );
+             m_console.CriticalLn( message );
+             m_console.WriteLn();
+         }
+         else {
+            m_console.NoteLn( "<end><cbr><br>* Latest Indigo server log entry:" );
             m_console.NoteLn( message );
             m_console.WriteLn();
          }
@@ -500,7 +519,7 @@ private:
       if ( m_waitMonitor.IsInitialized() )
          ++m_waitMonitor;
       else
-         m_waitMonitor.Initialize( "Waiting for INDI server" );
+         m_waitMonitor.Initialize( "Waiting for Indigo server" );
    }
 
    virtual void NewFrameEvent( ImageWindow& window, bool reusedWindow, bool geometryChanged )
@@ -604,6 +623,8 @@ void* INDICCDFrameInstance::LockParameter( const MetaParameter* p, size_type tab
       return &p_enableAlignmentCorrection;
    if ( p == TheICFAlignmentFileParameter )
       return p_alignmentFile.Begin();
+   if ( p == TheICFTelescopeFocalLengthParameter )
+       return &p_telescopeFocalLength;
 
    if ( p == TheICFClientViewIdParameter )
       return o_clientViewIds[tableRow].Begin();
@@ -708,7 +729,8 @@ bool INDICCDFrameInstance::AllocateParameter( size_type sizeOrLength, const Meta
       o_serverFrames[tableRow].Clear();
       if ( sizeOrLength > 0 )
          o_serverFrames[tableRow].SetLength( sizeOrLength );
-   } else if ( p == TheICFAlignmentFileParameter )
+   }
+   else if ( p == TheICFAlignmentFileParameter )
    {
       p_alignmentFile.Clear();
       if ( sizeOrLength > 0 )
@@ -951,9 +973,9 @@ ImagePropertiesFromImageMetadata( const ImageMetadata& data )
    if ( data.apertureArea.IsDefined() )
       properties << ImageProperty( "Instrument:Telescope:CollectingArea", Round( data.apertureArea(), 3 ) );
    if ( data.eodRa.IsDefined() )
-      properties << ImageProperty( "Instrument:Telescope:Pointing:RA", data.eodRa() );
+      properties << ImageProperty( "Instrument:Telescope:Pointing:RA", data.ra() );
    if ( data.eodDec.IsDefined() )
-      properties << ImageProperty( "Instrument:Telescope:Pointing:Dec", data.eodDec() );
+      properties << ImageProperty( "Instrument:Telescope:Pointing:Dec", data.dec() );
    if ( data.filterName.IsDefined() )
       properties << ImageProperty( "Instrument:Filter:Name", data.filterName() );
    if ( data.sensorTemp.IsDefined() )
@@ -1032,7 +1054,7 @@ void AbstractINDICCDFrameExecution::Perform()
    INDIClient* indi = INDIClient::TheClientOrDie();
 
    if ( !indi->HasDevices() )
-      throw Error( "No INDI device has been connected." );
+      throw Error( "No Indigo device has been connected." );
 
    try
    {
@@ -1041,6 +1063,8 @@ void AbstractINDICCDFrameExecution::Perform()
       String telescopeName = m_instance.TelescopeDeviceName();
 
       m_instance.SetTelescopeAlignmentModelParameter();
+      m_instance.SetTelescopeFocalLength();
+
 
       m_instance.SendDeviceProperties( false/*async*/ );
 
@@ -1092,7 +1116,7 @@ void AbstractINDICCDFrameExecution::Perform()
 
          if ( !indi->SendNewPropertyItem( m_instance.p_deviceName, CCD_EXPOSURE_PROPERTY_NAME, "INDI_NUMBER", CCD_EXPOSURE_ITEM_NAME, m_instance.p_exposureTime, true/*async*/ ) )
          {
-            ExposureErrorEvent( "Failure to send new property values to INDI server" );
+            ExposureErrorEvent( "Failure to send new property values to Indigo server" );
             ++m_errorCount;
             continue; // ### TODO: Implement a p_onError process parameter
          }
@@ -1107,8 +1131,8 @@ void AbstractINDICCDFrameExecution::Perform()
                throw Error( "Cannot get current mount coordinates for device '" + telescopeName + "'" );
             double ra = 0;
             double dec = 0;
-            itemRA.PropertyTarget.TryToDouble(ra);
-            itemDec.PropertyTarget.TryToDouble(dec);
+            itemRA.PropertyValue.TryToDouble(ra);
+            itemDec.PropertyValue.TryToDouble(dec);
             telescopeRA = Rad( ra *15 );
             telescopeDec = Rad( dec );
           }
@@ -1205,7 +1229,7 @@ void AbstractINDICCDFrameExecution::Perform()
                      // If not already available, try to get the local
                      // sidereal time.
                      if ( !data.localSiderealTime.IsDefined() )
-                        if ( indi->GetPropertyItem( telescopeName, "TIME_LST", "LST", item, false/*formatted*/ ) )
+                        if ( indi->GetPropertyItem( telescopeName, MOUNT_LST_TIME_PROPERTY_NAME, MOUNT_LST_TIME_ITEM_NAME, item, false/*formatted*/ ) )
                         {
                            data.localSiderealTime = item.PropertyValue.ToDouble();
                            IsoString lstSexagesimal = IsoString::ToSexagesimal( data.localSiderealTime(),
@@ -1217,8 +1241,8 @@ void AbstractINDICCDFrameExecution::Perform()
                      {
                         // If not already available, try to get the telescope
                         // pier side from standard device properties.
-                        if ( !data.focalLength.IsDefined() )
-                           if ( indi->GetPropertyItem( telescopeName, "TELESCOPE_PIER_SIDE", "PIER_WEST", item) )
+                        if ( !data.telescopePierSide.IsDefined() )
+                           if ( indi->GetPropertyItem( telescopeName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, item) )
                            {
                               if (item.PropertyValue == "ON" )
                               {
@@ -1253,81 +1277,111 @@ void AbstractINDICCDFrameExecution::Perform()
                         data.telescopeName = telescopeName;
 
                         // Store the epoch-of-date coordinates
-                        if ( !data.eodRa.IsDefined() || !data.eodDec.IsDefined() )
+                        if (!data.eodRa.IsDefined() || !data.eodDec.IsDefined())
                         {
                            data.eodRa = Deg( telescopeRA );
                            data.eodDec = Deg( telescopeDec );
                         }
 
                         // Compute GCRS / J2000.0 coordinates from telescope
-                        // true / EOD coordinates.
-                        if ( data.year.IsDefined() )
+                        // true / EOD coordinates if epoch == JNow
+						// Note: The EOD coordinates consider the proper motion of the target objects, 
+						//       if they were acquired via the coordinate search dialog. Since we do not
+						//       have these information here the resulting J2000 coordinate will have this
+						//       mismatch.  
+						data.ra = Deg(telescopeRA);
+						data.dec = Deg(telescopeDec);
+						data.equinox = 2000.0;
+						INDIPropertyListItem item;
+						INDIClient* indi = INDIClient::TheClientOrDie();
+						bool computeApparentPositions = false;
+						if (indi->GetPropertyItem(telescopeName, MOUNT_EPOCH_PROPERTY_NAME, MOUNT_EPOCH_ITEM_NAME, item, false/*formatted*/))
+						{
+							if (TruncInt(item.PropertyValue.ToDouble()) == 0)
+								computeApparentPositions = true;
+						}
+						else
+						{
+							// fallback: if EPOCH property is not defined assume JNow
+							computeApparentPositions = true;
+						}
+
+                        if ( data.year.IsDefined() && computeApparentPositions)
                         {
-                           TimePoint t( data.year(), data.month(), data.day(), data.dayf() - data.tz()/24 );
-                           Position P( t, "UTC" );
-                           P.InitEquinoxBasedParameters();
-                           Vector u3 = Vector::FromSpherical( telescopeRA, telescopeDec );
-                           // Apparent -> GCRS
-                           Vector u2 = P.EquinoxBiasPrecessionNutationInverseMatrix() * u3;
-                           // ### TODO: Topocentric -> geocentric coordinates.
-                           u2.ToSpherical2Pi( telescopeRA, telescopeDec );
-                           data.ra = Deg( telescopeRA );
-                           data.dec = Deg( telescopeDec );
-                           data.equinox = 2000.0;
+							TimePoint t(data.year(), data.month(), data.day(), data.dayf() - data.tz() / 24);
+							Position P(t, "UTC");
+							P.InitEquinoxBasedParameters();
+							Vector u3 = Vector::FromSpherical(telescopeRA, telescopeDec);
+							// Apparent -> GCRS
+							Vector u2 = P.EquinoxBiasPrecessionNutationInverseMatrix() * u3;
+							// ### TODO: Topocentric -> geocentric coordinates.
+							u2.ToSpherical2Pi(telescopeRA, telescopeDec);
+							data.ra = Deg(telescopeRA);
+							data.dec = Deg(telescopeDec);
                         }
 
                         // If not already available, try to get the telescope
                         // focal length from standard device properties.
-                        if ( !data.focalLength.IsDefined() )
+                        if ( !data.focalLength.IsDefined())
                            if ( indi->GetPropertyItem( telescopeName, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", item, false/*formatted*/ ) )
                            {
                               double focalLengthMM = Round( item.PropertyValue.ToDouble(), 3 );
                               data.focalLength = focalLengthMM/1000;
                               keywords << FITSHeaderKeyword( "FOCALLEN", focalLengthMM, "Focal length (mm)" );
                            }
+                           else if (m_instance.p_telescopeFocalLength != 0)
+                           {
+                              double focalLengthMM = m_instance.p_telescopeFocalLength;
+                              data.focalLength = focalLengthMM/1000;
+                              keywords << FITSHeaderKeyword( "FOCALLEN", focalLengthMM, "Focal length (mm)" );
+                           }
                      }
-
                      // Replace existing coordinate keywords with our
                      // (rigorously calculated) GCRS coordinates.
-                     if ( data.ra.IsDefined() && data.dec.IsDefined() )
-                        for ( FITSHeaderKeyword& k : keywords )
-                           if ( k.name == "OBJCTRA" )
-                           {
-                              k.value = '\'' + IsoString::ToSexagesimal( data.ra()/15,
-                                                   RAConversionOptions( 3/*precision*/, 0/*width*/ ) ) + '\'';
-                              k.comment = "Right ascension of the center of the image";
-                           }
-                           else if ( k.name == "OBJCTDEC" )
-                           {
-                              k.value = '\'' + IsoString::ToSexagesimal( data.dec(),
-                                                   DecConversionOptions( 2/*precision*/, 0/*width*/ ) ) + '\'';
-                              k.comment = "Declination ascension of the center of the image";
-                           }
-                           else if ( k.name == "EQUINOX" )
-                           {
-                              k.value = "2000.0";
-                              k.comment = "Coordinates referred to GCRS / J2000.0";
-                           }
-
-                     // If not already available, try to get the telescope
-                     // aperture from standard device properties.
-                     if ( !data.aperture.IsDefined() )
-                        if ( indi->GetPropertyItem( telescopeName, "TELESCOPE_INFO", "TELESCOPE_APERTURE", item, false/*formatted*/ ) )
-                        {
-                           double apertureMM = Round( item.PropertyValue.ToDouble(), 3 );
-                           data.aperture = apertureMM/1000;
-                           keywords << FITSHeaderKeyword( "APTDIA", apertureMM, "Aperture diameter (mm)" );
-                        }
-
-                     // If not already available, try to get the telescope
-                     // focal length from standard device properties.
-                     if ( !data.focalLength.IsDefined() )
-                        if ( indi->GetPropertyItem( telescopeName, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", item, false/*formatted*/ ) )
-                        {
-                           double focalLengthMM = Round( item.PropertyValue.ToDouble(), 3 );
-                           data.focalLength = focalLengthMM/1000;
-                           keywords << FITSHeaderKeyword( "FOCALLEN", focalLengthMM, "Focal length (mm)" );
-                        }
+					 bool raKeywordFound = false;
+					 bool decKeywordFound = false;
+					 bool equinoxKeywordFound = false;
+					 if (data.ra.IsDefined() && data.dec.IsDefined()) {
+						 for (FITSHeaderKeyword& k : keywords)
+							 if (k.name == "OBJCTRA")
+							 {
+								 raKeywordFound = true;
+								 k.value = '\'' + IsoString::ToSexagesimal(data.ra() / 15,
+									 RAConversionOptions(3/*precision*/, 0/*width*/)) + '\'';
+								 k.comment = "Right ascension of the center of the image";
+							 }
+							 else if (k.name == "OBJCTDEC")
+							 {
+								 decKeywordFound = true;
+								 k.value = '\'' + IsoString::ToSexagesimal(data.dec(),
+									 DecConversionOptions(2/*precision*/, 0/*width*/)) + '\'';
+								 k.comment = "Declination of the center of the image";
+							 }
+							 else if (k.name == "EQUINOX")
+							 {
+								 equinoxKeywordFound = true;
+								 k.value = "2000.0";
+								 k.comment = "Coordinates referred to GCRS / J2000.0";
+							 }
+					 }
+					 
+					 if (!raKeywordFound)
+					 {
+						 IsoString sexagesimal = '\'' + IsoString::ToSexagesimal(data.ra() / 15,
+							 RAConversionOptions(3/*precision*/, 0/*width*/)) + '\'';
+						 keywords << FITSHeaderKeyword("OBJCTRA", sexagesimal, "Right ascension of the center of the image");
+					 }
+					 if (!decKeywordFound)
+					 {
+						 IsoString sexagesimal = '\'' + IsoString::ToSexagesimal(data.dec(),
+							 DecConversionOptions(2/*precision*/, 0/*width*/)) + '\'';
+						 keywords << FITSHeaderKeyword("OBJCTDEC", sexagesimal, "Declination of the center of the image");
+					 }
+					 if (!equinoxKeywordFound)
+					 {
+						 keywords << FITSHeaderKeyword("EQUINOX", 2000.0, "Coordinates referred to GCRS / J2000.0");
+					 }
+					 
 
                      // If not already available, try to get the local
                      // geographic longitude of observatory.
@@ -1346,6 +1400,17 @@ void AbstractINDICCDFrameExecution::Perform()
                      if (!data.geographicHeight.IsDefined())
                         if ( indi->GetPropertyItem( telescopeName, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, item, false/*formatted*/ ))
                            data.geographicHeight = item.PropertyValue.ToDouble();
+
+                     if (!data.geographicHeight.IsDefined())
+                     {
+                       String filterDeviceName = m_instance.p_extFilterWheelDeviceName != TheICFExternalFilterWheelDeviceNameParameter->DefaultValue() ? m_instance.p_extFilterWheelDeviceName : m_instance.p_deviceName;
+                       if ( indi->GetPropertyItem( filterDeviceName, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
+                       {
+                          if ( indi->GetPropertyItem(  filterDeviceName, WHEEL_SLOT_NAME_PROPERTY_NAME, "SLOT_NAME_" + String( item.PropertyValue.ToInt() ), item ) )
+                             data.filterName = item.PropertyValue;
+                       }
+                     }
+
 
                      properties << ImagePropertiesFromImageMetadata( data );
                }
@@ -1571,6 +1636,7 @@ void AbstractINDICCDFrameExecution::Perform()
    catch ( ... )
    {
       m_running = false;
+      EndAcquisitionEvent();
 
       try
       {

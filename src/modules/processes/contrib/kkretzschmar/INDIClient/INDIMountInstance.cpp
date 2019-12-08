@@ -82,7 +82,6 @@ INDIMountInstance::INDIMountInstance( const MetaProcess* m ) :
    p_pierSide( IMCPierSide::Default),
    p_targetRA( TheIMCTargetRAParameter->DefaultValue() ),
    p_targetDec( TheIMCTargetDecParameter->DefaultValue() ),
-   p_computeApparentPosition( TheIMCComputeApparentPositionParameter->DefaultValue() ),
    p_enableAlignmentCorrection(TheIMCEnableAlignmentCorrectionParameter->DefaultValue()),
    p_alignmentFile(TheIMCAlignmentFileParameter->DefaultValue()),
    p_alignmentConfig(TheIMCAlignmentConfigParameter->DefaultValue()),
@@ -117,9 +116,8 @@ void INDIMountInstance::Assign( const ProcessImplementation& p )
       p_targetRA                  = x->p_targetRA;
       p_targetDec                 = x->p_targetDec;
       p_pierSide                  = x->p_pierSide;
-      p_computeApparentPosition   = x->p_computeApparentPosition;
-      p_enableAlignmentCorrection = x->p_enableAlignmentCorrection;
-      p_alignmentMethod           = x->p_alignmentMethod;
+	  p_enableAlignmentCorrection = x->p_enableAlignmentCorrection;
+	  p_alignmentMethod           = x->p_alignmentMethod;
       p_alignmentFile             = x->p_alignmentFile;
       p_alignmentConfig           = x->p_alignmentConfig;
       o_currentLST                = x->o_currentLST;
@@ -343,47 +341,54 @@ bool INDIMountInstance::ExecuteGlobal()
 
 bool INDIMountInstance::ExecuteOn( View& view )
 {
-   double observationCenterRA, observationCenterDec;
-   double imageCenterRA = -1, imageCenterDec = -91;
+   double telescopePointingRA, telescopePointingDec;
+   double observationCenterRA = -1, observationCenterDec = -91;
    {
       AutoViewLock lock( view );
-
-      Variant ra = view.PropertyValue( "Observation:Center:RA" );
-      Variant dec = view.PropertyValue( "Observation:Center:Dec" );
+	  // Instrument:Telescope:Pointing coordinates represent the coordinates the mount/telescope is pointing at
+	  // given w.r.t epoch J2000. 
+      Variant ra = view.PropertyValue( "Instrument:Telescope:Pointing:RA" );
+      Variant dec = view.PropertyValue( "Instrument:Telescope:Pointing:Dec" );
       if ( !ra.IsValid() || !dec.IsValid() )
-         throw Error( "The view does not define valid observation coordinates." );
-      observationCenterRA = ra.ToDouble()/15;
-      observationCenterDec = dec.ToDouble();
+         throw Error( "The view does not define valid telescope pointing coordinates." );
+      telescopePointingRA = ra.ToDouble()/15;
+      telescopePointingDec = dec.ToDouble();
 
 
-      if ( view.HasProperty( "Image:Center:RA" ) && view.HasProperty( "Image:Center:Dec" ) )
+      if ( view.HasProperty( "Observation:Center:RA" ) && view.HasProperty( "Observation:Center:Dec" ) )
       {
-         ra = view.PropertyValue( "Image:Center:RA" );
-         dec = view.PropertyValue( "Image:Center:Dec" );
+		 // Observation:Center coordinates represent the coordinates of the image center
+		 // and must be given w.r.t epoch J2000. Due to pointing error sources, like bad alignment, these coordinates
+		 // are usually different from the Telescope:Pointing coordinates.  These coordinates can be determined in plate solving algorithms, e.g. with the PixInsight ImageSolver script.
+         ra = view.PropertyValue( "Observation:Center:RA" );
+         dec = view.PropertyValue( "Observation:Center:Dec" );
          if ( !ra.IsValid() || !dec.IsValid() )
-            throw Error( "The view does not define valid image center coordinates." );
-         imageCenterRA = ra.ToDouble()/15;
-         imageCenterDec = dec.ToDouble();
+            throw Error( "The view does not define valid observation center coordinates." );
+         observationCenterRA = ra.ToDouble()/15;
+         observationCenterDec = dec.ToDouble();
       }
       else
       {
+		 // OBJCTRA, OBJCTDEC must be given w.r.t epoch J2000
          FITSKeywordArray keywords;
          view.Window().GetKeywords( keywords );
          for ( auto k : keywords )
             if ( k.name == "OBJCTRA" )
-               k.StripValueDelimiters().TrySexagesimalToDouble( imageCenterRA, ' ' );
+               k.StripValueDelimiters().TrySexagesimalToDouble( observationCenterRA, ' ' );
             else if ( k.name == "OBJCTDEC" )
-               k.StripValueDelimiters().TrySexagesimalToDouble( imageCenterDec, ' ' );
-         if ( imageCenterRA < 0 || imageCenterDec < -90 )
+               k.StripValueDelimiters().TrySexagesimalToDouble( observationCenterDec, ' ' );
+         if ( observationCenterRA < 0 || observationCenterDec < -90 )
             throw Error( "The view does not define image center coordinates." );
          Console().WarningLn( "<end><cbr>Warning: Retrieved image center coordinates from obsolete FITS keywords 'OBJCTRA' and 'OBJCTDEC'" );
       }
    }
 
+   // Current coordinates are given JNow coordinates
    GetCurrentCoordinates();
 
-   double deltaRA = o_currentRA - imageCenterRA;
-   double deltaDec = o_currentDec - imageCenterDec;
+   // delta coordinates are independent to epoch
+   double deltaRA = telescopePointingRA - observationCenterRA;
+   double deltaDec = telescopePointingDec - observationCenterDec;
 
    if ( o_currentLST >= 0 ) // ### N.B.: o_currentLST < 0 if LST property could not be retrieved
    {
@@ -405,15 +410,15 @@ bool INDIMountInstance::ExecuteOn( View& view )
    double storedTargetRA = p_targetRA;
    double storedTargetDec = p_targetDec;
    bool stored_alignmentMode = this->p_enableAlignmentCorrection;
-   pcl_bool storedComputeApparentPosition = p_computeApparentPosition;
    pcl_bool storedEnableAlignmentCorrection = p_enableAlignmentCorrection;
 
    try
    {
       p_command = IMCCommand::GoTo;
-      p_targetRA = AlignmentModel::RangeShiftRightAscension(o_currentRA + deltaRA);
-      p_targetDec = o_currentDec + deltaDec;
-      p_computeApparentPosition = false;
+	  // target coordinates already consider mount epoch here, since an ExecuteOn operation
+	  // only makes sense if the mount did a goto operation before. TODO: check that
+      p_targetRA = AlignmentModel::RangeShiftRightAscension(p_targetRA + deltaRA);
+      p_targetDec = p_targetDec + deltaDec;
       p_enableAlignmentCorrection = false;
 
       Console().WriteLn( "<end><cbr>Applying differential correction: dRA = "
@@ -429,8 +434,7 @@ bool INDIMountInstance::ExecuteOn( View& view )
       p_command = storedCommand;
       p_targetRA = storedTargetRA;
       p_targetDec = storedTargetDec;
-      p_computeApparentPosition = storedComputeApparentPosition;
-      p_enableAlignmentCorrection = stored_alignmentMode;
+	  p_enableAlignmentCorrection = stored_alignmentMode;
       p_enableAlignmentCorrection = storedEnableAlignmentCorrection;
       return true;
    }
@@ -439,7 +443,6 @@ bool INDIMountInstance::ExecuteOn( View& view )
       p_command = storedCommand;
       p_targetRA = storedTargetRA;
       p_targetDec = storedTargetDec;
-      p_computeApparentPosition = storedComputeApparentPosition;
       p_enableAlignmentCorrection = storedEnableAlignmentCorrection;
       throw;
    }
@@ -461,8 +464,6 @@ void* INDIMountInstance::LockParameter( const MetaParameter* p, size_type tableR
       return &p_targetRA;
    if ( p == TheIMCTargetDecParameter )
       return &p_targetDec;
-   if ( p == TheIMCComputeApparentPositionParameter )
-      return &p_computeApparentPosition;
    if ( p == TheIMCAlignmentFileParameter )
 	   return p_alignmentFile.Begin();
    if ( p == TheIMCAlignmentConfigParameter )
@@ -543,14 +544,14 @@ bool INDIMountInstance::ValidateDevice( bool throwErrors ) const
          if ( !indi->HasPropertyItem( device.DeviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME ) ) // is this a mount device?
          {
             if ( throwErrors )
-               throw Error( '\'' + p_deviceName + "' does not seem to be a valid INDI Mount device" );
+               throw Error( '\'' + p_deviceName + "' does not seem to be a valid Indigo Mount device" );
             return false;
          }
          return true;
       }
 
    if ( throwErrors )
-      throw Error( "INDI device not available: '" + p_deviceName + "'" );
+      throw Error( "Indigo device not available: '" + p_deviceName + "'" );
    return false;
 }
 
@@ -599,21 +600,8 @@ void INDIMountInstance::GetCurrentCoordinates()
 
 void INDIMountInstance::GetTargetCoordinates( double& targetRA, double& targetDec ) const
 {
-   if ( p_computeApparentPosition )
-   {
-      Position P( TimePoint::Now(), "UTC" );
-      P.InitEquinoxBasedParameters();
-      Vector u2 = Vector::FromSpherical( Rad( p_targetRA*15 ), Rad( p_targetDec ) );
-      Vector u3 = P.EquinoxBiasPrecessionNutationMatrix() * u2;
-      u3.ToSpherical2Pi( targetRA, targetDec );
-      targetRA = o_apparentTargetRA = Deg( targetRA )/15;
-      targetDec = o_apparentTargetDec = Deg( targetDec );
-   }
-   else
-   {
-      targetRA = p_targetRA;
-      targetDec = p_targetDec;
-   }
+   targetRA = p_targetRA;
+   targetDec = p_targetDec;
 }
 
 
@@ -623,19 +611,14 @@ void INDIMountInstance::GetPierSide() {
    INDIPropertyListItem item;
    static const char* indiPierSides[] = { MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, MOUNT_SIDE_OF_PIER_EAST_ITEM_NAME };
    for ( size_type i = 0; i < ItemsInArray( indiPierSides ); ++i )
-      if ( indi->GetPropertyItem( p_deviceName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, indiPierSides[i], item ) )
+      if ( indi->GetPropertyItem( p_deviceName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, indiPierSides[i], item ) ) {
          if ( item.PropertyValue == "ON" )
          {
             p_pierSide = i;
             break;
          }
-      else
-         {
-            // pier side fallback
-            // If the INDI mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
-            double hourAngle = AlignmentModel::RangeShiftHourAngle(o_currentLST - o_currentRA);
-            p_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
-         }
+      }
+      
 
 }
 
@@ -700,7 +683,7 @@ void AbstractINDIMountExecution::Perform()
    INDIClient* indi = INDIClient::TheClientOrDie();
 
    if ( !indi->HasDevices() )
-      throw Error( "No INDI device has been connected." );
+      throw Error( "No Indigo device has been connected." );
 
    try
    {
@@ -878,7 +861,7 @@ void AbstractINDIMountExecution::Perform()
     	  // Apply corrected position to simulate an unaligned telescope
     	  double trueTargetRa = targetRA;
     	  double trueTargetDec = targetDec;
-        m_instance.GetPierSide();
+          m_instance.GetPierSide();
     	  ApplyPointingModelCorrection(aModel.Ptr(), trueTargetRa, trueTargetDec);
 
           StartMountEvent( targetRA, m_instance.o_currentRA, targetDec, m_instance.o_currentDec, m_instance.p_command );
@@ -930,7 +913,7 @@ void AbstractINDIMountExecution::Perform()
             case IMCAlignmentMethod::None:
             {
                try {
-                  AutoPointer<AlignmentModel> aModel = AlignmentModel::Create(m_instance.p_alignmentFile);
+
                   SyncDataPoint syncPoint;
                   syncPoint.creationTime      = TimePoint::Now();
                   syncPoint.localSiderialTime = m_instance.o_currentLST;
@@ -939,14 +922,20 @@ void AbstractINDIMountExecution::Perform()
                   syncPoint.telecopeRA        = m_instance.o_currentRA;
                   syncPoint.telecopeDEC       = m_instance.o_currentDec;
                   syncPoint.pierSide          = m_instance.p_pierSide;
-                  aModel->AddSyncDataPoint(syncPoint);
-                  aModel->WriteObject(m_instance.p_alignmentFile);
-               } catch (...) {
+
+                  if (File::Exists(m_instance.p_alignmentFile)) {
+                    AutoPointer<AlignmentModel> aModel = AlignmentModel::Create(m_instance.p_alignmentFile);
+                    aModel->AddSyncDataPoint(syncPoint);
+                    aModel->WriteObject(m_instance.p_alignmentFile);
+                  } else {
+                    AutoPointer<AlignmentModel> aModel = GeneralAnalyticalPointingModel::Create(m_instance.o_geographicLatitude, m_instance.p_alignmentConfig, CHECK_BIT(m_instance.p_alignmentConfig, 0));
+                    aModel->AddSyncDataPoint(syncPoint);
+                    aModel->WriteObject(m_instance.p_alignmentFile);
+                  }
+                } catch (...) {
                   EndMountEvent();
                   throw;
                }
-
-            	break;
             }
             break;
             default:
@@ -1011,7 +1000,7 @@ void AbstractINDIMountExecution::Perform()
     	 break;
       }
       default:
-         throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown INDI Mount command." );
+         throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown Indigo Mount command." );
       }
    }
    catch ( ... )

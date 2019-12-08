@@ -122,6 +122,7 @@ private:
    String     p_extFilterWheelDeviceName;
    pcl_bool   p_enableAlignmentCorrection;
    String     p_alignmentFile;
+   int32      p_telescopeFocalLength;
 
    StringList o_clientViewIds;
    StringList o_clientFilePaths;
@@ -130,6 +131,7 @@ private:
    int        m_exposureNumber;
 
    void SetTelescopeAlignmentModelParameter( bool throwErrors = false );
+   void SetTelescopeFocalLength();
 
    friend class INDICCDFrameInterface;
    friend class AbstractINDICCDFrameExecution;

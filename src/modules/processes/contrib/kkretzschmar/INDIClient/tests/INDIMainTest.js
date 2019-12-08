@@ -49,12 +49,15 @@
 
 #include "INDICCDControllerTests.js"
 
+#define host "localhost"
+
 function INDICCDTestSuite()
 {
    this.__base__ = Test;
    this.__base__( "INDICCDTestSuite" );
 
-   this.deviceController = new INDIDeviceController;
+   this.deviceController = new IndigoDeviceController;
+   this.deviceController.serverHostName = "localhost"
    this.timer = new ElapsedTime;
 
    this.add( new INDICCDControllerTests( this ) );
@@ -62,7 +65,7 @@ function INDICCDTestSuite()
    this.executeController = function()
    {
       if ( !this.deviceController.executeGlobal() )
-         throw new Error( "INDIDeviceController.executeGlobal() failed" );
+         throw new Error( "IndigoDeviceController.executeGlobal() failed" );
    };
 
    this.restartTimer = function()
@@ -70,6 +73,10 @@ function INDICCDTestSuite()
       this.timer.reset();
    };
 
+   this.stopTimer = function ()
+   {
+      this.timer.stop();
+   };
    this.timeout = function()
    {
       if ( this.timer.value > 10 )
@@ -85,6 +92,7 @@ function INDICCDTestSuite()
    this.begin = function()
    {
       // Connect to INDI server
+      this.deviceController.serverHostName = host
       this.deviceController.serverConnect = true;
       this.executeController();
 
@@ -93,9 +101,10 @@ function INDICCDTestSuite()
       {
          msleep( 100 );
          processEvents();
-         if ( indexOfDevice( (new INDIDeviceController).devices, CCD_DEVICE_NAME ) >= 0 )
+         if ( indexOfDevice( (new IndigoDeviceController).devices, CCD_DEVICE_NAME ) >= 0 )
             break;
       }
+      this.stopTime();
 
       // Wait for another 500 ms to allow for all device and property lists to
       // update completely.
@@ -113,7 +122,7 @@ function INDICCDTestSuite()
       {
          msleep( 100 );
          processEvents();
-         if ( propertyEquals( (new INDIDeviceController).properties, propertyKey, "ON" ) )
+         if ( propertyEquals( (new IndigoDeviceController).properties, propertyKey, "ON" ) )
             break;
       }
    };
@@ -133,7 +142,12 @@ function INDIMountTestSuite()
    this.__base__ = Test;
    this.__base__( "INDIMountTestSuite" );
 
+<<<<<<< HEAD
+   this.deviceController = new IndigoDeviceController;
+=======
    this.deviceController = new INDIDeviceController;
+   this.deviceController.serverHostName = "klaus-Inspiron-1720"
+>>>>>>> 7c912548af71aec64089d296987ff43fbbe876ba
    this.timer = new ElapsedTime;
 
    this.add( new INDIMountControllerTests( this ) );
@@ -141,7 +155,7 @@ function INDIMountTestSuite()
    this.executeController = function()
    {
       if ( !this.deviceController.executeGlobal() )
-         throw new Error( "INDIDeviceController.executeGlobal() failed" );
+         throw new Error( "IndigoDeviceController.executeGlobal() failed" );
    };
 
    this.restartTimer = function()
@@ -172,7 +186,7 @@ function INDIMountTestSuite()
       {
          msleep( 100 );
          processEvents();
-         if ( indexOfDevice( (new INDIDeviceController).devices, MOUNT_DEVICE_NAME ) >= 0 )
+         if ( indexOfDevice( (new IndigoDeviceController).devices, MOUNT_DEVICE_NAME ) >= 0 )
             break;
       }
 
@@ -192,7 +206,7 @@ function INDIMountTestSuite()
       {
          msleep( 100 );
          processEvents();
-         if ( propertyEquals( (new INDIDeviceController).properties, propertyKey, "ON" ) )
+         if ( propertyEquals( (new IndigoDeviceController).properties, propertyKey, "ON" ) )
             break;
       }
    };
@@ -206,9 +220,9 @@ function INDIMountTestSuite()
 };
 
 // run CCD tests
-INDICCDTestSuite.prototype = new Test;
+//INDICCDTestSuite.prototype = new Test;
 
-(new INDICCDTestSuite).run();
+//(new INDICCDTestSuite).run();
 
 // run Mount tests
 INDIMountTestSuite.prototype = new Test;

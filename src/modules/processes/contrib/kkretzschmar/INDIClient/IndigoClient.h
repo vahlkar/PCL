@@ -58,8 +58,8 @@
 #include<functional>
 #include<iostream>
 
-#include "indigo_client.h"
-#include "indigo_names.h"
+#include "indigo/indigo_client.h"
+#include "indigo/indigo_names.h"
 
 class IndigoClient
 {
@@ -79,7 +79,9 @@ class IndigoClient
    };
    std::string m_serverHost;
    uint32_t    m_port;
+#ifndef __PCL_WINDOWS
    std::set<indigo_driver_entry*>    m_devices;
+#endif
 public:
    explicit IndigoClient(const char* clientName);
    IndigoClient(const char* clientName, const char* host, int32_t port);
@@ -106,7 +108,7 @@ public:
    std::function<void(indigo_property*)> newText = [] (indigo_property*){};
    std::function<void(indigo_property*)> newLight = [] (indigo_property*){};
    std::function<void(indigo_property*)> newBlob = [] (indigo_property*){};
-   std::function<void(const char*)> newMessage = [] (const char*){};
+   std::function<void(const char*, int)> newMessage = [] (const char*, int severity){};
  private:
    indigo_server_entry* getServerEntry(const char* host, int32_t port) const;
    static indigo_result clientAttach(indigo_client *client);

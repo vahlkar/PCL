@@ -107,21 +107,21 @@ INDIDeviceControllerProcess::INDIDeviceControllerProcess()
 
 IsoString INDIDeviceControllerProcess::Id() const
 {
-   return "INDIDeviceController";
+   return "IndigoDeviceController";
 }
 
 // ----------------------------------------------------------------------------
 
 IsoString INDIDeviceControllerProcess::Category() const
 {
-   return "INDI,Instrumentation";
+   return "Instrumentation";
 }
 
 // ----------------------------------------------------------------------------
 
 uint32 INDIDeviceControllerProcess::Version() const
 {
-   return 0x100; // required
+   return 0x200; // required
 }
 
 // ----------------------------------------------------------------------------
@@ -130,7 +130,7 @@ String INDIDeviceControllerProcess::Description() const
 {
    return
    "<html>"
-   "<p>An INDI client process for controlling INDI devices.</p>"
+   "<p>An Indigo client process for controlling Indigo devices.</p>"
    "</html>";
 }
 

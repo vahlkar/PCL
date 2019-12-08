@@ -78,7 +78,7 @@ INDIClient* INDIClient::TheClient()
 INDIClient* INDIClient::TheClientOrDie()
 {
    if ( s_indiClient == nullptr )
-      throw Error( "The INDI device controller has not been initialized" );
+      throw Error( "The Indigo device controller has not been initialized" );
    return s_indiClient;
 }
 
@@ -101,7 +101,7 @@ bool INDIClient::GetPropertyItem( const String& device, const String& property, 
    ExclConstPropertyList y = PropertyList();
    const INDIPropertyListItemArray& properties( y );
 
-   for ( auto item : properties )
+   for ( auto item : properties ) {
       if ( item.Device == device && item.Property == property && item.Element == element )
       {
          result.Device = device;
@@ -116,6 +116,7 @@ bool INDIClient::GetPropertyItem( const String& device, const String& property, 
          result.PropertyState = item.PropertyState;
          return true;
       }
+   }
 
    return false;
 }
@@ -168,7 +169,7 @@ bool INDIClient::SendNewPropertyItem( const INDINewPropertyItem& newItem, bool a
       if ( verbosity > 1 )
       {
          console.WriteLn( "<end><cbr><br>------------------------------------------------------------------------------" );
-         console.WriteLn( "Sending new property element to INDI server '" + HostName() + ':' + IsoString( Port() ) + "':" );
+         console.WriteLn( "Sending new property element to Indigo server '" + HostName() + ':' + IsoString( Port() ) + "':" );
       }
 
       if ( newItem.Device.IsEmpty() || newItem.Property.IsEmpty() || newItem.ElementValues.IsEmpty() || newItem.PropertyType.IsEmpty() )
@@ -284,11 +285,11 @@ bool INDIClient::SendNewPropertyItem( const INDINewPropertyItem& newItem, bool a
          free(values);
       }
 
-
+      console.AbortEnabled();
       // In synchronous calls, wait until the server has processed all of our
       // property update requests.
       if ( !async ) {
-         for ( ;; ) {
+         for ( ; IsDeviceConnected(newItem.Device.ToIsoString()) ; ) {
             Module->ProcessEvents();
             if ( console.AbortRequested() )
                throw ProcessAborted();
@@ -307,7 +308,7 @@ bool INDIClient::SendNewPropertyItem( const INDINewPropertyItem& newItem, bool a
                   case INDIGO_ALERT_STATE:
                      throw String( "Failure to send '"
                            + newItem.Device + '.' + newItem.Property + '.' + elementValue.Element
-                           + "' property newItem. Message from INDI server: " + CurrentServerMessage() );
+                           + "' property newItem. Message from Indigo server: " + CurrentServerMessage().m_message );
                   default:
                      break;
                   }
@@ -315,6 +316,12 @@ bool INDIClient::SendNewPropertyItem( const INDINewPropertyItem& newItem, bool a
 
             if ( requestsDone == newItem.ElementValues.Length() )
                break;
+         }
+         if (!IsDeviceConnected(newItem.Device.ToIsoString()))
+         {
+             console.CriticalLn("<end><cbr><br>------------------------------------------------------------------------------" );
+             console.CriticalLn("Device '" + newItem.Device + "' is not connected.");
+             return false;
          }
       }
 
@@ -365,7 +372,7 @@ void INDIClient::registerNewDeviceCallback() {
 
       INDIDeviceListItem deviceListItem;
       deviceListItem.DeviceName = deviceName.c_str();
-      deviceListItem.DeviceLabel =  deviceName.c_str();
+      //deviceListItem.DeviceLabel =  deviceName.c_str();
       devices << deviceListItem;
 
       {
@@ -415,6 +422,14 @@ void INDIClient::registerNewPropertyCallback() {
 void INDIClient::registerRemovePropertyCallback() {
    m_indigoClient.removeProperty = [this] (indigo_property* property) {
       CHECK_POINTER( property );
+
+      AutoPointer<IProperty> ip( PropertyFactory::Create( property ));
+      if (!ip->getDeviceName().IsEmpty() && ip->getName().IsEmpty()) {
+        // An empty property name in this context means removing all properties of the given device from the property list
+        RemoveAllPropertiesForDevice(ip->getDeviceName());
+      }
+
+
       ApplyToPropertyList( property, PropertyListRemover() );
    };
 }
@@ -463,10 +478,11 @@ void INDIClient::registerNewBlobCallback() {
 }
 
 void INDIClient::registerGetMessageCallback() {
-   m_indigoClient.newMessage = [this] (const char* message) {
+   m_indigoClient.newMessage = [this] (const char* message, int severity) {
       CHECK_POINTER( message );
       volatile AutoLock lock( m_mutex );
-      m_currentServerMessage = message;
+      m_currentServerMessage.m_message = message;
+      m_currentServerMessage.m_messageSeverity = severity;
 
    };
 }
@@ -495,6 +511,15 @@ bool INDIClient::IsDeviceConnected(const IsoString& deviceName) const {
    return false;
 }
 
+void INDIClient::RemoveAllPropertiesForDevice( const String& deviceName )
+{
+    ExclPropertyList y = PropertyList();
+    INDIPropertyListItemArray& properties( y );
+    INDIPropertyListItem item;
+    item.Device = deviceName;
+    BelongsToSameDevice predicate;
+    properties.Remove(item, predicate);
+}
 
 void INDIClient::ApplyToPropertyList( indigo_property* p, const PropertyListMutator& mutate )
 {

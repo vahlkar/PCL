@@ -118,6 +118,17 @@ public:
 	   return m_device;
    }
 
+   const String CurrentFilterWheelDeviceName() const
+   {
+       String externalFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText(GUI->ExternalFilterDevice_Combo.CurrentItem());
+       return externalFilterWheelDeviceName != String("<No filter wheel>") ? externalFilterWheelDeviceName : m_device;
+   }
+
+   int TelescopeFocalLength() const
+   {
+      return m_telescopeFocalLength;
+   }
+
 private:
 
    String                          m_device;
@@ -224,6 +235,8 @@ private:
    };
 
    GUIData* GUI = nullptr;
+
+   int32_t m_telescopeFocalLength = 0;
 
    void UpdateControls();
 

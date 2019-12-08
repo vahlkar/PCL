@@ -2,11 +2,23 @@
 # PixInsight Makefile Generator Script v1.115
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-11-29T09:40:50.658Z
+# Generated on .... 2019-12-03T23:36:57.443Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ MacOSX/g++
 # Configuration ... Release/x64
+# --------------------------------------------------------------------
+# Additional preprocessor definitions:
+# INDIGO_MACOS=1
+# --------------------------------------------------------------------
+# Additional include search directories:
+# $(INDIGODIR)/indigo_libs
+# --------------------------------------------------------------------
+# Additional library search directories:
+# "$(INDIGODIR)/build/lib//x64
+# --------------------------------------------------------------------
+# Additional libraries:
+# indigo
 ######################################################################
 
 OBJ_DIR="$(PCLSRCDIR)/modules/processes/contrib/kkretzschmar/INDIClient/macosx/g++/x64/Release"
@@ -20,7 +32,6 @@ all: $(OBJ_DIR)/INDIClient-pxm.dylib
 
 SRC_FILES= \
 ../../Alignment.cpp \
-../../IINDIProperty.cpp \
 ../../IIndigoProperty.cpp \
 ../../INDICCDFrameInstance.cpp \
 ../../INDICCDFrameInterface.cpp \
@@ -44,7 +55,6 @@ SRC_FILES= \
 
 OBJ_FILES= \
 ./x64/Release/Alignment.o \
-./x64/Release/IINDIProperty.o \
 ./x64/Release/IIndigoProperty.o \
 ./x64/Release/INDICCDFrameInstance.o \
 ./x64/Release/INDICCDFrameInterface.o \
@@ -68,7 +78,6 @@ OBJ_FILES= \
 
 DEP_FILES= \
 ./x64/Release/Alignment.d \
-./x64/Release/IINDIProperty.d \
 ./x64/Release/IIndigoProperty.d \
 ./x64/Release/INDICCDFrameInstance.d \
 ./x64/Release/INDICCDFrameInterface.d \
@@ -93,7 +102,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/INDIClient-pxm.dylib: $(OBJ_FILES)
-	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.12 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/INDIClient-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/INDIClient-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.12 -stdlib=libc++ -Wl,-dead_strip -dynamiclib -install_name @executable_path/INDIClient-pxm.dylib -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -L"$(INDIGODIR)/build/lib/" -o $(OBJ_DIR)/INDIClient-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -lindigo
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -103,9 +112,9 @@ clean:
 .PHONY: post-build
 post-build:
 	cp $(OBJ_DIR)/INDIClient-pxm.dylib $(PCLBINDIR64)
-	codesign --deep -s pleiades -f -v --timestamp $(PCLBINDIR64)/INDIClient-pxm.dylib
+	install_name_tool -change @executable_path/libindigo.dylib @loader_path/libindigo.dylib $(PCLBINDIR64)/INDIClient-pxm.dylib
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.12 -D_REENTRANT -D__PCL_MACOSX -D"INDIGO_MACOS=1" -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(INDIGODIR)/indigo_libs" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 
