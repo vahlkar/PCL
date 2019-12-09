@@ -50,15 +50,17 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#ifndef __IndigoProperty_h
+#ifndef __IIndigoProperty_h
 #define __IIndigoProperty_h
-
-#include<memory>
-
-#include "indigo/indigo_bus.h"
 
 #include <pcl/Exception.h>
 #include <pcl/String.h>
+
+#include "IndigoDefs.h"
+
+#include <indigo/indigo_bus.h>
+
+#include <memory>
 
 #define CHECK_INDEX_THROWS( x )  \
    if ( int( i ) >= x )          \

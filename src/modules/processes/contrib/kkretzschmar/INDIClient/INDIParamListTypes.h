@@ -60,10 +60,12 @@
 #ifndef __INDIParamListTypes_h
 #define __INDIParamListTypes_h
 
-#include "indigo/indigo_bus.h"
-
 #include <pcl/Array.h>
 #include <pcl/String.h>
+
+#include "IndigoDefs.h"
+
+#include <indigo/indigo_bus.h>
 
 namespace pcl
 {

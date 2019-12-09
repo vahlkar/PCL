@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.115
+# PixInsight Makefile Generator Script v1.116
 # Copyright (C) 2009-2019 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-12-03T23:37:29.626Z
+# Generated on .... 2019-12-09T12:02:53.340Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc15
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional preprocessor definitions:
-# INDIGO_WINDOWS=1
+# _CRT_SECURE_NO_WARNINGS
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional include search directories:
 # $(INDIGODIR)/indigo_libs
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional library search directories:
-# "$(INDIGODIR)/build/lib/
+# $(INDIGODIR)/build/lib
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional libraries:
 # indigo
@@ -25,10 +25,10 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>c6b256f1-c88e-4b79-a3c3-774309dce9dd</UniqueIdentifier>
+      <UniqueIdentifier>43cd102f-d0b8-45ec-8306-662ad5320f57</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>139b7f34-fdb1-4c9c-98a2-213b02f26663</UniqueIdentifier>
+      <UniqueIdentifier>167d351f-8e82-47e6-9f5e-206741e3a97e</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +140,9 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\IndigoClient.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IndigoDefs.h">
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ModuleParameterRegistration.h">

@@ -51,13 +51,14 @@
 // ----------------------------------------------------------------------------
 
 #include "IndigoClient.h"
+
+#include <indigo/indigo_json.h>
+#include <indigo/indigo_driver_json.h>
+
 #ifndef __PCL_WINDOWS
-#include <unistd.h>
+# include <unistd.h>
 #endif
 #include <string.h>
-
-#include "indigo/indigo_json.h"
-#include "indigo/indigo_driver_json.h"
 
 IndigoClient::IndigoClient(const char* clientName) {
    strncpy(m_indigoClient.name, clientName, strlen(clientName));

@@ -53,13 +53,15 @@
 #ifndef INDIGOCLIENT_H
 #define INDIGOCLIENT_H
 
-#include<string>
-#include<set>
-#include<functional>
-#include<iostream>
+#include "IndigoDefs.h"
 
-#include "indigo/indigo_client.h"
-#include "indigo/indigo_names.h"
+#include <indigo/indigo_client.h>
+#include <indigo/indigo_names.h>
+
+#include <string>
+#include <set>
+#include <functional>
+#include <iostream>
 
 class IndigoClient
 {
