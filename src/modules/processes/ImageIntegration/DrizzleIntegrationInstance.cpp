@@ -70,6 +70,7 @@
 #include <pcl/View.h>
 
 #define DRIZZLE_BOUNDS_TOLERANCE 1.0e-5
+#define DRIZZLE_DROP_TOLERANCE   1.0e-8
 #define DRIZZLE_KERNEL_EPSILON   0.025
 
 namespace pcl
@@ -1545,7 +1546,7 @@ void DrizzleIntegrationEngine::Perform()
                if ( m_decoder.HasAlignmentSplines() )
                   threadData.G.Initialize( Rect( m_referenceWidth, m_referenceHeight ),
                                            8/*gridDelta*/, m_decoder.AlignmentSplines() );
-            threadData.dropDelta0 = (1 - m_instance.p_dropShrink)/2;
+            threadData.dropDelta0 = Max( DRIZZLE_DROP_TOLERANCE, (1.0 - m_instance.p_dropShrink)/2 );
             threadData.dropDelta1 = 1 - threadData.dropDelta0;
             threadData.splines = threadData.G.IsValid();
             threadData.rejection = m_instance.p_enableRejection && m_decoder.HasRejectionData();
