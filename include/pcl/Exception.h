@@ -139,6 +139,15 @@ public:
    virtual void Show() const;
 
    /*!
+    * Prints a representation of the information transported by this exception
+    * exclusively as text on the platform console.
+    *
+    * This function ignores the current settings defined through previous calls
+    * to EnableConsoleOutput() and EnableGUIOutput().
+    */
+   void ShowOnConsole() const;
+
+   /*!
     * Returns true iff console text output is enabled for %Exception.
     *
     * When console output is enabled, exception information is presented as

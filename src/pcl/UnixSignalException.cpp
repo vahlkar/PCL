@@ -203,15 +203,7 @@ static void CriticalSignalHandler( int signalNumber )
 
 void UnixSignalException::Show() const
 {
-   bool wasConsoleOutput = IsConsoleOutputEnabled();
-   bool wasGUIOutput = IsGUIOutputEnabled();
-   EnableConsoleOutput();
-   DisableGUIOutput();
-
-   Exception::Show();
-
-   EnableConsoleOutput( wasConsoleOutput );
-   EnableGUIOutput( wasGUIOutput );
+   ShowOnConsole();
 }
 
 // ----------------------------------------------------------------------------

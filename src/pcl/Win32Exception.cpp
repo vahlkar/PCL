@@ -271,15 +271,7 @@ static void My_se_translator( unsigned int /*code*/, EXCEPTION_POINTERS* pointer
 
 void Win32Exception::Show() const
 {
-   bool wasConsoleOutput = IsConsoleOutputEnabled();
-   bool wasGUIOutput = IsGUIOutputEnabled();
-   EnableConsoleOutput();
-   DisableGUIOutput();
-
-   Exception::Show();
-
-   EnableConsoleOutput( wasConsoleOutput );
-   EnableGUIOutput( wasGUIOutput );
+   ShowOnConsole();
 }
 
 // ----------------------------------------------------------------------------
