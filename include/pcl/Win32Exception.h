@@ -103,10 +103,11 @@ public:
 
    /*!
     * Constructs a new %Win32Exception object with the specified exception
-    * \a code and \a data.
+    * \a code and \a data, plus optional backtrace information \a details.
     */
-   Win32Exception( exception_code code, exception_data_pointer data ) :
-      m_code( code ), m_data( data )
+   Win32Exception( exception_code code, exception_data_pointer data,
+                   const IsoString& details = IsoString() ) :
+      m_code( code ), m_data( data ), m_details( details )
    {
    }
 
@@ -129,6 +130,17 @@ public:
    }
 
    /*!
+    * Returns the backtrace information associated with this exception.
+    *
+    * The returned string will be empty if no backtrace data were available at
+    * the time this exception was generated.
+    */
+   const IsoString& Details() const
+   {
+      return m_details;
+   }
+
+   /*!
     * Returns an error or warning message corresponding to this exception.
     * For example, some typical messages are "access violation", "stack
     * overflow" and "illegal instruction", returned by specific derived
@@ -144,8 +156,14 @@ public:
     */
    String FormatInfo() const override
    {
-      return String().Format( "At address %p with exception code %X :\n",
-                              ExceptionAddress(), ExceptionCode() ) + Message();
+      String info = String().Format( "At address %p with exception code %X :\n",
+                                     ExceptionAddress(), ExceptionCode() ) + Message();
+      if ( !m_details.IsEmpty() )
+      {
+         info.Append( '\n' );
+         info.Append( m_details );
+      }
+      return info;
    }
 
    /*!
@@ -177,14 +195,15 @@ public:
     * must be called before the calling process can raise any system exception.
     *
     * \note A module should never call this member function. It is invoked when
-    * appropriate by the PixInsight Core application and internal PCL routines.
+    * appropriate by the PixInsight core application and internal PCL routines.
     */
    static void Initialize();
 
 protected:
 
    exception_code         m_code;
-   exception_data_pointer m_data; // points to an EXCEPTION_RECORD structure
+   exception_data_pointer m_data;    // points to an EXCEPTION_RECORD structure
+   IsoString              m_details; // backtrace information
 };
 
 // ----------------------------------------------------------------------------
@@ -193,8 +212,9 @@ class PCL_CLASS Win32AccessViolationException : public Win32Exception
 {
 public:
 
-   Win32AccessViolationException( exception_code code, exception_data_pointer data ) :
-      Win32Exception( code, data )
+   Win32AccessViolationException( exception_code code, exception_data_pointer data,
+                                  const IsoString& details = IsoString() ) :
+      Win32Exception( code, data, details )
    {
    }
 
@@ -209,8 +229,9 @@ public:
    class PCL_CLASS className : public pcl::Win32Exception                     \
    {                                                                          \
    public:                                                                    \
-      className( exception_code code, exception_data_pointer data ) :         \
-         pcl::Win32Exception( code, data )                                    \
+      className( exception_code code, exception_data_pointer data,            \
+                 const IsoString& details = IsoString() ) :                   \
+         pcl::Win32Exception( code, data, details )                           \
       {                                                                       \
       }                                                                       \
       className( const className& ) = default;                                \

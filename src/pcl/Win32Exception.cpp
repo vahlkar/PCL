@@ -55,6 +55,13 @@
 
 #include <eh.h>
 
+#pragma warning( push )
+#pragma warning( disable: 4091 ) // typedef ignored on left of <unnamed-enum...>
+#include <dbghelp.h>
+#pragma warning( pop )
+
+#pragma comment( lib, "Dbghelp.lib" )
+
 namespace pcl
 {
 
@@ -71,6 +78,98 @@ Win32Exception::exception_address Win32Exception::ExceptionAddress() const
 
 // ----------------------------------------------------------------------------
 
+static IsoString BackTrace( CONTEXT* context )
+{
+   HANDLE process = GetCurrentProcess();
+
+   if ( SymInitialize( process, NULL, TRUE ) == FALSE )
+      return IsoString();
+
+   STACKFRAME stack = {};
+#if _WIN64
+   stack.AddrPC.Offset = context->Rip;
+   stack.AddrPC.Mode = AddrModeFlat;
+   stack.AddrFrame.Offset = context->Rbp;
+   stack.AddrFrame.Mode = AddrModeFlat;
+   stack.AddrStack.Offset = context->Rsp;
+   stack.AddrStack.Mode = AddrModeFlat;
+#else
+   stack.AddrPC.Offset = context->Eip;
+   stack.AddrPC.Mode = AddrModeFlat;
+   stack.AddrFrame.Offset = context->Ebp;
+   stack.AddrFrame.Mode = AddrModeFlat;
+   stack.AddrStack.Offset = context->Esp;
+   stack.AddrStack.Mode = AddrModeFlat;
+#endif
+
+   IsoString details;
+   details << "*** Backtrace Information ***\n"
+           << IsoString( '=', 80 ) << '\n';
+
+   HANDLE thread  = GetCurrentThread();
+
+   char buffer[ sizeof( SYMBOL_INFO ) + MAX_SYM_NAME * sizeof( TCHAR ) ];
+
+   for ( unsigned frame = 0; ; ++frame )
+   {
+      BOOL result = StackWalk64(
+#if defined( _M_X64 )
+            IMAGE_FILE_MACHINE_AMD64
+#else
+            IMAGE_FILE_MACHINE_I386
+#endif
+            ,
+            process,
+            thread,
+            &stack,
+            context,
+            NULL,
+            SymFunctionTableAccess64,
+            SymGetModuleBase64,
+            NULL
+      );
+
+      if ( !result )
+         break;
+
+      PSYMBOL_INFO pSymbol = (PSYMBOL_INFO)buffer;
+      pSymbol->SizeOfStruct = sizeof( SYMBOL_INFO );
+      pSymbol->MaxNameLen = MAX_SYM_NAME;
+      DWORD64 displacement = 0;
+      SymFromAddr( process, (ULONG64)stack.AddrPC.Offset, &displacement, pSymbol );
+
+      IMAGEHLP_LINE64* line = (IMAGEHLP_LINE64*)malloc( sizeof( IMAGEHLP_LINE64 ) );
+      line->SizeOfStruct = sizeof( IMAGEHLP_LINE64 );
+
+      details.AppendFormat( "%3u: ", frame );
+
+      DWORD disp;
+      if ( SymGetLineFromAddr64( process, stack.AddrPC.Offset, &disp, line ) )
+         details.AppendFormat( "%s in module: %s line: %lu at address: 0x%0X", pSymbol->Name, line->FileName, line->LineNumber, pSymbol->Address );
+      else
+      {
+         HMODULE hModule = NULL;
+         GetModuleHandleEx( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                            (LPCTSTR)stack.AddrPC.Offset, &hModule );
+         if ( hModule != NULL )
+         {
+            char module[ MAX_PATH ] = {};
+            GetModuleFileNameA( hModule, module, MAX_PATH );
+            details.AppendFormat( "%s in module: %s at address: 0x%0X", pSymbol->Name, module, pSymbol->Address );
+         }
+         else
+            details.AppendFormat( "%s at address: 0x%0X", pSymbol->Name, pSymbol->Address );
+      }
+
+      details << '\n';
+
+      free( line );
+   }
+
+   details << IsoString( '=', 80 ) << '\n';
+   return details;
+}
+
 static void My_se_translator( unsigned int /*code*/, EXCEPTION_POINTERS* pointers )
 {
    if ( pointers->ExceptionRecord->ExceptionFlags == EXCEPTION_NONCONTINUABLE )
@@ -78,91 +177,92 @@ static void My_se_translator( unsigned int /*code*/, EXCEPTION_POINTERS* pointer
 
    Win32Exception::exception_code code = pointers->ExceptionRecord->ExceptionCode;
    Win32Exception::exception_data_pointer data = pointers->ExceptionRecord;
+   IsoString details = BackTrace( pointers->ContextRecord );
 
    switch ( code )
    {
-   case EXCEPTION_ACCESS_VIOLATION :
-      throw Win32AccessViolationException( code, data );
+   case EXCEPTION_ACCESS_VIOLATION:
+      throw Win32AccessViolationException( code, data, details );
       break;
 
-   case EXCEPTION_ARRAY_BOUNDS_EXCEEDED :
-      throw EWin32ArrayBoundsExceeded( code, data );
+   case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+      throw EWin32ArrayBoundsExceeded( code, data, details );
       break;
 
-   case EXCEPTION_BREAKPOINT :
-      throw EWin32Breakpoint( code, data );
+   case EXCEPTION_BREAKPOINT:
+      throw EWin32Breakpoint( code, data, details );
       break;
 
-   case EXCEPTION_DATATYPE_MISALIGNMENT :
-      throw EWin32DataMisalignment( code, data );
+   case EXCEPTION_DATATYPE_MISALIGNMENT:
+      throw EWin32DataMisalignment( code, data, details );
       break;
 
-   case EXCEPTION_FLT_DENORMAL_OPERAND :
-      throw EWin32FloatingPointDenormalOperand( code, data );
+   case EXCEPTION_FLT_DENORMAL_OPERAND:
+      throw EWin32FloatingPointDenormalOperand( code, data, details );
       break;
 
-   case EXCEPTION_FLT_DIVIDE_BY_ZERO :
-      throw EWin32FloatingPointDivideByZero( code, data );
+   case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+      throw EWin32FloatingPointDivideByZero( code, data, details );
       break;
 
-   case EXCEPTION_FLT_INEXACT_RESULT :
-      throw EWin32FloatingPointInexactResult( code, data );
+   case EXCEPTION_FLT_INEXACT_RESULT:
+      throw EWin32FloatingPointInexactResult( code, data, details );
       break;
 
-   case EXCEPTION_FLT_INVALID_OPERATION :
-      throw EWin32FloatingPointInvalidOperation( code, data );
+   case EXCEPTION_FLT_INVALID_OPERATION:
+      throw EWin32FloatingPointInvalidOperation( code, data, details );
       break;
 
-   case EXCEPTION_FLT_OVERFLOW :
-      throw EWin32FloatingPointOverflow( code, data );
+   case EXCEPTION_FLT_OVERFLOW:
+      throw EWin32FloatingPointOverflow( code, data, details );
       break;
 
-   case EXCEPTION_FLT_STACK_CHECK :
-      throw EWin32FloatingPointStackCheck( code, data );
+   case EXCEPTION_FLT_STACK_CHECK:
+      throw EWin32FloatingPointStackCheck( code, data, details );
       break;
 
-   case EXCEPTION_FLT_UNDERFLOW :
-      throw EWin32FloatingPointUnderflow( code, data );
+   case EXCEPTION_FLT_UNDERFLOW:
+      throw EWin32FloatingPointUnderflow( code, data, details );
       break;
 
-   case EXCEPTION_ILLEGAL_INSTRUCTION :
-      throw EWin32IllegalInstruction( code, data );
+   case EXCEPTION_ILLEGAL_INSTRUCTION:
+      throw EWin32IllegalInstruction( code, data, details );
       break;
 
-   case EXCEPTION_IN_PAGE_ERROR :
-      throw EWin32PageError( code, data );
+   case EXCEPTION_IN_PAGE_ERROR:
+      throw EWin32PageError( code, data, details );
       break;
 
-   case EXCEPTION_INT_DIVIDE_BY_ZERO :
-      throw EWin32DivideByZero( code, data );
+   case EXCEPTION_INT_DIVIDE_BY_ZERO:
+      throw EWin32DivideByZero( code, data, details );
       break;
 
-   case EXCEPTION_INT_OVERFLOW :
-      throw EWin32Overflow( code, data );
+   case EXCEPTION_INT_OVERFLOW:
+      throw EWin32Overflow( code, data, details );
       break;
 
-   case EXCEPTION_INVALID_DISPOSITION :
-      throw EWin32InvalidDisposition( code, data );
+   case EXCEPTION_INVALID_DISPOSITION:
+      throw EWin32InvalidDisposition( code, data, details );
       break;
 
-   case EXCEPTION_NONCONTINUABLE_EXCEPTION :
-      throw EWin32NonContinuableException( code, data );
+   case EXCEPTION_NONCONTINUABLE_EXCEPTION:
+      throw EWin32NonContinuableException( code, data, details );
       break;
 
-   case EXCEPTION_PRIV_INSTRUCTION :
-      throw EWin32PrivilegedInstruction( code, data );
+   case EXCEPTION_PRIV_INSTRUCTION:
+      throw EWin32PrivilegedInstruction( code, data, details );
       break;
 
-   case EXCEPTION_SINGLE_STEP :
-      throw EWin32SingleStep( code, data );
+   case EXCEPTION_SINGLE_STEP:
+      throw EWin32SingleStep( code, data, details );
       break;
 
-   case EXCEPTION_STACK_OVERFLOW :
-      throw EWin32StackOverflow( code, data );
+   case EXCEPTION_STACK_OVERFLOW:
+      throw EWin32StackOverflow( code, data, details );
       break;
 
-   default :
-      throw Win32Exception( code, data );
+   default:
+      throw Win32Exception( code, data, details );
       break;
    }
 }
