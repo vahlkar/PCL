@@ -386,6 +386,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    int labelWidth1 = w.Font().Width( "Server file name template:" ) + emWidth;
    int editWidth1 = 5*emWidth;
    int editWidth2 = 8*emWidth;
+   int ui4 = w.LogicalPixelsToPhysical( 4 );
 
    //
 
@@ -680,19 +681,19 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    OpenClientFrames_CheckBox.SetText( "Open client frames" );
    OpenClientFrames_CheckBox.SetToolTip( "<p>Load newly acquired frames as image windows.</p>" );
 
-   OpenClientFrames_Sizer.AddSpacing( labelWidth1 + 4 );
+   OpenClientFrames_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    OpenClientFrames_Sizer.Add( OpenClientFrames_CheckBox );
    OpenClientFrames_Sizer.AddStretch();
 
    ReuseImageWindow_CheckBox.SetText( "Reuse image window" );
    ReuseImageWindow_CheckBox.SetToolTip( "<p>Load newly acquired client frames on the same image window, if available.</p>" );
-   ReuseImageWindow_Sizer.AddSpacing( labelWidth1 + 4 );
+   ReuseImageWindow_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ReuseImageWindow_Sizer.Add( ReuseImageWindow_CheckBox );
    ReuseImageWindow_Sizer.AddStretch();
 
    AutoStretch_CheckBox.SetText( "AutoStretch" );
    AutoStretch_CheckBox.SetToolTip( "<p>Compute and apply adaptive screen transfer functions (STF) for newly acquired client frames.</p>" );
-   AutoStretch_Sizer.AddSpacing( labelWidth1 + 4 );
+   AutoStretch_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    AutoStretch_Sizer.Add( AutoStretch_CheckBox );
    AutoStretch_Sizer.AddStretch();
 
@@ -700,14 +701,14 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    LinkedAutoStretch_CheckBox.SetToolTip( "<p>If enabled, compute and apply a single adaptive STF for all nominal channels of "
       "each acquired color image.</p>"
       "<p>If disabled, compute a separate adaptive STF for each nominal color channel.</p>" );
-   LinkedAutoStretch_Sizer.AddSpacing( labelWidth1 + 4 );
+   LinkedAutoStretch_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    LinkedAutoStretch_Sizer.Add( LinkedAutoStretch_CheckBox );
    LinkedAutoStretch_Sizer.AddStretch();
 
    SaveClientFrames_CheckBox.SetText( "Save client frames" );
    SaveClientFrames_CheckBox.SetToolTip( "<p>Save newly acquired frames to local image files in XISF format.</p>" );
 
-   SaveClientFrames_Sizer.AddSpacing( labelWidth1 + 4 );
+   SaveClientFrames_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    SaveClientFrames_Sizer.Add( SaveClientFrames_CheckBox );
    SaveClientFrames_Sizer.AddStretch();
 
@@ -717,7 +718,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
       "contents of overwritten files will be lost.</p>"
       "<p><b>Enable this option <u>at your own risk.</u></b></p>" );
 
-   OverwriteClientFrames_Sizer.AddSpacing( labelWidth1 + 4 );
+   OverwriteClientFrames_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    OverwriteClientFrames_Sizer.Add( OverwriteClientFrames_CheckBox );
    OverwriteClientFrames_Sizer.AddStretch();
 
@@ -966,6 +967,8 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    Global_Sizer.Add( FrameAcquisition_Control );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedHeight();
 

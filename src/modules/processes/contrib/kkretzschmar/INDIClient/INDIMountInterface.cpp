@@ -111,7 +111,7 @@ CoordinateSearchDialog::CoordinateSearchDialog( INDIMountInterface& parent ) :
    SearchInfo_TextBox.SetReadOnly();
    SearchInfo_TextBox.SetStyleSheet( ScaledStyleSheet(
          "* {"
-            "font-family: DejaVu Sans Mono, Monospace;"
+            "font-family: Hack, DejaVu Sans Mono, Monospace;"
             "font-size: 8pt;"
             "background: #141414;" // borrowed from /rsc/qss/core-standard.qss
             "color: #E8E8E8;"
@@ -438,7 +438,7 @@ EphemerisSearchDialog::EphemerisSearchDialog( INDIMountInterface& parent ) :
    ObjectInfo_TextBox.SetReadOnly();
    ObjectInfo_TextBox.SetStyleSheet( ScaledStyleSheet(
          "* {"
-            "font-family: DejaVu Sans Mono, Monospace;"
+            "font-family: Hack, DejaVu Sans Mono, Monospace;"
             "font-size: 8pt;"
             "background: #141414;" // borrowed from /rsc/qss/core-standard.qss
             "color: #E8E8E8;"
@@ -505,8 +505,10 @@ void EphemerisSearchDialog::e_Show( Control& )
       for ( auto object : objects )
          Objects_ComboBox.AddItem( ObjectName( object ) );
 
+      EnsureLayoutUpdated();
       AdjustToContents();
       SetMinSize();
+
       e_ItemSelected( Objects_ComboBox, Objects_ComboBox.CurrentItem() );
    }
 }
@@ -731,8 +733,8 @@ SyncDataListDialog::SyncDataListDialog( Array<SyncDataPoint>& syncDataArray ) :
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.Add( SyncDataList_Sizer );
    Global_Sizer.Add( SyncDataListButton_Sizer );
-   SetSizer( Global_Sizer );
 
+   SetSizer( Global_Sizer );
    SetWindowTitle( "List of Sync Data Points" );
 
    OnShow( (Control::event_handler)&SyncDataListDialog::e_Show, *this );
@@ -746,6 +748,8 @@ void SyncDataListDialog::e_Show( Control& )
    if ( m_firstTimeShown )
    {
       m_firstTimeShown = false;
+
+      EnsureLayoutUpdated();
       AdjustToContents();
       SetMinSize();
    }
@@ -915,7 +919,6 @@ AlignmentConfigDialog::AlignmentConfigDialog( INDIMountInterface& w ) :
    Global_Sizer.Add( AlignmentConfigButton_Sizer );
 
    SetSizer( Global_Sizer );
-
    SetWindowTitle( "Telescope Pointing Models" );
 
    OnShow( (Control::event_handler)&AlignmentConfigDialog::e_Show, *this );
@@ -928,6 +931,8 @@ void AlignmentConfigDialog::e_Show( Control& )
    if ( m_firstTimeShown )
    {
       m_firstTimeShown = false;
+
+      EnsureLayoutUpdated();
       SetMinWidth( RoundInt( 2.5*Font().Width( WindowTitle() ) ) );
       AdjustToContents();
       SetFixedSize();
@@ -1510,7 +1515,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
 {
    const String infoLabelStyleSheet =
       "QLabel {"
-         "font-family: DejaVu Sans Mono, Monospace;"
+         "font-family: Hack, DejaVu Sans Mono, Monospace;"
       "}";
 
    const String buttonStyleSheet1 =
@@ -1765,7 +1770,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountTargetDec_Sizer.Add( MountTargetDECIsSouth_CheckBox );
    MountTargetDec_Sizer.AddStretch();
 
-   
+
    MountSearch_Button.SetText( "Search" );
    MountSearch_Button.SetIcon( w.ScaledResource( ":/icons/find.png" ) );
    MountSearch_Button.SetStyleSheet( buttonStyleSheet1 );
@@ -1785,7 +1790,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountAsteroids_Button.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
 
    MountSearch_Sizer.SetSpacing( 8 );
-   MountSearch_Sizer.AddSpacing( labelWidth1 + 4 );
+   MountSearch_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    MountSearch_Sizer.Add( MountSearch_Button );
    MountSearch_Sizer.Add( MountPlanets_Button );
    MountSearch_Sizer.Add( MountAsteroids_Button );
@@ -1806,7 +1811,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountPark_Button.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
 
    MountGoToStart_Sizer.SetSpacing( 8 );
-   MountGoToStart_Sizer.AddSpacing( labelWidth1 + 4 );
+   MountGoToStart_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    MountGoToStart_Sizer.Add( MountGoToStart_Button );
    MountGoToStart_Sizer.Add( MountSync_Button );
    MountGoToStart_Sizer.Add( MountPark_Button );
@@ -1818,7 +1823,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountGoToCancel_Button.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
    MountGoToCancel_Button.Disable();
 
-   MountGoToCancel_Sizer.AddSpacing( labelWidth1 + 4 );
+   MountGoToCancel_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    MountGoToCancel_Sizer.Add( MountGoToCancel_Button );
    MountGoToCancel_Sizer.AddStretch();
 
@@ -1833,6 +1838,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountGoTo_Sizer.Add( MountGoToInfo_Label );
 
    MountGoTo_Control.SetSizer( MountGoTo_Sizer );
+
    //
 
    Slew_SectionBar.SetTitle( "Slew" );
@@ -1860,7 +1866,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    SlewTopRight_Button.OnRelease( (Button::press_event_handler)&INDIMountInterface::e_Release, w );
 
    SlewTopRow_Sizer.SetSpacing( 8 );
-   SlewTopRow_Sizer.AddSpacing( labelWidth1 + 4 );
+   SlewTopRow_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    SlewTopRow_Sizer.Add( SlewTopLeft_Button );
    SlewTopRow_Sizer.Add( SlewTop_Button );
    SlewTopRow_Sizer.Add( SlewTopRight_Button );
@@ -1887,7 +1893,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    SlewRight_Button.OnRelease( (Button::press_event_handler)&INDIMountInterface::e_Release, w );
 
    SlewMiddleRow_Sizer.SetSpacing( 8 );
-   SlewMiddleRow_Sizer.AddSpacing( labelWidth1 + 4 );
+   SlewMiddleRow_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    SlewMiddleRow_Sizer.Add( SlewLeft_Button );
    SlewMiddleRow_Sizer.Add( SlewStop_Button );
    SlewMiddleRow_Sizer.Add( SlewRight_Button );
@@ -1914,7 +1920,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    SlewBottomRight_Button.OnRelease( (Button::press_event_handler)&INDIMountInterface::e_Release, w );
 
    SlewBottomRow_Sizer.SetSpacing( 8 );
-   SlewBottomRow_Sizer.AddSpacing( labelWidth1 + 4 );
+   SlewBottomRow_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    SlewBottomRow_Sizer.Add( SlewBottomLeft_Button );
    SlewBottomRow_Sizer.Add( SlewBottom_Button );
    SlewBottomRow_Sizer.Add( SlewBottomRight_Button );
@@ -1968,6 +1974,8 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    Global_Sizer.Add( Slew_Control );
 
    w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
    w.AdjustToContents();
    w.SetFixedHeight();
 

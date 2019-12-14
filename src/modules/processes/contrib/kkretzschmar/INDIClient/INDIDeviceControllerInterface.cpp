@@ -685,15 +685,19 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
    Global_Sizer.Add( Devices_Control );
    Global_Sizer.Add( ServerMessage_Label );
 
-   SynchronizeWithServer_Timer.SetInterval( 0.5 );
-   SynchronizeWithServer_Timer.SetPeriodic( true );
-   SynchronizeWithServer_Timer.OnTimer( (Timer::timer_event_handler)&INDIDeviceControllerInterface::e_Timer, w );
+   w.SetSizer( Global_Sizer );
+
+   w.EnsureLayoutUpdated();
+   w.AdjustToContents();
 
    w.OnShow( (Control::event_handler)&INDIDeviceControllerInterface::e_Show, w );
    w.OnHide( (Control::event_handler)&INDIDeviceControllerInterface::e_Hide, w );
 
-   w.SetSizer( Global_Sizer );
-   w.AdjustToContents();
+   //
+
+   SynchronizeWithServer_Timer.SetInterval( 0.5 );
+   SynchronizeWithServer_Timer.SetPeriodic( true );
+   SynchronizeWithServer_Timer.OnTimer( (Timer::timer_event_handler)&INDIDeviceControllerInterface::e_Timer, w );
 }
 
 // ----------------------------------------------------------------------------
