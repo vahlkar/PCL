@@ -78,7 +78,8 @@ namespace pcl
  * For this handler to work properly, all code that may raise asynchronous
  * (structured) exceptions must be compiled with the '-EHa' Visual C/C++
  * compiler option. Otherwise no asynchronous exception thrown in a try{} block
- * will be caught by the corresponding catch{} block.
+ * will be caught by the corresponding catch{} block, and the program will
+ * terminate.
  */
 class PCL_CLASS Win32Exception : public pcl::Exception
 {

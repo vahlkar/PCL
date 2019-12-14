@@ -55,16 +55,20 @@
 #include <pcl/UnixSignalException.h>
 #include <pcl/Version.h>
 
+#ifndef __PCL_UNIX_NO_BACKTRACE
 #include <cxxabi.h>
 #include <execinfo.h>
-#include <stdio.h>
-
 #define STACK_DEPTH 256
+#endif
+
+#include <stdio.h>
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
+
+#ifndef __PCL_UNIX_NO_BACKTRACE
 
 static IsoString GetDemangledFunctionName( const char* symbol, IsoString& addrStr )
 {
@@ -101,10 +105,16 @@ static IsoString GetDemangledFunctionName( const char* symbol, IsoString& addrSt
    return (status == 0) ? IsoString( demangledFuncname ) : symbolStr;
 }
 
+#endif // !__PCL_UNIX_NO_BACKTRACE
+
 // ----------------------------------------------------------------------------
 
 static void CriticalSignalHandler( int signalNumber )
 {
+   IsoString details;
+
+#ifndef __PCL_UNIX_NO_BACKTRACE
+
    static const char* signalNames[] =
    {
       "",
@@ -138,11 +148,10 @@ static void CriticalSignalHandler( int signalNumber )
    void* addrList[ STACK_DEPTH ];
    size_t addrLen = backtrace( addrList, sizeof( addrList )/sizeof( void* ) );
    char** symbolList = backtrace_symbols( addrList, addrLen );
-   IsoString details;
    if ( symbolList != nullptr )
       if ( symbolList[0] != nullptr )
       {
-         details = IsoString( PixInsightVersion::AsString() ) + " - Critical Signal Backtrace\n";
+         details << '\n' << IsoString( PixInsightVersion::AsString() ) << " - Critical Signal Backtrace\n";
          details.AppendFormat( "Received signal %d (%s)\n"
                                "Module: %s\n",
                                signalNumber,
@@ -155,18 +164,14 @@ static void CriticalSignalHandler( int signalNumber )
                IsoString addrOffsetStr;
                IsoString demangledFuncname = GetDemangledFunctionName( symbolList[i], addrOffsetStr );
                details.AppendFormat( "%3u: ", addrLen-i );
-               details += demangledFuncname;
+               details << demangledFuncname;
                if ( !addrOffsetStr.IsEmpty() )
-               {
-                  details += "(+";
-                  details += addrOffsetStr;
-                  details += ')';
-               }
-               details += '\n';
+                  details << "(+" << addrOffsetStr << ')';
+               details << '\n';
             }
          details << IsoString( '=', 80 ) << '\n';
 
-         fprintf( stderr, "\n\n%s", details.c_str() );
+         fprintf( stderr, "\n%s", details.c_str() );
 
          /*
           * The symbol list array is allocated by backtrace_symbols using
@@ -181,6 +186,8 @@ static void CriticalSignalHandler( int signalNumber )
           */
          free( symbolList );
       }
+
+#endif // !__PCL_UNIX_NO_BACKTRACE
 
    switch ( signalNumber )
    {
@@ -203,6 +210,9 @@ static void CriticalSignalHandler( int signalNumber )
 
 void UnixSignalException::Show() const
 {
+   /*
+    * N.B.: The following function call must be expanded inline.
+    */
    ShowOnConsole();
 }
 

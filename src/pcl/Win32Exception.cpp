@@ -51,16 +51,21 @@
 
 #ifdef __PCL_WINDOWS
 
+#include <pcl/AutoLock.h>
 #include <pcl/Win32Exception.h>
 
 #include <eh.h>
+
+#ifndef __PCL_WINDOWS_NO_BACKTRACE
 
 #pragma warning( push )
 #pragma warning( disable: 4091 ) // typedef ignored on left of <unnamed-enum...>
 #include <dbghelp.h>
 #pragma warning( pop )
 
-#pragma comment( lib, "Dbghelp.lib" )
+#pragma comment( lib, "dbghelp.lib" )
+
+#endif // !__PCL_WINDOWS_NO_BACKTRACE
 
 namespace pcl
 {
@@ -78,106 +83,109 @@ Win32Exception::exception_address Win32Exception::ExceptionAddress() const
 
 // ----------------------------------------------------------------------------
 
-static IsoString BackTrace( CONTEXT* context )
-{
-   HANDLE process = GetCurrentProcess();
-
-   if ( SymInitialize( process, NULL, TRUE ) == FALSE )
-      return IsoString();
-
-   STACKFRAME stack = {};
-#if _WIN64
-   stack.AddrPC.Offset = context->Rip;
-   stack.AddrPC.Mode = AddrModeFlat;
-   stack.AddrFrame.Offset = context->Rbp;
-   stack.AddrFrame.Mode = AddrModeFlat;
-   stack.AddrStack.Offset = context->Rsp;
-   stack.AddrStack.Mode = AddrModeFlat;
-#else
-   stack.AddrPC.Offset = context->Eip;
-   stack.AddrPC.Mode = AddrModeFlat;
-   stack.AddrFrame.Offset = context->Ebp;
-   stack.AddrFrame.Mode = AddrModeFlat;
-   stack.AddrStack.Offset = context->Esp;
-   stack.AddrStack.Mode = AddrModeFlat;
-#endif
-
-   IsoString details;
-   details << "*** Backtrace Information ***\n"
-           << IsoString( '=', 80 ) << '\n';
-
-   HANDLE thread  = GetCurrentThread();
-
-   char buffer[ sizeof( SYMBOL_INFO ) + MAX_SYM_NAME * sizeof( TCHAR ) ];
-
-   for ( unsigned frame = 0; ; ++frame )
-   {
-      BOOL result = StackWalk64(
-#if defined( _M_X64 )
-            IMAGE_FILE_MACHINE_AMD64
-#else
-            IMAGE_FILE_MACHINE_I386
-#endif
-            ,
-            process,
-            thread,
-            &stack,
-            context,
-            NULL,
-            SymFunctionTableAccess64,
-            SymGetModuleBase64,
-            NULL
-      );
-
-      if ( !result )
-         break;
-
-      PSYMBOL_INFO pSymbol = (PSYMBOL_INFO)buffer;
-      pSymbol->SizeOfStruct = sizeof( SYMBOL_INFO );
-      pSymbol->MaxNameLen = MAX_SYM_NAME;
-      DWORD64 displacement = 0;
-      SymFromAddr( process, (ULONG64)stack.AddrPC.Offset, &displacement, pSymbol );
-
-      IMAGEHLP_LINE64* line = (IMAGEHLP_LINE64*)malloc( sizeof( IMAGEHLP_LINE64 ) );
-      line->SizeOfStruct = sizeof( IMAGEHLP_LINE64 );
-
-      details.AppendFormat( "%3u: ", frame );
-
-      DWORD disp;
-      if ( SymGetLineFromAddr64( process, stack.AddrPC.Offset, &disp, line ) )
-         details.AppendFormat( "%s in module: %s line: %lu at address: 0x%0X", pSymbol->Name, line->FileName, line->LineNumber, pSymbol->Address );
-      else
-      {
-         HMODULE hModule = NULL;
-         GetModuleHandleEx( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                            (LPCTSTR)stack.AddrPC.Offset, &hModule );
-         if ( hModule != NULL )
-         {
-            char module[ MAX_PATH ] = {};
-            GetModuleFileNameA( hModule, module, MAX_PATH );
-            details.AppendFormat( "%s in module: %s at address: 0x%0X", pSymbol->Name, module, pSymbol->Address );
-         }
-         else
-            details.AppendFormat( "%s at address: 0x%0X", pSymbol->Name, pSymbol->Address );
-      }
-
-      details << '\n';
-
-      free( line );
-   }
-
-   details << IsoString( '=', 80 ) << '\n';
-   return details;
-}
-
 static void My_se_translator( unsigned int /*code*/, EXCEPTION_POINTERS* pointers )
 {
    if ( pointers->ExceptionRecord->ExceptionFlags == EXCEPTION_NONCONTINUABLE )
       throw pcl::FatalError( "Noncontinuable system exception" );
 
+   IsoString details;
+
+#ifndef __PCL_WINDOWS_NO_BACKTRACE
+   {
+      static Mutex mutex;
+      volatile AutoLock lock( mutex );
+
+      HANDLE process = GetCurrentProcess();
+
+//       CONTEXT* context = pointers->ContextRecord;
+      CONTEXT context;
+      RtlCaptureContext( &context );
+
+      STACKFRAME stack = {};
+#if _WIN64
+      stack.AddrPC.Offset = context.Rip;
+      stack.AddrPC.Mode = AddrModeFlat;
+      stack.AddrFrame.Offset = context.Rbp;
+      stack.AddrFrame.Mode = AddrModeFlat;
+      stack.AddrStack.Offset = context.Rsp;
+      stack.AddrStack.Mode = AddrModeFlat;
+#else
+      stack.AddrPC.Offset = context.Eip;
+      stack.AddrPC.Mode = AddrModeFlat;
+      stack.AddrFrame.Offset = context.Ebp;
+      stack.AddrFrame.Mode = AddrModeFlat;
+      stack.AddrStack.Offset = context.Esp;
+      stack.AddrStack.Mode = AddrModeFlat;
+#endif
+
+      details << "\n*** Backtrace Information ***\n"
+            << IsoString( '=', 80 ) << '\n';
+
+      HANDLE thread  = GetCurrentThread();
+
+      char buffer[ sizeof( SYMBOL_INFO ) + MAX_SYM_NAME*sizeof( TCHAR ) ];
+
+      for ( unsigned frame = 0; ; ++frame )
+      {
+         if ( !StackWalk64(
+#if defined( _M_X64 )
+               IMAGE_FILE_MACHINE_AMD64
+#else
+               IMAGE_FILE_MACHINE_I386
+#endif
+               ,
+               process, thread, &stack, &context,
+               NULL/*ReadMemoryRoutine*/,
+               SymFunctionTableAccess64,
+               SymGetModuleBase64,
+               NULL/*TranslateAddress*/ ) )
+         {
+            break;
+         }
+
+         PSYMBOL_INFO pSymbol = (PSYMBOL_INFO)buffer;
+         pSymbol->SizeOfStruct = sizeof( SYMBOL_INFO );
+         pSymbol->MaxNameLen = MAX_SYM_NAME;
+         DWORD64 displacement = 0;
+         SymFromAddr( process, (ULONG64)stack.AddrPC.Offset, &displacement, pSymbol );
+
+         IMAGEHLP_LINE64* line = (IMAGEHLP_LINE64*)malloc( sizeof( IMAGEHLP_LINE64 ) );
+         line->SizeOfStruct = sizeof( IMAGEHLP_LINE64 );
+
+         details.AppendFormat( "%3u: ", frame );
+
+         DWORD disp;
+         if ( SymGetLineFromAddr64( process, stack.AddrPC.Offset, &disp, line ) )
+         {
+            details.AppendFormat( "%s in module: %s line: %lu at address: 0x%0X",
+                                 pSymbol->Name, line->FileName, line->LineNumber, pSymbol->Address );
+         }
+         else
+         {
+            HMODULE hModule = NULL;
+            GetModuleHandleEx( GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                              (LPCTSTR)stack.AddrPC.Offset, &hModule );
+            if ( hModule != NULL )
+            {
+               char module[ MAX_PATH ] = {};
+               GetModuleFileNameA( hModule, module, MAX_PATH );
+               details.AppendFormat( "%s in module: %s at address: 0x%0X", pSymbol->Name, module, pSymbol->Address );
+            }
+            else
+               details.AppendFormat( "%s at address: 0x%0X", pSymbol->Name, pSymbol->Address );
+         }
+
+         details << '\n';
+
+         free( line );
+      }
+
+      details << IsoString( '=', 80 ) << '\n';
+   }
+#endif // !__PCL_WINDOWS_NO_BACKTRACE
+
    Win32Exception::exception_code code = pointers->ExceptionRecord->ExceptionCode;
    Win32Exception::exception_data_pointer data = pointers->ExceptionRecord;
-   IsoString details = BackTrace( pointers->ContextRecord );
 
    switch ( code )
    {
@@ -271,6 +279,9 @@ static void My_se_translator( unsigned int /*code*/, EXCEPTION_POINTERS* pointer
 
 void Win32Exception::Show() const
 {
+   /*
+    * N.B.: The following function call must be expanded inline.
+    */
    ShowOnConsole();
 }
 
@@ -278,6 +289,20 @@ void Win32Exception::Show() const
 
 void Win32Exception::Initialize()
 {
+#ifndef __PCL_WINDOWS_NO_BACKTRACE
+   {
+      static bool initialized = false;
+      static Mutex mutex;
+      volatile AutoLock lock( mutex );
+
+      HANDLE process = GetCurrentProcess();
+      if ( initialized )
+         SymCleanup( process );
+      SymInitialize( process, NULL/*UserSearchPath*/, TRUE/*fInvadeProcess*/ );
+      initialized = true;
+   }
+#endif
+
    _set_se_translator( My_se_translator );
 }
 

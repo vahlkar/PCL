@@ -238,21 +238,6 @@ void Exception::Show() const
 
 // ----------------------------------------------------------------------------
 
-void Exception::ShowOnConsole() const
-{
-   bool wasConsoleOutput = IsConsoleOutputEnabled();
-   bool wasGUIOutput = IsGUIOutputEnabled();
-   EnableConsoleOutput();
-   DisableGUIOutput();
-
-   Show();
-
-   EnableConsoleOutput( wasConsoleOutput );
-   EnableGUIOutput( wasGUIOutput );
-}
-
-// ----------------------------------------------------------------------------
-
 bool Exception::IsConsoleOutputEnabled()
 {
    return s_useConsole;

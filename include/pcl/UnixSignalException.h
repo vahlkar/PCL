@@ -55,7 +55,7 @@
 /// \file pcl/UnixSignalException.h
 
 #if defined( __PCL_WINDOWS ) || !defined( __PCL_LINUX ) && !defined( __PCL_FREEBSD ) && !defined( __PCL_MACOSX )
-#  error UnixSignalException can only be used on Linux, FreeBSD and OS X platforms.
+#  error UnixSignalException can only be used on Linux, FreeBSD and macOS platforms.
 #endif
 
 #include <pcl/Defs.h>
@@ -73,9 +73,9 @@ namespace pcl
  * \class UnixSignalException
  * \brief A UNIX synchronous signal handler that throws C++ exceptions.
  *
- * This class can only be used on Linux, FreeBSD and OS X platforms. On Windows
- * platforms, including this header file from compilable code raises a compiler
- * error.
+ * This class can only be used on Linux, FreeBSD and macOS platforms. On
+ * Windows platforms, including this header file from compilable code raises a
+ * compilation error.
  *
  * For this handler to work properly, all code that may raise synchronous
  * signals (SIGSEGV and the like) must be compiled with GCC's

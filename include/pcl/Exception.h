@@ -140,12 +140,28 @@ public:
 
    /*!
     * Prints a representation of the information transported by this exception
-    * exclusively as text on the platform console.
+    * exclusively as plain text on the platform console.
     *
-    * This function ignores the current settings defined through previous calls
-    * to EnableConsoleOutput() and EnableGUIOutput().
+    * This function ignores current settings defined through previous calls to
+    * EnableConsoleOutput() and EnableGUIOutput().
     */
-   void ShowOnConsole() const;
+   PCL_FORCE_INLINE void ShowOnConsole() const
+   {
+      /*
+       * N.B.: This function must always be expanded inline. Otherwise, neither
+       * UNIX synchronous signal handlers nor Win32 structured exception
+       * handlers can throw C++ exceptions.
+       */
+      bool wasConsoleOutput = IsConsoleOutputEnabled();
+      bool wasGUIOutput = IsGUIOutputEnabled();
+      EnableConsoleOutput();
+      DisableGUIOutput();
+
+      Exception::Show();
+
+      EnableConsoleOutput( wasConsoleOutput );
+      EnableGUIOutput( wasGUIOutput );
+   }
 
    /*!
     * Returns true iff console text output is enabled for %Exception.
