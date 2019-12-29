@@ -246,8 +246,6 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
                if ( p_verbosity > 0 )
                   console.NoteLn( "* Disconnected from Indigo server " + p_serverHostName + ", port=" + String( p_serverPort ) );
             }
-
-            INDIClient::DestroyClient();
          }
       }
 

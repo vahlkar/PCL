@@ -487,20 +487,15 @@ void INDIClient::registerGetMessageCallback() {
    };
 }
 
-void INDIClient::serverConnected()
-{
-   volatile AutoLock lock( m_mutex );
-   m_serverConnectionChanged = true;
-}
-
-void INDIClient::serverDisconnected( int exitCode )
+void INDIClient::reset()
 {
    volatile AutoLock lock( m_mutex );
    ExclDeviceList x = DeviceList();
    ExclPropertyList y = PropertyList();
-   INDIDeviceListItemArray( x ).Clear();
-   INDIPropertyListItemArray( y ).Clear();
-   m_serverConnectionChanged = true;
+   INDIDeviceListItemArray& devices( x );
+   devices.Clear();
+   INDIPropertyListItemArray& properties( y );
+   properties.Clear();
 }
 
 bool INDIClient::IsDeviceConnected(const IsoString& deviceName) const {

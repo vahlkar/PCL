@@ -68,7 +68,7 @@ function INDIMountControllerTests( parent )
       }
    );
 
- /*  this.add(
+   this.add(
       function testMoveNorthSouth()
       {
          let mountController = new IndigoMount;
@@ -162,7 +162,7 @@ function INDIMountControllerTests( parent )
          expectEqualsWithPrecision( 15.0, mountController.currentDec, 0.1 );
       }
    );
-*/
+
 
 
    this.add(
