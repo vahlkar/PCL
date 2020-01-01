@@ -610,15 +610,28 @@ void INDIMountInstance::GetPierSide() {
 
    INDIPropertyListItem item;
    static const char* indiPierSides[] = { MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, MOUNT_SIDE_OF_PIER_EAST_ITEM_NAME };
+   bool deviceHasPierSideProperty = true;
    for ( size_type i = 0; i < ItemsInArray( indiPierSides ); ++i )
-      if ( indi->GetPropertyItem( p_deviceName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, indiPierSides[i], item ) ) {
+   {
+      if ( indi->GetPropertyItem( p_deviceName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, indiPierSides[i], item ) )
+      {
          if ( item.PropertyValue == "ON" )
          {
             p_pierSide = i;
             break;
          }
+      } else {
+        deviceHasPierSideProperty = false;
+        break;
       }
-      
+    }
+   if(!deviceHasPierSideProperty)
+   {
+      // pier side fallback
+      // If the Indigo mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
+      double hourAngle = AlignmentModel::RangeShiftHourAngle( o_currentLST - o_currentRA);
+      p_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
+   }
 
 }
 
