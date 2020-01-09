@@ -2974,18 +2974,33 @@ pcl_enum DebayerInstance::BayerPatternFromTarget( const View& view ) const
       if ( view.HasProperty( "PCL:CFASourcePattern" ) )
          return BayerPatternFromTargetProperty( view.PropertyValue( "PCL:CFASourcePattern" ) );
 
+      Console console;
       FITSKeywordArray keywords = view.Window().Keywords();
       IsoString bayerPattern;
-      int xOffset = 0, yOffset = 0;
+      double xOffset = 0, yOffset = 0;
       for ( const FITSHeaderKeyword& keyword : keywords )
-         if ( keyword.name == "BAYERPAT" )
-            bayerPattern = keyword.StripValueDelimiters().Uppercase();
-         else if ( keyword.name == "XBAYROFF" )
-            (void)keyword.value.TryToInt( xOffset );
-         else if ( keyword.name == "YBAYROFF" )
-            (void)keyword.value.TryToInt( yOffset );
+      {
+         try
+         {
+            if ( keyword.name == "BAYERPAT" )
+               bayerPattern = keyword.StripValueDelimiters().Uppercase();
+            else if ( keyword.name == "XBAYROFF" )
+               xOffset = keyword.value.ToDouble();
+            else if ( keyword.name == "YBAYROFF" )
+               yOffset = keyword.value.ToDouble();
+         }
+         catch ( Exception& x )
+         {
+            Console().CriticalLn( "<end><cbr>*** Error: Parsing " + keyword.name + " FITS keyword: " + x.Message() );
+         }
+         catch ( ... )
+         {
+            throw;
+         }
+      }
+
       if ( !bayerPattern.IsEmpty() )
-         return BayerPatternFromTargetPropertyValue( bayerPattern, xOffset, yOffset );
+         return BayerPatternFromTargetPropertyValue( bayerPattern, TruncInt( xOffset ), TruncInt( yOffset ) );
 
       throw Error( "Unable to acquire CFA pattern information: Required image metadata not available." );
    }
@@ -3006,16 +3021,30 @@ pcl_enum DebayerInstance::BayerPatternFromTarget( FileFormatInstance& file ) con
          if ( file.ReadFITSKeywords( keywords ) )
          {
             IsoString bayerPattern;
-            int xOffset = 0, yOffset = 0;
+            double xOffset = 0, yOffset = 0;
             for ( const FITSHeaderKeyword& keyword : keywords )
-               if ( keyword.name == "BAYERPAT" )
-                  bayerPattern = keyword.StripValueDelimiters().Uppercase();
-               else if ( keyword.name == "XBAYROFF" )
-                  (void)keyword.value.TryToInt( xOffset );
-               else if ( keyword.name == "YBAYROFF" )
-                  (void)keyword.value.TryToInt( yOffset );
+            {
+               try
+               {
+                  if ( keyword.name == "BAYERPAT" )
+                     bayerPattern = keyword.StripValueDelimiters().Uppercase();
+                  else if ( keyword.name == "XBAYROFF" )
+                     xOffset = keyword.value.ToDouble();
+                  else if ( keyword.name == "YBAYROFF" )
+                     yOffset = keyword.value.ToDouble();
+               }
+               catch ( Exception& x )
+               {
+                  Console().CriticalLn( "<end><cbr>*** Error: Parsing " + keyword.name + " FITS keyword: " + x.Message() );
+               }
+               catch ( ... )
+               {
+                  throw;
+               }
+            }
+
             if ( !bayerPattern.IsEmpty() )
-               return BayerPatternFromTargetPropertyValue( bayerPattern, xOffset, yOffset );
+               return BayerPatternFromTargetPropertyValue( bayerPattern, TruncInt( xOffset ), TruncInt( yOffset ) );
          }
       }
 
@@ -3086,16 +3115,30 @@ IsoString DebayerInstance::CFAPatternIdFromTarget( const View& view, bool xtrans
       {
          FITSKeywordArray keywords = view.Window().Keywords();
          IsoString bayerPattern;
-         int xOffset = 0, yOffset = 0;
+         double xOffset = 0, yOffset = 0;
          for ( const FITSHeaderKeyword& keyword : keywords )
-            if ( keyword.name == "BAYERPAT" )
-               bayerPattern = keyword.StripValueDelimiters().Uppercase();
-            else if ( keyword.name == "XBAYROFF" )
-               (void)keyword.value.TryToInt( xOffset );
-            else if ( keyword.name == "YBAYROFF" )
-               (void)keyword.value.TryToInt( yOffset );
+         {
+            try
+            {
+               if ( keyword.name == "BAYERPAT" )
+                  bayerPattern = keyword.StripValueDelimiters().Uppercase();
+               else if ( keyword.name == "XBAYROFF" )
+                  xOffset = keyword.value.ToDouble();
+               else if ( keyword.name == "YBAYROFF" )
+                  yOffset = keyword.value.ToDouble();
+            }
+            catch ( Exception& x )
+            {
+               Console().CriticalLn( "<end><cbr>*** Error: Parsing " + keyword.name + " FITS keyword: " + x.Message() );
+            }
+            catch ( ... )
+            {
+               throw;
+            }
+         }
+
          if ( !bayerPattern.IsEmpty() )
-            return CFAPatternIdFromTargetProperty( bayerPattern, xOffset, yOffset );
+            return CFAPatternIdFromTargetProperty( bayerPattern, TruncInt( xOffset ), TruncInt( yOffset ) );
       }
 
       throw Error( "Unable to acquire CFA pattern information: Required image metadata not available." );
@@ -3118,16 +3161,30 @@ IsoString DebayerInstance::CFAPatternIdFromTarget( FileFormatInstance& file, boo
             if ( file.ReadFITSKeywords( keywords ) )
             {
                IsoString bayerPattern;
-               int xOffset = 0, yOffset = 0;
+               double xOffset = 0, yOffset = 0;
                for ( const FITSHeaderKeyword& keyword : keywords )
-                  if ( keyword.name == "BAYERPAT" )
-                     bayerPattern = keyword.StripValueDelimiters().Uppercase();
-                  else if ( keyword.name == "XBAYROFF" )
-                     (void)keyword.value.TryToInt( xOffset );
-                  else if ( keyword.name == "YBAYROFF" )
-                     (void)keyword.value.TryToInt( yOffset );
+               {
+                  try
+                  {
+                     if ( keyword.name == "BAYERPAT" )
+                        bayerPattern = keyword.StripValueDelimiters().Uppercase();
+                     else if ( keyword.name == "XBAYROFF" )
+                        xOffset = keyword.value.ToDouble();
+                     else if ( keyword.name == "YBAYROFF" )
+                        yOffset = keyword.value.ToDouble();
+                  }
+                  catch ( Exception& x )
+                  {
+                     Console().CriticalLn( "<end><cbr>*** Error: Parsing " + keyword.name + " FITS keyword: " + x.Message() );
+                  }
+                  catch ( ... )
+                  {
+                     throw;
+                  }
+               }
+
                if ( !bayerPattern.IsEmpty() )
-                  return CFAPatternIdFromTargetProperty( bayerPattern, xOffset, yOffset );
+                  return CFAPatternIdFromTargetProperty( bayerPattern, TruncInt( xOffset ), TruncInt( yOffset ) );
             }
          }
 
