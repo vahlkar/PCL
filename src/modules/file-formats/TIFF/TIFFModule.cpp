@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     0
-#define MODULE_VERSION_REVISION  7
+#define MODULE_VERSION_REVISION  8
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       7
+#define MODULE_RELEASE_YEAR      2020
+#define MODULE_RELEASE_MONTH     1
+#define MODULE_RELEASE_DAY       14
 
 #include "TIFFModule.h"
 #include "TIFFFormat.h"
@@ -115,7 +115,7 @@ String TIFFModule::Author() const
 
 String TIFFModule::Copyright() const
 {
-   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
 }
 
 // -------------------------------------------------------------------------

@@ -138,15 +138,25 @@ String RawFormat::Implementation() const
    "<html>"
    "<p>PixInsight Standard File Format Support Modules.</p>"
 
-   "<p>This implementation of digital camera raw format decoding uses LibRaw version 0.19.5.</p>"
+   "<p>This implementation of digital camera raw format decoding uses LibRaw 201910 snapshot.</p>"
 
-   "<p>LibRaw library:<br/>"
-   "Copyright (c) 2008-2019 LibRaw LLC (info@libraw.org)<br/>"
-   "The LibRaw library includes source code from:</p>"
+   "<p><b>LibRaw</b><br/>"
+   "Copyright (C) 2008-2019 LibRaw LLC (http://www.libraw.org, info@libraw.org)</p>"
 
-   "<p>dcraw.c, Dave Coffin's raw photo decoder. Copyright (c) 1997-2016 by Dave Coffin</p>"
+   "<p>LibRaw uses code from dcraw.c -- Dave Coffin's raw photo decoder,<br/>"
+   "dcraw.c is copyright 1997-2018 by Dave Coffin, dcoffin a cybercom o net.<br/>"
+   "LibRaw do not use RESTRICTED code from dcraw.c</p>"
 
-   "<p>PixInsight Class Library (PCL):<br/>"
+   "<p>LibRaw uses DCB demosaic and FBDD denoise licensed under BSD-like 3-clause license<br/>"
+   "DCB and FBDD are Copyright (C) 2010, Jacek Gozdz (cuniek@kft.umcs.lublin.pl)</p>"
+
+   "<p>LibRaw uses X3F library to unpack Foveon Files, licensed BSD-style license<br/>"
+   "Copyright (c) 2010, Roland Karlsson (roland@proxel.se). All rights reserved.</p>"
+
+   "<p>LibRaw uses pieces of code from Adobe DNG SDK 1.4,<br/>"
+   "Copyright (c) 2005 Adobe Systems Incorporated, licensed under MIT license</p>"
+
+   "<p><b>PixInsight Class Library (PCL)</b><br/>"
    "Copyright (c) 2003-2019, Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"

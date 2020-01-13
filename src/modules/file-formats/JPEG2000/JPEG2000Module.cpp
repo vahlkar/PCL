@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     0
-#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_REVISION  3
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       7
+#define MODULE_RELEASE_YEAR      2020
+#define MODULE_RELEASE_MONTH     1
+#define MODULE_RELEASE_DAY       14
 
 #include "JPEG2000Module.h"
 #include "JPEG2000Format.h"
@@ -115,7 +115,7 @@ String JPEG2000Module::Author() const
 
 String JPEG2000Module::Copyright() const
 {
-   return "Copyright (c) 2006-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2006-2020 Pleiades Astrophoto";
 }
 
 // -------------------------------------------------------------------------
