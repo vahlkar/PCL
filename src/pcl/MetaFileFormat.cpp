@@ -146,7 +146,7 @@ static void MandatoryError( const IsoString& formatName, const char* funcName )
 
 // ----------------------------------------------------------------------------
 
-MetaFileFormat::MetaFileFormat() : MetaObject( Module ), FileFormatBase()
+MetaFileFormat::MetaFileFormat() : MetaObject( Module )
 {
    if ( Module == nullptr )
       throw Error( "MetaFileFormat: Module not initialized - illegal MetaFileFormat instantiation." );
@@ -305,19 +305,21 @@ public:
 
    static api_bool api_func GetImageId( const_file_format_handle hf, char* id, uint32 n, uint32 index )
    {
-      try
+      if ( id != nullptr )
       {
-         if ( index < constInstance->m_description.Length() )
+         try
          {
-            constInstance->m_description[index].id.c_copy( id, n );
-            return api_true;
+            if ( index < constInstance->m_description.Length() )
+            {
+               constInstance->m_description[index].id.c_copy( id, n );
+               return api_true;
+            }
+            *id = '\0';
+            return api_false;
          }
-
+         ERROR_HANDLER
          *id = '\0';
-         return api_false;
       }
-      ERROR_HANDLER
-      *id = '\0';
       return api_false;
    }
 
@@ -329,11 +331,12 @@ public:
       {
          if ( index < constInstance->m_description.Length() )
          {
-            PCLImageInfoToAPI( *info, constInstance->m_description[index].info );
-            PCLImageOptionsToAPI( *options, constInstance->m_description[index].options );
+            if ( info != nullptr )
+               PCLImageInfoToAPI( *info, constInstance->m_description[index].info );
+            if ( options != nullptr )
+               PCLImageOptionsToAPI( *options, constInstance->m_description[index].options );
             return api_true;
          }
-
          return api_false;
       }
       ERROR_HANDLER
@@ -478,9 +481,12 @@ public:
          if ( !instance->GetNextKeyword( k ) )
             return api_false;
          k.Trim();
-         k.name.c_copy( name, n );
-         k.value.c_copy( value, n );
-         k.comment.c_copy( comment, n );
+         if ( name != nullptr )
+            k.name.c_copy( name, n );
+         if ( value != nullptr )
+            k.value.c_copy( value, n );
+         if ( comment != nullptr )
+            k.comment.c_copy( comment, n );
          return api_true;
       }
       ERROR_HANDLER
@@ -613,7 +619,7 @@ public:
    {
       try
       {
-         if ( len == 0 )
+         if ( len == nullptr )
             return api_false;
 
          PropertyDescriptionArray properties = instance->Properties();
@@ -621,13 +627,13 @@ public:
          for ( const PropertyDescription& d : properties )
             if ( d.id.Length() > n )
                n = d.id.Length();
-         if ( id != 0 && *len >= n )
+         if ( id != nullptr && *len >= n )
          {
-            if ( cb != 0 )
+            if ( cb != nullptr )
                for ( const PropertyDescription& d : properties )
                {
                   d.id.c_copy( id, *len+1 );
-                  if ( !(*cb)( id, uint64( d.type ), data ) )
+                  if ( !(*cb)( id, APIPropertyTypeFromVariantType( d.type ), data ) )
                      return api_false;
                }
             return api_true;
@@ -659,9 +665,9 @@ public:
    {
       try
       {
-         if ( id == 0 )
+         if ( id == nullptr )
          {
-            if ( apiValue != 0 )
+            if ( apiValue != nullptr )
                apiValue->type = VTYPE_INVALID;
             return api_false;
          }
@@ -669,12 +675,12 @@ public:
          const Variant& value = instance->GetProperty( id );
          if ( !value.IsValid() )
          {
-            if ( apiValue != 0 )
+            if ( apiValue != nullptr )
                apiValue->type = VTYPE_INVALID;
             return api_false;
          }
 
-         if ( apiValue == 0 ) // just verifying property existence?
+         if ( apiValue == nullptr ) // just verifying property existence?
             return api_true;
 
          APIPropertyValueFromVariant( *apiValue, value );
@@ -714,7 +720,7 @@ public:
    {
       try
       {
-         if ( apiValue == 0 )
+         if ( apiValue == nullptr )
             return api_false;
          instance->SetProperty( id, VariantFromAPIPropertyValue( *apiValue ) );
          return api_true;
@@ -742,7 +748,7 @@ public:
    {
       try
       {
-         if ( len == 0 )
+         if ( len == nullptr )
             return api_false;
 
          PropertyDescriptionArray properties = instance->ImageProperties();
@@ -750,13 +756,13 @@ public:
          for ( const PropertyDescription& d : properties )
             if ( d.id.Length() > n )
                n = d.id.Length();
-         if ( id != 0 && *len >= n )
+         if ( id != nullptr && *len >= n )
          {
-            if ( cb != 0 )
+            if ( cb != nullptr )
                for ( const PropertyDescription& d : properties )
                {
                   d.id.c_copy( id, *len+1 );
-                  if ( !(*cb)( id, uint64( d.type ), data ) )
+                  if ( !(*cb)( id, APIPropertyTypeFromVariantType( d.type ), data ) )
                      return api_false;
                }
             return api_true;
@@ -788,9 +794,9 @@ public:
    {
       try
       {
-         if ( id == 0 )
+         if ( id == nullptr )
          {
-            if ( apiValue != 0 )
+            if ( apiValue != nullptr )
                apiValue->type = VTYPE_INVALID;
             return api_false;
          }
@@ -798,12 +804,12 @@ public:
          const Variant& value = instance->GetImageProperty( id );
          if ( !value.IsValid() )
          {
-            if ( apiValue != 0 )
+            if ( apiValue != nullptr )
                apiValue->type = VTYPE_INVALID;
             return api_false;
          }
 
-         if ( apiValue == 0 ) // just verifying property existence?
+         if ( apiValue == nullptr ) // just verifying property existence?
             return api_true;
 
          APIPropertyValueFromVariant( *apiValue, value );
@@ -843,7 +849,7 @@ public:
    {
       try
       {
-         if ( apiValue == 0 )
+         if ( apiValue == nullptr )
             return api_false;
          instance->SetImageProperty( id, VariantFromAPIPropertyValue( *apiValue ) );
          return api_true;
@@ -1268,7 +1274,7 @@ public:
       try
       {
          Array<ImageOptions> o;
-         if ( options != 0 )
+         if ( options != nullptr )
             for ( uint32 i = 0; i < n; ++i )
             {
                ImageOptions oi;
@@ -1277,18 +1283,18 @@ public:
             }
 
          Array<void*> f;
-         if ( formatOptions != 0 )
+         if ( formatOptions != nullptr )
             for ( uint32 i = 0; i < n; ++i )
                f.Add( const_cast<void*>( formatOptions[i] ) );
 
          if ( !instance->QueryOptions( o, f ) )
             return api_false;
 
-         if ( options != 0 )
+         if ( options != nullptr )
             for ( uint32 i = 0, n1 = Min( n, uint32( o.Length() ) ); i < n1; ++i )
                PCLImageOptionsToAPI( options[i], o[i] );
 
-         if ( formatOptions != 0 )
+         if ( formatOptions != nullptr )
             for ( uint32 i = 0, n1 = Min( n, uint32( f.Length() ) ); i < n1; ++i )
                formatOptions[i] = f[i];
 
