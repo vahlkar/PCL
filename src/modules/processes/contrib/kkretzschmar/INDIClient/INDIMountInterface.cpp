@@ -2067,20 +2067,28 @@ __device_found:
          GUI->Dec_Value_Label.Clear();
 
       static const char* indiPierSides[] = { MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, MOUNT_SIDE_OF_PIER_EAST_ITEM_NAME };
-      for ( size_type i = 0; i < ItemsInArray( indiPierSides ); ++i )
+      bool deviceHasPierSideProperty = true;
+      for ( size_type i = 0; i < ItemsInArray( indiPierSides ); ++i ) {
          if ( indi->GetPropertyItem( m_device, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, indiPierSides[i], mountProp ) )
+         {
             if ( mountProp.PropertyValue == "ON" )
             {
                m_pierSide = i;
                break;
             }
-            else
-            {
-               // pier side fallback
-               // If the Indigo mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
-               double hourAngle = AlignmentModel::RangeShiftHourAngle(time_lst - coord_ra);
-               m_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
-            }
+         } else {
+             deviceHasPierSideProperty = false;
+             break;
+         }
+      }
+
+      if(!deviceHasPierSideProperty)
+      {
+         // pier side fallback
+         // If the Indigo mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
+         double hourAngle = AlignmentModel::RangeShiftHourAngle(time_lst - coord_ra);
+         m_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
+      }
 
 
       if ( indi->GetPropertyItem( m_device, MOUNT_HORIZONTAL_COORDINATES_PROPERTY_NAME, MOUNT_HORIZONTAL_COORDINATES_ALT_ITEM_NAME, mountProp, false/*formatted*/ ) )

@@ -197,6 +197,7 @@ public:
 
    bool disconnectServer() {
       if (IsServerConnected()) {
+         reset();
          return m_indigoClient.disconnectServer();
       }
       return true;
@@ -367,14 +368,6 @@ public:
       m_verbosity = Range( level, 0, 2 );
    }
 
-   bool ServerConnectionHasChanged()
-   {
-      volatile AutoLock lock( m_mutex );
-      bool hasChanged = m_serverConnectionChanged;
-      m_serverConnectionChanged = false;
-      return hasChanged;
-   }
-
    bool ReportChangedDeviceLists( INDIDeviceListItemArray& created, INDIDeviceListItemArray& removed )
    {
       volatile AutoLock lock( m_mutex );
@@ -404,16 +397,13 @@ public:
       return TheClient() != nullptr;
    }
 
+   void reset();
+
    static INDIClient* TheClient();
    static INDIClient* TheClientOrDie();
    static INDIClient* NewClient( const IsoString& hostName = "localhost", uint32 port = 7624 );
    static void DestroyClient();
 
-
-
-
-   void serverConnected();
-   void serverDisconnected( int exit_code );
 
 private:
    IndigoClient              m_indigoClient;
@@ -428,7 +418,6 @@ private:
    String                    m_downloadedImagePath;
    ServerMessage             m_currentServerMessage;
    int                       m_verbosity = 1;
-   bool                      m_serverConnectionChanged = false;
    INDIDeviceListItemArray   m_createdDevices;
    INDIDeviceListItemArray   m_removedDevices;
    INDIPropertyListItemArray m_createdProperties;

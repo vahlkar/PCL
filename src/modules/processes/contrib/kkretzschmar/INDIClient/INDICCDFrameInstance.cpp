@@ -838,6 +838,36 @@ String INDICCDFrameInstance::CCDFrameTypePrefix( int frameTypeIdx )
    }
 }
 
+pcl_enum INDICCDFrameInstance::GetPerSide(const String& telescopeName, double currentLST, double currentRA)
+{
+    INDIClient* indi = INDIClient::TheClientOrDie();
+
+    INDIPropertyListItem item;
+    static const char* indiPierSides[] = { MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, MOUNT_SIDE_OF_PIER_EAST_ITEM_NAME };
+    bool deviceHasPierSideProperty = true;
+    for ( size_type i = 0; i < ItemsInArray( indiPierSides ); ++i )
+    {
+       if ( indi->GetPropertyItem( telescopeName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, indiPierSides[i], item ) )
+       {
+          if ( item.PropertyValue == "ON" )
+          {
+             return i;
+          }
+       } else {
+         deviceHasPierSideProperty = false;
+         break;
+       }
+     }
+    if(!deviceHasPierSideProperty)
+    {
+       // pier side fallback
+       // If the Indigo mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
+       double hourAngle = AlignmentModel::RangeShiftHourAngle( currentLST - currentRA);
+       return hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
+    }
+    return IMCPierSide::None;
+}
+
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
@@ -1241,22 +1271,25 @@ void AbstractINDICCDFrameExecution::Perform()
                      {
                         // If not already available, try to get the telescope
                         // pier side from standard device properties.
-                        if ( !data.telescopePierSide.IsDefined() )
-                           if ( indi->GetPropertyItem( telescopeName, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, item) )
-                           {
-                              if (item.PropertyValue == "ON" )
-                              {
-                                 data.telescopePierSide = "WEST";
-                                 keywords << FITSHeaderKeyword( "PIERSIDE", "West", "Counterweight pointing East." );
-                              } else
-                              {
-                                 data.telescopePierSide = "EAST";
-                                 keywords << FITSHeaderKeyword( "PIERSIDE", "East", "Counterweight pointing West." );
-                              }
-                           } else {
-                              data.telescopePierSide = "NONE";
-                           }
+                        pcl_enum pierSide= IMCPierSide::None;
+                        if ( !data.telescopePierSide.IsDefined() ) {
 
+                           pierSide = m_instance.GetPerSide(telescopeName, data.localSiderealTime(), telescopeRA);
+
+                           if (pierSide == IMCPierSide::West)
+                           {
+                               data.telescopePierSide = "WEST";
+                               keywords << FITSHeaderKeyword( "PIERSIDE", "West", "Counterweight pointing East." );
+                           } else if (pierSide == IMCPierSide::East)
+                           {
+                              data.telescopePierSide = "EAST";
+                              keywords << FITSHeaderKeyword( "PIERSIDE", "East", "Counterweight pointing West." );
+                           } else {
+                              pierSide = IMCPierSide::None;
+                           }
+                        } else {
+                            pierSide = data.telescopePierSide() == "WEST" ? IMCPierSide::West : (data.telescopePierSide() == "EAST" ?  IMCPierSide::East : IMCPierSide::None);
+                        }
                         // Apply the inverse of the alignment model
                         if ( m_instance.p_enableAlignmentCorrection )
                         {
@@ -1265,7 +1298,6 @@ void AbstractINDICCDFrameExecution::Perform()
                            double localSiderialTime = data.localSiderealTime();
                            double newHourAngle = -1;
                            double newDec = -1;
-                           pcl_enum pierSide = data.telescopePierSide() == "EAST" ? IMCPierSide::East : IMCPierSide::West;
                            aModel->ApplyInverse( newHourAngle, newDec,
                                     AlignmentModel::RangeShiftHourAngle( localSiderialTime - Deg( telescopeRA )/15 ),
                                     Deg( telescopeDec ),

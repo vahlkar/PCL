@@ -92,6 +92,8 @@ public:
    static String CCDFrameTypePropertyString( int frameTypeIdx );
    static String CCDFrameTypePrefix( int frameTypeIdx );
 
+   pcl_enum GetPerSide(const String &telescopeName, double currentLST, double currentRA);
+
 private:
 
    String     p_deviceName;

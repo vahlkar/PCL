@@ -73,10 +73,7 @@ function INDICCDTestSuite()
       this.timer.reset();
    };
 
-   this.stopTimer = function ()
-   {
-      this.timer.stop();
-   };
+   
    this.timeout = function()
    {
       if ( this.timer.value > 10 )
@@ -101,10 +98,9 @@ function INDICCDTestSuite()
       {
          msleep( 100 );
          processEvents();
-         if ( indexOfDevice( (new IndigoDeviceController).devices, CCD_DEVICE_NAME ) >= 0 )
+         if ( indexOfDevice( this.deviceController.devices, CCD_DEVICE_NAME ) >= 0 )
             break;
       }
-      this.stopTime();
 
       // Wait for another 500 ms to allow for all device and property lists to
       // update completely.
@@ -122,16 +118,13 @@ function INDICCDTestSuite()
       {
          msleep( 100 );
          processEvents();
-         if ( propertyEquals( (new IndigoDeviceController).properties, propertyKey, "ON" ) )
+         if ( propertyEquals( this.deviceController.properties, propertyKey, "ON" ) )
             break;
       }
    };
 
    this.end = function()
    {
-      // Disconnect from INDI server
-      this.deviceController.serverConnect = false;
-      this.executeController();
    };
 };
 
@@ -142,12 +135,8 @@ function INDIMountTestSuite()
    this.__base__ = Test;
    this.__base__( "INDIMountTestSuite" );
 
-<<<<<<< HEAD
    this.deviceController = new IndigoDeviceController;
-=======
-   this.deviceController = new INDIDeviceController;
-   this.deviceController.serverHostName = "klaus-Inspiron-1720"
->>>>>>> 7c912548af71aec64089d296987ff43fbbe876ba
+   this.deviceController.serverHostName = "localhost"
    this.timer = new ElapsedTime;
 
    this.add( new INDIMountControllerTests( this ) );
@@ -186,7 +175,7 @@ function INDIMountTestSuite()
       {
          msleep( 100 );
          processEvents();
-         if ( indexOfDevice( (new IndigoDeviceController).devices, MOUNT_DEVICE_NAME ) >= 0 )
+         if ( indexOfDevice( this.deviceController.devices, MOUNT_DEVICE_NAME ) >= 0 )
             break;
       }
 
@@ -206,7 +195,7 @@ function INDIMountTestSuite()
       {
          msleep( 100 );
          processEvents();
-         if ( propertyEquals( (new IndigoDeviceController).properties, propertyKey, "ON" ) )
+         if ( propertyEquals( this.deviceController.properties, propertyKey, "ON" ) )
             break;
       }
    };
@@ -220,9 +209,9 @@ function INDIMountTestSuite()
 };
 
 // run CCD tests
-//INDICCDTestSuite.prototype = new Test;
+INDICCDTestSuite.prototype = new Test;
 
-//(new INDICCDTestSuite).run();
+(new INDICCDTestSuite).run();
 
 // run Mount tests
 INDIMountTestSuite.prototype = new Test;

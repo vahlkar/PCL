@@ -103,9 +103,6 @@ bool IndigoClient::disconnectServer() {
       if (rc != INDIGO_OK){
          return false;
       }
-      while (server->thread_started) { // check for abort flag
-            // do process events via hook
-      }
    }
    return true;
 }

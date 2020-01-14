@@ -776,7 +776,9 @@ void INDIDeviceControllerInterface::UpdateDeviceLists()
 
    if ( !createdDevices.IsEmpty() )
       for ( auto item : createdDevices )
+      {
          new DeviceNode( GUI->Devices_TreeBox, item );
+      }
 
    if ( !removedDevices.IsEmpty() )
       for ( int n = GUI->Devices_TreeBox.NumberOfChildren(), i = n; --i >= 0; )
@@ -895,6 +897,7 @@ void INDIDeviceControllerInterface::e_Show( Control& )
 void INDIDeviceControllerInterface::e_Hide( Control& )
 {
    GUI->SynchronizeWithServer_Timer.Stop();
+   INDIClient::DestroyClient();
 }
 
 void INDIDeviceControllerInterface::e_ToggleSection( SectionBar& sender, Control& section, bool start )
@@ -929,11 +932,6 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
             }
 
             INDIClient::TheClient()->disconnectServer();
-            if ( !INDIClient::TheClient()->IsServerConnected() )
-            {
-               INDIClient::DestroyClient();
-               GUI->ServerMessage_Label.SetText( "Successfully disconnected from server." );
-            }
          }
 
       IsoString hostName8 = GUI->HostName_Edit.Text().Trimmed().ToUTF8();
@@ -961,12 +959,6 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
       {
          if ( INDIClient::TheClient()->IsServerConnected() )
             INDIClient::TheClient()->disconnectServer();
-
-         if ( !INDIClient::TheClient()->IsServerConnected() )
-         {
-            INDIClient::DestroyClient();
-            GUI->ServerMessage_Label.SetText( "Successfully disconnected from server." );
-         }
       }
 
       UpdateDeviceLists();
