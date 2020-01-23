@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIClient.h - Released 2019-11-07T11:00:23Z
+// INDIClient.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -53,13 +53,13 @@
 #ifndef __INDIClient_h
 #define __INDIClient_h
 
-#include "INDIParamListTypes.h"
 #include "IIndigoProperty.h"
+#include "INDIParamListTypes.h"
 #include "IndigoClient.h"
 
 #include <pcl/AutoLock.h>
 
-#include<sstream>
+#include <sstream>
 
 namespace pcl
 {
@@ -71,7 +71,7 @@ class ExclusiveAccess
 {
 public:
 
-   typedef T   item_type;
+   typedef T item_type;
 
    ExclusiveAccess( Mutex& mutex, item_type& item ) :
       m_lock( mutex ),
@@ -91,16 +91,18 @@ public:
 
 private:
 
-   AutoLock   m_lock;
+   AutoLock m_lock;
    item_type& m_item;
 };
+
+// ----------------------------------------------------------------------------
 
 template <class T>
 class ExclusiveConstAccess
 {
 public:
 
-   typedef T   item_type;
+   typedef T item_type;
 
    ExclusiveConstAccess( Mutex& mutex, const item_type& item ) :
       m_lock( mutex ),
@@ -115,9 +117,11 @@ public:
 
 private:
 
-         AutoLock   m_lock;
+   AutoLock m_lock;
    const item_type& m_item;
 };
+
+// ----------------------------------------------------------------------------
 
 class ExclPropertyList : public ExclusiveAccess<INDIPropertyListItemArray>
 {
@@ -129,6 +133,8 @@ public:
    }
 };
 
+// ----------------------------------------------------------------------------
+
 class ExclConstPropertyList : public ExclusiveConstAccess<INDIPropertyListItemArray>
 {
 public:
@@ -138,6 +144,8 @@ public:
    {
    }
 };
+
+// ----------------------------------------------------------------------------
 
 class ExclDeviceList : public ExclusiveAccess<INDIDeviceListItemArray>
 {
@@ -149,6 +157,8 @@ public:
    }
 };
 
+// ----------------------------------------------------------------------------
+
 class ExclConstDeviceList : public ExclusiveConstAccess<INDIDeviceListItemArray>
 {
 public:
@@ -159,17 +169,23 @@ public:
    }
 };
 
+// ----------------------------------------------------------------------------
+
 class INDIClient
 {
 public:
 
-    struct ServerMessage {
-        String m_message;
-        int    m_messageSeverity = 0;
-    };
+   struct ServerMessage
+   {
+      String m_message;
+      int m_messageSeverity = 0;
+   };
 
-   INDIClient( const IsoString& hostName = "localhost", uint32 port = 7624 ): m_indigoClient("PixInsight", hostName.c_str(), port), m_serverHost(hostName), m_serverPort(port) {
-
+   INDIClient( const IsoString& hostName = "localhost", uint32 port = 7624 ) :
+      m_indigoClient( "PixInsight", hostName.c_str(), port ),
+      m_serverHost( hostName ),
+      m_serverPort( port )
+   {
       // register Indigo callbacks
       registerNewDeviceCallback();
       registerRemoveDeviceCallback();
@@ -181,22 +197,23 @@ public:
       registerNewLightCallback();
       registerNewBlobCallback();
       registerGetMessageCallback();
-
    }
 
    virtual ~INDIClient()
    {
    }
 
-   bool connectServer(std::ostream& errorMessage) {
-      if (!m_indigoClient.connectServer(errorMessage)){
+   bool connectServer( std::ostream& errorMessage )
+   {
+      if ( !m_indigoClient.connectServer( errorMessage ) )
          return false;
-      }
       return true;
    }
 
-   bool disconnectServer() {
-      if (IsServerConnected()) {
+   bool disconnectServer()
+   {
+      if ( IsServerConnected() )
+      {
          reset();
          return m_indigoClient.disconnectServer();
       }
@@ -206,28 +223,28 @@ public:
    bool IsServerConnected() const
    {
       std::ostringstream errorMessage;
-      return m_indigoClient.serverIsConnected(errorMessage);
+      return m_indigoClient.serverIsConnected( errorMessage );
    }
 
-   bool IsServerConnected(std::ostream& errorMessage) const
+   bool IsServerConnected( std::ostream& errorMessage ) const
    {
-      return m_indigoClient.serverIsConnected(errorMessage);
+      return m_indigoClient.serverIsConnected( errorMessage );
    }
 
-   bool connectDevice(const IsoString& deviceName)
+   bool connectDevice( const IsoString& deviceName )
    {
-      return m_indigoClient.connectDevice(std::string(deviceName.c_str()));
+      return m_indigoClient.connectDevice( std::string( deviceName.c_str() ) );
    }
 
-   bool disconnectDevice(const IsoString& deviceName)
+   bool disconnectDevice( const IsoString& deviceName )
    {
-      return m_indigoClient.disconnectDevice(std::string(deviceName.c_str()));
+      return m_indigoClient.disconnectDevice( std::string( deviceName.c_str() ) );
    }
 
-   bool IsDeviceConnected(const IsoString& deviceName) const;
+   bool IsDeviceConnected( const IsoString& deviceName ) const;
 
-   void setServer(const char *hostname, unsigned int port) {
-
+   void setServer( const char* hostname, unsigned int port )
+   {
    }
 
    IsoString HostName() const
@@ -281,36 +298,38 @@ public:
                          bool formatted = true ) const;
 
    bool GetPropertyTargetItem( const String& device, const String& property, const String& element,
-                         INDIPropertyListItem& result,
-                         bool formatted = true ) const;
+                               INDIPropertyListItem& result,
+                               bool formatted = true ) const;
 
    bool HasPropertyItem( const String& device, const String& property, const String& element ) const
    {
       INDIPropertyListItem dum;
-      return GetPropertyItem( device, property, element, dum, false/*formatted*/ );
+      return GetPropertyItem( device, property, element, dum, false /*formatted*/ );
    }
 
    bool SendNewPropertyItem( const INDINewPropertyItem& item, bool async = false );
 
    template <typename T>
    bool SendNewPropertyItem( const String& device, const String& property, const String& type,
-                             const String& element, const T& value, bool async = false )
+                             const String& element, const T& value,
+                             bool async = false )
    {
       return SendNewPropertyItem( INDINewPropertyItem( device, property, type, element, value ), async );
    }
 
    template <typename T>
    bool MaybeSendNewPropertyItem( const String& device, const String& property, const String& type,
-                                  const String& element, const T& value, bool async = false )
+                                  const String& element, const T& value,
+                                  bool async = false )
    {
-      return HasPropertyItem( device, property, element ) &&
-             SendNewPropertyItem( device, property, type, element, value, async );
+      return HasPropertyItem( device, property, element ) && SendNewPropertyItem( device, property, type, element, value, async );
    }
 
    template <typename T1, typename T2>
    bool SendNewPropertyItem( const String& device, const String& property, const String& type,
                              const String& element1, const T1& value1,
-                             const String& element2, const T2& value2, bool async = false )
+                             const String& element2, const T2& value2,
+                             bool async = false )
    {
       return SendNewPropertyItem( INDINewPropertyItem( device, property, type, element1, value1, element2, value2 ), async );
    }
@@ -318,11 +337,12 @@ public:
    template <typename T1, typename T2>
    bool MaybeSendNewPropertyItem( const String& device, const String& property, const String& type,
                                   const String& element1, const T1& value1,
-                                  const String& element2, const T2& value2, bool async = false )
+                                  const String& element2, const T2& value2,
+                                  bool async = false )
    {
-      return HasPropertyItem( device, property, element1 ) &&
-             HasPropertyItem( device, property, element2 ) &&
-             SendNewPropertyItem( device, property, type, element1, value1, element2, value2, async );
+      return HasPropertyItem( device, property, element1 )
+          && HasPropertyItem( device, property, element2 )
+          && SendNewPropertyItem( device, property, type, element1, value1, element2, value2, async );
    }
 
    ServerMessage CurrentServerMessage() const
@@ -368,7 +388,8 @@ public:
       m_verbosity = Range( level, 0, 2 );
    }
 
-   bool ReportChangedDeviceLists( INDIDeviceListItemArray& created, INDIDeviceListItemArray& removed )
+   bool ReportChangedDeviceLists( INDIDeviceListItemArray& created,
+                                  INDIDeviceListItemArray& removed )
    {
       volatile AutoLock lock( m_mutex );
       created = m_createdDevices;
@@ -378,7 +399,9 @@ public:
       return !created.IsEmpty() || !removed.IsEmpty();
    }
 
-   bool ReportChangedPropertyLists( INDIPropertyListItemArray& created, INDIPropertyListItemArray& removed, INDIPropertyListItemArray& updated )
+   bool ReportChangedPropertyLists( INDIPropertyListItemArray& created,
+                                    INDIPropertyListItemArray& removed,
+                                    INDIPropertyListItemArray& updated )
    {
       volatile AutoLock lock( m_mutex );
       created = m_createdProperties;
@@ -404,10 +427,9 @@ public:
    static INDIClient* NewClient( const IsoString& hostName = "localhost", uint32 port = 7624 );
    static void DestroyClient();
 
-
 private:
-   IndigoClient              m_indigoClient;
 
+   IndigoClient              m_indigoClient;
    IsoString                 m_serverHost;
    uint32_t                  m_serverPort;
    bool                      m_serverIsConnected;
@@ -424,7 +446,6 @@ private:
    INDIPropertyListItemArray m_removedProperties;
    INDIPropertyListItemArray m_updatedProperties;
    mutable Mutex             m_mutex;
-
 
    void registerNewDeviceCallback();
    void registerRemoveDeviceCallback();
@@ -451,7 +472,6 @@ private:
       virtual void operator()( INDIClient* indi, INDIPropertyListItemArray& properties, const INDIPropertyListItem& item ) const
       {
          properties << item;
-
          {
             volatile AutoLock lock( indi->m_mutex );
             indi->m_createdProperties << item;
@@ -469,7 +489,6 @@ private:
          if ( p != properties.End() )
          {
             properties.Remove( p );
-
             {
                volatile AutoLock lock( indi->m_mutex );
                indi->m_removedProperties << item;
@@ -488,7 +507,6 @@ private:
          if ( p != properties.End() )
          {
             *p = item;
-
             {
                volatile AutoLock lock( indi->m_mutex );
                indi->m_updatedProperties << item;
@@ -503,9 +521,9 @@ private:
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __INDIClient_h
+#endif // __INDIClient_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIClient.h - Released 2019-11-07T11:00:23Z
+// EOF INDIClient.h - Released 2020-01-23T19:56:17Z

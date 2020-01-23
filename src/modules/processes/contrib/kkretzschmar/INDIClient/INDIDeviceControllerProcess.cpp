@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerProcess.cpp - Released 2019-11-07T11:00:23Z
+// INDIDeviceControllerProcess.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -50,10 +50,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include "INDIDeviceControllerProcess.h"
 #include "INDIDeviceControllerInstance.h"
 #include "INDIDeviceControllerInterface.h"
 #include "INDIDeviceControllerParameters.h"
-#include "INDIDeviceControllerProcess.h"
 
 #include <pcl/Arguments.h>
 #include <pcl/Console.h>
@@ -128,10 +128,9 @@ uint32 INDIDeviceControllerProcess::Version() const
 
 String INDIDeviceControllerProcess::Description() const
 {
-   return
-   "<html>"
-   "<p>An Indigo client process for controlling Indigo devices.</p>"
-   "</html>";
+   return "<html>"
+          "<p>An Indigo client process for controlling Indigo devices.</p>"
+          "</html>";
 }
 
 // ----------------------------------------------------------------------------
@@ -147,12 +146,14 @@ bool INDIDeviceControllerProcess::PrefersGlobalExecution() const
 {
    return true;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* INDIDeviceControllerProcess::DefaultInterface() const
 {
    return TheINDIDeviceControllerInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* INDIDeviceControllerProcess::Create() const
@@ -165,7 +166,7 @@ ProcessImplementation* INDIDeviceControllerProcess::Create() const
 ProcessImplementation* INDIDeviceControllerProcess::Clone( const ProcessImplementation& p ) const
 {
    const INDIDeviceControllerInstance* instPtr = dynamic_cast<const INDIDeviceControllerInstance*>( &p );
-   return (instPtr != nullptr) ? new INDIDeviceControllerInstance( *instPtr ) : nullptr;
+   return ( instPtr != nullptr ) ? new INDIDeviceControllerInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -195,7 +196,7 @@ int INDIDeviceControllerProcess::ProcessCommandLine( const StringList& argv ) co
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerProcess.cpp - Released 2019-11-07T11:00:23Z
+// EOF INDIDeviceControllerProcess.cpp - Released 2020-01-23T19:56:17Z

@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIMountInstance.h - Released 2019-11-07T11:00:23Z
+// INDIMountInstance.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -53,9 +53,9 @@
 #ifndef __INDIMountInstance_h
 #define __INDIMountInstance_h
 
+#include <pcl/Array.h>
 #include <pcl/MetaParameter.h>
 #include <pcl/ProcessImplementation.h>
-#include <pcl/Array.h>
 
 #include "Alignment.h"
 
@@ -71,18 +71,15 @@ public:
    INDIMountInstance( const MetaProcess* );
    INDIMountInstance( const INDIMountInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool IsHistoryUpdater( const View& v ) const;
-   virtual bool ExecuteOn( View& view );
-
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-
-   virtual void* LockParameter( const MetaParameter* p, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool IsHistoryUpdater( const View& v ) const override;
+   bool ExecuteOn( View& view ) override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter* p, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
    bool ValidateDevice( bool throwErrors = true ) const;
    void SendDeviceProperties( bool asynchronous = true ) const;
@@ -94,36 +91,36 @@ public:
    void GetPierSide();
    bool isForceCounterWeightUp() const;
 
-   void AddSyncDataPoint(const SyncDataPoint& syncDataPoint);
+   void AddSyncDataPoint( const SyncDataPoint& syncDataPoint );
 
-   static void loadSyncData(Array<SyncDataPoint>& syncDataList, String syncDataFile);
+   static void loadSyncData( Array<SyncDataPoint>& syncDataList, String syncDataFile );
 
 private:
 
-           String   p_deviceName;
-           pcl_enum p_command;
-           pcl_enum p_slewRate;
-           pcl_enum p_alignmentMethod;
-           pcl_enum p_pierSide;
-           double   p_targetRA;
-           double   p_targetDec;
-           pcl_bool p_enableAlignmentCorrection;
-           String   p_alignmentFile;
-           uint32   p_alignmentConfig;
+   String p_deviceName;
+   pcl_enum p_command;
+   pcl_enum p_slewRate;
+   pcl_enum p_alignmentMethod;
+   pcl_enum p_pierSide;
+   double p_targetRA;
+   double p_targetDec;
+   pcl_bool p_enableAlignmentCorrection;
+   String p_alignmentFile;
+   uint32 p_alignmentConfig;
 
-           double   o_currentLST;
-           double   o_currentRA;
-           double   o_currentDec;
-   mutable double   o_apparentTargetRA;
-   mutable double   o_apparentTargetDec;
-           double   o_geographicLatitude;
-           double   o_syncLST;
-           double   o_syncCelestialRA;
-           double   o_syncCelestialDEC;
-           double   o_syncTelescopeRA;
-           double   o_syncTelescopeDEC;
+   double o_currentLST;
+   double o_currentRA;
+   double o_currentDec;
+   mutable double o_apparentTargetRA;
+   mutable double o_apparentTargetDec;
+   double o_geographicLatitude;
+   double o_syncLST;
+   double o_syncCelestialRA;
+   double o_syncCelestialDEC;
+   double o_syncTelescopeRA;
+   double o_syncTelescopeDEC;
 
-   Array<SyncDataPoint>  syncDataArray;
+   Array<SyncDataPoint> syncDataArray;
 
    friend class INDIMountInterface;
    friend class AbstractINDIMountExecution;
@@ -189,9 +186,9 @@ private:
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __INDIMountInstance_h
+#endif // __INDIMountInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInstance.h - Released 2019-11-07T11:00:23Z
+// EOF INDIMountInstance.h - Released 2020-01-23T19:56:17Z

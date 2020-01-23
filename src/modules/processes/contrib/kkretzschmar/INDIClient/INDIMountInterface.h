@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIMountInterface.h - Released 2019-11-07T11:00:23Z
+// INDIMountInterface.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -67,16 +67,16 @@
 #include <pcl/SectionBar.h>
 #include <pcl/Sizer.h>
 #include <pcl/SpinBox.h>
+#include <pcl/TabBox.h>
 #include <pcl/TextBox.h>
 #include <pcl/Timer.h>
 #include <pcl/ToolButton.h>
 #include <pcl/TreeBox.h>
-#include <pcl/TabBox.h>
 
-#include "INDIMountParameters.h"
+#include "DeviceConfigBase.h"
 #include "INDIClient.h"
 #include "INDIMountInstance.h"
-#include "DeviceConfigBase.h"
+#include "INDIMountParameters.h"
 
 namespace pcl
 {
@@ -117,26 +117,26 @@ public:
 
 private:
 
-   VerticalSizer       Global_Sizer;
-      HorizontalSizer      Search_Sizer;
-         Label                ObjectName_Label;
-         Edit                 ObjectName_Edit;
-         PushButton           Search_Button;
-      TextBox              SearchInfo_TextBox;
-      HorizontalSizer      Buttons_Sizer;
-         PushButton           Get_Button;
-         PushButton           GoTo_Button;
-         PushButton           Cancel_Button;
+   VerticalSizer Global_Sizer;
+   HorizontalSizer Search_Sizer;
+   Label ObjectName_Label;
+   Edit ObjectName_Edit;
+   PushButton Search_Button;
+   TextBox SearchInfo_TextBox;
+   HorizontalSizer Buttons_Sizer;
+   PushButton Get_Button;
+   PushButton GoTo_Button;
+   PushButton Cancel_Button;
 
    INDIMountInterface& m_parent;
 
-   double    m_alpha = 0;
-   double    m_delta = 0;
-   bool      m_valid = false;
-   bool      m_goto = false;
-   bool      m_downloading = false;
-   bool      m_abort = false;
-   bool      m_firstTimeShown = true;
+   double m_alpha = 0;
+   double m_delta = 0;
+   bool m_valid = false;
+   bool m_goto = false;
+   bool m_downloading = false;
+   bool m_abort = false;
+   bool m_firstTimeShown = true;
    IsoString m_downloadData;
 
    void e_Show( Control& sender );
@@ -144,8 +144,8 @@ private:
    void e_LoseFocus( Control& sender );
    bool e_Download( NetworkTransfer& sender, const void* buffer, fsize_type size );
    bool e_Progress( NetworkTransfer& sender,
-                  fsize_type downloadTotal, fsize_type downloadCurrent,
-                  fsize_type uploadTotal, fsize_type uploadCurrent );
+                    fsize_type downloadTotal, fsize_type downloadCurrent,
+                    fsize_type uploadTotal, fsize_type uploadCurrent );
    void e_Click( Button& sender, bool checked );
 };
 
@@ -184,26 +184,26 @@ public:
 
 protected:
 
-   VerticalSizer     Global_Sizer;
-      HorizontalSizer   Objects_Sizer;
-         Label             Object_Label;
-         ComboBox          Objects_ComboBox;
-         PushButton        Calculate_Button;
-      TextBox           ObjectInfo_TextBox;
-      HorizontalSizer   Buttons_Sizer;
-         PushButton        Clear_Button;
-         PushButton        Get_Button;
-         PushButton        GoTo_Button;
-         PushButton        Cancel_Button;
+   VerticalSizer Global_Sizer;
+   HorizontalSizer Objects_Sizer;
+   Label Object_Label;
+   ComboBox Objects_ComboBox;
+   PushButton Calculate_Button;
+   TextBox ObjectInfo_TextBox;
+   HorizontalSizer Buttons_Sizer;
+   PushButton Clear_Button;
+   PushButton Get_Button;
+   PushButton GoTo_Button;
+   PushButton Cancel_Button;
 
    INDIMountInterface& m_parent;
 
    IsoString m_objectName;
-   double    m_alpha = 0;  // hours
-   double    m_delta = 0; // degrees
-   bool      m_valid = false;
-   bool      m_goto = false;
-   bool      m_firstTimeShown = true;
+   double m_alpha = 0; // hours
+   double m_delta = 0; // degrees
+   bool m_valid = false;
+   bool m_goto = false;
+   bool m_firstTimeShown = true;
 
    virtual String ObjectName( const EphemerisObject& ) const;
 
@@ -255,26 +255,26 @@ class SyncDataListDialog : public Dialog
 {
 public:
 
-   SyncDataListDialog(Array<SyncDataPoint>& syncDataArray);
+   SyncDataListDialog( Array<SyncDataPoint>& syncDataArray );
 
 private:
 
-   VerticalSizer     Global_Sizer;
-      HorizontalSizer      SyncDataList_Sizer;
-         TreeBox              SnycData_TreeBox;
-      HorizontalSizer      SyncDataListButton_Sizer;
-         PushButton           Enable_Button;
-         PushButton           Disable_Button;
-         PushButton           Delete_Button;
-         PushButton           Ok_Button;
-         PushButton           Cancel_Button;
+   VerticalSizer Global_Sizer;
+   HorizontalSizer SyncDataList_Sizer;
+   TreeBox SnycData_TreeBox;
+   HorizontalSizer SyncDataListButton_Sizer;
+   PushButton Enable_Button;
+   PushButton Disable_Button;
+   PushButton Delete_Button;
+   PushButton Ok_Button;
+   PushButton Cancel_Button;
 
    void e_Click( Button& sender, bool checked );
    void e_Show( Control& sender );
    void e_Close( Control& sender, bool& allowClose );
 
    Array<SyncDataPoint>& m_syncDataList;
-   bool                  m_firstTimeShown = true;
+   bool m_firstTimeShown = true;
 };
 
 // ----------------------------------------------------------------------------
@@ -291,24 +291,24 @@ private:
 
    INDIMountInterface& m_interface;
 
-   VerticalSizer        Global_Sizer;
-      TabBox               AlignmentConfig_TabBox;
-         Control              AnalyticalAlignment_ConfigControl;
-            VerticalSizer     MountAlignmentConfig_Sizer;
-               CheckBox          ModelPierSide_CheckBox;
-               CheckBox          Offset_CheckBox;
-               CheckBox          Collimation_CheckBox;
-               CheckBox          NonPerpendicular_CheckBox;
-               CheckBox          PolarAxisDisplacement_CheckBox;
-               CheckBox          TubeFlexure_CheckBox;
-               CheckBox          ForkFlexure_CheckBox;
-               CheckBox          DeltaAxisFlexure_CheckBox;
-               CheckBox          Linear_CheckBox;
-               CheckBox          Quadratic_CheckBox;
-         //Control             SurfaceSplineAlignment_ConfigControl;
-            HorizontalSizer      AlignmentConfigButton_Sizer;
-               PushButton           Ok_Button;
-               PushButton           Cancel_Button;
+   VerticalSizer Global_Sizer;
+   TabBox AlignmentConfig_TabBox;
+   Control AnalyticalAlignment_ConfigControl;
+   VerticalSizer MountAlignmentConfig_Sizer;
+   CheckBox ModelPierSide_CheckBox;
+   CheckBox Offset_CheckBox;
+   CheckBox Collimation_CheckBox;
+   CheckBox NonPerpendicular_CheckBox;
+   CheckBox PolarAxisDisplacement_CheckBox;
+   CheckBox TubeFlexure_CheckBox;
+   CheckBox ForkFlexure_CheckBox;
+   CheckBox DeltaAxisFlexure_CheckBox;
+   CheckBox Linear_CheckBox;
+   CheckBox Quadratic_CheckBox;
+   //Control             SurfaceSplineAlignment_ConfigControl;
+   HorizontalSizer AlignmentConfigButton_Sizer;
+   PushButton Ok_Button;
+   PushButton Cancel_Button;
 
    void e_Show( Control& sender );
    void e_Click( Button& sender, bool checked );
@@ -322,11 +322,12 @@ class MountConfigDialog : public ConfigDialogBase
 public:
 
    MountConfigDialog( const String& deviceName,
-                      double geoLat, double geoLong, double geoHeight,
-                      String utcTime, double utcOffset );
+      double geoLat, double geoLong, double geoHeight,
+      String utcTime, double utcOffset );
 
-   double getTelescopeFocalLength() const {
-       return TelescopeFocalLength_NumericEdit.Value();
+   double getTelescopeFocalLength() const
+   {
+      return TelescopeFocalLength_NumericEdit.Value();
    }
 
 private:
@@ -335,33 +336,33 @@ private:
 
    String m_device;
 
-   HorizontalSizer   Latitude_Sizer;
-      Label             Latitude_Label;
-      SpinBox           Latitude_H_SpinBox;
-      SpinBox           Latitude_M_SpinBox;
-      NumericEdit       Latitude_S_NumericEdit;
-      CheckBox          LatitudeIsSouth_CheckBox;
-   HorizontalSizer   Longitude_Sizer;
-      Label             Longitude_Label;
-      SpinBox           Longitude_H_SpinBox;
-      SpinBox           Longitude_M_SpinBox;
-      NumericEdit       Longitude_S_NumericEdit;
-      CheckBox          LongitudeIsWest_CheckBox;
-   HorizontalSizer   Date_Sizer;
-      Label             Date_Label;
-      SpinBox           Date_Day_SpinBox;
-      SpinBox           Date_Month_SpinBox;
-      SpinBox           Date_Year_SpinBox;
-      PushButton        GetHostDateTime_PushButton;
-   HorizontalSizer   UtcTime_Sizer;
-      Label             UtcTime_Label;
-      SpinBox           UtcTime_H_SpinBox;
-      SpinBox           UtcTime_M_SpinBox;
-      NumericEdit       UtcTime_S_NumericEdit;
+   HorizontalSizer Latitude_Sizer;
+   Label Latitude_Label;
+   SpinBox Latitude_H_SpinBox;
+   SpinBox Latitude_M_SpinBox;
+   NumericEdit Latitude_S_NumericEdit;
+   CheckBox LatitudeIsSouth_CheckBox;
+   HorizontalSizer Longitude_Sizer;
+   Label Longitude_Label;
+   SpinBox Longitude_H_SpinBox;
+   SpinBox Longitude_M_SpinBox;
+   NumericEdit Longitude_S_NumericEdit;
+   CheckBox LongitudeIsWest_CheckBox;
+   HorizontalSizer Date_Sizer;
+   Label Date_Label;
+   SpinBox Date_Day_SpinBox;
+   SpinBox Date_Month_SpinBox;
+   SpinBox Date_Year_SpinBox;
+   PushButton GetHostDateTime_PushButton;
+   HorizontalSizer UtcTime_Sizer;
+   Label UtcTime_Label;
+   SpinBox UtcTime_H_SpinBox;
+   SpinBox UtcTime_M_SpinBox;
+   NumericEdit UtcTime_S_NumericEdit;
 
-   NumericEdit       Height_NumericEdit;
-   NumericEdit       TelescopeAperture_NumericEdit;
-   NumericEdit       TelescopeFocalLength_NumericEdit;
+   NumericEdit Height_NumericEdit;
+   NumericEdit TelescopeAperture_NumericEdit;
+   NumericEdit TelescopeFocalLength_NumericEdit;
 
    void SendUpdatedProperties();
    void e_Timer( Timer& sender );
@@ -412,12 +413,12 @@ public:
 
    const String& UtcTime() const
    {
-       return m_utcTime;
+      return m_utcTime;
    }
 
    double UtcOffset() const
    {
-       return m_utcOffset;
+      return m_utcOffset;
    }
 
    int TelescopeAperture() const
@@ -464,122 +465,122 @@ private:
       Timer UpdateDeviceList_Timer;
       Timer UpdateDeviceProperties_Timer;
 
-      VerticalSizer     Global_Sizer;
+      VerticalSizer Global_Sizer;
 
-      SectionBar        ServerParameters_SectionBar;
-      Control           ServerParameters_Control;
-      VerticalSizer     ServerParameters_Sizer;
-         HorizontalSizer   MountDevice_Sizer;
-            Label             MountDevice_Label;
-            ComboBox          MountDevice_Combo;
-            ToolButton        MountDeviceConfig_ToolButton;
-         Control           MountProperties_Control;
-         VerticalSizer     MountProperties_Sizer;
-            HorizontalSizer   MountLST_Sizer;
-               Label             LST_Label;
-               Label             LST_Value_Label;
-            HorizontalSizer   MountEQRA_Sizer;
-               Label             RA_Label;
-               Label             RA_Value_Label;
-            HorizontalSizer   MountEQDec_Sizer;
-               Label             Dec_Label;
-               Label             Dec_Value_Label;
-            HorizontalSizer   MountHZAZ_Sizer;
-               Label             AZ_Label;
-               Label             AZ_Value_Label;
-            HorizontalSizer   MountHZALT_Sizer;
-               Label             ALT_Label;
-               Label             ALT_Value_Label;
-      SectionBar        MountAlignment_SectionBar;
-      Control           MountAlignment_Control;
-      VerticalSizer     MountAlignment_Sizer;
-         HorizontalSizer   MountAlignmentFile_Sizer;
-            Label             AlignmentFile_Label;
-            Edit              AlignmentFile_Edit;
-            ToolButton        AlignmentFile_ToolButton;
-         HorizontalSizer   MountAlignmentConfig_Sizer;
-            PushButton        MountAligmentModelConfig_Button;
-            PushButton        MountAligmentModelFit_Button;
-            PushButton        SyncDataList_Button;
-         HorizontalSizer   MountAlignmentCorrection_Sizer;
-            CheckBox          MountAlignmentCorrection_CheckBox;
-            CheckBox          MountAlignmentPlotResiduals_CheckBox;
-      SectionBar        MountGoTo_SectionBar;
-      Control           MountGoTo_Control;
-      VerticalSizer     MountGoTo_Sizer;
-         HorizontalSizer   MountTargetRA_Sizer;
-            Label             TargetRA_Label;
-            SpinBox           TargetRA_H_SpinBox;
-            SpinBox           TargetRA_M_SpinBox;
-            NumericEdit       TargetRA_S_NumericEdit;
-         HorizontalSizer   MountTargetDec_Sizer;
-            Label             TargetDec_Label;
-            SpinBox           TargetDec_H_SpinBox;
-            SpinBox           TargetDec_M_SpinBox;
-            NumericEdit       TargetDec_S_NumericEdit;
-            CheckBox          MountTargetDECIsSouth_CheckBox;
-         HorizontalSizer   MountSearch_Sizer;
-            PushButton        MountSearch_Button;
-            PushButton        MountPlanets_Button;
-            PushButton        MountAsteroids_Button;
-         HorizontalSizer   MountGoToStart_Sizer;
-            PushButton        MountGoToStart_Button;
-            PushButton        MountSync_Button;
-            PushButton        MountPark_Button;
-         HorizontalSizer   MountGoToCancel_Sizer;
-            PushButton        MountGoToCancel_Button;
-         Label             MountGoToInfo_Label;
+      SectionBar ServerParameters_SectionBar;
+      Control ServerParameters_Control;
+      VerticalSizer ServerParameters_Sizer;
+      HorizontalSizer MountDevice_Sizer;
+      Label MountDevice_Label;
+      ComboBox MountDevice_Combo;
+      ToolButton MountDeviceConfig_ToolButton;
+      Control MountProperties_Control;
+      VerticalSizer MountProperties_Sizer;
+      HorizontalSizer MountLST_Sizer;
+      Label LST_Label;
+      Label LST_Value_Label;
+      HorizontalSizer MountEQRA_Sizer;
+      Label RA_Label;
+      Label RA_Value_Label;
+      HorizontalSizer MountEQDec_Sizer;
+      Label Dec_Label;
+      Label Dec_Value_Label;
+      HorizontalSizer MountHZAZ_Sizer;
+      Label AZ_Label;
+      Label AZ_Value_Label;
+      HorizontalSizer MountHZALT_Sizer;
+      Label ALT_Label;
+      Label ALT_Value_Label;
+      SectionBar MountAlignment_SectionBar;
+      Control MountAlignment_Control;
+      VerticalSizer MountAlignment_Sizer;
+      HorizontalSizer MountAlignmentFile_Sizer;
+      Label AlignmentFile_Label;
+      Edit AlignmentFile_Edit;
+      ToolButton AlignmentFile_ToolButton;
+      HorizontalSizer MountAlignmentConfig_Sizer;
+      PushButton MountAligmentModelConfig_Button;
+      PushButton MountAligmentModelFit_Button;
+      PushButton SyncDataList_Button;
+      HorizontalSizer MountAlignmentCorrection_Sizer;
+      CheckBox MountAlignmentCorrection_CheckBox;
+      CheckBox MountAlignmentPlotResiduals_CheckBox;
+      SectionBar MountGoTo_SectionBar;
+      Control MountGoTo_Control;
+      VerticalSizer MountGoTo_Sizer;
+      HorizontalSizer MountTargetRA_Sizer;
+      Label TargetRA_Label;
+      SpinBox TargetRA_H_SpinBox;
+      SpinBox TargetRA_M_SpinBox;
+      NumericEdit TargetRA_S_NumericEdit;
+      HorizontalSizer MountTargetDec_Sizer;
+      Label TargetDec_Label;
+      SpinBox TargetDec_H_SpinBox;
+      SpinBox TargetDec_M_SpinBox;
+      NumericEdit TargetDec_S_NumericEdit;
+      CheckBox MountTargetDECIsSouth_CheckBox;
+      HorizontalSizer MountSearch_Sizer;
+      PushButton MountSearch_Button;
+      PushButton MountPlanets_Button;
+      PushButton MountAsteroids_Button;
+      HorizontalSizer MountGoToStart_Sizer;
+      PushButton MountGoToStart_Button;
+      PushButton MountSync_Button;
+      PushButton MountPark_Button;
+      HorizontalSizer MountGoToCancel_Sizer;
+      PushButton MountGoToCancel_Button;
+      Label MountGoToInfo_Label;
 
-      SectionBar        Slew_SectionBar;
-      Control           Slew_Control;
-      HorizontalSizer   Slew_Sizer;
-         Control           SlewLeft_Control;
-         VerticalSizer     SlewLeft_Sizer;
-            HorizontalSizer   SlewTopRow_Sizer;
-               ToolButton        SlewTopLeft_Button;
-               ToolButton        SlewTop_Button;
-               ToolButton        SlewTopRight_Button;
-            HorizontalSizer   SlewMiddleRow_Sizer;
-               ToolButton        SlewLeft_Button;
-               ToolButton        SlewStop_Button;
-               ToolButton        SlewRight_Button;
-            HorizontalSizer   SlewBottomRow_Sizer;
-               ToolButton        SlewBottomLeft_Button;
-               ToolButton        SlewBottom_Button;
-               ToolButton        SlewBottomRight_Button;
-         VerticalSizer     SlewRight_Sizer;
-            Label             SlewSpeed_Label;
-            ComboBox          SlewSpeed_ComboBox;
+      SectionBar Slew_SectionBar;
+      Control Slew_Control;
+      HorizontalSizer Slew_Sizer;
+      Control SlewLeft_Control;
+      VerticalSizer SlewLeft_Sizer;
+      HorizontalSizer SlewTopRow_Sizer;
+      ToolButton SlewTopLeft_Button;
+      ToolButton SlewTop_Button;
+      ToolButton SlewTopRight_Button;
+      HorizontalSizer SlewMiddleRow_Sizer;
+      ToolButton SlewLeft_Button;
+      ToolButton SlewStop_Button;
+      ToolButton SlewRight_Button;
+      HorizontalSizer SlewBottomRow_Sizer;
+      ToolButton SlewBottomLeft_Button;
+      ToolButton SlewBottom_Button;
+      ToolButton SlewBottomRight_Button;
+      VerticalSizer SlewRight_Sizer;
+      Label SlewSpeed_Label;
+      ComboBox SlewSpeed_ComboBox;
 
-      bool m_modelBothPierSides              = true;
-      bool m_alignmentConfigOffset           = true;
-      bool m_alignmentConfigCollimation      = true;
+      bool m_modelBothPierSides = true;
+      bool m_alignmentConfigOffset = true;
+      bool m_alignmentConfigCollimation = true;
       bool m_alignmentConfigNonPerpendicular = true;
-      bool m_alignmentConfigPolarAxisDisp    = true;
-      bool m_alignmentConfigTubeFlexure      = true;
-      bool m_alignmentConfigForkFlexure      = false;
-      bool m_alignmentConfigDecAxisFlexure   = true;
-      bool m_alignmentLinear                 = true;
-      bool m_alignmentQuadratic              = true;
-      int  m_alignmentModelIndex             = 0;
+      bool m_alignmentConfigPolarAxisDisp = true;
+      bool m_alignmentConfigTubeFlexure = true;
+      bool m_alignmentConfigForkFlexure = false;
+      bool m_alignmentConfigDecAxisFlexure = true;
+      bool m_alignmentLinear = true;
+      bool m_alignmentQuadratic = true;
+      int  m_alignmentModelIndex = 0;
 
       uint32 AlignmentConfigParameter() const;
    };
 
    GUIData* GUI = nullptr;
 
-   double   m_geoLatitude          = 0;
-   double   m_geoLongitude         = 0;
-   double   m_geoHeight            = 0;
+   double   m_geoLatitude = 0;
+   double   m_geoLongitude = 0;
+   double   m_geoHeight = 0;
    String   m_utcTime;
-   double   m_utcOffset            = 0;
-   int      m_telescopeAperture    = 0;
+   double   m_utcOffset = 0;
+   int      m_telescopeAperture = 0;
    int      m_telescopeFocalLength = 0;
-   pcl_enum m_pierSide             = IMCPierSide::Default;
+   pcl_enum m_pierSide = IMCPierSide::Default;
 
    void UpdateControls();
 
-   void plotAlignemtResiduals(AlignmentModel* model);
+   void plotAlignemtResiduals( AlignmentModel* model );
 
    void e_Timer( Timer& sender );
    void e_Edit( Edit& sender );
@@ -600,9 +601,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __INDIMountInterface_h
+#endif // __INDIMountInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInterface.h - Released 2019-11-07T11:00:23Z
+// EOF INDIMountInterface.h - Released 2020-01-23T19:56:17Z

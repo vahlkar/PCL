@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIMountInstance.cpp - Released 2019-11-07T11:00:23Z
+// INDIMountInstance.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -50,9 +50,9 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include "INDIMountInstance.h"
 #include "Alignment.h"
 #include "INDIClient.h"
-#include "INDIMountInstance.h"
 #include "INDIMountParameters.h"
 
 #undef J2000 // #defined in INDI/indicom.h
@@ -61,12 +61,12 @@
 #include <pcl/Console.h>
 #include <pcl/ElapsedTime.h>
 #include <pcl/FITSHeaderKeyword.h>
+#include <pcl/File.h>
 #include <pcl/Math.h>
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
 #include <pcl/Position.h>
 #include <pcl/StdStatus.h>
-#include <pcl/File.h>
 
 namespace pcl
 {
@@ -78,24 +78,24 @@ INDIMountInstance::INDIMountInstance( const MetaProcess* m ) :
    p_deviceName( TheIMCDeviceNameParameter->DefaultValue() ),
    p_command( IMCCommand::Default ),
    p_slewRate( IMCSlewRate::Default ),
-   p_alignmentMethod(IMCAlignmentMethod::Default),
-   p_pierSide( IMCPierSide::Default),
+   p_alignmentMethod( IMCAlignmentMethod::Default ),
+   p_pierSide( IMCPierSide::Default ),
    p_targetRA( TheIMCTargetRAParameter->DefaultValue() ),
    p_targetDec( TheIMCTargetDecParameter->DefaultValue() ),
-   p_enableAlignmentCorrection(TheIMCEnableAlignmentCorrectionParameter->DefaultValue()),
-   p_alignmentFile(TheIMCAlignmentFileParameter->DefaultValue()),
-   p_alignmentConfig(TheIMCAlignmentConfigParameter->DefaultValue()),
+   p_enableAlignmentCorrection( TheIMCEnableAlignmentCorrectionParameter->DefaultValue() ),
+   p_alignmentFile( TheIMCAlignmentFileParameter->DefaultValue() ),
+   p_alignmentConfig( TheIMCAlignmentConfigParameter->DefaultValue() ),
    o_currentLST( TheIMCCurrentLSTParameter->DefaultValue() ),
    o_currentRA( TheIMCCurrentRAParameter->DefaultValue() ),
    o_currentDec( TheIMCCurrentDecParameter->DefaultValue() ),
    o_apparentTargetRA( TheIMCApparentTargetRAParameter->DefaultValue() ),
    o_apparentTargetDec( TheIMCApparentTargetDecParameter->DefaultValue() ),
    o_geographicLatitude( TheIMCGeographicLatitudeParameter->DefaultValue() ),
-   o_syncLST(TheIMCSyncLSTParameter->DefaultValue()),
-   o_syncCelestialRA(TheIMCSyncCelestialRAParameter->DefaultValue()) ,
-   o_syncCelestialDEC(TheIMCSyncCelestialDecParameter->DefaultValue()),
-   o_syncTelescopeRA(TheIMCSyncTelescopeRAParameter->DefaultValue()),
-   o_syncTelescopeDEC(TheIMCSyncTelescopeDecParameter->DefaultValue())
+   o_syncLST( TheIMCSyncLSTParameter->DefaultValue() ),
+   o_syncCelestialRA( TheIMCSyncCelestialRAParameter->DefaultValue() ),
+   o_syncCelestialDEC( TheIMCSyncCelestialDecParameter->DefaultValue() ),
+   o_syncTelescopeRA( TheIMCSyncTelescopeRAParameter->DefaultValue() ),
+   o_syncTelescopeDEC( TheIMCSyncTelescopeDecParameter->DefaultValue() )
 {
 }
 
@@ -110,27 +110,27 @@ void INDIMountInstance::Assign( const ProcessImplementation& p )
    const INDIMountInstance* x = dynamic_cast<const INDIMountInstance*>( &p );
    if ( x != nullptr )
    {
-      p_deviceName                = x->p_deviceName;
-      p_command                   = x->p_command;
-      p_slewRate                  = x->p_slewRate;
-      p_targetRA                  = x->p_targetRA;
-      p_targetDec                 = x->p_targetDec;
-      p_pierSide                  = x->p_pierSide;
-	  p_enableAlignmentCorrection = x->p_enableAlignmentCorrection;
-	  p_alignmentMethod           = x->p_alignmentMethod;
-      p_alignmentFile             = x->p_alignmentFile;
-      p_alignmentConfig           = x->p_alignmentConfig;
-      o_currentLST                = x->o_currentLST;
-      o_currentRA                 = x->o_currentRA;
-      o_currentDec                = x->o_currentDec;
-      o_apparentTargetRA          = x->o_apparentTargetRA;
-      o_apparentTargetDec         = x->o_apparentTargetDec;
-      o_geographicLatitude        = x->o_geographicLatitude;
-      o_syncLST                   = x->o_syncLST;
-      o_syncCelestialRA           = x->o_syncCelestialRA;
-      o_syncCelestialDEC          = x->o_syncCelestialDEC;
-      o_syncTelescopeRA           = x->o_syncTelescopeRA;
-      o_syncTelescopeDEC          = x->o_syncTelescopeDEC;
+      p_deviceName = x->p_deviceName;
+      p_command = x->p_command;
+      p_slewRate = x->p_slewRate;
+      p_targetRA = x->p_targetRA;
+      p_targetDec = x->p_targetDec;
+      p_pierSide = x->p_pierSide;
+      p_enableAlignmentCorrection = x->p_enableAlignmentCorrection;
+      p_alignmentMethod = x->p_alignmentMethod;
+      p_alignmentFile = x->p_alignmentFile;
+      p_alignmentConfig = x->p_alignmentConfig;
+      o_currentLST = x->o_currentLST;
+      o_currentRA = x->o_currentRA;
+      o_currentDec = x->o_currentDec;
+      o_apparentTargetRA = x->o_apparentTargetRA;
+      o_apparentTargetDec = x->o_apparentTargetDec;
+      o_geographicLatitude = x->o_geographicLatitude;
+      o_syncLST = x->o_syncLST;
+      o_syncCelestialRA = x->o_syncCelestialRA;
+      o_syncCelestialDEC = x->o_syncCelestialDEC;
+      o_syncTelescopeRA = x->o_syncTelescopeRA;
+      o_syncTelescopeDEC = x->o_syncTelescopeDEC;
    }
 }
 
@@ -198,17 +198,17 @@ public:
 
 private:
 
-   Console        m_console;
+   Console m_console;
    StandardStatus m_status;
-   StatusMonitor  m_monitor;
-   pcl_enum       m_command;
+   StatusMonitor m_monitor;
+   pcl_enum m_command;
 
    static size_type TargetDistance( double targetRA, double currentRA, double targetDec, double currentDec )
    {
-      return RoundInt64( (Abs( targetRA - currentRA ) + Abs( targetDec - currentDec ))*1e6 );
+      return RoundInt64( ( Abs( targetRA - currentRA ) + Abs( targetDec - currentDec ) ) * 1e6 );
    }
 
-   virtual void StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command )
+   void StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command ) override
    {
       m_console.EnableAbort();
       m_command = command;
@@ -220,43 +220,43 @@ private:
       case IMCCommand::ParkDefault:
       case IMCCommand::TestSync:
       case IMCCommand::Sync:
-         {
-            String targetPosText =
-                 "RA = "
-               + String::ToSexagesimal( targetRA,
-                           SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, false/*sign*/ ) )
-               + ", Dec = "
-               + String::ToSexagesimal( targetDec,
-                           SexagesimalConversionOptions( 3/*items*/, 2/*precision*/, true/*sign*/ ) )
-               + ' ';
+      {
+         String targetPosText =
+            "RA = "
+            + String::ToSexagesimal( targetRA,
+               SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, false /*sign*/ ) )
+            + ", Dec = "
+            + String::ToSexagesimal( targetDec,
+               SexagesimalConversionOptions( 3 /*items*/, 2 /*precision*/, true /*sign*/ ) )
+            + ' ';
 
-            switch ( m_command )
-            {
-            case IMCCommand::GoTo:
-               m_monitor.Clear();
-               m_monitor.SetCallback( &m_status );
-               m_monitor.Initialize( "Slewing to " + targetPosText, TargetDistance( targetRA, currentRA, targetDec, currentDec ) );
-               break;
-            case IMCCommand::Park:
-            case IMCCommand::ParkDefault:
-               m_monitor.Clear();
-               m_monitor.SetCallback( &m_status );
-               m_monitor.Initialize( "Parking telescope to " + targetPosText, TargetDistance( targetRA, currentRA, targetDec, currentDec ) );
-               break;
-            case IMCCommand::Sync:
-            case IMCCommand::TestSync:
-               m_console.WriteLn( "<end><cbr>Syncing mount: dRA = "
-                  + String::ToSexagesimal( targetRA - currentRA,
-                           SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, true/*sign*/ ) )
-                  + ", dDec = "
-                  + String::ToSexagesimal( targetDec - currentDec,
-                           SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, true/*sign*/ ) )
-                  + ", Position: "
-                  + targetPosText );
-               break;
-            }
+         switch ( m_command )
+         {
+         case IMCCommand::GoTo:
+            m_monitor.Clear();
+            m_monitor.SetCallback( &m_status );
+            m_monitor.Initialize( "Slewing to " + targetPosText, TargetDistance( targetRA, currentRA, targetDec, currentDec ) );
+            break;
+         case IMCCommand::Park:
+         case IMCCommand::ParkDefault:
+            m_monitor.Clear();
+            m_monitor.SetCallback( &m_status );
+            m_monitor.Initialize( "Parking telescope to " + targetPosText, TargetDistance( targetRA, currentRA, targetDec, currentDec ) );
+            break;
+         case IMCCommand::Sync:
+         case IMCCommand::TestSync:
+            m_console.WriteLn( "<end><cbr>Syncing mount: dRA = "
+               + String::ToSexagesimal( targetRA - currentRA,
+                  SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
+               + ", dDec = "
+               + String::ToSexagesimal( targetDec - currentDec,
+                  SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
+               + ", Position: "
+               + targetPosText );
+            break;
          }
-         break;
+      }
+      break;
 
       case IMCCommand::MoveNorthStart:
          m_console.WriteLn( "<end><cbr>Start slewing toward North..." );
@@ -285,7 +285,7 @@ private:
       Module->ProcessEvents();
    }
 
-   virtual void MountEvent( double targetRA, double currentRA, double targetDec, double currentDec )
+   void MountEvent( double targetRA, double currentRA, double targetDec, double currentDec ) override
    {
       if ( m_console.AbortRequested() )
       {
@@ -312,7 +312,7 @@ private:
       }
    }
 
-   virtual void EndMountEvent()
+   void EndMountEvent() override
    {
       m_console.DisableAbort();
       if ( m_monitor.IsInitialized() )
@@ -320,12 +320,12 @@ private:
       Module->ProcessEvents();
    }
 
-   virtual void WaitEvent()
+   void WaitEvent() override
    {
       Module->ProcessEvents();
    }
 
-   virtual void AbortEvent()
+   void AbortEvent() override
    {
    }
 };
@@ -338,38 +338,36 @@ bool INDIMountInstance::ExecuteGlobal()
    return true;
 }
 
-
 bool INDIMountInstance::ExecuteOn( View& view )
 {
    double telescopePointingRA, telescopePointingDec;
    double observationCenterRA = -1, observationCenterDec = -91;
    {
       AutoViewLock lock( view );
-	  // Instrument:Telescope:Pointing coordinates represent the coordinates the mount/telescope is pointing at
-	  // given w.r.t epoch J2000. 
+      // Instrument:Telescope:Pointing coordinates represent the coordinates the mount/telescope is pointing at
+      // given w.r.t epoch J2000.
       Variant ra = view.PropertyValue( "Instrument:Telescope:Pointing:RA" );
       Variant dec = view.PropertyValue( "Instrument:Telescope:Pointing:Dec" );
       if ( !ra.IsValid() || !dec.IsValid() )
          throw Error( "The view does not define valid telescope pointing coordinates." );
-      telescopePointingRA = ra.ToDouble()/15;
+      telescopePointingRA = ra.ToDouble() / 15;
       telescopePointingDec = dec.ToDouble();
-
 
       if ( view.HasProperty( "Observation:Center:RA" ) && view.HasProperty( "Observation:Center:Dec" ) )
       {
-		 // Observation:Center coordinates represent the coordinates of the image center
-		 // and must be given w.r.t epoch J2000. Due to pointing error sources, like bad alignment, these coordinates
-		 // are usually different from the Telescope:Pointing coordinates.  These coordinates can be determined in plate solving algorithms, e.g. with the PixInsight ImageSolver script.
+         // Observation:Center coordinates represent the coordinates of the image center
+         // and must be given w.r.t epoch J2000. Due to pointing error sources, like bad alignment, these coordinates
+         // are usually different from the Telescope:Pointing coordinates.  These coordinates can be determined in plate solving algorithms, e.g. with the PixInsight ImageSolver script.
          ra = view.PropertyValue( "Observation:Center:RA" );
          dec = view.PropertyValue( "Observation:Center:Dec" );
          if ( !ra.IsValid() || !dec.IsValid() )
             throw Error( "The view does not define valid observation center coordinates." );
-         observationCenterRA = ra.ToDouble()/15;
+         observationCenterRA = ra.ToDouble() / 15;
          observationCenterDec = dec.ToDouble();
       }
       else
       {
-		 // OBJCTRA, OBJCTDEC must be given w.r.t epoch J2000
+         // OBJCTRA, OBJCTDEC must be given w.r.t epoch J2000
          FITSKeywordArray keywords;
          view.Window().GetKeywords( keywords );
          for ( auto k : keywords )
@@ -392,14 +390,14 @@ bool INDIMountInstance::ExecuteOn( View& view )
 
    if ( o_currentLST >= 0 ) // ### N.B.: o_currentLST < 0 if LST property could not be retrieved
    {
-      double currentHourAngle = AlignmentModel::RangeShiftHourAngle(o_currentLST - o_currentRA);
+      double currentHourAngle = AlignmentModel::RangeShiftHourAngle( o_currentLST - o_currentRA );
       double newHourAngle = currentHourAngle - deltaRA;
-      if ( (currentHourAngle < 0) != (newHourAngle < 0) )
+      if ( ( currentHourAngle < 0 ) != ( newHourAngle < 0 ) )
          if ( MessageBox( "<p>New center right ascension coordinate crosses the meridian, and will possibly trigger a meridian flip.</p>"
-                           "<p><b>Continue?</b></p>",
-                           Meta()->Id(),
-                           StdIcon::Warning,
-                           StdButton::Yes, StdButton::No ).Execute() != StdButton::Yes )
+                          "<p><b>Continue?</b></p>",
+                          Meta()->Id(),
+                          StdIcon::Warning,
+                          StdButton::Yes, StdButton::No ).Execute() != StdButton::Yes )
          {
             return false;
          }
@@ -415,18 +413,18 @@ bool INDIMountInstance::ExecuteOn( View& view )
    try
    {
       p_command = IMCCommand::GoTo;
-	  // target coordinates already consider mount epoch here, since an ExecuteOn operation
-	  // only makes sense if the mount did a goto operation before. TODO: check that
-      p_targetRA = AlignmentModel::RangeShiftRightAscension(p_targetRA + deltaRA);
+      // target coordinates already consider mount epoch here, since an ExecuteOn operation
+      // only makes sense if the mount did a goto operation before. TODO: check that
+      p_targetRA = AlignmentModel::RangeShiftRightAscension( p_targetRA + deltaRA );
       p_targetDec = p_targetDec + deltaDec;
       p_enableAlignmentCorrection = false;
 
       Console().WriteLn( "<end><cbr>Applying differential correction: dRA = "
-                  + String::ToSexagesimal( deltaRA,
-                           SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, true/*sign*/ ) )
-                  + ", dDec = "
-                  + String::ToSexagesimal( deltaDec,
-                           SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, true/*sign*/ ) ) );
+         + String::ToSexagesimal( deltaRA,
+            SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
+         + ", dDec = "
+         + String::ToSexagesimal( deltaDec,
+            SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) ) );
 
       INDIMountInstanceExecution( *this ).Perform();
 
@@ -434,11 +432,11 @@ bool INDIMountInstance::ExecuteOn( View& view )
       p_command = storedCommand;
       p_targetRA = storedTargetRA;
       p_targetDec = storedTargetDec;
-	  p_enableAlignmentCorrection = stored_alignmentMode;
+      p_enableAlignmentCorrection = stored_alignmentMode;
       p_enableAlignmentCorrection = storedEnableAlignmentCorrection;
       return true;
    }
-   catch( ... )
+   catch ( ... )
    {
       p_command = storedCommand;
       p_targetRA = storedTargetRA;
@@ -457,18 +455,18 @@ void* INDIMountInstance::LockParameter( const MetaParameter* p, size_type tableR
    if ( p == TheIMCSlewRateParameter )
       return &p_slewRate;
    if ( p == TheIMCAlignmentMethodParameter )
-         return &p_alignmentMethod;
+      return &p_alignmentMethod;
    if ( p == TheIMCEnableAlignmentCorrectionParameter )
-	   return &p_enableAlignmentCorrection;
+      return &p_enableAlignmentCorrection;
    if ( p == TheIMCTargetRAParameter )
       return &p_targetRA;
    if ( p == TheIMCTargetDecParameter )
       return &p_targetDec;
    if ( p == TheIMCAlignmentFileParameter )
-	   return p_alignmentFile.Begin();
+      return p_alignmentFile.Begin();
    if ( p == TheIMCAlignmentConfigParameter )
-	   return &p_alignmentConfig;
-   if (p == TheIMCCurrentLSTParameter )
+      return &p_alignmentConfig;
+   if ( p == TheIMCCurrentLSTParameter )
       return &o_currentLST;
    if ( p == TheIMCCurrentRAParameter )
       return &o_currentRA;
@@ -479,19 +477,19 @@ void* INDIMountInstance::LockParameter( const MetaParameter* p, size_type tableR
    if ( p == TheIMCApparentTargetDecParameter )
       return &o_apparentTargetDec;
    if ( p == TheIMCPierSideParameter )
-	   return &p_pierSide;
+      return &p_pierSide;
    if ( p == TheIMCSyncLSTParameter )
-   	   return &o_syncLST;
+      return &o_syncLST;
    if ( p == TheIMCSyncCelestialRAParameter )
-	   return &o_syncCelestialRA;
+      return &o_syncCelestialRA;
    if ( p == TheIMCSyncCelestialDecParameter )
-	   return &o_syncCelestialDEC;
+      return &o_syncCelestialDEC;
    if ( p == TheIMCSyncTelescopeRAParameter )
-	   return &o_syncTelescopeRA;
+      return &o_syncTelescopeRA;
    if ( p == TheIMCSyncTelescopeDecParameter )
-	   return &o_syncTelescopeDEC;
-   if ( p == TheIMCGeographicLatitudeParameter)
-   	   return &o_geographicLatitude;
+      return &o_syncTelescopeDEC;
+   if ( p == TheIMCGeographicLatitudeParameter )
+      return &o_geographicLatitude;
 
    return nullptr;
 }
@@ -503,11 +501,12 @@ bool INDIMountInstance::AllocateParameter( size_type sizeOrLength, const MetaPar
       p_deviceName.Clear();
       if ( sizeOrLength > 0 )
          p_deviceName.SetLength( sizeOrLength );
-   } else if ( p == TheIMCAlignmentFileParameter )
+   }
+   else if ( p == TheIMCAlignmentFileParameter )
    {
-	   p_alignmentFile.Clear();
-	   if ( sizeOrLength > 0 )
-		   p_alignmentFile.SetLength( sizeOrLength );
+      p_alignmentFile.Clear();
+      if ( sizeOrLength > 0 )
+         p_alignmentFile.SetLength( sizeOrLength );
    }
    else
       return false;
@@ -521,7 +520,7 @@ size_type INDIMountInstance::ParameterLength( const MetaParameter* p, size_type 
       return p_deviceName.Length();
 
    if ( p == TheIMCAlignmentFileParameter )
-         return p_alignmentFile.Length();
+      return p_alignmentFile.Length();
 
    return 0;
 }
@@ -541,7 +540,9 @@ bool INDIMountInstance::ValidateDevice( bool throwErrors ) const
    for ( auto device : devices )
       if ( device.DeviceName == p_deviceName )
       {
-         if ( !indi->HasPropertyItem( device.DeviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME ) ) // is this a mount device?
+         if ( !indi->HasPropertyItem( device.DeviceName,
+                                      MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME,
+                                      MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME ) ) // is this a mount device?
          {
             if ( throwErrors )
                throw Error( '\'' + p_deviceName + "' does not seem to be a valid Indigo Mount device" );
@@ -558,7 +559,12 @@ bool INDIMountInstance::ValidateDevice( bool throwErrors ) const
 void INDIMountInstance::SendDeviceProperties( bool async ) const
 {
    INDIClient* indi = INDIClient::TheClientOrDie();
-   indi->MaybeSendNewPropertyItem( p_deviceName, MOUNT_SLEW_RATE_PROPERTY_NAME, "INDI_SWITCH", MountSlewRatePropertyString( p_slewRate ), "ON", async );
+   indi->MaybeSendNewPropertyItem( p_deviceName,
+                                   MOUNT_SLEW_RATE_PROPERTY_NAME,
+                                   "INDI_SWITCH",
+                                   MountSlewRatePropertyString( p_slewRate ),
+                                   "ON",
+                                   async );
 }
 
 String INDIMountInstance::MountSlewRatePropertyString( int slewRateIdx )
@@ -587,15 +593,31 @@ void INDIMountInstance::GetCurrentCoordinates()
    INDIClient* indi = INDIClient::TheClientOrDie();
 
    INDIPropertyListItem itemH, itemD;
-   if ( !indi->GetPropertyItem( p_deviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, itemH, false/*formatted*/ ) ||
-        !indi->GetPropertyItem( p_deviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, itemD, false/*formatted*/ ) )
+   if ( !indi->GetPropertyItem( p_deviceName,
+                                MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME,
+                                MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME,
+                                itemH,
+                                false /*formatted*/ ) ||
+        !indi->GetPropertyItem( p_deviceName,
+                                MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME,
+                                MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME,
+                                itemD,
+                                false /*formatted*/ ) )
+   {
       throw Error( "Cannot get current mount coordinates" );
+   }
 
    o_currentRA = itemH.PropertyValue.ToDouble();
    o_currentDec = itemD.PropertyValue.ToDouble();
 
-   if ( indi->GetPropertyItem( p_deviceName, MOUNT_LST_TIME_PROPERTY_NAME, MOUNT_LST_TIME_ITEM_NAME, itemH, false/*formatted*/ ) )
+   if ( indi->GetPropertyItem( p_deviceName,
+                               MOUNT_LST_TIME_PROPERTY_NAME,
+                               MOUNT_LST_TIME_ITEM_NAME,
+                               itemH,
+                               false /*formatted*/ ) )
+   {
       o_currentLST = itemH.PropertyValue.ToDouble();
+   }
 }
 
 void INDIMountInstance::GetTargetCoordinates( double& targetRA, double& targetDec ) const
@@ -604,8 +626,8 @@ void INDIMountInstance::GetTargetCoordinates( double& targetRA, double& targetDe
    targetDec = p_targetDec;
 }
 
-
-void INDIMountInstance::GetPierSide() {
+void INDIMountInstance::GetPierSide()
+{
    INDIClient* indi = INDIClient::TheClientOrDie();
 
    INDIPropertyListItem item;
@@ -620,36 +642,37 @@ void INDIMountInstance::GetPierSide() {
             p_pierSide = i;
             break;
          }
-      } else {
-        deviceHasPierSideProperty = false;
-        break;
       }
-    }
-   if(!deviceHasPierSideProperty)
+      else
+      {
+         deviceHasPierSideProperty = false;
+         break;
+      }
+   }
+   if ( !deviceHasPierSideProperty )
    {
       // pier side fallback
       // If the Indigo mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
-      double hourAngle = AlignmentModel::RangeShiftHourAngle( o_currentLST - o_currentRA);
+      double hourAngle = AlignmentModel::RangeShiftHourAngle( o_currentLST - o_currentRA );
       p_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
    }
-
 }
 
- bool INDIMountInstance::isForceCounterWeightUp() const {
-    INDIClient* indi = INDIClient::TheClientOrDie();
-    INDIPropertyListItem item;
-    if ( indi->GetPropertyItem( p_deviceName, "FORCECWUP", "ENABLE", item))
-       if ( item.PropertyValue == "ON" )
-          return true;
+bool INDIMountInstance::isForceCounterWeightUp() const
+{
+   INDIClient* indi = INDIClient::TheClientOrDie();
+   INDIPropertyListItem item;
+   if ( indi->GetPropertyItem( p_deviceName, "FORCECWUP", "ENABLE", item ) )
+      if ( item.PropertyValue == "ON" )
+         return true;
 
-    return false;
- }
-
-
-void INDIMountInstance::AddSyncDataPoint(const SyncDataPoint& syncDataPoint){
-	this->syncDataArray.Add(syncDataPoint);
+   return false;
 }
 
+void INDIMountInstance::AddSyncDataPoint( const SyncDataPoint& syncDataPoint )
+{
+   this->syncDataArray.Add( syncDataPoint );
+}
 
 void INDIMountInstance::loadSyncData( Array<SyncDataPoint>& syncDataList, String syncDataFile )
 {
@@ -657,33 +680,36 @@ void INDIMountInstance::loadSyncData( Array<SyncDataPoint>& syncDataList, String
    for ( const IsoString& row : syncDataRows )
    {
       IsoStringList tokens;
-      row.Break( tokens, ',', true/*trim*/ );
+      row.Break( tokens, ',', true /*trim*/ );
       if ( !tokens.IsEmpty() )
          if ( tokens.Length() == 7 )
             syncDataList.Add( { TimePoint::Now(),
-                                tokens[0].ToDouble(),
-                                tokens[1].ToDouble(),
-                                tokens[2].ToDouble(),
-                                tokens[3].ToDouble(),
-                                tokens[4].ToDouble(),
-                                (tokens[5] == "West") ? IMCPierSide::West : ((tokens[5] == "East") ? IMCPierSide::East : IMCPierSide::None),
-                                tokens[6] == "true" } );
-         // else
-         //    throw Error( "Invalid sync data format" );
+               tokens[0].ToDouble(),
+               tokens[1].ToDouble(),
+               tokens[2].ToDouble(),
+               tokens[3].ToDouble(),
+               tokens[4].ToDouble(),
+               ( tokens[5] == "West" ) ? IMCPierSide::West : ( ( tokens[5] == "East" ) ? IMCPierSide::East : IMCPierSide::None ),
+               tokens[6] == "true" } );
+      // else
+      //    throw Error( "Invalid sync data format" );
    }
 }
 
-void AbstractINDIMountExecution::ApplyPointingModelCorrection(AlignmentModel* aModel, double& targetRA, double& targetDec) {
-	double localSiderialTime = m_instance.o_currentLST;
-	aModel->ReadObject(m_instance.p_alignmentFile);
-	double newHourAngle=-1;
-	double newDec=-1;
+void AbstractINDIMountExecution::ApplyPointingModelCorrection( AlignmentModel* aModel, double& targetRA, double& targetDec )
+{
+   double localSiderialTime = m_instance.o_currentLST;
+   aModel->ReadObject( m_instance.p_alignmentFile );
+   double newHourAngle = -1;
+   double newDec = -1;
 
-   aModel->Apply(newHourAngle, newDec, AlignmentModel::RangeShiftHourAngle(localSiderialTime - targetRA), targetDec, m_instance.p_pierSide);
-	targetRA=localSiderialTime-newHourAngle;
-	targetDec=newDec;
+   aModel->Apply( newHourAngle, newDec,
+                  AlignmentModel::RangeShiftHourAngle( localSiderialTime - targetRA ),
+                  targetDec,
+                  m_instance.p_pierSide );
+   targetRA = localSiderialTime - newHourAngle;
+   targetDec = newDec;
 }
-
 
 void AbstractINDIMountExecution::Perform()
 {
@@ -701,7 +727,7 @@ void AbstractINDIMountExecution::Perform()
    try
    {
       m_instance.ValidateDevice();
-      m_instance.SendDeviceProperties( false/*async*/ );
+      m_instance.SendDeviceProperties( false /*async*/ );
       m_instance.GetCurrentCoordinates();
 
       m_running = true;
@@ -709,7 +735,12 @@ void AbstractINDIMountExecution::Perform()
       switch ( m_instance.p_command )
       {
       case IMCCommand::Unpark:
-         indi->MaybeSendNewPropertyItem( m_instance.p_deviceName, MOUNT_PARK_PROPERTY_NAME, "INDI_SWITCH", MOUNT_PARK_UNPARKED_ITEM_NAME, "ON", false/*async*/ );
+         indi->MaybeSendNewPropertyItem( m_instance.p_deviceName,
+                                         MOUNT_PARK_PROPERTY_NAME,
+                                         "INDI_SWITCH",
+                                         MOUNT_PARK_UNPARKED_ITEM_NAME,
+                                         "ON",
+                                         false /*async*/ );
          break;
 
       case IMCCommand::GoTo:
@@ -719,52 +750,78 @@ void AbstractINDIMountExecution::Perform()
             double targetRA, targetDec, hourAngle;
 
             // Do not apply telescope pointing model in differential correction or during collection of sync points
-            if (m_instance.p_enableAlignmentCorrection){
-          	  AutoPointer<AlignmentModel> aModel = nullptr;
+            if ( m_instance.p_enableAlignmentCorrection )
+            {
+               AutoPointer<AlignmentModel> aModel = nullptr;
 
-          	  switch (m_instance.p_alignmentMethod){
-          	  case IMCAlignmentMethod::AnalyticalModel:
-                 aModel = GeneralAnalyticalPointingModel::Create(m_instance.o_geographicLatitude, m_instance.p_alignmentConfig, CHECK_BIT(m_instance.p_alignmentConfig, 0));
-              	  aModel->ReadObject(m_instance.p_alignmentFile);
-          		  break;
-          	  default:
-          		  aModel = AlignmentModel::Create(m_instance.p_alignmentFile);
-          	  }
-              if (aModel == nullptr){
-          		throw Error( "Alignment model could not be loaded" );
-          	  }
-              bool isForceCounterWeightUp = m_instance.isForceCounterWeightUp();
-              pcl_enum pierside = aModel->PierSideFromHourAngle(AlignmentModel::RangeShiftHourAngle(m_instance.o_currentLST - targetRARaw), isForceCounterWeightUp);
-              aModel->Apply(hourAngle, targetDec, AlignmentModel::RangeShiftHourAngle(m_instance.o_currentLST - targetRARaw), targetDecRaw, pierside);
-          	  targetRA=AlignmentModel::RangeShiftRightAscension(m_instance.o_currentLST-hourAngle);
+               switch ( m_instance.p_alignmentMethod )
+               {
+               case IMCAlignmentMethod::AnalyticalModel:
+                  aModel = GeneralAnalyticalPointingModel::Create( m_instance.o_geographicLatitude,
+                                                                  m_instance.p_alignmentConfig,
+                                                                  CHECK_BIT( m_instance.p_alignmentConfig, 0 ) );
+                  aModel->ReadObject( m_instance.p_alignmentFile );
+                  break;
+               default:
+                  aModel = AlignmentModel::Create( m_instance.p_alignmentFile );
+               }
+               if ( aModel == nullptr )
+               {
+                  throw Error( "Alignment model could not be loaded" );
+               }
+               bool isForceCounterWeightUp = m_instance.isForceCounterWeightUp();
+               pcl_enum pierside = aModel->PierSideFromHourAngle(
+                              AlignmentModel::RangeShiftHourAngle( m_instance.o_currentLST - targetRARaw ),
+                              isForceCounterWeightUp );
+               aModel->Apply( hourAngle, targetDec,
+                              AlignmentModel::RangeShiftHourAngle( m_instance.o_currentLST - targetRARaw ),
+                              targetDecRaw, pierside );
+               targetRA = AlignmentModel::RangeShiftRightAscension( m_instance.o_currentLST - hourAngle );
 
-          	  double deltaRA  = targetRA  - targetRARaw;
-          	  double deltaDec = targetDec - targetDecRaw;
+               double deltaRA = targetRA - targetRARaw;
+               double deltaDec = targetDec - targetDecRaw;
 
-          	  Console().WriteLn( "<end><cbr>Applying pointing model correction: dRA = "
-          	                  + String::ToSexagesimal( deltaRA,
-          	                           SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, true/*sign*/ ) )
-          	                  + ", dDec = "
-          	                  + String::ToSexagesimal( deltaDec,
-          	                           SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, true/*sign*/ ) ) );
-
-
-            } else {
-            	targetRA = targetRARaw;
-            	targetDec = targetDecRaw;
+               Console().WriteLn( "<end><cbr>Applying pointing model correction: dRA = "
+                  + String::ToSexagesimal( deltaRA,
+                     SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
+                  + ", dDec = "
+                  + String::ToSexagesimal( deltaDec,
+                     SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) ) );
+            }
+            else
+            {
+               targetRA = targetRARaw;
+               targetDec = targetDecRaw;
             }
 
-            StartMountEvent( targetRA, m_instance.o_currentRA, targetDec, m_instance.o_currentDec, m_instance.p_command );
-            indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, "INDI_NUMBER",  // send (RA,DEC) coordinates in bulk request
-                                       MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, targetRA,
-                                       MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, targetDec, true/*async*/ );
+            StartMountEvent( targetRA, m_instance.o_currentRA,
+                             targetDec, m_instance.o_currentDec,
+                             m_instance.p_command );
+            indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                       MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME,
+                                       "INDI_NUMBER",
+                                       // send (RA,DEC) coordinates in bulk request
+                                       MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME,
+                                       targetRA,
+                                       MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME,
+                                       targetDec,
+                                       true /*async*/ );
             //Sleep(500);
-            for ( ElapsedTime T; ; )
+            for ( ElapsedTime T;; )
             {
                INDIPropertyListItem RA_item;
                INDIPropertyListItem Dec_item;
-               if (    indi->GetPropertyItem( m_instance.p_deviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, RA_item, false/*formatted*/ )
-                  && indi->GetPropertyItem( m_instance.p_deviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, Dec_item, false/*formatted*/ ) )
+               if ( indi->GetPropertyItem( m_instance.p_deviceName,
+                                           MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME,
+                                           MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME,
+                                           RA_item,
+                                           false /*formatted*/ ) &&
+                  indi->GetPropertyItem( m_instance.p_deviceName,
+                                         MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME,
+                                         MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME,
+                                         Dec_item,
+                                         false /*formatted*/ ) )
+               {
                   if ( RA_item.PropertyState == INDIGO_BUSY_STATE || Dec_item.PropertyState == INDIGO_BUSY_STATE )
                   {
                      if ( T() > 0.1 )
@@ -783,23 +840,41 @@ void AbstractINDIMountExecution::Perform()
                      EndMountEvent();
                      break;
                   }
+               }
             }
          }
          m_instance.GetCurrentCoordinates();
          break;
 
       case IMCCommand::Park:
-         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA, m_instance.p_targetDec, m_instance.o_currentDec, m_instance.p_command );
-         indi->MaybeSendNewPropertyItem( m_instance.p_deviceName, MOUNT_PARK_POSITION_PROPERTY_NAME, "INDI_NUMBER",
-                                         MOUNT_PARK_POSITION_HA_ITEM_NAME, m_instance.o_currentLST - m_instance.p_targetRA,
-                                         MOUNT_PARK_POSITION_DEC_ITEM_NAME, m_instance.p_targetDec, true/*async*/ );
+         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA,
+                          m_instance.p_targetDec, m_instance.o_currentDec,
+                          m_instance.p_command );
+         indi->MaybeSendNewPropertyItem( m_instance.p_deviceName,
+                                         MOUNT_PARK_POSITION_PROPERTY_NAME,
+                                         "INDI_NUMBER",
+                                         MOUNT_PARK_POSITION_HA_ITEM_NAME,
+                                         m_instance.o_currentLST - m_instance.p_targetRA,
+                                         MOUNT_PARK_POSITION_DEC_ITEM_NAME,
+                                         m_instance.p_targetDec,
+                                         true /*async*/ );
          //Sleep(500);
-         indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_PARK_PROPERTY_NAME, "INDI_SWITCH", MOUNT_PARK_PARKED_ITEM_NAME, "ON", true/*async*/ );
+         indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                    MOUNT_PARK_PROPERTY_NAME,
+                                    "INDI_SWITCH",
+                                    MOUNT_PARK_PARKED_ITEM_NAME,
+                                    "ON",
+                                    true /*async*/ );
          //Sleep(500);
-         for ( ElapsedTime T; ; )
+         for ( ElapsedTime T;; )
          {
             INDIPropertyListItem item;
-            if ( indi->GetPropertyItem( m_instance.p_deviceName, MOUNT_PARK_PROPERTY_NAME, MOUNT_PARK_PARKED_ITEM_NAME, item, false/*formatted*/ ) )
+            if ( indi->GetPropertyItem( m_instance.p_deviceName,
+                                        MOUNT_PARK_PROPERTY_NAME,
+                                        MOUNT_PARK_PARKED_ITEM_NAME,
+                                        item,
+                                        false /*formatted*/ ) )
+            {
                if ( item.PropertyState == INDIGO_BUSY_STATE )
                {
                   if ( T() > 0.1 )
@@ -810,7 +885,6 @@ void AbstractINDIMountExecution::Perform()
                   }
                   else
                      WaitEvent();
-
                }
                else
                {
@@ -818,6 +892,7 @@ void AbstractINDIMountExecution::Perform()
                   EndMountEvent();
                   break;
                }
+            }
          }
          break;
 
@@ -825,17 +900,41 @@ void AbstractINDIMountExecution::Perform()
          {
             double parkHA = 0, parkDec = 0;
             INDIPropertyListItem item;
-            if ( indi->GetPropertyItem( m_instance.p_deviceName, MOUNT_PARK_POSITION_PROPERTY_NAME, MOUNT_PARK_POSITION_HA_ITEM_NAME, item, false/*formatted*/ ) )
-               parkHA = item.PropertyValue.ToDouble();
-            if ( indi->GetPropertyItem( m_instance.p_deviceName, MOUNT_PARK_POSITION_PROPERTY_NAME, MOUNT_PARK_POSITION_DEC_ITEM_NAME, item, false/*formatted*/ ) )
-               parkDec = item.PropertyValue.ToDouble();
-
-            StartMountEvent( m_instance.o_currentLST - parkHA, m_instance.o_currentRA, parkDec, m_instance.o_currentDec, m_instance.p_command );
-            indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_PARK_PROPERTY_NAME, "INDI_SWITCH", MOUNT_PARK_PARKED_ITEM_NAME, "ON", true/*async*/ );
-            //Sleep(500);
-            for ( ElapsedTime T; ; )
+            if ( indi->GetPropertyItem( m_instance.p_deviceName,
+                                        MOUNT_PARK_POSITION_PROPERTY_NAME,
+                                        MOUNT_PARK_POSITION_HA_ITEM_NAME,
+                                        item,
+                                        false /*formatted*/ ) )
             {
-               if ( indi->GetPropertyItem( m_instance.p_deviceName, MOUNT_PARK_PROPERTY_NAME, MOUNT_PARK_PARKED_ITEM_NAME, item, false/*formatted*/ ) )
+               parkHA = item.PropertyValue.ToDouble();
+            }
+            if ( indi->GetPropertyItem( m_instance.p_deviceName,
+                                        MOUNT_PARK_POSITION_PROPERTY_NAME,
+                                        MOUNT_PARK_POSITION_DEC_ITEM_NAME,
+                                        item,
+                                        false /*formatted*/ ) )
+            {
+               parkDec = item.PropertyValue.ToDouble();
+            }
+
+            StartMountEvent( m_instance.o_currentLST - parkHA, m_instance.o_currentRA,
+                           parkDec, m_instance.o_currentDec,
+                           m_instance.p_command );
+            indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                       MOUNT_PARK_PROPERTY_NAME,
+                                       "INDI_SWITCH",
+                                       MOUNT_PARK_PARKED_ITEM_NAME,
+                                       "ON",
+                                       true /*async*/ );
+            //Sleep(500);
+            for ( ElapsedTime T;; )
+            {
+               if ( indi->GetPropertyItem( m_instance.p_deviceName,
+                                           MOUNT_PARK_PROPERTY_NAME,
+                                           MOUNT_PARK_PARKED_ITEM_NAME,
+                                           item,
+                                           false /*formatted*/ ) )
+               {
                   if ( item.PropertyState == INDIGO_BUSY_STATE )
                   {
                      if ( T() > 0.1 )
@@ -853,55 +952,62 @@ void AbstractINDIMountExecution::Perform()
                      EndMountEvent();
                      break;
                   }
+               }
             }
          }
          break;
+
       case IMCCommand::TestSync:
-      {
-    	  double targetRA, targetDec;
-    	  m_instance.GetTargetCoordinates( targetRA, targetDec );
-    	  m_instance.GetCurrentCoordinates();
+         {
+            double targetRA, targetDec;
+            m_instance.GetTargetCoordinates( targetRA, targetDec );
+            m_instance.GetCurrentCoordinates();
 
-    	  AutoPointer<AlignmentModel> aModel;
+            AutoPointer<AlignmentModel> aModel;
 
-    	  switch (m_instance.p_alignmentMethod){
-    	  case IMCAlignmentMethod::AnalyticalModel:
-           aModel = GeneralAnalyticalPointingModel::Create(m_instance.o_geographicLatitude, m_instance.p_alignmentConfig, CHECK_BIT(m_instance.p_alignmentConfig, 0));
-    		  break;
-    	  default:
-    		  throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown Pointing Model." );
-    	  }
-    	  // Apply corrected position to simulate an unaligned telescope
-    	  double trueTargetRa = targetRA;
-    	  double trueTargetDec = targetDec;
-          m_instance.GetPierSide();
-    	  ApplyPointingModelCorrection(aModel.Ptr(), trueTargetRa, trueTargetDec);
+            switch ( m_instance.p_alignmentMethod )
+            {
+            case IMCAlignmentMethod::AnalyticalModel:
+               aModel = GeneralAnalyticalPointingModel::Create( m_instance.o_geographicLatitude,
+                                                                m_instance.p_alignmentConfig,
+                                                                CHECK_BIT( m_instance.p_alignmentConfig, 0 ) );
+               break;
+            default:
+               throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown Pointing Model." );
+            }
+            // Apply corrected position to simulate an unaligned telescope
+            double trueTargetRa = targetRA;
+            double trueTargetDec = targetDec;
+            m_instance.GetPierSide();
+            ApplyPointingModelCorrection( aModel.Ptr(), trueTargetRa, trueTargetDec );
 
-          StartMountEvent( targetRA, m_instance.o_currentRA, targetDec, m_instance.o_currentDec, m_instance.p_command );
-          switch (m_instance.p_alignmentMethod){
-           case IMCAlignmentMethod::AnalyticalModel:
-           {
-        	   SyncDataPoint syncPoint;
-        	   syncPoint.creationTime      = TimePoint::Now();
-        	   syncPoint.localSiderialTime = m_instance.o_currentLST;
-        	   syncPoint.celestialRA       = AlignmentModel::RangeShiftHourAngle(targetRA);
-        	   syncPoint.celestialDEC      = targetDec;
-        	   syncPoint.telecopeRA        = trueTargetRa;
-        	   syncPoint.telecopeDEC       = trueTargetDec;
-            syncPoint.pierSide          = m_instance.p_pierSide;
+            StartMountEvent( targetRA, m_instance.o_currentRA,
+                           targetDec, m_instance.o_currentDec,
+                           m_instance.p_command );
+            switch ( m_instance.p_alignmentMethod )
+            {
+            case IMCAlignmentMethod::AnalyticalModel:
+               {
+                  SyncDataPoint syncPoint;
+                  syncPoint.creationTime = TimePoint::Now();
+                  syncPoint.localSiderialTime = m_instance.o_currentLST;
+                  syncPoint.celestialRA = AlignmentModel::RangeShiftHourAngle( targetRA );
+                  syncPoint.celestialDEC = targetDec;
+                  syncPoint.telecopeRA = trueTargetRa;
+                  syncPoint.telecopeDEC = trueTargetDec;
+                  syncPoint.pierSide = m_instance.p_pierSide;
 
-        	   aModel->AddSyncDataPoint(syncPoint);
-        	   aModel->WriteObject(m_instance.p_alignmentFile);
-        	   break;
-           }
+                  aModel->AddSyncDataPoint( syncPoint );
+                  aModel->WriteObject( m_instance.p_alignmentFile );
+               }
+               break;
+            }
+            m_instance.GetCurrentCoordinates();
 
-          }
-          m_instance.GetCurrentCoordinates();
+            EndMountEvent();
+         }
+         break; // TestSync
 
-          EndMountEvent();
-
-    	  break; // TestSync
-      }
       case IMCCommand::Sync:
          {
             double targetRA, targetDec;
@@ -910,49 +1016,70 @@ void AbstractINDIMountExecution::Perform()
             m_instance.GetPierSide();
 
             StartMountEvent( targetRA, m_instance.o_currentRA, targetDec, m_instance.o_currentDec, m_instance.p_command );
-            switch (m_instance.p_alignmentMethod){
-            case IMCAlignmentMethod::ServerModel:
+            switch ( m_instance.p_alignmentMethod )
             {
-               indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_ON_COORDINATES_SET_PROPERTY_NAME, "INDI_SWITCH", MOUNT_ON_COORDINATES_SET_SYNC_ITEM_NAME, "ON", false/*async*/ );
-               indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, "INDI_NUMBER",
-                                       MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, targetRA,
-                                    MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, targetDec, false/*async*/ );
-               indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_ON_COORDINATES_SET_PROPERTY_NAME, "INDI_SWITCH", MOUNT_ON_COORDINATES_SET_TRACK_ITEM_NAME, "ON", false/*async*/ );
+            case IMCAlignmentMethod::ServerModel:
+               {
+                  indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                             MOUNT_ON_COORDINATES_SET_PROPERTY_NAME,
+                                             "INDI_SWITCH",
+                                             MOUNT_ON_COORDINATES_SET_SYNC_ITEM_NAME,
+                                             "ON",
+                                             false /*async*/ );
+                  indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                             MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME,
+                                             "INDI_NUMBER",
+                                             MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, targetRA,
+                                             MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, targetDec,
+                                             false /*async*/ );
+                  indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                             MOUNT_ON_COORDINATES_SET_PROPERTY_NAME,
+                                             "INDI_SWITCH",
+                                             MOUNT_ON_COORDINATES_SET_TRACK_ITEM_NAME,
+                                             "ON",
+                                             false /*async*/ );
 
-            	// TODO: get sync point coordinates from server and set parameter
-            }
-            break;
+                  // TODO: get sync point coordinates from server and set parameter
+               }
+               break;
             case IMCAlignmentMethod::AnalyticalModel:
             case IMCAlignmentMethod::None:
-            {
-               try {
+               {
+                  try
+                  {
+                     SyncDataPoint syncPoint;
+                     syncPoint.creationTime = TimePoint::Now();
+                     syncPoint.localSiderialTime = m_instance.o_currentLST;
+                     syncPoint.celestialRA = targetRA;
+                     syncPoint.celestialDEC = targetDec;
+                     syncPoint.telecopeRA = m_instance.o_currentRA;
+                     syncPoint.telecopeDEC = m_instance.o_currentDec;
+                     syncPoint.pierSide = m_instance.p_pierSide;
 
-                  SyncDataPoint syncPoint;
-                  syncPoint.creationTime      = TimePoint::Now();
-                  syncPoint.localSiderialTime = m_instance.o_currentLST;
-                  syncPoint.celestialRA       = targetRA;
-                  syncPoint.celestialDEC      = targetDec;
-                  syncPoint.telecopeRA        = m_instance.o_currentRA;
-                  syncPoint.telecopeDEC       = m_instance.o_currentDec;
-                  syncPoint.pierSide          = m_instance.p_pierSide;
-
-                  if (File::Exists(m_instance.p_alignmentFile)) {
-                    AutoPointer<AlignmentModel> aModel = AlignmentModel::Create(m_instance.p_alignmentFile);
-                    aModel->AddSyncDataPoint(syncPoint);
-                    aModel->WriteObject(m_instance.p_alignmentFile);
-                  } else {
-                    AutoPointer<AlignmentModel> aModel = GeneralAnalyticalPointingModel::Create(m_instance.o_geographicLatitude, m_instance.p_alignmentConfig, CHECK_BIT(m_instance.p_alignmentConfig, 0));
-                    aModel->AddSyncDataPoint(syncPoint);
-                    aModel->WriteObject(m_instance.p_alignmentFile);
+                     if ( File::Exists( m_instance.p_alignmentFile ) )
+                     {
+                        AutoPointer<AlignmentModel> aModel = AlignmentModel::Create( m_instance.p_alignmentFile );
+                        aModel->AddSyncDataPoint( syncPoint );
+                        aModel->WriteObject( m_instance.p_alignmentFile );
+                     }
+                     else
+                     {
+                        AutoPointer<AlignmentModel> aModel = GeneralAnalyticalPointingModel::Create( m_instance.o_geographicLatitude,
+                                                                                    m_instance.p_alignmentConfig,
+                                                                                    CHECK_BIT( m_instance.p_alignmentConfig, 0 ) );
+                        aModel->AddSyncDataPoint( syncPoint );
+                        aModel->WriteObject( m_instance.p_alignmentFile );
+                     }
                   }
-                } catch (...) {
-                  EndMountEvent();
-                  throw;
+                  catch ( ... )
+                  {
+                     EndMountEvent();
+                     throw;
+                  }
                }
-            }
-            break;
+               break;
             default:
-            	throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown Alignment Method." );
+               throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown Alignment Method." );
             }
             m_instance.GetCurrentCoordinates();
 
@@ -961,57 +1088,86 @@ void AbstractINDIMountExecution::Perform()
          break;
       case IMCCommand::MoveNorthStart:
       case IMCCommand::MoveNorthStop:
-         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA, m_instance.p_targetDec, m_instance.o_currentDec, m_instance.p_command );
-         indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME,
-                                    (m_instance.p_command == IMCCommand::MoveNorthStart) ? "ON" : "OFF", true/*async*/ );
+         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA,
+                          m_instance.p_targetDec, m_instance.o_currentDec,
+                          m_instance.p_command );
+         indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                    MOUNT_MOTION_DEC_PROPERTY_NAME,
+                                    "INDI_SWITCH",
+                                    MOUNT_MOTION_NORTH_ITEM_NAME,
+                                    (m_instance.p_command == IMCCommand::MoveNorthStart) ? "ON" : "OFF",
+                                    true /*async*/ );
          m_instance.GetCurrentCoordinates();
          EndMountEvent();
          break;
 
       case IMCCommand::MoveSouthStart:
       case IMCCommand::MoveSouthStop:
-         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA, m_instance.p_targetDec, m_instance.o_currentDec, m_instance.p_command );
-         indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME,
-                                    (m_instance.p_command == IMCCommand::MoveSouthStart) ? "ON" : "OFF", true /*async*/ );
+         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA,
+                          m_instance.p_targetDec, m_instance.o_currentDec,
+                          m_instance.p_command );
+         indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                    MOUNT_MOTION_DEC_PROPERTY_NAME,
+                                    "INDI_SWITCH",
+                                    MOUNT_MOTION_SOUTH_ITEM_NAME,
+                                    (m_instance.p_command == IMCCommand::MoveSouthStart) ? "ON" : "OFF",
+                                    true /*async*/ );
          m_instance.GetCurrentCoordinates();
          EndMountEvent();
          break;
 
       case IMCCommand::MoveWestStart:
       case IMCCommand::MoveWestStop:
-         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA, m_instance.p_targetDec, m_instance.o_currentDec, m_instance.p_command );
-         indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME,
-                                    (m_instance.p_command == IMCCommand::MoveWestStart) ? "ON" : "OFF", true/*async*/ );
+         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA,
+                          m_instance.p_targetDec, m_instance.o_currentDec,
+                          m_instance.p_command );
+         indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                    MOUNT_MOTION_RA_PROPERTY_NAME,
+                                    "INDI_SWITCH",
+                                    MOUNT_MOTION_WEST_ITEM_NAME,
+                                    (m_instance.p_command == IMCCommand::MoveWestStart) ? "ON" : "OFF",
+                                    true /*async*/ );
          m_instance.GetCurrentCoordinates();
          EndMountEvent();
          break;
 
       case IMCCommand::MoveEastStart:
       case IMCCommand::MoveEastStop:
-         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA, m_instance.p_targetDec, m_instance.o_currentDec, m_instance.p_command );
-         indi->SendNewPropertyItem( m_instance.p_deviceName, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME,
-                                    (m_instance.p_command == IMCCommand::MoveEastStart) ? "ON" : "OFF", true/*async*/ );
+         StartMountEvent( m_instance.p_targetRA, m_instance.o_currentRA,
+                          m_instance.p_targetDec, m_instance.o_currentDec,
+                          m_instance.p_command );
+         indi->SendNewPropertyItem( m_instance.p_deviceName,
+                                    MOUNT_MOTION_RA_PROPERTY_NAME,
+                                    "INDI_SWITCH",
+                                    MOUNT_MOTION_EAST_ITEM_NAME,
+                                    (m_instance.p_command == IMCCommand::MoveEastStart) ? "ON" : "OFF",
+                                    true /*async*/ );
          m_instance.GetCurrentCoordinates();
          EndMountEvent();
          break;
-      case IMCCommand::FitPointingModel:
-      {
-    	 AutoPointer<AlignmentModel> aModel = nullptr;
-    	 switch (m_instance.p_alignmentMethod){
-    	 case IMCAlignmentMethod::AnalyticalModel:
-          aModel = GeneralAnalyticalPointingModel::Create(m_instance.o_geographicLatitude, m_instance.p_alignmentConfig, CHECK_BIT(m_instance.p_alignmentConfig, 0));
-    		 break;
-    	 default:
-    		 throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown Pointing Model." );
-    	 }
 
-       aModel->ReadSyncData(m_instance.p_alignmentFile);
-    	 // fit model
-    	 aModel->FitModel();
-    	 aModel->WriteObject(m_instance.p_alignmentFile);
-    	 aModel->PrintParameters();
-    	 break;
-      }
+      case IMCCommand::FitPointingModel:
+         {
+            AutoPointer<AlignmentModel> aModel = nullptr;
+            switch ( m_instance.p_alignmentMethod )
+            {
+            case IMCAlignmentMethod::AnalyticalModel:
+               aModel = GeneralAnalyticalPointingModel::Create( m_instance.o_geographicLatitude,
+                                                                m_instance.p_alignmentConfig,
+                                                                CHECK_BIT( m_instance.p_alignmentConfig, 0 ) );
+               break;
+            default:
+               throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown Pointing Model." );
+            }
+
+            aModel->ReadSyncData( m_instance.p_alignmentFile );
+            // fit model
+            aModel->FitModel();
+            aModel->WriteObject( m_instance.p_alignmentFile );
+            aModel->PrintParameters();
+         }
+         break;
+
       default:
          throw Error( "Internal error: AbstractINDIMountExecution::Perform(): Unknown Indigo Mount command." );
       }
@@ -1027,7 +1183,7 @@ void AbstractINDIMountExecution::Perform()
       catch ( ProcessAborted& )
       {
          m_aborted = true;
-         indi->MaybeSendNewPropertyItem( m_instance.p_deviceName, MOUNT_ABORT_MOTION_PROPERTY_NAME, "INDI_SWITCH", MOUNT_ABORT_MOTION_ITEM_NAME, "ON", true/*async*/ );
+         indi->MaybeSendNewPropertyItem( m_instance.p_deviceName, MOUNT_ABORT_MOTION_PROPERTY_NAME, "INDI_SWITCH", MOUNT_ABORT_MOTION_ITEM_NAME, "ON", true /*async*/ );
          AbortEvent();
          throw;
       }
@@ -1046,7 +1202,7 @@ void AbstractINDIMountExecution::Abort()
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInstance.cpp - Released 2019-11-07T11:00:23Z
+// EOF INDIMountInstance.cpp - Released 2020-01-23T19:56:17Z

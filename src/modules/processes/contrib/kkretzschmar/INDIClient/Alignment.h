@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// Alignment.h - Released 2019-11-07T11:00:23Z
+// Alignment.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@
 #include <pcl/TimePoint.h>
 #include <pcl/Vector.h>
 
-#define CHECK_BIT( var, pos ) ((var) & (1<<(pos)))
+#define CHECK_BIT( var, pos ) ( ( var ) & ( 1 << ( pos ) ) )
 
 namespace pcl
 {
@@ -78,12 +78,11 @@ double GreenwhichApparentSiderialTime();
 
 // Computes the local mean siderial time
 // \param: geographic longitude in degrees (>0 east, <0 west)
-double LocalMeanSiderialTime(double longitude);
+double LocalMeanSiderialTime( double longitude );
 
 // Computes the local apparent siderial time
 // \param: geographic longitude in degrees (>0 east, <0 west)
-double LocalApparentSiderialTime(double longitude);
-
+double LocalApparentSiderialTime( double longitude );
 
 // ----------------------------------------------------------------------------
 
@@ -93,21 +92,21 @@ class PCL_CLASS XMLElement;
 struct SyncDataPoint
 {
    TimePoint creationTime;
-   double    localSiderialTime;
-   double    celestialRA; // true position of the telescope on the sky
-   double    celestialDEC;
-   double    telecopeRA;  //
-   double    telecopeDEC;
-   pcl_enum  pierSide;
-   bool      enabled;
+   double localSiderialTime;
+   double celestialRA; // true position of the telescope on the sky
+   double celestialDEC;
+   double telecopeRA; //
+   double telecopeDEC;
+   pcl_enum pierSide;
+   bool enabled;
 
    bool operator ==( const SyncDataPoint& rhs ) const
    {
-      return   localSiderialTime == rhs.localSiderialTime
-            && celestialRA       == rhs.celestialRA
-            && celestialDEC      == rhs.celestialDEC
-            && telecopeRA        == rhs.telecopeRA
-            && pierSide          == rhs.pierSide;
+      return localSiderialTime == rhs.localSiderialTime
+          && celestialRA == rhs.celestialRA
+          && celestialDEC == rhs.celestialDEC
+          && telecopeRA == rhs.telecopeRA
+          && pierSide == rhs.pierSide;
    }
 };
 
@@ -135,12 +134,12 @@ public:
    // factory method
    static AlignmentModel* Create( const String& fileName );
 
-   virtual void Apply( double& hourAngleCor, double& decCor, const double hourAngle, const double dec, pcl_enum pierSide)
+   virtual void Apply( double& hourAngleCor, double& decCor, const double hourAngle, const double dec, pcl_enum pierSide )
    {
       throw Error( "Internal Error: AlignmentModel::Apply(): No implementation provided." );
    }
 
-   virtual void ApplyInverse( double& hourAngleCor, double& decCor, const double hourAngle, const double dec, pcl_enum pierSide)
+   virtual void ApplyInverse( double& hourAngleCor, double& decCor, const double hourAngle, const double dec, pcl_enum pierSide )
    {
       throw Error( "Internal Error: AlignmentModel::ApplyInverse(): No implementation provided." );
    }
@@ -167,8 +166,7 @@ public:
    virtual void ReadObject( const String& fileName ) final;
    virtual void ReadSyncData( const String& fileName ) final;
 
-
-   pcl_enum PierSideFromHourAngle( double hourAngle , bool counterWeightUpEnforced);
+   pcl_enum PierSideFromHourAngle( double hourAngle, bool counterWeightUpEnforced );
 
    Array<SyncDataPoint>& SyncDataPoints()
    {
@@ -205,13 +203,13 @@ public:
 
 protected:
 
-   Console              m_console;
-   bool                 m_modelEachPierSide = false;
-   String               m_modelName;
-   Array<double>        m_residuals;
+   Console m_console;
+   bool m_modelEachPierSide = false;
+   String m_modelName;
+   Array<double> m_residuals;
    Array<SyncDataPoint> m_syncData;
-   TimePoint            m_modelCreationTime = TimePoint::Now();
-   TimePoint            m_syncDataMaxCreationTime = TimePoint::Now();
+   TimePoint m_modelCreationTime = TimePoint::Now();
+   TimePoint m_syncDataMaxCreationTime = TimePoint::Now();
 
    void Serialize( XMLElement* root ) const;
    AutoPointer<XMLDocument> CreateXTPMDocument() const;
@@ -233,12 +231,10 @@ protected:
 class GeneralAnalyticalPointingModel : public AlignmentModel
 {
 private:
-
-   constexpr static size_t modelParameters   = 11;
+   constexpr static size_t modelParameters = 11;
    constexpr static size_t maxNumOfPierSides = 2;
 
 public:
-
    constexpr static const char* const modelName = "GeneralAnalytical";
 
    GeneralAnalyticalPointingModel()
@@ -262,9 +258,9 @@ public:
       delete m_pointingModelEast;
    }
 
-   virtual void Apply(double& hourAngleCor, double& decCor, const double hourAngle, const double dec, pcl_enum pierSide) ;
+   virtual void Apply( double& hourAngleCor, double& decCor, const double hourAngle, const double dec, pcl_enum pierSide );
 
-   virtual void ApplyInverse(double& hourAngleCor, double& decCor, const double hourAngle, const double dec, pcl_enum pierSide);
+   virtual void ApplyInverse( double& hourAngleCor, double& decCor, const double hourAngle, const double dec, pcl_enum pierSide );
 
    virtual void FitModel( const Array<SyncDataPoint>& syncPointArray );
    virtual void FitModel();
@@ -281,23 +277,22 @@ public:
    virtual void PrintParameters();
 
 private:
-
    void EvaluateBasis( Matrix& basisMatrix, double hourAngle, double dec );
    void PrintParameterVector( Vector* parameters, double residual );
    void FitModelForPierSide( const Array<SyncDataPoint>& syncPointArray, pcl_enum pierSide, double& residual );
 
-   size_t    m_numOfModelParameters = modelParameters;
-   double    m_siteLatitude = 0; // in radians
-   Vector*   m_pointingModelWest = nullptr;
-   Vector*   m_pointingModelEast = nullptr;
-   uint32_t  m_modelConfig = 0;
+   size_t m_numOfModelParameters = modelParameters;
+   double m_siteLatitude = 0; // in radians
+   Vector* m_pointingModelWest = nullptr;
+   Vector* m_pointingModelEast = nullptr;
+   uint32_t m_modelConfig = 0;
 };
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __Alignment_h
+#endif // __Alignment_h
 
 // ----------------------------------------------------------------------------
-// EOF Alignment.h - Released 2019-11-07T11:00:23Z
+// EOF Alignment.h - Released 2020-01-23T19:56:17Z

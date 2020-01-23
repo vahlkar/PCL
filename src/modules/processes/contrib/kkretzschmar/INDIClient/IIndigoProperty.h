@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// IIndigoProperty.h - Released 2019-11-07T11:00:23Z
+// IIndigoProperty.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -62,22 +62,21 @@
 
 #include <memory>
 
-#define CHECK_INDEX_THROWS( x )  \
-   if ( int( i ) >= x )          \
+#define CHECK_INDEX_THROWS( x ) \
+   if ( int( i ) >= x )         \
       throw Error( "*** Error: " + String( PCL_FUNCTION_NAME ) + ": Invalid element index '" + String( i ) + "'" );
-
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-
 class IProperty
 {
 public:
 
-   IProperty( indigo_property* property ) : m_property( property )
+   IProperty( indigo_property* property ) :
+      m_property( property )
    {
    }
 
@@ -85,7 +84,8 @@ public:
    {
    }
 
-   bool isHidden() const {
+   bool isHidden() const
+   {
       return m_property->hidden;
    }
 
@@ -121,7 +121,7 @@ public:
 
    virtual String getTypeStr() const
    {
-      switch( m_property->type )
+      switch ( m_property->type )
       {
       case INDIGO_SWITCH_VECTOR:
          return "INDI_SWITCH";
@@ -185,7 +185,8 @@ public:
       strcpy( m_property->name, name.c_str() );
    }
 
-   virtual std::unique_ptr<indigo_property> clone() const  {
+   virtual std::unique_ptr<indigo_property> clone() const
+   {
       return nullptr;
    }
 
@@ -200,10 +201,10 @@ class NumberProperty : public IProperty
 {
 public:
 
-   NumberProperty( indigo_property* property ) : IProperty( property )
+   NumberProperty( indigo_property* property ) :
+      IProperty( property )
    {
    }
-
 
    virtual String getElementValue( size_type i ) const;
    virtual String getElementTarget( size_type i ) const;
@@ -213,7 +214,6 @@ public:
    virtual String getNumberFormat( size_type i ) const;
 
    virtual std::unique_ptr<indigo_property> clone() const;
-
 };
 
 // ----------------------------------------------------------------------------
@@ -222,7 +222,8 @@ class TextProperty : public IProperty
 {
 public:
 
-   TextProperty( indigo_property* property ) : IProperty( property )
+   TextProperty( indigo_property* property ) :
+      IProperty( property )
    {
    }
 
@@ -237,10 +238,10 @@ class SwitchProperty : public IProperty
 {
 public:
 
-   SwitchProperty( indigo_property* property ) : IProperty( property )
+   SwitchProperty( indigo_property* property ) :
+      IProperty( property )
    {
    }
-
 
    virtual String getElementValue( size_type i ) const;
 
@@ -253,7 +254,8 @@ class LightProperty : public IProperty
 {
 public:
 
-   LightProperty( indigo_property* property ) : IProperty( property )
+   LightProperty( indigo_property* property ) :
+      IProperty( property )
    {
    }
 
@@ -268,19 +270,16 @@ class BlobProperty : public IProperty
 {
 public:
 
-   BlobProperty( indigo_property* property ) : IProperty( property )
+   BlobProperty( indigo_property* property ) :
+      IProperty( property )
    {
    }
 
-
-   virtual void*   getBlob( size_type i ) const;
-   virtual size_type  getBlobSize(size_type i) const;
-   virtual String getBlobFormat(size_type i) const;
-   virtual String getUrl(size_type i) const;
+   virtual void* getBlob( size_type i ) const;
+   virtual size_type getBlobSize( size_type i ) const;
+   virtual String getBlobFormat( size_type i ) const;
+   virtual String getUrl( size_type i ) const;
 };
-
-// ----------------------------------------------------------------------------
-
 
 // ----------------------------------------------------------------------------
 
@@ -291,23 +290,23 @@ public:
    static String Device( const String& key )
    {
       size_type startpos = key.Find( '/' );
-      size_type endpos   = key.Find( '/', 1 );
-      return key.Substring( startpos+1, endpos-startpos-1 );
+      size_type endpos = key.Find( '/', 1 );
+      return key.Substring( startpos + 1, endpos - startpos - 1 );
    }
 
    static String Property( const String& key )
    {
       size_type startpos = key.Find( '/', 1 );
-      size_type endpos   = key.Find( '/', startpos+1 );
-      return key.Substring( startpos+1, endpos-startpos-1 );
+      size_type endpos = key.Find( '/', startpos + 1 );
+      return key.Substring( startpos + 1, endpos - startpos - 1 );
    }
 
    static String Element( const String& key )
    {
       size_type startpos1 = key.Find( '/', 1 );
-      size_type startpos2 = key.Find( '/', startpos1+1 );
-      size_type endpos    = key.Find( '/', startpos2+1 );
-      return key.Substring( startpos2+1, endpos-startpos2 );
+      size_type startpos2 = key.Find( '/', startpos1 + 1 );
+      size_type endpos = key.Find( '/', startpos2 + 1 );
+      return key.Substring( startpos2 + 1, endpos - startpos2 );
    }
 
    static String Key( const String& device )
@@ -340,9 +339,9 @@ public:
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __IIndigoProperty_h
+#endif // __IIndigoProperty_h
 
 // ----------------------------------------------------------------------------
-// EOF IIndigoProperty.h - Released 2019-11-07T11:00:23Z
+// EOF IIndigoProperty.h - Released 2020-01-23T19:56:17Z

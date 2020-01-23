@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInterface.h - Released 2019-11-07T11:00:23Z
+// INDIDeviceControllerInterface.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -77,20 +77,15 @@ public:
    INDIDeviceControllerInterface();
    virtual ~INDIDeviceControllerInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual InterfaceFeatures Features() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   InterfaceFeatures Features() const override;
 
    void UpdateControls();
 
@@ -98,24 +93,24 @@ public:
    {
       GUIData( INDIDeviceControllerInterface& );
 
-      VerticalSizer     Global_Sizer;
-         SectionBar        Server_SectionBar;
-         Control           Server_Control;
-         HorizontalSizer   Server_Sizer;
-            Label             HostName_Label;
-            Edit              HostName_Edit;
-            Label             Port_Label;
-            SpinBox           Port_SpinBox;
-            VerticalSizer     ServerAction_Sizer;
-               PushButton        Connect_PushButton;
-               PushButton        Disconnect_PushButton;
-         SectionBar        Devices_SectionBar;
-         Control           Devices_Control;
-         HorizontalSizer   Devices_Sizer;
-            TreeBox           Devices_TreeBox;
-            VerticalSizer     NodeAction_Sizer;
-               PushButton        NodeAction_PushButton;
-         Label             ServerMessage_Label;
+      VerticalSizer Global_Sizer;
+      SectionBar Server_SectionBar;
+      Control Server_Control;
+      HorizontalSizer Server_Sizer;
+      Label HostName_Label;
+      Edit HostName_Edit;
+      Label Port_Label;
+      SpinBox Port_SpinBox;
+      VerticalSizer ServerAction_Sizer;
+      PushButton Connect_PushButton;
+      PushButton Disconnect_PushButton;
+      SectionBar Devices_SectionBar;
+      Control Devices_Control;
+      HorizontalSizer Devices_Sizer;
+      TreeBox Devices_TreeBox;
+      VerticalSizer NodeAction_Sizer;
+      PushButton NodeAction_PushButton;
+      Label ServerMessage_Label;
 
       Timer SynchronizeWithServer_Timer;
    };
@@ -153,9 +148,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __INDIDeviceControllerInterface_h
+#endif // __INDIDeviceControllerInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInterface.h - Released 2019-11-07T11:00:23Z
+// EOF INDIDeviceControllerInterface.h - Released 2020-01-23T19:56:17Z

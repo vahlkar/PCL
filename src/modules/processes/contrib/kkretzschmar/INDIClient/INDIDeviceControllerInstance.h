@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInstance.h - Released 2019-11-07T11:00:23Z
+// INDIDeviceControllerInstance.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -71,15 +71,13 @@ public:
    INDIDeviceControllerInstance( const MetaProcess* );
    INDIDeviceControllerInstance( const INDIDeviceControllerInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
@@ -87,7 +85,7 @@ private:
    uint32                       p_serverPort;
    pcl_bool                     p_serverConnect;
    String                       p_serverCommand;
-   pcl_bool                     p_abort;
+   pcl_bool                     p_abort = false;
    int32                        p_verbosity;
    INDINewPropertyListItemArray p_newProperties;
    String                       p_getCommandParameters;
@@ -103,9 +101,9 @@ private:
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __INDIDeviceControllerInstance_h
+#endif // __INDIDeviceControllerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInstance.h - Released 2019-11-07T11:00:23Z
+// EOF INDIDeviceControllerInstance.h - Released 2020-01-23T19:56:17Z

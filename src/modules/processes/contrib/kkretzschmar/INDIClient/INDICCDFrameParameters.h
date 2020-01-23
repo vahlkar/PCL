@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDICCDFrameParameters.h - Released 2019-11-07T11:00:23Z
+// INDICCDFrameParameters.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -70,7 +70,7 @@ public:
 
    ICFDeviceName( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICFDeviceName* TheICFDeviceNameParameter;
@@ -81,19 +81,22 @@ class ICFUploadMode : public MetaEnumeration
 {
 public:
 
-   enum { UploadClient,
-          UploadServer,
-          UploadServerAndClient,
-          NumberOfUploadModes,
-          Default = UploadClient };
+   enum
+   {
+      UploadClient,
+      UploadServer,
+      UploadServerAndClient,
+      NumberOfUploadModes,
+      Default = UploadClient
+   };
 
    ICFUploadMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ICFUploadMode* TheICFUploadModeParameter;
@@ -106,7 +109,7 @@ public:
 
    ICFServerUploadDirectory( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICFServerUploadDirectory* TheICFServerUploadDirectoryParameter;
@@ -119,8 +122,8 @@ public:
 
    ICFServerFileNameTemplate( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICFServerFileNameTemplate* TheICFServerFileNameTemplateParameter;
@@ -131,20 +134,23 @@ class ICFFrameType : public MetaEnumeration
 {
 public:
 
-   enum { LightFrame,
-          BiasFrame,
-          DarkFrame,
-          FlatFrame,
-          NumberOfFrameTypes,
-          Default = LightFrame };
+   enum
+   {
+      LightFrame,
+      BiasFrame,
+      DarkFrame,
+      FlatFrame,
+      NumberOfFrameTypes,
+      Default = LightFrame
+   };
 
    ICFFrameType( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ICFFrameType* TheICFFrameTypeParameter;
@@ -157,10 +163,10 @@ public:
 
    ICFBinningX( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICFBinningX* TheICFBinningXParameter;
@@ -173,10 +179,10 @@ public:
 
    ICFBinningY( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICFBinningY* TheICFBinningYParameter;
@@ -189,10 +195,10 @@ public:
 
    ICFFilterSlot( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICFFilterSlot* TheICFFilterSlotParameter;
@@ -205,11 +211,11 @@ public:
 
    ICFExposureTime( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICFExposureTime* TheICFExposureTimeParameter;
@@ -222,11 +228,11 @@ public:
 
    ICFExposureDelay( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICFExposureDelay* TheICFExposureDelayParameter;
@@ -239,10 +245,10 @@ public:
 
    ICFExposureCount( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICFExposureCount* TheICFExposureCountParameter;
@@ -255,8 +261,8 @@ public:
 
    ICFOpenClientImages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICFOpenClientImages* TheICFOpenClientImagesParameter;
@@ -269,8 +275,8 @@ public:
 
    ICFNewImageIdTemplate( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICFNewImageIdTemplate* TheICFNewImageIdTemplateParameter;
@@ -283,8 +289,8 @@ public:
 
    ICFReuseImageWindow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICFReuseImageWindow* TheICFReuseImageWindowParameter;
@@ -297,8 +303,8 @@ public:
 
    ICFAutoStretch( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICFAutoStretch* TheICFAutoStretchParameter;
@@ -311,8 +317,8 @@ public:
 
    ICFLinkedAutoStretch( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICFLinkedAutoStretch* TheICFLinkedAutoStretchParameter;
@@ -325,8 +331,8 @@ public:
 
    ICFSaveClientImages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICFSaveClientImages* TheICFSaveClientImagesParameter;
@@ -339,8 +345,8 @@ public:
 
    ICFOverwriteClientImages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICFOverwriteClientImages* TheICFOverwriteClientImagesParameter;
@@ -353,7 +359,7 @@ public:
 
    ICFClientDownloadDirectory( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICFClientDownloadDirectory* TheICFClientDownloadDirectoryParameter;
@@ -366,8 +372,8 @@ public:
 
    ICFClientFileNameTemplate( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICFClientFileNameTemplate* TheICFClientFileNameTemplateParameter;
@@ -380,8 +386,8 @@ public:
 
    ICFClientOutputFormatHints( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICFClientOutputFormatHints* TheICFClientOutputFormatHintsParameter;
@@ -394,8 +400,8 @@ public:
 
    ICFObjectName( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICFObjectName* TheICFObjectNameParameter;
@@ -406,21 +412,24 @@ class ICFTelescopeSelection : public MetaEnumeration
 {
 public:
 
-   enum { NoTelescope,
-          ActiveTelescope,
-          MountControllerTelescope,
-          MountControllerOrActiveTelescope,
-          TelescopeDeviceName,
-          NumberOfTelescopeSelections,
-          Default = MountControllerOrActiveTelescope };
+   enum
+   {
+      NoTelescope,
+      ActiveTelescope,
+      MountControllerTelescope,
+      MountControllerOrActiveTelescope,
+      TelescopeDeviceName,
+      NumberOfTelescopeSelections,
+      Default = MountControllerOrActiveTelescope
+   };
 
    ICFTelescopeSelection( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ICFTelescopeSelection* TheICFTelescopeSelectionParameter;
@@ -433,8 +442,8 @@ public:
 
    ICFRequireSelectedTelescope( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICFRequireSelectedTelescope* TheICFRequireSelectedTelescopeParameter;
@@ -447,8 +456,8 @@ public:
 
    ICFTelescopeDeviceName( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICFTelescopeDeviceName* TheICFTelescopeDeviceNameParameter;
@@ -462,8 +471,8 @@ public:
 
    ICFClientFrames( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICFClientFrames* TheICFClientFramesParameter;
@@ -476,8 +485,8 @@ public:
 
    ICFClientViewId( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICFClientViewId* TheICFClientViewIdParameter;
@@ -490,8 +499,8 @@ public:
 
    ICFClientFilePath( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICFClientFilePath* TheICFClientFilePathParameter;
@@ -504,8 +513,8 @@ public:
 
    ICFServerFrames( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICFServerFrames* TheICFServerFramesParameter;
@@ -518,35 +527,32 @@ public:
 
    ICFServerFrame( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICFServerFrame* TheICFServerFrameParameter;
 
 // ----------------------------------------------------------------------------
 
-DECLARE_STRING_PARAMETER_CLASS(ICFExternalFilterWheelDeviceName);
+DECLARE_STRING_PARAMETER_CLASS( ICFExternalFilterWheelDeviceName );
 
 // ----------------------------------------------------------------------------
 
+DECLARE_BOOLEAN_PARAMETER_CLASS( ICFEnableAlignmentCorrection );
+DECLARE_STRING_PARAMETER_CLASS( ICFAlignmentFile );
 
 // ----------------------------------------------------------------------------
 
-DECLARE_BOOLEAN_PARAMETER_CLASS(ICFEnableAlignmentCorrection);
-DECLARE_STRING_PARAMETER_CLASS(ICFAlignmentFile);
-
-// ----------------------------------------------------------------------------
-
-DECLARE_INT32_PARAMETER_CLASS(ICFTelescopeFocalLength);
+DECLARE_INT32_PARAMETER_CLASS( ICFTelescopeFocalLength );
 
 // ----------------------------------------------------------------------------
 
 PCL_END_LOCAL
 
-} // pcl
+} // namespace pcl
 
-#endif   // __INDICCDFrameParameters_h
+#endif // __INDICCDFrameParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameParameters.h - Released 2019-11-07T11:00:23Z
+// EOF INDICCDFrameParameters.h - Released 2020-01-23T19:56:17Z

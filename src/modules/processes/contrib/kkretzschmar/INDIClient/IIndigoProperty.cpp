@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// IIndigoProperty.cpp - Released 2019-11-07T11:00:23Z
+// IIndigoProperty.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,48 +54,57 @@
 
 #include <pcl/StringList.h>
 
-
 namespace pcl
 {
 
-
 // ----------------------------------------------------------------------------
-
 
 String SwitchProperty::getElementValue( size_t i ) const
 {
    CHECK_INDEX_THROWS( m_property->count );
-   return m_property->items[i].sw.value  ? "ON" : "OFF";
+   return m_property->items[i].sw.value ? "ON" : "OFF";
 }
 
-std::unique_ptr<indigo_property> SwitchProperty::clone() const {
-    std::unique_ptr<indigo_property> property(indigo_init_switch_property(NULL, m_property->device, m_property->name, NULL, NULL, INDIGO_OK_STATE, INDIGO_RW_PERM, m_property->rule, m_property->count));
-    memcpy(property.get(), m_property, sizeof(indigo_property) + m_property->count * sizeof(indigo_item));
-    return property;
+std::unique_ptr<indigo_property> SwitchProperty::clone() const
+{
+   std::unique_ptr<indigo_property> property( indigo_init_switch_property( NULL, m_property->device, m_property->name,
+                                                                           NULL, NULL,
+                                                                           INDIGO_OK_STATE, INDIGO_RW_PERM,
+                                                                           m_property->rule, m_property->count ) );
+   memcpy( property.get(), m_property, sizeof( indigo_property ) + m_property->count * sizeof( indigo_item ) );
+   return property;
 }
 
 // ----------------------------------------------------------------------------
 
+String NumberProperty::getElementValue( size_type i ) const
+{
+   CHECK_INDEX_THROWS( m_property->count );
+   return IsoString( static_cast<double>( m_property->items[i].number.value ) );
+}
 
-String NumberProperty::getElementValue( size_type i ) const {
-    CHECK_INDEX_THROWS( m_property->count );
-    return IsoString(static_cast<double>(m_property->items[i].number.value));
+String NumberProperty::getElementTarget( size_type i ) const
+{
+   CHECK_INDEX_THROWS( m_property->count );
+   return IsoString( static_cast<double>( m_property->items[i].number.target ) );
 }
-String NumberProperty::getElementTarget( size_type i ) const {
-    CHECK_INDEX_THROWS( m_property->count );
-    return IsoString(static_cast<double>(m_property->items[i].number.target));
+
+String NumberProperty::getElementMinValue( size_type i ) const
+{
+   CHECK_INDEX_THROWS( m_property->count );
+   return m_property->items[i].number.min;
 }
-String NumberProperty::getElementMinValue( size_type i ) const {
-    CHECK_INDEX_THROWS( m_property->count );
-    return m_property->items[i].number.min;
+
+String NumberProperty::getElementMaxValue( size_type i ) const
+{
+   CHECK_INDEX_THROWS( m_property->count );
+   return m_property->items[i].number.max;
 }
-String NumberProperty::getElementMaxValue( size_type i ) const {
-    CHECK_INDEX_THROWS( m_property->count );
-    return m_property->items[i].number.max;
-}
-String NumberProperty::getElementValueStep( size_type i ) const {
-    CHECK_INDEX_THROWS( m_property->count );
-    return m_property->items[i].number.step;
+
+String NumberProperty::getElementValueStep( size_type i ) const
+{
+   CHECK_INDEX_THROWS( m_property->count );
+   return m_property->items[i].number.step;
 }
 
 String NumberProperty::getNumberFormat( size_t i ) const
@@ -104,15 +113,17 @@ String NumberProperty::getNumberFormat( size_t i ) const
    return m_property->items[i].number.format;
 }
 
-
-std::unique_ptr<indigo_property> NumberProperty::clone() const {
-    std::unique_ptr<indigo_property> property(indigo_init_number_property(NULL, m_property->device, m_property->name, NULL, NULL, INDIGO_OK_STATE, INDIGO_RW_PERM, m_property->count));
-    memcpy(property.get(), m_property, sizeof(indigo_property) + m_property->count * sizeof(indigo_item));
-    return property;
+std::unique_ptr<indigo_property> NumberProperty::clone() const
+{
+   std::unique_ptr<indigo_property> property( indigo_init_number_property( NULL, m_property->device, m_property->name,
+                                                                           NULL, NULL,
+                                                                           INDIGO_OK_STATE, INDIGO_RW_PERM,
+                                                                           m_property->count ) );
+   memcpy( property.get(), m_property, sizeof( indigo_property ) + m_property->count * sizeof( indigo_item ) );
+   return property;
 }
 
 // ----------------------------------------------------------------------------
-
 
 String TextProperty::getElementValue( size_t i ) const
 {
@@ -120,19 +131,22 @@ String TextProperty::getElementValue( size_t i ) const
    return m_property->items[i].text.value;
 }
 
-std::unique_ptr<indigo_property> TextProperty::clone() const {
-    std::unique_ptr<indigo_property> property(indigo_init_text_property(NULL, m_property->device, m_property->name, NULL, NULL, INDIGO_OK_STATE, INDIGO_RW_PERM, m_property->count));
-    memcpy(property.get(), m_property, sizeof(indigo_property) + m_property->count * sizeof(indigo_item));
-    return property;
+std::unique_ptr<indigo_property> TextProperty::clone() const
+{
+   std::unique_ptr<indigo_property> property( indigo_init_text_property( NULL, m_property->device, m_property->name,
+                                                                         NULL, NULL,
+                                                                         INDIGO_OK_STATE, INDIGO_RW_PERM,
+                                                                         m_property->count ) );
+   memcpy( property.get(), m_property, sizeof( indigo_property ) + m_property->count * sizeof( indigo_item ) );
+   return property;
 }
 
 // ----------------------------------------------------------------------------
 
-
 String LightProperty::getElementValue( size_t i ) const
 {
    CHECK_INDEX_THROWS( m_property->count );
-   switch ( m_property->items[i].light.value)
+   switch ( m_property->items[i].light.value )
    {
    case INDIGO_IDLE_STATE:
       return "IDLE";
@@ -147,27 +161,38 @@ String LightProperty::getElementValue( size_t i ) const
    }
 }
 
-std::unique_ptr<indigo_property> LightProperty::clone() const {
-    std::unique_ptr<indigo_property> property(indigo_init_light_property(NULL, m_property->device, m_property->name, NULL, NULL, INDIGO_OK_STATE, m_property->count));
-    memcpy(property.get(), m_property, sizeof(indigo_property) + m_property->count * sizeof(indigo_item));
-    return property;
+std::unique_ptr<indigo_property> LightProperty::clone() const
+{
+   std::unique_ptr<indigo_property> property( indigo_init_light_property( NULL, m_property->device, m_property->name,
+                                                                          NULL, NULL,
+                                                                          INDIGO_OK_STATE,
+                                                                          m_property->count ) );
+   memcpy( property.get(), m_property, sizeof( indigo_property ) + m_property->count * sizeof( indigo_item ) );
+   return property;
 }
 
 // ----------------------------------------------------------------------------
 
-void*   BlobProperty::getBlob( size_type i ) const {
+void* BlobProperty::getBlob( size_type i ) const
+{
    CHECK_INDEX_THROWS( m_property->count );
    return m_property->items[i].blob.value;
 }
-size_type  BlobProperty::getBlobSize(size_type i) const {
+
+size_type BlobProperty::getBlobSize( size_type i ) const
+{
    CHECK_INDEX_THROWS( m_property->count );
    return m_property->items[i].blob.size;
 }
-String BlobProperty::getBlobFormat(size_type i) const {
+
+String BlobProperty::getBlobFormat( size_type i ) const
+{
    CHECK_INDEX_THROWS( m_property->count );
    return m_property->items[i].blob.format;
 }
-String BlobProperty::getUrl(size_type i) const {
+
+String BlobProperty::getUrl( size_type i ) const
+{
    CHECK_INDEX_THROWS( m_property->count );
    return m_property->items[i].blob.url;
 }
@@ -189,7 +214,7 @@ String PropertyUtils::FormattedNumber( const String& number, IsoString format )
    format.DeleteRight( im );
    format.DeleteLeft( 1 );
    StringList tokens;
-   format.Break( tokens, '.', true/*trim*/ );
+   format.Break( tokens, '.', true /*trim*/ );
 
    int fraction = 0;
    tokens[1].TryToInt( fraction );
@@ -231,9 +256,9 @@ String PropertyUtils::FormattedNumber( const String& number, IsoString format )
 
 // ----------------------------------------------------------------------------
 
-
-IProperty* PropertyFactory::Create( indigo_property* property ) {
-   switch( property->type )
+IProperty* PropertyFactory::Create( indigo_property* property )
+{
+   switch ( property->type )
    {
    case INDIGO_NUMBER_VECTOR:
       return new NumberProperty( property );
@@ -250,9 +275,7 @@ IProperty* PropertyFactory::Create( indigo_property* property ) {
    }
 }
 
-
-
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF IIndigoProperty.cpp - Released 2019-11-07T11:00:23Z
+// EOF IIndigoProperty.cpp - Released 2020-01-23T19:56:17Z

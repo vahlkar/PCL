@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDICCDFrameInterface.cpp - Released 2019-11-07T11:00:23Z
+// INDICCDFrameInterface.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -50,8 +50,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "INDICCDFrameInstance.h"
 #include "INDICCDFrameInterface.h"
+#include "INDICCDFrameInstance.h"
 #include "INDICCDFrameParameters.h"
 #include "INDICCDFrameProcess.h"
 #include "INDIDeviceControllerInstance.h"
@@ -77,13 +77,13 @@ class SimpleGetStringDialog : public Dialog
 {
 public:
 
-   SimpleGetStringDialog( const String& label, const String& text = String(), const String& title = "INDICCDFrame" )
+   SimpleGetStringDialog( const String& label, const String& text = String(), const String& title = "IndigoCCDFrame" )
    {
       Text_Label.SetText( label );
-      Text_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+      Text_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
       Text_Edit.SetText( text.Trimmed() );
-      Text_Edit.SetMinWidth( 32*Font().Width( 'm' ) );
+      Text_Edit.SetMinWidth( 32 * Font().Width( 'm' ) );
 
       Text_Sizer.SetSpacing( 6 );
       Text_Sizer.Add( Text_Label );
@@ -120,13 +120,13 @@ public:
 
 private:
 
-   VerticalSizer     Global_Sizer;
-      HorizontalSizer   Text_Sizer;
-         Label             Text_Label;
-         Edit              Text_Edit;
-      HorizontalSizer   Buttons_Sizer;
-         PushButton        OK_PushButton;
-         PushButton        Cancel_PushButton;
+   VerticalSizer Global_Sizer;
+   HorizontalSizer Text_Sizer;
+   Label Text_Label;
+   Edit Text_Edit;
+   HorizontalSizer Buttons_Sizer;
+   PushButton OK_PushButton;
+   PushButton Cancel_PushButton;
 
    void e_Show( Control& )
    {
@@ -153,15 +153,14 @@ FilterConfigDialog::FilterConfigDialog( const String& deviceName ) :
    FilterNames_TreeBox.SetMinHeight( 8 * Font().Height() );
    FilterNames_TreeBox.SetScaledMinWidth( 100 );
    FilterNames_TreeBox.SetNumberOfColumns( 2 );
-   FilterNames_TreeBox.SetHeaderText( 0,  "Filter Slot" );
-   FilterNames_TreeBox.SetHeaderText( 1,  "Filter Name" );
+   FilterNames_TreeBox.SetHeaderText( 0, "Filter Slot" );
+   FilterNames_TreeBox.SetHeaderText( 1, "Filter Name" );
    FilterNames_TreeBox.DisableMultipleSelections();
    FilterNames_TreeBox.SetStyleSheet( ScaledStyleSheet(
-         "QTreeView {"
+      "QTreeView {"
          "font-family: Hack, DejaVu Sans Mono, Monospace;"
          "font-size: 9pt;"
-         "}"
-   ) );
+      "}" ) );
 
    FilterRename_ToolButton.SetIcon( ScaledResource( ":/icons/write.png" ) );
    FilterRename_ToolButton.SetScaledFixedSize( 22, 22 );
@@ -186,11 +185,11 @@ FilterConfigDialog::FilterConfigDialog( const String& deviceName ) :
 
 void FilterConfigDialog::SendUpdatedProperties()
 {
-   for ( int i = 0, n = FilterNames_TreeBox.NumberOfChildren() ; i < n; ++i )
+   for ( int i = 0, n = FilterNames_TreeBox.NumberOfChildren(); i < n; ++i )
       INDIClient::TheClient()->SendNewPropertyItem( m_device,
-            WHEEL_SLOT_NAME_PROPERTY_NAME,
-            "INDI_TEXT",
-            "SLOT_NAME_" + String( i+1 ), FilterNames_TreeBox.Child(i)->Text( 1 ) );
+         WHEEL_SLOT_NAME_PROPERTY_NAME,
+         "INDI_TEXT",
+         "SLOT_NAME_" + String( i + 1 ), FilterNames_TreeBox.Child( i )->Text( 1 ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -320,7 +319,7 @@ ProcessImplementation* INDICCDFrameInterface::NewProcess() const
    instance->p_clientOutputFormatHints = GUI->ClientOutputFormatHints_Edit.Text().Trimmed();
    instance->p_objectName = GUI->ObjectName_Edit.Text().Trimmed();
    instance->p_telescopeSelection = GUI->TelescopeDevice_Combo.CurrentItem();
-   instance->p_extFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText( GUI->ExternalFilterDevice_Combo.CurrentItem());
+   instance->p_extFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText( GUI->ExternalFilterDevice_Combo.CurrentItem() );
    return instance;
 }
 
@@ -330,7 +329,7 @@ bool INDICCDFrameInterface::ValidateProcess( const ProcessImplementation& p, Str
 {
    if ( dynamic_cast<const INDICCDFrameInstance*>( &p ) != nullptr )
       return true;
-   whyNot = "Not an INDICCDFrame instance.";
+   whyNot = "Not an IndigoCCDFrame instance.";
    return false;
 }
 
@@ -353,7 +352,7 @@ bool INDICCDFrameInterface::ImportProcess( const ProcessImplementation& p )
       GUI->ExposureDelay_NumericEdit.SetValue( instance->p_exposureDelay );
       GUI->ExposureCount_SpinBox.SetValue( instance->p_exposureCount );
       GUI->ObjectName_Edit.SetText( instance->p_objectName );
-      GUI->TelescopeDevice_Combo.SetCurrentItem( Max( instance->p_telescopeSelection, GUI->TelescopeDevice_Combo.NumberOfItems()-1 ) );
+      GUI->TelescopeDevice_Combo.SetCurrentItem( Max( instance->p_telescopeSelection, GUI->TelescopeDevice_Combo.NumberOfItems() - 1 ) );
       GUI->OpenClientFrames_CheckBox.SetChecked( instance->p_openClientImages );
       GUI->ReuseImageWindow_CheckBox.SetChecked( instance->p_reuseImageWindow );
       GUI->AutoStretch_CheckBox.SetChecked( instance->p_autoStretch );
@@ -364,7 +363,7 @@ bool INDICCDFrameInterface::ImportProcess( const ProcessImplementation& p )
       GUI->ClientFileNameTemplate_Edit.SetText( instance->p_clientFileNameTemplate );
       GUI->ClientOutputFormatHints_Edit.SetText( instance->p_clientOutputFormatHints );
 
-      if ( instance->ValidateDevice( false/*throwErrors*/ ) )
+      if ( instance->ValidateDevice( false /*throwErrors*/ ) )
       {
          m_device = instance->p_deviceName;
          instance->SendDeviceProperties();
@@ -384,8 +383,8 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 {
    int emWidth = w.Font().Width( 'm' );
    int labelWidth1 = w.Font().Width( "Server file name template:" ) + emWidth;
-   int editWidth1 = 5*emWidth;
-   int editWidth2 = 8*emWidth;
+   int editWidth1 = 5 * emWidth;
+   int editWidth2 = 8 * emWidth;
    int ui4 = w.LogicalPixelsToPhysical( 4 );
 
    //
@@ -396,12 +395,12 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDDevice_Label.SetText( "Indigo CCD device:" );
    CCDDevice_Label.SetToolTip( "<p>Select an Indigo CCD device.</p>" );
    CCDDevice_Label.SetMinWidth( labelWidth1 );
-   CCDDevice_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   CCDDevice_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
-   FilterConfig_ToolButton.SetIcon(w.ScaledResource(":/icons/wrench.png"));
-   FilterConfig_ToolButton.SetScaledFixedSize(22, 22);
-   FilterConfig_ToolButton.SetToolTip("<p>Configure Indigo filter wheel device</p>");
-   FilterConfig_ToolButton.OnClick((Button::click_event_handler) &INDICCDFrameInterface::e_Click, w);
+   FilterConfig_ToolButton.SetIcon( w.ScaledResource( ":/icons/wrench.png" ) );
+   FilterConfig_ToolButton.SetScaledFixedSize( 22, 22 );
+   FilterConfig_ToolButton.SetToolTip( "<p>Configure Indigo filter wheel device</p>" );
+   FilterConfig_ToolButton.OnClick( (Button::click_event_handler)&INDICCDFrameInterface::e_Click, w );
    FilterConfig_ToolButton.Disable();
 
    CCDDevice_Combo.OnItemSelected( (ComboBox::item_event_handler)&INDICCDFrameInterface::e_ItemSelected, w );
@@ -409,7 +408,6 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDDevice_Sizer.SetSpacing( 4 );
    CCDDevice_Sizer.Add( CCDDevice_Label );
    CCDDevice_Sizer.Add( CCDDevice_Combo, 100 );
-
 
    CCDTemp_NumericEdit.SetReal();
    CCDTemp_NumericEdit.SetPrecision( 2 );
@@ -446,7 +444,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 
    CCDBinX_Label.SetText( "Binning X:" );
    CCDBinX_Label.SetFixedWidth( labelWidth1 );
-   CCDBinX_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   CCDBinX_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    CCDBinX_Label.SetToolTip( ccdBinXToolTipText );
    CCDBinX_Label.Disable();
 
@@ -473,7 +471,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 
    CCDBinY_Label.SetText( "Binning Y:" );
    CCDBinY_Label.SetFixedWidth( labelWidth1 );
-   CCDBinY_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   CCDBinY_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    CCDBinY_Label.SetToolTip( ccdBinYToolTipText );
    CCDBinY_Label.Disable();
 
@@ -501,7 +499,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 
    CCDFilter_Label.SetText( "Filter:" );
    CCDFilter_Label.SetFixedWidth( labelWidth1 );
-   CCDFilter_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   CCDFilter_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    CCDFilter_Label.SetToolTip( ccdFilterToolTipText );
    CCDFilter_Label.Disable();
 
@@ -514,13 +512,12 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    CCDFilter_HSizer.Add( CCDFilter_Combo, 100 );
    CCDFilter_HSizer.Add( FilterConfig_ToolButton );
 
-
    const char* ccdFrameTypeToolTipText =
       "<p>The frame type will be stored as a standard property and FITS header keyword in each acquired frame.</p>";
 
    CCDFrameType_Label.SetText( "Frame type:" );
    CCDFrameType_Label.SetFixedWidth( labelWidth1 );
-   CCDFrameType_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   CCDFrameType_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    CCDFrameType_Label.SetToolTip( ccdFrameTypeToolTipText );
    CCDFrameType_Label.Disable();
 
@@ -548,7 +545,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    UploadMode_Label.SetText( "Upload mode:" );
    UploadMode_Label.SetToolTip( uploadModeToolTipText );
    UploadMode_Label.SetMinWidth( labelWidth1 );
-   UploadMode_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   UploadMode_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    UploadMode_Label.Disable();
 
    UploadMode_Combo.AddItem( "Upload to client only" );
@@ -570,7 +567,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ServerUploadDir_Label.SetText( "Server upload directory:" );
    ServerUploadDir_Label.SetToolTip( uploadDirToolTipText );
    ServerUploadDir_Label.SetMinWidth( labelWidth1 );
-   ServerUploadDir_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ServerUploadDir_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    ServerUploadDir_Label.Disable();
 
    ServerUploadDir_Edit.SetReadOnly();
@@ -593,44 +590,44 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
       "new frames are acquired. Supported template specifiers are the following:</p>"
       "<p><table border=\"1\" cellspacing=\"1\" cellpadding=\"4\">"
       "<tr>"
-         "<td><i>Template specifier</i></td>"
-         "<td width=\"90%\"><i>Will be replaced by</i></td>"
+      "<td><i>Template specifier</i></td>"
+      "<td width=\"90%\"><i>Will be replaced by</i></td>"
       "</tr>"
       "<tr>"
-         "<td>%f</td>"
-         "<td>Frame type (light, flat, dark, bias).</td>"
+      "<td>%f</td>"
+      "<td>Frame type (light, flat, dark, bias).</td>"
       "</tr>"
       "<tr>"
-         "<td>%b</td>"
-         "<td>CCD binning with the format HxV, where H and V are, respectively, the horizontal and vertical binning factors.</td>"
+      "<td>%b</td>"
+      "<td>CCD binning with the format HxV, where H and V are, respectively, the horizontal and vertical binning factors.</td>"
       "</tr>"
       "<tr>"
-         "<td>%e</td>"
-         "<td>Exposure time in seconds.</td>"
+      "<td>%e</td>"
+      "<td>Exposure time in seconds.</td>"
       "</tr>"
       "<tr>"
-         "<td>%F</td>"
-         "<td>Filter name</td>"
+      "<td>%F</td>"
+      "<td>Filter name</td>"
       "</tr>"
       "<tr>"
-         "<td>%T</td>"
-         "<td>CCD temperature in degrees Celsius.</td>"
+      "<td>%T</td>"
+      "<td>CCD temperature in degrees Celsius.</td>"
       "</tr>"
       "<tr>"
-         "<td>%t</td>"
-         "<td>Acquisition date and time in the UTC time scale, ISO 8601 format.</td>"
+      "<td>%t</td>"
+      "<td>Acquisition date and time in the UTC time scale, ISO 8601 format.</td>"
       "</tr>"
       "<tr>"
-         "<td>%d</td>"
-         "<td>Acquisition date in the UTC time scale, yyyy-mm-dd format.</td>"
+      "<td>%d</td>"
+      "<td>Acquisition date in the UTC time scale, yyyy-mm-dd format.</td>"
       "</tr>"
       "<tr>"
-         "<td>%n</td>"
-         "<td>The frame number starting from one, with three digits and left-padded with zeros.</td>"
+      "<td>%n</td>"
+      "<td>The frame number starting from one, with three digits and left-padded with zeros.</td>"
       "</tr>"
       "<tr>"
-         "<td>%u</td>"
-         "<td>A universally unique identifier (UUID) in canonical form (36 characters).</td>"
+      "<td>%u</td>"
+      "<td>A universally unique identifier (UUID) in canonical form (36 characters).</td>"
       "</tr>"
       "</table></p>"
       "<p>For example, the default template %f_B%b_E%e_%n would produce the following file name:</p>"
@@ -644,7 +641,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ServerFileNameTemplate_Label.SetText( "Server file name template:" );
    ServerFileNameTemplate_Label.SetToolTip( serverFileNameTemplateToolTipText );
    ServerFileNameTemplate_Label.SetMinWidth( labelWidth1 );
-   ServerFileNameTemplate_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ServerFileNameTemplate_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    ServerFileNameTemplate_Label.Disable();
 
    ServerFileNameTemplate_Edit.SetToolTip( serverFileNameTemplateToolTipText );
@@ -699,8 +696,8 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 
    LinkedAutoStretch_CheckBox.SetText( "Linked AutoStretch" );
    LinkedAutoStretch_CheckBox.SetToolTip( "<p>If enabled, compute and apply a single adaptive STF for all nominal channels of "
-      "each acquired color image.</p>"
-      "<p>If disabled, compute a separate adaptive STF for each nominal color channel.</p>" );
+                                          "each acquired color image.</p>"
+                                          "<p>If disabled, compute a separate adaptive STF for each nominal color channel.</p>" );
    LinkedAutoStretch_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    LinkedAutoStretch_Sizer.Add( LinkedAutoStretch_CheckBox );
    LinkedAutoStretch_Sizer.AddStretch();
@@ -713,10 +710,10 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    SaveClientFrames_Sizer.AddStretch();
 
    OverwriteClientFrames_CheckBox.SetText( "Overwrite existing files" );
-   OverwriteClientFrames_CheckBox.SetToolTip( "<p>If this option is selected, INDICCDFrame will overwrite "
-      "existing files with the same names as generated output files. This can be dangerous because the original "
-      "contents of overwritten files will be lost.</p>"
-      "<p><b>Enable this option <u>at your own risk.</u></b></p>" );
+   OverwriteClientFrames_CheckBox.SetToolTip( "<p>If this option is selected, IndigoCCDFrame will overwrite "
+                                              "existing files with the same names as generated output files. This can be dangerous because the original "
+                                              "contents of overwritten files will be lost.</p>"
+                                              "<p><b>Enable this option <u>at your own risk.</u></b></p>" );
 
    OverwriteClientFrames_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    OverwriteClientFrames_Sizer.Add( OverwriteClientFrames_CheckBox );
@@ -729,7 +726,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ClientDownloadDir_Label.SetText( "Client download directory:" );
    ClientDownloadDir_Label.SetToolTip( downloadDirToolTipText );
    ClientDownloadDir_Label.SetMinWidth( labelWidth1 );
-   ClientDownloadDir_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ClientDownloadDir_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    ClientDownloadDir_Label.Disable();
 
    ClientDownloadDir_Edit.SetToolTip( downloadDirToolTipText );
@@ -754,7 +751,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ClientFileNameTemplate_Label.SetText( "Client file name template:" );
    ClientFileNameTemplate_Label.SetToolTip( clientFileNameTemplateToolTipText );
    ClientFileNameTemplate_Label.SetMinWidth( labelWidth1 );
-   ClientFileNameTemplate_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ClientFileNameTemplate_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    ClientFileNameTemplate_Label.Disable();
 
    ClientFileNameTemplate_Edit.SetToolTip( clientFileNameTemplateToolTipText );
@@ -767,7 +764,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 
    const char* clientOutputFormatHintsToolTipText =
       "<p><i>Format hints</i> allow you to override global file format settings for image files used by specific processes. "
-      "In INDICCDFrame, output hints allow you to control the way newly acquired image files are generated on the Indigo client.</p>"
+      "In IndigoCCDFrame, output hints allow you to control the way newly acquired image files are generated on the Indigo client.</p>"
       "<p>For example, you can use the \"compression-codec zlib\" hint to force the XISF format support module to compress "
       "images using the Zlib data compression algorithm. To gain more control on compression, you can use the \"compression-level <i>n</i>\""
       "hint to specify a compression level <i>n</i> in the range from 0 (default compression) to 100 (maximum compression). See the XISF "
@@ -776,7 +773,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ClientOutputFormatHints_Label.SetText( "Output format hints:" );
    ClientOutputFormatHints_Label.SetToolTip( clientOutputFormatHintsToolTipText );
    ClientOutputFormatHints_Label.SetMinWidth( labelWidth1 );
-   ClientOutputFormatHints_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ClientOutputFormatHints_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    ClientOutputFormatHints_Label.Disable();
 
    ClientOutputFormatHints_Edit.SetToolTip( clientOutputFormatHintsToolTipText );
@@ -828,7 +825,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ExposureCount_Label.SetText( "Number of frames:" );
    ExposureCount_Label.SetToolTip( "<p>Number of frames to be acquired.</p>" );
    ExposureCount_Label.SetMinWidth( labelWidth1 );
-   ExposureCount_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ExposureCount_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    ExposureCount_SpinBox.SetRange( 1, 1000 );
    ExposureCount_SpinBox.SetFixedWidth( editWidth2 );
@@ -878,7 +875,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ObjectName_Label.SetText( "Object name:" );
    ObjectName_Label.SetToolTip( objectNameToolTip );
    ObjectName_Label.SetMinWidth( labelWidth1 );
-   ObjectName_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ObjectName_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    ObjectName_Edit.SetToolTip( objectNameToolTip );
    ObjectName_Edit.SetText( TheICFObjectNameParameter->DefaultValue() );
@@ -888,7 +885,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ObjectName_Sizer.Add( ObjectName_Edit, 100 );
 
    const char* telescopeDeviceToolTip =
-      "<p>This parameter tells INDICCDFrame how to select the telescope used for acquisition of light frames:</p>"
+      "<p>This parameter tells IndigoCCDFrame how to select the telescope used for acquisition of light frames:</p>"
 
       "<p><b>No telescope.</b> Newly acquired light frames won't have any property or keyword related to accurate observation "
       "coordinates. The OBJCTRA and OBJCDEC FITS keywords provided by Indigo will be left intact. This option is <i>not recommended</i> "
@@ -913,7 +910,7 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    TelescopeDevice_Label.SetText( "Telescope device:" );
    TelescopeDevice_Label.SetToolTip( telescopeDeviceToolTip );
    TelescopeDevice_Label.SetMinWidth( labelWidth1 );
-   TelescopeDevice_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   TelescopeDevice_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    TelescopeDevice_Combo.AddItem( "No telescope" );
    TelescopeDevice_Combo.AddItem( "Active telescope" );
@@ -926,15 +923,14 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    TelescopeDevice_Sizer.Add( TelescopeDevice_Label );
    TelescopeDevice_Sizer.Add( TelescopeDevice_Combo, 100 );
 
-
    const char* externalFilterDeviceToolTip =
-         "<p>When the CCD device does not have an integrated filter wheel, it is possible to </p>"
+      "<p>When the CCD device does not have an integrated filter wheel, it is possible to </p>"
       "specify the device name of an external filter wheel here.</p>";
 
    ExternalFilterDevice_Label.SetText( "External filter wheel device:" );
    ExternalFilterDevice_Label.SetToolTip( externalFilterDeviceToolTip );
    ExternalFilterDevice_Label.SetMinWidth( labelWidth1 );
-   ExternalFilterDevice_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ExternalFilterDevice_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    ExternalFilterDevice_Label.Disable();
 
    ExternalFilterDevice_Combo.AddItem( "<No filter wheel>" );
@@ -945,7 +941,6 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ExternalFilterDevice_Sizer.SetSpacing( 4 );
    ExternalFilterDevice_Sizer.Add( ExternalFilterDevice_Label );
    ExternalFilterDevice_Sizer.Add( ExternalFilterDevice_Combo, 100 );
-
 
    FrameAcquisition_Sizer.SetSpacing( 4 );
    FrameAcquisition_Sizer.Add( ExposureParameters_Sizer );
@@ -1059,7 +1054,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
             }
 
             GUI->CCDDevice_Combo.SetItemText( 0,
-                  (GUI->CCDDevice_Combo.NumberOfItems() > 1) ? "<No Device Selected>" : "<No Camera Device Available>" );
+               ( GUI->CCDDevice_Combo.NumberOfItems() > 1 ) ? "<No Device Selected>" : "<No Camera Device Available>" );
 
             int i = Max( 0, GUI->CCDDevice_Combo.FindItem( m_device ) );
             GUI->CCDDevice_Combo.SetCurrentItem( i );
@@ -1072,7 +1067,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
 
       m_device.Clear();
 
-__device_found:
+   __device_found:
 
       UpdateControls();
    }
@@ -1122,14 +1117,14 @@ __device_found:
          GUI->CCDBinY_Label.Disable();
       }
 
-      String externalFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText(GUI->ExternalFilterDevice_Combo.CurrentItem());
-      if ( indi->GetPropertyItem(  externalFilterWheelDeviceName != String("<No filter wheel>") ? externalFilterWheelDeviceName : m_device, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
+      String externalFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText( GUI->ExternalFilterDevice_Combo.CurrentItem() );
+      if ( indi->GetPropertyItem( externalFilterWheelDeviceName != String( "<No filter wheel>" ) ? externalFilterWheelDeviceName : m_device, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME, item ) )
       {
          int currentFilterIndex = item.PropertyValue.ToInt() - 1;
          GUI->CCDFilter_Combo.Clear();
          for ( int i = 1; i <= 256; ++i )
          {
-            if ( !indi->GetPropertyItem(  externalFilterWheelDeviceName != String("<No filter wheel>") ? externalFilterWheelDeviceName : m_device, WHEEL_SLOT_NAME_PROPERTY_NAME, "SLOT_NAME_" + String( i ), item ) )
+            if ( !indi->GetPropertyItem( externalFilterWheelDeviceName != String( "<No filter wheel>" ) ? externalFilterWheelDeviceName : m_device, WHEEL_SLOT_NAME_PROPERTY_NAME, "SLOT_NAME_" + String( i ), item ) )
                break;
             GUI->CCDFilter_Combo.AddItem( item.PropertyValue );
          }
@@ -1175,7 +1170,7 @@ __device_found:
                GUI->OpenClientFrames_CheckBox.Enable();
                GUI->ReuseImageWindow_CheckBox.Enable( openClientFrames && !saveClientFrames );
                GUI->AutoStretch_CheckBox.Enable( openClientFrames || saveClientFrames );
-               GUI->LinkedAutoStretch_CheckBox.Enable( (openClientFrames || saveClientFrames) && GUI->AutoStretch_CheckBox.IsChecked() );
+               GUI->LinkedAutoStretch_CheckBox.Enable( ( openClientFrames || saveClientFrames ) && GUI->AutoStretch_CheckBox.IsChecked() );
                GUI->SaveClientFrames_CheckBox.Enable();
                GUI->OverwriteClientFrames_CheckBox.Enable( saveClientFrames );
                GUI->ClientDownloadDir_Label.Enable( saveClientFrames );
@@ -1250,21 +1245,21 @@ __device_found:
          GUI->ServerUploadDir_Edit.SetText( item.PropertyValue );
 
       {
-      if (!GUI->ExternalFilterDevice_Combo.IsEnabled() && !GUI->CCDFilter_Combo.IsEnabled() ){
-         GUI->ExternalFilterDevice_Combo.Clear();
-         ExclConstDeviceList x = indi->ConstDeviceList();
-         const INDIDeviceListItemArray& devices( x );
-         for ( auto device : devices )
+         if ( !GUI->ExternalFilterDevice_Combo.IsEnabled() && !GUI->CCDFilter_Combo.IsEnabled() )
          {
-            // add filter devices to combo box
-             if (indi->HasPropertyItem(device.DeviceName, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME))
-                GUI->ExternalFilterDevice_Combo.AddItem(device.DeviceName);
+            GUI->ExternalFilterDevice_Combo.Clear();
+            ExclConstDeviceList x = indi->ConstDeviceList();
+            const INDIDeviceListItemArray& devices( x );
+            for ( auto device : devices )
+            {
+               // add filter devices to combo box
+               if ( indi->HasPropertyItem( device.DeviceName, WHEEL_SLOT_PROPERTY_NAME, WHEEL_SLOT_ITEM_NAME ) )
+                  GUI->ExternalFilterDevice_Combo.AddItem( device.DeviceName );
+            }
+            GUI->ExternalFilterDevice_Combo.Enable();
+            GUI->ExternalFilterDevice_Label.Enable();
          }
-         GUI->ExternalFilterDevice_Combo.Enable();
-         GUI->ExternalFilterDevice_Label.Enable();
       }
-      }
-
    }
 }
 
@@ -1280,7 +1275,7 @@ void INDICCDFrameInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
    if ( sender == GUI->CCDDevice_Combo )
    {
       // The first item in the combo box list has been reserved for a "no device" selection.
-      m_device = (itemIndex > 0) ? sender.ItemText( itemIndex ).Trimmed() : String();
+      m_device = ( itemIndex > 0 ) ? sender.ItemText( itemIndex ).Trimmed() : String();
       UpdateControls();
 
       // check for cooler connection (e.g. Atik cameras)
@@ -1289,45 +1284,44 @@ void INDICCDFrameInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
          INDIPropertyListItem item;
          if ( indi->GetPropertyItem( m_device, CCD_COOLER_PROPERTY_NAME, CCD_COOLER_ON_ITEM_NAME, item ) )
             if ( item.PropertyValue == "OFF" )
-               indi->SendNewPropertyItem( m_device, CCD_COOLER_PROPERTY_NAME, "INDI_SWITCH", CCD_COOLER_ON_ITEM_NAME, "ON", true/*async*/ );
+               indi->SendNewPropertyItem( m_device, CCD_COOLER_PROPERTY_NAME, "INDI_SWITCH", CCD_COOLER_ON_ITEM_NAME, "ON", true /*async*/ );
 
          // load configuration on server
-         indi->SendNewPropertyItem( m_device, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON");
-
+         indi->SendNewPropertyItem( m_device, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON" );
       }
    }
    else if ( sender == GUI->CCDBinX_Combo )
    {
       indi->MaybeSendNewPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, "INDI_NUMBER",
-                                    CCD_BIN_HORIZONTAL_ITEM_NAME, GUI->CCDBinX_Combo.ItemText( itemIndex ).Trimmed(), true/*async*/ );
+         CCD_BIN_HORIZONTAL_ITEM_NAME, GUI->CCDBinX_Combo.ItemText( itemIndex ).Trimmed(), true /*async*/ );
    }
    else if ( sender == GUI->CCDBinY_Combo )
    {
       indi->MaybeSendNewPropertyItem( m_device, CCD_BIN_PROPERTY_NAME, "INDI_NUMBER",
-                                      CCD_BIN_HORIZONTAL_ITEM_NAME, GUI->CCDBinX_Combo.ItemText( itemIndex ).Trimmed(),
-                                      CCD_BIN_VERTICAL_ITEM_NAME, GUI->CCDBinY_Combo.ItemText( itemIndex ).Trimmed(),
-                                      true/*async*/ );
+         CCD_BIN_HORIZONTAL_ITEM_NAME, GUI->CCDBinX_Combo.ItemText( itemIndex ).Trimmed(),
+         CCD_BIN_VERTICAL_ITEM_NAME, GUI->CCDBinY_Combo.ItemText( itemIndex ).Trimmed(),
+         true /*async*/ );
    }
    else if ( sender == GUI->CCDFilter_Combo )
    {
       indi->MaybeSendNewPropertyItem( CurrentFilterWheelDeviceName(), WHEEL_SLOT_PROPERTY_NAME, "INDI_NUMBER",
-                                    WHEEL_SLOT_ITEM_NAME, itemIndex+1, true/*async*/ );
+         WHEEL_SLOT_ITEM_NAME, itemIndex + 1, true /*async*/ );
    }
    else if ( sender == GUI->UploadMode_Combo )
    {
       indi->MaybeSendNewPropertyItem( m_device, CCD_UPLOAD_MODE_PROPERTY_NAME, "INDI_SWITCH",
-                                    INDICCDFrameInstance::UploadModePropertyString( itemIndex ), "ON", true/*async*/ );
+         INDICCDFrameInstance::UploadModePropertyString( itemIndex ), "ON", true /*async*/ );
    }
    else if ( sender == GUI->CCDFrameType_Combo )
    {
       indi->MaybeSendNewPropertyItem( m_device, CCD_FRAME_TYPE_PROPERTY_NAME, "INDI_SWITCH",
-                                    INDICCDFrameInstance::CCDFrameTypePropertyString( itemIndex ), "ON", true/*async*/ );
+         INDICCDFrameInstance::CCDFrameTypePropertyString( itemIndex ), "ON", true /*async*/ );
    }
    else if ( sender == GUI->ExternalFilterDevice_Combo )
    {
       String externalFilterWheelDeviceName = sender.ItemText( itemIndex ).Trimmed();
       // load configuration on server
-      indi->MaybeSendNewPropertyItem( externalFilterWheelDeviceName, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON", true/*async*/  );
+      indi->MaybeSendNewPropertyItem( externalFilterWheelDeviceName, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON", true /*async*/ );
    }
 }
 
@@ -1356,7 +1350,6 @@ void INDICCDFrameInterface::e_FileDrop( Control& sender, const Point& pos, const
 class INDICCDFrameInterfaceExecution : public AbstractINDICCDFrameExecution
 {
 public:
-
    INDICCDFrameInterfaceExecution( INDICCDFrameInterface* iface ) :
       AbstractINDICCDFrameExecution( *dynamic_cast<INDICCDFrameInstance*>( iface->NewProcess() ) ),
       m_iface( iface ),
@@ -1371,10 +1364,9 @@ public:
    }
 
 private:
-
-   INDICCDFrameInterface*            m_iface;
+   INDICCDFrameInterface* m_iface;
    AutoPointer<INDICCDFrameInstance> m_instanceAuto;
-   bool                              m_abortRequested;
+   bool m_abortRequested;
 
    virtual void StartAcquisitionEvent()
    {
@@ -1440,7 +1432,7 @@ private:
       if ( m_abortRequested )
          AbstractINDICCDFrameExecution::Abort();
 
-      m_iface->GUI->ExposureInfo_Label.SetText( String().Format( "Exposure %d of %d: %.3gs", expNum+1, expCount, expTime ) );
+      m_iface->GUI->ExposureInfo_Label.SetText( String().Format( "Exposure %d of %d: %.3gs", expNum + 1, expCount, expTime ) );
       m_iface->ProcessEvents();
    }
 
@@ -1470,7 +1462,7 @@ private:
       if ( reusedWindow )
       {
          if ( geometryChanged )
-            window.ZoomToFit( false/*allowZoom*/ );
+            window.ZoomToFit( false /*allowZoom*/ );
          else
             window.Regenerate();
       }
@@ -1478,7 +1470,7 @@ private:
       {
          window.BringToFront();
          window.Show();
-         window.ZoomToFit( false/*allowZoom*/ );
+         window.ZoomToFit( false /*allowZoom*/ );
       }
       m_iface->ProcessEvents();
    }
@@ -1520,18 +1512,18 @@ void INDICCDFrameInterface::e_Click( Button& sender, bool checked )
    if ( sender == GUI->CCDTargetTemp_ToolButton )
    {
       INDIClient::TheClient()->SendNewPropertyItem( m_device, CCD_TEMPERATURE_PROPERTY_NAME, "INDI_NUMBER",
-                                                   CCD_TEMPERATURE_ITEM_NAME, GUI->CCDTargetTemp_NumericEdit.Value(), true/*async*/ );
+         CCD_TEMPERATURE_ITEM_NAME, GUI->CCDTargetTemp_NumericEdit.Value(), true /*async*/ );
    }
    else if ( sender == GUI->ServerUploadDir_ToolButton )
    {
       SimpleGetStringDialog dialog( "Server upload directory:", GUI->ServerUploadDir_Edit.Text() );
       if ( dialog.Execute() )
-         INDIClient::TheClient()->SendNewPropertyItem( m_device, CCD_LOCAL_MODE_PROPERTY_NAME, "INDI_TEXT", CCD_LOCAL_MODE_DIR_ITEM_NAME, dialog.Text(), true/*async*/ );
+         INDIClient::TheClient()->SendNewPropertyItem( m_device, CCD_LOCAL_MODE_PROPERTY_NAME, "INDI_TEXT", CCD_LOCAL_MODE_DIR_ITEM_NAME, dialog.Text(), true /*async*/ );
    }
    else if ( sender == GUI->ClientDownloadDir_ToolButton )
    {
       GetDirectoryDialog d;
-      d.SetCaption( "INDICCDFrame: Select Client Download Directory" );
+      d.SetCaption( "IndigoCCDFrame: Select Client Download Directory" );
       if ( d.Execute() )
          GUI->ClientDownloadDir_Edit.SetText( d.Directory() );
    }
@@ -1543,22 +1535,25 @@ void INDICCDFrameInterface::e_Click( Button& sender, bool checked )
    {
       if ( m_execution != nullptr )
          m_execution->Abort();
-   } else if (sender == GUI->FilterConfig_ToolButton) {
-
-      FilterConfigDialog filterWheelConfig(CurrentFilterWheelDeviceName());
-      for (size_t index=0; index < (size_t) GUI->CCDFilter_Combo.NumberOfItems(); index++){
-         filterWheelConfig.addFilterName(index+1,GUI->CCDFilter_Combo.ItemText(index));
+   }
+   else if ( sender == GUI->FilterConfig_ToolButton )
+   {
+      FilterConfigDialog filterWheelConfig( CurrentFilterWheelDeviceName() );
+      for ( size_t index = 0; index < (size_t)GUI->CCDFilter_Combo.NumberOfItems(); index++ )
+      {
+         filterWheelConfig.addFilterName( index + 1, GUI->CCDFilter_Combo.ItemText( index ) );
       }
       filterWheelConfig.adjustTreeColumns();
-      if (filterWheelConfig.Execute() && INDIClient::HasClient()) {
-
+      if ( filterWheelConfig.Execute() && INDIClient::HasClient() )
+      {
+         // ??
       }
    }
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInterface.cpp - Released 2019-11-07T11:00:23Z
+// EOF INDICCDFrameInterface.cpp - Released 2020-01-23T19:56:17Z

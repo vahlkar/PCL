@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDICCDFrameInterface.h - Released 2019-11-07T11:00:23Z
+// INDICCDFrameInterface.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -65,35 +65,38 @@
 #include <pcl/Timer.h>
 #include <pcl/TreeBox.h>
 
-#include "INDIClient.h"
 #include "DeviceConfigBase.h"
+#include "INDIClient.h"
 
 namespace pcl
 {
 
+// ----------------------------------------------------------------------------
+
 class INDICCDFrameInterfaceExecution;
 
-class FilterConfigDialog : public ConfigDialogBase {
+class FilterConfigDialog : public ConfigDialogBase
+{
 public:
-	FilterConfigDialog(const String& deviceName);
 
-	void addFilterName(size_t filterSlot, const String& filterName);
-	void adjustTreeColumns();
+   FilterConfigDialog( const String& deviceName );
+
+   void addFilterName( size_t filterSlot, const String& filterName );
+   void adjustTreeColumns();
+
 private:
 
-	  HorizontalSizer   FilterConfig_Sizer;
-	  	  TreeBox           FilterNames_TreeBox;
-	  	  VerticalSizer     FilterToolBox_Sizer;
-	  	  	  ToolButton      FilterRename_ToolButton;
+   HorizontalSizer FilterConfig_Sizer;
+   TreeBox FilterNames_TreeBox;
+   VerticalSizer FilterToolBox_Sizer;
+   ToolButton FilterRename_ToolButton;
 
-	void SendUpdatedProperties() override;
+   void SendUpdatedProperties() override;
 
-	void e_Click( Button& sender, bool checked );
-
+   void e_Click( Button& sender, bool checked );
 };
 
 // ----------------------------------------------------------------------------
-
 
 class INDICCDFrameInterface : public ProcessInterface
 {
@@ -102,26 +105,26 @@ public:
    INDICCDFrameInterface();
    virtual ~INDICCDFrameInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-   virtual InterfaceFeatures Features() const;
-   virtual void ResetInstance();
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-   virtual ProcessImplementation* NewProcess() const;
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-   virtual bool ImportProcess( const ProcessImplementation& );
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   const char** IconImageXPM() const override;
+   InterfaceFeatures Features() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
    const String& CurrentDeviceName() const
    {
-	   return m_device;
+      return m_device;
    }
 
    const String CurrentFilterWheelDeviceName() const
    {
-       String externalFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText(GUI->ExternalFilterDevice_Combo.CurrentItem());
-       return externalFilterWheelDeviceName != String("<No filter wheel>") ? externalFilterWheelDeviceName : m_device;
+      String externalFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText( GUI->ExternalFilterDevice_Combo.CurrentItem() );
+      return externalFilterWheelDeviceName != String( "<No filter wheel>" ) ? externalFilterWheelDeviceName : m_device;
    }
 
    int TelescopeFocalLength() const
@@ -131,7 +134,7 @@ public:
 
 private:
 
-   String                          m_device;
+   String m_device;
    INDICCDFrameInterfaceExecution* m_execution = nullptr;
 
    struct GUIData
@@ -141,97 +144,96 @@ private:
       Timer UpdateDeviceList_Timer;
       Timer UpdateDeviceProperties_Timer;
 
-      VerticalSizer     Global_Sizer;
+      VerticalSizer Global_Sizer;
 
-      SectionBar        ServerParameters_SectionBar;
-      Control           ServerParameters_Control;
-      VerticalSizer     ServerParameters_Sizer;
-         HorizontalSizer   CCDDevice_Sizer;
-            Label             CCDDevice_Label;
-            ComboBox          CCDDevice_Combo;
-         Control           CCDProperties_Control;
-         VerticalSizer     CCDProperties_Sizer;
-            HorizontalSizer   CCDTemp_HSizer;
-               NumericEdit       CCDTemp_NumericEdit;
-               NumericControl    CCDTargetTemp_NumericEdit;
-               ToolButton        CCDTargetTemp_ToolButton;
-            HorizontalSizer   CCDBinX_HSizer;
-               Label             CCDBinX_Label;
-               ComboBox          CCDBinX_Combo;
-            HorizontalSizer   CCDBinY_HSizer;
-               Label             CCDBinY_Label;
-               ComboBox          CCDBinY_Combo;
-            HorizontalSizer   CCDFilter_HSizer;
-               Label             CCDFilter_Label;
-               ComboBox          CCDFilter_Combo;
-               ToolButton        FilterConfig_ToolButton;
-            HorizontalSizer   CCDFrameType_HSizer;
-               Label             CCDFrameType_Label;
-               ComboBox          CCDFrameType_Combo;
-            HorizontalSizer   UploadMode_HSizer;
-               Label             UploadMode_Label;
-               ComboBox          UploadMode_Combo;
-            HorizontalSizer   ServerUploadDir_HSizer;
-               Label             ServerUploadDir_Label;
-               Edit              ServerUploadDir_Edit;
-               ToolButton        ServerUploadDir_ToolButton;
-            HorizontalSizer   ServerFileNameTemplate_HSizer;
-               Label             ServerFileNameTemplate_Label;
-               Edit              ServerFileNameTemplate_Edit;
-               PushButton        ServerFileNameTemplate_PushButton;
+      SectionBar ServerParameters_SectionBar;
+      Control ServerParameters_Control;
+      VerticalSizer ServerParameters_Sizer;
+      HorizontalSizer CCDDevice_Sizer;
+      Label CCDDevice_Label;
+      ComboBox CCDDevice_Combo;
+      Control CCDProperties_Control;
+      VerticalSizer CCDProperties_Sizer;
+      HorizontalSizer CCDTemp_HSizer;
+      NumericEdit CCDTemp_NumericEdit;
+      NumericControl CCDTargetTemp_NumericEdit;
+      ToolButton CCDTargetTemp_ToolButton;
+      HorizontalSizer CCDBinX_HSizer;
+      Label CCDBinX_Label;
+      ComboBox CCDBinX_Combo;
+      HorizontalSizer CCDBinY_HSizer;
+      Label CCDBinY_Label;
+      ComboBox CCDBinY_Combo;
+      HorizontalSizer CCDFilter_HSizer;
+      Label CCDFilter_Label;
+      ComboBox CCDFilter_Combo;
+      ToolButton FilterConfig_ToolButton;
+      HorizontalSizer CCDFrameType_HSizer;
+      Label CCDFrameType_Label;
+      ComboBox CCDFrameType_Combo;
+      HorizontalSizer UploadMode_HSizer;
+      Label UploadMode_Label;
+      ComboBox UploadMode_Combo;
+      HorizontalSizer ServerUploadDir_HSizer;
+      Label ServerUploadDir_Label;
+      Edit ServerUploadDir_Edit;
+      ToolButton ServerUploadDir_ToolButton;
+      HorizontalSizer ServerFileNameTemplate_HSizer;
+      Label ServerFileNameTemplate_Label;
+      Edit ServerFileNameTemplate_Edit;
+      PushButton ServerFileNameTemplate_PushButton;
 
-      SectionBar        ClientParameters_SectionBar;
-      Control           ClientParameters_Control;
-      VerticalSizer     ClientParameters_Sizer;
-         HorizontalSizer   OpenClientFrames_Sizer;
-            CheckBox          OpenClientFrames_CheckBox;
-         HorizontalSizer   ReuseImageWindow_Sizer;
-            CheckBox          ReuseImageWindow_CheckBox;
-         HorizontalSizer   AutoStretch_Sizer;
-            CheckBox          AutoStretch_CheckBox;
-         HorizontalSizer   LinkedAutoStretch_Sizer;
-            CheckBox          LinkedAutoStretch_CheckBox;
-         HorizontalSizer   SaveClientFrames_Sizer;
-            CheckBox          SaveClientFrames_CheckBox;
-         HorizontalSizer   OverwriteClientFrames_Sizer;
-            CheckBox          OverwriteClientFrames_CheckBox;
-         HorizontalSizer   ClientDownloadDir_HSizer;
-            Label             ClientDownloadDir_Label;
-            Edit              ClientDownloadDir_Edit;
-            ToolButton        ClientDownloadDir_ToolButton;
-         HorizontalSizer   ClientFileNameTemplate_HSizer;
-            Label             ClientFileNameTemplate_Label;
-            Edit              ClientFileNameTemplate_Edit;
-         HorizontalSizer   ClientOutputFormatHints_HSizer;
-            Label             ClientOutputFormatHints_Label;
-            Edit              ClientOutputFormatHints_Edit;
+      SectionBar ClientParameters_SectionBar;
+      Control ClientParameters_Control;
+      VerticalSizer ClientParameters_Sizer;
+      HorizontalSizer OpenClientFrames_Sizer;
+      CheckBox OpenClientFrames_CheckBox;
+      HorizontalSizer ReuseImageWindow_Sizer;
+      CheckBox ReuseImageWindow_CheckBox;
+      HorizontalSizer AutoStretch_Sizer;
+      CheckBox AutoStretch_CheckBox;
+      HorizontalSizer LinkedAutoStretch_Sizer;
+      CheckBox LinkedAutoStretch_CheckBox;
+      HorizontalSizer SaveClientFrames_Sizer;
+      CheckBox SaveClientFrames_CheckBox;
+      HorizontalSizer OverwriteClientFrames_Sizer;
+      CheckBox OverwriteClientFrames_CheckBox;
+      HorizontalSizer ClientDownloadDir_HSizer;
+      Label ClientDownloadDir_Label;
+      Edit ClientDownloadDir_Edit;
+      ToolButton ClientDownloadDir_ToolButton;
+      HorizontalSizer ClientFileNameTemplate_HSizer;
+      Label ClientFileNameTemplate_Label;
+      Edit ClientFileNameTemplate_Edit;
+      HorizontalSizer ClientOutputFormatHints_HSizer;
+      Label ClientOutputFormatHints_Label;
+      Edit ClientOutputFormatHints_Edit;
 
-      SectionBar        FrameAcquisition_SectionBar;
-      Control           FrameAcquisition_Control;
-      VerticalSizer     FrameAcquisition_Sizer;
-         HorizontalSizer   ExposureParameters_Sizer;
-            VerticalSizer     ExposureParametersLeft_Sizer;
-               NumericEdit       ExposureTime_NumericEdit;
-               NumericEdit       ExposureDelay_NumericEdit;
-               HorizontalSizer   ExposureCount_Sizer;
-                  Label             ExposureCount_Label;
-                  SpinBox           ExposureCount_SpinBox;
-            VerticalSizer     ExposureParametersRight_Sizer;
-               HorizontalSizer   StartExposure_Sizer;
-                  PushButton        StartExposure_PushButton;
-               HorizontalSizer   CancelExposure_Sizer;
-                  PushButton        CancelExposure_PushButton;
-               Label             ExposureInfo_Label;
-         HorizontalSizer   ObjectName_Sizer;
-            Label             ObjectName_Label;
-            Edit              ObjectName_Edit;
-         HorizontalSizer   TelescopeDevice_Sizer;
-            Label             TelescopeDevice_Label;
-            ComboBox          TelescopeDevice_Combo;
-         HorizontalSizer   ExternalFilterDevice_Sizer;
-            Label             ExternalFilterDevice_Label;
-            ComboBox          ExternalFilterDevice_Combo;
-
+      SectionBar FrameAcquisition_SectionBar;
+      Control FrameAcquisition_Control;
+      VerticalSizer FrameAcquisition_Sizer;
+      HorizontalSizer ExposureParameters_Sizer;
+      VerticalSizer ExposureParametersLeft_Sizer;
+      NumericEdit ExposureTime_NumericEdit;
+      NumericEdit ExposureDelay_NumericEdit;
+      HorizontalSizer ExposureCount_Sizer;
+      Label ExposureCount_Label;
+      SpinBox ExposureCount_SpinBox;
+      VerticalSizer ExposureParametersRight_Sizer;
+      HorizontalSizer StartExposure_Sizer;
+      PushButton StartExposure_PushButton;
+      HorizontalSizer CancelExposure_Sizer;
+      PushButton CancelExposure_PushButton;
+      Label ExposureInfo_Label;
+      HorizontalSizer ObjectName_Sizer;
+      Label ObjectName_Label;
+      Edit ObjectName_Edit;
+      HorizontalSizer TelescopeDevice_Sizer;
+      Label TelescopeDevice_Label;
+      ComboBox TelescopeDevice_Combo;
+      HorizontalSizer ExternalFilterDevice_Sizer;
+      Label ExternalFilterDevice_Label;
+      ComboBox ExternalFilterDevice_Combo;
    };
 
    GUIData* GUI = nullptr;
@@ -259,9 +261,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __INDICCDFrameInterface_h
+#endif // __INDICCDFrameInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInterface.h - Released 2019-11-07T11:00:23Z
+// EOF INDICCDFrameInterface.h - Released 2020-01-23T19:56:17Z

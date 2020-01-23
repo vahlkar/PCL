@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDICCDFrameProcess.cpp - Released 2019-11-07T11:00:23Z
+// INDICCDFrameProcess.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -51,8 +51,8 @@
 // ----------------------------------------------------------------------------
 
 #include "INDICCDFrameProcess.h"
-#include "INDICCDFrameInterface.h"
 #include "INDICCDFrameInstance.h"
+#include "INDICCDFrameInterface.h"
 #include "INDICCDFrameParameters.h"
 
 #include <pcl/Arguments.h>
@@ -103,8 +103,8 @@ INDICCDFrameProcess::INDICCDFrameProcess()
    new ICFRequireSelectedTelescope( this );
    new ICFTelescopeDeviceName( this );
    new ICFExternalFilterWheelDeviceName( this );
-   new ICFEnableAlignmentCorrection (this);
-   new ICFAlignmentFile(this);
+   new ICFEnableAlignmentCorrection( this );
+   new ICFAlignmentFile( this );
 
    new ICFClientFrames( this );
    new ICFClientViewId( TheICFClientFramesParameter );
@@ -139,10 +139,9 @@ uint32 INDICCDFrameProcess::Version() const
 
 String INDICCDFrameProcess::Description() const
 {
-   return
-   "<html>"
-   "<p>Acquire frames from Indigo CCD devices.</p>"
-   "</html>";
+   return "<html>"
+          "<p>Acquire frames from Indigo CCD devices.</p>"
+          "</html>";
 }
 
 // ----------------------------------------------------------------------------
@@ -207,7 +206,7 @@ int INDICCDFrameProcess::ProcessCommandLine( const StringList& argv ) const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameProcess.cpp - Released 2019-11-07T11:00:23Z
+// EOF INDICCDFrameProcess.cpp - Released 2020-01-23T19:56:17Z

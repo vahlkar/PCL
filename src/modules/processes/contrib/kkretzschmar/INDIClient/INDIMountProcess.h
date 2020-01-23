@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIMountProcess.h - Released 2019-11-07T11:00:23Z
+// INDIMountProcess.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -66,24 +66,17 @@ public:
 
    INDIMountProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Category() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-
-   virtual const char** IconImageXPM() const;
-
-   virtual bool PrefersGlobalExecution() const;
-
-   virtual ProcessInterface* DefaultInterface() const;
-
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
-
-   virtual bool CanProcessCommandLines() const;
-   virtual int ProcessCommandLine( const StringList& ) const;
+   IsoString Id() const override;
+   IsoString Category() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   const char** IconImageXPM() const override;
+   bool PrefersGlobalExecution() const override;
+   ProcessInterface* DefaultInterface() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
+   bool CanProcessCommandLines() const override;
+   int ProcessCommandLine( const StringList& ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -94,9 +87,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __INDIMountProcess_h
+#endif // __INDIMountProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountProcess.h - Released 2019-11-07T11:00:23Z
+// EOF INDIMountProcess.h - Released 2020-01-23T19:56:17Z

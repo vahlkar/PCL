@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInstance.cpp - Released 2019-11-07T11:00:23Z
+// INDIDeviceControllerInstance.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -50,8 +50,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "INDIClient.h"
 #include "INDIDeviceControllerInstance.h"
+#include "INDIClient.h"
 #include "INDIDeviceControllerParameters.h"
 #include "INDIDeviceControllerProcess.h"
 
@@ -61,7 +61,7 @@
 #include <pcl/Mutex.h>
 #include <pcl/StdStatus.h>
 
-#include<sstream>
+#include <sstream>
 
 #ifdef __PCL_LINUX
 #include <memory>
@@ -77,14 +77,7 @@ INDIDeviceControllerInstance::INDIDeviceControllerInstance( const MetaProcess* m
    p_serverHostName( TheIDCServerHostNameParameter->DefaultValue() ),
    p_serverPort( uint32( TheIDCServerPortParameter->DefaultValue() ) ),
    p_serverConnect( TheIDCServerConnectParameter->DefaultValue() ),
-   p_serverCommand(),
-   p_abort( false ),
-   p_verbosity( int32( TheIDCVerbosityParameter->DefaultValue() ) ),
-   p_newProperties(),
-   p_getCommandParameters(),
-   o_devices(),
-   o_properties(),
-   o_getCommandResult()
+   p_verbosity( int32( TheIDCVerbosityParameter->DefaultValue() ) )
 {
    AcquireINDIClientProperties();
 }
@@ -128,7 +121,7 @@ bool INDIDeviceControllerInstance::CanExecuteGlobal( String& whyNot ) const
 static void GetNewPropertyListItemParametersFromKey( const INDINewPropertyListItem& listItem, INDINewPropertyItem& item )
 {
    StringList items;
-   listItem.PropertyKey.Break( items, '/', false/*trim*/, listItem.PropertyKey.StartsWith( '/' ) ? 1 : 0 );
+   listItem.PropertyKey.Break( items, '/', false /*trim*/, listItem.PropertyKey.StartsWith( '/' ) ? 1 : 0 );
    if ( items.Length() == 3 )
       if ( !items[0].IsEmpty() && !items[1].IsEmpty() && !items[2].IsEmpty() )
       {
@@ -164,15 +157,16 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
 
          indi->SetVerbosity( p_verbosity );
          std::ostringstream errMesg;
-         if ( !indi->IsServerConnected(errMesg) )
+         if ( !indi->IsServerConnected( errMesg ) )
          {
-            if (!errMesg.str().empty()){
-               throw Error( "IndigoDeviceControllerInstance: Connection to Indigo server " + p_serverHostName + ", port=" + String( p_serverPort ) + IsoString(" lost. Possible reason: " + IsoString(errMesg.str().c_str())) );
+            if ( !errMesg.str().empty() )
+            {
+               throw Error( "IndigoDeviceControllerInstance: Connection to Indigo server " + p_serverHostName + ", port=" + String( p_serverPort ) + IsoString( " lost. Possible reason: " + IsoString( errMesg.str().c_str() ) ) );
             }
 
-            indi->connectServer(errMesg);
-            Sleep(100);
-            if ( !indi->IsServerConnected(errMesg) )
+            indi->connectServer( errMesg );
+            Sleep( 100 );
+            if ( !indi->IsServerConnected( errMesg ) )
                throw Error( "IndigoDeviceControllerInstance: Failure to connect to Indigo server " + p_serverHostName + ", port=" + String( p_serverPort ) );
 
             if ( p_verbosity > 0 )
@@ -187,21 +181,18 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
             console.EnableAbort();
 
             bool isTryGet = p_serverCommand == "TRY_GET";
-            if ( p_serverCommand == "GET" || isTryGet)
+            if ( p_serverCommand == "GET" || isTryGet )
             {
                o_getCommandResult.Clear();
                String device( PropertyUtils::Device( p_getCommandParameters ) );
                String property( PropertyUtils::Property( p_getCommandParameters ) );
                String element( PropertyUtils::Element( p_getCommandParameters ) );
                INDIPropertyListItem item;
-               if ( !indi->GetPropertyItem( device, property, element, item ) && !isTryGet)
+               if ( !indi->GetPropertyItem( device, property, element, item ) && !isTryGet )
                   throw Error( "IndigoDeviceControllerInstance: Could not get value of property '" + String( p_getCommandParameters ) + "'" );
                o_getCommandResult = item.PropertyValue;
                if ( p_verbosity > 1 )
-                  console.WriteLn( "<end><cbr>Device=" + device +
-                                   ", Property=" + property +
-                                   ", Element=" + element +
-                                   ", Value=" + o_getCommandResult );
+                  console.WriteLn( "<end><cbr>Device=" + device + ", Property=" + property + ", Element=" + element + ", Value=" + o_getCommandResult );
             }
             else if ( p_serverCommand == "SET" )
             {
@@ -209,7 +200,7 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
                {
                   INDINewPropertyItem newProperty;
                   GetNewPropertyListItemParametersFromKey( newListProperty, newProperty );
-                  if ( !indi->SendNewPropertyItem( newProperty, false/*async*/ ) )
+                  if ( !indi->SendNewPropertyItem( newProperty, false /*async*/ ) )
                      throw Error( "IndigoDeviceControllerInstance: Failure to send new property values." );
                }
                p_newProperties.Clear();
@@ -220,7 +211,7 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
                {
                   INDINewPropertyItem newProperty;
                   GetNewPropertyListItemParametersFromKey( newListProperty, newProperty );
-                  if ( !indi->SendNewPropertyItem( newProperty, true/*async*/ ) )
+                  if ( !indi->SendNewPropertyItem( newProperty, true /*async*/ ) )
                      throw Error( "IndigoDeviceControllerInstance: Failure to send new property values (asynchronous)." );
                }
                p_newProperties.Clear();
@@ -238,7 +229,7 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
          if ( indi != nullptr )
          {
             std::ostringstream errMesg;
-            if ( indi->IsServerConnected(errMesg) )
+            if ( indi->IsServerConnected( errMesg ) )
             {
                AcquireINDIClientProperties();
                indi->SetVerbosity( p_verbosity );
@@ -445,9 +436,10 @@ void INDIDeviceControllerInstance::AcquireINDIClientProperties()
    o_devices.Clear();
    o_properties.Clear();
 
-   if ( INDIClient::HasClient() ){
+   if ( INDIClient::HasClient() )
+   {
       std::ostringstream errMesg;
-      if ( INDIClient::TheClient()->IsServerConnected(errMesg) )
+      if ( INDIClient::TheClient()->IsServerConnected( errMesg ) )
       {
          {
             ExclConstDeviceList x = INDIClient::TheClient()->ConstDeviceList();
@@ -463,7 +455,7 @@ void INDIDeviceControllerInstance::AcquireINDIClientProperties()
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInstance.cpp - Released 2019-11-07T11:00:23Z
+// EOF INDIDeviceControllerInstance.cpp - Released 2020-01-23T19:56:17Z

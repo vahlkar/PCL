@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// DeviceConfigBase.h - Released 2019-11-07T11:00:23Z
+// DeviceConfigBase.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -55,10 +55,7 @@
 
 #include <pcl/Dialog.h>
 #include <pcl/PushButton.h>
-#include <pcl/SectionBar.h>
 #include <pcl/Sizer.h>
-#include <pcl/ToolButton.h>
-#include <pcl/TreeBox.h>
 
 namespace pcl
 {
@@ -69,95 +66,32 @@ class ConfigDialogBase : public Dialog
 {
 public:
 
-   ConfigDialogBase( const String& deviceName ) : m_device( deviceName )
-   {
-      SaveConfig_Button.SetText( "Save" );
-      SaveConfig_Button.SetToolTip( "<p>Stores the current configuration on the Indigo server.</p>" );
-      SaveConfig_Button.SetIcon( ScaledResource( ":/icons/save.png" ) );
-      SaveConfig_Button.OnClick( (Button::click_event_handler)&ConfigDialogBase::e_Click, *this );
-
-      Ok_Button.SetText( "Ok" );
-      Ok_Button.SetIcon( ScaledResource( ":/icons/ok.png" ) );
-      Ok_Button.OnClick( (Button::click_event_handler)&ConfigDialogBase::e_Click, *this );
-
-      Cancel_Button.SetText( "Cancel" );
-      Cancel_Button.SetIcon( ScaledResource( ":/icons/cancel.png" ) );
-      Cancel_Button.OnClick( (Button::click_event_handler)&ConfigDialogBase::e_Click, *this );
-
-      ConfigButton_Sizer.SetSpacing( 8 );
-      ConfigButton_Sizer.SetMargin( 8 );
-      ConfigButton_Sizer.Add( SaveConfig_Button );
-      ConfigButton_Sizer.AddStretch();
-      ConfigButton_Sizer.Add( Ok_Button );
-      ConfigButton_Sizer.Add( Cancel_Button );
-
-      Global_Sizer.SetSpacing( 8 );
-      Global_Sizer.SetMargin( 8 );
-
-      SetSizer( Global_Sizer );
-
-      SetWindowTitle( "Configuration Dialog" );
-
-      OnShow( (Control::event_handler)&ConfigDialogBase::e_Show, *this );
-   }
+   ConfigDialogBase( const String& deviceName );
 
 protected:
 
-   bool   m_firstTimeShown = true;
+   bool m_firstTimeShown = true;
    String m_device;
 
-   VerticalSizer     Global_Sizer;
-
-   HorizontalSizer   ConfigButton_Sizer;
-      PushButton        SaveConfig_Button;
-      PushButton        Ok_Button;
-      PushButton        Cancel_Button;
+   VerticalSizer Global_Sizer;
+   HorizontalSizer ConfigButton_Sizer;
+   PushButton SaveConfig_Button;
+   PushButton Ok_Button;
+   PushButton Cancel_Button;
 
    virtual void SendUpdatedProperties() = 0;
 
-   void AddBaseControls()
-   {
-      Global_Sizer.Add( ConfigButton_Sizer );
-   }
+   void AddBaseControls();
 
-   void e_Show( Control& )
-   {
-      if ( m_firstTimeShown )
-      {
-         m_firstTimeShown = false;
-         AdjustToContents();
-         SetFixedHeight();
-         SetMinSize();
-      }
-   }
-
-   void e_Click( Button& sender, bool checked )
-   {
-      if ( sender == Ok_Button )
-      {
-         SendUpdatedProperties();
-         Ok();
-      }
-
-      if ( sender == Cancel_Button )
-      {
-         Cancel();
-      }
-
-      if ( sender == SaveConfig_Button )
-      {
-         SendUpdatedProperties();
-         INDIClient::TheClient()->SendNewPropertyItem( m_device, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_SAVE_ITEM_NAME, "ON" );
-         Ok();
-      }
-   }
+   void e_Show( Control& sender );
+   void e_Click( Button& sender, bool checked );
 };
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 #endif // __DeviceConfigBase_h
 
 // ----------------------------------------------------------------------------
-// EOF DeviceConfigBase.h - Released 2019-11-07T11:00:23Z
+// EOF DeviceConfigBase.h - Released 2020-01-23T19:56:17Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerProcess.h - Released 2020-01-23T19:56:17Z
+// DeviceConfigBase.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -50,46 +50,90 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#ifndef __INDIDeviceControllerProcess_h
-#define __INDIDeviceControllerProcess_h
-
-#include <pcl/MetaProcess.h>
+#include "DeviceConfigBase.h"
+#include "INDIClient.h"
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-class INDIDeviceControllerProcess : public MetaProcess
+ConfigDialogBase::ConfigDialogBase( const String& deviceName ) :
+   m_device( deviceName )
 {
-public:
+   SaveConfig_Button.SetText( "Save" );
+   SaveConfig_Button.SetToolTip( "<p>Stores the current configuration on the Indigo server.</p>" );
+   SaveConfig_Button.SetIcon( ScaledResource( ":/icons/save.png" ) );
+   SaveConfig_Button.OnClick( (Button::click_event_handler)&ConfigDialogBase::e_Click, *this );
 
-   INDIDeviceControllerProcess();
+   Ok_Button.SetText( "Ok" );
+   Ok_Button.SetIcon( ScaledResource( ":/icons/ok.png" ) );
+   Ok_Button.OnClick( (Button::click_event_handler)&ConfigDialogBase::e_Click, *this );
 
-   IsoString Id() const override;
-   IsoString Category() const override;
-   uint32 Version() const override;
-   String Description() const override;
-   const char** IconImageXPM() const override;
-   bool PrefersGlobalExecution() const override;
-   ProcessInterface* DefaultInterface() const override;
-   ProcessImplementation* Create() const override;
-   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
-   bool CanProcessCommandLines() const override;
-   int ProcessCommandLine( const StringList& ) const override;
-};
+   Cancel_Button.SetText( "Cancel" );
+   Cancel_Button.SetIcon( ScaledResource( ":/icons/cancel.png" ) );
+   Cancel_Button.OnClick( (Button::click_event_handler)&ConfigDialogBase::e_Click, *this );
+
+   ConfigButton_Sizer.SetSpacing( 8 );
+   ConfigButton_Sizer.SetMargin( 8 );
+   ConfigButton_Sizer.Add( SaveConfig_Button );
+   ConfigButton_Sizer.AddStretch();
+   ConfigButton_Sizer.Add( Ok_Button );
+   ConfigButton_Sizer.Add( Cancel_Button );
+
+   Global_Sizer.SetSpacing( 8 );
+   Global_Sizer.SetMargin( 8 );
+
+   SetSizer( Global_Sizer );
+
+   SetWindowTitle( "Configuration Dialog" );
+
+   OnShow( (Control::event_handler)&ConfigDialogBase::e_Show, *this );
+}
 
 // ----------------------------------------------------------------------------
 
-PCL_BEGIN_LOCAL
-extern INDIDeviceControllerProcess* TheINDIDeviceControllerProcess;
-PCL_END_LOCAL
+void ConfigDialogBase::AddBaseControls()
+{
+   Global_Sizer.Add( ConfigButton_Sizer );
+}
+
+// ----------------------------------------------------------------------------
+
+void ConfigDialogBase::e_Show( Control& )
+{
+   if ( m_firstTimeShown )
+   {
+      m_firstTimeShown = false;
+      AdjustToContents();
+      SetFixedHeight();
+      SetMinSize();
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void ConfigDialogBase::e_Click( Button& sender, bool checked )
+{
+   if ( sender == Ok_Button )
+   {
+      SendUpdatedProperties();
+      Ok();
+   }
+
+   if ( sender == Cancel_Button )
+   {
+      Cancel();
+   }
+
+   if ( sender == SaveConfig_Button )
+   {
+      SendUpdatedProperties();
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_SAVE_ITEM_NAME, "ON" );
+      Ok();
+   }
+}
 
 // ----------------------------------------------------------------------------
 
 } // namespace pcl
-
-#endif // __INDIDeviceControllerProcess_h
-
-// ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerProcess.h - Released 2020-01-23T19:56:17Z

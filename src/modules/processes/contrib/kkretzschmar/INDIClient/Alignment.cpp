@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// Alignment.cpp - Released 2019-11-07T11:00:23Z
+// Alignment.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -63,51 +63,54 @@
 namespace pcl
 {
 
-double GreenwhichMeanSiderialTime() {
+double GreenwhichMeanSiderialTime()
+{
    TimePoint currentTime = TimePoint::Now();
    int year, month, day, hour, minute;
    double seconds;
-   currentTime.GetComplexTime(year, month, day, hour, minute, seconds);
+   currentTime.GetComplexTime( year, month, day, hour, minute, seconds );
    double hoursSinceMidnight = hour + minute / 60.0 + seconds / 3600.0;
    // JD0 : julian date of last midnight
    // JD = JD0 + hoursSinceMidnight / 24.0
    double JD0 = currentTime.JD() - hoursSinceMidnight / 24.0;
-   double D   = currentTime.JD() -  2451545.0;
-   double D0  = JD0 - 2451545.0;
+   double D = currentTime.JD() - 2451545.0;
+   double D0 = JD0 - 2451545.0;
    // T: number of centuries since year 2000
    double T = D / 36525.0;
-   double GMST = 6.697374558 + 0.06570982441908 * D0 + 1.00273790935 * hoursSinceMidnight + 0.000026 * T * T;
+   double GMST = 6.697374558 + 0.06570982441908*D0 + 1.00273790935*hoursSinceMidnight + 0.000026*T*T;
    // reduce to [0h,23h]
-   return std::fmod(GMST, 24.0) ;
+   return std::fmod( GMST, 24.0 );
 }
 
-double GreenwhichApparentSiderialTime() {
+double GreenwhichApparentSiderialTime()
+{
    double GMST = GreenwhichMeanSiderialTime();
    TimePoint currentTime = TimePoint::Now();
-   double D   = currentTime.JD() -  2451545.0;
+   double D = currentTime.JD() - 2451545.0;
    // eps: obliquity
-   double eps = 23.4393 - 0.0000004 * D;
+   double eps = 23.4393 - 0.0000004*D;
    // L : mean longitude of the sun
-   double L = 280.47 + 0.98565 * D;
+   double L = 280.47 + 0.98565*D;
    // omega :logitude of the ascending node of the moon
-   double omega = 125.04 - 0.052954 * D;
+   double omega = 125.04 - 0.052954*D;
    // delPsi: approx nutation on longitude
-   double delPsi =  -0.000319 * Sin( omega ) - 0.000024 * Sin( 2*L );
+   double delPsi = -0.000319*Sin( omega ) - 0.000024*Sin( 2*L );
    // eqeq: equation of equinoxes
-   double eqeq = delPsi *  Cos(eps);
+   double eqeq = delPsi * Cos( eps );
    return GMST + eqeq;
 }
 
-double LocalMeanSiderialTime(double longitude) {
+double LocalMeanSiderialTime( double longitude )
+{
    double GMST = GreenwhichMeanSiderialTime();
-   return GMST + longitude / 15.0;
+   return GMST + longitude/15;
 }
 
-double LocalApparentSiderialTime(double longitude) {
+double LocalApparentSiderialTime( double longitude )
+{
    double GAST = GreenwhichMeanSiderialTime();
-   return GAST + longitude / 15.0;
+   return GAST + longitude/15;
 }
-
 
 // ----------------------------------------------------------------------------
 
@@ -126,7 +129,9 @@ static bool TryToDouble( double& value, IsoString::const_iterator p )
 
 // ----------------------------------------------------------------------------
 
-static Vector ParseListOfRealValues( IsoString& text, size_type start, size_type end, size_type minCount = 0, size_type maxCount = ~size_type( 0 ) )
+static Vector ParseListOfRealValues( IsoString& text,
+                                     size_type start, size_type end,
+                                     size_type minCount = 0, size_type maxCount = ~size_type( 0 ) )
 {
    Array<double> v;
    for ( size_type i = start, j; i < end; ++i )
@@ -148,7 +153,8 @@ static Vector ParseListOfRealValues( IsoString& text, size_type start, size_type
    return Vector( v.Begin(), int( v.Length() ) );
 }
 
-static Vector ParseListOfRealValues( const XMLElement& element, size_type minCount = 0, size_type maxCount = ~size_type( 0 ) )
+static Vector ParseListOfRealValues( const XMLElement& element,
+                                     size_type minCount = 0, size_type maxCount = ~size_type( 0 ) )
 {
    IsoString text = IsoString( element.Text().Trimmed() );
    return ParseListOfRealValues( text, 0, text.Length(), minCount, maxCount );
@@ -159,8 +165,8 @@ static Vector ParseListOfRealValues( const XMLElement& element, size_type minCou
 static void WarnOnUnknownChildElement( const XMLElement& element, const String& parsingWhatElement )
 {
    XMLParseError e( element,
-         "Parsing " + parsingWhatElement + " element",
-         "Skipping unknown \'" + element.Name() + "\' child element." );
+                    "Parsing " + parsingWhatElement + " element",
+                    "Skipping unknown \'" + element.Name() + "\' child element." );
    Console().WarningLn( "<end><cbr>** Warning: " + e.Message() );
 }
 
@@ -197,13 +203,13 @@ Matrix AlignmentModel::PseudoInverse( const Matrix& matrix )
    Matrix WInverse( matrix.Columns(), matrix.Columns() );
    for ( int j = 0; j < matrix.Columns(); ++j )
       for ( int i = 0; i < matrix.Columns(); ++i )
-         WInverse[i][j] = (i == j && Abs( svd.W[i] ) > 1e-15) ? 1/svd.W[i] : 0.0;
+         WInverse[i][j] = ( i == j && Abs( svd.W[i] ) > 1e-15 ) ? 1/svd.W[i] : 0.0;
    return svd.V * WInverse * svd.U.Transpose();
 }
 
 // ----------------------------------------------------------------------------
 
-pcl_enum AlignmentModel::PierSideFromHourAngle( double hourAngle, bool counterWeightUpEnforced)
+pcl_enum AlignmentModel::PierSideFromHourAngle( double hourAngle, bool counterWeightUpEnforced )
 {
    pcl_enum pierSideWest = counterWeightUpEnforced ? IMCPierSide::East : IMCPierSide::West;
    pcl_enum pierSideEast = counterWeightUpEnforced ? IMCPierSide::West : IMCPierSide::East;
@@ -225,7 +231,7 @@ AutoPointer<XMLDocument> AlignmentModel::CreateXTPMDocument() const
 
 // ----------------------------------------------------------------------------
 
-void AlignmentModel::Serialize(XMLElement* root) const
+void AlignmentModel::Serialize( XMLElement* root ) const
 {
    if ( root == nullptr )
       throw Error( "Internal Error: AlignmentModel::Serialize(): Invalid root pointer" );
@@ -236,7 +242,7 @@ void AlignmentModel::Serialize(XMLElement* root) const
       for ( auto syncDataPoint : m_syncData )
       {
          XMLElement* listElement = new XMLElement( *list, "SyncDataPoint",
-                     XMLAttributeList() << XMLAttribute( "CreationTime", syncDataPoint.creationTime.ToString() ) );
+            XMLAttributeList() << XMLAttribute( "CreationTime", syncDataPoint.creationTime.ToString() ) );
          *(new XMLElement( *listElement, "LocalSiderialTime" )) << new XMLText( String( syncDataPoint.localSiderialTime ) );
          *(new XMLElement( *listElement, "CelestialRA" )) << new XMLText( String( syncDataPoint.celestialRA ) );
          *(new XMLElement( *listElement, "CelestialDEC" )) << new XMLText( String( syncDataPoint.celestialDEC ) );
@@ -340,9 +346,10 @@ void AlignmentModel::ParseSyncData( const XMLElement& syncDataList )
       }
    }
    if ( m_syncData.IsEmpty() )
-      throw Error("Missing required sync data point.");
+      throw Error( "Missing required sync data point." );
    if ( m_syncDataMaxCreationTime > m_modelCreationTime )
-      Console().WarningLn( "<end><cbr>** Warning: Telescope pointing model is outdated. There are new sync data points, consider re-fitting the model." );
+      Console().WarningLn( "<end><cbr>** Warning: Telescope pointing model is outdated. "
+                           "There are new sync data points; consider re-fitting the model." );
 }
 
 // ----------------------------------------------------------------------------
@@ -502,7 +509,6 @@ AlignmentModel* AlignmentModel::Create( const String& fileName )
    return result;
 }
 
-
 // ----------------------------------------------------------------------------
 
 static const double scaleArcmin = 60.0;
@@ -515,16 +521,16 @@ void GeneralAnalyticalPointingModel::EvaluateBasis( Matrix& basisVectors, double
    if ( basisVectors.Rows() != 2 || basisVectors.Columns() != static_cast<int>( m_numOfModelParameters ) )
       throw Error( "Internal error: PointingModel::EvaluateBasis: Matrix dimensions do not match" );
 
-   double ctc   = Cos( Rad( hourAngle ) );
-   double cdc   = Cos( Rad( dec ) );
-   double stc   = Sin( Rad( hourAngle ) );
-   double sdc   = Sin( Rad( dec ) );
+   double ctc = Cos( Rad( hourAngle ) );
+   double cdc = Cos( Rad( dec ) );
+   double stc = Sin( Rad( hourAngle ) );
+   double sdc = Sin( Rad( dec ) );
 
-   double secdc = 1/Cos( Rad( dec ) );
+   double secdc = 1 / Cos( Rad( dec ) );
    double tandc = Tan( Rad( dec ) );
 
-   double clat  = Cos( m_siteLatitude );
-   double slat  = Sin( m_siteLatitude );
+   double clat = Cos( m_siteLatitude );
+   double slat = Sin( m_siteLatitude );
 
    if ( CHECK_BIT( m_modelConfig, 1 ) )
    {
@@ -552,8 +558,8 @@ void GeneralAnalyticalPointingModel::EvaluateBasis( Matrix& basisVectors, double
    else
    {
       // collimation error
-      basisVectors[0][2] =  0;
-      basisVectors[1][2] =  0;
+      basisVectors[0][2] = 0;
+      basisVectors[1][2] = 0;
    }
 
    if ( CHECK_BIT( m_modelConfig, 3 ) )
@@ -565,11 +571,11 @@ void GeneralAnalyticalPointingModel::EvaluateBasis( Matrix& basisVectors, double
    else
    {
       // non-perpendicular dec-ra axis error
-      basisVectors[0][3] =  0;
-      basisVectors[1][3] =  0;
+      basisVectors[0][3] = 0;
+      basisVectors[1][3] = 0;
    }
 
-   if ( CHECK_BIT(m_modelConfig, 4 ) )
+   if ( CHECK_BIT( m_modelConfig, 4 ) )
    {
       // polar-axis horizontal displacement
       basisVectors[0][4] = -ctc * tandc;
@@ -623,7 +629,7 @@ void GeneralAnalyticalPointingModel::EvaluateBasis( Matrix& basisVectors, double
    {
       // delta-axis flexure
       basisVectors[0][8] = cdc * ctc + slat * tandc;
-      basisVectors[1][8] = 0 ;
+      basisVectors[1][8] = 0;
    }
    else
    {
@@ -646,7 +652,7 @@ void GeneralAnalyticalPointingModel::EvaluateBasis( Matrix& basisVectors, double
    if ( CHECK_BIT( m_modelConfig, 10 ) )
    {
       // quadratic term
-      basisVectors[0][10] = hourAngle * hourAngle ;
+      basisVectors[0][10] = hourAngle * hourAngle;
       basisVectors[1][10] = 0;
    }
    else
@@ -673,7 +679,7 @@ void GeneralAnalyticalPointingModel::Apply( double& hourAngleCor, double& decCor
       alignCorrection += (*modelParameters)[modelIndex] * basisVectors.ColumnVector( modelIndex );
 
    hourAngleCor = hourAngle - alignCorrection[0]/factorHaToDeg;
-   decCor       = dec - alignCorrection[1];
+   decCor = dec - alignCorrection[1];
 }
 
 // ----------------------------------------------------------------------------
@@ -686,14 +692,14 @@ void GeneralAnalyticalPointingModel::ApplyInverse( double& hourAngleCor, double&
 
    // compute correction vector
    Vector alignCorrection( 2 );
-   Vector* modelParameters = (!m_modelEachPierSide ||  pierSide == IMCPierSide::West) ? m_pointingModelWest : m_pointingModelEast;
+   Vector* modelParameters = (!m_modelEachPierSide || pierSide == IMCPierSide::West) ? m_pointingModelWest : m_pointingModelEast;
 
    alignCorrection = (*modelParameters)[0] * basisVectors.ColumnVector( 0 );
    for ( size_t modelIndex = 1; modelIndex < m_numOfModelParameters; modelIndex++ )
-      alignCorrection +=  (*modelParameters)[modelIndex] * basisVectors.ColumnVector( modelIndex );
+      alignCorrection += (*modelParameters)[modelIndex] * basisVectors.ColumnVector( modelIndex );
 
    hourAngleCor = hourAngle + alignCorrection[0]/factorHaToDeg;
-   decCor       = dec + alignCorrection[1];
+   decCor = dec + alignCorrection[1];
 }
 
 // ----------------------------------------------------------------------------
@@ -728,7 +734,7 @@ void GeneralAnalyticalPointingModel::FitModel( const Array<SyncDataPoint>& syncP
 void GeneralAnalyticalPointingModel::FitModelForPierSide( const Array<SyncDataPoint>& syncPointArray, pcl_enum pierSide, double& residual )
 {
    // Count data points for each pier side
-   size_t numOfPoints  = 0;
+   size_t numOfPoints = 0;
    for ( auto dataPoint : syncPointArray )
    {
       if ( !dataPoint.enabled || pierSide != IMCPierSide::None && dataPoint.pierSide != pierSide )
@@ -746,7 +752,7 @@ void GeneralAnalyticalPointingModel::FitModelForPierSide( const Array<SyncDataPo
    // design matrix
    designMatrices = new Matrix( 2*numOfPoints, m_numOfModelParameters );
    // alignmentErrorVecotr
-   measuredDisplacements = new Vector ( 2*numOfPoints );
+   measuredDisplacements = new Vector( 2*numOfPoints );
 
    // fill design matrices
    size_t counts = 0;
@@ -765,12 +771,12 @@ void GeneralAnalyticalPointingModel::FitModelForPierSide( const Array<SyncDataPo
 
       for ( size_t modelIndex = 0; modelIndex < m_numOfModelParameters; modelIndex++ )
       {
-         designMatrices->Element( 2*counts, modelIndex )     = basisVectors[0][modelIndex];
+         designMatrices->Element( 2*counts, modelIndex ) = basisVectors[0][modelIndex];
          designMatrices->Element( 2*counts + 1, modelIndex ) = basisVectors[1][modelIndex];
       }
 
       // compute measured alignment error
-      (*measuredDisplacements)[2*counts]     = (celestialHourAngle - telescopeHourAngle)*factorHaToDeg;
+      (*measuredDisplacements)[2*counts] = ( celestialHourAngle - telescopeHourAngle ) * factorHaToDeg;
       (*measuredDisplacements)[2*counts + 1] = syncPoint.celestialDEC - syncPoint.telecopeDEC;
 
       counts++;
@@ -785,14 +791,14 @@ void GeneralAnalyticalPointingModel::FitModelForPierSide( const Array<SyncDataPo
       *m_pointingModelWest = pseudoInverse * *measuredDisplacements;
       // compute residual
       Vector residualVector = (*designMatrices) * *m_pointingModelWest - *measuredDisplacements;
-      residual = residualVector.Norm()/m_pointingModelWest->Norm();
+      residual = residualVector.Norm() / m_pointingModelWest->Norm();
    }
    if ( pierSide == IMCPierSide::East )
    {
       *m_pointingModelEast = pseudoInverse * *measuredDisplacements;
       // compute residual
       Vector residualVector = (*designMatrices) * *m_pointingModelEast - *measuredDisplacements;
-      residual = residualVector.Norm()/m_pointingModelEast->Norm();
+      residual = residualVector.Norm() / m_pointingModelEast->Norm();
    }
 
    delete designMatrices;
@@ -811,8 +817,8 @@ XMLDocument* GeneralAnalyticalPointingModel::Serialize() const
    *(new XMLElement( *root, "CreationTime" )) << new XMLText( m_modelCreationTime.ToString() );
    *(new XMLElement( *root, "GeographicLatitude" )) << new XMLText( String( m_siteLatitude ) );
    *(new XMLElement( *root, "Configuration" )) << new XMLText( String( m_modelConfig ) );
-   *(new XMLElement( *root, "ModelParameters", XMLAttributeList() << XMLAttribute("PierSide", m_modelEachPierSide ? "West" : "None" ) ))
-         << new XMLText( String().ToCommaSeparated( *m_pointingModelWest ) );
+   *(new XMLElement( *root, "ModelParameters", XMLAttributeList() << XMLAttribute( "PierSide", m_modelEachPierSide ? "West" : "None" ) ))
+      << new XMLText( String().ToCommaSeparated( *m_pointingModelWest ) );
 
    if ( m_modelEachPierSide )
       *(new XMLElement( *root, "ModelParameters", XMLAttributeList() << XMLAttribute( "PierSide", "East" ) ))
@@ -835,7 +841,7 @@ void GeneralAnalyticalPointingModel::Parse( const XMLDocument& xml )
    const XMLElement& root = *xml.RootElement();
    for ( const XMLNode& node : root )
    {
-      const XMLElement& element = static_cast<const XMLElement&>(node);
+      const XMLElement& element = static_cast<const XMLElement&>( node );
       try
       {
          if ( element.Name() == "ModelName" )
@@ -859,7 +865,7 @@ void GeneralAnalyticalPointingModel::Parse( const XMLDocument& xml )
                *m_pointingModelEast = ParseListOfRealValues( element );
          }
          else if ( element.Name() == "SyncDataList" )
-            AlignmentModel::ParseSyncData(element);
+            AlignmentModel::ParseSyncData( element );
          else
             WarnOnUnknownChildElement( element, "xtpm root" );
       }
@@ -886,26 +892,27 @@ void GeneralAnalyticalPointingModel::Parse( const XMLDocument& xml )
 void GeneralAnalyticalPointingModel::PrintParameterVector( Vector* parameters, double residual )
 {
    m_console.WriteLn( String().Format( "<end><cbr>"
-                                       "* Fitting residual ................................................ %+.2f ", residual ) );
-   m_console.WriteLn( String().Format( "* Hour angle offset ............................................... %+.2f (arcmin)", (*parameters)[0]*scaleArcmin ) );
-   m_console.WriteLn( String().Format( "* Declination offset .............................................. %+.2f (arcmin)", (*parameters)[1]*scaleArcmin ) );
-   double poleSep = Sqrt( (*parameters)[4] * (*parameters)[4] + (*parameters)[5]* (*parameters)[5] );
-   double poleAngle = ArcCos(- (*parameters)[4] / poleSep );
-   m_console.WriteLn( String().Format( "* Angular separation between true and instrumental pole ........... %+.2f (arcmin)", poleSep*scaleArcmin ) );
+                                       "* Fitting residual ................................................ %+.2f ",
+      residual ) );
+   m_console.WriteLn( String().Format( "* Hour angle offset ............................................... %+.2f (arcmin)",  (*parameters)[ 0] * scaleArcmin ) );
+   m_console.WriteLn( String().Format( "* Declination offset .............................................. %+.2f (arcmin)",  (*parameters)[ 1] * scaleArcmin ) );
+   double poleSep = Sqrt( (*parameters)[4] * (*parameters)[4] + (*parameters)[5] * (*parameters)[5] );
+   double poleAngle = ArcCos( -(*parameters)[4]/poleSep );
+   m_console.WriteLn( String().Format( "* Angular separation between true and instrumental pole ........... %+.2f (arcmin)", poleSep * scaleArcmin ) );
    m_console.WriteLn( String().Format( "* Angle between meridian and line of true and instrumental pole ... %+.2f (deg)", Deg( poleAngle ) ) );
-   m_console.WriteLn( String().Format( "* Mis-alignment of optical and mechanical axes .................... %+.2f (arcmin)", (*parameters)[2]*scaleArcmin ) );
-   m_console.WriteLn( String().Format( "* Polar/declination axis non-orthogonality ........................ %+.2f (arcmin)", -(*parameters)[3]*scaleArcmin ) );
-   m_console.WriteLn( String().Format( "* Tube flexure - droop away from zenith ........................... %+.2f (arcmin)", (*parameters)[6]*scaleArcmin ) );
-   m_console.WriteLn( String().Format( "* Bending of declination axis ..................................... %+.2f (arcmin)", (*parameters)[8]*scaleArcmin ) );
-   m_console.WriteLn( String().Format( "* Linear hour angle scale error ................................... %+.2f (arcmin)", (*parameters)[9]*scaleArcmin ) );
-   m_console.WriteLn( String().Format( "* Quadratic hour angle scale error ................................ %+.2f (arcmin)", (*parameters)[10]*scaleArcmin ) );
+   m_console.WriteLn( String().Format( "* Mis-alignment of optical and mechanical axes .................... %+.2f (arcmin)",  (*parameters)[ 2] * scaleArcmin ) );
+   m_console.WriteLn( String().Format( "* Polar/declination axis non-orthogonality ........................ %+.2f (arcmin)", -(*parameters)[ 3] * scaleArcmin ) );
+   m_console.WriteLn( String().Format( "* Tube flexure - droop away from zenith ........................... %+.2f (arcmin)",  (*parameters)[ 6] * scaleArcmin ) );
+   m_console.WriteLn( String().Format( "* Bending of declination axis ..................................... %+.2f (arcmin)",  (*parameters)[ 8] * scaleArcmin ) );
+   m_console.WriteLn( String().Format( "* Linear hour angle scale error ................................... %+.2f (arcmin)",  (*parameters)[ 9] * scaleArcmin ) );
+   m_console.WriteLn( String().Format( "* Quadratic hour angle scale error ................................ %+.2f (arcmin)",  (*parameters)[10] * scaleArcmin ) );
 }
 
 // ----------------------------------------------------------------------------
 
 void GeneralAnalyticalPointingModel::PrintParameters()
 {
-   m_console.NoteLn( "<end><cbr><br> Analytical Pointing Model Parameters" );
+   m_console.NoteLn( "<end><cbr><br>Analytical Pointing Model Parameters" );
    m_console.WriteLn( "The parameters refer to the general analytical telescope pointing model as described by Marc W. Buie (2013)" );
    m_console.WriteLn( "in his paper http://www.boulder.swri.edu/~buie/idl/downloads/pointing/pointing.pdf." );
    if ( m_modelEachPierSide )
@@ -920,7 +927,7 @@ void GeneralAnalyticalPointingModel::PrintParameters()
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF Alignment.cpp - Released 2019-11-07T11:00:23Z
+// EOF Alignment.cpp - Released 2020-01-23T19:56:17Z

@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerParameters.h - Released 2019-11-07T11:00:23Z
+// INDIDeviceControllerParameters.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -70,24 +70,24 @@ public:
 
    IDCServerHostName( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern IDCServerHostName* TheIDCServerHostNameParameter;
 
 // ----------------------------------------------------------------------------
 
-class IDCServerPort: public MetaUInt32
+class IDCServerPort : public MetaUInt32
 {
 public:
 
    IDCServerPort( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern IDCServerPort* TheIDCServerPortParameter;
@@ -100,8 +100,8 @@ public:
 
    IDCServerConnect( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern IDCServerConnect* TheIDCServerConnectParameter;
@@ -114,7 +114,7 @@ public:
 
    IDCServerCommand( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IDCServerCommand* TheIDCServerCommandParameter;
@@ -127,7 +127,7 @@ public:
 
    IDCAbort( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IDCAbort* TheIDCAbortParameter;
@@ -140,8 +140,8 @@ public:
 
    IDCVerbosity( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
 };
 
 extern IDCVerbosity* TheIDCVerbosityParameter;
@@ -154,7 +154,7 @@ public:
 
    IDCGetCommandParameters( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IDCGetCommandParameters* TheIDCGetCommandParametersParameter;
@@ -167,8 +167,8 @@ public:
 
    IDCGetCommandResult( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IDCGetCommandResult* TheIDCGetCommandResultParameter;
@@ -181,8 +181,8 @@ public:
 
    IDCDevices( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IDCDevices* TheIDCDevicesParameter;
@@ -195,8 +195,8 @@ public:
 
    IDCDeviceName( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IDCDeviceName* TheIDCDeviceNameParameter;
@@ -209,8 +209,8 @@ public:
 
    IDCDeviceLabel( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IDCDeviceLabel* TheIDCDeviceLabelParameter;
@@ -223,8 +223,8 @@ public:
 
    IDCProperties( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IDCProperties* TheIDCPropertiesParameter;
@@ -237,8 +237,8 @@ public:
 
    IDCPropertyName( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IDCPropertyName* TheIDCPropertyNameParameter;
@@ -251,8 +251,8 @@ public:
 
    IDCPropertyValue( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IDCPropertyValue* TheIDCPropertyValueParameter;
@@ -265,8 +265,8 @@ public:
 
    IDCPropertyType( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IDCPropertyType* TheIDCPropertyTypeParameter;
@@ -279,11 +279,11 @@ public:
 
    IDCPropertyState( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   bool IsReadOnly() const override;
 };
 
 extern IDCPropertyState* TheIDCPropertyStateParameter;
@@ -296,7 +296,7 @@ public:
 
    IDCNewProperties( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IDCNewProperties* TheIDCNewPropertiesParameter;
@@ -309,7 +309,7 @@ public:
 
    IDCNewPropertyKey( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IDCNewPropertyKey* TheIDCNewPropertyKeyParameter;
@@ -322,7 +322,7 @@ public:
 
    IDCNewPropertyType( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IDCNewPropertyType* TheIDCNewPropertyTypeParameter;
@@ -335,7 +335,7 @@ public:
 
    IDCNewPropertyValue( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern IDCNewPropertyValue* TheIDCNewPropertyValueParameter;
@@ -344,9 +344,9 @@ extern IDCNewPropertyValue* TheIDCNewPropertyValueParameter;
 
 PCL_END_LOCAL
 
-} // pcl
+} // namespace pcl
 
 #endif // INDIDeviceControllerParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerParameters.h - Released 2019-11-07T11:00:23Z
+// EOF INDIDeviceControllerParameters.h - Released 2020-01-23T19:56:17Z

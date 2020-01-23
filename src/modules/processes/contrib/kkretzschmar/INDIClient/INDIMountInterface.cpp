@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIMountInterface.cpp - Released 2019-11-07T11:00:23Z
+// INDIMountInterface.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 // km/s -> AU/day
-static const double KMS2AUY = 365.25*86400/149597870e3;
+static const double KMS2AUY = 365.25 * 86400 / 149597870e3;
 
 // ----------------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ CoordinateSearchDialog::CoordinateSearchDialog( INDIMountInterface& parent ) :
 
    ObjectName_Label.SetText( "Object: " );
    ObjectName_Label.SetToolTip( objectNameToolTip );
-   ObjectName_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
+   ObjectName_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    ObjectName_Edit.SetToolTip( objectNameToolTip );
    ObjectName_Edit.OnGetFocus( (Control::event_handler)&CoordinateSearchDialog::e_GetFocus, *this );
@@ -110,15 +110,14 @@ CoordinateSearchDialog::CoordinateSearchDialog( INDIMountInterface& parent ) :
 
    SearchInfo_TextBox.SetReadOnly();
    SearchInfo_TextBox.SetStyleSheet( ScaledStyleSheet(
-         "* {"
-            "font-family: Hack, DejaVu Sans Mono, Monospace;"
-            "font-size: 8pt;"
-            "background: #141414;" // borrowed from /rsc/qss/core-standard.qss
-            "color: #E8E8E8;"
-         "}"
-      ) );
+      "* {"
+      "font-family: Hack, DejaVu Sans Mono, Monospace;"
+      "font-size: 8pt;"
+      "background: #141414;" // borrowed from /rsc/qss/core-standard.qss
+      "color: #E8E8E8;"
+      "}" ) );
    SearchInfo_TextBox.Restyle();
-   SearchInfo_TextBox.SetMinSize( SearchInfo_TextBox.Font().Width( 'm' )*81, SearchInfo_TextBox.Font().Height()*22 );
+   SearchInfo_TextBox.SetMinSize( SearchInfo_TextBox.Font().Width( 'm' ) * 81, SearchInfo_TextBox.Font().Height() * 22 );
 
    Get_Button.SetText( "Get" );
    Get_Button.SetIcon( ScaledResource( ":/icons/window-import.png" ) );
@@ -197,19 +196,19 @@ bool CoordinateSearchDialog::e_Download( NetworkTransfer& sender, const void* bu
 // ----------------------------------------------------------------------------
 
 bool CoordinateSearchDialog::e_Progress( NetworkTransfer& sender,
-                                       fsize_type downloadTotal, fsize_type downloadCurrent,
-                                       fsize_type uploadTotal, fsize_type uploadCurrent )
+   fsize_type downloadTotal, fsize_type downloadCurrent,
+   fsize_type uploadTotal, fsize_type uploadCurrent )
 {
    if ( m_abort )
       return false;
 
    if ( downloadTotal > 0 )
       SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%u of %u bytes transferred (%d%%)",
-                                                downloadCurrent, downloadTotal,
-                                                RoundInt( 100.0*downloadCurrent/downloadTotal ) ) );
+                                                  downloadCurrent, downloadTotal,
+                                                  RoundInt( 100.0 * downloadCurrent / downloadTotal ) ) );
    else
       SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%u bytes transferred (unknown size)",
-                                                downloadCurrent ) );
+                                                  downloadCurrent ) );
    SearchInfo_TextBox.Focus();
    Module->ProcessEvents();
    return true;
@@ -241,7 +240,8 @@ void CoordinateSearchDialog::e_Click( Button& sender, bool checked )
                            "FROM basic "
                            "JOIN ident ON ident.oidref = oid "
                            "LEFT OUTER JOIN flux ON flux.oidref = oid AND flux.filter = 'V' "
-                           "WHERE id = '" + objectName + "';";
+                           "WHERE id = '"
+         + objectName + "';";
       url << select_stmt;
 
       NetworkTransfer transfer;
@@ -261,7 +261,7 @@ void CoordinateSearchDialog::e_Click( Button& sender, bool checked )
       if ( ok )
       {
          SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%d bytes downloaded @ %.3g KiB/s<br>",
-                                                   transfer.BytesTransferred(), transfer.TotalSpeed() ) );
+            transfer.BytesTransferred(), transfer.TotalSpeed() ) );
          //SearchInfo_TextBox.Insert( "<end><cbr><br><raw>" + m_downloadData + "</raw>" );
 
          StringList lines;
@@ -270,12 +270,12 @@ void CoordinateSearchDialog::e_Click( Button& sender, bool checked )
          {
             // The first line has column titles. The second line has values.
             StringList tokens;
-            lines[1].Break( tokens, '\t', true/*trim*/ );
+            lines[1].Break( tokens, '\t', true /*trim*/ );
             if ( tokens.Length() == 11 )
             {
-               String           objectName;
-               String           objectType;
-               String           spectralType;
+               String objectName;
+               String objectType;
+               String spectralType;
                Optional<double> vmag;     // flux in the V filter
                Optional<double> ra;       // hours
                Optional<double> dec;      // degrees
@@ -285,17 +285,17 @@ void CoordinateSearchDialog::e_Click( Button& sender, bool checked )
                Optional<double> radVel;   // km/s
 
                if ( !tokens[1].IsEmpty() )
-                  ra = tokens[1].ToDouble()/15;   // degrees -> hours
+                  ra = tokens[1].ToDouble() / 15; // degrees -> hours
                if ( !tokens[2].IsEmpty() )
-                  dec = tokens[2].ToDouble();     // degrees
+                  dec = tokens[2].ToDouble(); // degrees
                if ( !tokens[3].IsEmpty() )
                   muAlpha = tokens[3].ToDouble(); // mas/yr * cos(delta)
                if ( !tokens[4].IsEmpty() )
                   muDelta = tokens[4].ToDouble(); // mas/yr
                if ( !tokens[5].IsEmpty() )
-                  parallax = tokens[5].ToDouble()/1000; // mas -> arcsec
+                  parallax = tokens[5].ToDouble() / 1000; // mas -> arcsec
                if ( !tokens[6].IsEmpty() )
-                  radVel = tokens[6].ToDouble();  // km/s
+                  radVel = tokens[6].ToDouble(); // km/s
                objectName = tokens[7].Unquoted().Trimmed();
                objectType = tokens[8].Unquoted().Trimmed();
                spectralType = tokens[9].Unquoted().Trimmed();
@@ -305,62 +305,66 @@ void CoordinateSearchDialog::e_Click( Button& sender, bool checked )
                if ( ra.IsDefined() && dec.IsDefined() )
                {
                   StarPosition S( ra(),
-                                  dec(),
-                                  muAlpha.OrElse( 0 ),
-                                  muDelta.OrElse( 0 ),
-                                  parallax.OrElse( 0 ),
-                                  radVel.OrElse( 0 ) );
+                     dec(),
+                     muAlpha.OrElse( 0 ),
+                     muDelta.OrElse( 0 ),
+                     parallax.OrElse( 0 ),
+                     radVel.OrElse( 0 ) );
                   ObserverPosition O( m_parent.GeographicLongitude(),
-                                      m_parent.GeographicLatitude(),
-                                      m_parent.GeographicHeight() );
+                     m_parent.GeographicLatitude(),
+                     m_parent.GeographicHeight() );
                   TimePoint t = TimePoint::Now();
                   pcl::Position P( t, "UTC" );
-                  if (m_parent.ShouldComputeTopocentricApparentCoordinates()) {
+                  if ( m_parent.ShouldComputeTopocentricApparentCoordinates() )
+                  {
                      P.SetObserver( O );
                      P.Apparent( S ).ToSpherical2Pi( m_alpha, m_delta );
-                     m_alpha = Deg( m_alpha )/15;
+                     m_alpha = Deg( m_alpha ) / 15;
                      m_delta = Deg( m_delta );
-                  } else {
+                  }
+                  else
+                  {
                      m_alpha = ra();
                      m_delta = dec();
                   }
 
                   String info = String()
-                          << "<end><cbr><br><b>Object            :</b> "
-                          << objectName
-                          <<           "<br><b>Object type       :</b> "
-                          << objectType
-                          <<           "<br><b>Right Ascension   :</b> "
-                          << String::ToSexagesimal( ra(), RAConversionOptions( 3/*precision*/, 3/*width*/ ) )
-                          <<           "<br><b>Declination       :</b> "
-                          << String::ToSexagesimal( dec(), DecConversionOptions( 2/*precision*/, 3/*width*/ ) );
+                     << "<end><cbr><br><b>Object            :</b> "
+                     << objectName
+                     <<           "<br><b>Object type       :</b> "
+                     << objectType
+                     <<           "<br><b>Right Ascension   :</b> "
+                     << String::ToSexagesimal( ra(), RAConversionOptions( 3 /*precision*/, 3 /*width*/ ) )
+                     <<           "<br><b>Declination       :</b> "
+                     << String::ToSexagesimal( dec(), DecConversionOptions( 2 /*precision*/, 3 /*width*/ ) );
                   if ( muAlpha.IsDefined() )
-                     info <<           "<br><b>Proper motion RA* :</b> "
+                     info <<      "<br><b>Proper motion RA* :</b> "
                           << String().Format( "%+8.2f mas/year * cos(delta)", muAlpha() );
                   if ( muDelta.IsDefined() )
-                     info <<           "<br><b>Proper motion Dec :</b> "
+                     info <<      "<br><b>Proper motion Dec :</b> "
                           << String().Format( "%+8.2f mas/year", muDelta() );
                   if ( parallax.IsDefined() )
-                     info <<           "<br><b>Parallax          :</b> "
+                     info <<      "<br><b>Parallax          :</b> "
                           << String().Format( "%8.2f arcsec", parallax() );
                   if ( radVel.IsDefined() )
-                     info <<           "<br><b>Radial velocity   :</b> "
+                     info <<      "<br><b>Radial velocity   :</b> "
                           << String().Format( "%+7.1f km/s", radVel() );
                   if ( !spectralType.IsEmpty() )
-                     info <<           "<br><b>Spectral type     :</b> "
+                     info <<      "<br><b>Spectral type     :</b> "
                           << spectralType;
                   if ( vmag.IsDefined() )
-                     info <<           "<br><b>Visual Magnitude  :</b> "
+                     info <<      "<br><b>Visual Magnitude  :</b> "
                           << String().Format( "%.4g", vmag() );
 
-                  if (m_parent.ShouldComputeTopocentricApparentCoordinates()) {
-                     info    << "<br>" << t.ToString( "%Y-%M-%D %h:%m:%s2" ) << " UTC"
-                             <<       "<br><br><b>*** Topocentric Apparent Coordinates ***</b>"
-                             <<           "<br><b>Right Ascension   :</b> "
-                             << String::ToSexagesimal( m_alpha, RAConversionOptions( 3/*precision*/, 3/*width*/ ) )
-                             <<           "<br><b>Declination       :</b> "
-                             << String::ToSexagesimal( m_delta, DecConversionOptions( 2/*precision*/, 3/*width*/ ) )
-                             << "<br>";
+                  if ( m_parent.ShouldComputeTopocentricApparentCoordinates() )
+                  {
+                     info << "<br>" << t.ToString( "%Y-%M-%D %h:%m:%s2" ) << " UTC"
+                          << "<br><br><b>*** Topocentric Apparent Coordinates ***</b>"
+                          << "<br><b>Right Ascension   :</b> "
+                          << String::ToSexagesimal( m_alpha, RAConversionOptions( 3 /*precision*/, 3 /*width*/ ) )
+                          << "<br><b>Declination       :</b> "
+                          << String::ToSexagesimal( m_delta, DecConversionOptions( 2 /*precision*/, 3 /*width*/ ) )
+                          << "<br>";
                   }
                   SearchInfo_TextBox.Insert( info );
                   m_valid = true;
@@ -419,7 +423,7 @@ EphemerisSearchDialog::EphemerisSearchDialog( INDIMountInterface& parent ) :
 
    Object_Label.SetText( "Object: " );
    Object_Label.SetToolTip( objectToolTip );
-   Object_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
+   Object_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    Objects_ComboBox.SetToolTip( objectToolTip );
    Objects_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&EphemerisSearchDialog::e_ItemSelected, *this );
@@ -437,15 +441,14 @@ EphemerisSearchDialog::EphemerisSearchDialog( INDIMountInterface& parent ) :
 
    ObjectInfo_TextBox.SetReadOnly();
    ObjectInfo_TextBox.SetStyleSheet( ScaledStyleSheet(
-         "* {"
-            "font-family: Hack, DejaVu Sans Mono, Monospace;"
-            "font-size: 8pt;"
-            "background: #141414;" // borrowed from /rsc/qss/core-standard.qss
-            "color: #E8E8E8;"
-         "}"
-      ) );
+      "* {"
+      "font-family: Hack, DejaVu Sans Mono, Monospace;"
+      "font-size: 8pt;"
+      "background: #141414;" // borrowed from /rsc/qss/core-standard.qss
+      "color: #E8E8E8;"
+      "}" ) );
    ObjectInfo_TextBox.Restyle();
-   ObjectInfo_TextBox.SetMinSize( ObjectInfo_TextBox.Font().Width( 'm' )*81, ObjectInfo_TextBox.Font().Height()*22 );
+   ObjectInfo_TextBox.SetMinSize( ObjectInfo_TextBox.Font().Width( 'm' ) * 81, ObjectInfo_TextBox.Font().Height() * 22 );
 
    Clear_Button.SetText( "Clear" );
    Clear_Button.SetIcon( ScaledResource( ":/icons/clear.png" ) );
@@ -531,24 +534,24 @@ void EphemerisSearchDialog::e_Click( Button& sender, bool checked )
       TimePoint t = TimePoint::Now();
       EphemerisFile::Handle H( Ephemerides(), m_objectName, isMoon ? "Ea" : "SSB" );
       ObserverPosition O( m_parent.GeographicLongitude(),
-                          m_parent.GeographicLatitude(),
-                          m_parent.GeographicHeight() );
+         m_parent.GeographicLatitude(),
+         m_parent.GeographicHeight() );
       pcl::Position P( t, "UTC" );
       P.SetObserver( O );
       P.Apparent( H ).ToSpherical2Pi( m_alpha, m_delta );
-      m_alpha = Deg( m_alpha )/15;
+      m_alpha = Deg( m_alpha ) / 15;
       m_delta = Deg( m_delta );
 
       String info = String()
-               << "<end><cbr><br><b>" << ObjectName() << "</b> "
-               << "<br>" << t.ToString( "%Y-%M-%D %h:%m:%s2" ) << " UTC"
-               << "<br><b>*** Topocentric Apparent Coordinates ***</b>"
-               << "<br><b>Right ascension  :</b> "
-               << String::ToSexagesimal( m_alpha, RAConversionOptions( 3/*precision*/, 3/*width*/ ) )
-               << "<br><b>Declination      :</b> "
-               << String::ToSexagesimal( m_delta, DecConversionOptions( 2/*precision*/, 3/*width*/ ) )
-               << "<br><b>True distance    :</b> "
-               << String().Format( "%10.*f %s", P.TrueDistance( H ), isMoon ? 3 : 7, isMoon ? "km" : "au" );
+         << "<end><cbr><br><b>" << ObjectName() << "</b> "
+         << "<br>" << t.ToString( "%Y-%M-%D %h:%m:%s2" ) << " UTC"
+         << "<br><b>*** Topocentric Apparent Coordinates ***</b>"
+         << "<br><b>Right ascension  :</b> "
+         << String::ToSexagesimal( m_alpha, RAConversionOptions( 3 /*precision*/, 3 /*width*/ ) )
+         << "<br><b>Declination      :</b> "
+         << String::ToSexagesimal( m_delta, DecConversionOptions( 2 /*precision*/, 3 /*width*/ ) )
+         << "<br><b>True distance    :</b> "
+         << String().Format( "%10.*f %s", P.TrueDistance( H ), isMoon ? 3 : 7, isMoon ? "km" : "au" );
       if ( P.CanComputeApparentVisualMagnitude( H ) )
       {
          Optional<double> V = P.ApparentVisualMagnitude( H )();
@@ -574,12 +577,14 @@ void EphemerisSearchDialog::e_Click( Button& sender, bool checked )
    {
       if ( m_objectName == "Sun" )
          if ( MessageBox( "<p>You are about to point your telescope at the Sun.</p>"
-               "<p><b>THIS IS EXTREMELY DANGEROUS - BY DOING THIS YOU CAN CAUSE "
-               "IRREVERSIBLE DAMAGE TO YOUR EYES AND/OR TO YOUR EQUIPMENT.</b></p>"
-               "<p>Do you really want to do this?</p>",
-               WindowTitle(),
-               StdIcon::Warning, StdButton::Cancel, StdButton::Ok ).Execute() != StdButton::Ok )
+                          "<p><b>THIS IS EXTREMELY DANGEROUS - BY DOING THIS YOU CAN CAUSE "
+                          "IRREVERSIBLE DAMAGE TO YOUR EYES AND/OR TO YOUR EQUIPMENT.</b></p>"
+                          "<p>Do you really want to do this?</p>",
+                          WindowTitle(),
+                          StdIcon::Warning, StdButton::Cancel, StdButton::Ok ).Execute() != StdButton::Ok )
+         {
             return;
+         }
 
       m_goto = sender == GoTo_Button;
       Ok();
@@ -609,7 +614,7 @@ EphemerisObjectList PlanetSearchDialog::Objects() const
                                 << EphemerisObject( "Ur", "SSB", "Uranus" )
                                 << EphemerisObject( "Ne", "SSB", "Neptune" )
                                 << EphemerisObject( "Pl", "SSB", "Pluto" )
-                                << EphemerisObject( "Mn", "Ea",  "Moon" )
+                                << EphemerisObject( "Mn", "Ea", "Moon" )
                                 << EphemerisObject( "Sn", "SSB", "Sun" );
 }
 
@@ -631,9 +636,9 @@ EphemerisObjectList AsteroidSearchDialog::Objects() const
 {
    EphemerisObjectList objects = EphemerisFile::AsteroidEphemerides().Objects();
    objects.Sort( []( const EphemerisObject& a, const EphemerisObject& b )
-                  {
-                     return a.objectId.ToInt() < b.objectId.ToInt();
-                  } );
+      {
+         return a.objectId.ToInt() < b.objectId.ToInt();
+      } );
    return objects;
 }
 
@@ -667,35 +672,34 @@ void AsteroidSearchDialog::e_ItemSelected( ComboBox& sender, int itemIndex )
 SyncDataListDialog::SyncDataListDialog( Array<SyncDataPoint>& syncDataArray ) :
    m_syncDataList( syncDataArray )
 {
-   SnycData_TreeBox.SetMinHeight( Font().Width( 'm' )*60 );
-   SnycData_TreeBox.SetScaledMinWidth(  Font().Height()  * 50 );
+   SnycData_TreeBox.SetMinHeight( Font().Width( 'm' ) * 60 );
+   SnycData_TreeBox.SetScaledMinWidth( Font().Height() * 50 );
    SnycData_TreeBox.SetNumberOfColumns( 8 );
    SnycData_TreeBox.SetHeaderText( 2, "HA" );
    SnycData_TreeBox.SetHeaderText( 3, "Dec" );
    SnycData_TreeBox.SetHeaderText( 4, "Delta HA" );
    SnycData_TreeBox.SetHeaderText( 5, "Delta Dec" );
-   SnycData_TreeBox.SetHeaderText( 6, "Pier side");
-   SnycData_TreeBox.SetHeaderText( 7, "Created on");
+   SnycData_TreeBox.SetHeaderText( 6, "Pier side" );
+   SnycData_TreeBox.SetHeaderText( 7, "Created on" );
    SnycData_TreeBox.EnableAlternateRowColor();
    SnycData_TreeBox.EnableMultipleSelections( true );
 
-   for ( size_t index = 0;  index < syncDataArray.Length(); ++index )
+   for ( size_t index = 0; index < syncDataArray.Length(); ++index )
    {
-      TreeBox::Node* node =  new TreeBox::Node();
+      TreeBox::Node* node = new TreeBox::Node();
       auto syncDataPoint = syncDataArray[index];
       node->SetText( 0, String().Format( "%i", index ) );
       node->SetIcon( 1, ScaledResource( syncDataPoint.enabled ? ":/browser/enabled.png" : ":/browser/disabled.png" ) );
-      node->SetText( 2, String().Format( "%2.3f", AlignmentModel::RangeShiftHourAngle( syncDataPoint.localSiderialTime-syncDataPoint.celestialRA ) ) );
+      node->SetText( 2, String().Format( "%2.3f", AlignmentModel::RangeShiftHourAngle( syncDataPoint.localSiderialTime - syncDataPoint.celestialRA ) ) );
       node->SetText( 3, String().Format( "%2.3f", syncDataPoint.celestialDEC ) );
       node->SetText( 4, String().Format( "%2.5f", syncDataPoint.telecopeRA - syncDataPoint.celestialRA ) );
-      node->SetText( 5, String().Format( "%2.5f", syncDataPoint.celestialDEC-syncDataPoint.telecopeDEC ) );
-      node->SetText( 6, String( (syncDataPoint.pierSide == IMCPierSide::West) ?
-                                       "West" :  ((syncDataPoint.pierSide == IMCPierSide::East) ? "East" : "") ) );
+      node->SetText( 5, String().Format( "%2.5f", syncDataPoint.celestialDEC - syncDataPoint.telecopeDEC ) );
+      node->SetText( 6, String( ( syncDataPoint.pierSide == IMCPierSide::West ) ? "West" : ( ( syncDataPoint.pierSide == IMCPierSide::East ) ? "East" : "" ) ) );
       node->SetText( 7, syncDataPoint.creationTime.ToString() );
       SnycData_TreeBox.Add( node );
    }
 
-   for ( int i = 0 ; i < SnycData_TreeBox.NumberOfColumns(); ++i )
+   for ( int i = 0; i < SnycData_TreeBox.NumberOfColumns(); ++i )
       SnycData_TreeBox.AdjustColumnWidthToContents( i );
 
    SyncDataList_Sizer.SetSpacing( 8 );
@@ -788,9 +792,9 @@ void SyncDataListDialog::e_Click( Button& sender, bool checked )
    {
       for ( auto node : SnycData_TreeBox.SelectedNodes() )
       {
-         int index = SnycData_TreeBox.ChildIndex(node);
-         m_syncDataList.Remove(m_syncDataList[index]);
-         SnycData_TreeBox.Remove(index);
+         int index = SnycData_TreeBox.ChildIndex( node );
+         m_syncDataList.Remove( m_syncDataList[index] );
+         SnycData_TreeBox.Remove( index );
       }
    }
    else if ( sender == Ok_Button )
@@ -933,7 +937,7 @@ void AlignmentConfigDialog::e_Show( Control& )
       m_firstTimeShown = false;
 
       EnsureLayoutUpdated();
-      SetMinWidth( RoundInt( 2.5*Font().Width( WindowTitle() ) ) );
+      SetMinWidth( RoundInt( 2.5 * Font().Width( WindowTitle() ) ) );
       AdjustToContents();
       SetFixedSize();
    }
@@ -976,15 +980,15 @@ void AlignmentConfigDialog::e_PageSelected( TabBox& sender, int tabIndex )
 
 // ----------------------------------------------------------------------------
 
-MountConfigDialog::MountConfigDialog(const String& deviceName,
+MountConfigDialog::MountConfigDialog( const String& deviceName,
                                       double geoLat, double geoLong, double geoHeight,
-                                      String utcTime, double utcOffset ) :
+   String utcTime, double utcOffset ) :
    ConfigDialogBase( deviceName ),
    m_device( deviceName )
 {
    int emWidth = Font().Width( 'm' );
-   int editWidth1 = RoundInt( 4.25*emWidth );
-   int editWidth2 = RoundInt( 5.25*emWidth );
+   int editWidth1 = RoundInt( 4.25 * emWidth );
+   int editWidth2 = RoundInt( 5.25 * emWidth );
 
    int sign, s1, s2;
    double s3;
@@ -993,7 +997,7 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
 
    Latitude_Label.SetText( "Geographic Latitude:" );
    Latitude_Label.SetToolTip( "<p>Position of observatory: Geographic latitude in degrees, arcminutes and arcseconds.</p>" );
-   Latitude_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Latitude_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    Latitude_Label.SetFixedWidth( labelWidth1 );
 
    DecimalToSexagesimal( sign, s1, s2, s3, geoLat );
@@ -1030,7 +1034,7 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
 
    Longitude_Label.SetText( "Geographic Longitude:" );
    Longitude_Label.SetToolTip( "<p>Position of observatory: Geographic longitude in degrees, arcminutes and arcseconds.</p>" );
-   Longitude_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Longitude_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    Longitude_Label.SetFixedWidth( labelWidth1 );
 
    Longitude_H_SpinBox.SetRange( 0, 180 );
@@ -1065,7 +1069,7 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
    Height_NumericEdit.SetRange( 0, 500000 );
    Height_NumericEdit.label.SetText( "Geographic Height:" );
    Height_NumericEdit.label.SetToolTip( "<p>Position of observatory: Geographic height in meters.</p></p>" );
-   Height_NumericEdit.label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Height_NumericEdit.label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    Height_NumericEdit.label.SetFixedWidth( labelWidth1 );
    Height_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Height_NumericEdit.sizer.AddStretch();
@@ -1074,11 +1078,11 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
    double dayFraction;
    double timeZone;
    int year, month, day;
-   utcTime.TryParseISO8601DateTime(year, month, day, dayFraction, timeZone );
+   utcTime.TryParseISO8601DateTime( year, month, day, dayFraction, timeZone );
 
    Date_Label.SetText( "Date:" );
    Date_Label.SetToolTip( "<p>Current date</p>" );
-   Date_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Date_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    Date_Label.SetFixedWidth( labelWidth1 );
 
    Date_Day_SpinBox.SetRange( 0, 31 );
@@ -1093,7 +1097,6 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
    Date_Year_SpinBox.SetFixedWidth( editWidth1 );
    Date_Year_SpinBox.SetValue( year );
 
-
    GetHostDateTime_PushButton.SetText( "Get" );
    GetHostDateTime_PushButton.SetToolTip( "<p>Get date and utc time from the host where the Indigo server is running on.</p>" );
    GetHostDateTime_PushButton.OnClick( (Button::click_event_handler)&MountConfigDialog::e_Click, *this );
@@ -1106,12 +1109,11 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
    Date_Sizer.Add( GetHostDateTime_PushButton );
    Date_Sizer.AddStretch();
 
-
    DecimalToSexagesimal( sign, s1, s2, s3, dayFraction * 24 );
 
    UtcTime_Label.SetText( "UTC time:" );
    UtcTime_Label.SetToolTip( "<p>Current UTC time</p>" );
-   UtcTime_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   UtcTime_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    UtcTime_Label.SetFixedWidth( labelWidth1 );
 
    UtcTime_H_SpinBox.SetRange( 0, 180 );
@@ -1128,7 +1130,7 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
    UtcTime_S_NumericEdit.SetRange( 0, 59.99 );
    UtcTime_S_NumericEdit.label.Hide();
    UtcTime_S_NumericEdit.edit.SetFixedWidth( editWidth2 );
-   UtcTime_S_NumericEdit.SetValue( s3);
+   UtcTime_S_NumericEdit.SetValue( s3 );
 
    UtcTime_Sizer.SetSpacing( 4 );
    UtcTime_Sizer.Add( UtcTime_Label );
@@ -1142,8 +1144,6 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
    UpdateUtc_Timer.OnTimer( (Timer::timer_event_handler)&MountConfigDialog::e_Timer, *this );
    UpdateUtc_Timer.Start();
 
-
-
    /*TelescopeAperture_NumericEdit.label.SetText( "Telescope aperture:" );
    TelescopeAperture_NumericEdit.label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    TelescopeAperture_NumericEdit.label.SetToolTip( "<p>Telescope's aperture in millimeters.</p>" );
@@ -1155,8 +1155,8 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
    TelescopeAperture_NumericEdit.SetValue( telescopeAperture );
 */
    TelescopeFocalLength_NumericEdit.label.SetText( "Telescope focal length:" );
-   TelescopeFocalLength_NumericEdit.label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-   TelescopeFocalLength_NumericEdit.label.SetToolTip( "<p>Telescope's focal length in millimeters.</p> ");
+   TelescopeFocalLength_NumericEdit.label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
+   TelescopeFocalLength_NumericEdit.label.SetToolTip( "<p>Telescope's focal length in millimeters.</p> " );
    TelescopeFocalLength_NumericEdit.label.SetFixedWidth( labelWidth1 );
    TelescopeFocalLength_NumericEdit.SetInteger();
    TelescopeFocalLength_NumericEdit.SetRange( 0, 100000 );
@@ -1181,34 +1181,34 @@ MountConfigDialog::MountConfigDialog(const String& deviceName,
 void MountConfigDialog::SendUpdatedProperties()
 {
    double lat = SexagesimalToDecimal( LatitudeIsSouth_CheckBox.IsChecked() ? -1 : +1,
-         Latitude_H_SpinBox.Value(), Latitude_M_SpinBox.Value(), Latitude_S_NumericEdit.Value() );
+      Latitude_H_SpinBox.Value(), Latitude_M_SpinBox.Value(), Latitude_S_NumericEdit.Value() );
 
    INDIClient::TheClient()->SendNewPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, "INDI_NUMBER", GEOGRAPHIC_COORDINATES_LATITUDE_ITEM_NAME, lat );
 
    double longitude = SexagesimalToDecimal( LongitudeIsWest_CheckBox.IsChecked() ? -1 : +1,
-         Longitude_H_SpinBox.Value(), Longitude_M_SpinBox.Value(), Longitude_S_NumericEdit.Value() );
+      Longitude_H_SpinBox.Value(), Longitude_M_SpinBox.Value(), Longitude_S_NumericEdit.Value() );
 
    INDIClient::TheClient()->SendNewPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, "INDI_NUMBER", GEOGRAPHIC_COORDINATES_LONGITUDE_ITEM_NAME, longitude );
 
    INDIPropertyListItem mountProp;
-   if (INDIClient::TheClient()->GetPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, mountProp, false/*formatted*/ ))
+   if ( INDIClient::TheClient()->GetPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, mountProp, false /*formatted*/ ) )
    {
       INDIClient::TheClient()->SendNewPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, "INDI_NUMBER", GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, Height_NumericEdit.Value() );
    }
-   if (INDIClient::TheClient()->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_TIME_ITEM_NAME, mountProp, false/*formatted*/ ))
+   if ( INDIClient::TheClient()->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_TIME_ITEM_NAME, mountProp, false /*formatted*/ ) )
    {
-      double newUtcTime = SexagesimalToDecimal(  +1, UtcTime_H_SpinBox.Value(), UtcTime_M_SpinBox.Value(), UtcTime_S_NumericEdit.Value() );
+      double newUtcTime = SexagesimalToDecimal( +1, UtcTime_H_SpinBox.Value(), UtcTime_M_SpinBox.Value(), UtcTime_S_NumericEdit.Value() );
       INDIClient::TheClient()->SendNewPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, "INDI_NUMBER", UTC_TIME_ITEM_NAME, newUtcTime );
    }
    // sending telescope info in bulk request
-   if (INDIClient::TheClient()->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", mountProp, false/*formatted*/ ))
+   if ( INDIClient::TheClient()->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", mountProp, false /*formatted*/ ) )
    {
-     INDINewPropertyItem newPropertyItem( m_device, "TELESCOPE_INFO", "INDI_NUMBER" );
-     newPropertyItem.ElementValues << ElementValue( "TELESCOPE_APERTURE", TelescopeAperture_NumericEdit.Value() );
-     newPropertyItem.ElementValues << ElementValue( "TELESCOPE_FOCAL_LENGTH", TelescopeFocalLength_NumericEdit.Value() );
-     newPropertyItem.ElementValues << ElementValue( "GUIDER_APERTURE", 10 );
-     newPropertyItem.ElementValues << ElementValue( "GUIDER_FOCAL_LENGTH", 100 );
-     INDIClient::TheClient()->SendNewPropertyItem( newPropertyItem );
+      INDINewPropertyItem newPropertyItem( m_device, "TELESCOPE_INFO", "INDI_NUMBER" );
+      newPropertyItem.ElementValues << ElementValue( "TELESCOPE_APERTURE", TelescopeAperture_NumericEdit.Value() );
+      newPropertyItem.ElementValues << ElementValue( "TELESCOPE_FOCAL_LENGTH", TelescopeFocalLength_NumericEdit.Value() );
+      newPropertyItem.ElementValues << ElementValue( "GUIDER_APERTURE", 10 );
+      newPropertyItem.ElementValues << ElementValue( "GUIDER_FOCAL_LENGTH", 100 );
+      INDIClient::TheClient()->SendNewPropertyItem( newPropertyItem );
    }
 }
 
@@ -1216,39 +1216,53 @@ void MountConfigDialog::SendUpdatedProperties()
 
 void MountConfigDialog::e_Click( Button& sender, bool checked )
 {
-    if (sender == GetHostDateTime_PushButton)
-    {
-        INDIPropertyListItem mountProp;
-        if (INDIClient::TheClient()->GetPropertyItem( m_device, MOUNT_SET_HOST_TIME_PROPERTY_NAME, MOUNT_SET_HOST_TIME_ITEM_NAME, mountProp, false/*formatted*/ ))
-        {
-           INDIClient::TheClient()->MaybeSendNewPropertyItem( m_device, MOUNT_SET_HOST_TIME_PROPERTY_NAME, "INDI_SWITCH", MOUNT_SET_HOST_TIME_ITEM_NAME, "ON", true/*async*/ );
-        }
-    }
+   if ( sender == GetHostDateTime_PushButton )
+   {
+      INDIPropertyListItem mountProp;
+      if ( INDIClient::TheClient()->GetPropertyItem( m_device,
+                                                     MOUNT_SET_HOST_TIME_PROPERTY_NAME,
+                                                     MOUNT_SET_HOST_TIME_ITEM_NAME,
+                                                     mountProp,
+                                                     false /*formatted*/ ) )
+      {
+         INDIClient::TheClient()->MaybeSendNewPropertyItem( m_device,
+                                                            MOUNT_SET_HOST_TIME_PROPERTY_NAME,
+                                                            "INDI_SWITCH",
+                                                            MOUNT_SET_HOST_TIME_ITEM_NAME,
+                                                            "ON",
+                                                            true /*async*/ );
+      }
+   }
 }
 
 void MountConfigDialog::e_Timer( Timer& sender )
 {
    if ( sender == UpdateUtc_Timer )
    {
-     INDIPropertyListItem mountProp;
-     if (INDIClient::TheClient()->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_TIME_ITEM_NAME, mountProp, false/*formatted*/ ))
-     {
-       double dayFraction;
-       double timeZone;
-       int year, month, day;
-       mountProp.PropertyValue.TryParseISO8601DateTime(year, month, day, dayFraction, timeZone );
-       Date_Day_SpinBox.SetValue( day );
-       Date_Month_SpinBox.SetValue( month );
-       Date_Year_SpinBox.SetValue( year );
+      INDIPropertyListItem mountProp;
+      if ( INDIClient::TheClient()->GetPropertyItem( m_device,
+                                                     UTC_TIME_PROPERTY_NAME,
+                                                     UTC_TIME_ITEM_NAME,
+                                                     mountProp,
+                                                     false /*formatted*/ ) )
+      {
+         double dayFraction;
+         double timeZone;
+         int year, month, day;
+         mountProp.PropertyValue.TryParseISO8601DateTime( year, month, day, dayFraction, timeZone );
+         Date_Day_SpinBox.SetValue( day );
+         Date_Month_SpinBox.SetValue( month );
+         Date_Year_SpinBox.SetValue( year );
 
-       int sign, hour, minutes;
-       double seconds;
-       DecimalToSexagesimal( sign, hour, minutes, seconds, dayFraction * 24 );
-       UtcTime_H_SpinBox.SetValue( hour );
-       UtcTime_M_SpinBox.SetValue( minutes );
-       UtcTime_S_NumericEdit.SetValue( seconds );
-
-     } else {
+         int sign, hour, minutes;
+         double seconds;
+         DecimalToSexagesimal( sign, hour, minutes, seconds, dayFraction * 24 );
+         UtcTime_H_SpinBox.SetValue( hour );
+         UtcTime_M_SpinBox.SetValue( minutes );
+         UtcTime_S_NumericEdit.SetValue( seconds );
+      }
+      else
+      {
          Date_Label.Disable();
          Date_Day_SpinBox.Disable();
          Date_Month_SpinBox.Disable();
@@ -1258,10 +1272,9 @@ void MountConfigDialog::e_Timer( Timer& sender )
          UtcTime_M_SpinBox.Disable();
          UtcTime_S_NumericEdit.Disable();
          GetHostDateTime_PushButton.Disable();
-     }
+      }
    }
 }
-
 
 // ----------------------------------------------------------------------------
 
@@ -1320,7 +1333,7 @@ bool INDIMountInterface::Launch( const MetaProcess& P, const ProcessImplementati
 {
    if ( GUI == nullptr )
    {
-      GUI = new GUIData(*this );
+      GUI = new GUIData( *this );
       SetWindowTitle( "Indigo Mount Controller" );
       ResetInstance();
       UpdateControls();
@@ -1383,17 +1396,18 @@ int INDIMountInterface::AlignmentMethod() const
 
 bool INDIMountInterface::ShouldComputeTopocentricApparentCoordinates()
 {
-	INDIPropertyListItem item;
-	INDIClient* indi = INDIClient::TheClientOrDie();
-	if (indi->GetPropertyItem(m_device, MOUNT_EPOCH_PROPERTY_NAME, MOUNT_EPOCH_ITEM_NAME, item, false/*formatted*/))
-	{
-		if (TruncInt(item.PropertyValue.ToDouble()) == 0)
-			return true;
-	}
-	else
-		return true;
+   INDIPropertyListItem item;
+   INDIClient* indi = INDIClient::TheClientOrDie();
+   if ( !indi->GetPropertyItem( m_device,
+                                MOUNT_EPOCH_PROPERTY_NAME,
+                                MOUNT_EPOCH_ITEM_NAME,
+                                item,
+                                false /*formatted*/ ) )
+   {
+      return true;
+   }
 
-	return false;
+   return TruncInt( item.PropertyValue.ToDouble() ) == 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1405,16 +1419,16 @@ ProcessImplementation* INDIMountInterface::NewProcess() const
    instance->p_slewRate = GUI->SlewSpeed_ComboBox.CurrentItem();
 
    instance->p_targetRA = SexagesimalToDecimal( 0,
-         GUI->TargetRA_H_SpinBox.Value(), GUI->TargetRA_M_SpinBox.Value(), GUI->TargetRA_S_NumericEdit.Value() );
+      GUI->TargetRA_H_SpinBox.Value(), GUI->TargetRA_M_SpinBox.Value(), GUI->TargetRA_S_NumericEdit.Value() );
 
    instance->p_targetDec = SexagesimalToDecimal( GUI->MountTargetDECIsSouth_CheckBox.IsChecked() ? -1 : +1,
-         GUI->TargetDec_H_SpinBox.Value(), GUI->TargetDec_M_SpinBox.Value(), GUI->TargetDec_S_NumericEdit.Value() );
+      GUI->TargetDec_H_SpinBox.Value(), GUI->TargetDec_M_SpinBox.Value(), GUI->TargetDec_S_NumericEdit.Value() );
 
    instance->p_alignmentMethod = GUI->m_alignmentModelIndex;
 
-   instance->p_enableAlignmentCorrection =  GUI->MountAlignmentCorrection_CheckBox.IsChecked();
+   instance->p_enableAlignmentCorrection = GUI->MountAlignmentCorrection_CheckBox.IsChecked();
 
-   switch( instance->p_alignmentMethod )
+   switch ( instance->p_alignmentMethod )
    {
    case IMCAlignmentMethod::AnalyticalModel:
       instance->p_alignmentConfig = GUI->AlignmentConfigParameter();
@@ -1438,7 +1452,7 @@ bool INDIMountInterface::ValidateProcess( const ProcessImplementation& p, String
 {
    if ( dynamic_cast<const INDIMountInstance*>( &p ) != nullptr )
       return true;
-   whyNot = "Not an INDIMount instance.";
+   whyNot = "Not an IndigoMount instance.";
    return false;
 }
 
@@ -1459,7 +1473,8 @@ bool INDIMountInterface::ImportProcess( const ProcessImplementation& p )
       double targetRA, targetDec;
       instance->GetTargetCoordinates( targetRA, targetDec );
 
-      int sign, s1, s2; double s3;
+      int sign, s1, s2;
+      double s3;
       DecimalToSexagesimal( sign, s1, s2, s3, targetRA );
       GUI->TargetRA_H_SpinBox.SetValue( s1 );
       GUI->TargetRA_M_SpinBox.SetValue( s2 );
@@ -1471,7 +1486,7 @@ bool INDIMountInterface::ImportProcess( const ProcessImplementation& p )
       GUI->TargetDec_S_NumericEdit.SetValue( s3 );
       GUI->MountTargetDECIsSouth_CheckBox.SetChecked( sign < 0 );
 
-      if ( instance->ValidateDevice( false/*throwErrors*/ ) )
+      if ( instance->ValidateDevice( false /*throwErrors*/ ) )
          m_device = instance->p_deviceName;
       else
          m_device.Clear();
@@ -1541,8 +1556,8 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
 
    int emWidth = w.Font().Width( 'm' );
    int labelWidth1 = w.Font().Width( "Local Sidereal Time:" ) + emWidth;
-   int editWidth1 = RoundInt( 4.25*emWidth );
-   int editWidth2 = RoundInt( 5.25*emWidth );
+   int editWidth1 = RoundInt( 4.25 * emWidth );
+   int editWidth2 = RoundInt( 5.25 * emWidth );
    int ui4 = w.LogicalPixelsToPhysical( 4 );
 
    ServerParameters_SectionBar.SetTitle( "Device Properties" );
@@ -1551,7 +1566,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountDevice_Label.SetText( "Indigo Mount device:" );
    MountDevice_Label.SetToolTip( "<p>Select an Indigo Mount device.</p>" );
    MountDevice_Label.SetMinWidth( labelWidth1 );
-   MountDevice_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   MountDevice_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    MountDeviceConfig_ToolButton.SetIcon( w.ScaledResource( ":/icons/wrench.png" ) );
    MountDeviceConfig_ToolButton.SetScaledFixedSize( 22, 22 );
@@ -1567,55 +1582,55 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountDevice_Sizer.Add( MountDeviceConfig_ToolButton );
 
    LST_Label.SetText( "Local Sidereal Time:" );
-   LST_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   LST_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    LST_Label.SetFixedWidth( labelWidth1 );
 
    LST_Value_Label.SetStyleSheet( infoLabelStyleSheet );
-   LST_Value_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
+   LST_Value_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    MountLST_Sizer.SetSpacing( 4 );
    MountLST_Sizer.Add( LST_Label );
    MountLST_Sizer.Add( LST_Value_Label, 100 );
 
    RA_Label.SetText( "Right Ascension:" );
-   RA_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   RA_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    RA_Label.SetFixedWidth( labelWidth1 );
 
    RA_Value_Label.SetStyleSheet( infoLabelStyleSheet );
-   RA_Value_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
+   RA_Value_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    MountEQRA_Sizer.SetSpacing( 4 );
    MountEQRA_Sizer.Add( RA_Label );
    MountEQRA_Sizer.Add( RA_Value_Label, 100 );
 
    Dec_Label.SetText( "Declination:" );
-   Dec_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Dec_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    Dec_Label.SetFixedWidth( labelWidth1 );
 
    Dec_Value_Label.SetStyleSheet( infoLabelStyleSheet );
-   Dec_Value_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
+   Dec_Value_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    MountEQDec_Sizer.SetSpacing( 4 );
    MountEQDec_Sizer.Add( Dec_Label );
    MountEQDec_Sizer.Add( Dec_Value_Label, 100 );
 
    AZ_Label.SetText( "Azimuth:" );
-   AZ_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   AZ_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    AZ_Label.SetFixedWidth( labelWidth1 );
 
    AZ_Value_Label.SetStyleSheet( infoLabelStyleSheet );
-   AZ_Value_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
+   AZ_Value_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    MountHZAZ_Sizer.SetSpacing( 4 );
    MountHZAZ_Sizer.Add( AZ_Label );
    MountHZAZ_Sizer.Add( AZ_Value_Label, 100 );
 
    ALT_Label.SetText( "Altitude:" );
-   ALT_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ALT_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    ALT_Label.SetFixedWidth( labelWidth1 );
 
    ALT_Value_Label.SetStyleSheet( infoLabelStyleSheet );
-   ALT_Value_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
+   ALT_Value_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    MountHZALT_Sizer.SetSpacing( 4 );
    MountHZALT_Sizer.Add( ALT_Label );
@@ -1638,7 +1653,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
 
    //
    MountAlignment_SectionBar.SetTitle( "Pointing Models" );
-   MountAlignment_SectionBar.SetSection(MountAlignment_Control);
+   MountAlignment_SectionBar.SetSection( MountAlignment_Control );
 
    const char* alignmentfileToolTipText =
       "<p>Path to a file with metadata for a telescope pointing model.</p>";
@@ -1654,7 +1669,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    AlignmentFile_ToolButton.SetIcon( w.ScaledResource( ":/icons/select-file.png" ) );
    AlignmentFile_ToolButton.SetScaledFixedSize( 22, 22 );
    AlignmentFile_ToolButton.SetToolTip( "<p>Select the ponting model file:</p>" );
-   AlignmentFile_ToolButton.OnClick( (Button::click_event_handler) &INDIMountInterface::e_Click, w );
+   AlignmentFile_ToolButton.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
 
    MountAlignmentFile_Sizer.SetSpacing( 4 );
    MountAlignmentFile_Sizer.Add( AlignmentFile_Label );
@@ -1665,17 +1680,17 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    const char* alignmentConfigToolTipText = "<p>Configure and create a new pointing model.</p>";
 
    MountAligmentModelConfig_Button.SetText( "Configure" );
-   MountAligmentModelConfig_Button.SetIcon( w.ScaledResource(":/icons/wrench.png" ) );
+   MountAligmentModelConfig_Button.SetIcon( w.ScaledResource( ":/icons/wrench.png" ) );
    MountAligmentModelConfig_Button.SetToolTip( alignmentConfigToolTipText );
    MountAligmentModelConfig_Button.SetStyleSheet( buttonStyleSheet1 );
-   MountAligmentModelConfig_Button.OnClick( (Button::click_event_handler) &INDIMountInterface::e_Click, w );
+   MountAligmentModelConfig_Button.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
 
    MountAligmentModelFit_Button.SetText( "Create Model" );
    MountAligmentModelFit_Button.SetIcon( w.ScaledResource( ":/icons/gear.png" ) );
    MountAligmentModelFit_Button.SetToolTip( alignmentConfigToolTipText );
    MountAligmentModelFit_Button.SetStyleSheet( buttonStyleSheet2 );
    MountAligmentModelFit_Button.Disable();
-   MountAligmentModelFit_Button.OnClick( (Button::click_event_handler) &INDIMountInterface::e_Click, w );
+   MountAligmentModelFit_Button.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
 
    const char* syncdatafileToolTipText = "<p>Shows the table of sync data points.</p>";
 
@@ -1683,7 +1698,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    SyncDataList_Button.SetIcon( w.ScaledResource( ":/icons/list.png" ) );
    SyncDataList_Button.SetToolTip( syncdatafileToolTipText );
    SyncDataList_Button.SetStyleSheet( buttonStyleSheet1 );
-   SyncDataList_Button.OnClick( (Button::click_event_handler) &INDIMountInterface::e_Click, w );
+   SyncDataList_Button.OnClick( (Button::click_event_handler)&INDIMountInterface::e_Click, w );
 
    MountAlignmentConfig_Sizer.SetSpacing( 8 );
    MountAlignmentConfig_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -1718,7 +1733,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
 
    TargetRA_Label.SetText( "Right Ascension:" );
    TargetRA_Label.SetToolTip( "<p>Target object position in equatorial coordinates: Right Ascension coordinate (h:m:s)</p>" );
-   TargetRA_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   TargetRA_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    TargetRA_Label.SetFixedWidth( labelWidth1 );
 
    TargetRA_H_SpinBox.SetRange( 0, 23 );
@@ -1743,7 +1758,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
 
    TargetDec_Label.SetText( "Declination:" );
    TargetDec_Label.SetToolTip( "<p>Target object position in equatorial coordinates: Declination coordinate (d:m:s)</p>" );
-   TargetDec_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   TargetDec_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    TargetDec_Label.SetFixedWidth( labelWidth1 );
 
    TargetDec_H_SpinBox.SetRange( 0, 90 );
@@ -1769,7 +1784,6 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountTargetDec_Sizer.Add( TargetDec_S_NumericEdit );
    MountTargetDec_Sizer.Add( MountTargetDECIsSouth_CheckBox );
    MountTargetDec_Sizer.AddStretch();
-
 
    MountSearch_Button.SetText( "Search" );
    MountSearch_Button.SetIcon( w.ScaledResource( ":/icons/find.png" ) );
@@ -1827,7 +1841,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
    MountGoToCancel_Sizer.Add( MountGoToCancel_Button );
    MountGoToCancel_Sizer.AddStretch();
 
-   MountGoToInfo_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
+   MountGoToInfo_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    MountGoTo_Sizer.SetSpacing( 8 );
    MountGoTo_Sizer.Add( MountTargetRA_Sizer );
@@ -1938,7 +1952,7 @@ INDIMountInterface::GUIData::GUIData( INDIMountInterface& w )
 
    SlewSpeed_Label.SetText( "Slew speed:" );
    SlewSpeed_Label.SetToolTip( slewSpeedTooltipText );
-   SlewSpeed_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
+   SlewSpeed_Label.SetTextAlignment( TextAlign::Left | TextAlign::VertCenter );
 
    SlewSpeed_ComboBox.AddItem( "Guide" );
    SlewSpeed_ComboBox.AddItem( "Centering" );
@@ -2012,7 +2026,7 @@ void INDIMountInterface::e_Timer( Timer& sender )
                   GUI->MountDevice_Combo.AddItem( device.DeviceName );
 
             GUI->MountDevice_Combo.SetItemText( 0,
-                  (GUI->MountDevice_Combo.NumberOfItems() > 1) ? "<No Device Selected>" : "<No Mount Device Available>" );
+               ( GUI->MountDevice_Combo.NumberOfItems() > 1 ) ? "<No Device Selected>" : "<No Mount Device Available>" );
 
             int i = Max( 0, GUI->MountDevice_Combo.FindItem( m_device ) );
             GUI->MountDevice_Combo.SetCurrentItem( i );
@@ -2038,37 +2052,37 @@ __device_found:
       INDIPropertyListItem mountProp;
 
       double time_lst = 0;
-      if (indi->GetPropertyItem( m_device, MOUNT_LST_TIME_PROPERTY_NAME, MOUNT_LST_TIME_ITEM_NAME, mountProp, false/*formatted*/ ))
+      if ( indi->GetPropertyItem( m_device, MOUNT_LST_TIME_PROPERTY_NAME, MOUNT_LST_TIME_ITEM_NAME, mountProp, false /*formatted*/ ) )
       {
-        time_lst = mountProp.PropertyValue.ToDouble();
+         time_lst = mountProp.PropertyValue.ToDouble();
       }
       else
       {
-        time_lst =  LocalApparentSiderialTime(GeographicLongitude());
+         time_lst = LocalApparentSiderialTime( GeographicLongitude() );
       }
       GUI->LST_Value_Label.SetText( String::ToSexagesimal( time_lst,
-                              SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, false/*sign*/, 3/*width*/ ) ) );
-
+         SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, false /*sign*/, 3 /*width*/ ) ) );
 
       double coord_ra = 0;
-      if ( indi->GetPropertyItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, mountProp, false /*formatted*/ ) )
       {
          GUI->RA_Value_Label.SetText( String::ToSexagesimal( mountProp.PropertyValue.ToDouble(),
-                  SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, false/*sign*/, 3/*width*/, ' '/*separator*/ ) ) );
+            SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, false /*sign*/, 3 /*width*/, ' ' /*separator*/ ) ) );
          coord_ra = mountProp.PropertyValue.ToDouble();
       }
       else
          GUI->RA_Value_Label.Clear();
 
-      if ( indi->GetPropertyItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, mountProp, false /*formatted*/ ) )
          GUI->Dec_Value_Label.SetText( String::ToSexagesimal( mountProp.PropertyValue.ToDouble(),
-                  SexagesimalConversionOptions( 3/*items*/, 2/*precision*/, true/*sign*/, 3/*width*/, ' '/*separator*/ ) ) );
+            SexagesimalConversionOptions( 3 /*items*/, 2 /*precision*/, true /*sign*/, 3 /*width*/, ' ' /*separator*/ ) ) );
       else
          GUI->Dec_Value_Label.Clear();
 
       static const char* indiPierSides[] = { MOUNT_SIDE_OF_PIER_WEST_ITEM_NAME, MOUNT_SIDE_OF_PIER_EAST_ITEM_NAME };
       bool deviceHasPierSideProperty = true;
-      for ( size_type i = 0; i < ItemsInArray( indiPierSides ); ++i ) {
+      for ( size_type i = 0; i < ItemsInArray( indiPierSides ); ++i )
+      {
          if ( indi->GetPropertyItem( m_device, MOUNT_SIDE_OF_PIER_PROPERTY_NAME, indiPierSides[i], mountProp ) )
          {
             if ( mountProp.PropertyValue == "ON" )
@@ -2076,30 +2090,31 @@ __device_found:
                m_pierSide = i;
                break;
             }
-         } else {
-             deviceHasPierSideProperty = false;
-             break;
+         }
+         else
+         {
+            deviceHasPierSideProperty = false;
+            break;
          }
       }
 
-      if(!deviceHasPierSideProperty)
+      if ( !deviceHasPierSideProperty )
       {
          // pier side fallback
          // If the Indigo mount device does not support the TELESCOPE_PIER_SIDE property, compute the pierside from hour angle
-         double hourAngle = AlignmentModel::RangeShiftHourAngle(time_lst - coord_ra);
+         double hourAngle = AlignmentModel::RangeShiftHourAngle( time_lst - coord_ra );
          m_pierSide = hourAngle <= 0 ? IMCPierSide::West : IMCPierSide::East;
       }
 
-
-      if ( indi->GetPropertyItem( m_device, MOUNT_HORIZONTAL_COORDINATES_PROPERTY_NAME, MOUNT_HORIZONTAL_COORDINATES_ALT_ITEM_NAME, mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, MOUNT_HORIZONTAL_COORDINATES_PROPERTY_NAME, MOUNT_HORIZONTAL_COORDINATES_ALT_ITEM_NAME, mountProp, false /*formatted*/ ) )
          GUI->ALT_Value_Label.SetText( String::ToSexagesimal( mountProp.PropertyValue.ToDouble(),
-                                 SexagesimalConversionOptions( 3/*items*/, 2/*precision*/, true/*sign*/, 3/*width*/ ) ) );
+            SexagesimalConversionOptions( 3 /*items*/, 2 /*precision*/, true /*sign*/, 3 /*width*/ ) ) );
       else
          GUI->ALT_Value_Label.Clear();
 
-      if ( indi->GetPropertyItem( m_device, MOUNT_HORIZONTAL_COORDINATES_PROPERTY_NAME, MOUNT_HORIZONTAL_COORDINATES_AZ_ITEM_NAME, mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, MOUNT_HORIZONTAL_COORDINATES_PROPERTY_NAME, MOUNT_HORIZONTAL_COORDINATES_AZ_ITEM_NAME, mountProp, false /*formatted*/ ) )
          GUI->AZ_Value_Label.SetText( String::ToSexagesimal( mountProp.PropertyValue.ToDouble(),
-                                 SexagesimalConversionOptions( 3/*items*/, 2/*precision*/, true/*sign*/, 3/*width*/ ) ) );
+            SexagesimalConversionOptions( 3 /*items*/, 2 /*precision*/, true /*sign*/, 3 /*width*/ ) ) );
       else
          GUI->AZ_Value_Label.Clear();
 
@@ -2116,47 +2131,46 @@ __device_found:
       GUI->SlewSpeed_Label.Enable( foundSlewRate );
       GUI->SlewSpeed_ComboBox.Enable( foundSlewRate );
 
-      if ( indi->GetPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_LATITUDE_ITEM_NAME, mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_LATITUDE_ITEM_NAME, mountProp, false /*formatted*/ ) )
          m_geoLatitude = mountProp.PropertyValue.ToDouble();
       else
          m_geoLatitude = 0;
 
-      if ( indi->GetPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_LONGITUDE_ITEM_NAME, mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_LONGITUDE_ITEM_NAME, mountProp, false /*formatted*/ ) )
          m_geoLongitude = mountProp.PropertyValue.ToDouble();
       else
          m_geoLongitude = 0;
 
-      if ( indi->GetPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, GEOGRAPHIC_COORDINATES_PROPERTY_NAME, GEOGRAPHIC_COORDINATES_ELEVATION_ITEM_NAME, mountProp, false /*formatted*/ ) )
          m_geoHeight = mountProp.PropertyValue.ToDouble();
       else
          m_geoHeight = 0;
 
-      if ( indi->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_TIME_ITEM_NAME, mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_TIME_ITEM_NAME, mountProp, false /*formatted*/ ) )
          m_utcTime = mountProp.PropertyValue;
 
-      if ( indi->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_OFFSET_ITEM_NAME, mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, UTC_TIME_PROPERTY_NAME, UTC_OFFSET_ITEM_NAME, mountProp, false /*formatted*/ ) )
          m_utcOffset = mountProp.PropertyValue.ToDouble();
       else
          m_utcOffset = 0;
 
-      if ( indi->GetPropertyItem( m_device, MOUNT_PARK_PROPERTY_NAME, MOUNT_PARK_PARKED_ITEM_NAME, mountProp, false/*formatted*/ ) )
-          if ( mountProp.PropertyValue == "ON" )
-          {
-            GUI->MountPark_Button.SetText("Unpark");
-          } else
-          {
-            GUI->MountPark_Button.SetText("Park");
-          }
+      if ( indi->GetPropertyItem( m_device, MOUNT_PARK_PROPERTY_NAME, MOUNT_PARK_PARKED_ITEM_NAME, mountProp, false /*formatted*/ ) )
+         if ( mountProp.PropertyValue == "ON" )
+         {
+            GUI->MountPark_Button.SetText( "Unpark" );
+         }
+         else
+         {
+            GUI->MountPark_Button.SetText( "Park" );
+         }
 
-
-      if ( indi->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_APERTURE", mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_APERTURE", mountProp, false /*formatted*/ ) )
          m_telescopeAperture = mountProp.PropertyValue.ToDouble();
       else
          m_telescopeAperture = 0;
 
-      if ( indi->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", mountProp, false/*formatted*/ ) )
+      if ( indi->GetPropertyItem( m_device, "TELESCOPE_INFO", "TELESCOPE_FOCAL_LENGTH", mountProp, false /*formatted*/ ) )
          m_telescopeFocalLength = mountProp.PropertyValue.ToDouble();
-
    }
 }
 
@@ -2174,19 +2188,19 @@ public:
    {
    }
 
-   virtual void Abort()
+   void Abort() override
    {
       m_abortRequested = true;
    }
 
 private:
 
-   INDIMountInterface*            m_iface = nullptr;
+   INDIMountInterface* m_iface = nullptr;
    AutoPointer<INDIMountInstance> m_instanceAuto;
-   bool                           m_abortRequested = false;
-   pcl_enum                       m_command = IMCCommand::Default;
+   bool m_abortRequested = false;
+   pcl_enum m_command = IMCCommand::Default;
 
-   virtual void StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command )
+   void StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command ) override
    {
       m_iface->m_execution = this;
       m_command = command;
@@ -2216,7 +2230,7 @@ private:
       Module->ProcessEvents();
    }
 
-   virtual void MountEvent( double targetRA, double currentRA, double targetDec, double currentDec )
+   void MountEvent( double targetRA, double currentRA, double targetDec, double currentDec ) override
    {
       if ( m_abortRequested )
          AbstractINDIMountExecution::Abort();
@@ -2227,10 +2241,10 @@ private:
          m_iface->GUI->MountGoToInfo_Label.SetText(
             "Slewing: dRA = "
             + String::ToSexagesimal( targetRA - currentRA,
-                           SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, true/*sign*/ ) )
+               SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
             + ", dDec = "
             + String::ToSexagesimal( targetDec - currentDec,
-                           SexagesimalConversionOptions( 3/*items*/, 2/*precision*/, true/*sign*/ ) ) );
+               SexagesimalConversionOptions( 3 /*items*/, 2 /*precision*/, true /*sign*/ ) ) );
          break;
 
       case IMCCommand::Park:
@@ -2248,7 +2262,7 @@ private:
       Module->ProcessEvents();
    }
 
-   virtual void EndMountEvent()
+   void EndMountEvent() override
    {
       m_iface->m_execution = nullptr;
       m_iface->GUI->TargetRA_H_SpinBox.Enable();
@@ -2278,12 +2292,12 @@ private:
       Module->ProcessEvents();
    }
 
-   virtual void WaitEvent()
+   void WaitEvent() override
    {
       Module->ProcessEvents();
    }
 
-   virtual void AbortEvent()
+   void AbortEvent() override
    {
       EndMountEvent();
    }
@@ -2306,12 +2320,13 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
    }
    else if ( sender == GUI->MountPark_Button )
    {
-      if (GUI->MountPark_Button.Text() == "Park")
+      if ( GUI->MountPark_Button.Text() == "Park" )
       {
-        INDIMountInterfaceExecution( this ).Perform( IMCCommand::ParkDefault );
-      } else
+         INDIMountInterfaceExecution( this ).Perform( IMCCommand::ParkDefault );
+      }
+      else
       {
-        INDIMountInterfaceExecution( this ).Perform( IMCCommand::Unpark );
+         INDIMountInterfaceExecution( this ).Perform( IMCCommand::Unpark );
       }
    }
    else if ( sender == GUI->MountGoToCancel_Button )
@@ -2326,7 +2341,8 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
       if ( m_searchDialog->Execute() )
          if ( m_searchDialog->HasValidCoordinates() )
          {
-            int sign, s1, s2; double s3;
+            int sign, s1, s2;
+            double s3;
             DecimalToSexagesimal( sign, s1, s2, s3, m_searchDialog->RA() );
             GUI->TargetRA_H_SpinBox.SetValue( s1 );
             GUI->TargetRA_M_SpinBox.SetValue( s2 );
@@ -2340,7 +2356,6 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
 
             if ( m_searchDialog->GoToTarget() )
                INDIMountInterfaceExecution( this ).Perform( IMCCommand::GoTo );
-
          }
    }
    else if ( sender == GUI->MountPlanets_Button )
@@ -2349,7 +2364,8 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
          m_planetDialog = new PlanetSearchDialog( *this );
       if ( m_planetDialog->Execute() )
       {
-         int sign, s1, s2; double s3;
+         int sign, s1, s2;
+         double s3;
          DecimalToSexagesimal( sign, s1, s2, s3, m_planetDialog->RA() );
          GUI->TargetRA_H_SpinBox.SetValue( s1 );
          GUI->TargetRA_M_SpinBox.SetValue( s2 );
@@ -2363,7 +2379,6 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
 
          if ( m_planetDialog->GoToTarget() )
             INDIMountInterfaceExecution( this ).Perform( IMCCommand::GoTo );
-
       }
    }
    else if ( sender == GUI->MountAsteroids_Button )
@@ -2372,7 +2387,8 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
          m_asteroidDialog = new AsteroidSearchDialog( *this );
       if ( m_asteroidDialog->Execute() )
       {
-         int sign, s1, s2; double s3;
+         int sign, s1, s2;
+         double s3;
          DecimalToSexagesimal( sign, s1, s2, s3, m_asteroidDialog->RA() );
          GUI->TargetRA_H_SpinBox.SetValue( s1 );
          GUI->TargetRA_M_SpinBox.SetValue( s2 );
@@ -2386,23 +2402,21 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
 
          if ( m_asteroidDialog->GoToTarget() )
             INDIMountInterfaceExecution( this ).Perform( IMCCommand::GoTo );
-
       }
    }
    else if ( sender == GUI->SlewStop_Button )
    {
-      INDIClient::TheClient()->MaybeSendNewPropertyItem( m_device, MOUNT_ABORT_MOTION_PROPERTY_NAME, "INDI_SWITCH", MOUNT_ABORT_MOTION_ITEM_NAME, "ON", true/*async*/ );
+      INDIClient::TheClient()->MaybeSendNewPropertyItem( m_device, MOUNT_ABORT_MOTION_PROPERTY_NAME, "INDI_SWITCH", MOUNT_ABORT_MOTION_ITEM_NAME, "ON", true /*async*/ );
    }
-   else if ( sender == GUI->AlignmentFile_ToolButton)
+   else if ( sender == GUI->AlignmentFile_ToolButton )
    {
       SaveFileDialog f;
       FileFilter filter;
       filter.AddExtension( "xtpm" );
       f.SetFilter( filter );
-      f.SetCaption( "INDIMount: Select Alignment File" );
+      f.SetCaption( "IndigoMount: Select Alignment File" );
       if ( f.Execute() )
          GUI->AlignmentFile_Edit.SetText( f.FileName() );
-
    }
    else if ( sender == GUI->MountAligmentModelFit_Button )
    {
@@ -2418,7 +2432,7 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
             aModel = GeneralAnalyticalPointingModel::Create( m_geoLatitude, alignmentConfig, GUI->m_modelBothPierSides );
             break;
          default:
-            throw Error( "Internal error: AbstractINDIMountInterface: Unknown Pointing Model.");
+            throw Error( "Internal error: AbstractINDIMountInterface: Unknown Pointing Model." );
          }
 
          aModel->ReadObject( GUI->AlignmentFile_Edit.Text().Trimmed() );
@@ -2464,39 +2478,39 @@ void INDIMountInterface::e_Press( Button& sender )
 
    if ( sender == GUI->SlewTopLeft_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "ON", true/*async*/ );
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "ON", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "ON", true /*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "ON", true /*async*/ );
    }
    else if ( sender == GUI->SlewTop_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "ON", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "ON", true /*async*/ );
    }
    if ( sender == GUI->SlewTopRight_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "ON", true/*async*/ );
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "ON", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "ON", true /*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "ON", true /*async*/ );
    }
    else if ( sender == GUI->SlewLeft_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "ON", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "ON", true /*async*/ );
    }
    else if ( sender == GUI->SlewRight_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "ON", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "ON", true /*async*/ );
    }
    else if ( sender == GUI->SlewBottomLeft_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "ON", true/*async*/ );
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "ON", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "ON", true /*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "ON", true /*async*/ );
    }
    else if ( sender == GUI->SlewBottom_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "ON", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "ON", true /*async*/ );
    }
    else if ( sender == GUI->SlewBottomRight_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "ON", true/*async*/ );
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "ON", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "ON", true /*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "ON", true /*async*/ );
    }
 }
 
@@ -2509,39 +2523,39 @@ void INDIMountInterface::e_Release( Button& sender )
 
    if ( sender == GUI->SlewTopLeft_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "OFF", true/*async*/ );
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, "TELESCOPE_MOTION_WE", "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "OFF", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "OFF", true /*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, "TELESCOPE_MOTION_WE", "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "OFF", true /*async*/ );
    }
    else if ( sender == GUI->SlewTop_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", "MOTION_NORTH", "OFF", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", "MOTION_NORTH", "OFF", true /*async*/ );
    }
    if ( sender == GUI->SlewTopRight_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "OFF", true/*async*/ );
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "OFF", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_NORTH_ITEM_NAME, "OFF", true /*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "OFF", true /*async*/ );
    }
    else if ( sender == GUI->SlewLeft_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "OFF", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "OFF", true /*async*/ );
    }
    else if ( sender == GUI->SlewRight_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "OFF", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "OFF", true /*async*/ );
    }
    else if ( sender == GUI->SlewBottomLeft_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "OFF", true/*async*/ );
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "OFF", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "OFF", true /*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_WEST_ITEM_NAME, "OFF", true /*async*/ );
    }
    else if ( sender == GUI->SlewBottom_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "OFF", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "OFF", true /*async*/ );
    }
    else if ( sender == GUI->SlewBottomRight_Button )
    {
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "OFF", true/*async*/ );
-      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "OFF", true/*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_DEC_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_SOUTH_ITEM_NAME, "OFF", true /*async*/ );
+      INDIClient::TheClient()->SendNewPropertyItem( m_device, MOUNT_MOTION_RA_PROPERTY_NAME, "INDI_SWITCH", MOUNT_MOTION_EAST_ITEM_NAME, "OFF", true /*async*/ );
    }
 }
 
@@ -2554,7 +2568,7 @@ void INDIMountInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 
    if ( sender == GUI->MountDevice_Combo )
    {
-      m_device = (itemIndex > 0) ? sender.ItemText( itemIndex ).Trimmed() : String();
+      m_device = ( itemIndex > 0 ) ? sender.ItemText( itemIndex ).Trimmed() : String();
       UpdateControls();
 
       // get initial properties and unpark mount
@@ -2563,33 +2577,34 @@ void INDIMountInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
          INDIPropertyListItem item;
 
          // load configuration on server
-         INDIClient::TheClient()->SendNewPropertyItem( m_device, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON");
+         INDIClient::TheClient()->SendNewPropertyItem( m_device, CONFIG_PROPERTY_NAME, "INDI_SWITCH", CONFIG_LOAD_ITEM_NAME, "ON" );
 
-         if ( INDIClient::TheClient()->GetPropertyTargetItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, item, false/*formatted*/ ) )
+         if ( INDIClient::TheClient()->GetPropertyTargetItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_RA_ITEM_NAME, item, false /*formatted*/ ) )
          {
-            int dum, h, m; double s;
+            int dum, h, m;
+            double s;
             DecimalToSexagesimal( dum, h, m, s, item.PropertyTarget.ToDouble() );
             GUI->TargetRA_H_SpinBox.SetValue( h );
             GUI->TargetRA_M_SpinBox.SetValue( m );
             GUI->TargetRA_S_NumericEdit.SetValue( s );
          }
 
-         if ( INDIClient::TheClient()->GetPropertyTargetItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, item, false/*formatted*/ ) )
+         if ( INDIClient::TheClient()->GetPropertyTargetItem( m_device, MOUNT_EQUATORIAL_COORDINATES_PROPERTY_NAME, MOUNT_EQUATORIAL_COORDINATES_DEC_ITEM_NAME, item, false /*formatted*/ ) )
          {
-            int sign, d, m; double s;
+            int sign, d, m;
+            double s;
             DecimalToSexagesimal( sign, d, m, s, item.PropertyTarget.ToDouble() );
             GUI->TargetDec_H_SpinBox.SetValue( d );
             GUI->TargetDec_M_SpinBox.SetValue( m );
             GUI->TargetDec_S_NumericEdit.SetValue( s );
             GUI->MountTargetDECIsSouth_CheckBox.SetChecked( sign < 0 );
          }
-
       }
    }
    else if ( sender == GUI->SlewSpeed_ComboBox )
    {
       INDIClient::TheClient()->MaybeSendNewPropertyItem( m_device, MOUNT_SLEW_RATE_PROPERTY_NAME, "INDI_SWITCH",
-                     INDIMountInstance::MountSlewRatePropertyString( itemIndex ), "ON", true/*async*/ );
+         INDIMountInstance::MountSlewRatePropertyString( itemIndex ), "ON", true /*async*/ );
    }
 }
 
@@ -2600,7 +2615,6 @@ void INDIMountInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 //unset multiplot
 
 const char* RESIDUAL_GNUPLOT_TEMPLATE = R"(
-
 set terminal svg enhanced size 800,600 enhanced background rgb 'white' font 'helvetica,12'
 set ticslevel 0
 set xzeroaxis
@@ -2675,16 +2689,17 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
       // compute alignment correction
       double haCor = 0;
       double decCor = 0;
-      model->Apply( haCor, decCor, cel_ha, cel_dec,IMCPierSide::West );
+      model->Apply( haCor, decCor, cel_ha, cel_dec, IMCPierSide::West );
       double del_haCor = cel_ha - haCor;
       double del_decCor = cel_dec - decCor;
-      double haResidual = (del_ha - del_haCor) * ra_factor;
-      double decResidual = (del_dec - del_decCor) * dec_factor;
+      double haResidual = ( del_ha - del_haCor ) * ra_factor;
+      double decResidual = ( del_dec - del_decCor ) * dec_factor;
       fileContent.AppendFormat( "%f %f %f %f\n", cel_ha, cel_dec, haResidual, decResidual );
       delHAs << haResidual;
       delDecs << decResidual;
    }
-   fileContent << '\n' << '\n';
+   fileContent << '\n'
+               << '\n';
 
    // pier side is east
    for ( auto syncPoint : syncDatapointList )
@@ -2701,11 +2716,11 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
       // compute alignment correction
       double haCor = 0;
       double decCor = 0;
-      model->Apply( haCor, decCor, cel_ha, cel_dec, IMCPierSide::East);
+      model->Apply( haCor, decCor, cel_ha, cel_dec, IMCPierSide::East );
       double del_haCor = cel_ha - haCor;
       double del_decCor = cel_dec - decCor;
-      double haResidual = (del_ha - del_haCor) * ra_factor;
-      double decResidual = (del_dec - del_decCor) * dec_factor;
+      double haResidual = ( del_ha - del_haCor ) * ra_factor;
+      double decResidual = ( del_dec - del_decCor ) * dec_factor;
       fileContent.AppendFormat( "%f %f %f %f\n", cel_ha, cel_dec, haResidual, decResidual );
       delHAs << haResidual;
       delDecs << decResidual;
@@ -2741,19 +2756,36 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
       double maxDev = Max( *delHAs.MaxItem(), *delDecs.MaxItem() );
 
       File::WriteTextFile( gnuFilePath, IsoString().Format( RESIDUAL_GNUPLOT_TEMPLATE,
-            outputFiles80.c_str(), modelResidualDataPath8.c_str(), modelResidualDataPath8.c_str(),
-            outputFiles81.c_str(), modelResidualDataPath8.c_str(), modelResidualDataPath8.c_str(),
-            outputFiles82.c_str(), modelResidualDataPath8.c_str(), modelResidualDataPath8.c_str(),
-            outputFiles83.c_str(), modelResidualDataPath8.c_str(), modelResidualDataPath8.c_str(),
-            outputFiles84.c_str(), modelResidualDataPath8.c_str(), modelResidualDataPath8.c_str(),
-            outputFiles85.c_str(), modelResidualDataPath8.c_str(), modelResidualDataPath8.c_str(),
-            -maxDev, maxDev, -maxDev, maxDev,
-            outputFiles86.c_str(), modelResidualDataPath8.c_str(), modelResidualDataPath8.c_str() ) );
+                                                            outputFiles80.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            outputFiles81.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            outputFiles82.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            outputFiles83.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            outputFiles84.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            outputFiles85.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            -maxDev,
+                                                            maxDev,
+                                                            -maxDev,
+                                                            maxDev,
+                                                            outputFiles86.c_str(),
+                                                            modelResidualDataPath8.c_str(),
+                                                            modelResidualDataPath8.c_str() ) );
    }
 
    int exitCode = ExternalProcess::ExecuteProgram(
-                     PixInsightSettings::GlobalString( "Application/BinDirectory" ) + "/gnuplot",
-                     StringList() << gnuFilePath );
+      PixInsightSettings::GlobalString( "Application/BinDirectory" ) + "/gnuplot",
+      StringList() << gnuFilePath );
 
    if ( exitCode == 0 )
    {
@@ -2767,7 +2799,8 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
    }
    else
    {
-      MessageBox( "<p>Failure to generate alignment residuals graph. Gnuplot exited with code " + String( exitCode ) + ".</p>",
+      MessageBox( "<p>Failure to generate alignment residuals graph. "
+                  "Gnuplot exited with code " + String( exitCode ) + ".</p>",
                   WindowTitle(),
                   StdIcon::Error, StdButton::Ok ).Execute();
    }
@@ -2775,7 +2808,7 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInterface.cpp - Released 2019-11-07T11:00:23Z
+// EOF INDIMountInterface.cpp - Released 2020-01-23T19:56:17Z

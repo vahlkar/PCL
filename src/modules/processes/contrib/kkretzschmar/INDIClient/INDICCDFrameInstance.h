@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDICCDFrameInstance.h - Released 2019-11-07T11:00:23Z
+// INDICCDFrameInstance.h - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -68,16 +68,13 @@ public:
    INDICCDFrameInstance( const MetaProcess* );
    INDICCDFrameInstance( const INDICCDFrameInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-
-   virtual bool ExecuteGlobal();
-
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter*, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter*, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter*, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter*, size_type tableRow ) const override;
 
    bool ValidateDevice( bool throwErrors = true ) const;
    String TelescopeDeviceName( bool throwErrors = true ) const;
@@ -92,45 +89,45 @@ public:
    static String CCDFrameTypePropertyString( int frameTypeIdx );
    static String CCDFrameTypePrefix( int frameTypeIdx );
 
-   pcl_enum GetPerSide(const String &telescopeName, double currentLST, double currentRA);
+   pcl_enum GetPerSide( const String& telescopeName, double currentLST, double currentRA );
 
 private:
 
-   String     p_deviceName;
-   pcl_enum   p_uploadMode;
-   String     p_serverUploadDirectory;
-   String     p_serverFileNameTemplate;
-   pcl_enum   p_frameType;
-   int32      p_binningX;
-   int32      p_binningY;
-   int32      p_filterSlot;
-   double     p_exposureTime;
-   double     p_exposureDelay;
-   int32      p_exposureCount;
-   pcl_bool   p_openClientImages;
-   String     p_newImageIdTemplate;
-   pcl_bool   p_reuseImageWindow;
-   pcl_bool   p_autoStretch;
-   pcl_bool   p_linkedAutoStretch;
-   pcl_bool   p_saveClientImages;
-   pcl_bool   p_overwriteClientImages;
-   String     p_clientDownloadDirectory;
-   String     p_clientFileNameTemplate;
-   String     p_clientOutputFormatHints;
-   String     p_objectName;
-   pcl_enum   p_telescopeSelection;
-   pcl_bool   p_requireSelectedTelescope;
-   String     p_telescopeDeviceName; // only if p_telescopeSelection = device name
-   String     p_extFilterWheelDeviceName;
-   pcl_bool   p_enableAlignmentCorrection;
-   String     p_alignmentFile;
-   int32      p_telescopeFocalLength;
+   String p_deviceName;
+   pcl_enum p_uploadMode;
+   String p_serverUploadDirectory;
+   String p_serverFileNameTemplate;
+   pcl_enum p_frameType;
+   int32 p_binningX;
+   int32 p_binningY;
+   int32 p_filterSlot;
+   double p_exposureTime;
+   double p_exposureDelay;
+   int32 p_exposureCount;
+   pcl_bool p_openClientImages;
+   String p_newImageIdTemplate;
+   pcl_bool p_reuseImageWindow;
+   pcl_bool p_autoStretch;
+   pcl_bool p_linkedAutoStretch;
+   pcl_bool p_saveClientImages;
+   pcl_bool p_overwriteClientImages;
+   String p_clientDownloadDirectory;
+   String p_clientFileNameTemplate;
+   String p_clientOutputFormatHints;
+   String p_objectName;
+   pcl_enum p_telescopeSelection;
+   pcl_bool p_requireSelectedTelescope;
+   String p_telescopeDeviceName; // only if p_telescopeSelection = device name
+   String p_extFilterWheelDeviceName;
+   pcl_bool p_enableAlignmentCorrection;
+   String p_alignmentFile;
+   int32 p_telescopeFocalLength;
 
    StringList o_clientViewIds;
    StringList o_clientFilePaths;
    StringList o_serverFrames;
 
-   int        m_exposureNumber;
+   int m_exposureNumber = 0;
 
    void SetTelescopeAlignmentModelParameter( bool throwErrors = false );
    void SetTelescopeFocalLength();
@@ -146,11 +143,7 @@ class AbstractINDICCDFrameExecution
 public:
 
    AbstractINDICCDFrameExecution( INDICCDFrameInstance& instance ) :
-      m_instance( instance ),
-      m_running( false ),
-      m_aborted( false ),
-      m_successCount( 0 ),
-      m_errorCount( 0 )
+      m_instance( instance )
    {
    }
 
@@ -214,10 +207,10 @@ protected:
 
 private:
 
-   bool m_running;
-   bool m_aborted;
-   int  m_successCount;
-   int  m_errorCount;
+   bool m_running = false;
+   bool m_aborted = false;
+   int m_successCount = 0;
+   int m_errorCount = 0;
 
    // Geometry of the current image window
    static int s_width;
@@ -227,9 +220,9 @@ private:
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __INDICCDFrameInstance_h
+#endif // __INDICCDFrameInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInstance.h - Released 2019-11-07T11:00:23Z
+// EOF INDICCDFrameInstance.h - Released 2020-01-23T19:56:17Z

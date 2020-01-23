@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInterface.cpp - Released 2019-11-07T11:00:23Z
+// INDIDeviceControllerInterface.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -50,8 +50,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "INDIClient.h"
 #include "INDIDeviceControllerInterface.h"
+#include "INDIClient.h"
 #include "INDIDeviceControllerParameters.h"
 #include "INDIDeviceControllerProcess.h"
 
@@ -59,13 +59,13 @@
 #include <pcl/MessageBox.h>
 #include <pcl/RadioButton.h>
 
-#define DEVICE_COLUMN   0
+#define DEVICE_COLUMN 0
 #define PROPERTY_COLUMN 0
-#define ELEMENT_COLUMN  0
-#define VALUE_COLUMN    1
-#define LABEL_COLUMN    2
+#define ELEMENT_COLUMN 0
+#define VALUE_COLUMN 1
+#define LABEL_COLUMN 2
 
-#define DEVICE_TREE_MINHEIGHT( fnt )   RoundInt( 8.125*fnt.Height() )
+#define DEVICE_TREE_MINHEIGHT( fnt ) RoundInt( 8.125 * fnt.Height() )
 
 namespace pcl
 {
@@ -103,10 +103,13 @@ public:
    void Update()
    {
       const char* iconResource;
-      if (m_item.DeviceName.IsEmpty()) {
+      if ( m_item.DeviceName.IsEmpty() )
+      {
          iconResource = ":/icons/error.png";
-      } else {
-         iconResource =  INDIClient::TheClient()->IsDeviceConnected(IsoString(m_item.DeviceName)) ? ":/bullets/bullet-ball-glass-green.png" : ":/bullets/bullet-ball-glass-grey.png";
+      }
+      else
+      {
+         iconResource = INDIClient::TheClient()->IsDeviceConnected( IsoString( m_item.DeviceName ) ) ? ":/bullets/bullet-ball-glass-green.png" : ":/bullets/bullet-ball-glass-grey.png";
       }
 
       SetIcon( DEVICE_COLUMN, ParentTree().ScaledResource( iconResource ) );
@@ -242,7 +245,7 @@ public:
       Key_Label.SetText( item.PropertyKey );
 
       Text_Label.SetText( item.ElementLabel );
-      Text_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+      Text_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
       Text_Sizer.SetSpacing( 6 );
       Text_Sizer.Add( Text_Label );
@@ -268,13 +271,23 @@ public:
       SetSizer( Global_Sizer );
 
       const char* typeTitleChunk;
-      switch( m_item.PropertyType )
+      switch ( m_item.PropertyType )
       {
-      case INDIGO_SWITCH_VECTOR: typeTitleChunk = "Switch "; break;
-      case INDIGO_NUMBER_VECTOR: typeTitleChunk = "Number "; break;
-      case INDIGO_LIGHT_VECTOR:  typeTitleChunk = "Light ";  break;
-      case INDIGO_TEXT_VECTOR:   typeTitleChunk = "Text ";   break;
-      default:          typeTitleChunk = "";        break;
+      case INDIGO_SWITCH_VECTOR:
+         typeTitleChunk = "Switch ";
+         break;
+      case INDIGO_NUMBER_VECTOR:
+         typeTitleChunk = "Number ";
+         break;
+      case INDIGO_LIGHT_VECTOR:
+         typeTitleChunk = "Light ";
+         break;
+      case INDIGO_TEXT_VECTOR:
+         typeTitleChunk = "Text ";
+         break;
+      default:
+         typeTitleChunk = "";
+         break;
       }
       SetWindowTitle( "Indigo " + String( typeTitleChunk ) + "Property" );
 
@@ -286,13 +299,23 @@ public:
    INDINewPropertyItem NewItem() const
    {
       const char* typeName;
-      switch( m_item.PropertyType )
+      switch ( m_item.PropertyType )
       {
-      case INDIGO_SWITCH_VECTOR: typeName = "INDI_SWITCH";  break;
-      case INDIGO_NUMBER_VECTOR: typeName = "INDI_NUMBER";  break;
-      case INDIGO_LIGHT_VECTOR:  typeName = "INDI_LIGHT";   break;
-      case INDIGO_TEXT_VECTOR:   typeName = "INDI_TEXT";    break;
-      default:          typeName = "INDI_UNKNOWN"; break;
+      case INDIGO_SWITCH_VECTOR:
+         typeName = "INDI_SWITCH";
+         break;
+      case INDIGO_NUMBER_VECTOR:
+         typeName = "INDI_NUMBER";
+         break;
+      case INDIGO_LIGHT_VECTOR:
+         typeName = "INDI_LIGHT";
+         break;
+      case INDIGO_TEXT_VECTOR:
+         typeName = "INDI_TEXT";
+         break;
+      default:
+         typeName = "INDI_UNKNOWN";
+         break;
       }
       INDINewPropertyItem newItem( m_item.Device, m_item.Property, typeName, m_item.Element, NewItemValue() );
       newItem.PropertyKey = m_item.PropertyKey;
@@ -303,13 +326,13 @@ public:
 
 protected:
 
-   VerticalSizer     Global_Sizer;
-      Label             Key_Label;
-      HorizontalSizer   Text_Sizer;
-         Label             Text_Label;
-      HorizontalSizer   Buttons_Sizer;
-         PushButton        OK_PushButton;
-         PushButton        Cancel_PushButton;
+   VerticalSizer Global_Sizer;
+   Label Key_Label;
+   HorizontalSizer Text_Sizer;
+   Label Text_Label;
+   HorizontalSizer Buttons_Sizer;
+   PushButton OK_PushButton;
+   PushButton Cancel_PushButton;
 
    void e_Show( Control& )
    {
@@ -340,7 +363,7 @@ public:
    TextPropertyEditDialog( const INDIPropertyListItem& item ) :
       PropertyEditDialog( item )
    {
-      Text_Edit.SetMinWidth( 32*Font().Width( 'm' ) );
+      Text_Edit.SetMinWidth( 32 * Font().Width( 'm' ) );
       Text_Sizer.Add( Text_Edit, 100 );
 
       Text_Edit.SetText( item.PropertyValue );
@@ -350,7 +373,7 @@ protected:
 
    Edit Text_Edit;
 
-   virtual String NewItemValue() const
+   String NewItemValue() const override
    {
       return Text_Edit.Text().Trimmed();
    }
@@ -367,7 +390,7 @@ public:
 
 private:
 
-   virtual String NewItemValue() const
+   String NewItemValue() const override
    {
       return String( Text_Edit.Text().ToDouble() );
    }
@@ -399,7 +422,7 @@ private:
    RadioButton On_RadioButton;
    RadioButton Off_RadioButton;
 
-   virtual String NewItemValue() const
+   String NewItemValue() const override
    {
       return On_RadioButton.IsChecked() ? "ON" : "OFF";
    }
@@ -412,13 +435,13 @@ public:
    CoordinatesPropertyEditDialog( const INDIPropertyListItem& item ) :
       PropertyEditDialog( item )
    {
-      Hours_Edit.SetFixedWidth( 8*Font().Width( '0' ) );
+      Hours_Edit.SetFixedWidth( 8 * Font().Width( '0' ) );
       Colon1_Label.SetText( ':' );
-      Colon1_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
-      Minutes_Edit.SetFixedWidth( 8*Font().Width( '0' ) );
+      Colon1_Label.SetTextAlignment( TextAlign::Center | TextAlign::VertCenter );
+      Minutes_Edit.SetFixedWidth( 8 * Font().Width( '0' ) );
       Colon2_Label.SetText( ':' );
-      Colon2_Label.SetTextAlignment( TextAlign::Center|TextAlign::VertCenter );
-      Seconds_Edit.SetFixedWidth( 9*Font().Width( '0' ) );
+      Colon2_Label.SetTextAlignment( TextAlign::Center | TextAlign::VertCenter );
+      Seconds_Edit.SetFixedWidth( 9 * Font().Width( '0' ) );
       Negative_CheckBox.SetText( "Negative" );
 
       Text_Sizer.AddSpacing( 4 );
@@ -431,7 +454,8 @@ public:
       Text_Sizer.Add( Negative_CheckBox );
       Text_Sizer.AddStretch();
 
-      int sign, s1, s2; double s3;
+      int sign, s1, s2;
+      double s3;
       DecimalToSexagesimal( sign, s1, s2, s3, item.PropertyValue.ToDouble() );
       Hours_Edit.SetText( String( s1 ) );
       Minutes_Edit.SetText( String( s2 ) );
@@ -441,20 +465,20 @@ public:
 
 private:
 
-   Edit     Hours_Edit;
-   Label    Colon1_Label;
-   Edit     Minutes_Edit;
-   Label    Colon2_Label;
-   Edit     Seconds_Edit;
+   Edit Hours_Edit;
+   Label Colon1_Label;
+   Edit Minutes_Edit;
+   Label Colon2_Label;
+   Edit Seconds_Edit;
    CheckBox Negative_CheckBox;
 
-   virtual String NewItemValue() const
+   String NewItemValue() const override
    {
       int sign = Negative_CheckBox.IsChecked() ? -1 : +1;
       double s1 = Hours_Edit.Text().ToDouble();
       double s2 = Minutes_Edit.Text().ToDouble();
       double s3 = Seconds_Edit.Text().ToDouble();
-      double c = sign*(s1 + (s2 + s3/60)/60);
+      double c = sign * ( s1 + ( s2 + s3 / 60 ) / 60 );
       return String( c );
    }
 };
@@ -518,7 +542,7 @@ const char** INDIDeviceControllerInterface::IconImageXPM() const
 InterfaceFeatures INDIDeviceControllerInterface::Features() const
 {
    return InterfaceFeature::DragObject
-        | InterfaceFeature::BrowseDocumentationButton;
+      | InterfaceFeature::BrowseDocumentationButton;
 }
 
 bool INDIDeviceControllerInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
@@ -589,13 +613,13 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
    Server_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&INDIDeviceControllerInterface::e_ToggleSection, w );
 
    HostName_Label.SetText( "Host:" );
-   HostName_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   HostName_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    HostName_Edit.SetMinWidth( editWidth1 );
    HostName_Edit.OnEditCompleted( (Edit::edit_event_handler)&INDIDeviceControllerInterface::e_EditCompleted, w );
 
    Port_Label.SetText( "Port:" );
-   Port_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Port_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    Port_SpinBox.SetRange( int( TheIDCServerPortParameter->MinimumValue() ), int( TheIDCServerPortParameter->MaximumValue() ) );
    Port_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&INDIDeviceControllerInterface::e_SpinValueUpdated, w );
@@ -633,21 +657,20 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
 
    Devices_TreeBox.SetMinHeight( DEVICE_TREE_MINHEIGHT( fnt ) );
    Devices_TreeBox.SetScaledMinWidth( 500 );
-   Devices_TreeBox.SetNumberOfColumns( LABEL_COLUMN+1 );
+   Devices_TreeBox.SetNumberOfColumns( LABEL_COLUMN + 1 );
    //Devices_TreeBox.SetHeaderText( DEVICE_COLUMN,   String() );
    //Devices_TreeBox.SetHeaderText( PROPERTY_COLUMN, "Property" );
-   Devices_TreeBox.SetHeaderText( ELEMENT_COLUMN,  "Device/Property" ); // merge device/property/element items
-   Devices_TreeBox.SetHeaderText( VALUE_COLUMN,    "Value" );
-   Devices_TreeBox.SetHeaderText( LABEL_COLUMN,    "Label" );
+   Devices_TreeBox.SetHeaderText( ELEMENT_COLUMN, "Device/Property" ); // merge device/property/element items
+   Devices_TreeBox.SetHeaderText( VALUE_COLUMN, "Value" );
+   Devices_TreeBox.SetHeaderText( LABEL_COLUMN, "Label" );
    Devices_TreeBox.EnableRootDecoration();
    Devices_TreeBox.EnableAlternateRowColor();
    Devices_TreeBox.DisableMultipleSelections();
    Devices_TreeBox.SetStyleSheet( w.ScaledStyleSheet(
-         "QTreeView {"
-            "font-family: Hack, DejaVu Sans Mono, Monospace;"
-            "font-size: 9pt;"
-         "}"
-      ) );
+      "QTreeView {"
+         "font-family: Hack, DejaVu Sans Mono, Monospace;"
+         "font-size: 9pt;"
+      "}" ) );
    Devices_TreeBox.OnCurrentNodeUpdated( (TreeBox::node_navigation_event_handler)&INDIDeviceControllerInterface::e_CurrentNodeUpdated, w );
    Devices_TreeBox.OnNodeActivated( (TreeBox::node_event_handler)&INDIDeviceControllerInterface::e_NodeActivated, w );
    Devices_TreeBox.OnNodeDoubleClicked( (TreeBox::node_event_handler)&INDIDeviceControllerInterface::e_NodeDoubleClicked, w );
@@ -671,8 +694,8 @@ INDIDeviceControllerInterface::GUIData::GUIData( INDIDeviceControllerInterface& 
 
    //
 
-   ServerMessage_Label.SetTextAlignment( TextAlign::Left|TextAlign::Bottom );
-   ServerMessage_Label.SetFixedHeight( 3*fnt.Height() );
+   ServerMessage_Label.SetTextAlignment( TextAlign::Left | TextAlign::Bottom );
+   ServerMessage_Label.SetFixedHeight( 3 * fnt.Height() );
    ServerMessage_Label.EnableWordWrapping();
 
    //
@@ -715,7 +738,7 @@ void INDIDeviceControllerInterface::UpdateNodeActionButtons( TreeBox::Node* node
             if ( !deviceName.IsEmpty() )
             {
                GUI->NodeAction_PushButton.Enable();
-               if ( INDIClient::TheClient()->IsDeviceConnected(deviceName) )
+               if ( INDIClient::TheClient()->IsDeviceConnected( deviceName ) )
                {
                   GUI->NodeAction_PushButton.SetText( "Disconnect" );
                   GUI->NodeAction_PushButton.SetIcon( ScaledResource( ":/icons/stop.png" ) );
@@ -747,10 +770,9 @@ void INDIDeviceControllerInterface::UpdateNodeActionButtons( TreeBox::Node* node
    GUI->NodeAction_PushButton.SetText( "Unavailable" );
    GUI->NodeAction_PushButton.SetIcon( ScaledResource( ":/icons/delete.png" ) );
    GUI->NodeAction_PushButton.SetToolTip( (GUI->Devices_TreeBox.NumberOfChildren() > 0) ?
-      "<p>No action available for the selected tree item.</p>"
-      "<p>Please select a device or editable property element.</p>"
-      :
-      "<p>No devices available.</p>" );
+         "<p>No action available for the selected tree item.</p>"
+         "<p>Please select a device or editable property element.</p>" :
+         "<p>No devices available.</p>" );
    GUI->NodeAction_PushButton.Disable();
 }
 
@@ -776,9 +798,7 @@ void INDIDeviceControllerInterface::UpdateDeviceLists()
 
    if ( !createdDevices.IsEmpty() )
       for ( auto item : createdDevices )
-      {
          new DeviceNode( GUI->Devices_TreeBox, item );
-      }
 
    if ( !removedDevices.IsEmpty() )
       for ( int n = GUI->Devices_TreeBox.NumberOfChildren(), i = n; --i >= 0; )
@@ -798,7 +818,7 @@ void INDIDeviceControllerInterface::UpdateDeviceLists()
                bool inserted = false;
                for ( int n = deviceNode->NumberOfChildren(), i = 0; i < n; ++i )
                {
-                  PropertyNode* propertyNode = static_cast<PropertyNode*>( (*deviceNode)[i] );
+                  PropertyNode* propertyNode = static_cast<PropertyNode*>( ( *deviceNode )[i] );
                   if ( propertyNode->PropertyName() == item.Property )
                   {
                      new PropertyElementNode( propertyNode, item );
@@ -821,7 +841,7 @@ void INDIDeviceControllerInterface::UpdateDeviceLists()
             {
                for ( int n = deviceNode->NumberOfChildren(), i = 0; i < n; ++i )
                {
-                  PropertyNode* propertyNode = static_cast<PropertyNode*>( (*deviceNode)[i] );
+                  PropertyNode* propertyNode = static_cast<PropertyNode*>( ( *deviceNode )[i] );
                   if ( propertyNode->PropertyName() == item.Property )
                   {
                      deviceNode->Remove( i );
@@ -841,13 +861,13 @@ void INDIDeviceControllerInterface::UpdateDeviceLists()
             {
                for ( int n = deviceNode->NumberOfChildren(), i = 0; i < n; ++i )
                {
-                  PropertyNode* propertyNode = static_cast<PropertyNode*>( (*deviceNode)[i] );
+                  PropertyNode* propertyNode = static_cast<PropertyNode*>( ( *deviceNode )[i] );
                   if ( propertyNode->PropertyName() == item.Property )
                   {
                      propertyNode->Update( item );
                      for ( int n = propertyNode->NumberOfChildren(), i = 0; i < n; ++i )
                      {
-                        PropertyElementNode* elementNode = static_cast<PropertyElementNode*>( (*propertyNode)[i] );
+                        PropertyElementNode* elementNode = static_cast<PropertyElementNode*>( ( *propertyNode )[i] );
                         if ( elementNode->Item() == item )
                         {
                            elementNode->Update( item );
@@ -923,10 +943,11 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
          if ( INDIClient::TheClient()->IsServerConnected() )
          {
             if ( MessageBox( "<p>About to disconnect from Indigo server:</p>"
-                     "<p>" + INDIClient::TheClient()->HostName() + ":" + IsoString( INDIClient::TheClient()->Port() ) + "</p>"
-                     "<p><b>Are you sure?</b></p>",
-                     WindowTitle(),
-                     StdIcon::Warning, StdButton::No, StdButton::Yes ).Execute() != StdButton::Yes )
+                             "<p>" + INDIClient::TheClient()->HostName() + ":" +
+                             IsoString( INDIClient::TheClient()->Port() ) + "</p>"
+                             "<p><b>Are you sure?</b></p>",
+                             WindowTitle(),
+                             StdIcon::Warning, StdButton::No, StdButton::Yes ).Execute() != StdButton::Yes )
             {
                return;
             }
@@ -943,11 +964,11 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
          INDIClient::NewClient( hostName8, port );
 
       std::ostringstream errMesg;
-      bool success = INDIClient::TheClient()->connectServer(errMesg);
-      if ( ! success )
+      bool success = INDIClient::TheClient()->connectServer( errMesg );
+      if ( !success )
          MessageBox( "<p>Failure to connect to Indigo server:</p>"
                      "<p>" + GUI->HostName_Edit.Text().Trimmed() + ":" + String( port ) + "</p>"
-                     "<p><b>Possible reason: </b></p>" + IsoString(errMesg.str().c_str()),
+                     "<p><b>Possible reason: </b></p>" + IsoString( errMesg.str().c_str() ),
                      WindowTitle(),
                      StdIcon::Error, StdButton::Ok ).Execute();
 
@@ -956,10 +977,8 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
    else if ( sender == GUI->Disconnect_PushButton )
    {
       if ( INDIClient::HasClient() )
-      {
          if ( INDIClient::TheClient()->IsServerConnected() )
             INDIClient::TheClient()->disconnectServer();
-      }
 
       UpdateDeviceLists();
    }
@@ -974,7 +993,7 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
                IsoString deviceName( deviceNode->DeviceName().To7BitASCII() );
                if ( !deviceName.IsEmpty() )
                {
-                  if ( INDIClient::TheClient()->IsDeviceConnected(deviceName) )
+                  if ( INDIClient::TheClient()->IsDeviceConnected( deviceName ) )
                      INDIClient::TheClient()->disconnectDevice( deviceName );
                   else
                      INDIClient::TheClient()->connectDevice( deviceName );
@@ -993,7 +1012,7 @@ void INDIDeviceControllerInterface::e_Click( Button& sender, bool checked )
                {
                   INDINewPropertyItem result;
                   if ( PropertyEditDialog::EditProperty( result, elementNode->Item() ) )
-                     if ( !INDIClient::TheClient()->SendNewPropertyItem( result , true /*asynch*/) )
+                     if ( !INDIClient::TheClient()->SendNewPropertyItem( result, true /*asynch*/ ) )
                         MessageBox( "<p>Failure to send new property item value:</p>"
                                     "<p>" + elementNode->Item().PropertyKey + "</p>",
                                     WindowTitle(),
@@ -1033,13 +1052,13 @@ void INDIDeviceControllerInterface::e_NodeActivated( TreeBox& sender, TreeBox::N
       {
          IsoString deviceName( deviceNode->DeviceName().To7BitASCII() );
          if ( !deviceName.IsEmpty() )
-            if ( INDIClient::TheClient()->IsDeviceConnected(deviceName) )
+            if ( INDIClient::TheClient()->IsDeviceConnected( deviceName ) )
             {
                if ( MessageBox( "<p>About to disconnect from Indigo device '" + deviceNode->DeviceName() + "'</p>"
-                        "<p>Are you sure?</p>",
-                        WindowTitle(),
-                        StdIcon::Warning,
-                        StdButton::No, StdButton::Yes ).Execute() != StdButton::Yes )
+                                "<p>Are you sure?</p>",
+                                WindowTitle(),
+                                StdIcon::Warning,
+                                StdButton::No, StdButton::Yes ).Execute() != StdButton::Yes )
                {
                   return;
                }
@@ -1048,7 +1067,6 @@ void INDIDeviceControllerInterface::e_NodeActivated( TreeBox& sender, TreeBox::N
             }
             else
                INDIClient::TheClient()->connectDevice( deviceName );
-
       }
       else
       {
@@ -1057,7 +1075,7 @@ void INDIDeviceControllerInterface::e_NodeActivated( TreeBox& sender, TreeBox::N
          {
             INDINewPropertyItem result;
             if ( PropertyEditDialog::EditProperty( result, elementNode->Item() ) )
-               INDIClient::TheClient()->SendNewPropertyItem( result , true /*asynch*/);
+               INDIClient::TheClient()->SendNewPropertyItem( result, true /*asynch*/ );
          }
       }
    }
@@ -1086,13 +1104,18 @@ void INDIDeviceControllerInterface::e_NodeSelectionUpdated( TreeBox& sender )
 void INDIDeviceControllerInterface::e_Timer( Timer& sender )
 {
    UpdateDeviceLists();
-   if ( INDIClient::HasClient() ) {
+   if ( INDIClient::HasClient() )
+   {
       String message;
-      if (INDIClient::TheClient()->CurrentServerMessage().m_messageSeverity == INDIGO_ALERT_STATE) {
-        message = String().Format("Latest Indigo server log entry: ERROR: %s", INDIClient::TheClient()->CurrentServerMessage().m_message.To7BitASCII().c_str() );
-      } else {
-        message = String().Format("Latest Indigo server log entry: %s", INDIClient::TheClient()->CurrentServerMessage().m_message.To7BitASCII().c_str() );
-
+      if ( INDIClient::TheClient()->CurrentServerMessage().m_messageSeverity == INDIGO_ALERT_STATE )
+      {
+         message = String().Format( "Latest Indigo server log entry: ERROR: %s",
+                                    INDIClient::TheClient()->CurrentServerMessage().m_message.To7BitASCII().c_str() );
+      }
+      else
+      {
+         message = String().Format( "Latest Indigo server log entry: %s",
+                                    INDIClient::TheClient()->CurrentServerMessage().m_message.To7BitASCII().c_str() );
       }
 
       GUI->ServerMessage_Label.SetText( message );
@@ -1101,7 +1124,7 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInterface.cpp - Released 2019-11-07T11:00:23Z
+// EOF INDIDeviceControllerInterface.cpp - Released 2020-01-23T19:56:17Z

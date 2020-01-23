@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIMountProcess.cpp - Released 2019-11-07T11:00:23Z
+// INDIMountProcess.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -50,10 +50,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include "INDIMountProcess.h"
 #include "INDIMountInstance.h"
 #include "INDIMountInterface.h"
 #include "INDIMountParameters.h"
-#include "INDIMountProcess.h"
 
 #include <pcl/Arguments.h>
 #include <pcl/Console.h>
@@ -86,17 +86,17 @@ INDIMountProcess::INDIMountProcess()
    new IMCCurrentDec( this );
    new IMCApparentTargetRA( this );
    new IMCApparentTargetDec( this );
-   new IMCPierSide ( this );
+   new IMCPierSide( this );
    new IMCSyncLST( this );
    new IMCSyncCelestialRA( this );
-   new IMCSyncCelestialDec ( this );
-   new IMCSyncTelescopeRA ( this );
-   new IMCSyncTelescopeDec ( this );
-   new IMCEnableAlignmentCorrection (this);
-   new IMCAlignmentMethod(this);
-   new IMCAlignmentFile(this);
-   new IMCAlignmentConfig(this);
-   new IMCGeographicLatitude(this);
+   new IMCSyncCelestialDec( this );
+   new IMCSyncTelescopeRA( this );
+   new IMCSyncTelescopeDec( this );
+   new IMCEnableAlignmentCorrection( this );
+   new IMCAlignmentMethod( this );
+   new IMCAlignmentFile( this );
+   new IMCAlignmentConfig( this );
+   new IMCGeographicLatitude( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -124,10 +124,9 @@ uint32 INDIMountProcess::Version() const
 
 String INDIMountProcess::Description() const
 {
-   return
-   "<html>"
-   "<p>Control Indigo Mount devices./p>"
-   "</html>";
+   return "<html>"
+          "<p>Control Indigo Mount devices./p>"
+          "</html>";
 }
 
 // ----------------------------------------------------------------------------
@@ -143,12 +142,14 @@ bool INDIMountProcess::PrefersGlobalExecution() const
 {
    return true;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* INDIMountProcess::DefaultInterface() const
 {
    return TheINDIMountInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* INDIMountProcess::Create() const
@@ -161,7 +162,7 @@ ProcessImplementation* INDIMountProcess::Create() const
 ProcessImplementation* INDIMountProcess::Clone( const ProcessImplementation& p ) const
 {
    const INDIMountInstance* instPtr = dynamic_cast<const INDIMountInstance*>( &p );
-   return (instPtr != nullptr) ? new INDIMountInstance( *instPtr ) : nullptr;
+   return ( instPtr != nullptr ) ? new INDIMountInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -172,6 +173,7 @@ bool INDIMountProcess::CanProcessCommandLines() const
 }
 
 // ----------------------------------------------------------------------------
+
 #if 0
 static void ShowHelp()
 {
@@ -181,6 +183,7 @@ static void ShowHelp()
 "</raw>" );
 }
 #endif
+
 int INDIMountProcess::ProcessCommandLine( const StringList& argv ) const
 {
    return 0;
@@ -188,7 +191,7 @@ int INDIMountProcess::ProcessCommandLine( const StringList& argv ) const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountProcess.cpp - Released 2019-11-07T11:00:23Z
+// EOF INDIMountProcess.cpp - Released 2020-01-23T19:56:17Z

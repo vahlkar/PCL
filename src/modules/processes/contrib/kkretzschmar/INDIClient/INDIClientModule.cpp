@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.1.0
+// Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIClientModule.cpp - Released 2019-11-07T11:00:23Z
+// INDIClientModule.cpp - Released 2020-01-23T19:56:17Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
-// Copyright (c) 2014-2019 Klaus Kretzschmar
+// Copyright (c) 2014-2020 Klaus Kretzschmar
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -51,18 +51,18 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     1
+#define MODULE_VERSION_MINOR     2
 #define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       7
+#define MODULE_RELEASE_YEAR      2020
+#define MODULE_RELEASE_MONTH     1
+#define MODULE_RELEASE_DAY       23
 
+#include "INDIClientModule.h"
 #include "INDICCDFrameInterface.h"
 #include "INDICCDFrameProcess.h"
-#include "INDIClientModule.h"
 #include "INDIDeviceControllerInterface.h"
 #include "INDIDeviceControllerProcess.h"
 #include "INDIMountInterface.h"
@@ -120,7 +120,7 @@ String INDIClientModule::Author() const
 
 String INDIClientModule::Copyright() const
 {
-   return "Copyright (c) 2014-2018 Klaus Kretzschmar";
+   return "Copyright (c) 2014-2020 Klaus Kretzschmar";
 }
 
 // ----------------------------------------------------------------------------
@@ -152,14 +152,14 @@ String INDIClientModule::OriginalFileName() const
 
 void INDIClientModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
-   year  = MODULE_RELEASE_YEAR;
+   year = MODULE_RELEASE_YEAR;
    month = MODULE_RELEASE_MONTH;
-   day   = MODULE_RELEASE_DAY;
+   day = MODULE_RELEASE_DAY;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -179,4 +179,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF INDIClientModule.cpp - Released 2019-11-07T11:00:23Z
+// EOF INDIClientModule.cpp - Released 2020-01-23T19:56:17Z

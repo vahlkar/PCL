@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.116
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.117
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-12-09T12:02:53.340Z
+# Generated on .... 2020-01-23T20:04:20.866Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -25,14 +25,17 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>43cd102f-d0b8-45ec-8306-662ad5320f57</UniqueIdentifier>
+      <UniqueIdentifier>792d1e9b-8037-4149-b68d-c3d084d382f4</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>167d351f-8e82-47e6-9f5e-206741e3a97e</UniqueIdentifier>
+      <UniqueIdentifier>fb38007d-1966-44fc-8025-fb32ae3f894b</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Alignment.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DeviceConfigBase.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\IIndigoProperty.cpp">
