@@ -7,7 +7,7 @@ To build LibRaw for PCL development, follow these steps:
 
 1. Download LibRaw's source code. We recommend cloning the [official LibRaw GitHub repository](https://github.com/LibRaw/LibRaw) to a directory on your local file system. Let's represent this directory as $LIBRAWDIR.
 
-2. Copy the required Makefile.pcl.xxx file for your platform (where xxx is one of *linux*, *macosx* or *windows*; unfortunately LibRaw cannot be compiled on FreeBSD) to $LIBRAWDIR. These files are available on [$PCLSRCDIR/3rdparty/libraw](https://gitlab.com/pixinsight/PCL/tree/master/src/3rdparty/libraw).
+2. Copy the required Makefile.pcl.xxx file for your platform (where xxx is one of *linux*, *macos* or *windows*; unfortunately LibRaw cannot be compiled on FreeBSD) to $LIBRAWDIR. These files are available on [$PCLSRCDIR/3rdparty/libraw](https://gitlab.com/pixinsight/PCL/tree/master/src/3rdparty/libraw).
 
 3. Use the appropriate Makefile.pcl.xxx file to build LibRaw. For example:
 
