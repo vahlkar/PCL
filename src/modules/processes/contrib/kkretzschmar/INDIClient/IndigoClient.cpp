@@ -60,9 +60,11 @@
 #endif
 #include <string.h>
 
+#include <pcl/Utility.h>
+
 IndigoClient::IndigoClient( const char* clientName )
 {
-   strncpy( m_indigoClient.name, clientName, strlen( clientName ) );
+   strncpy( m_indigoClient.name, clientName, pcl::Min( size_t( INDIGO_NAME_SIZE-1 ), strlen( clientName ) ) );
    m_indigoClient.client_context = reinterpret_cast<void*>( this );
    indigo_start();
 }
@@ -71,7 +73,7 @@ IndigoClient::IndigoClient( const char* clientName, const char* host, int32_t po
    m_serverHost( host ),
    m_port( static_cast<uint32_t>( port ) )
 {
-   strncpy( m_indigoClient.name, clientName, strlen( clientName ) );
+   strncpy( m_indigoClient.name, clientName, pcl::Min( size_t( INDIGO_NAME_SIZE-1 ), strlen( clientName ) ) );
    m_indigoClient.client_context = reinterpret_cast<void*>( this );
    indigo_start();
    //indigo_set_log_level(INDIGO_LOG_INFO);
@@ -290,7 +292,7 @@ bool IndigoClient::loadDeviceDriver( const std::string& driver )
 {
 #ifndef __PCL_WINDOWS
    indigo_driver_entry* driverEntry = nullptr;
-   indigo_result rc = indigo_load_driver( driver.c_str(), true, &driverEntry );
+   /*indigo_result rc =*/(void)indigo_load_driver( driver.c_str(), true, &driverEntry );
    if ( driverEntry != nullptr )
       m_devices.insert( driverEntry );
    indigo_attach_client( &m_indigoClient );
