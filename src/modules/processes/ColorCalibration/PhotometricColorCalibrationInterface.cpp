@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.0
+// Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2019-11-07T11:00:22Z
+// PhotometricColorCalibrationInterface.cpp - Released 2020-02-01T12:00:50Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -58,11 +58,10 @@
 #include <pcl/Console.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/MessageBox.h>
-#include <pcl/MetaModule.h>
-#include <pcl/NetworkTransfer.h>
+#include <pcl/OnlineObjectSearchDialog.h>
 #include <pcl/PreviewSelectionDialog.h>
-#include <pcl/TextBox.h>
 #include <pcl/ViewSelectionDialog.h>
+#include <pcl/WCSKeywords.h>
 
 namespace pcl
 {
@@ -81,7 +80,7 @@ struct CatalogData
    String description;
 };
 
-static Array<ServerData>  s_servers;
+static Array<ServerData>  s_vizierServers;
 static Array<CatalogData> s_solverCatalogs;
 static Array<CatalogData> s_photometryCatalogs;
 static bool               s_dataInitialized = false;
@@ -90,8 +89,8 @@ static void InitializeData()
 {
    if ( !s_dataInitialized )
    {
-      s_servers.Clear();
-      s_servers << ServerData{ "CDS Strasbourg, France", "http://cdsarc.u-strasbg.fr/" }
+      s_vizierServers.Clear();
+      s_vizierServers << ServerData{ "CDS Strasbourg, France", "http://cdsarc.u-strasbg.fr/" }
                 << ServerData{ "ADAC Tokyo, Japan", "http://vizier.nao.ac.jp/" }
                 << ServerData{ "CADC Victoria, Canada ", "http://vizier.hia.nrc.ca/" }
                 << ServerData{ "CASU Cambridge, UK", "http://vizier.ast.cam.ac.uk/" }
@@ -124,380 +123,6 @@ PhotometricColorCalibrationInterface* ThePhotometricColorCalibrationInterface = 
 
 #include "PhotometricColorCalibrationIcon.xpm"
 
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-
-// km/s -> AU/day
-static const double KMS2AUY = 365.25*86400/149597870e3;
-
-class CoordinateSearchDialog : public Dialog
-{
-public:
-
-   CoordinateSearchDialog();
-
-   const String& ObjectName() const
-   {
-      return m_objectName;
-   }
-
-   const String& ObjectType() const
-   {
-      return m_objectType;
-   }
-
-   const String& SpectralType() const
-   {
-      return m_spectralType;
-   }
-
-   double VMagnitude() const
-   {
-      return m_vmag;
-   }
-
-   // degrees
-   double RA() const
-   {
-      return m_RA;
-   }
-
-   // degrees
-   double Dec() const
-   {
-      return m_Dec;
-   }
-
-   // mas/year
-   double MuRA() const
-   {
-      return m_muRA;
-   }
-
-   // mas/year
-   double MuDec() const
-   {
-      return m_muDec;
-   }
-
-   // mas
-   double Parallax() const
-   {
-      return m_parallax;
-   }
-
-   // AU/year
-   double RadialVelocity() const
-   {
-      return m_radVel;
-   }
-
-   bool HasValidCoordinates() const
-   {
-      return m_valid;
-   }
-
-private:
-
-   VerticalSizer       Global_Sizer;
-      HorizontalSizer      Search_Sizer;
-         Label                ObjectName_Label;
-         Edit                 ObjectName_Edit;
-         PushButton           Search_Button;
-      TextBox              SearchInfo_TextBox;
-      HorizontalSizer      Buttons_Sizer;
-         PushButton           Get_Button;
-         PushButton           Cancel_Button;
-
-   String    m_objectName;
-   String    m_objectType;
-   String    m_spectralType;
-   double    m_vmag = 0;     // flux in the V filter
-   double    m_RA = 0;       // in degrees
-   double    m_Dec = 0;      // in degrees
-   double    m_muRA = 0;     // in mas/year
-   double    m_muDec = 0;    // in mas/year
-   double    m_parallax = 0; // in mas
-   double    m_radVel = 0;   // in AU/year
-   bool      m_valid = false;
-   bool      m_downloading = false;
-   bool      m_abort = false;
-   IsoString m_downloadData;
-
-   void e_Show( Control& sender );
-   void e_GetFocus( Control& sender );
-   void e_LoseFocus( Control& sender );
-   bool e_Download( NetworkTransfer& sender, const void* buffer, fsize_type size );
-   bool e_Progress( NetworkTransfer& sender,
-                    fsize_type downloadTotal, fsize_type downloadCurrent,
-                    fsize_type uploadTotal, fsize_type uploadCurrent );
-   void e_Click( Button& sender, bool checked );
-};
-
-// ----------------------------------------------------------------------------
-
-CoordinateSearchDialog::CoordinateSearchDialog()
-{
-   const char* objectNameToolTip =
-      "<p>Name or identifier of the object to search for. Examples: M31, Pleiades, NGC 253, Orion Nebula, Antares.</p>";
-
-   ObjectName_Label.SetText( "Object: " );
-   ObjectName_Label.SetToolTip( objectNameToolTip );
-   ObjectName_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
-
-   ObjectName_Edit.SetToolTip( objectNameToolTip );
-   ObjectName_Edit.OnGetFocus( (Control::event_handler)&CoordinateSearchDialog::e_GetFocus, *this );
-   ObjectName_Edit.OnLoseFocus( (Control::event_handler)&CoordinateSearchDialog::e_LoseFocus, *this );
-
-   Search_Button.SetText( "Search" );
-   Search_Button.SetIcon( ScaledResource( ":/icons/find.png" ) );
-   Search_Button.SetToolTip( "<p>Perform online coordinate search.</p>" );
-   Search_Button.OnClick( (Button::click_event_handler)&CoordinateSearchDialog::e_Click, *this );
-
-   Search_Sizer.SetSpacing( 4 );
-   Search_Sizer.Add( ObjectName_Label );
-   Search_Sizer.Add( ObjectName_Edit, 100 );
-   Search_Sizer.Add( Search_Button );
-
-   SearchInfo_TextBox.SetReadOnly();
-   SearchInfo_TextBox.SetStyleSheet( ScaledStyleSheet(
-         "QTextEdit {"
-            "font-family: Hack, DejaVu Sans Mono, Monospace;"
-            "font-size: 8pt;"
-            "background: #141414;" // borrowed from /rsc/qss/core-standard.qss
-            "color: #E8E8E8;"
-         "}"
-      ) );
-   SearchInfo_TextBox.Restyle();
-   SearchInfo_TextBox.SetMinSize( SearchInfo_TextBox.Font().Width( 'm' )*81, SearchInfo_TextBox.Font().Height()*22 );
-
-   Get_Button.SetText( "Get" );
-   Get_Button.SetIcon( ScaledResource( ":/icons/window-import.png" ) );
-   Get_Button.SetToolTip( "<p>Acquire object coordinates.</p>" );
-   Get_Button.OnClick( (Button::click_event_handler)&CoordinateSearchDialog::e_Click, *this );
-   Get_Button.Disable();
-
-   Cancel_Button.SetText( "Cancel" );
-   Cancel_Button.SetIcon( ScaledResource( ":/icons/cancel.png" ) );
-   Cancel_Button.OnClick( (Button::click_event_handler)&CoordinateSearchDialog::e_Click, *this );
-
-   Buttons_Sizer.SetSpacing( 8 );
-   Buttons_Sizer.AddStretch();
-   Buttons_Sizer.Add( Get_Button );
-   Buttons_Sizer.Add( Cancel_Button );
-
-   Global_Sizer.SetSpacing( 8 );
-   Global_Sizer.SetMargin( 8 );
-   Global_Sizer.Add( Search_Sizer );
-   Global_Sizer.Add( SearchInfo_TextBox, 100 );
-   Global_Sizer.Add( Buttons_Sizer );
-
-   SetSizer( Global_Sizer );
-
-   EnsureLayoutUpdated();
-   AdjustToContents();
-   SetMinSize();
-
-   SetWindowTitle( "Online Coordinate Search" );
-}
-
-// ----------------------------------------------------------------------------
-
-void CoordinateSearchDialog::e_GetFocus( Control& sender )
-{
-   if ( sender == ObjectName_Edit )
-      Search_Button.SetDefault();
-}
-
-// ----------------------------------------------------------------------------
-
-void CoordinateSearchDialog::e_LoseFocus( Control& sender )
-{
-   if ( sender == ObjectName_Edit )
-      Get_Button.SetDefault();
-}
-
-// ----------------------------------------------------------------------------
-
-bool CoordinateSearchDialog::e_Download( NetworkTransfer& sender, const void* buffer, fsize_type size )
-{
-   if ( m_abort )
-      return false;
-
-   m_downloadData.Append( static_cast<const char*>( buffer ), size );
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-bool CoordinateSearchDialog::e_Progress( NetworkTransfer& sender,
-                                         fsize_type downloadTotal, fsize_type downloadCurrent,
-                                         fsize_type uploadTotal, fsize_type uploadCurrent )
-{
-   if ( m_abort )
-      return false;
-
-   if ( downloadTotal > 0 )
-      SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%u of %u bytes transferred (%d%%)<flush>",
-                                                  downloadCurrent, downloadTotal,
-                                                  RoundInt( 100.0*downloadCurrent/downloadTotal ) ) );
-   else
-      SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%u bytes transferred (unknown size)<flush>",
-                                                  downloadCurrent ) );
-   SearchInfo_TextBox.Focus();
-   Module->ProcessEvents();
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-void CoordinateSearchDialog::e_Click( Button& sender, bool checked )
-{
-   if ( sender == Search_Button )
-   {
-      String objectName = ObjectName_Edit.Text().Trimmed();
-      ObjectName_Edit.SetText( objectName );
-      if ( objectName.IsEmpty() )
-      {
-         SearchInfo_TextBox.SetText( "\x1b[31m*** Error: No object has been specified.\x1b[39m<br>" );
-         ObjectName_Edit.Focus();
-         return;
-      }
-
-      m_valid = false;
-      Get_Button.Disable();
-
-      //String url( "http://vizier.cfa.harvard.edu/viz-bin/nph-sesame/-oI/A?" );
-      //url << objectName;
-      String url( "http://simbad.u-strasbg.fr/simbad/sim-tap/sync?request=doQuery&lang=adql&format=TSV&query=" );
-      String select_stmt = "SELECT oid, ra, dec, pmra, pmdec, plx_value, rvz_radvel, main_id, otype_txt, sp_type, flux "
-                           "FROM basic "
-                           "JOIN ident ON ident.oidref = oid "
-                           "LEFT OUTER JOIN flux ON flux.oidref = oid AND flux.filter = 'V' "
-                           "WHERE id = '" + objectName + "';";
-      url << select_stmt;
-
-      NetworkTransfer transfer;
-      transfer.SetURL( url );
-      transfer.OnDownloadDataAvailable( (NetworkTransfer::download_event_handler)&CoordinateSearchDialog::e_Download, *this );
-      transfer.OnTransferProgress( (NetworkTransfer::progress_event_handler)&CoordinateSearchDialog::e_Progress, *this );
-
-      SearchInfo_TextBox.SetText( "<wrap><raw>" + url + "</raw><br><br><flush>" );
-      Module->ProcessEvents();
-
-      m_downloadData.Clear();
-      m_downloading = true;
-      m_abort = false;
-      bool ok = transfer.Download();
-      m_downloading = false;
-
-      if ( ok )
-      {
-         SearchInfo_TextBox.Insert( String().Format( "<end><clrbol>%d bytes downloaded @ %.3g KiB/s<br>",
-                                                     transfer.BytesTransferred(), transfer.TotalSpeed() ) );
-         //SearchInfo_TextBox.Insert( "<end><cbr><br><raw>" + m_downloadData + "</raw>" );
-
-         StringList lines;
-         m_downloadData.Break( lines, '\n' );
-         if ( lines.Length() >= 2 )
-         {
-            // The first line has column titles. The second line has values.
-            StringList tokens;
-            lines[1].Break( tokens, '\t', true/*trim*/ );
-            if ( tokens.Length() == 11 )
-            {
-               m_RA = tokens[1].ToDouble();                                         // degrees
-               m_Dec = tokens[2].ToDouble();                                        // degrees
-               m_muRA = tokens[3].IsEmpty() ? 0.0 : tokens[3].ToDouble();           // mas/yr
-               m_muDec = tokens[4].IsEmpty() ? 0.0 : tokens[4].ToDouble();          // mas/yr
-               m_parallax = tokens[5].IsEmpty() ? 0.0 : tokens[5].ToDouble();       // mas
-               m_radVel = tokens[6].IsEmpty() ? 0.0 : tokens[6].ToDouble()*KMS2AUY; // km/s -> AU/year
-               m_objectName = tokens[7].Unquoted().Trimmed();
-               m_objectType = tokens[8].Unquoted().Trimmed();
-               m_spectralType = tokens[9].Unquoted().Trimmed();
-               m_vmag = tokens[10].IsEmpty() ? 101.0 : tokens[10].ToDouble();
-
-               try
-               {
-                  String info =
-                           "<end><cbr><br><b>Object            :</b> "
-                        + m_objectName
-                        +            "<br><b>Object type       :</b> "
-                        + m_objectType
-                        +            "<br><b>Right Ascension   :</b> "
-                        + String::ToSexagesimal( m_RA/15,
-                                       SexagesimalConversionOptions( 3/*items*/, 3/*precision*/, false/*sign*/, 3/*width*/ ) )
-                        +            "<br><b>Declination       :</b> "
-                        + String::ToSexagesimal( m_Dec,
-                                       SexagesimalConversionOptions( 3/*items*/, 2/*precision*/, true/*sign*/, 3/*width*/ ) );
-                  if ( m_muRA != 0 )
-                     info
-                        +=           "<br><b>Proper motion RA  :</b> "
-                        + String().Format( "%+8.2f mas/year", m_muRA );
-                  if ( m_muDec != 0 )
-                     info
-                        +=           "<br><b>Proper motion Dec :</b> "
-                        + String().Format( "%+8.2f mas/year", m_muDec );
-                  if ( m_parallax != 0 )
-                     info
-                        +=           "<br><b>Parallax          :</b> "
-                        + String().Format( "%8.2f mas", m_parallax );
-                  if ( m_radVel != 0 )
-                     info
-                        +=           "<br><b>Radial velocity   :</b> "
-                        + String().Format( "%+.4g AU/year", m_radVel );
-                  if ( !m_spectralType.IsEmpty() )
-                     info
-                        +=           "<br><b>Spectral type     :</b> "
-                        + m_spectralType;
-                  if ( m_vmag < 100 )
-                     info
-                        +=           "<br><b>V Magnitude       :</b> "
-                        + String().Format( "%.4g", m_vmag );
-                  info += "<br>";
-
-                  SearchInfo_TextBox.Insert( info );
-                  m_valid = true;
-                  Get_Button.Enable();
-               }
-               catch ( ... )
-               {
-               }
-            }
-         }
-
-         if ( !m_valid )
-            SearchInfo_TextBox.Insert( "<end><cbr><br>\x1b[31m*** Error: Unable to acquire valid coordinate information.\x1b[39m<br>" );
-      }
-      else
-      {
-         if ( m_abort )
-            SearchInfo_TextBox.Insert( "<end><cbr><br>\x1b[31m<raw><* abort *></raw>\x1b[39m<br>" );
-         else
-            SearchInfo_TextBox.Insert( "<end><cbr><br>\x1b[31m*** Error: Download failed: <raw>" + transfer.ErrorInformation() + "</raw>\x1b[39m<br>" );
-      }
-
-      // ### FIXME: Workaround to force visibility of TextBox focus.
-      SearchInfo_TextBox.Unfocus();
-      Module->ProcessEvents();
-      SearchInfo_TextBox.Focus();
-
-      m_downloadData.Clear();
-   }
-   else if ( sender == Get_Button )
-   {
-      Ok();
-   }
-   else if ( sender == Cancel_Button )
-   {
-      if ( m_downloading )
-         m_abort = true;
-      else
-         Cancel();
-   }
-}
-
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 PhotometricColorCalibrationInterface::PhotometricColorCalibrationInterface() :
@@ -624,15 +249,15 @@ void PhotometricColorCalibrationInterface::UpdateControls()
    GUI->WorkingMode_ComboBox.SetCurrentItem( m_instance.p_workingMode );
 
    int itemIndex = -1;
-   for ( size_type i = 0; i < s_servers.Length(); ++i )
-      if ( m_instance.p_serverURL == s_servers[i].url )
+   for ( size_type i = 0; i < s_vizierServers.Length(); ++i )
+      if ( m_instance.p_serverURL == s_vizierServers[i].url )
       {
          itemIndex = int( i );
          break;
       }
    if ( itemIndex < 0 )
    {
-      itemIndex = int( s_servers.Length() );
+      itemIndex = int( s_vizierServers.Length() );
       if ( GUI->Server_ComboBox.NumberOfItems() < itemIndex+1 )
          GUI->Server_ComboBox.AddItem( "<custom server>" );
    }
@@ -807,48 +432,37 @@ void PhotometricColorCalibrationInterface::AcquireMetadata( const ImageWindow& w
    if ( window.IsNull() )
       return;
 
-   FITSKeywordArray keywords = window.Keywords();
-   IsoStringList foundKeywords;
-   for ( const FITSHeaderKeyword& keyword : keywords )
+   WCSKeywords wcs( window.MainView().GetStorableProperties(), window.Keywords() );
+
+   IsoStringList foundItems;
+   if ( wcs.objctra.IsDefined() )
    {
-      String value = keyword.StripValueDelimiters();
-
-      if ( keyword.name.CompareIC( "FOCALLEN" ) == 0 )
-      {
-         if ( !value.TryToFloat( m_instance.p_focalLength ) )
-            continue;
-      }
-      else if ( keyword.name.CompareIC( "XPIXSZ" ) == 0 )
-      {
-         if ( !value.TryToFloat( m_instance.p_pixelSize ) )
-            continue;
-      }
-      else if ( keyword.name.CompareIC( "OBJCTRA" ) == 0 )
-      {
-         if ( !value.TrySexagesimalToDouble( m_instance.p_centerRA, ' '/*separator*/ ) )
-            continue;
-         m_instance.p_centerRA *= 15;
-      }
-      else if ( keyword.name.CompareIC( "OBJCTDEC" ) == 0 )
-      {
-         if ( !value.TrySexagesimalToDouble( m_instance.p_centerDec, ' '/*separator*/ ) )
-            continue;
-      }
-      else if ( keyword.name.CompareIC( "DATE-OBS" ) == 0 )
-      {
-         int year, month, day;
-         double dayf, tz;
-         if ( !value.TryParseISO8601DateTime( year, month, day, dayf, tz ) )
-            continue;
-         m_instance.p_epochJD = ComplexTimeToJD( year, month, day, dayf - tz/24 );
-      }
-      else
-         continue;
-
-      foundKeywords << keyword.name;
+      m_instance.p_centerRA = wcs.objctra();
+      foundItems << "Observation:Center:RA";
+   }
+   if ( wcs.objctdec.IsDefined() )
+   {
+      m_instance.p_centerDec = wcs.objctdec();
+      foundItems << "Observation:Center:Dec";
+   }
+   if ( wcs.dateobs.IsDefined() )
+   {
+      m_instance.p_epochJD = wcs.dateobs();
+      foundItems << "Observation:Time:Start";
+   }
+   if ( wcs.focallen.IsDefined() )
+   {
+      m_instance.p_focalLength = wcs.focallen();
+      foundItems << "Instrument:Telescope:FocalLength";
+   }
+   if ( wcs.xpixsz.IsDefined() )
+   {
+      m_instance.p_pixelSize = wcs.xpixsz();
+      foundItems << "Instrument:Sensor:XPixelSize"
+                 << "Instrument:Sensor:YPixelSize";
    }
 
-   if ( foundKeywords.IsEmpty() )
+   if ( foundItems.IsEmpty() )
    {
       MessageBox( "<p>The active image has no position or acquisition metadata.</p>",
                   "PhotometricColorCalibration", StdIcon::Error, StdButton::Ok ).Execute();
@@ -858,7 +472,7 @@ void PhotometricColorCalibrationInterface::AcquireMetadata( const ImageWindow& w
    UpdateControls();
 
    MessageBox( "<p>The following metadata items have been retrieved from the active image:</p>"
-               "<p>" + String().ToCommaSeparated( foundKeywords ) + "</p>",
+               "<p>" + String().ToSeparated( foundItems, "<br/>" ) + "</p>",
                "PhotometricColorCalibration", StdIcon::Information, StdButton::Ok ).Execute();
 }
 
@@ -1020,8 +634,8 @@ void PhotometricColorCalibrationInterface::e_ItemSelected( ComboBox& sender, int
    else if ( sender == GUI->Server_ComboBox )
    {
       if ( itemIndex >= 0 )
-         if ( size_type( itemIndex ) < s_servers.Length() )
-            m_instance.p_serverURL = s_servers[itemIndex].url;
+         if ( size_type( itemIndex ) < s_vizierServers.Length() )
+            m_instance.p_serverURL = s_vizierServers[itemIndex].url;
       GUI->Server_ComboBox.SetToolTip( m_instance.p_serverURL );
    }
    else if ( sender == GUI->WhiteReference_ComboBox )
@@ -1088,9 +702,12 @@ void PhotometricColorCalibrationInterface::e_Click( Button& sender, bool checked
    else if ( sender == GUI->SearchCoordinates_Button )
    {
       if ( m_searchDialog == nullptr )
-         m_searchDialog = new CoordinateSearchDialog;
+      {
+         m_searchDialog = new OnlineObjectSearchDialog;
+         m_searchDialog->SetWindowTitle( "Online Coordinate Search" );
+      }
       if ( m_searchDialog->Execute() )
-         if ( m_searchDialog->HasValidCoordinates() )
+         if ( m_searchDialog->IsValid() )
          {
             m_instance.p_centerRA = m_searchDialog->RA();
             m_instance.p_centerDec = m_searchDialog->Dec();
@@ -1563,7 +1180,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    Server_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    Server_Label.SetToolTip( serverToolTip );
 
-   for ( const ServerData& server : s_servers )
+   for ( const ServerData& server : s_vizierServers )
       Server_ComboBox.AddItem( server.name );
    Server_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&PhotometricColorCalibrationInterface::e_ItemSelected, w );
 
@@ -2438,4 +2055,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2019-11-07T11:00:22Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-02-01T12:00:50Z

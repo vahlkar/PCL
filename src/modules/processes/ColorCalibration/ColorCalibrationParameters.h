@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.0
+// Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ColorCalibrationParameters.h - Released 2019-11-07T11:00:22Z
+// ColorCalibrationParameters.h - Released 2020-02-01T12:00:50Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -480,4 +480,4 @@ PCL_END_LOCAL
 #endif   // __ColorCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationParameters.h - Released 2019-11-07T11:00:22Z
+// EOF ColorCalibrationParameters.h - Released 2020-02-01T12:00:50Z
