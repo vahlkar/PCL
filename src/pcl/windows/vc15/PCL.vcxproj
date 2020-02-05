@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.115
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.117
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-11-29T09:40:25.610Z
+# Generated on .... 2020-02-04T17:14:14.970Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -30,7 +30,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{EA1AEA30-7A28-43FE-999F-406319BC269A}</ProjectGuid>
+    <ProjectGuid>{15A7B081-81EA-4741-B2C8-88B244D80582}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -233,6 +233,7 @@
     <ClCompile Include="..\..\FFTConvolution.cpp"/>
     <ClCompile Include="..\..\FFTRotationAndScaling.cpp"/>
     <ClCompile Include="..\..\FFTTranslation.cpp"/>
+    <ClCompile Include="..\..\FactorialCache.cpp"/>
     <ClCompile Include="..\..\FastRotation.cpp"/>
     <ClCompile Include="..\..\File.cpp"/>
     <ClCompile Include="..\..\FileDialog.cpp"/>
@@ -286,6 +287,7 @@
     <ClCompile Include="..\..\MuteStatus.cpp"/>
     <ClCompile Include="..\..\NetworkTransfer.cpp"/>
     <ClCompile Include="..\..\NumericControl.cpp"/>
+    <ClCompile Include="..\..\OnlineObjectSearchDialog.cpp"/>
     <ClCompile Include="..\..\OrthographicProjection.cpp"/>
     <ClCompile Include="..\..\PSFFit.cpp"/>
     <ClCompile Include="..\..\Pen.cpp"/>

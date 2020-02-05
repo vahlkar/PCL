@@ -623,7 +623,7 @@ template <typename T> inline void Frexp( T x, T& m, int& p )
  *
  * <tt>Hav( x ) = (1 - Cos( x ))/2</tt>
  *
- * The haversine is nice to work with tiny angles.
+ * The haversine is useful to work with tiny angles.
  *
  * \ingroup mathematical_functions
  */
@@ -646,66 +646,108 @@ template <typename T> inline constexpr T Ldexp( T m, int p )
 // ----------------------------------------------------------------------------
 
 /*!
- * Natural (base e) logarithm of x.
+ * Natural (base e) logarithm of \a x.
  * \ingroup mathematical_functions
  */
 template <typename T> inline constexpr T Ln( T x )
 {
+   PCL_PRECONDITION( x >= 0 )
    return std::log( x );
 }
 
 // ----------------------------------------------------------------------------
 
+struct PCL_CLASS FactorialCache
+{
+   constexpr static int s_cacheSize = 127;
+   static const double  s_lut[ s_cacheSize+1 ];
+};
+
+/*!
+ * The factorial of \a n &ge; 0.
+ *
+ * A static lookup table is used to speed up for \a n <= 127.
+ *
+ * \ingroup mathematical_functions
+ */
+inline double Factorial( int n )
+{
+   PCL_PRECONDITION( n >= 0 )
+   if ( n <= FactorialCache::s_cacheSize )
+      return FactorialCache::s_lut[n];
+   double x = FactorialCache::s_lut[FactorialCache::s_cacheSize];
+   for ( int m = FactorialCache::s_cacheSize; ++m <= n; )
+      x *= m;
+   return x;
+}
+
+/*!
+ * The natural logarithm of the factorial of \a n &ge; 0.
+ *
+ * For \a n <= 127 computes the natural logarithm of the factorial function
+ * directly. For \a n > 127 computes a series approximation, so that the
+ * function won't overflow even for very large arguments.
+ *
+ * \ingroup mathematical_functions
+ */
+inline double LnFactorial( int n )
+{
+   PCL_PRECONDITION( n >= 0 )
+   if ( n <= FactorialCache::s_cacheSize )
+      return Ln( FactorialCache::s_lut[n] );
+   double x = n + 1;
+// return (x - 0.5)*Ln( x ) - x + 0.5*Ln( TwoPi() ) + 1/12/x - 1/(360*x*x*x);
+   return (x - 0.5)*Ln( x ) - x + 0.91893853320467267 + 1/12/x - 1/(360*x*x*x);
+}
+
 /*!
  * \class Fact
  * \brief Factorial function.
  *
- * We use a static lookup table to speed up for n <= 60.
+ * We use a static lookup table to speed up for \a n <= 127.
  *
  * Example of use:
  *
- * \code double factorialOfEight = Fact<double>()( 8 ); \endcode
+ * \code double factorialOfEight = Fact<double>()( 8 ); // = 40320 \endcode
+ *
+ * The implementation of this class is thread-safe.
+ *
+ * \deprecated This class is deprecated and subject to removal in a future
+ * version of PCL. For newly produced code, use the pcl::Factorial() and
+ * pcl::LnFactorial() functions instead.
  *
  * \ingroup mathematical_functions
  */
-template <typename T> struct PCL_CLASS Fact
+template <typename T> struct PCL_CLASS Fact : public FactorialCache
 {
    /*!
-    * Returns the factorial of \a n;
+    * Returns the factorial of \a n &ge; 0.
     */
    T operator()( int n ) const
    {
-      static T f[ 61 ] = { T( 1 ), T( 1 ), T( 2 ), T( 6 ), T( 24 ), T( 120 ) };
-      static int last = 5;
-      PCL_PRECONDITION( 0 <= n )
-      if ( last < n )
-      {
-         int m = Min( n, 60 );
-         T x = f[last];
-         while ( last < m )
-         {
-            x *= ++last;
-            f[last] = x;
-         }
-         while ( m < n )
-            x *= ++m;
-         return x;
-      }
-      return f[n];
+      PCL_PRECONDITION( n >= 0 )
+      if ( n <= s_cacheSize )
+         return T( s_lut[n] );
+      double x = s_lut[s_cacheSize];
+      for ( int m = s_cacheSize; ++m <= n; )
+         x *= m;
+      return T( x );
    }
 
    /*!
-    * Returns the natural logarithm of the factorial of \a n. For \a n <= 60
-    * computes the logarithm of the factorial function directly. For \a n > 60
-    * computes a series approximation, so that the function won't overflow even
-    * for very large arguments.
+    * Returns the natural logarithm of the factorial of \a n &ge; 0. For
+    * \a n <= 127 computes the natural logarithm of the factorial function
+    * directly. For \a n > 127 computes a series approximation, so that the
+    * function won't overflow even for very large arguments.
     */
    T Ln( int n ) const
    {
-      if ( n <= 60 )
-         return Ln( operator()( n ) );
+      PCL_PRECONDITION( n >= 0 )
+      if ( n <= s_cacheSize )
+         return T( pcl::Ln( s_lut[n] ) );
       double x = n + 1;
-      return (x - 0.5)*pcl::Ln( x ) - x + 0.5*pcl::Ln( TwoPi() ) + 1/12/x - 1/(360*x*x*x);
+//    return T( (x - 0.5)*pcl::Ln( x ) - x + 0.5*pcl::Ln( TwoPi() ) + 1/12/x - 1/(360*x*x*x) );
+      return T( (x - 0.5)*pcl::Ln( x ) - x + 0.91893853320467267 + 1/12/x - 1/(360*x*x*x) );
    }
 };
 
@@ -728,6 +770,7 @@ inline constexpr long double Ln2()
  */
 template <typename T> inline constexpr T Log( T x )
 {
+   PCL_PRECONDITION( x >= 0 )
    return std::log10( x );
 }
 
@@ -754,6 +797,7 @@ template <typename T> inline constexpr T Log2( T x )
 {
    // Use the relation:
    //    log2(x) = ln(x)/ln(2)
+   PCL_PRECONDITION( x >= 0 )
    return std::log( x )/Ln2();
 }
 
@@ -791,6 +835,7 @@ inline constexpr long double Log2T()
  */
 template <typename T> inline constexpr T LogN( T n, T x )
 {
+   PCL_PRECONDITION( x >= 0 )
    return std::log( x )/std::log( n );
 }
 
@@ -836,7 +881,7 @@ template <typename T, typename C> inline T Poly( T x, C c, int n )
  *
  * <tt>y = c[0] + c[1]*x + c[2]*x**2 + ... + c[n]*x**n</tt>
  *
- * The specified coefficients initializer_list \a c must not be empty;
+ * The specified coefficients initializer list \a c must not be empty;
  * otherwise this function invokes undefined behavior.
  *
  * \ingroup mathematical_functions
@@ -923,7 +968,7 @@ inline void __pcl_sincos__( long double x, long double& sx, long double& cx )
 #endif
 
 /*!
- * Sine and cosine of x.
+ * Sine and cosine of \a x.
  *
  * The arguments \a sx and \a cx will receive, respectively, the values of the
  * sine and cosine of x.
@@ -948,7 +993,7 @@ template <typename T> inline void SinCos( T x, T& sx, T& cx )
 // ----------------------------------------------------------------------------
 
 /*!
- * Integer and fractional parts of x.
+ * Integer and fractional parts of \a x.
  *
  * The arguments \a i and \a f receive, respectively, the integer (truncated)
  * part and the fractional part of \a x. It holds that \a x = \a i + \a f, i.e.
@@ -1156,7 +1201,7 @@ template <typename T> inline constexpr T Pow( T x, T y )
 
 /*!
  * \class Pow10I
- * \brief Exponential function 10**n, n being a signed integer.
+ * \brief Exponential function 10**n, \a n being a signed integer.
  *
  * Example of use:
  *
@@ -1172,16 +1217,16 @@ template <typename T> struct PCL_CLASS Pow10I
       static const T lut[] =
       {
 #define ___( x ) static_cast<T>( x )
-      ___( 1.0e+00 ), ___( 1.0e+01 ), ___( 1.0e+02 ), ___( 1.0e+03 ), ___( 1.0e+04 ),
-      ___( 1.0e+05 ), ___( 1.0e+06 ), ___( 1.0e+07 ), ___( 1.0e+08 ), ___( 1.0e+09 ),
-      ___( 1.0e+10 ), ___( 1.0e+11 ), ___( 1.0e+12 ), ___( 1.0e+13 ), ___( 1.0e+14 ),
-      ___( 1.0e+15 ), ___( 1.0e+16 ), ___( 1.0e+17 ), ___( 1.0e+18 ), ___( 1.0e+19 ),
-      ___( 1.0e+20 ), ___( 1.0e+21 ), ___( 1.0e+22 ), ___( 1.0e+23 ), ___( 1.0e+24 ),
-      ___( 1.0e+25 ), ___( 1.0e+26 ), ___( 1.0e+27 ), ___( 1.0e+28 ), ___( 1.0e+29 ),
-      ___( 1.0e+30 ), ___( 1.0e+31 ), ___( 1.0e+32 ), ___( 1.0e+33 ), ___( 1.0e+34 ),
-      ___( 1.0e+35 ), ___( 1.0e+36 ), ___( 1.0e+37 ), ___( 1.0e+38 ), ___( 1.0e+39 ),
-      ___( 1.0e+40 ), ___( 1.0e+41 ), ___( 1.0e+42 ), ___( 1.0e+43 ), ___( 1.0e+44 ),
-      ___( 1.0e+45 ), ___( 1.0e+46 ), ___( 1.0e+47 ), ___( 1.0e+48 ), ___( 1.0e+49 )
+         ___( 1.0e+00 ), ___( 1.0e+01 ), ___( 1.0e+02 ), ___( 1.0e+03 ), ___( 1.0e+04 ),
+         ___( 1.0e+05 ), ___( 1.0e+06 ), ___( 1.0e+07 ), ___( 1.0e+08 ), ___( 1.0e+09 ),
+         ___( 1.0e+10 ), ___( 1.0e+11 ), ___( 1.0e+12 ), ___( 1.0e+13 ), ___( 1.0e+14 ),
+         ___( 1.0e+15 ), ___( 1.0e+16 ), ___( 1.0e+17 ), ___( 1.0e+18 ), ___( 1.0e+19 ),
+         ___( 1.0e+20 ), ___( 1.0e+21 ), ___( 1.0e+22 ), ___( 1.0e+23 ), ___( 1.0e+24 ),
+         ___( 1.0e+25 ), ___( 1.0e+26 ), ___( 1.0e+27 ), ___( 1.0e+28 ), ___( 1.0e+29 ),
+         ___( 1.0e+30 ), ___( 1.0e+31 ), ___( 1.0e+32 ), ___( 1.0e+33 ), ___( 1.0e+34 ),
+         ___( 1.0e+35 ), ___( 1.0e+36 ), ___( 1.0e+37 ), ___( 1.0e+38 ), ___( 1.0e+39 ),
+         ___( 1.0e+40 ), ___( 1.0e+41 ), ___( 1.0e+42 ), ___( 1.0e+43 ), ___( 1.0e+44 ),
+         ___( 1.0e+45 ), ___( 1.0e+46 ), ___( 1.0e+47 ), ___( 1.0e+48 ), ___( 1.0e+49 )
 #undef ___
       };
       static const int N = ItemsInArray( lut );
@@ -1232,7 +1277,7 @@ template <typename T> inline T RotL( T x, uint32 n )
    const uint8 mask = 8*sizeof( x ) - 1;
    const uint8 r = uint8( n & mask );
    return (x << r) | (x >> ((-r) & mask));
-   // Or, equivalently but less optimized:
+   // Or equivalently, but less optimized:
    //return (x << r) | (x >> (1+mask-r));
 }
 
@@ -1253,7 +1298,7 @@ template <typename T> inline T RotR( T x, uint32 n )
    const uint8 mask = 8*sizeof( x ) - 1;
    const uint8 r = uint8( n & mask );
    return (x >> r) | (x << ((-r) & mask));
-   // Or, equivalently but less optimized:
+   // Or equivalently, but less optimized:
    //return (x >> r) | (x << (1+mask-r));
 }
 
@@ -1639,7 +1684,7 @@ template <typename T> struct PCL_CLASS Pow2I
 // ----------------------------------------------------------------------------
 
 /*!
- * The exponential function x**n, where n is a signed integer.
+ * The exponential function x**n, where \a n is a signed integer.
  * \ingroup mathematical_functions
  */
 template <typename T> inline T PowI( T x, int n )
@@ -1706,11 +1751,11 @@ template <typename T> inline constexpr T ArcTanh( T x )
 // ----------------------------------------------------------------------------
 
 /*!
- * Inverse haversine (archaversine?) function.
+ * Inverse haversine (archaversine) function.
  *
  * <tt>ArcHav( x ) = 2*ArcSin( Sqrt( x ) )</tt>
  *
- * The haversine is nice to work with tiny angles.
+ * The haversine is useful to work with tiny angles.
  *
  * \ingroup mathematical_functions
  */

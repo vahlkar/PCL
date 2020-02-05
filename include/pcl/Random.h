@@ -821,7 +821,7 @@ public:
          double y = alpha - beta*x;
          double temp = 1 + Exp( y );
          double lhs = y + Ln( v/temp/temp );
-         double rhs = k + n*Ln( value ) - m_F.Ln( n );
+         double rhs = k + n*Ln( value ) - LnFactorial( n );
          if ( lhs <= rhs )
             return n;
       }
@@ -830,7 +830,6 @@ public:
 private:
 
    RNG&         m_R;
-   Fact<double> m_F;
 };
 
 // ----------------------------------------------------------------------------
