@@ -137,6 +137,7 @@ private:
 
    float       p_esdOutliersFraction;  // maximum fraction of outliers for ESD rejection
    float       p_esdAlpha;             // type I error probability for ESD rejection
+   float       p_esdLowRelaxation;     // relaxation factor for ESD rejection of low pixels
 
    float       p_ccdGain;       // CCD gain in e-/ADU
    float       p_ccdReadNoise;  // CCD read noise in e-

@@ -214,6 +214,7 @@ private:
          NumericControl    LinearFitHigh_NumericControl;
          NumericControl    ESDOutliersFraction_NumericControl;
          NumericControl    ESDAlpha_NumericControl;
+         NumericControl    ESDLowRelaxation_NumericControl;
          NumericControl    RangeLow_NumericControl;
          NumericControl    RangeHigh_NumericControl;
 

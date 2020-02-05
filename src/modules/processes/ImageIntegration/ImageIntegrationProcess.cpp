@@ -98,6 +98,7 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IILinearFitHigh( this );
    new IIESDOutliersFraction( this );
    new IIESDAlpha( this );
+   new IIESDLowRelaxation( this );
    new IICCDGain( this );
    new IICCDReadNoise( this );
    new IICCDScaleNoise( this );

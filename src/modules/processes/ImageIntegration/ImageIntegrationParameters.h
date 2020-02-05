@@ -508,6 +508,23 @@ extern IIESDAlpha* TheIIESDAlphaParameter;
 
 // ----------------------------------------------------------------------------
 
+class IIESDLowRelaxation : public MetaFloat
+{
+public:
+
+   IIESDLowRelaxation( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIESDLowRelaxation* TheIIESDLowRelaxationParameter;
+
+// ----------------------------------------------------------------------------
+
 class IICCDGain : public MetaFloat
 {
 public:

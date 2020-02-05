@@ -449,6 +449,9 @@ void ImageIntegrationInterface::UpdateRejectionControls()
    GUI->ESDAlpha_NumericControl.Enable( doesESDRejection );
    GUI->ESDAlpha_NumericControl.SetValue( instance.p_esdAlpha );
 
+   GUI->ESDLowRelaxation_NumericControl.Enable( doesESDRejection );
+   GUI->ESDLowRelaxation_NumericControl.SetValue( instance.p_esdLowRelaxation );
+
    GUI->CCDGain_NumericControl.Enable( doesCCDClipRejection );
    GUI->CCDGain_NumericControl.SetValue( instance.p_ccdGain );
 
@@ -969,6 +972,8 @@ void ImageIntegrationInterface::__Rejection_EditValueUpdated( NumericEdit& sende
       instance.p_esdOutliersFraction = value;
    else if ( sender == GUI->ESDAlpha_NumericControl )
       instance.p_esdAlpha = value;
+   else if ( sender == GUI->ESDLowRelaxation_NumericControl )
+      instance.p_esdLowRelaxation = value;
    else if ( sender == GUI->CCDGain_NumericControl )
       instance.p_ccdGain = value;
    else if ( sender == GUI->CCDReadNoise_NumericControl )
@@ -2080,8 +2085,26 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "ESD rejection algorithm.</p>"
       "<p>This is the significance level of the outlier detection hypothesis test. For example, a significance level "
       "of 0.01 means that a 1% chance of being wrong when rejecting the null hypothesis (that there are no outliers in "
-      "a given pixel stack) is acceptable. The default value is 0.05 (5% significance level).</p>" );
+      "a given pixel stack) is acceptable. The default value is 0.05 (5% significance level).</p>"
+      "<p>By increasing this parameter the ESD algorithm will tend to reject more pixels in each stack. The effect of "
+      "increasing this parameter is similar to reducing the threshold of a sigma clipping algorithm (although the "
+      "underlying mechanism is very different).</p>" );
    ESDAlpha_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::__Rejection_EditValueUpdated, w );
+
+   ESDLowRelaxation_NumericControl.label.SetText( "ESD low relaxation:" );
+   ESDLowRelaxation_NumericControl.label.SetFixedWidth( labelWidth1 );
+   ESDLowRelaxation_NumericControl.slider.SetRange( 0, 50 );
+   ESDLowRelaxation_NumericControl.slider.SetScaledMinWidth( 250 );
+   ESDLowRelaxation_NumericControl.SetReal();
+   ESDLowRelaxation_NumericControl.SetRange( TheIIESDLowRelaxationParameter->MinimumValue(), TheIIESDLowRelaxationParameter->MaximumValue() );
+   ESDLowRelaxation_NumericControl.SetPrecision( TheIIESDLowRelaxationParameter->Precision() );
+   ESDLowRelaxation_NumericControl.edit.SetFixedWidth( editWidth2 );
+   ESDLowRelaxation_NumericControl.SetToolTip( "<p>Relaxation factor for ESD rejection of low pixels.</p>"
+      "<p>The larger the value of this parameter, the more permissive the ESD algorithm will be for rejection of pixels "
+      "with values below the median of each stack. This can be useful to reject less dark pixels on sky background areas "
+      "and extended nebular regions, where high dispersion induced by noise may lead to excessive detection of false "
+      "outliers.</p>" );
+   ESDLowRelaxation_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageIntegrationInterface::__Rejection_EditValueUpdated, w );
 
    RangeLow_NumericControl.label.SetText( "Range low:" );
    RangeLow_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -2119,6 +2142,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Rejection2_Sizer.Add( LinearFitHigh_NumericControl );
    Rejection2_Sizer.Add( ESDOutliersFraction_NumericControl );
    Rejection2_Sizer.Add( ESDAlpha_NumericControl );
+   Rejection2_Sizer.Add( ESDLowRelaxation_NumericControl );
    Rejection2_Sizer.Add( RangeLow_NumericControl );
    Rejection2_Sizer.Add( RangeHigh_NumericControl );
 

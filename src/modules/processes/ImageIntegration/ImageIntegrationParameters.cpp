@@ -82,6 +82,7 @@ IILinearFitLow*                      TheIILinearFitLowParameter = nullptr;
 IILinearFitHigh*                     TheIILinearFitHighParameter = nullptr;
 IIESDOutliersFraction*               TheIIESDOutliersFractionParameter = nullptr;
 IIESDAlpha*                          TheIIESDAlphaParameter = nullptr;
+IIESDLowRelaxation*                  TheIIESDLowRelaxationParameter = nullptr;
 IICCDGain*                           TheIICCDGainParameter = nullptr;
 IICCDReadNoise*                      TheIICCDReadNoiseParameter = nullptr;
 IICCDScaleNoise*                     TheIICCDScaleNoiseParameter = nullptr;
@@ -852,6 +853,38 @@ double IIESDAlpha::MinimumValue() const
 double IIESDAlpha::MaximumValue() const
 {
    return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+IIESDLowRelaxation::IIESDLowRelaxation( MetaProcess* P ) : MetaFloat( P )
+{
+   TheIIESDLowRelaxationParameter = this;
+}
+
+IsoString IIESDLowRelaxation::Id() const
+{
+   return "esdLowRelaxation";
+}
+
+int IIESDLowRelaxation::Precision() const
+{
+   return 2;
+}
+
+double IIESDLowRelaxation::DefaultValue() const
+{
+   return 1.50;
+}
+
+double IIESDLowRelaxation::MinimumValue() const
+{
+   return 1;
+}
+
+double IIESDLowRelaxation::MaximumValue() const
+{
+   return 5;
 }
 
 // ----------------------------------------------------------------------------

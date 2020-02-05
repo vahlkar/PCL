@@ -106,6 +106,7 @@ ImageIntegrationInstance::ImageIntegrationInstance( const MetaProcess* m ) :
    p_linearFitHigh( TheIILinearFitHighParameter->DefaultValue() ),
    p_esdOutliersFraction( TheIIESDOutliersFractionParameter->DefaultValue() ),
    p_esdAlpha( TheIIESDAlphaParameter->DefaultValue() ),
+   p_esdLowRelaxation( TheIIESDLowRelaxationParameter->DefaultValue() ),
    p_ccdGain( TheIICCDGainParameter->DefaultValue() ),
    p_ccdReadNoise( TheIICCDReadNoiseParameter->DefaultValue() ),
    p_ccdScaleNoise( TheIICCDScaleNoiseParameter->DefaultValue() ),
@@ -180,6 +181,7 @@ void ImageIntegrationInstance::Assign( const ProcessImplementation& p )
       p_linearFitHigh                     = x->p_linearFitHigh;
       p_esdOutliersFraction               = x->p_esdOutliersFraction;
       p_esdAlpha                          = x->p_esdAlpha;
+      p_esdLowRelaxation                  = x->p_esdLowRelaxation;
       p_ccdGain                           = x->p_ccdGain;
       p_ccdReadNoise                      = x->p_ccdReadNoise;
       p_ccdScaleNoise                     = x->p_ccdScaleNoise;
@@ -2998,11 +3000,17 @@ void RejectionEngine::ESDRejectionThread::Run()
          for ( int i = 0; ; )
          {
             int n = int( X.Length() );
-            double m = Mean( X.Begin(), X.End() );
-            double s = StdDev( X.Begin(), X.End(), m );
+//             double m = Mean( X.Begin(), X.End() );
+            double m = Median( X.Begin(), X.End() );
+            double sh = StdDev( X.Begin(), X.End(), m );
+            double sl = I.p_esdLowRelaxation * sh;
             Vector r( n );
             for ( int i = 0; i < n; ++i )
-               r[i] = Abs( X[i].x - m )/s;
+            {
+//                r[i] = Abs( X[i].x - m )/s;
+               double d = X[i].x - m;
+               r[i] = (d >= 0) ? d/sh : -d/sl;
+            }
 
             int imax = 0;
             for ( int i = 1; i < n; ++i )
@@ -3923,7 +3931,8 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
          rejectionParameters.Format( "lfit_low=%.3f lfit_high=%.3f", instance.p_linearFitLow, instance.p_linearFitHigh );
          break;
       case IIRejection::ESD:
-         rejectionParameters.Format( "esd_outliers=%.2f esd_alpha=%.2f", instance.p_esdOutliersFraction, instance.p_esdAlpha );
+         rejectionParameters.Format( "esd_outliers=%.2f esd_alpha=%.2f esd_low=%.2f",
+                                     instance.p_esdOutliersFraction, instance.p_esdAlpha, instance.p_esdLowRelaxation );
          break;
       case IIRejection::CCDClip:
          rejectionParameters.Format( "gain=%.2f read_noise=%.2f scale_noise=%.2f",
@@ -4996,6 +5005,8 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_esdOutliersFraction;
    if ( p == TheIIESDAlphaParameter )
       return &p_esdAlpha;
+   if ( p == TheIIESDLowRelaxationParameter )
+      return &p_esdLowRelaxation;
    if ( p == TheIICCDGainParameter )
       return &p_ccdGain;
    if ( p == TheIICCDReadNoiseParameter )

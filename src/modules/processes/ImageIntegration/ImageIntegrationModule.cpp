@@ -51,14 +51,14 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     21
-#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_MINOR     22
+#define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       9
+#define MODULE_RELEASE_YEAR      2020
+#define MODULE_RELEASE_MONTH     2
+#define MODULE_RELEASE_DAY       5
 
 #include "DrizzleIntegrationInstance.h"
 #include "DrizzleIntegrationInterface.h"
@@ -124,7 +124,7 @@ String ImageIntegrationModule::Author() const
 
 String ImageIntegrationModule::Copyright() const
 {
-   return "Copyright (c) 2009-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2009-2020 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
