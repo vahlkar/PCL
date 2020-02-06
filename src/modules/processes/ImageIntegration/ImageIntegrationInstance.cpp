@@ -2019,7 +2019,7 @@ public:
          return 0;
       DVector d( n );
       for ( int i = 0; i < n; ++i )
-         d[i] = r[i].value - median;
+         d[i] = Abs( r[i].value - median );
       return pcl::Median( d.Begin(), d.End() );
    }
 
@@ -2043,7 +2043,7 @@ public:
       }
 
       mean = RejectionMedian( r, n );
-      sigma = RejectionSigma( r, n );
+      sigma = 1.4826*RejectionMAD( r, n, mean );
 
       DVector v( n );
       for ( int i = 0; i < n; ++i )
