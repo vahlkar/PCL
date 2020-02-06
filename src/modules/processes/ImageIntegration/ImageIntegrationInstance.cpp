@@ -2078,6 +2078,7 @@ public:
 
          double s0 = sigma;
          sigma = 1.134*v.StdDev();
+         mean = v.Mean();
          if ( ++it > 1 )
             if ( Abs( s0 - sigma )/s0 < 0.0005 )
                break;
@@ -3001,7 +3002,9 @@ void RejectionEngine::ESDRejectionThread::Run()
          {
             int n = int( X.Length() );
 //             double m = Mean( X.Begin(), X.End() );
-            double m = Median( X.Begin(), X.End() );
+            int th = Max( 1, TruncInt( I.p_esdOutliersFraction * n ) - i );
+            int tl = Max( 1, TruncInt( I.p_esdOutliersFraction/I.p_esdLowRelaxation * n ) - i );
+            double m = (th+tl < n-2) ? TrimmedMean( X.Begin(), X.End(), tl, th ) : Median( X.Begin(), X.End() );
             double sh = StdDev( X.Begin(), X.End(), m );
             double sl = I.p_esdLowRelaxation * sh;
             Vector r( n );
