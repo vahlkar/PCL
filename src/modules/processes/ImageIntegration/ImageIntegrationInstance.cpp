@@ -2024,6 +2024,20 @@ public:
    }
 
    /*
+    * Sn scale estimator of Rousseeuw and Croux for a pixel sample.
+    *
+    * r....... The sample of rejection items.
+    * n....... Number of unrejected items (sample length).
+    */
+   static double RejectionSn( const RejectionDataItem* r, int n )
+   {
+      DVector d( n );
+      for ( int i = 0; i < n; ++i )
+         d[i] = r[i].value;
+      return pcl::Sn( d.Begin(), d.End() );
+   }
+
+   /*
     * Winsorization of a pixel sample.
     *
     * mean.... On output, the Winsorized mean of the sample.
@@ -2031,7 +2045,7 @@ public:
     * r....... The sample of rejection items.
     * n....... Number of unrejected items (sample length).
     * cutoffPoint... Winsorization cutoff point. If cutoffPoint > 0, all sample
-    *          values with absolute value larger than cutoffPoint will be set
+    *          values with absolute values larger than cutoffPoint will be set
     *          equal to the sample median.
     */
    static void RejectionWinsorization( double& mean, double& sigma, const RejectionDataItem* r, int n, float cutoffPoint )
@@ -2043,7 +2057,7 @@ public:
       }
 
       mean = RejectionMedian( r, n );
-      sigma = 1.4826*RejectionMAD( r, n, mean );
+      sigma = 1.1926*RejectionSn( r, n );
 
       DVector v( n );
       for ( int i = 0; i < n; ++i )
