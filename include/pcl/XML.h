@@ -1496,6 +1496,64 @@ public:
    }
 #endif   // !__PCL_NO_STL_COMPATIBLE_ITERATORS
 
+#ifndef __PCL_NO_MUTABLE_XML_ELEMENT_ITERATORS
+
+   /*!
+    * Returns a mutable iterator located at the beginning of the list of child
+    * nodes of this %XML element.
+    */
+   iterator Begin()
+   {
+      return m_childNodes.Begin();
+   }
+
+   /*!
+    * Returns a mutable iterator located at the end of the list of child nodes
+    * of this %XML element.
+    */
+   iterator End()
+   {
+      return m_childNodes.End();
+   }
+
+   /*!
+    * Returns an immutable iterator located at the beginning of the list of
+    * child nodes of this %XML element.
+    */
+   const_iterator ConstBegin() const
+   {
+      return m_childNodes.ConstBegin();
+   }
+
+   /*!
+    * Returns an immutable iterator located at the end of the list of child
+    * nodes of this %XML element.
+    */
+   const_iterator ConstEnd() const
+   {
+      return m_childNodes.ConstEnd();
+   }
+
+# ifndef __PCL_NO_STL_COMPATIBLE_ITERATORS
+   /*!
+    * STL-compatible iteration. Equivalent to Begin().
+    */
+   iterator begin()
+   {
+      return Begin();
+   }
+
+   /*!
+    * STL-compatible iteration. Equivalent to End().
+    */
+   iterator end()
+   {
+      return End();
+   }
+# endif   // !__PCL_NO_STL_COMPATIBLE_ITERATORS
+
+#endif   // !__PCL_NO_MUTABLE_XML_ELEMENT_ITERATORS
+
    /*!
     * Returns true iff this element contains one or more child %XML elements.
     */
@@ -1914,7 +1972,7 @@ public:
 private:
 
    String m_text; // N.B.: This is plain, that is, decoded, text.
-   bool   m_preserveSpaces : 1;
+   bool   m_preserveSpaces = true;
 };
 
 // ----------------------------------------------------------------------------
@@ -1940,7 +1998,7 @@ public:
     * The specified \a data must not contain the sequence "]]>". Any occurrence
     * of this forbidden sequence will be removed for serialization.
     */
-   XMLCDATA( const String& data ) :
+   XMLCDATA( const String& data = String() ) :
       XMLNode( XMLNodeType::CDATA ),
       m_cdata( data )
    {
@@ -2177,7 +2235,6 @@ public:
     * optional \a encoding and \a standalone document specification.
     */
    XMLDeclaration( const String& version = String(), const String& encoding = String(), bool standalone = false ) :
-      XMLComponent(),
       m_version( version ),
       m_encoding( encoding ),
       m_standalone( standalone )
@@ -2238,7 +2295,7 @@ private:
 
    String m_version;
    String m_encoding;
-   bool   m_standalone : 1;
+   bool   m_standalone = false;
 };
 
 // ----------------------------------------------------------------------------
@@ -2263,7 +2320,6 @@ public:
     * document type \a name and type \a definition.
     */
    XMLDocTypeDeclaration( const String& name = String(), const String& definition = String() ) :
-      XMLComponent(),
       m_name( name ),
       m_definition( definition )
    {
@@ -2520,12 +2576,7 @@ public:
     * \li Use space characters (\#x20) for indentation.
     * \li Indentation size = 3 spaces.
     */
-   XMLDocument()
-   {
-      m_autoFormatting = false;
-      m_indentTabs = false;
-      m_indentSize = 3;
-   }
+   XMLDocument() = default;
 
    /*!
     * Virtual destructor. Recursively destroys all %XML elements, declarations
@@ -2866,7 +2917,7 @@ public:
     */
    int IndentSize() const
    {
-      return int( m_indentSize );
+      return m_indentSize;
    }
 
    /*!
@@ -2894,7 +2945,7 @@ public:
     */
    void SetIndentSize( int indentSize )
    {
-      m_indentSize = unsigned( Range( indentSize, 0, 8 ) );
+      m_indentSize = Range( indentSize, 0, 8 );
    }
 
    /*!
@@ -2961,9 +3012,9 @@ private:
    XMLElementFilter*     m_filter = nullptr;
    XMLParserOptions      m_parserOptions;
    XMLNodeLocation       m_location;
-   bool                  m_autoFormatting : 1;
-   bool                  m_indentTabs     : 1;
-   unsigned              m_indentSize     : 4;
+   bool                  m_autoFormatting = false;
+   bool                  m_indentTabs = false;
+   int                   m_indentSize = 3;
 };
 
 // ----------------------------------------------------------------------------
