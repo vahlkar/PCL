@@ -583,21 +583,55 @@ public:
     *
     * Returns true iff the specified point \a pI can be projected on the
     * celestial sphere using this astrometric solution.
+    *
+    * \sa RawImageToCelestial(), CelestialToImage()
     */
    bool ImageToCelestial( DPoint& pRD, const DPoint& pI ) const
    {
       if ( !IsValid() )
          throw Error( "Invalid call to AstrometricMetadata::ImageToCelestial(): No astrometric solution." );
-      bool valid = m_projection->Inverse( pRD, m_transformWI->Inverse( pI ) );
-      if ( valid )
+      if ( m_projection->Inverse( pRD, m_transformWI->Inverse( pI ) ) )
       {
          // Constrain right ascension to the [0,360) range.
          if ( pRD.x < 0 )
             pRD.x += 360;
          else if ( pRD.x >= 360 )
             pRD.x -= 360;
+         return true;
       }
-      return valid;
+      return false;
+   }
+
+   /*!
+    * Transformation from image coordinates to celestial coordinates, without
+    * enforcing a valid range of right ascensions.
+    *
+    * \param pRD  Reference to a point where the output equatorial spherical
+    *             coordinates will be stored, expressed in degrees. \a pRD.x
+    *             will be the right ascension and \a pRD.y the declination.
+    *             Output right ascensions are \e not constrained to the [0,360)
+    *             range. Output declinations are in the range [-90,+90].
+    *
+    * \param pI   Input image coordinates in pixels. The specified location can
+    *             legally lie outside of the image bounds defined by
+    *             [0,0]-[Width(),Height()].
+    *
+    * Returns true iff the specified point \a pI can be projected on the
+    * celestial sphere using this astrometric solution.
+    *
+    * This function is useful for interpolation schemes where discontinuities
+    * caused by zero crossings in right ascension, i.e. abrupt changes from 360
+    * to 0 degrees, are not admissible numerically. Right ascensions returned
+    * by this function can be larger than 360 degrees or less than zero,
+    * ensuring smooth transitions.
+    *
+    * \sa ImageToCelestial(), CelestialToImage()
+    */
+   bool RawImageToCelestial( DPoint& pRD, const DPoint& pI ) const
+   {
+      if ( !IsValid() )
+         throw Error( "Invalid call to AstrometricMetadata::RawImageToCelestial(): No astrometric solution." );
+      return m_projection->Inverse( pRD, m_transformWI->Inverse( pI ) );
    }
 
    /*!
@@ -612,6 +646,8 @@ public:
     * Returns true iff the specified celestial coordinates can be reprojected
     * on the image coordinate system. Note that the output image coordinates
     * can lie outside of the image bounds defined by [0,0]-[Width(),Height()].
+    *
+    * \sa ImageToCelestial(), RawImageToCelestial()
     */
    bool CelestialToImage( DPoint& pI, const DPoint& pRD ) const
    {
