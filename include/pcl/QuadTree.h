@@ -1085,7 +1085,10 @@ private:
                {
                   if ( p[0] == x )
                      if ( p[1] == y )
+                     {
+                        --m_length;
                         continue;
+                     }
                   points << p;
                }
 
