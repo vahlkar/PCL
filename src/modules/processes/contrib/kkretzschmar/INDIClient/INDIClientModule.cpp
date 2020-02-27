@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIClientModule.cpp - Released 2020-01-23T19:56:17Z
+// INDIClientModule.cpp - Released 2020-02-27T12:56:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       23
+#define MODULE_RELEASE_MONTH     2
+#define MODULE_RELEASE_DAY       27
 
 #include "INDIClientModule.h"
 #include "INDICCDFrameInterface.h"
@@ -179,4 +179,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF INDIClientModule.cpp - Released 2020-01-23T19:56:17Z
+// EOF INDIClientModule.cpp - Released 2020-02-27T12:56:01Z

@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
-// pcl/Translation.cpp - Released 2019-11-07T10:59:44Z
+// pcl/Translation.cpp - Released 2020-02-27T12:55:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -175,11 +175,11 @@ private:
 
          for ( int i = m_firstRow; i < m_endRow; ++i )
          {
-            double dy = m_data.delta.y + i;
+            double dy = i - m_data.delta.y;
 
             for ( int j = 0; j < m_data.width; ++j, ++f )
             {
-               DPoint p( m_data.delta.x+j, dy );
+               DPoint p( j - m_data.delta.x, dy );
                *f = (p.x >= 0 && p.x < m_data.width && p.y >= 0 && p.y < m_data.height) ? (*m_interpolator)( p ) : m_data.fillValue;
 
                UPDATE_THREAD_MONITOR( 65536 )
@@ -228,4 +228,4 @@ void Translation::Apply( UInt32Image& img ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Translation.cpp - Released 2019-11-07T10:59:44Z
+// EOF pcl/Translation.cpp - Released 2020-02-27T12:55:33Z

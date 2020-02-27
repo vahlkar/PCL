@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.21.1
+// Standard ImageIntegration Process Module Version 1.22.0
 // ----------------------------------------------------------------------------
-// HDRCompositionInstance.cpp - Released 2019-11-18T16:52:32Z
+// HDRCompositionInstance.cpp - Released 2020-02-27T12:56:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -979,4 +979,4 @@ size_type HDRCompositionInstance::ParameterLength( const MetaParameter* p, size_
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInstance.cpp - Released 2019-11-18T16:52:32Z
+// EOF HDRCompositionInstance.cpp - Released 2020-02-27T12:56:01Z

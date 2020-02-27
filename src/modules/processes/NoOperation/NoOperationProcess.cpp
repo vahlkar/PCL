@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationProcess.cpp - Released 2019-11-07T11:00:22Z
+// NoOperationProcess.cpp - Released 2020-02-27T12:56:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -153,4 +153,4 @@ ProcessImplementation* NoOperationProcess::Clone( const ProcessImplementation& p
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationProcess.cpp - Released 2019-11-07T11:00:22Z
+// EOF NoOperationProcess.cpp - Released 2020-02-27T12:56:01Z

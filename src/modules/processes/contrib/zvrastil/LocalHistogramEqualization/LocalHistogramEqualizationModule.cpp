@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationModule.cpp - Released 2019-11-07T11:00:23Z
+// LocalHistogramEqualizationModule.cpp - Released 2020-02-27T12:56:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
@@ -57,9 +57,9 @@
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       7
+#define MODULE_RELEASE_YEAR      2020
+#define MODULE_RELEASE_MONTH     2
+#define MODULE_RELEASE_DAY       27
 
 #include "LocalHistogramEqualizationModule.h"
 #include "LocalHistogramEqualizationProcess.h"
@@ -154,4 +154,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationModule.cpp - Released 2019-11-07T11:00:23Z
+// EOF LocalHistogramEqualizationModule.cpp - Released 2020-02-27T12:56:01Z

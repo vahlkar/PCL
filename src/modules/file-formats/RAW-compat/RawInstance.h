@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.5.2
+// Standard RAW_compat File Format Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// RawInstance.h - Released 2019-11-07T11:00:12Z
+// RawInstance.h - Released 2020-01-14T11:57:23Z
 // ----------------------------------------------------------------------------
-// This file is part of the standard RAW PixInsight module.
+// This file is part of the standard RAW_compat PixInsight module.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -140,4 +140,4 @@ private:
 #endif   // __RawInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.h - Released 2019-11-07T11:00:12Z
+// EOF RawInstance.h - Released 2020-01-14T11:57:23Z

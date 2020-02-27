@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInstance.cpp - Released 2019-11-07T11:00:22Z
+// StarGeneratorInstance.cpp - Released 2020-02-27T12:56:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -429,8 +429,8 @@ private:
             {
                star.Mov( m_data.star );
                star.Mul( Pow( 2.512, MAG_MIN - i->mag ) );
-               Point p( TruncI( x ), TruncI( y ) );
-               T.SetDelta( x-p.x, y-p.y );
+               Point p( TruncInt( x ), TruncInt( y ) );
+               T.SetDelta( p.x-x, p.y-y );
                T >> star;
                p -= r2;
                {
@@ -571,4 +571,4 @@ size_type StarGeneratorInstance::ParameterLength( const MetaParameter* p, size_t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInstance.cpp - Released 2019-11-07T11:00:22Z
+// EOF StarGeneratorInstance.cpp - Released 2020-02-27T12:56:01Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkInterface.h - Released 2019-11-07T11:00:23Z
+// BlinkInterface.h - Released 2020-02-27T12:56:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -395,4 +395,4 @@ PCL_END_LOCAL
 #endif   // __BlinkInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.h - Released 2019-11-07T11:00:23Z
+// EOF BlinkInterface.h - Released 2020-02-27T12:56:01Z

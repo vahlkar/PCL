@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
-// pcl/MercatorProjection.cpp - Released 2019-11-07T10:59:44Z
+// pcl/MercatorProjection.cpp - Released 2020-02-27T12:55:33Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -84,4 +84,4 @@ bool MercatorProjection::Unproject(DPoint& pN, const DPoint& pW) const noexcept
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MercatorProjection.cpp - Released 2019-11-07T10:59:44Z
+// EOF pcl/MercatorProjection.cpp - Released 2020-02-27T12:55:33Z

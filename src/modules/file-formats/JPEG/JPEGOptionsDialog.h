@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
-// Standard JPEG File Format Module Version 1.0.4
+// Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGOptionsDialog.h - Released 2019-11-07T11:00:12Z
+// JPEGOptionsDialog.h - Released 2020-02-27T12:55:48Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -116,4 +116,4 @@ protected:
 #endif   // __JPEGOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEGOptionsDialog.h - Released 2019-11-07T11:00:12Z
+// EOF JPEGOptionsDialog.h - Released 2020-02-27T12:55:48Z

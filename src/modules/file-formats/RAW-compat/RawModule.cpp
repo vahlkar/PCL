@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.1.19
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.5.2
+// Standard RAW_compat File Format Module Version 1.5.3
 // ----------------------------------------------------------------------------
-// RawModule.cpp - Released 2019-11-07T11:00:12Z
+// RawModule.cpp - Released 2020-01-14T11:57:23Z
 // ----------------------------------------------------------------------------
-// This file is part of the standard RAW PixInsight module.
+// This file is part of the standard RAW_compat PixInsight module.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     5
-#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_REVISION  3
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2019
-#define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       7
+#define MODULE_RELEASE_YEAR      2020
+#define MODULE_RELEASE_MONTH     1
+#define MODULE_RELEASE_DAY       14
 
 #include "RawModule.h"
 #include "RawFormat.h"
@@ -109,7 +109,7 @@ String RawModule::Author() const
 
 String RawModule::Copyright() const
 {
-   return "Copyright (c) 2006-2019, Pleiades Astrophoto";
+   return "Copyright (c) 2006-2020, Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -124,16 +124,16 @@ String RawModule::TradeMarks() const
 String RawModule::OriginalFileName() const
 {
 #ifdef __PCL_FREEBSD
-   return "RAW-pxm.so";
+   return "RAW-compat-pxm.so";
 #endif
 #ifdef __PCL_LINUX
-   return "RAW-pxm.so";
+   return "RAW-compat-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
-   return "RAW-pxm.dylib";
+   return "RAW-compat-pxm.dylib";
 #endif
 #ifdef __PCL_WINDOWS
-   return "RAW-pxm.dll";
+   return "RAW-compat-pxm.dll";
 #endif
 }
 
@@ -161,4 +161,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF RawModule.cpp - Released 2019-11-07T11:00:12Z
+// EOF RawModule.cpp - Released 2020-01-14T11:57:23Z

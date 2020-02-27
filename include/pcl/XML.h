@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
-// pcl/XML.h - Released 2019-11-07T10:59:34Z
+// pcl/XML.h - Released 2020-02-27T12:55:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1883,15 +1883,24 @@ public:
     *                space characters (\#x20). If true, the specified \a text
     *                string will be stored intact.
     *
+    * \param verbatim   If true, the text block will be serialized unencoded,
+    *                that is, exactly as is being specified, in the XML
+    *                document. No codification of illegal characers such as
+    *                quotes and '<' or '>' will be performed. This is useful to
+    *                generate special code blocks that must be included
+    *                literally, such as &lt;style&gt; or &lt;script&gt; tags in
+    *                HTML and SVG documents.
+    *
     * Besides text contents transformation, space preservation also has an
     * impact in the way text blocks are serialized as %XML: New line characters
     * (\#x0A) are never used to separate text blocks from their parent or
     * sibling nodes when space preservation is enabled.
     */
-   XMLText( const String& text, bool preserveSpaces = true ) :
+   XMLText( const String& text, bool preserveSpaces = true, bool verbatim = false ) :
       XMLNode( XMLNodeType::Text ),
       m_text( preserveSpaces ? text : XML::CollapsedSpaces( XML::TrimmedSpaces( text ) ) ),
-      m_preserveSpaces( preserveSpaces )
+      m_preserveSpaces( preserveSpaces ),
+      m_verbatim( verbatim )
    {
    }
 
@@ -1973,6 +1982,7 @@ private:
 
    String m_text; // N.B.: This is plain, that is, decoded, text.
    bool   m_preserveSpaces = true;
+   bool   m_verbatim = false;
 };
 
 // ----------------------------------------------------------------------------
@@ -3024,4 +3034,4 @@ private:
 #endif   // __PCL_XML_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XML.h - Released 2019-11-07T10:59:34Z
+// EOF pcl/XML.h - Released 2020-02-27T12:55:23Z

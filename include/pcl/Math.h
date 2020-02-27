@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2019-11-07T10:59:34Z
+// pcl/Math.h - Released 2020-02-27T12:55:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -2421,6 +2421,84 @@ template <typename T> inline double StableMean( const T* i, const T* j )
 }
 
 /*!
+ * Computes the two-sided, asymmetric trimmed mean of a sequence [i,j).
+ *
+ * The returned value is the arithmetic mean of a sequence [I+l,J-h-1], where
+ * [I,J) is the input sequence [i,j) sorted in ascending order.
+ *
+ * Let n = j-i be the length of the input sequence. For empty sequences
+ * (n &le; 0) or completely truncated sequences (l+h >= n), this function
+ * returns zero. Otherwise the returned value is the arithmetic mean of the
+ * nonrejected n-l-h elements in the sorted sequence, as described above.
+ *
+ * This function may alter the order of elements in the input sequence [i,j).
+ * The type T must provide a valid less-than relational operator, copy
+ * assignment, and conversion to double semantics.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline double TrimmedMean( T* i, T* j, distance_type l = 1, distance_type h = 1 )
+{
+   distance_type n = j - i;
+   if ( n < 1 )
+      return 0;
+   if ( l+h < 1 )
+      return Sum( i, j )/n;
+   if ( l+h >= n )
+      return 0;
+   double s = 0;
+   for ( const T* t0 = pcl::Select( i, j, l ),
+                * t1 = pcl::Select( i, j, n-h-1 ); ; )
+   {
+      if ( *i >= *t0 )
+         if ( *i <= *t1 )
+            s += double( *i );
+      if ( ++i == j )
+         return s/(n - l - h);
+   }
+}
+
+/*!
+ * Computes the two-sided, asymmetric trimmed mean of a sequence [i,j) without
+ * altering its order of elements (non-destructive trimmed mean).
+ *
+ * This function generates a temporary duplicate of the input sequence
+ * elements, converted to \c double values, then calls
+ * TrimmedMean( T*, T*, distance_type, distance_type ) to calculate the trimmed
+ * mean value.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline double NondestructiveTrimmedMean( const T* i, const T* j, distance_type l = 1, distance_type h = 1 )
+{
+   distance_type n = j - i;
+   if ( n < 1 )
+      return 0;
+   if ( l+h < 1 )
+      return Sum( i, j )/n;
+   if ( l+h >= n )
+      return 0;
+   double* d = new double[ n ];
+   double* p = d;
+   for ( const T* f = i; f < j; ++f, ++p )
+      *p = double( *f );
+   double s = 0;
+   for ( const double* q = d,
+                     * t0 = pcl::Select( d, p, l ),
+                     * t1 = pcl::Select( d, p, n-h-1 ); ; )
+   {
+      if ( *q >= *t0 )
+         if ( *q <= *t1 )
+            s += *q;
+      if ( ++q == p )
+      {
+         delete [] d;
+         return s/(n - l - h);
+      }
+   }
+}
+
+/*!
  * Returns the variance of a sequence [i,j) with respect to the specified
  * \a center value.
  *
@@ -3830,4 +3908,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 )
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2019-11-07T10:59:34Z
+// EOF pcl/Math.h - Released 2020-02-27T12:55:23Z

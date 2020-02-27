@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// FileDataCache.cpp - Released 2019-11-07T11:00:22Z
+// FileDataCache.cpp - Released 2020-02-27T12:56:01Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -322,4 +322,4 @@ void FileDataCacheItem::Save( const IsoString& keyPrefix, int index ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCache.cpp - Released 2019-11-07T11:00:22Z
+// EOF FileDataCache.cpp - Released 2020-02-27T12:56:01Z

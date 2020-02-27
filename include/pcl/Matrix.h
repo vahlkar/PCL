@@ -2,14 +2,14 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2019-11-07T10:59:34Z
+// pcl/Matrix.h - Released 2020-02-27T12:55:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
-// Copyright (c) 2003-2019 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -3202,8 +3202,8 @@ GenericMatrix<T> operator ^( const GenericMatrix<T>& A, const T& x )
 /*!
  * Returns the result of raising a scalar \a x to a matrix \a A.
  *
- * This function exists because scalar-to-matrix division is not a
- * commutative operation. A/x is not equal to x/A.
+ * This function exists because scalar-to-matrix exponentiation is not a
+ * commutative operation. A^x is not equal to x^A.
  *
  * \ingroup matrix_operators
  */
@@ -3444,4 +3444,4 @@ typedef F80Matrix                   LDMatrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2019-11-07T10:59:34Z
+// EOF pcl/Matrix.h - Released 2020-02-27T12:55:23Z

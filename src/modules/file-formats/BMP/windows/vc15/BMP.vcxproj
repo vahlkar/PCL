@@ -2,9 +2,9 @@
 <!--
 ######################################################################
 # PixInsight Makefile Generator Script v1.117
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-12-13T16:39:20.925Z
+# Generated on .... 2020-02-27T12:56:52.496Z
 # Project id ...... BMP
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9F8CDC56-6747-4F2B-83C0-71BC09CCB47A}</ProjectGuid>
+    <ProjectGuid>{877F260F-ABB1-4D5A-92CD-3B1FAB9EEFC4}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

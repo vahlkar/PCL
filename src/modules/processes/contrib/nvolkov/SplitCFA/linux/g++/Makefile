@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.115
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.117
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-11-29T09:40:52.046Z
+# Generated on .... 2020-02-27T12:57:08.409Z
 # Project id ...... SplitCFA
 # Project type .... Module
 # Platform ........ Linux/g++

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.19
+// /_/     \____//_____/   PCL 2.1.20
 // ----------------------------------------------------------------------------
-// pcl/OnlineObjectSearchDialog.h - Released 2020-02-01T11:18:05Z
+// pcl/OnlineObjectSearchDialog.h - Released 2020-02-27T12:55:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -297,4 +297,4 @@ protected:
 #endif   // __PCL_OnlineObjectSearchDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/OnlineObjectSearchDialog.h - Released 2020-02-01T11:18:05Z
+// EOF pcl/OnlineObjectSearchDialog.h - Released 2020-02-27T12:55:23Z
