@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrParameters.cpp - Released 2020-02-27T12:56:01Z
+// GradientsHdrParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,6 +29,7 @@
 // ----------------------------------------------------------------------------
 
 #include "GradientsHdrParameters.h"
+
 #include <cfloat>
 
 namespace pcl
@@ -36,15 +37,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrParameterExpGradient*    TheGradientsHdrParameterExpGradient = 0;
-GradientsHdrParameterLogMaxGradient*    TheGradientsHdrParameterLogMaxGradient = 0;
-GradientsHdrParameterLogMinGradient*    TheGradientsHdrParameterLogMinGradient = 0;
-GradientsHdrParameterRescale01*  TheGradientsHdrParameterRescale01 = 0;
-GradientsHdrParameterPreserveColor*  TheGradientsHdrParameterPreserveColor = 0;
+GradientsHdrParameterExpGradient* TheGradientsHdrParameterExpGradient = nullptr;
+GradientsHdrParameterLogMaxGradient* TheGradientsHdrParameterLogMaxGradient = nullptr;
+GradientsHdrParameterLogMinGradient* TheGradientsHdrParameterLogMinGradient = nullptr;
+GradientsHdrParameterRescale01* TheGradientsHdrParameterRescale01 = nullptr;
+GradientsHdrParameterPreserveColor* TheGradientsHdrParameterPreserveColor = nullptr;
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrParameterExpGradient::GradientsHdrParameterExpGradient( MetaProcess* P ) : MetaDouble( P )
+GradientsHdrParameterExpGradient::GradientsHdrParameterExpGradient( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheGradientsHdrParameterExpGradient = this;
 }
@@ -76,7 +78,8 @@ double GradientsHdrParameterExpGradient::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrParameterLogMaxGradient::GradientsHdrParameterLogMaxGradient( MetaProcess* P ) : MetaDouble( P )
+GradientsHdrParameterLogMaxGradient::GradientsHdrParameterLogMaxGradient( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheGradientsHdrParameterLogMaxGradient = this;
 }
@@ -98,7 +101,7 @@ double GradientsHdrParameterLogMaxGradient::DefaultValue() const
 
 double GradientsHdrParameterLogMaxGradient::MinimumValue() const
 {
-   return -DBL_DIG/2;
+   return -DBL_DIG / 2;
 }
 
 double GradientsHdrParameterLogMaxGradient::MaximumValue() const
@@ -108,7 +111,8 @@ double GradientsHdrParameterLogMaxGradient::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrParameterLogMinGradient::GradientsHdrParameterLogMinGradient( MetaProcess* P ) : MetaDouble( P )
+GradientsHdrParameterLogMinGradient::GradientsHdrParameterLogMinGradient( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheGradientsHdrParameterLogMinGradient = this;
 }
@@ -125,12 +129,12 @@ int GradientsHdrParameterLogMinGradient::Precision() const
 
 double GradientsHdrParameterLogMinGradient::DefaultValue() const
 {
-  return MinimumValue();
+   return MinimumValue();
 }
 
 double GradientsHdrParameterLogMinGradient::MinimumValue() const
 {
-  return -(DBL_DIG-1)/2;
+   return -(DBL_DIG - 1) / 2;
 }
 
 double GradientsHdrParameterLogMinGradient::MaximumValue() const
@@ -138,11 +142,10 @@ double GradientsHdrParameterLogMinGradient::MaximumValue() const
    return 0.0;
 }
 
-
 // ----------------------------------------------------------------------------
 
-
-GradientsHdrParameterRescale01::GradientsHdrParameterRescale01( MetaProcess* P ) : MetaBoolean( P )
+GradientsHdrParameterRescale01::GradientsHdrParameterRescale01( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheGradientsHdrParameterRescale01 = this;
 }
@@ -157,8 +160,8 @@ bool GradientsHdrParameterRescale01::DefaultValue() const
    return true;
 }
 
-
-GradientsHdrParameterPreserveColor::GradientsHdrParameterPreserveColor( MetaProcess* P ) : MetaBoolean( P )
+GradientsHdrParameterPreserveColor::GradientsHdrParameterPreserveColor( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheGradientsHdrParameterPreserveColor = this;
 }
@@ -175,8 +178,7 @@ bool GradientsHdrParameterPreserveColor::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrParameters.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// HistogramTransformationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -64,14 +64,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-HistogramTransformationInstance::HistogramTransformationInstance( const MetaProcess* P ) :
-   ProcessImplementation( P )
+HistogramTransformationInstance::HistogramTransformationInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
 {
    Reset();
 }
 
-HistogramTransformationInstance::HistogramTransformationInstance( const HistogramTransformationInstance& x ) :
-   ProcessImplementation( x )
+// -------------------------------------------------------------------------
+
+HistogramTransformationInstance::HistogramTransformationInstance( const HistogramTransformationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -81,7 +83,7 @@ HistogramTransformationInstance::HistogramTransformationInstance( const Histogra
 void HistogramTransformationInstance::Assign( const ProcessImplementation& p )
 {
    const HistogramTransformationInstance* x = dynamic_cast<const HistogramTransformationInstance*>( &p );
-   if ( x != 0 )
+   if ( x != nullptr )
       for ( int i = 0; i < 5; ++i )
       {
          m[i] = x->m[i];
@@ -232,7 +234,6 @@ bool HistogramTransformationInstance::CanExecuteOn( const ImageVariant& image, S
       whyNot = "HistogramTransformation cannot be executed on complex images.";
       return false;
    }
-
    return true;
 }
 
@@ -287,8 +288,10 @@ void* HistogramTransformationInstance::LockParameter( const MetaParameter* p, si
       return r0+tableRow;
    if ( p == TheHighRangeParameter )
       return r1+tableRow;
-   return 0;
+   return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool HistogramTransformationInstance::AllocateParameter( size_type /*sizeOrLength*/, const MetaParameter* p, size_type /*tableRow*/ )
 {
@@ -300,12 +303,12 @@ bool HistogramTransformationInstance::AllocateParameter( size_type /*sizeOrLengt
          c0[c] = r0[c] = 0;
          c1[c] = r1[c] = 1;
       }
-
       return true;
    }
-
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 size_type HistogramTransformationInstance::ParameterLength( const MetaParameter* p, size_type /*tableRow*/ ) const
 {
@@ -319,4 +322,4 @@ size_type HistogramTransformationInstance::ParameterLength( const MetaParameter*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF HistogramTransformationInstance.cpp - Released 2020-07-31T19:33:39Z

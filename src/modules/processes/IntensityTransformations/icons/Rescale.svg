@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="c" x1="64.181" x2="64.189" y1="90.884" y2="38.038" gradientTransform="matrix(2.2348 0 0 2.3124 95.817 -177.55)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#e00" offset="0"/>
+<stop stop-color="#ffbe2a" offset=".13151"/>
+<stop stop-color="#b3ee00" offset=".22806"/>
+<stop stop-color="#27ff1a" offset=".33611"/>
+<stop stop-color="#2750ef" offset=".47635"/>
+<stop stop-color="#7624df" offset=".61199"/>
+<stop stop-color="#a400ec" offset=".69475"/>
+<stop stop-color="#ff0dc1" offset=".83039"/>
+<stop stop-color="#f00" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="39.165" x2="75.056" y1="63.356" y2="63.356" gradientTransform="matrix(2.1087 0 0 2.1023 108.68 -161.89)" gradientUnits="userSpaceOnUse">
+<stop offset="0"/>
+<stop stop-color="#b3ee00" stop-opacity="0" offset="1"/>
+</linearGradient>
+<linearGradient id="a" x1="63.247" x2="91.103" y1="63.89" y2="63.89" gradientTransform="matrix(1.5549 0 0 2.1023 159.14 -161.89)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" stop-opacity="0" offset="0"/>
+<stop stop-color="#fff" stop-opacity=".97934" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-30.238 40.306)">
+<g transform="translate(-141.44 56.205)">
+<rect x="178.03" y="-89.764" width="122.74" height="122.37" fill="url(#c)" style="paint-order:markers fill stroke"/>
+<rect x="178.03" y="-89.764" width="122.74" height="122.37" fill="url(#b)" style="paint-order:markers fill stroke"/>
+<path d="m294.39-17.269-27.161-38.115v27.813l-89.188-0.14047v22.756h89.048l0.28179 27.532z" fill-rule="evenodd"/>
+<path d="m184.44-39.884 27.161-38.115v27.813l89.188-0.14047v22.756h-89.048l-0.28178 27.532z" fill="#fff" fill-rule="evenodd"/>
+<rect x="256.02" y="-90.161" width="44.752" height="122.77" fill="url(#a)" stroke-width="0" style="paint-order:markers fill stroke"/>
+<path d="m294.39-17.269-27.161-38.115v27.813l-55.479-6e-6 -0.14086 22.615 55.479 2.1e-6 0.28178 27.532z" fill-rule="evenodd"/>
+</g>
+</g>
+</svg>

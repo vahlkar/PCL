@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchProcess.cpp - Released 2020-02-27T12:56:01Z
+// AdaptiveStretchProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -60,10 +60,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "AdaptiveStretchIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 AdaptiveStretchProcess* TheAdaptiveStretchProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -113,9 +109,9 @@ String AdaptiveStretchProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** AdaptiveStretchProcess::IconImageXPM() const
+String AdaptiveStretchProcess::IconImageSVGFile() const
 {
-   return AdaptiveStretchIcon_XPM;
+   return "@module_icons_dir/AdaptiveStretch.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -145,4 +141,4 @@ ProcessImplementation* AdaptiveStretchProcess::Clone( const ProcessImplementatio
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF AdaptiveStretchProcess.cpp - Released 2020-07-31T19:33:39Z

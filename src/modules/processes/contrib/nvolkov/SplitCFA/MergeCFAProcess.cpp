@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAProcess.cpp - Released 2020-02-27T12:56:01Z
+// MergeCFAProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -51,21 +51,17 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "MergeCFAProcess.h"
-#include "MergeCFAParameters.h"
 #include "MergeCFAInterface.h"
+#include "MergeCFAParameters.h"
+#include "MergeCFAProcess.h"
 
-#include <pcl/Console.h>
 #include <pcl/Arguments.h>
-#include <pcl/View.h>
+#include <pcl/Console.h>
 #include <pcl/Exception.h>
+#include <pcl/View.h>
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-#include "MergeCFAIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -110,24 +106,25 @@ uint32 MergeCFAProcess::Version() const
 
 String MergeCFAProcess::Description() const
 {
-   return
-   "<html>"
-   "<p>Combines one CFA Bayer( [ R ] [ G ] [ G ] [ B ] ) from subimages ( names [ 0 ] [ 1 ] [ 2 ] [ 3 ] ).</p>"
-   "</html>";
+   return "<html>"
+          "<p>Combines one CFA Bayer ([R][G][G][B]) frame from subimages (names [0][1][2][3]).</p>"
+          "</html>";
 }
 
 // ----------------------------------------------------------------------------
 
-const char** MergeCFAProcess::IconImageXPM() const
+String MergeCFAProcess::IconImageSVGFile() const
 {
-   return MergeCFAIcon_XPM; //---> put a nice icon here
+   return "@module_icons_dir/MergeCFA.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* MergeCFAProcess::DefaultInterface() const
 {
    return TheMergeCFAInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* MergeCFAProcess::Create() const
@@ -143,10 +140,9 @@ ProcessImplementation* MergeCFAProcess::Clone( const ProcessImplementation& p ) 
    return (instPtr != nullptr) ? new MergeCFAInstance( *instPtr ) : nullptr;
 }
 
-
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF MergeCFAProcess.cpp - Released 2020-07-31T19:33:39Z

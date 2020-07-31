@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesParameters.cpp - Released 2020-02-27T12:56:01Z
+// PreferencesParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -128,6 +128,7 @@ IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  expandFavoritesAtStartup )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  openURLsWithInternalBrowser )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  openResourcesOnNewWebBrowserWindows )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( MainWindow,  privateWebBrowsingMode )
+IMPLEMENT_INT32_METAPARAMETER   ( MainWindow,  iconGridSpacing )
 IMPLEMENT_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile01 )
 IMPLEMENT_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile02 )
 IMPLEMENT_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile03 )
@@ -224,4 +225,4 @@ IMPLEMENT_BOOLEAN_METAPARAMETER ( Process, enableLaunchStatistics )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF PreferencesParameters.cpp - Released 2020-07-31T19:33:39Z

@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationParameters.h - Released 2020-02-27T12:56:01Z
+// AnnotationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -69,9 +69,9 @@ public:
 
    AnnotationText( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String DefaultValue() const override;
 };
 
 extern AnnotationText* TheAnnotationTextParameter;
@@ -84,9 +84,9 @@ public:
 
    AnnotationFont( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String DefaultValue() const override;
 };
 
 extern AnnotationFont* TheAnnotationFontParameter;
@@ -99,8 +99,8 @@ public:
 
    AnnotationFontSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
 };
 
 extern AnnotationFontSize* TheAnnotationFontSizeParameter;
@@ -113,7 +113,7 @@ public:
 
    AnnotationFontBold( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern AnnotationFontBold* TheAnnotationFontBoldParameter;
@@ -126,7 +126,7 @@ public:
 
    AnnotationFontItalic( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern AnnotationFontItalic* TheAnnotationFontItalicParameter;
@@ -139,7 +139,7 @@ public:
 
    AnnotationFontUnderline( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern AnnotationFontUnderline* TheAnnotationFontUnderlineParameter;
@@ -152,7 +152,7 @@ public:
 
    AnnotationFontShadow( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern AnnotationFontShadow* TheAnnotationFontShadowParameter;
@@ -165,8 +165,8 @@ public:
 
    AnnotationColor( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
 };
 
 extern AnnotationColor* TheAnnotationColorParameter;
@@ -177,9 +177,9 @@ class AnnotationPositionX : public MetaInt32
 {
 public:
 
-	AnnotationPositionX( MetaProcess* );
+   AnnotationPositionX( MetaProcess* );
 
-	virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern AnnotationPositionX* TheAnnotationPositionXParameter;
@@ -190,9 +190,9 @@ class AnnotationPositionY : public MetaInt32
 {
 public:
 
-	AnnotationPositionY( MetaProcess* );
+   AnnotationPositionY( MetaProcess* );
 
-	virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern AnnotationPositionY* TheAnnotationPositionYParameter;
@@ -205,7 +205,7 @@ public:
 
    AnnotationShowLeader( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern AnnotationShowLeader* TheAnnotationShowLeaderParameter;
@@ -216,9 +216,9 @@ class AnnotationLeaderPositionX : public MetaInt32
 {
 public:
 
-	AnnotationLeaderPositionX( MetaProcess* );
+   AnnotationLeaderPositionX( MetaProcess* );
 
-	virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern AnnotationLeaderPositionX* TheAnnotationLeaderPositionXParameter;
@@ -229,9 +229,9 @@ class AnnotationLeaderPositionY : public MetaInt32
 {
 public:
 
-	AnnotationLeaderPositionY( MetaProcess* );
+   AnnotationLeaderPositionY( MetaProcess* );
 
-	virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern AnnotationLeaderPositionY* TheAnnotationLeaderPositionYParameter;
@@ -244,8 +244,8 @@ public:
 
    AnnotationOpacity( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
 };
 
 extern AnnotationOpacity* TheAnnotationOpacityParameter;
@@ -254,9 +254,9 @@ extern AnnotationOpacity* TheAnnotationOpacityParameter;
 
 PCL_END_LOCAL
 
-} // pcl
+} // namespace pcl
 
-#endif   // __AnnotationParameters_h
+#endif // __AnnotationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF AnnotationParameters.h - Released 2020-07-31T19:33:39Z

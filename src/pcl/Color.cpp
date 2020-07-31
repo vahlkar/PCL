@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Color.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Color.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -69,13 +69,13 @@ struct CSSColor
    const char* name;
    RGBA        value;
 
-   CSSColor( const char* n, RGBA v ) : name( n ), value( v )
+   CSSColor( const char* n, RGBA v )
+      : name( n )
+      , value( v )
    {
    }
 
-   CSSColor( const CSSColor& c ) : name( c.name ), value( c.value )
-   {
-   }
+   CSSColor( const CSSColor& ) = default;
 
    bool operator ==( const CSSColor& c ) const
    {
@@ -324,4 +324,4 @@ IsoString CSSColorName( RGBA c )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Color.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Color.cpp - Released 2020-07-31T19:33:12Z

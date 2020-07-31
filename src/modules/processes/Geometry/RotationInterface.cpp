@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// RotationInterface.cpp - Released 2020-02-27T12:56:01Z
+// RotationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -65,15 +65,13 @@ RotationInterface* TheRotationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "RotationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-RotationInterface::RotationInterface() :
-   instance( TheRotationProcess )
+RotationInterface::RotationInterface()
+   : m_instance( TheRotationProcess )
 {
    TheRotationInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 RotationInterface::~RotationInterface()
 {
@@ -81,31 +79,43 @@ RotationInterface::~RotationInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString RotationInterface::Id() const
 {
    return "Rotation";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* RotationInterface::Process() const
 {
    return TheRotationProcess;
 }
 
-const char** RotationInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String RotationInterface::IconImageSVGFile() const
 {
-   return RotationIcon_XPM;
+   return "@module_icons_dir/Rotation.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void RotationInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentWindow();
+   m_instance.LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 void RotationInterface::ResetInstance()
 {
    RotationInstance defaultInstance( TheRotationProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool RotationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -120,10 +130,14 @@ bool RotationInterface::Launch( const MetaProcess& P, const ProcessImplementatio
    return &P == TheRotationProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* RotationInterface::NewProcess() const
 {
-   return new RotationInstance( instance );
+   return new RotationInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool RotationInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -133,17 +147,23 @@ bool RotationInterface::ValidateProcess( const ProcessImplementation& p, pcl::St
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool RotationInterface::RequiresInstanceValidation() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool RotationInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool RotationInterface::WantsReadoutNotifications() const
 {
@@ -156,9 +176,9 @@ void RotationInterface::UpdateReadout( const View&, const pcl::DPoint&, double R
       if ( IsVisible() )
          if ( GUI->FillColor_SectionBar.Section().IsVisible() )
          {
-            instance.p_fillColor[0] = R;
-            instance.p_fillColor[1] = G;
-            instance.p_fillColor[2] = B;
+            m_instance.p_fillColor[0] = R;
+            m_instance.p_fillColor[1] = G;
+            m_instance.p_fillColor[2] = B;
             UpdateFillColorControls();
          }
 }
@@ -171,31 +191,35 @@ void RotationInterface::UpdateControls()
    UpdateFillColorControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void RotationInterface::UpdateNumericControls()
 {
-   GUI->Angle_NumericEdit.SetValue( Abs( Deg( instance.p_angle ) ) );
+   GUI->Angle_NumericEdit.SetValue( Abs( Deg( m_instance.p_angle ) ) );
 
-   GUI->Clockwise_CheckBox.SetChecked( instance.p_angle < 0 );
+   GUI->Clockwise_CheckBox.SetChecked( m_instance.p_angle < 0 );
 
    GUI->Dial_Control.Update();
 
-   GUI->OptimizeFast_CheckBox.SetChecked( instance.p_optimizeFast );
+   GUI->OptimizeFast_CheckBox.SetChecked( m_instance.p_optimizeFast );
 
-   GUI->Algorithm_ComboBox.SetCurrentItem( instance.p_interpolation );
+   GUI->Algorithm_ComboBox.SetCurrentItem( m_instance.p_interpolation );
 
-   GUI->ClampingThreshold_NumericEdit.SetValue( instance.p_clampingThreshold );
-   GUI->ClampingThreshold_NumericEdit.Enable( InterpolationAlgorithm::IsClampedInterpolation( instance.p_interpolation ) );
+   GUI->ClampingThreshold_NumericEdit.SetValue( m_instance.p_clampingThreshold );
+   GUI->ClampingThreshold_NumericEdit.Enable( InterpolationAlgorithm::IsClampedInterpolation( m_instance.p_interpolation ) );
 
-   GUI->Smoothness_NumericEdit.SetValue( instance.p_smoothness );
-   GUI->Smoothness_NumericEdit.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( instance.p_interpolation ) );
+   GUI->Smoothness_NumericEdit.SetValue( m_instance.p_smoothness );
+   GUI->Smoothness_NumericEdit.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( m_instance.p_interpolation ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void RotationInterface::UpdateFillColorControls()
 {
-   GUI->Red_NumericControl.SetValue( instance.p_fillColor[0] );
-   GUI->Green_NumericControl.SetValue( instance.p_fillColor[1] );
-   GUI->Blue_NumericControl.SetValue( instance.p_fillColor[2] );
-   GUI->Alpha_NumericControl.SetValue( instance.p_fillColor[3] );
+   GUI->Red_NumericControl.SetValue( m_instance.p_fillColor[0] );
+   GUI->Green_NumericControl.SetValue( m_instance.p_fillColor[1] );
+   GUI->Blue_NumericControl.SetValue( m_instance.p_fillColor[2] );
+   GUI->Alpha_NumericControl.SetValue( m_instance.p_fillColor[3] );
    GUI->ColorSample_Control.Update();
 }
 
@@ -206,26 +230,32 @@ void RotationInterface::__Angle_ValueUpdated( NumericEdit& sender, double value 
    double a = Rad( value );
    if ( GUI->Clockwise_CheckBox.IsChecked() )
       a = -a;
-   instance.p_angle = ArcTan( Sin( a ), Cos( a ) );
+   m_instance.p_angle = ArcTan( Sin( a ), Cos( a ) );
 
    UpdateNumericControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void RotationInterface::__Clockwise_Click( Button& sender, bool checked )
 {
-   if ( Round( Abs( Deg( instance.p_angle ) ), 3 ) < 180 )
+   if ( Round( Abs( Deg( m_instance.p_angle ) ), 3 ) < 180 )
    {
-      instance.p_angle = -instance.p_angle;
+      m_instance.p_angle = -m_instance.p_angle;
       UpdateNumericControls();
    }
    else
       GUI->Clockwise_CheckBox.Uncheck();
 }
 
+// ----------------------------------------------------------------------------
+
 void RotationInterface::__OptimizeFast_Click( Button& sender, bool checked )
 {
-   instance.p_optimizeFast = checked;
+   m_instance.p_optimizeFast = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void RotationInterface::__AngleDial_Paint( Control& sender, const Rect& updateRect )
 {
@@ -252,7 +282,7 @@ void RotationInterface::__AngleDial_Paint( Control& sender, const Rect& updateRe
    g.DrawEllipse( r );
 
    double sa, ca;
-   SinCos( instance.p_angle, sa, ca );
+   SinCos( m_instance.p_angle, sa, ca );
    double x1 = x0 + 0.5*w*ca;
    double y1 = y0 - 0.5*h*sa;
 
@@ -263,16 +293,20 @@ void RotationInterface::__AngleDial_Paint( Control& sender, const Rect& updateRe
    g.DrawRect( x1-d3, y1-d3, x1+d3, y1+d3 );
 }
 
+// ----------------------------------------------------------------------------
+
 void RotationInterface::__AngleDial_MouseMove( Control& sender, const pcl::Point& pos, unsigned buttons, unsigned modifiers )
 {
    if ( dragging )
    {
       double a = Round( Deg( ArcTan( sender.ClientHeight()/2.0 - pos.y,
                                      pos.x - sender.ClientWidth()/2.0 ) ), 3 );
-      instance.p_angle = Rad( a );
+      m_instance.p_angle = Rad( a );
       UpdateNumericControls();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void RotationInterface::__AngleDial_MousePress( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
 {
@@ -283,51 +317,61 @@ void RotationInterface::__AngleDial_MousePress( Control& sender, const pcl::Poin
    __AngleDial_MouseMove( sender, pos, buttons, modifiers );
 }
 
+// ----------------------------------------------------------------------------
+
 void RotationInterface::__AngleDial_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
 {
    dragging = false;
 }
 
+// ----------------------------------------------------------------------------
+
 void RotationInterface::__Algorithm_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->Algorithm_ComboBox )
    {
-      instance.p_interpolation = itemIndex;
-      GUI->ClampingThreshold_NumericEdit.Enable( InterpolationAlgorithm::IsClampedInterpolation( instance.p_interpolation ) );
-      GUI->Smoothness_NumericEdit.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( instance.p_interpolation ) );
+      m_instance.p_interpolation = itemIndex;
+      GUI->ClampingThreshold_NumericEdit.Enable( InterpolationAlgorithm::IsClampedInterpolation( m_instance.p_interpolation ) );
+      GUI->Smoothness_NumericEdit.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( m_instance.p_interpolation ) );
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void RotationInterface::__Algorithm_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->ClampingThreshold_NumericEdit )
-      instance.p_clampingThreshold = value;
+      m_instance.p_clampingThreshold = value;
    else if ( sender == GUI->Smoothness_NumericEdit )
-      instance.p_smoothness = value;
+      m_instance.p_smoothness = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void RotationInterface::__FilColor_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->Red_NumericControl )
-      instance.p_fillColor[0] = value;
+      m_instance.p_fillColor[0] = value;
    else if ( sender == GUI->Green_NumericControl )
-      instance.p_fillColor[1] = value;
+      m_instance.p_fillColor[1] = value;
    else if ( sender == GUI->Blue_NumericControl )
-      instance.p_fillColor[2] = value;
+      m_instance.p_fillColor[2] = value;
    else if ( sender == GUI->Alpha_NumericControl )
-      instance.p_fillColor[3] = value;
+      m_instance.p_fillColor[3] = value;
 
    GUI->ColorSample_Control.Update();
 }
+
+// ----------------------------------------------------------------------------
 
 void RotationInterface::__ColorSample_Paint( Control& sender, const Rect& updateRect )
 {
    Graphics g( sender );
 
-   RGBA color = RGBAColor( float( instance.p_fillColor[0] ),
-                           float( instance.p_fillColor[1] ),
-                           float( instance.p_fillColor[2] ),
-                           float( instance.p_fillColor[3] ) );
+   RGBA color = RGBAColor( float( m_instance.p_fillColor[0] ),
+                           float( m_instance.p_fillColor[1] ),
+                           float( m_instance.p_fillColor[2] ),
+                           float( m_instance.p_fillColor[3] ) );
 
    if ( Alpha( color ) != 0 )
    {
@@ -342,6 +386,7 @@ void RotationInterface::__ColorSample_Paint( Control& sender, const Rect& update
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 RotationInterface::GUIData::GUIData( RotationInterface& w )
 {
@@ -349,7 +394,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
    int labelWidth1 = fnt.Width( String( "Clamping threshold:" ) + 'M' );
    int labelWidth2 = fnt.Width( String( 'M',  2 ) );
 
-   // -------------------------------------------------------------------------
+   //
 
    Rotation_SectionBar.SetTitle( "Rotation" );
    Rotation_SectionBar.SetSection( Rotation_Control );
@@ -403,7 +448,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 
    Rotation_Control.SetSizer( Rotation_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Interpolation_SectionBar.SetTitle( "Interpolation" );
    Interpolation_SectionBar.SetSection( Interpolation_Control );
@@ -456,7 +501,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 
    Interpolation_Control.SetSizer( Interpolation_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    FillColor_SectionBar.SetTitle( "Fill Color" );
    FillColor_SectionBar.SetSection( FillColor_Control );
@@ -505,7 +550,7 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 
    FillColor_Control.SetSizer( FillColor_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
@@ -531,4 +576,4 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF RotationInterface.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// STFSliders.cpp - Released 2020-02-27T12:56:01Z
+// STFSliders.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -65,15 +65,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-STFSliders::STFSliders() :
-   channel( 0 ),
-   rgb( true ),
-   m( 0.5F ), c0( 0 ), c1( 1 ), v0( 0 ), v1( 1 ),
-   gradient( Bitmap::Null() ),
-   beingDragged( -1 ),
-   scrolling( false ),
-   scrollOrigin( 0 ),
-   m_wheelSteps( 0 )
+STFSliders::STFSliders()
 {
    OnPaint( (Control::paint_event_handler)&STFSliders::__Paint, *this );
    OnResize( (Control::resize_event_handler)&STFSliders::__Resize, *this );
@@ -82,6 +74,8 @@ STFSliders::STFSliders() :
    OnMouseRelease( (Control::mouse_button_event_handler)&STFSliders::__MouseRelease, *this );
    OnMouseWheel( (Control::mouse_wheel_event_handler)&STFSliders::__MouseWheel, *this );
 }
+
+// ----------------------------------------------------------------------------
 
 STFSliders::~STFSliders()
 {
@@ -100,6 +94,8 @@ void STFSliders::SetChannel( int c, bool color )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void STFSliders::SetValues( const STF& stf )
 {
    m = stf.m;
@@ -107,6 +103,8 @@ void STFSliders::SetValues( const STF& stf )
    c1 = stf.c1;
    Update();
 }
+
+// ----------------------------------------------------------------------------
 
 void STFSliders::SetVisibleRange( double a, double b )
 {
@@ -134,6 +132,8 @@ void STFSliders::OnValueUpdated( value_event_handler f, Control& c )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void STFSliders::OnRangeUpdated( range_event_handler f, Control& c )
 {
    if ( f == nullptr || c.IsNull() )
@@ -154,6 +154,8 @@ void STFSliders::InvalidateGradient()
 {
    gradient = Bitmap::Null();
 }
+
+// ----------------------------------------------------------------------------
 
 void STFSliders::RebuildGradient()
 {
@@ -197,6 +199,8 @@ RGBA STFSliders::HandlerColor( double v ) const
    return RGBAColor( 255, 255, 255 );
 }
 
+// ----------------------------------------------------------------------------
+
 void STFSliders::DrawHandler( Graphics& g, double v )
 {
    RGBA color = HandlerColor( v );
@@ -216,6 +220,8 @@ void STFSliders::DrawHandler( Graphics& g, double v )
    g.DrawLine( x, 0, x, h1-6 );
    g.DrawPolyline( notch );
 }
+
+// ----------------------------------------------------------------------------
 
 void STFSliders::__Paint( Control& sender, const pcl::Rect& updateRect )
 {
@@ -263,6 +269,8 @@ int STFSliders::FindHandler( double v )
    return 2;
 }
 
+// ----------------------------------------------------------------------------
+
 double STFSliders::UpdateDragging( int x )
 {
    double v = Range( SliderToSTF( x ), 0.0, 1.0 );
@@ -289,6 +297,8 @@ double STFSliders::UpdateDragging( int x )
 
    return v;
 }
+
+// ----------------------------------------------------------------------------
 
 bool STFSliders::UpdateScrolling( int x )
 {
@@ -325,6 +335,8 @@ bool STFSliders::UpdateScrolling( int x )
 
    return update;
 }
+
+// ----------------------------------------------------------------------------
 
 #define mode   TheScreenTransferFunctionInterface->WorkingMode()
 
@@ -369,6 +381,8 @@ void STFSliders::__MousePress( Control& sender, const pcl::Point& pos, int butto
 
 #undef mode
 
+// ----------------------------------------------------------------------------
+
 void STFSliders::__MouseMove( Control& sender, const pcl::Point& pos, unsigned buttons, unsigned modifiers )
 {
    if ( scrolling )
@@ -385,6 +399,8 @@ void STFSliders::__MouseMove( Control& sender, const pcl::Point& pos, unsigned b
          (onValueUpdatedReceiver->*onValueUpdated)( *this, channel, beingDragged, v, modifiers, false );
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void STFSliders::__MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
 {
@@ -412,6 +428,8 @@ void STFSliders::__MouseRelease( Control& sender, const pcl::Point& pos, int but
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void STFSliders::__MouseWheel( Control& sender, const pcl::Point& pos, int delta, unsigned buttons, unsigned modifiers )
 {
    m_wheelSteps += delta; // delta is rotation angle in 1/8 degree steps
@@ -433,4 +451,4 @@ void STFSliders::__MouseWheel( Control& sender, const pcl::Point& pos, int delta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF STFSliders.cpp - Released 2020-02-27T12:56:01Z
+// EOF STFSliders.cpp - Released 2020-07-31T19:33:39Z

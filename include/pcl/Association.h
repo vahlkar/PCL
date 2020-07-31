@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Association.h - Released 2020-02-27T12:55:23Z
+// pcl/Association.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -94,8 +94,9 @@ public:
     * Constructs an association with the specified values \a x1 and \a x2,
     * respectively for the \a first and \a second members.
     */
-   Association( const T1& x1, const T2& x2 ) :
-      first( x1 ), second( x2 )
+   Association( const T1& x1, const T2& x2 )
+      : first( x1 )
+      , second( x2 )
    {
    }
 };
@@ -160,4 +161,4 @@ bool operator <( const Association<T1,T2>& x1, const Association<T1,T2>& x2 )
 #endif  // __PCL_Association_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Association.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Association.h - Released 2020-07-31T19:33:04Z

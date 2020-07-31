@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/PolarTransform.cpp - Released 2020-02-27T12:55:33Z
+// pcl/PolarTransform.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -166,10 +166,15 @@ private:
       ThreadData( sample_array& a_result,
                   const DVector& a_sin, const DVector& a_cos, const DVector& a_r,
                   const DPoint& a_center, int a_width, int a_height,
-                  const StatusMonitor& a_status, size_type a_count ) :
-         AbstractImage::ThreadData( a_status, a_count ),
-         result( a_result ),
-      sin( a_sin ), cos( a_cos ), r( a_r ), center( a_center ), width( a_width ), height( a_height )
+                  const StatusMonitor& a_status, size_type a_count )
+         : AbstractImage::ThreadData( a_status, a_count )
+         , result( a_result )
+         , sin( a_sin )
+         , cos( a_cos )
+         , r( a_r )
+         , center( a_center )
+         , width( a_width )
+         , height( a_height )
       {
       }
 
@@ -189,8 +194,11 @@ private:
 
       typedef PixelInterpolation::Interpolator<P>  interpolator_type;
 
-      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow ) :
-         m_data( data ), m_firstRow( firstRow ), m_endRow( endRow ), m_interpolator( interpolator )
+      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
+         : m_data( data )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
+         , m_interpolator( interpolator )
       {
       }
 
@@ -293,4 +301,4 @@ void LogPolarTransform::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PolarTransform.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/PolarTransform.cpp - Released 2020-07-31T19:33:12Z

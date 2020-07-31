@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterInterface.h - Released 2020-02-27T12:56:01Z
+// RestorationFilterInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -79,21 +79,16 @@ public:
    RestorationFilterInterface();
    virtual ~RestorationFilterInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
@@ -172,28 +167,20 @@ private:
    void UpdateDeringingControls();
    void UpdateRangeControls();
 
-   // Event handlers
-
    void __PSF_PageSelected( TabBox& sender, int pageIndex );
    void __PSF_ValueUpdated( NumericEdit& sender, double value );
    void __PSF_EditCompleted( Edit& sender );
    void __PSF_Click( Button& sender, bool checked );
    void __PSF_Paint( Control& sender, const Rect& updateRect );
-
    void __Noise_ValueUpdated( NumericEdit& sender, double value );
    void __Noise_SpinValueUpdated( SpinBox& sender, int value );
-
    void __Filter_ItemSelected( ComboBox& sender, int itemIndex );
    void __Filter_ValueUpdated( NumericEdit& sender, double value );
-
    void __Target_ItemSelected( ComboBox& sender, int itemIndex );
-
    void __Deringing_Check( SectionBar& sender, bool checked );
    void __Deringing_ValueUpdated( NumericEdit& sender, double value );
    void __Deringing_Click( Button& sender, bool checked );
-
    void __Range_ValueUpdated( NumericEdit& sender, double value );
-
    void __ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
    void __ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
 
@@ -213,4 +200,4 @@ PCL_END_LOCAL
 #endif   // __RestorationFilterInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterInterface.h - Released 2020-02-27T12:56:01Z
+// EOF RestorationFilterInterface.h - Released 2020-07-31T19:33:39Z

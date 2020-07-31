@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorModule.cpp - Released 2020-02-27T12:56:01Z
+// SubframeSelectorModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -62,8 +62,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 namespace pcl
 {
@@ -103,7 +103,7 @@ String SubframeSelectorModule::Description() const
 
 String SubframeSelectorModule::Company() const
 {
-   return IsoString(); // N/A
+   return IsoString();
 }
 
 // ----------------------------------------------------------------------------
@@ -117,14 +117,14 @@ String SubframeSelectorModule::Author() const
 
 String SubframeSelectorModule::Copyright() const
 {
-   return "Copyright (c) 2017-2019, Cameron Leger";
+   return "Copyright (c) 2017-2020, Cameron Leger";
 }
 
 // ----------------------------------------------------------------------------
 
 String SubframeSelectorModule::TradeMarks() const
 {
-   return IsoString(); // N/A
+   return "PixInsight";
 }
 
 // ----------------------------------------------------------------------------
@@ -170,42 +170,18 @@ void SubframeSelectorModule::OnUnload()
 
 // ----------------------------------------------------------------------------
 
-/*
- * PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
- *
- * Module installation routine.
- *
- * If this routine is defined as a public symbol in a module, the PixInsight
- * core application will call it just after loading and initializing the module
- * shared object or dynamic-link library.
- *
- * The mode argument specifies the kind of installation being performed by the
- * core application. See the pcl::InstallMode namespace for more information.
- */
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
-   /*
-    * When the PixInsight application installs this module, we just have to
-    * instantiate the meta objects describing it.
-    */
    new pcl::SubframeSelectorModule;
 
-   /*
-    * The mode argument tells us which kind of installation is being requested
-    * by the PixInsight application. Incomplete installation requests only need
-    * module descriptions.
-    */
    if ( mode == pcl::InstallMode::FullInstall )
    {
       new pcl::SubframeSelectorProcess;
       new pcl::SubframeSelectorInterface;
    }
 
-   /*
-    * Return zero to signal successful installation
-    */
    return 0;
 }
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorModule.cpp - Released 2020-07-31T19:33:39Z

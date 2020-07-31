@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// LinearFitInterface.h - Released 2020-02-27T12:56:01Z
+// LinearFitInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -76,22 +76,17 @@ public:
    LinearFitInterface();
    virtual ~LinearFitInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
@@ -136,4 +131,4 @@ PCL_END_LOCAL
 #endif   // __LinearFitInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInterface.h - Released 2020-02-27T12:56:01Z
+// EOF LinearFitInterface.h - Released 2020-07-31T19:33:39Z

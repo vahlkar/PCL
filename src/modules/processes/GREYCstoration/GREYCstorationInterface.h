@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationInterface.h - Released 2020-02-27T12:56:01Z
+// GREYCstorationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -68,22 +68,19 @@
 #ifndef __GREYCstorationInterface_h
 #define __GREYCstorationInterface_h
 
-#include <pcl/ProcessInterface.h>
-
-#include <pcl/Sizer.h>
+#include <pcl/CheckBox.h>
+#include <pcl/ComboBox.h>
 #include <pcl/Label.h>
 #include <pcl/NumericControl.h>
+#include <pcl/ProcessInterface.h>
+#include <pcl/Sizer.h>
 #include <pcl/SpinBox.h>
-#include <pcl/ComboBox.h>
-#include <pcl/CheckBox.h>
 
 #include "GREYCstorationInstance.h"
 
 namespace pcl
 {
 
-// ----------------------------------------------------------------------------
-// GREYCstorationInterface
 // ----------------------------------------------------------------------------
 
 class GREYCstorationInterface : public ProcessInterface
@@ -93,29 +90,20 @@ public:
    GREYCstorationInterface();
    virtual ~GREYCstorationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   // -------------------------------------------------------------------------
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
    GREYCstorationInstance instance;
-
-   // -------------------------------------------------------------------------
 
    struct GUIData
    {
@@ -142,11 +130,9 @@ private:
          CheckBox          CoupledChannels_CheckBox;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
    void UpdateControls();
-
-   // Event Handlers
 
    void __ValueUpdated( NumericEdit& sender, double value );
    void __IntValueUpdated( SpinBox& sender, int value );
@@ -169,4 +155,4 @@ PCL_END_LOCAL
 #endif   // __GREYCstorationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF GREYCstorationInterface.h - Released 2020-07-31T19:33:39Z

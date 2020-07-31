@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionInterface.h - Released 2020-02-27T12:56:01Z
+// GradientsHdrCompositionInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -47,33 +47,26 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-class GradientsHdrCompositionInterface: public ProcessInterface
+class GradientsHdrCompositionInterface : public ProcessInterface
 {
 public:
 
    GradientsHdrCompositionInterface();
    virtual ~GradientsHdrCompositionInterface();
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   InterfaceFeatures Features() const;
-
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual void SaveSettings() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   void SaveSettings() const override;
 
 private:
 
@@ -83,34 +76,34 @@ private:
    {
       GUIData( GradientsHdrCompositionInterface& );
 
-      VerticalSizer  Global_Sizer;
+      VerticalSizer Global_Sizer;
 
-      SectionBar        TargetImages_SectionBar;
-      Control           TargetImages_Control;
-      HorizontalSizer   TargetImages_Sizer;
-         TreeBox           TargetImages_TreeBox;
-         VerticalSizer     TargetButtons_Sizer;
-            PushButton        AddFiles_PushButton;
-            PushButton        SelectAll_PushButton;
-            PushButton        InvertSelection_PushButton;
-            PushButton        ToggleSelected_PushButton;
-            PushButton        RemoveSelected_PushButton;
-            PushButton        Clear_PushButton;
-            CheckBox          FullPaths_CheckBox;
+      SectionBar TargetImages_SectionBar;
+      Control TargetImages_Control;
+      HorizontalSizer TargetImages_Sizer;
+      TreeBox TargetImages_TreeBox;
+      VerticalSizer TargetButtons_Sizer;
+      PushButton AddFiles_PushButton;
+      PushButton SelectAll_PushButton;
+      PushButton InvertSelection_PushButton;
+      PushButton ToggleSelected_PushButton;
+      PushButton RemoveSelected_PushButton;
+      PushButton Clear_PushButton;
+      CheckBox FullPaths_CheckBox;
 
-      SectionBar        Parameters_SectionBar;
-      Control           Parameters_Control;
-      VerticalSizer     Parameters_Sizer;
-         HorizontalSizer   Bias_Sizer;
-            NumericControl    LogBias_NumericControl;
-         HorizontalSizer   KeepLog_Sizer;
-            Label             KeepLog_Label;
-            CheckBox          KeepLog_CheckBox;
-         HorizontalSizer   GenerateMask_Sizer;
-            Label             GenerateMask_Label;
-            CheckBox          GenerateMask_CheckBox;
-            Label             NegativeBias_Label;
-            CheckBox          NegativeBias_CheckBox;
+      SectionBar Parameters_SectionBar;
+      Control Parameters_Control;
+      VerticalSizer Parameters_Sizer;
+      HorizontalSizer Bias_Sizer;
+      NumericControl LogBias_NumericControl;
+      HorizontalSizer KeepLog_Sizer;
+      Label KeepLog_Label;
+      CheckBox KeepLog_CheckBox;
+      HorizontalSizer GenerateMask_Sizer;
+      Label GenerateMask_Label;
+      CheckBox GenerateMask_CheckBox;
+      Label NegativeBias_Label;
+      CheckBox NegativeBias_CheckBox;
    };
 
    GUIData* GUI = nullptr;
@@ -150,14 +143,14 @@ private:
 // ----------------------------------------------------------------------------
 
 PCL_BEGIN_LOCAL
-   extern GradientsHdrCompositionInterface* TheGradientsHdrCompositionInterface;
+extern GradientsHdrCompositionInterface* TheGradientsHdrCompositionInterface;
 PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionInterface.h - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrCompositionInterface.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationInstance.h - Released 2020-02-27T12:56:01Z
+// BackgroundNeutralizationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -68,13 +68,13 @@ public:
    BackgroundNeutralizationInstance( const MetaProcess* );
    BackgroundNeutralizationInstance( const BackgroundNeutralizationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
@@ -82,7 +82,7 @@ private:
    float    backgroundLow;
    float    backgroundHigh;
    pcl_bool useROI;        // use a region of interest; entire image otherwise
-   Rect     roi;           // region of interest
+   Rect     roi = 0;       // region of interest
    pcl_enum mode;
    float    targetBackground;
 
@@ -97,4 +97,4 @@ private:
 #endif   // __BackgroundNeutralizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF BackgroundNeutralizationInstance.h - Released 2020-07-31T19:33:39Z

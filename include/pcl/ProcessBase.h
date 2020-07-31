@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ProcessBase.h - Released 2020-02-27T12:55:23Z
+// pcl/ProcessBase.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -170,6 +170,13 @@ public:
     * Small icons are used on interface elements where screen space must be
     * preserved. Two good examples are the Process Explorer window and the
     * ProcessContainer interface.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * Small icons are deprecated because all process and interface icons must
+    * now be specified in SVG format. SVG icons can be resized automatically to
+    * the required dimensions.
     */
    virtual Bitmap SmallIcon() const = 0;
 
@@ -203,7 +210,7 @@ public:
     * Returns true iff this process is able to open a documentation browser with
     * specific documentation contents.
     *
-    * Starting from version 1.7, the PixInsight Core application implements an
+    * Starting from version 1.7, the PixInsight core application implements an
     * integrated documentation system. The core application provides automatic
     * documentation browsing and searching functionality, so normally this
     * member function returns true for all processes.
@@ -272,7 +279,7 @@ public:
     * Handles a request to browse documentation specific for this process.
     * Returns true iff the documentation was loaded successfully.
     *
-    * Since version 1.7 of the PixInsight Core application, the integrated
+    * Since version 1.7 of the PixInsight core application, the integrated
     * documentation system works in a completely automatic and standardized way
     * to provide documentation browsing and searching functionality.
     *
@@ -293,4 +300,4 @@ public:
 #endif   // __PCL_ProcessBase_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessBase.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ProcessBase.h - Released 2020-07-31T19:33:04Z

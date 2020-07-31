@@ -162,7 +162,7 @@ bin/dcraw_half: lib/libraw.a object/dcraw_half.o
 	${CC} -DLIBRAW_NOTHREADS  ${CFLAGS} -o bin/dcraw_half object/dcraw_half.o -L./lib -lraw  -lm -lstdc++  ${LDADD}
 
 bin/half_mt: lib/liblibraw_r-pxi.a object/half_mt.o
-	${CC}   -pthread ${CFLAGS} -o bin/half_mt object/half_mt.o -L./lib -lraw_r  -lm -lstdc++  ${LDADD}
+	${CC}   -pthread ${CFLAGS} -o bin/half_mt object/half_mt.o -L./lib -llibraw_r-pxi -lm -lstdc++  ${LDADD}
 
 bin/dcraw_emu: lib/libraw.a samples/dcraw_emu.cpp
 	${CXX} -DLIBRAW_NOTHREADS  ${CFLAGS} -o bin/dcraw_emu samples/dcraw_emu.cpp -L./lib -lraw  -lm  ${LDADD}

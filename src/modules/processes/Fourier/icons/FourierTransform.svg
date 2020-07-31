@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="a">
+<stop stop-color="#f7f7ff" offset="0"/>
+<stop stop-color="#3b3b3b" offset="1"/>
+</linearGradient>
+<radialGradient id="f" cx="58.427" cy="54.116" r="26.269" gradientTransform="matrix(2.0196 0 6.497e-8 2.0085 49.96 -106.12)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f7f7ff" offset="0"/>
+<stop stop-color="#919199" offset=".25"/>
+<stop stop-color="#55585f" offset=".5"/>
+<stop stop-color="#161719" offset="1"/>
+</radialGradient>
+<radialGradient id="e" cx="58.477" cy="53.997" r="1.3229" gradientTransform="matrix(.00029797 34.622 -8.7429 7.5251e-5 640.03 -2022.4)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<radialGradient id="d" cx="58.477" cy="53.997" r="29.104" gradientTransform="matrix(1.7256 .027391 -.0080423 .50667 67.483 -26.783)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<radialGradient id="c" cx="58.477" cy="53.997" r="30.04" gradientTransform="matrix(.85713 -.77188 1.1053 1.2274 58.154 -18.959)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<radialGradient id="b" cx="58.477" cy="53.997" r="30.04" gradientTransform="matrix(1.6072 -.028934 .03036 1.6864 72.335 -87.192)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+</defs>
+<g transform="translate(-26.727 49.72)">
+<g transform="translate(-73.497 15.837)">
+<rect x="106.57" y="-59.206" width="122.77" height="122.77" fill="url(#f)" style="paint-order:normal"/>
+<path d="m167.96-59.206v122.77" fill="none" stroke="url(#e)" stroke-width="6.35"/>
+<path d="m106.57 2.177h122.77" fill="none" stroke="url(#d)" stroke-width="6.35"/>
+<path d="m109.78-55.999 116.35 116.35" fill="none" stroke="url(#c)" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="6.35"/>
+<path d="m226.13-55.999-116.35 116.35" fill="none" stroke="url(#b)" stroke-linecap="round" stroke-linejoin="bevel" stroke-width="6.35"/>
+</g>
+<rect x="36.252" y="-40.195" width="116.42" height="116.42" fill="none" stroke="#000" stroke-linecap="round" stroke-width="6.35"/>
+</g>
+</svg>

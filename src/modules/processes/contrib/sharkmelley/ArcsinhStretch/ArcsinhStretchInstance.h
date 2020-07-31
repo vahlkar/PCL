@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInstance.h - Released 2020-02-27T12:56:01Z
+// ArcsinhStretchInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
-// Copyright (c) 2017-2018 Mark Shelley
+// Copyright (c) 2017-2020 Mark Shelley
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -68,21 +68,19 @@ public:
    ArcsinhStretchInstance( const MetaProcess* );
    ArcsinhStretchInstance( const ArcsinhStretchInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
 
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-
-   void Preview(UInt16Image&) const;
+   void Preview( UInt16Image& ) const;
 
 private:
 
    float    p_stretch;
    float    p_blackpoint;
-   float    p_coarse;
-   float    p_fine;
+   float    p_coarse = 0;
+   float    p_fine = 0;
    pcl_bool p_protectHighlights;
    pcl_bool p_useRgbws;
    pcl_bool p_previewClipped;
@@ -101,4 +99,4 @@ private:
 #endif   // __ArcsinhStretchInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ArcsinhStretchInstance.h - Released 2020-07-31T19:33:39Z

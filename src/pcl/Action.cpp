@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Action.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Action.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -85,8 +85,7 @@ public:
    {
       try
       {
-         return api_bool( reinterpret_cast<const Action*>( hSender )->IsEnabled(
-                                             *reinterpret_cast<const ActionInfo*>( info ) ) );
+         return api_bool( reinterpret_cast<const Action*>( hSender )->IsEnabled( *reinterpret_cast<const ActionInfo*>( info ) ) );
       }
       ERROR_HANDLER
       return api_false;
@@ -95,8 +94,34 @@ public:
 
 // ----------------------------------------------------------------------------
 
-Action::Action( const String& menuItem, const Bitmap& icon, const String toolBar ) :
-   UIObject( (*API->Action->CreateAction)( ModuleHandle(), this, menuItem.c_str(), toolBar.c_str(), icon.handle, 0/*flags*/ ) )
+Action::Action( const String& menuItem, const String& iconSVGFile, const String& toolBar )
+   : UIObject( (*API->Action->CreateActionSVGFile)( ModuleHandle(), this, menuItem.c_str(), toolBar.c_str(), iconSVGFile.c_str(), 0/*flags*/ ) )
+{
+   if ( handle == 0 )
+      throw APIFunctionError( "CreateActionSVGFile" );
+
+   (*API->Action->SetActionExecutionRoutine)( handle, ActionDispatcher::Execute );
+   (*API->Action->SetActionStateQueryRoutine)( handle, ActionDispatcher::QueryState );
+}
+
+// ----------------------------------------------------------------------------
+
+Action::Action( const String& menuItem, const IsoString& iconSVGSource, int, const String& toolBar )
+   : UIObject( (*API->Action->CreateActionSVG)( ModuleHandle(), this, menuItem.c_str(), toolBar.c_str(), iconSVGSource.c_str(), 0/*flags*/ ) )
+{
+   if ( handle == 0 )
+      throw APIFunctionError( "CreateActionSVG" );
+
+   (*API->Action->SetActionExecutionRoutine)( handle, ActionDispatcher::Execute );
+   (*API->Action->SetActionStateQueryRoutine)( handle, ActionDispatcher::QueryState );
+}
+
+// ----------------------------------------------------------------------------
+
+#ifdef __PCL_ACTION_DEPRECATED_CTOR
+// ### DEPRECATED
+Action::Action( const String& menuItem, const Bitmap& icon, const String& toolBar )
+   : UIObject( (*API->Action->CreateAction)( ModuleHandle(), this, menuItem.c_str(), toolBar.c_str(), icon.handle, 0/*flags*/ ) )
 {
    if ( handle == 0 )
       throw APIFunctionError( "CreateAction" );
@@ -104,6 +129,7 @@ Action::Action( const String& menuItem, const Bitmap& icon, const String toolBar
    (*API->Action->SetActionExecutionRoutine)( handle, ActionDispatcher::Execute );
    (*API->Action->SetActionStateQueryRoutine)( handle, ActionDispatcher::QueryState );
 }
+#endif
 
 // ----------------------------------------------------------------------------
 
@@ -226,6 +252,21 @@ Bitmap Action::Icon() const
 
 // ----------------------------------------------------------------------------
 
+void Action::SetIconSVGFile( const String& filePath )
+{
+   (*API->Action->SetActionIconSVGFile)( handle, filePath.c_str() );
+}
+
+// ----------------------------------------------------------------------------
+
+void Action::SetIconSVG( const IsoString& svgSource )
+{
+   (*API->Action->SetActionIconSVG)( handle, svgSource.c_str() );
+}
+
+// ----------------------------------------------------------------------------
+
+// ### DEPRECATED
 void Action::SetIcon( const Bitmap& bmp )
 {
    (*API->Action->SetActionIcon)( handle, bmp.handle );
@@ -250,4 +291,4 @@ void* Action::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Action.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Action.cpp - Released 2020-07-31T19:33:12Z

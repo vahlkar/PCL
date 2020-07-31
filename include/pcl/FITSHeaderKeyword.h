@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/FITSHeaderKeyword.h - Released 2020-02-27T12:55:23Z
+// pcl/FITSHeaderKeyword.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -91,10 +91,7 @@ public:
    /*!
     * Move constructor.
     */
-   FITSHeaderKeyword( FITSHeaderKeyword&& x ) :
-      name( std::move( x.name ) ), value( std::move( x.value ) ), comment( std::move( x.comment ) )
-   {
-   }
+   FITSHeaderKeyword( FITSHeaderKeyword&& ) = default;
 
    /*!
     * Constructs a %FITSHeaderKeyword object with the specified name, value and
@@ -102,15 +99,19 @@ public:
     */
    FITSHeaderKeyword( const IsoString& a_name,
                       const IsoString& a_value = IsoString(),
-                      const IsoString& a_comment = IsoString() ) :
-      name( a_name ), value( a_value ), comment( a_comment )
+                      const IsoString& a_comment = IsoString() )
+      : name( a_name )
+      , value( a_value )
+      , comment( a_comment )
    {
       Trim();
    }
 
    template <class S1, class S2, class S3>
-   FITSHeaderKeyword( const S1& a_name, const S2& a_value, const S3& a_comment ) :
-      name( IsoString( a_name ) ), value( IsoString( a_value ) ), comment( IsoString( a_comment ) )
+   FITSHeaderKeyword( const S1& a_name, const S2& a_value, const S3& a_comment )
+      : name( IsoString( a_name ) )
+      , value( IsoString( a_value ) )
+      , comment( IsoString( a_comment ) )
    {
       Trim();
    }
@@ -179,8 +180,8 @@ public:
    }
 
    /*!
-    * Returns the string %value (irrespective of its data type) of this %FITS
-    * header keyword, with delimiters pulled off and leading/trailing
+    * Returns the string %value of this %FITS header keyword (irrespective of
+    * its data type), with delimiters pulled off and leading/trailing
     * whitespace trimmed out.
     */
    IsoString StripValueDelimiters() const
@@ -220,7 +221,7 @@ public:
    }
 
    /*!
-    * Trims leading and trailing spaces in the name, value and comment
+    * Removes leading and trailing spaces in the name, value and comment
     * components of this %FITS header keyword.
     */
    void Trim()
@@ -286,4 +287,4 @@ inline bool operator <( const FITSHeaderKeyword& h1, const FITSHeaderKeyword& h2
 #endif   // __PCL_FITSHeaderKeyword_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FITSHeaderKeyword.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/FITSHeaderKeyword.h - Released 2020-07-31T19:33:04Z

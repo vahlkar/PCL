@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskParameters.h - Released 2020-02-27T12:56:01Z
+// UnsharpMaskParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -68,13 +68,11 @@ public:
 
    USMSigma( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern USMSigma* TheUSMSigmaParameter;
@@ -87,13 +85,11 @@ public:
 
    USMAmount( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern USMAmount* TheUSMAmountParameter;
@@ -106,9 +102,8 @@ public:
 
    USMUseLuminance( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern USMUseLuminance* TheUSMUseLuminanceParameter;
@@ -121,9 +116,8 @@ public:
 
    USMLinear( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern USMLinear* TheUSMLinearParameter;
@@ -136,9 +130,8 @@ public:
 
    USMDeringing( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern USMDeringing* TheUSMDeringingParameter;
@@ -151,13 +144,11 @@ public:
 
    USMDeringingDark( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern USMDeringingDark* TheUSMDeringingDarkParameter;
@@ -170,13 +161,11 @@ public:
 
    USMDeringingBright( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern USMDeringingBright* TheUSMDeringingBrightParameter;
@@ -189,9 +178,8 @@ public:
 
    USMOutputDeringingMaps( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern USMOutputDeringingMaps* TheUSMOutputDeringingMapsParameter;
@@ -204,13 +192,11 @@ public:
 
    USMRangeLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern USMRangeLow* TheUSMRangeLowParameter;
@@ -223,13 +209,11 @@ public:
 
    USMRangeHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern USMRangeHigh* TheUSMRangeHighParameter;
@@ -243,4 +227,4 @@ PCL_END_LOCAL
 #endif   // __UnsharpMaskParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskParameters.h - Released 2020-02-27T12:56:01Z
+// EOF UnsharpMaskParameters.h - Released 2020-07-31T19:33:39Z

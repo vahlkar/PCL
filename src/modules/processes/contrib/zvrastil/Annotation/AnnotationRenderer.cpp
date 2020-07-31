@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationRenderer.cpp - Released 2020-02-27T12:56:01Z
+// AnnotationRenderer.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -53,10 +53,10 @@
 
 #include "AnnotationRenderer.h"
 
+#define LEADER_GRIP_RADIUS 5
+
 namespace pcl
 {
-
-#define LEADER_GRIP_RADIUS 5
 
 // ----------------------------------------------------------------------------
 
@@ -76,11 +76,12 @@ Font AnnotationRenderer::GetAnnotationFont( const AnnotationInstance& instance, 
 // ----------------------------------------------------------------------------
 
 Rect AnnotationRenderer::GetBoundingRectangle( const AnnotationInstance& instance,
-      int &relPositionX, int &relPositionY, int &relLeaderPositionX, int &relLeaderPositionY )
+                                               int& relPositionX, int& relPositionY,
+                                               int& relLeaderPositionX, int& relLeaderPositionY )
 {
    // get annotation font
    Font f = GetAnnotationFont( instance );
-   int offset = f.Width("M")+1;
+   int offset = f.Width( "M" ) + 1;
 
    // get the text rectangle
    Rect textRect( f.Width( instance.annotationText ) + 1, f.Height() + 1 );
@@ -115,7 +116,7 @@ Rect AnnotationRenderer::GetBoundingRectangle( const AnnotationInstance& instanc
       else
       {
          // check if leader line points to right
-         if ( instance.annotationLeaderPositionX > instance.annotationPositionX+textRect.Width()+offset )
+         if ( instance.annotationLeaderPositionX > instance.annotationPositionX + textRect.Width() + offset )
          {
             // add enough space to the rectangle
             textRect.ResizeBy( instance.annotationLeaderPositionX + 2 - ( instance.annotationPositionX + textRect.Width() ), 0 );
@@ -124,11 +125,11 @@ Rect AnnotationRenderer::GetBoundingRectangle( const AnnotationInstance& instanc
          else
          {
             // add enough space to the rectangle
-            textRect.ResizeBy( offset+2, 0 );
+            textRect.ResizeBy( offset + 2, 0 );
          }
 
          // adjust relative coordinates
-         relLeaderPositionX = instance.annotationLeaderPositionX-instance.annotationPositionX;
+         relLeaderPositionX = instance.annotationLeaderPositionX - instance.annotationPositionX;
       }
 
       // then adjust vertically
@@ -154,7 +155,7 @@ Rect AnnotationRenderer::GetBoundingRectangle( const AnnotationInstance& instanc
       }
 
       // add extra space for the leader grip
-      textRect.ResizeBy( 2*LEADER_GRIP_RADIUS, 2*LEADER_GRIP_RADIUS );
+      textRect.ResizeBy( 2 * LEADER_GRIP_RADIUS, 2 * LEADER_GRIP_RADIUS );
       relPositionX += LEADER_GRIP_RADIUS;
       relPositionY += LEADER_GRIP_RADIUS;
       relLeaderPositionX += LEADER_GRIP_RADIUS;
@@ -172,8 +173,7 @@ Rect AnnotationRenderer::GetBoundingRectangle( const AnnotationInstance& instanc
 
 // ----------------------------------------------------------------------------
 
-Rect AnnotationRenderer::GetTextRect( const AnnotationInstance& instance, Graphics& g,
-      int posX, int posY )
+Rect AnnotationRenderer::GetTextRect( const AnnotationInstance& instance, Graphics& g, int posX, int posY )
 {
    // create the font
    Font f = GetAnnotationFont( instance, 1.0 );
@@ -187,9 +187,8 @@ Rect AnnotationRenderer::GetTextRect( const AnnotationInstance& instance, Graphi
 
 // ----------------------------------------------------------------------------
 
-void AnnotationRenderer::RenderAnnotation(
-   const AnnotationInstance& instance, Graphics& g,
-   int posX, int posY, int leaderPosX, int leaderPosY)
+void AnnotationRenderer::RenderAnnotation( const AnnotationInstance& instance, Graphics& g,
+                                           int posX, int posY, int leaderPosX, int leaderPosY )
 {
    // create text placement rectangle
    Rect textRect = GetTextRect( instance, g, posX, posY );
@@ -198,13 +197,13 @@ void AnnotationRenderer::RenderAnnotation(
    Font f = GetAnnotationFont( instance, 1.0 );
 
    // set up font to Graphics object
-   g.SetFont(f);
+   g.SetFont( f );
 
    // render shadow if required
    if ( instance.annotationFontShadow )
    {
       // set black pen
-	   g.SetPen( RGBAColor( 0, 0, 0 ) );
+      g.SetPen( RGBAColor( 0, 0, 0 ) );
 
       // render shifted black text and leader
       RenderTextAndLeader( instance, g, textRect, leaderPosX, leaderPosY, 1, 1 );
@@ -219,22 +218,21 @@ void AnnotationRenderer::RenderAnnotation(
 
 // ----------------------------------------------------------------------------
 
-void AnnotationRenderer::RenderGrips(
-   const AnnotationInstance& instance, Graphics& g,
-   int posX, int posY, int leaderPosX, int leaderPosY)
+void AnnotationRenderer::RenderGrips( const AnnotationInstance& instance, Graphics& g,
+                                      int posX, int posY, int leaderPosX, int leaderPosY )
 {
    // create text placement rectangle
    Rect textRect = GetTextRect( instance, g, posX, posY );
 
    // use text color, but make it semitransparent
    RGBA rectColor = RGBAColor(
-       Red( instance.annotationColor ),
-       Green( instance.annotationColor ),
-       Blue( instance.annotationColor ),
-       96 );
+      Red( instance.annotationColor ),
+      Green( instance.annotationColor ),
+      Blue( instance.annotationColor ),
+      96 );
 
    // set pen to this color and dashed line
-   g.SetPen( Pen( rectColor, 0, PenStyle::Dash ));
+   g.SetPen( Pen( rectColor, 0, PenStyle::Dash ) );
 
    // draw text grip rectangle
    g.DrawRect( textRect );
@@ -251,56 +249,56 @@ void AnnotationRenderer::RenderGrips(
 // ----------------------------------------------------------------------------
 
 Bitmap AnnotationRenderer::CreateAnnotationBitmap( const AnnotationInstance& instance,
-      int &relPosX, int &relPosY,
-      bool renderGrips )
+                                                   int& relPosX, int& relPosY, bool renderGrips )
 {
    // get annotation font
-      Font f = GetAnnotationFont( instance );
+   Font f = GetAnnotationFont( instance );
 
-      // get bitmap size and relative positions of text and leader in the bitmap
-      int relLeaderPosX = 0, relLeaderPosY = 0;
+   // get bitmap size and relative positions of text and leader in the bitmap
+   int relLeaderPosX = 0, relLeaderPosY = 0;
 
-      Rect bitmapRect = GetBoundingRectangle( instance,
-         relPosX, relPosY, relLeaderPosX, relLeaderPosY );
+   Rect bitmapRect = GetBoundingRectangle( instance,
+      relPosX, relPosY, relLeaderPosX, relLeaderPosY );
 
-      // create transparent bitmap
-      Bitmap annotationBmp( bitmapRect.Width(),
-                            bitmapRect.Height(),
-                            BitmapFormat::ARGB32 );
-      annotationBmp.Fill( RGBAColor( 0, 0, 0, 0 ) );
+   // create transparent bitmap
+   Bitmap annotationBmp( bitmapRect.Width(),
+      bitmapRect.Height(),
+      BitmapFormat::ARGB32 );
+   annotationBmp.Fill( RGBAColor( 0, 0, 0, 0 ) );
 
-      // render annotation to the bitmap
-      Graphics g;
-      g.BeginPaint( annotationBmp );
-      RenderAnnotation( instance, g,
-         relPosX, relPosY, relLeaderPosX, relLeaderPosY);
+   // render annotation to the bitmap
+   Graphics g;
+   g.BeginPaint( annotationBmp );
+   RenderAnnotation( instance, g,
+      relPosX, relPosY, relLeaderPosX, relLeaderPosY );
 
-      // multiply alpha channel with opacity
-      uint32 opacity = instance.annotationOpacity;
-      for (int y = 0; y < bitmapRect.Height(); y++)
+   // multiply alpha channel with opacity
+   uint32 opacity = instance.annotationOpacity;
+   for ( int y = 0; y < bitmapRect.Height(); y++ )
+   {
+      RGBA* scanline = annotationBmp.ScanLine( y );
+      for ( int x = 0; x < bitmapRect.Width(); x++ )
       {
-         RGBA* scanline = annotationBmp.ScanLine(y);
-         for (int x = 0; x < bitmapRect.Width(); x++)
-         {
-            uint32 alpha = scanline[x] >> 24;
-            alpha = (alpha * opacity) >> 8;
-            scanline[x] = (scanline[x] & 0xFFFFFF) | (alpha << 24);
-         }
+         uint32 alpha = scanline[x] >> 24;
+         alpha = ( alpha * opacity ) >> 8;
+         scanline[x] = ( scanline[x] & 0xFFFFFF ) | ( alpha << 24 );
       }
+   }
 
-      // render grips if required (we do not want opacity to be applied to them)
-      if ( renderGrips )
-         RenderGrips( instance, g, relPosX, relPosY, relLeaderPosX, relLeaderPosY );
+   // render grips if required (we do not want opacity to be applied to them)
+   if ( renderGrips )
+      RenderGrips( instance, g, relPosX, relPosY, relLeaderPosX, relLeaderPosY );
 
-      g.EndPaint();
+   g.EndPaint();
 
-      return annotationBmp;
+   return annotationBmp;
 }
 
 // ----------------------------------------------------------------------------
 
 void AnnotationRenderer::RenderTextAndLeader( const AnnotationInstance& instance, Graphics& g,
-      const Rect& textRect, int leaderPosX, int leaderPosY, int offsetX, int offsetY )
+                                              const Rect& textRect,
+                                              int leaderPosX, int leaderPosY, int offsetX, int offsetY )
 {
    // get not-offset text position
    int posX = textRect.x0;
@@ -326,22 +324,22 @@ void AnnotationRenderer::RenderTextAndLeader( const AnnotationInstance& instance
       {
          // leader horizontal line
          g.DrawLine( posX - 1 + offsetX, posY + textRect.Height() / 2 + offsetY,
-                     posX - 1 - offset + offsetX, posY + textRect.Height() / 2 + offsetY );
+            posX - 1 - offset + offsetX, posY + textRect.Height() / 2 + offsetY );
 
          // leader line to the endpoint
          g.DrawLine( posX - 1 - offset + offsetX, posY + textRect.Height() / 2 + offsetY,
-                     leaderPosX + offsetX, leaderPosY + offsetY );
+            leaderPosX + offsetX, leaderPosY + offsetY );
       }
       // if leader end is to the right of the text, start at the text ending
       else
       {
          // leader horizontal line
          g.DrawLine( posX + textRect.Width() + 1 + offsetX, posY + textRect.Height() / 2 + offsetY,
-                     posX + textRect.Width() + offset + 1 + offsetX, posY + textRect.Height() / 2 + offsetY);
+            posX + textRect.Width() + offset + 1 + offsetX, posY + textRect.Height() / 2 + offsetY );
 
          // leader line to the endpoint
          g.DrawLine( posX + textRect.Width() + offset + 1 + offsetX, posY + textRect.Height() / 2 + offsetY,
-                     leaderPosX + offsetX, leaderPosY + offsetY );
+            leaderPosX + offsetX, leaderPosY + offsetY );
       }
 
       g.DisableAntialiasing();
@@ -350,7 +348,7 @@ void AnnotationRenderer::RenderTextAndLeader( const AnnotationInstance& instance
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationRenderer.cpp - Released 2020-02-27T12:56:01Z
+// EOF AnnotationRenderer.cpp - Released 2020-07-31T19:33:39Z

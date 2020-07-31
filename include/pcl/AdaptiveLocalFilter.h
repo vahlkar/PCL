@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/AdaptiveLocalFilter.h - Released 2020-02-27T12:55:23Z
+// pcl/AdaptiveLocalFilter.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -105,10 +105,10 @@ public:
     *                \a sigma parameter. The default value is false (variance
     *                is used by default).
     */
-   AdaptiveLocalFilter( double sigma, int size = 5, bool useMAD = false ) :
-      m_size( Max( 3, size|1 ) ),
-      m_sigma( Max( 0.0, sigma ) ),
-      m_useMAD( useMAD )
+   AdaptiveLocalFilter( double sigma, int size = 5, bool useMAD = false )
+      : m_size( Max( 3, size|1 ) )
+      , m_sigma( Max( 0.0, sigma ) )
+      , m_useMAD( useMAD )
    {
    }
 
@@ -213,4 +213,4 @@ protected:
 #endif   // __PCL_AdaptiveLocalFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AdaptiveLocalFilter.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/AdaptiveLocalFilter.h - Released 2020-07-31T19:33:04Z

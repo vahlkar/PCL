@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleActions.cpp - Released 2020-02-27T12:56:01Z
+// RescaleActions.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -59,21 +59,22 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "RescaleRGBActionIcon.xpm"
-#include "RescaleLumActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-RescaleRGBAction::RescaleRGBAction() :
-   Action( "Image > Rescale > Rescale RGB/K", Bitmap( RescaleRGBActionIcon_XPM ), "Intensity Transformations" )
+RescaleRGBAction::RescaleRGBAction()
+   : Action( "Image > Rescale > Rescale RGB/K",
+             "@module_icons_dir/Rescale.svg",
+             "Intensity Transformations" )
 {
    SetToolTip( "Rescale" );
 }
+
+// ----------------------------------------------------------------------------
 
 void RescaleRGBAction::Execute()
 {
    RescaleInstance( TheRescaleProcess, RescalingMode::RGBK ).LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 bool RescaleRGBAction::IsEnabled( ActionInfo info ) const
 {
@@ -81,16 +82,23 @@ bool RescaleRGBAction::IsEnabled( ActionInfo info ) const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-RescaleRGBIndividualAction::RescaleRGBIndividualAction() :
-   Action( "Image > Rescale > Rescale Individual RGB/K Channels", Bitmap( RescaleRGBActionIcon_XPM ) )
+RescaleRGBIndividualAction::RescaleRGBIndividualAction()
+   : Action( "Image > Rescale > Rescale Individual RGB/K Channels",
+             "@module_icons_dir/RescaleRGBAction.svg" )
 {
+   SetToolTip( "Rescale Individual RGB/K Channels" );
 }
+
+// ----------------------------------------------------------------------------
 
 void RescaleRGBIndividualAction::Execute()
 {
    RescaleInstance( TheRescaleProcess, RescalingMode::RGBK ).LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 bool RescaleRGBIndividualAction::IsEnabled( ActionInfo info ) const
 {
@@ -98,16 +106,23 @@ bool RescaleRGBIndividualAction::IsEnabled( ActionInfo info ) const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-RescaleCIELAction::RescaleCIELAction() :
-   Action( "Image > Rescale > Rescale CIE L* Component", Bitmap( RescaleLumActionIcon_XPM ) )
+RescaleCIELAction::RescaleCIELAction()
+   : Action( "Image > Rescale > Rescale CIE L* Component",
+             "@module_icons_dir/RescaleLumAction.svg" )
 {
+   SetToolTip( "Rescale CIE L* Component" );
 }
+
+// ----------------------------------------------------------------------------
 
 void RescaleCIELAction::Execute()
 {
    RescaleInstance( TheRescaleProcess, RescalingMode::CIEL ).LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 bool RescaleCIELAction::IsEnabled( ActionInfo info ) const
 {
@@ -115,16 +130,23 @@ bool RescaleCIELAction::IsEnabled( ActionInfo info ) const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-RescaleCIEYAction::RescaleCIEYAction() :
-   Action( "Image > Rescale > Rescale CIE Y Component", Bitmap( RescaleLumActionIcon_XPM ) )
+RescaleCIEYAction::RescaleCIEYAction()
+   : Action( "Image > Rescale > Rescale CIE Y Component",
+             "@module_icons_dir/RescaleLumAction.svg" )
 {
+   SetToolTip( "Rescale CIE Y Component" );
 }
+
+// ----------------------------------------------------------------------------
 
 void RescaleCIEYAction::Execute()
 {
    RescaleInstance( TheRescaleProcess, RescalingMode::CIEY ).LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 bool RescaleCIEYAction::IsEnabled( ActionInfo info ) const
 {
@@ -136,4 +158,4 @@ bool RescaleCIEYAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleActions.cpp - Released 2020-02-27T12:56:01Z
+// EOF RescaleActions.cpp - Released 2020-07-31T19:33:39Z

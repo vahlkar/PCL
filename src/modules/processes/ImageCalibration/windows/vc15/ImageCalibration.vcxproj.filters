@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:00.507Z
+# Generated on .... 2020-07-31T19:36:34.404Z
 # Project id ...... ImageCalibration
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>5694d2ee-051e-4ab3-bcc9-36a63fbf19d6</UniqueIdentifier>
+      <UniqueIdentifier>5ef868a1-58b0-4055-b519-c101b6b9be60</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>3d8f5709-e103-419c-8b64-8a9a8855e75c</UniqueIdentifier>
+      <UniqueIdentifier>0bdce6be-bdbe-4414-b4df-0a95734b95ce</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>5a34322b-c001-43ee-9185-ad678899e6ae</UniqueIdentifier>
+      <UniqueIdentifier>45537b3b-2cd9-4a5e-9318-a7f24f8a55e0</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,16 +135,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\DefectMapIcon.png">
+    <None Include="..\..\icons\DefectMap.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ImageCalibrationIcon.png">
+    <None Include="..\..\icons\ImageCalibration.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\LocalNormalizationIcon.png">
+    <None Include="..\..\icons\LocalNormalization.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\SuperbiasIcon.png">
+    <None Include="..\..\icons\Superbias.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

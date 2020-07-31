@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAInterface.cpp - Released 2020-02-27T12:56:01Z
+// SplitCFAInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -60,46 +60,68 @@
 #include <pcl/FileFormatInstance.h>
 #include <pcl/StdStatus.h>
 
-#define IMAGELIST_MINHEIGHT( fnt )  RoundInt( 8.125*fnt.Height() )
+#define IMAGELIST_MINHEIGHT( fnt ) RoundInt( 8.125 * fnt.Height() )
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-SplitCFAInterface* TheSplitCFAInterface = 0;
+SplitCFAInterface* TheSplitCFAInterface = nullptr;
 
-SplitCFAInterface::SplitCFAInterface() :
-ProcessInterface(), m_instance( TheSplitCFAProcess ), GUI( 0 )
+// ----------------------------------------------------------------------------
+
+SplitCFAInterface::SplitCFAInterface()
+   : ProcessInterface()
+   , m_instance( TheSplitCFAProcess )
 {
    TheSplitCFAInterface = this;
    DisableAutoSaveGeometry();
 }
 
+// ----------------------------------------------------------------------------
+
 SplitCFAInterface::~SplitCFAInterface()
 {
-   if ( GUI != 0 ) delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString SplitCFAInterface::Id() const
 {
    return "SplitCFA";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* SplitCFAInterface::Process() const
 {
    return TheSplitCFAProcess;
 }
 
+// ----------------------------------------------------------------------------
+
+String SplitCFAInterface::IconImageSVGFile() const
+{
+   return "@module_icons_dir/SplitCFA.svg";
+}
+
+// ----------------------------------------------------------------------------
+
 InterfaceFeatures SplitCFAInterface::Features() const
 {
-   return InterfaceFeature::DefaultGlobal;// | SplitCFAInterfaceFeature::RealTimeButton;
+   return InterfaceFeature::DefaultGlobal; // | SplitCFAInterfaceFeature::RealTimeButton;
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInterface::ApplyInstance() const
 {
    m_instance.LaunchOnCurrentView();
 }
+
 // ----------------------------------------------------------------------------
 
 void SplitCFAInterface::ResetInstance()
@@ -108,9 +130,11 @@ void SplitCFAInterface::ResetInstance()
    ImportProcess( defaultInstance );
 }
 
+// ----------------------------------------------------------------------------
+
 bool SplitCFAInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "SplitCFA" );
@@ -126,23 +150,31 @@ bool SplitCFAInterface::Launch( const MetaProcess& P, const ProcessImplementatio
    return &P == TheSplitCFAProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* SplitCFAInterface::NewProcess() const
 {
    return new SplitCFAInstance( m_instance );
 }
 
+// ----------------------------------------------------------------------------
+
 bool SplitCFAInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
    if ( dynamic_cast<const SplitCFAInstance*>( &p ) != nullptr )
       return true;
-   whyNot = "Not an SplitCFA instance.";
+   whyNot = "Not a SplitCFA instance.";
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool SplitCFAInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool SplitCFAInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -153,15 +185,11 @@ bool SplitCFAInterface::ImportProcess( const ProcessImplementation& p )
 
 //-------------------------------------------------------------------------
 
-static
-void FileShow( const String& path )   // load ( if not loaded before ) and bring to front the ImageWindow
+static void FileShow( const String& path ) // load ( if not loaded before ) and bring to front the ImageWindow
 {
-   #if debug
-   Console().WriteLn( "FileShow():" + path );
-   #endif
    if ( ImageWindow::WindowByFilePath( path ).IsNull() )
    {
-      Array<ImageWindow> windows = ImageWindow::Open( path, IsoString()/*id*/, "raw cfa"/*formatHints*/ );
+      Array<ImageWindow> windows = ImageWindow::Open( path, IsoString() /*id*/, "raw cfa" /*formatHints*/ );
       for ( ImageWindow& window : windows )
          window.Show();
    }
@@ -169,9 +197,11 @@ void FileShow( const String& path )   // load ( if not loaded before ) and bring
       ImageWindow::WindowByFilePath( path ).BringToFront();
 }
 
+// ----------------------------------------------------------------------------
+
 void SplitCFAInterface::UpdateControls()
 {
-   GUI->OutputTree_CheckBox.Disable(m_instance.p_outputDir.IsEmpty());
+   GUI->OutputTree_CheckBox.Disable( m_instance.p_outputDir.IsEmpty() );
    GUI->OutputTree_CheckBox.SetChecked( m_instance.p_outputTree );
    GUI->OutputSubDirCFA_CheckBox.SetChecked( m_instance.p_outputSubDirCFA );
    GUI->OutputDir_Edit.SetText( m_instance.p_outputDir );
@@ -183,6 +213,8 @@ void SplitCFAInterface::UpdateControls()
    UpdateTargetImagesList();
    UpdateImageSelectionButtons();
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInterface::UpdateTargetImagesList()
 {
@@ -207,12 +239,12 @@ void SplitCFAInterface::UpdateTargetImagesList()
       node->SetToolTip( 0, "Double Click to check/uncheck" );
       node->SetAlignment( 0, TextAlign::Left );
 
-      node->SetText( 1, path );       // save full patch to hiden column for file idintification
+      node->SetText( 1, path ); // save full patch to hiden column for file idintification
 
-      if( GUI->FullPaths_CheckBox.IsChecked())
-         node->SetText( 2, path );   // show file full patch
+      if ( GUI->FullPaths_CheckBox.IsChecked() )
+         node->SetText( 2, path ); // show file full patch
       else
-         node->SetText( 2, File::ExtractName( path ) );   //show only file name
+         node->SetText( 2, File::ExtractName( path ) ); //show only file name
 
       node->SetText( 3, File::ExtractExtension( path ) );
    }
@@ -223,6 +255,8 @@ void SplitCFAInterface::UpdateTargetImagesList()
    GUI->Files_TreeBox.EnableHeaderSorting();
    GUI->Files_TreeBox.EnableUpdates();
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInterface::UpdateImageSelectionButtons()
 {
@@ -246,9 +280,11 @@ void SplitCFAInterface::SelectDir() //Select Output Directory
    if ( d.Execute() )
    {
       GUI->OutputDir_Edit.SetText( m_instance.p_outputDir = d.Directory() );
-      GUI->OutputTree_CheckBox.Disable(m_instance.p_outputDir.IsEmpty());
+      GUI->OutputTree_CheckBox.Disable( m_instance.p_outputDir.IsEmpty() );
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInterface::__TargetImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent )
 {
@@ -256,9 +292,9 @@ void SplitCFAInterface::__TargetImages_CurrentNodeUpdated( TreeBox& sender, Tree
    int index = sender.ChildIndex( &current );
    if ( index < 0 || size_type( index ) >= m_instance.p_targetFrames.Length() )
       throw Error( "SplitCFAInterface: *Warning* Corrupted interface structures" );
-
-   // ### If there's something else that depends on which image is selected in the list, do it here.
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInterface::__TargetImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col )
 {
@@ -266,9 +302,9 @@ void SplitCFAInterface::__TargetImages_NodeActivated( TreeBox& sender, TreeBox::
    if ( i < 0 || size_type( i ) >= m_instance.p_targetFrames.Length() )
       throw Error( "SplitCFAInterface: *Warning* Corrupted interface structures" );
 
-   // indexes in TreeBox and image_list is not equal, because TreeBox sorting is enabled.
-   // so i find image index by image full patch
-   SplitCFAInstance::ImageItem& item = m_instance.p_targetFrames[FileInList(GUI->Files_TreeBox[i]->Text(1))];
+   // Indexes in TreeBox and image_list are not equal, because TreeBox sorting
+   // is enabled. So I find image index by image full path.
+   SplitCFAInstance::ImageItem& item = m_instance.p_targetFrames[FileInList( GUI->Files_TreeBox[i]->Text( 1 ) )];
 
    switch ( col )
    {
@@ -279,59 +315,56 @@ void SplitCFAInterface::__TargetImages_NodeActivated( TreeBox& sender, TreeBox::
       break;
    case 2:
       // Activate the item's path: open the image.
-      FileShow(item.path);
+      FileShow( item.path );
       break;
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInterface::__TargetImages_NodeSelectionUpdated( TreeBox& sender )
 {
    UpdateImageSelectionButtons();
 }
 
+// ----------------------------------------------------------------------------
 
-int SplitCFAInterface::FileInList(const String& path)
+int SplitCFAInterface::FileInList( const String& path )
 {
-   // indexes in TreeBox and image_list is not equal, because TreeBox sorting is enabled.
-   // so i find image index by image full patch
-   int j = int(m_instance.p_targetFrames.Length()) -1;
+   // Indexes in TreeBox and image_list are not equal, because TreeBox sorting
+   // is enabled. So I find image index by image full path.
+   int j = int( m_instance.p_targetFrames.Length() ) - 1;
    while ( j >= 0 )
    {
-      if ( m_instance.p_targetFrames.At( j )->path == path  )
+      if ( m_instance.p_targetFrames.At( j )->path == path )
          break; //file found
       j--;
    }
    return j; //-1 = not found
 }
 
-void SplitCFAInterface::AddFile(const String& path, const String& folder )
+// ----------------------------------------------------------------------------
+
+void SplitCFAInterface::AddFile( const String& path, const String& folder )
 {
-   if ( FileInList(path) < 0 ) // new file
+   if ( FileInList( path ) < 0 ) // new file
    {
-      Console().WriteLn( "AddFile: " + path);
+      Console().WriteLn( "AddFile: " + path );
 
       ProcessEvents();
-      // insert the file to list
+      // insert the file into list
       String f;
-      if(!folder.IsEmpty())
+      if ( !folder.IsEmpty() )
       {
-         f = File::ExtractDirectory(path);
-         #if debug
-            Console().WriteLn( "intut TopFolder:" + folder );
-            Console().WriteLn( "input FileFolder:" + f );
-            ProcessEvents();
-         #endif
-         f.DeleteLeft(folder.Length());
+         f = File::ExtractDirectory( path );
+         f.DeleteLeft( folder.Length() );
       }
-
-      #if debug
-         Console().WriteLn( "output subfolder:" + f );
-         ProcessEvents();
-      #endif
 
       m_instance.p_targetFrames.Add( SplitCFAInstance::ImageItem( path, f ) );
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInterface::AddFiles()
 {
@@ -342,23 +375,24 @@ void SplitCFAInterface::AddFiles()
    if ( d.Execute() )
    {
       for ( size_type i = 0; i < d.FileNames().Length(); i++ )
-         AddFile(d.FileNames()[i]);
+         AddFile( d.FileNames()[i] );
       UpdateTargetImagesList();
    }
-   Console().WriteLn( "Total images:" + String(m_instance.p_targetFrames.Length()));
+   Console().WriteLn( "Total images:" + String( m_instance.p_targetFrames.Length() ) );
 }
+
+// ----------------------------------------------------------------------------
 
 /*
  * Secure recursive directory search routine.
  */
-static
-void SearchDirectory_Recursive( StringList& foundFiles, const String& whereToFind, const String& baseDir )
+static void SearchDirectory_Recursive( StringList& foundFiles, const String& whereToFind, const String& baseDir )
 {
    if ( whereToFind.Contains( ".." ) )
       throw Error( "Attempt to climb up the filesystem in file search operation: " + whereToFind );
    if ( !whereToFind.StartsWith( baseDir ) )
       throw Error( "Attempt to walk on a parallel directory tree in file search operation: '" + whereToFind
-                 + "'; expected to be rooted at '" + baseDir + "'" );
+         + "'; expected to be rooted at '" + baseDir + "'" );
    if ( !File::DirectoryExists( whereToFind ) )
       throw Error( "Nonexistent directory in file search operation: " + whereToFind );
 
@@ -385,8 +419,7 @@ void SearchDirectory_Recursive( StringList& foundFiles, const String& whereToFin
       SearchDirectory_Recursive( foundFiles, currentDir + *i, baseDir );
 }
 
-static
-StringList SearchDirectory( const String& whereToFind )
+static StringList SearchDirectory( const String& whereToFind )
 {
    try
    {
@@ -398,6 +431,8 @@ StringList SearchDirectory( const String& whereToFind )
    return StringList();
 }
 
+// ----------------------------------------------------------------------------
+
 void SplitCFAInterface::SearchFile( const String& path, const String& folder ) // Recursiv Search file in sub-folders
 {
    StringList files = SearchDirectory( path );
@@ -405,17 +440,21 @@ void SplitCFAInterface::SearchFile( const String& path, const String& folder ) /
       AddFile( *i, folder );
 }
 
+// ----------------------------------------------------------------------------
+
 void SplitCFAInterface::AddFolders()
 {
    GetDirectoryDialog d;
    d.SetCaption( "SplitCFA: Select Directory" );
    if ( d.Execute() )
    {
-      SearchFile(d.Directory(), File::ExtractDirectory(d.Directory()));
+      SearchFile( d.Directory(), File::ExtractDirectory( d.Directory() ) );
       UpdateTargetImagesList();
    }
-   Console().WriteLn( "Total images:" + String(m_instance.p_targetFrames.Length()));
+   Console().WriteLn( "Total images:" + String( m_instance.p_targetFrames.Length() ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInterface::RemoveSelectedFiles()
 {
@@ -423,13 +462,15 @@ void SplitCFAInterface::RemoveSelectedFiles()
    {
       if ( GUI->Files_TreeBox.Child( i )->IsSelected() )
       {
-         String path = GUI->Files_TreeBox.Child( i )->Text(1);
+         String path = GUI->Files_TreeBox.Child( i )->Text( 1 );
          int fileNumber = FileInList( path );
          m_instance.p_targetFrames.Remove( m_instance.p_targetFrames.At( fileNumber ) );
       }
    }
    UpdateTargetImagesList();
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInterface::__TargetImages_BottonClick( Button& sender, bool checked )
 {
@@ -453,7 +494,7 @@ void SplitCFAInterface::__TargetImages_BottonClick( Button& sender, bool checked
       {
          if ( GUI->Files_TreeBox[i]->IsSelected() )
          {
-            int j = FileInList(GUI->Files_TreeBox[i]->Text(1));
+            int j = FileInList( GUI->Files_TreeBox[i]->Text( 1 ) );
             bool enabled = !m_instance.p_targetFrames[j].enabled;
             m_instance.p_targetFrames[j].enabled = enabled;
             GUI->Files_TreeBox[i]->SetIcon( 0, Bitmap( ScaledResource( enabled ? ":/browser/enabled.png" : ":/browser/disabled.png" ) ) );
@@ -476,6 +517,8 @@ void SplitCFAInterface::__TargetImages_BottonClick( Button& sender, bool checked
    UpdateImageSelectionButtons();
 }
 
+// ----------------------------------------------------------------------------
+
 void SplitCFAInterface::__ToggleSection( SectionBar& sender, Control& section, bool start )
 {
    if ( start )
@@ -489,25 +532,26 @@ void SplitCFAInterface::__ToggleSection( SectionBar& sender, Control& section, b
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void SplitCFAInterface::__MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
 {
    if ( sender == GUI->OutputDir_Edit )
       SelectDir();
 }
 
+// ----------------------------------------------------------------------------
+
 void SplitCFAInterface::__EditCompleted( Edit& sender )
 {
-   if ( !sender.IsModified() ) return;
+   if ( !sender.IsModified() )
+      return;
    sender.SetModified( false );
-
-   #if debug
-   Console().WriteLn( "__EditCompleted()" );
-   #endif
 
    String text = sender.Text().Trimmed();
 
    if ( sender == GUI->Prefix_Edit )
-   m_instance.p_prefix = text;
+      m_instance.p_prefix = text;
    else if ( sender == GUI->Postfix_Edit )
       m_instance.p_postfix = text;
    else if ( sender == GUI->OutputDir_Edit )
@@ -515,7 +559,7 @@ void SplitCFAInterface::__EditCompleted( Edit& sender )
       if ( File::DirectoryExists( text ) )
       {
          m_instance.p_outputDir = text;
-         GUI->OutputTree_CheckBox.Disable(m_instance.p_outputDir.IsEmpty());
+         GUI->OutputTree_CheckBox.Disable( m_instance.p_outputDir.IsEmpty() );
       }
       else
          text = m_instance.p_outputDir;
@@ -524,20 +568,17 @@ void SplitCFAInterface::__EditCompleted( Edit& sender )
    sender.SetText( text );
 }
 
+// ----------------------------------------------------------------------------
+
 void SplitCFAInterface::__Button_Click( Button& sender, bool checked )
 {
-   #if debug
-   Console().WriteLn( "__Button_Click():" + sender.Text() );
-   Console().Flush();
-   #endif
-
    if ( sender == GUI->OutputDir_SelectButton )
       SelectDir();
 
    else if ( sender == GUI->OutputDir_ClearButton )
    {
       GUI->OutputDir_Edit.SetText( m_instance.p_outputDir = TheOutputDirParameter->DefaultValue() );
-      GUI->OutputTree_CheckBox.Disable(m_instance.p_outputDir.IsEmpty());
+      GUI->OutputTree_CheckBox.Disable( m_instance.p_outputDir.IsEmpty() );
    }
 
    else if ( sender == GUI->Overwrite_CheckBox )
@@ -546,9 +587,11 @@ void SplitCFAInterface::__Button_Click( Button& sender, bool checked )
       m_instance.p_outputTree = checked;
    else if ( sender == GUI->OutputSubDirCFA_CheckBox )
       m_instance.p_outputSubDirCFA = checked;
-   GUI->OutputTree_CheckBox.Disable(m_instance.p_outputDir.IsEmpty());
+
+   GUI->OutputTree_CheckBox.Disable( m_instance.p_outputDir.IsEmpty() );
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 SplitCFAInterface::GUIData::GUIData( SplitCFAInterface& w )
@@ -561,7 +604,7 @@ SplitCFAInterface::GUIData::GUIData( SplitCFAInterface& w )
    Files_TreeBox.SetNumberOfColumns( 4 ); // plus 1 hidden column for GUI Stretch
    Files_TreeBox.SetHeaderText( 0, "?" );
    Files_TreeBox.SetHeaderText( 1, "Patch" ); //hiden column
-   Files_TreeBox.HideColumn(1);
+   Files_TreeBox.HideColumn( 1 );
    Files_TreeBox.SetHeaderText( 2, "File" );
    Files_TreeBox.SetHeaderText( 3, "Ext" );
    Files_TreeBox.ShowHeader();
@@ -594,7 +637,7 @@ SplitCFAInterface::GUIData::GUIData( SplitCFAInterface& w )
 
    ToggleSelected_PushButton.SetText( "Toggle Selected" );
    ToggleSelected_PushButton.SetToolTip( "<p>Toggle the enabled/disabled state of currently selected target frames.</p>"
-      "<p>Disabled target frames will be ignored during the SplitCFA process.</p>" );
+                                         "<p>Disabled target frames will be ignored during the SplitCFA process.</p>" );
    ToggleSelected_PushButton.OnClick( (Button::click_event_handler)&SplitCFAInterface::__TargetImages_BottonClick, w );
 
    RemoveSelected_PushButton.SetText( "Remove Selected" );
@@ -634,21 +677,21 @@ SplitCFAInterface::GUIData::GUIData( SplitCFAInterface& w )
 
    OutputTree_CheckBox.SetText( "Tree" );
    OutputTree_CheckBox.SetToolTip( "<p>If checked, SplitCFA will create a new directory tree structure to "
-      "replicate the selected input folders. All subfolders will be created under the output directory, "
-      "and output files will populate them at the same relative locations as their input counterparts.</p>"
-      "<p>If unchecked, SplitCFA will write all output files on a single dirrectory.</p>");
+                                   "replicate the selected input folders. All subfolders will be created under the output directory, "
+                                   "and output files will populate them at the same relative locations as their input counterparts.</p>"
+                                   "<p>If unchecked, SplitCFA will write all output files on a single dirrectory.</p>" );
    OutputTree_CheckBox.OnClick( (Button::click_event_handler)&SplitCFAInterface::__Button_Click, w );
 
    OutputSubDirCFA_CheckBox.SetText( "CFA sub-folder" );
    OutputSubDirCFA_CheckBox.SetToolTip( "<p>If checked, SplitCFA will create four sub-folders for each "
-   "CFA channel, namely CFA0, CFA1, CFA2 and CFA3. Output files will be written according to this scheme.</p>");
+                                        "CFA channel, namely CFA0, CFA1, CFA2 and CFA3. Output files will be written according to this scheme.</p>" );
    OutputSubDirCFA_CheckBox.OnClick( (Button::click_event_handler)&SplitCFAInterface::__Button_Click, w );
 
    const char* ToolTipOutputDir = "<p>This is the directory (or folder) where all output files "
-      "will be written.</p>"
-      "<p>If this field is left blank, output files will be written to the same directories as their "
-      "corresponding target files. In this case, make sure that source directories are writable, or the "
-      "SplitCFA process will fail.</p>";
+                                  "will be written.</p>"
+                                  "<p>If this field is left blank, output files will be written to the same directories as their "
+                                  "corresponding target files. In this case, make sure that source directories are writable, or the "
+                                  "SplitCFA process will fail.</p>";
 
    OutputDir_Edit.SetToolTip( ToolTipOutputDir );
    OutputDir_Edit.OnMouseDoubleClick( (Control::mouse_event_handler)&SplitCFAInterface::__MouseDoubleClick, w );
@@ -673,7 +716,7 @@ SplitCFAInterface::GUIData::GUIData( SplitCFAInterface& w )
    const char* ToolTipPrefix =
       "<p>This is a prefix that will be prepended to the file name of each target image.</p>";
    Prefix_Label.SetText( "Prefix:" );
-   Prefix_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Prefix_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    Prefix_Label.SetToolTip( ToolTipPrefix );
    Prefix_Edit.SetFixedWidth( editWidth1 );
    Prefix_Edit.SetToolTip( ToolTipPrefix );
@@ -682,7 +725,7 @@ SplitCFAInterface::GUIData::GUIData( SplitCFAInterface& w )
    const char* ToolTipPostfix =
       "<p>This is a postfix that will be appended to the file name of each targer image.</p>";
    Postfix_Label.SetText( "Postfix:" );
-   Postfix_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Postfix_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    Postfix_Label.SetToolTip( ToolTipPostfix );
    Postfix_Edit.SetFixedWidth( editWidth1 );
    Postfix_Edit.SetToolTip( ToolTipPostfix );
@@ -690,9 +733,9 @@ SplitCFAInterface::GUIData::GUIData( SplitCFAInterface& w )
 
    Overwrite_CheckBox.SetText( "Overwrite" );
    Overwrite_CheckBox.SetToolTip( "<p>If this option is selected, SplitCFA will overwrite existing files with "
-      "the same names as generated output files. This can be dangerous because the original contents of "
-      "overwritten files will be lost.</p>"
-      "<p><b>Enable this option <u>at your own risk.</u></b></p>" );
+                                  "the same names as generated output files. This can be dangerous because the original contents of "
+                                  "overwritten files will be lost.</p>"
+                                  "<p><b>Enable this option <u>at your own risk.</u></b></p>" );
    Overwrite_CheckBox.OnClick( (Button::click_event_handler)&SplitCFAInterface::__Button_Click, w );
 
    OutputChunks_Sizer.Add( OutputSubDirCFA_CheckBox );
@@ -734,7 +777,7 @@ SplitCFAInterface::GUIData::GUIData( SplitCFAInterface& w )
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF SplitCFAInterface.cpp - Released 2020-07-31T19:33:39Z

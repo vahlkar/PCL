@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:05.355Z
+# Generated on .... 2020-07-31T19:36:41.103Z
 # Project id ...... Sandbox
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,10 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>945dce17-f4d5-47f8-8b65-49e1344c4829</UniqueIdentifier>
+      <UniqueIdentifier>e362b1ca-280e-4fae-a600-8d8ed666329c</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>363fae71-0abe-463e-ba1f-26a0681dee56</UniqueIdentifier>
+      <UniqueIdentifier>f51d5990-6afb-4c36-ad3e-f1facc3fc9fe</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>c366039d-22e4-4ac5-bf75-135e49edc1d0</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,5 +58,10 @@
     <ClInclude Include="..\..\SandboxProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\Sandbox.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

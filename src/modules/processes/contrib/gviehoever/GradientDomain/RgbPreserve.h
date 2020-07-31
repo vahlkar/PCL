@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// RgbPreserve.h - Released 2020-02-27T12:56:01Z
+// RgbPreserve.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,10 @@
 //#include <cassert>
 #include <pcl/Image.h>
 
-namespace pcl {
+namespace pcl
+{
+
+// ----------------------------------------------------------------------------
 
 /// implements base routines for changing image intensities while keeping RGB
 ///
@@ -42,36 +45,38 @@ namespace pcl {
 /// relative amounts of R:G:B are preserved.
 class RgbPreserve
 {
- public:
+public:
 
-  /// numeric type used internally
-  typedef double realType_t;
+   /// numeric type used internally
+   typedef double realType_t;
 
-  /// holds the matrix of image data in double format
-  typedef pcl::DImage imageType_t;
+   /// holds the matrix of image data in double format
+   typedef pcl::DImage imageType_t;
 
-  /// constructor
-  RgbPreserve();
-  /// destructor: releases internal data strucutures
-  ~RgbPreserve();
+   /// constructor
+   RgbPreserve();
+   /// destructor: releases internal data strucutures
+   ~RgbPreserve();
 
-  /// Transform image
-  ///
-  /// If the image set in setImage() is a single channel image,
-  /// this will just assign rNewLuminance to rResultImage_p.
-  ///
-  /// @param rOrigLuminance_p is the original brightness
-  /// @param rBewLuminance_p is the new brightness
-  /// @param rImage_p that contains the original and the result.
-  ///
-  /// @note the term "Luminance" may not be exact in this context
-  void rgbTransformation(imageType_t const &rOrigLuminance_p,
-			 imageType_t const &rNewLuminance_p,
-			 imageType_t &rImage_p) const;
+   /// Transform image
+   ///
+   /// If the image set in setImage() is a single channel image,
+   /// this will just assign rNewLuminance to rResultImage_p.
+   ///
+   /// @param rOrigLuminance_p is the original brightness
+   /// @param rBewLuminance_p is the new brightness
+   /// @param rImage_p that contains the original and the result.
+   ///
+   /// @note the term "Luminance" may not be exact in this context
+   void rgbTransformation( imageType_t const& rOrigLuminance_p,
+      imageType_t const& rNewLuminance_p,
+      imageType_t& rImage_p ) const;
 };
 
-};
+// ----------------------------------------------------------------------------
+
+}; // namespace pcl
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF RgbPreserve.h - Released 2020-02-27T12:56:01Z
+// EOF RgbPreserve.h - Released 2020-07-31T19:33:39Z

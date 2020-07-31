@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkInterface.h - Released 2020-02-27T12:56:01Z
+// BlinkInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -92,27 +92,21 @@ public:
    BlinkInterface();
    virtual ~BlinkInterface();
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   bool IsInstanceGenerator() const override;
+   bool CanImportInstances() const override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& ) override;
+   void SaveSettings() const override;
+   void LoadSettings() override;
+   bool WantsImageNotifications() const override;
+   void ImageCreated( const View& ) override;
+   void ImageDeleted( const View& ) override;
 
-   virtual MetaProcess* Process() const;
-
-   const char** IconImageXPM() const;
-   virtual InterfaceFeatures Features() const;
-
-   virtual bool IsInstanceGenerator() const;
-   virtual bool CanImportInstances() const;
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual void SaveSettings() const;
    void SaveVideoSettings() const;
-
-   virtual void LoadSettings();
    void LoadVideoSettings();
-
-   virtual bool WantsImageNotifications() const;
-   virtual void ImageCreated( const View& );
-   virtual void ImageDeleted( const View& );
 
 private:
 
@@ -218,8 +212,11 @@ private:
    {
    public:
 
-      AutoHTThread( const AbstractImage::ThreadData& data, BlinkData& blinkData, int startIndex, int endIndex ) :
-         m_data( data ), m_blinkData( blinkData ), m_startIndex( startIndex ), m_endIndex( endIndex )
+      AutoHTThread( const AbstractImage::ThreadData& data, BlinkData& blinkData, int startIndex, int endIndex )
+         : m_data( data )
+         , m_blinkData( blinkData )
+         , m_startIndex( startIndex )
+         , m_endIndex( endIndex )
       {
       }
 
@@ -229,7 +226,8 @@ private:
 
       const AbstractImage::ThreadData& m_data;
             BlinkData&                 m_blinkData;
-            int                        m_startIndex, m_endIndex;
+            int                        m_startIndex;
+            int                        m_endIndex;
    };
 
    // -------------------------------------------------------------------------
@@ -240,8 +238,9 @@ private:
 
       HorizontalSizer   Global_Sizer;
 
-      VerticalSizer        CentralPanel_sizer;
-         HorizontalSizer      Preview_sizer;
+      Control              CentralPanel_Control;
+      VerticalSizer        CentralPanel_Sizer;
+         HorizontalSizer      Preview_Sizer;
             ScrollBox            Preview_ScrollBox;
             VerticalSizer        STF_Sizer;
                ToolButton           AutoSTF_Button;
@@ -249,14 +248,14 @@ private:
                ToolButton           RGBLinked_Button;
 
          HorizontalSizer         ActionControl_Sizer;
-            ToolButton           PreviousImage_Button;
-            ToolButton           Play_Button;
-            ToolButton           NextImage_Button;
-            ComboBox             BlinkingDelay_ComboBox;
-            ToolButton           ShowTreeBox_Button;
+            ToolButton              PreviousImage_Button;
+            ToolButton              Play_Button;
+            ToolButton              NextImage_Button;
+            ComboBox                BlinkingDelay_ComboBox;
+            ToolButton              ShowTreeBox_Button;
 
       Control              RightPanel_Control;
-      VerticalSizer        RightPanel_sizer;
+      VerticalSizer        RightPanel_Sizer;
          TreeBox              Files_TreeBox;
          HorizontalSizer      FilesControl_Sizer;
             ToolButton           FileAdd_Button;
@@ -303,7 +302,6 @@ private:
    /*
     * Worker routines
     */
-
    void Init();                  // enable/disable buttons
    void TranslucentPlanets();    // nice pic to Preview if no files open
    void Image2Preview();
@@ -330,39 +328,29 @@ private:
    /*
     * Event handlers
     */
-
    void __Brightness_Click( Button&, bool );
-
    void __Files_NodeSelectionUpdated( TreeBox& );
    void __Files_NodeUpdated( TreeBox&, TreeBox::Node&, int );
    void __Files_MouseWheel( Control&, const Point&, int, unsigned, unsigned );
    void __Files_NodeDoubleClicked( TreeBox&, TreeBox::Node&, int );
-
    void __FileButton_Click( Button&, bool );
-
    void __Delay_ItemSelected( ComboBox&, int );
    void __ActionButton_Click( Button&, bool );
-
    void __ScrollControl_Paint( Control&, const Rect& );
    void __ScrollControl_MouseWheel( Control&, const Point&, int, unsigned, unsigned );
    void __ScrollControl_MousePress( Control&, const Point&, int, unsigned, unsigned );
    void __ScrollControl_MouseMove( Control&, const Point&, unsigned, unsigned );
-
    void __FilePanelHideButton_Click( Button&, bool );
-
    void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
    void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
-
    void __Show( Control& );
    void __Hide( Control& );
-
    void __UpdateAnimation_Timer( Timer& );
    void __UpdatePreview_Timer( Timer& );
 
    /*
     * Helper routines
     */
-
    static bool LoadImage( ImageVariant&, const String& filePath );
    static String SelectDirectory( const String& caption, const String& initialPath = String() );
    static String UniqueFilePath( const String& fileName, const String& dir );
@@ -395,4 +383,4 @@ PCL_END_LOCAL
 #endif   // __BlinkInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.h - Released 2020-02-27T12:56:01Z
+// EOF BlinkInterface.h - Released 2020-07-31T19:33:39Z

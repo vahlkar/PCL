@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInstance.cpp - Released 2020-02-27T12:56:01Z
+// CloneStampInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -64,17 +64,17 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-CloneStampInstance::CloneStampInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   color( uint32( TheCSColorParameter->DefaultValue() ) ),
-   boundsColor( uint32( TheCSBoundsColorParameter->DefaultValue() ) )
+CloneStampInstance::CloneStampInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , color( uint32( TheCSColorParameter->DefaultValue() ) )
+   , boundsColor( uint32( TheCSBoundsColorParameter->DefaultValue() ) )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-CloneStampInstance::CloneStampInstance( const CloneStampInstance& x ) :
-   ProcessImplementation( x )
+CloneStampInstance::CloneStampInstance( const CloneStampInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -723,4 +723,4 @@ size_type CloneStampInstance::ParameterLength( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF CloneStampInstance.cpp - Released 2020-07-31T19:33:39Z

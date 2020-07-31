@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionModule.cpp - Released 2020-02-27T12:56:01Z
+// ConvolutionModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -57,16 +57,16 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
+#include "ConvolutionInterface.h"
 #include "ConvolutionModule.h"
 #include "ConvolutionProcess.h"
-#include "ConvolutionInterface.h"
-#include "UnsharpMaskProcess.h"
-#include "UnsharpMaskInterface.h"
-#include "LarsonSekaninaProcess.h"
 #include "LarsonSekaninaInterface.h"
+#include "LarsonSekaninaProcess.h"
+#include "UnsharpMaskInterface.h"
+#include "UnsharpMaskProcess.h"
 
 namespace pcl
 {
@@ -77,6 +77,8 @@ ConvolutionModule::ConvolutionModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* ConvolutionModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
@@ -86,44 +88,58 @@ const char* ConvolutionModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ConvolutionModule::Name() const
 {
    return "Convolution";
 }
+
+// ----------------------------------------------------------------------------
 
 String ConvolutionModule::Description() const
 {
    return "PixInsight Convolution Process Module"; // Replace with your own description
 }
 
+// ----------------------------------------------------------------------------
+
 String ConvolutionModule::Company() const
 {
    return "Pleiades Astrophoto S.L.";
 }
 
+// ----------------------------------------------------------------------------
+
 String ConvolutionModule::Author() const
 {
-   return "Convolution: Javier Sanchis Mu&ntilde;oz / Juan Conejero\n"
-          "UnsharpMask: Carlos Milovic F. / Juan Conejero\n"
+   return "Convolution: Juan Conejero / Javier Sanchis Mu&ntilde;oz\n"
+          "UnsharpMask: Juan Conejero / Carlos Milovic F.\n"
           "LarsonSekanina: Carlos Milovic F. / Juan Conejero";
 }
 
+// ----------------------------------------------------------------------------
+
 String ConvolutionModule::Copyright() const
 {
-   return "Copyright (c) 2006-2012 Pleiades Astrophoto S.L.";
+   return "Copyright (c) 2006-2020 Pleiades Astrophoto S.L.";
 }
+
+// ----------------------------------------------------------------------------
 
 String ConvolutionModule::TradeMarks() const
 {
    return "Pixinsight";
 }
 
+// ----------------------------------------------------------------------------
+
 String ConvolutionModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "Convolution-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "Convolution-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -133,6 +149,8 @@ String ConvolutionModule::OriginalFileName() const
    return "Convolution-pxm.dll";
 #endif
 }
+
+// ----------------------------------------------------------------------------
 
 void ConvolutionModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -144,6 +162,8 @@ void ConvolutionModule::GetReleaseDate( int& year, int& month, int& day ) const
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -163,4 +183,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF ConvolutionModule.cpp - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Resample.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Resample.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -239,9 +239,11 @@ private:
    template <class P>
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( double a_xRatio, double a_yRatio, int a_width, const StatusMonitor& a_status, size_type a_count ) :
-         AbstractImage::ThreadData( a_status, a_count ),
-         xRatio( a_xRatio ), yRatio( a_yRatio ), width( a_width )
+      ThreadData( double a_xRatio, double a_yRatio, int a_width, const StatusMonitor& a_status, size_type a_count )
+         : AbstractImage::ThreadData( a_status, a_count )
+         , xRatio( a_xRatio )
+         , yRatio( a_yRatio )
+         , width( a_width )
       {
       }
 
@@ -258,8 +260,11 @@ private:
 
       typedef PixelInterpolation::Interpolator<P>  interpolator_type;
 
-      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow ) :
-         m_data( data ), m_firstRow( firstRow ), m_endRow( endRow ), m_interpolator( interpolator )
+      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
+         : m_data( data )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
+         , m_interpolator( interpolator )
       {
       }
 
@@ -326,4 +331,4 @@ void Resample::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Resample.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Resample.cpp - Released 2020-07-31T19:33:12Z

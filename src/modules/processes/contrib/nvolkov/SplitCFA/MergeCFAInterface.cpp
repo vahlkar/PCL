@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAInterface.cpp - Released 2020-02-27T12:56:01Z
+// MergeCFAInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -52,60 +52,66 @@
 // ----------------------------------------------------------------------------
 
 #include "MergeCFAInterface.h"
-#include "MergeCFAProcess.h"
 #include "MergeCFAParameters.h"
+#include "MergeCFAProcess.h"
 
-
-#include <pcl/Settings.h>
-#include <pcl/MessageBox.h>
 #include <pcl/Console.h>
+#include <pcl/MessageBox.h>
+#include <pcl/Settings.h>
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-MergeCFAInterface* TheMergeCFAInterface = 0;
+MergeCFAInterface* TheMergeCFAInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "MergeCFAIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-MergeCFAInterface::MergeCFAInterface() :
-ProcessInterface(),
-m_instance( TheMergeCFAProcess ),
-GUI( 0 )
+MergeCFAInterface::MergeCFAInterface()
+   : ProcessInterface()
+   , m_instance( TheMergeCFAProcess )
 {
    TheMergeCFAInterface = this;
 }
 
+// ----------------------------------------------------------------------------
+
 MergeCFAInterface::~MergeCFAInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString MergeCFAInterface::Id() const
 {
    return "MergeCFA";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* MergeCFAInterface::Process() const
 {
    return TheMergeCFAProcess;
 }
 
-const char** MergeCFAInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String MergeCFAInterface::IconImageSVGFile() const
 {
-   return MergeCFAIcon_XPM;
+   return "@module_icons_dir/MergeCFA.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures MergeCFAInterface::Features() const
 {
    return InterfaceFeature::DefaultGlobal;
 }
+
+// ----------------------------------------------------------------------------
 
 void MergeCFAInterface::ResetInstance()
 {
@@ -113,9 +119,11 @@ void MergeCFAInterface::ResetInstance()
    ImportProcess( defaultMergeCFAInstance );
 }
 
+// ----------------------------------------------------------------------------
+
 bool MergeCFAInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "MergeCFA" );
@@ -126,10 +134,14 @@ bool MergeCFAInterface::Launch( const MetaProcess& P, const ProcessImplementatio
    return &P == TheMergeCFAProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* MergeCFAInterface::NewProcess() const
 {
    return new MergeCFAInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool MergeCFAInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -139,10 +151,14 @@ bool MergeCFAInterface::ValidateProcess( const ProcessImplementation& p, String&
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool MergeCFAInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool MergeCFAInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -160,33 +176,35 @@ void MergeCFAInterface::UpdateControls()
    GUI->CFA2_ViewList.GetMainViews();
    GUI->CFA3_ViewList.GetMainViews();
 
-   GUI->CFA0_ViewList.SelectView(ImageWindow::WindowById(m_instance.p_viewId[0]).MainView());
-   GUI->CFA1_ViewList.SelectView(ImageWindow::WindowById(m_instance.p_viewId[1]).MainView());
-   GUI->CFA2_ViewList.SelectView(ImageWindow::WindowById(m_instance.p_viewId[2]).MainView());
-   GUI->CFA3_ViewList.SelectView(ImageWindow::WindowById(m_instance.p_viewId[3]).MainView());
+   GUI->CFA0_ViewList.SelectView( ImageWindow::WindowById( m_instance.p_viewId[0] ).MainView() );
+   GUI->CFA1_ViewList.SelectView( ImageWindow::WindowById( m_instance.p_viewId[1] ).MainView() );
+   GUI->CFA2_ViewList.SelectView( ImageWindow::WindowById( m_instance.p_viewId[2] ).MainView() );
+   GUI->CFA3_ViewList.SelectView( ImageWindow::WindowById( m_instance.p_viewId[3] ).MainView() );
 }
 
 // ----------------------------------------------------------------------------
+
 void MergeCFAInterface::__ViewList_ViewSelected( ViewList& sender, View& view )
 {
-   String id(view.Id());
+   String id( view.Id() );
    if ( sender == GUI->CFA0_ViewList )
    {
       // CFA0 selected -> try to find CFA 1,2,3 view automaticaly
       m_instance.p_viewId[0] = id;
 
-      if (!id.EndsWith('0')) return;
+      if ( !id.EndsWith( '0' ) )
+         return;
 
-      id.DeleteRight(id.Length()-1); //delete last char
+      id.DeleteRight( id.Length() - 1 ); //delete last char
 
-      for (int cfaIndex = 3; cfaIndex > 0; --cfaIndex )
+      for ( int cfaIndex = 3; cfaIndex > 0; --cfaIndex )
       {
          String cfaViewId( id + String( cfaIndex ) );
          View v = ImageWindow::WindowById( cfaViewId ).MainView();
          if ( !v.IsNull() )
          {
             m_instance.p_viewId[cfaIndex] = cfaViewId;
-            switch (cfaIndex)
+            switch ( cfaIndex )
             {
             case 1:
                GUI->CFA1_ViewList.SelectView( v );
@@ -201,11 +219,15 @@ void MergeCFAInterface::__ViewList_ViewSelected( ViewList& sender, View& view )
          }
       }
    }
-   else if( sender == GUI->CFA1_ViewList ) m_instance.p_viewId[1] = id;
-   else if( sender == GUI->CFA2_ViewList ) m_instance.p_viewId[2] = id;
-   else if( sender == GUI->CFA3_ViewList ) m_instance.p_viewId[3] = id;
+   else if ( sender == GUI->CFA1_ViewList )
+      m_instance.p_viewId[1] = id;
+   else if ( sender == GUI->CFA2_ViewList )
+      m_instance.p_viewId[2] = id;
+   else if ( sender == GUI->CFA3_ViewList )
+      m_instance.p_viewId[3] = id;
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 MergeCFAInterface::GUIData::GUIData( MergeCFAInterface& w )
@@ -268,7 +290,7 @@ MergeCFAInterface::GUIData::GUIData( MergeCFAInterface& w )
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF MergeCFAInterface.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInterface.cpp - Released 2020-02-27T12:56:01Z
+// ColorSaturationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -72,70 +72,23 @@ ColorSaturationInterface* TheColorSaturationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ColorSaturationIcon.xpm"
-#include "show_grid.xpm"
-#include "akima_interpolation.xpm"
-#include "cubic_spline_interpolation.xpm"
-#include "linear_interpolation.xpm"
-#include "delete_point_mode.xpm"
-#include "select_point_mode.xpm"
-#include "edit_point_mode.xpm"
-
-// ----------------------------------------------------------------------------
-
 static const int s_maxZoom = 99;
 static const int s_maxScale = 10;
 
 // ----------------------------------------------------------------------------
 
-ColorSaturationInterface::ColorSaturationInterface() :
-   instance( TheColorSaturationProcess ),
-   m_viewportBitmap( Bitmap::Null() ),
-   m_viewportDirty( true )
+ColorSaturationInterface::ColorSaturationInterface()
+   : m_instance( TheColorSaturationProcess )
 {
    TheColorSaturationInterface = this;
-
-   m_mode = EditMode;
-   m_savedMode = NoMode;
-
-   m_currentPoint = 0;
-
-   m_readoutActive = false;
-   for ( int i = 0; i < 4; ++i )
-      m_readouts[i] = 0;
-
-   m_zoomX = m_zoomY = 1;
-   m_scale = 1;
-   m_wheelSteps = 0;
-
-   m_showGrid = true;
-
-   m_panning = 0;
-   m_panOrigin = 0;
-
-   m_cursorVisible = false;
-   m_dragging = false;
-   m_cursorPos = -1;
-   m_curvePos = 0;
-
-   m_channelColor = RGBAColor( 0xFF, 0xFF, 0x00 ); // H
-
-   m_gridColor0      = RGBAColor( 0x50, 0x50, 0x50 );
-   m_gridColor1      = RGBAColor( 0x37, 0x37, 0x37 );
-   m_gridColor2      = RGBAColor( 0x60, 0x60, 0x60 );
-   m_backgroundColor = RGBAColor( 0x00, 0x00, 0x00 );
-
-   m_minCurveWidth = 300;
-   m_minCurveHeight = 300;
-   m_scaleSize = 8;
-
-   m_settingUp = false;
 }
+
+// ----------------------------------------------------------------------------
 
 ColorSaturationInterface::~ColorSaturationInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -154,9 +107,9 @@ MetaProcess* ColorSaturationInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ColorSaturationInterface::IconImageXPM() const
+String ColorSaturationInterface::IconImageSVGFile() const
 {
-   return ColorSaturationIcon_XPM;
+   return "@module_icons_dir/ColorSaturation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -170,14 +123,14 @@ InterfaceFeatures ColorSaturationInterface::Features() const
 
 void ColorSaturationInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
 
 // ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::RealTimePreviewUpdated( bool active )
 {
-   if ( GUI != 0 )
+   if ( GUI != nullptr )
       if ( active )
          RealTimePreview::SetOwner( *this ); // implicitly updates the r-t preview
       else
@@ -196,7 +149,7 @@ void ColorSaturationInterface::ResetInstance()
 
 bool ColorSaturationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "ColorSaturation" );
@@ -213,7 +166,7 @@ bool ColorSaturationInterface::Launch( const MetaProcess& P, const ProcessImplem
 
 ProcessImplementation* ColorSaturationInterface::NewProcess() const
 {
-   return new ColorSaturationInstance( instance );
+   return new ColorSaturationInstance( m_instance );
 }
 
 // ----------------------------------------------------------------------------
@@ -237,10 +190,8 @@ bool ColorSaturationInterface::RequiresInstanceValidation() const
 
 bool ColorSaturationInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
-
+   m_instance.Assign( p );
    m_currentPoint = 0;
-
    UpdateControls();
    UpdateCurve();
    UpdateRealTimePreview();
@@ -255,10 +206,14 @@ bool ColorSaturationInterface::RequiresRealTimePreviewUpdate( const UInt16Image&
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-ColorSaturationInterface::RealTimeThread::RealTimeThread() : Thread(), m_instance( TheColorSaturationProcess )
+ColorSaturationInterface::RealTimeThread::RealTimeThread()
+   : m_instance( TheColorSaturationProcess )
 {
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::RealTimeThread::Reset( const UInt16Image& image, const ColorSaturationInstance& instance )
 {
@@ -267,10 +222,15 @@ void ColorSaturationInterface::RealTimeThread::Reset( const UInt16Image& image, 
    m_instance.Assign( instance );
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::RealTimeThread::Run()
 {
    m_instance.Preview( m_image );
 }
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 bool ColorSaturationInterface::GenerateRealTimePreview( UInt16Image& image, const View&, const Rect&, int, String& ) const
 {
@@ -281,7 +241,7 @@ bool ColorSaturationInterface::GenerateRealTimePreview( UInt16Image& image, cons
 
    for ( ;; )
    {
-      m_realTimeThread->Reset( image, instance );
+      m_realTimeThread->Reset( image, m_instance );
       m_realTimeThread->Start();
 
       while ( m_realTimeThread->IsActive() )
@@ -294,7 +254,7 @@ bool ColorSaturationInterface::GenerateRealTimePreview( UInt16Image& image, cons
             m_realTimeThread->Wait();
 
             delete m_realTimeThread;
-            m_realTimeThread = 0;
+            m_realTimeThread = nullptr;
             return false;
          }
       }
@@ -304,7 +264,7 @@ bool ColorSaturationInterface::GenerateRealTimePreview( UInt16Image& image, cons
          image.Assign( m_realTimeThread->m_image );
 
          delete m_realTimeThread;
-         m_realTimeThread = 0;
+         m_realTimeThread = nullptr;
          return true;
       }
    }
@@ -321,8 +281,9 @@ bool ColorSaturationInterface::WantsReadoutNotifications() const
 
 void ColorSaturationInterface::BeginReadout( const View& v )
 {
-   if ( GUI != 0 && IsVisible() )
-      m_readoutActive = true;
+   if ( GUI != nullptr )
+      if ( IsVisible() )
+         m_readoutActive = true;
 }
 
 // ----------------------------------------------------------------------------
@@ -359,10 +320,10 @@ size_type ColorSaturationInterface::FindPoint( double x, double y, int tolerance
 {
    double delta = double( tolerancePx )/(GUI->Curve_ScrollBox.Viewport().Width()*m_zoomX - 1);
 
-   const double* xa = instance.C.XVector();
-   const double* ya = instance.C.YVector();
+   const double* xa = m_instance.C.XVector();
+   const double* ya = m_instance.C.YVector();
 
-   for ( size_type i = 0, n = instance.C.Length(); i < n; ++i )
+   for ( size_type i = 0, n = m_instance.C.Length(); i < n; ++i )
    {
       double dxi = Abs( x - xa[i] );
       if ( dxi <= delta )
@@ -397,8 +358,8 @@ size_type ColorSaturationInterface::CreatePoint( double x, double y, int toleran
 {
    double delta = float( tolerancePx )/(GUI->Curve_ScrollBox.Viewport().Width()*m_zoomX - 1);
 
-   const double* xa = instance.C.XVector();
-   const double* ya = instance.C.YVector();
+   const double* xa = m_instance.C.XVector();
+   const double* ya = m_instance.C.YVector();
 
    size_type i;
    for ( i = 0; ; )
@@ -407,7 +368,7 @@ size_type ColorSaturationInterface::CreatePoint( double x, double y, int toleran
       if ( dxi <= delta )
       {
          size_type j = i + 1;
-         if ( j < instance.C.Length() )
+         if ( j < m_instance.C.Length() )
          {
             double dxj = Abs( x - xa[j] );
             if ( dxj <= delta )
@@ -419,13 +380,13 @@ size_type ColorSaturationInterface::CreatePoint( double x, double y, int toleran
             }
          }
 
-         instance.C.Y( i ) = y;
+         m_instance.C.Y( i ) = y;
          break;
       }
 
-      if ( x < xa[i] || ++i == instance.C.Length() )
+      if ( x < xa[i] || ++i == m_instance.C.Length() )
       {
-         instance.C.Add( x, y );
+         m_instance.C.Add( x, y );
          break;
       }
    }
@@ -440,18 +401,18 @@ bool ColorSaturationInterface::DragPoint( size_type i, double x, double y )
 {
    bool ok = false;
 
-   if ( i > 0 && i < instance.C.Length()-1 && x > instance.C.X( i-1 ) && x < instance.C.X( i+1 ) )
+   if ( i > 0 && i < m_instance.C.Length()-1 && x > m_instance.C.X( i-1 ) && x < m_instance.C.X( i+1 ) )
    {
       ok = true;
-      instance.C.Remove( i );
-      instance.C.Add( x, y );
+      m_instance.C.Remove( i );
+      m_instance.C.Add( x, y );
    }
 
    if ( ok == false )
-      instance.C.Y( i ) = y;
+      m_instance.C.Y( i ) = y;
 
-   if ( i == 0 || i == instance.C.Length()-1)
-      instance.C.Y( instance.C.Length()-1 ) = instance.C.Y( 0 ) = y;
+   if ( i == 0 || i == m_instance.C.Length()-1)
+      m_instance.C.Y( m_instance.C.Length()-1 ) = m_instance.C.Y( 0 ) = y;
 
    UpdateRealTimePreview();
 
@@ -464,13 +425,11 @@ size_type ColorSaturationInterface::RemovePoint( double x, double y, int toleran
 
    if ( i != ~size_type( 0 ) )
    {
-      size_type i1 = instance.C.Length() - 1;
+      size_type i1 = m_instance.C.Length() - 1;
       if ( i == 0 || i == i1)
-         instance.C.Y( i1 ) =instance.C.Y( 0 ) = 0;
+         m_instance.C.Y( i1 ) =m_instance.C.Y( 0 ) = 0;
       else
-      {
-            instance.C.Remove( i );
-      }
+         m_instance.C.Remove( i );
 
       UpdateRealTimePreview();
    }
@@ -503,7 +462,7 @@ void ColorSaturationInterface::SetZoom( int hz, int vz, const Point* p )
       int m = contentsWidth - visibleWidth;
       GUI->Curve_ScrollBox.SetHorizontalScrollRange( 0, m );
 
-      if ( p != 0 )
+      if ( p != nullptr )
          GUI->Curve_ScrollBox.SetHorizontalScrollPosition( Range( p->x*m_zoomX - (visibleWidth >> 1), 0, m ) );
    }
    else
@@ -516,7 +475,7 @@ void ColorSaturationInterface::SetZoom( int hz, int vz, const Point* p )
       int m = contentsHeight - visibleHeight;
       GUI->Curve_ScrollBox.SetVerticalScrollRange( 0, m );
 
-      if ( p != 0 )
+      if ( p != nullptr )
          GUI->Curve_ScrollBox.SetVerticalScrollPosition( Range( p->y*m_zoomY - (visibleHeight >> 1), 0, m ) );
    }
    else
@@ -543,7 +502,7 @@ void ColorSaturationInterface::SetMode( working_mode m )
 
 void ColorSaturationInterface::SetInterpolation( int type )
 {
-   instance.C.SetType( type );
+   m_instance.C.SetType( type );
 
    UpdateInterpolationControls();
    UpdateCurve();
@@ -578,8 +537,10 @@ void ColorSaturationInterface::UpdateControls()
    UpdateInterpolationControls();
    UpdateCurveControls();
 
-   GUI->HueShift_NumericControl.SetValue( instance.hueShift );
+   GUI->HueShift_NumericControl.SetValue( m_instance.hueShift );
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::UpdateModeControls()
 {
@@ -591,23 +552,31 @@ void ColorSaturationInterface::UpdateModeControls()
    GUI->PanMode_ToolButton.SetChecked( m_mode == PanMode );
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::UpdateZoomControls()
 {
    GUI->Zoom_SpinBox.SetValue( m_zoomX );
    GUI->Scale_SpinBox.SetValue( m_scale );
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::UpdateGraphicsControls()
 {
    GUI->ShowGrid_ToolButton.SetChecked( m_showGrid );
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::UpdateInterpolationControls()
 {
-   GUI->AkimaSubsplines_ToolButton.SetChecked( instance.C.Type() == CurveType::AkimaSubsplines );
-   GUI->CubicSpline_ToolButton.SetChecked( instance.C.Type() == CurveType::CubicSpline );
-   GUI->Linear_ToolButton.SetChecked( instance.C.Type() == CurveType::Linear );
+   GUI->AkimaSubsplines_ToolButton.SetChecked( m_instance.C.Type() == CurveType::AkimaSubsplines );
+   GUI->CubicSpline_ToolButton.SetChecked( m_instance.C.Type() == CurveType::CubicSpline );
+   GUI->Linear_ToolButton.SetChecked( m_instance.C.Type() == CurveType::Linear );
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::UpdateCurveControls()
 {
@@ -615,7 +584,7 @@ void ColorSaturationInterface::UpdateCurveControls()
    GUI->Output_NumericEdit.SetValue( CurrentOutputValue() );
 
    bool isFirstPoint = m_currentPoint == 0;
-   bool isLastPoint = m_currentPoint == instance.C.Length()-1;
+   bool isLastPoint = m_currentPoint == m_instance.C.Length()-1;
 
    GUI->Input_NumericEdit.Enable( !(isFirstPoint || isLastPoint) );
 
@@ -626,10 +595,12 @@ void ColorSaturationInterface::UpdateCurveControls()
    GUI->LastPoint_ToolButton.Enable( !isLastPoint );
 
    GUI->CurrentPoint_Label.SetText( String().Format( "%u / %u",
-                                    m_currentPoint + 1, instance.C.Length() ) );
+                                    m_currentPoint + 1, m_instance.C.Length() ) );
 
    GUI->RestoreCurve_ToolButton.Enable( !m_storedCurve.IsIdentity() );
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::UpdateCurve()
 {
@@ -638,6 +609,8 @@ void ColorSaturationInterface::UpdateCurve()
    m_viewportDirty = true;
    GUI->Curve_ScrollBox.Viewport().Update();
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::UpdateCurveInfo()
 {
@@ -648,7 +621,6 @@ void ColorSaturationInterface::UpdateCurveInfo()
    }
 
    String s;
-
    switch ( m_mode )
    {
    default:
@@ -659,17 +631,18 @@ void ColorSaturationInterface::UpdateCurveInfo()
    case ZoomOutMode: s = " Zoom Out"; break;
    case PanMode:     s = " Pan"; break;
    }
-
    s.AppendFormat( " | x = %.5f | y = %.5f", m_curvePos.x, m_curvePos.y );
 
    GUI->Info_Label.SetText( s );
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::UpdateRealTimePreview()
 {
    if ( IsRealTimePreviewActive() )
    {
-      if ( m_realTimeThread != 0 )
+      if ( m_realTimeThread != nullptr )
          m_realTimeThread->Abort();
       GUI->UpdateRealTimePreview_Timer.Start();
    }
@@ -763,6 +736,8 @@ void ColorSaturationInterface::PlotGrid( Graphics& g, const Rect& r, int width, 
    g.DrawLine( 0, height >> 1, w, height >> 1 );
 }
 
+// ----------------------------------------------------------------------------
+
 static RGBA ScaleColor_H( float f )
 {
    RGBColorSystem::sample r, g, b;
@@ -796,14 +771,16 @@ void ColorSaturationInterface::PlotScale( Graphics& g, const Rect& r, int width,
    for ( int x = 0; x < w; ++x )
    {
       int diag = (x + r.x0 < ui8) ? ui8 - (x + r.x0) : 0;
-      g.SetPen( ScaleColor_H( instance.ShiftHueValue( float( x + r.x0 )/(width - 1) ) ) );
+      g.SetPen( ScaleColor_H( m_instance.ShiftHueValue( float( x + r.x0 )/(width - 1) ) ) );
       g.DrawLine( x, y0+diag, x, y0+ui8 );
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::PlotCurve( Graphics& g, const Rect& r,  int width, int height, int hZoom, int vZoom )
 {
-   const HSCurve& C = instance.C;
+   const HSCurve& C = m_instance.C;
 
    AutoPointer<HSCurve::interpolator> interpolator( C.InitInterpolator() );
    Array<Point> curve;
@@ -831,12 +808,14 @@ void ColorSaturationInterface::PlotCurve( Graphics& g, const Rect& r,  int width
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::PlotReadouts( Graphics& g, const Bitmap& bmp, const Rect& r, int width, int height )
 {
    int w = bmp.Width();
    int h = bmp.Height();
 
-   float hue = instance.UnshiftHueValue( m_readoutRGBWS.Hue( m_readouts[0], m_readouts[1], m_readouts[2] ) );
+   float hue = m_instance.UnshiftHueValue( m_readoutRGBWS.Hue( m_readouts[0], m_readouts[1], m_readouts[2] ) );
    int x = RoundInt( hue*(width - 1) ) - r.x0;
 
    float sat = m_readoutRGBWS.HSVSaturation( m_readouts[0], m_readouts[1], m_readouts[2] );
@@ -848,6 +827,8 @@ void ColorSaturationInterface::PlotReadouts( Graphics& g, const Bitmap& bmp, con
    if ( y >= 0 && y < h )
       g.DrawLine( 0, y, w, y );
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::PlotCursor( Graphics& g, const Rect& r )
 {
@@ -946,8 +927,10 @@ void ColorSaturationInterface::__Curve_Paint( Control& sender, const pcl::Rect& 
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__Curve_Resize( Control& sender,
-   int /*newWidth*/, int /*newHeight*/, int /*oldWidth*/, int /*oldHeight*/ )
+                                       int /*newWidth*/, int /*newHeight*/, int /*oldWidth*/, int /*oldHeight*/ )
 {
    if ( GUI != nullptr )
       if ( sender == GUI->Curve_ScrollBox.Viewport() )
@@ -960,11 +943,15 @@ void ColorSaturationInterface::__Curve_Resize( Control& sender,
       }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__Curve_ScrollPosUpdated( ScrollBox& sender, int pos )
 {
    if ( sender == GUI->Curve_ScrollBox )
       UpdateCurve();
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::__Curve_Enter( Control& sender )
 {
@@ -973,6 +960,8 @@ void ColorSaturationInterface::__Curve_Enter( Control& sender )
    m_cursorPos = -1;
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__Curve_Leave( Control& sender )
 {
    m_cursorVisible = false;
@@ -980,8 +969,10 @@ void ColorSaturationInterface::__Curve_Leave( Control& sender )
    sender.Update();
 }
 
-void ColorSaturationInterface::__Curve_MousePress(
-   Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
+// ----------------------------------------------------------------------------
+
+void ColorSaturationInterface::__Curve_MousePress( Control& sender,
+                                       const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
 {
    m_cursorPos = pos;
 
@@ -1071,8 +1062,10 @@ void ColorSaturationInterface::__Curve_MousePress(
    UpdateCurveInfo();
 }
 
-void ColorSaturationInterface::__Curve_MouseRelease(
-   Control& /*sender*/, const pcl::Point& /*pos*/, int button, unsigned /*buttons*/, unsigned /*modifiers*/ )
+// ----------------------------------------------------------------------------
+
+void ColorSaturationInterface::__Curve_MouseRelease( Control& /*sender*/,
+                                       const pcl::Point& /*pos*/, int button, unsigned /*buttons*/, unsigned /*modifiers*/ )
 {
    if ( button == MouseButton::Middle && m_savedMode != NoMode )
    {
@@ -1085,8 +1078,10 @@ void ColorSaturationInterface::__Curve_MouseRelease(
    UpdateCurveInfo();
 }
 
-void ColorSaturationInterface::__Curve_MouseMove(
-   Control& sender, const pcl::Point& pos, unsigned buttons, unsigned modifiers )
+// ----------------------------------------------------------------------------
+
+void ColorSaturationInterface::__Curve_MouseMove( Control& sender,
+                                       const pcl::Point& pos, unsigned buttons, unsigned modifiers )
 {
    if ( m_cursorVisible )
    {
@@ -1144,8 +1139,10 @@ void ColorSaturationInterface::__Curve_MouseMove(
    }
 }
 
-void ColorSaturationInterface::__Curve_MouseWheel(
-   Control& sender, const pcl::Point& pos, int delta, unsigned buttons, unsigned modifiers )
+// ----------------------------------------------------------------------------
+
+void ColorSaturationInterface::__Curve_MouseWheel( Control& sender,
+                                       const pcl::Point& pos, int delta, unsigned buttons, unsigned modifiers )
 {
    if ( sender == GUI->Curve_ScrollBox.Viewport() )
    {
@@ -1161,6 +1158,8 @@ void ColorSaturationInterface::__Curve_MouseWheel(
       }
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::__Curve_KeyPress( Control& sender, int key, unsigned modifiers, bool& wantsKey )
 {
@@ -1183,7 +1182,7 @@ void ColorSaturationInterface::__Curve_KeyPress( Control& sender, int key, unsig
          switch ( key )
          {
          case KeyCode::Left:  if ( i > 0 ) --i; break;
-         case KeyCode::Right: if ( i < instance.C.Length()-1 ) ++i; break;
+         case KeyCode::Right: if ( i < m_instance.C.Length()-1 ) ++i; break;
          }
 
          SelectPoint( i );
@@ -1236,6 +1235,8 @@ void ColorSaturationInterface::__Curve_KeyPress( Control& sender, int key, unsig
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__CurveParameter_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->Input_NumericEdit )
@@ -1245,8 +1246,8 @@ void ColorSaturationInterface::__CurveParameter_ValueUpdated( NumericEdit& sende
       if ( x != CurrentInputValue() )
       {
          double d = 1/Pow10I<double>()( TheXHSParameter->Precision() );
-         for ( size_type i = 0; i < instance.C.Length(); ++i )
-            if ( i != CurrentPoint() && Abs( x - instance.C.X( i ) ) < d )
+         for ( size_type i = 0; i < m_instance.C.Length(); ++i )
+            if ( i != CurrentPoint() && Abs( x - m_instance.C.X( i ) ) < d )
             {
                GUI->Input_NumericEdit.SetValue( CurrentInputValue() );
                pcl::MessageBox(
@@ -1257,10 +1258,10 @@ void ColorSaturationInterface::__CurveParameter_ValueUpdated( NumericEdit& sende
 
          DPoint p( x, CurrentOutputValue() );
 
-         instance.C.Remove( CurrentPoint() );
-         instance.C.Add( p );
+         m_instance.C.Remove( CurrentPoint() );
+         m_instance.C.Add( p );
 
-         m_currentPoint = instance.C.Search( x );
+         m_currentPoint = m_instance.C.Search( x );
       }
    }
    else if ( sender == GUI->Output_NumericEdit )
@@ -1271,6 +1272,8 @@ void ColorSaturationInterface::__CurveParameter_ValueUpdated( NumericEdit& sende
    UpdateCurve();
    UpdateRealTimePreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::__Mode_ButtonClick( Button& sender, bool /*checked*/ )
 {
@@ -1288,17 +1291,23 @@ void ColorSaturationInterface::__Mode_ButtonClick( Button& sender, bool /*checke
       SetMode( PanMode );
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__Zoom_ButtonClick( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->Zoom11_ToolButton )
       SetZoom( 1, 1 );
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__Zoom_ValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == GUI->Zoom_SpinBox )
       SetZoom( value, value );
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::__Scale_ValueUpdated( SpinBox& sender, int value )
 {
@@ -1307,11 +1316,15 @@ void ColorSaturationInterface::__Scale_ValueUpdated( SpinBox& sender, int value 
    UpdateCurve();
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__ShowGrid_ButtonClick( Button& /*sender*/, bool checked )
 {
    m_showGrid = checked;
    UpdateCurve();
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::__PointNavigation_ButtonClick( Button& sender, bool /*checked*/ )
 {
@@ -1327,15 +1340,17 @@ void ColorSaturationInterface::__PointNavigation_ButtonClick( Button& sender, bo
    }
    else if ( sender == GUI->NextPoint_ToolButton )
    {
-      if ( CurrentPoint() < instance.C.Length()-1 )
+      if ( CurrentPoint() < m_instance.C.Length()-1 )
          SelectPoint( CurrentPoint()+1 );
    }
    else if ( sender == GUI->LastPoint_ToolButton )
    {
-      if ( CurrentPoint() != instance.C.Length()-1 )
-         SelectPoint( instance.C.Length()-1 );
+      if ( CurrentPoint() != m_instance.C.Length()-1 )
+         SelectPoint( m_instance.C.Length()-1 );
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::__Interpolation_ButtonClick( Button& sender, bool checked )
 {
@@ -1347,15 +1362,19 @@ void ColorSaturationInterface::__Interpolation_ButtonClick( Button& sender, bool
       SetInterpolation( CurveType::Linear );
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__StoreCurve_ButtonClick( Button& /*sender*/, bool /*checked*/ )
 {
-   m_storedCurve = instance.C;
+   m_storedCurve = m_instance.C;
    UpdateCurveControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__RestoreCurve_ButtonClick( Button& /*sender*/, bool /*checked*/ )
 {
-   instance.C = m_storedCurve;
+   m_instance.C = m_storedCurve;
    m_currentPoint = 0;
 
    UpdateControls();
@@ -1363,25 +1382,30 @@ void ColorSaturationInterface::__RestoreCurve_ButtonClick( Button& /*sender*/, b
    UpdateRealTimePreview();
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__ReverseCurve_ButtonClick( Button& /*sender*/, bool /*checked*/ )
 {
-   instance.C.Reverse();
+   m_instance.C.Reverse();
 
    UpdateCurveControls();
    UpdateCurve();
    UpdateRealTimePreview();
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__ResetCurve_ButtonClick( Button& /*sender*/, bool /*checked*/ )
 {
-   instance.C.Reset();
-
+   m_instance.C.Reset();
    m_currentPoint = 0;
 
    UpdateCurveControls();
    UpdateCurve();
    UpdateRealTimePreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSaturationInterface::__KeyPress( Control& sender, int key, unsigned modifiers, bool& wantsKey )
 {
@@ -1497,6 +1521,8 @@ void ColorSaturationInterface::__KeyPress( Control& sender, int key, unsigned mo
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__KeyRelease( Control& sender, int key, unsigned modifiers, bool& wantsKey )
 {
    bool spaceBar = (modifiers & KeyModifier::SpaceBar) != 0;
@@ -1595,18 +1621,22 @@ void ColorSaturationInterface::__KeyRelease( Control& sender, int key, unsigned 
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__HueShift_ValueUpdated( NumericEdit& /*sender*/, double value )
 {
-   instance.hueShift = value;
+   m_instance.hueShift = value;
 
    UpdateControls();
    UpdateCurve();
    UpdateRealTimePreview();
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSaturationInterface::__UpdateRealTimePreview_Timer( Timer& sender )
 {
-   if ( m_realTimeThread != 0 )
+   if ( m_realTimeThread != nullptr )
       if ( m_realTimeThread->IsActive() )
          return;
 
@@ -1619,7 +1649,7 @@ void ColorSaturationInterface::__UpdateRealTimePreview_Timer( Timer& sender )
 
 ColorSaturationInterface::GUIData::GUIData( ColorSaturationInterface& w )
 {
-   int ui16 = w.LogicalPixelsToPhysical( 16 );
+   int ri16 = w.LogicalPixelsToResource( 16 );
    int ui24 = w.LogicalPixelsToPhysical( 24 );
    int labelWidth = w.Font().Width( String( "Saturation:" ) + 'M' );
    int editWidth1 = w.Font().Width( String( '0', 10 ) );
@@ -1647,21 +1677,21 @@ ColorSaturationInterface::GUIData::GUIData( ColorSaturationInterface& w )
 
    //
 
-   EditPointMode_ToolButton.SetIcon( Bitmap( edit_point_mode_XPM ).ScaledToSize( ui16, ui16 ) );
+   EditPointMode_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/edit_point_mode.svg", ri16, ri16 ) );
    EditPointMode_ToolButton.SetScaledFixedSize( 20, 20 );
    EditPointMode_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    EditPointMode_ToolButton.SetToolTip( "Edit Point mode" );
    EditPointMode_ToolButton.SetCheckable();
    EditPointMode_ToolButton.OnClick( (ToolButton::click_event_handler)&ColorSaturationInterface::__Mode_ButtonClick, w );
 
-   SelectPointMode_ToolButton.SetIcon( Bitmap( select_point_mode_XPM ).ScaledToSize( ui16, ui16 ) );
+   SelectPointMode_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/select_point_mode.svg", ri16, ri16 ) );
    SelectPointMode_ToolButton.SetScaledFixedSize( 20, 20 );
    SelectPointMode_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    SelectPointMode_ToolButton.SetToolTip( "Select Point mode [Shift]" );
    SelectPointMode_ToolButton.SetCheckable();
    SelectPointMode_ToolButton.OnClick( (ToolButton::click_event_handler)&ColorSaturationInterface::__Mode_ButtonClick, w );
 
-   DeletePointMode_ToolButton.SetIcon( Bitmap( delete_point_mode_XPM ).ScaledToSize( ui16, ui16 ) );
+   DeletePointMode_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/delete_point_mode.svg", ri16, ri16 ) );
    DeletePointMode_ToolButton.SetScaledFixedSize( 20, 20 );
    DeletePointMode_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    DeletePointMode_ToolButton.SetToolTip( "Delete Point mode [Ctrl]" );
@@ -1717,7 +1747,7 @@ ColorSaturationInterface::GUIData::GUIData( ColorSaturationInterface& w )
    Scale_SpinBox.SetToolTip( "Y-axis (saturation) range." );
    Scale_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ColorSaturationInterface::__Scale_ValueUpdated, w );
 
-   ShowGrid_ToolButton.SetIcon( Bitmap( show_grid_XPM ).ScaledToSize( ui16, ui16 ) );
+   ShowGrid_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/show_grid.svg", ri16, ri16 ) );
    ShowGrid_ToolButton.SetScaledFixedSize( 20, 20 );
    ShowGrid_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ShowGrid_ToolButton.SetToolTip( "Show grid" );
@@ -1827,21 +1857,21 @@ ColorSaturationInterface::GUIData::GUIData( ColorSaturationInterface& w )
 
    CurrentPoint_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
 
-   AkimaSubsplines_ToolButton.SetIcon( Bitmap( akima_interpolation_XPM ).ScaledToSize( ui16, ui16 ) );
+   AkimaSubsplines_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/akima_interpolation.svg", ri16, ri16 ) );
    AkimaSubsplines_ToolButton.SetScaledFixedSize( 20, 20 );
    AkimaSubsplines_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    AkimaSubsplines_ToolButton.SetToolTip( "Akima subspline interpolation" );
    AkimaSubsplines_ToolButton.SetCheckable();
    AkimaSubsplines_ToolButton.OnClick( (ToolButton::click_event_handler)&ColorSaturationInterface::__Interpolation_ButtonClick, w );
 
-   CubicSpline_ToolButton.SetIcon( Bitmap( cubic_spline_interpolation_XPM ).ScaledToSize( ui16, ui16 ) );
+   CubicSpline_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/cubic_spline_interpolation.svg", ri16, ri16 ) );
    CubicSpline_ToolButton.SetScaledFixedSize( 20, 20 );
    CubicSpline_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    CubicSpline_ToolButton.SetToolTip( "Cubic spline interpolation" );
    CubicSpline_ToolButton.SetCheckable();
    CubicSpline_ToolButton.OnClick( (ToolButton::click_event_handler)&ColorSaturationInterface::__Interpolation_ButtonClick, w );
 
-   Linear_ToolButton.SetIcon( Bitmap( linear_interpolation_XPM ).ScaledToSize( ui16, ui16 ) );
+   Linear_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/linear_interpolation.svg", ri16, ri16 ) );
    Linear_ToolButton.SetScaledFixedSize( 20, 20 );
    Linear_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    Linear_ToolButton.SetToolTip( "Linear interpolation" );
@@ -1898,4 +1928,4 @@ ColorSaturationInterface::GUIData::GUIData( ColorSaturationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorSaturationInterface.cpp - Released 2020-07-31T19:33:39Z

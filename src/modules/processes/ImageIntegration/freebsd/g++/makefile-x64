@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:00.681Z
+# Generated on .... 2020-07-31T19:36:34.679Z
 # Project id ...... ImageIntegration
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -19,6 +19,7 @@ all: $(OBJ_DIR)/ImageIntegration-pxm.so
 #
 
 SRC_FILES= \
+../../AdaptiveNormalizationData.cpp \
 ../../DrizzleIntegrationInstance.cpp \
 ../../DrizzleIntegrationInterface.cpp \
 ../../DrizzleIntegrationParameters.cpp \
@@ -35,13 +36,21 @@ SRC_FILES= \
 ../../ImageIntegrationParameters.cpp \
 ../../ImageIntegrationProcess.cpp \
 ../../IntegrationCache.cpp \
-../../SystemMemory.cpp
+../../IntegrationDataLoaderEngine.cpp \
+../../IntegrationDescription.cpp \
+../../IntegrationEngine.cpp \
+../../IntegrationFile.cpp \
+../../IntegrationRejectionEngine.cpp \
+../../LargeScaleRejectionMapGenerationEngine.cpp \
+../../MapIntegrationEngine.cpp \
+../../RejectionMapGenerationEngine.cpp
 
 #
 # Object files
 #
 
 OBJ_FILES= \
+./x64/Release/AdaptiveNormalizationData.o \
 ./x64/Release/DrizzleIntegrationInstance.o \
 ./x64/Release/DrizzleIntegrationInterface.o \
 ./x64/Release/DrizzleIntegrationParameters.o \
@@ -58,13 +67,21 @@ OBJ_FILES= \
 ./x64/Release/ImageIntegrationParameters.o \
 ./x64/Release/ImageIntegrationProcess.o \
 ./x64/Release/IntegrationCache.o \
-./x64/Release/SystemMemory.o
+./x64/Release/IntegrationDataLoaderEngine.o \
+./x64/Release/IntegrationDescription.o \
+./x64/Release/IntegrationEngine.o \
+./x64/Release/IntegrationFile.o \
+./x64/Release/IntegrationRejectionEngine.o \
+./x64/Release/LargeScaleRejectionMapGenerationEngine.o \
+./x64/Release/MapIntegrationEngine.o \
+./x64/Release/RejectionMapGenerationEngine.o
 
 #
 # Dependency files
 #
 
 DEP_FILES= \
+./x64/Release/AdaptiveNormalizationData.d \
 ./x64/Release/DrizzleIntegrationInstance.d \
 ./x64/Release/DrizzleIntegrationInterface.d \
 ./x64/Release/DrizzleIntegrationParameters.d \
@@ -81,7 +98,14 @@ DEP_FILES= \
 ./x64/Release/ImageIntegrationParameters.d \
 ./x64/Release/ImageIntegrationProcess.d \
 ./x64/Release/IntegrationCache.d \
-./x64/Release/SystemMemory.d
+./x64/Release/IntegrationDataLoaderEngine.d \
+./x64/Release/IntegrationDescription.d \
+./x64/Release/IntegrationEngine.d \
+./x64/Release/IntegrationFile.d \
+./x64/Release/IntegrationRejectionEngine.d \
+./x64/Release/LargeScaleRejectionMapGenerationEngine.d \
+./x64/Release/MapIntegrationEngine.d \
+./x64/Release/RejectionMapGenerationEngine.d
 
 #
 # Rules

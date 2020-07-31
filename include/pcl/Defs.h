@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Defs.h - Released 2020-02-27T12:55:23Z
+// pcl/Defs.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -65,7 +65,7 @@
  *       Reference Documentation
  *    </h2>
  *    <p>
- *       <strong>Copyright (c) 2003-2019, The PixInsight Development Team.
+ *       <strong>Copyright (c) 2003-2020, The PixInsight Development Team.
  *       All Rights Reserved</strong>
  *    </p>
  * </div>
@@ -122,13 +122,13 @@
  *    </p>
  *    <p>
  *       The entire source code of PCL, along with all PixInsight modules
- *       released as open-source products, is available at the
- *       <a href="https://github.com/PixInsight/">official PixInsight
- *       repositories on GitHub</a>. Open-source modules are a good starting
+ *       released as open-source products, are available in the
+ *       <a href="https://gitlab.com/pixinsight/">official PixInsight
+ *       repositories at GitLab</a>. Open-source modules are a good starting
  *       point for developing new PixInsight modules. PixInsight and PCL are
  *       supported by a vibrant community on
  *       <a href="http://forum.pixinsight.com">PixInsight Forum</a>, which also
- *       contains a developers section. Join us there!
+ *       includes a software development section.
  *    </p>
  * </div>
  */
@@ -1135,4 +1135,4 @@ typedef int64                 fsize_type;
 #endif   // __PCL_Defs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Defs.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Defs.h - Released 2020-07-31T19:33:04Z

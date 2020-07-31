@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// MaskedStretchParameters.h - Released 2020-02-27T12:56:01Z
+// MaskedStretchParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,11 +68,11 @@ public:
 
    MSTargetBackground( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern MSTargetBackground* TheMSTargetBackgroundParameter;
@@ -85,11 +85,10 @@ public:
 
    MSNumberOfIterations( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern MSNumberOfIterations* TheMSNumberOfIterationsParameter;
@@ -102,13 +101,11 @@ public:
 
    MSClippingFraction( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern MSClippingFraction* TheMSClippingFractionParameter;
@@ -121,7 +118,7 @@ public:
 
    MSBackgroundReferenceViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern MSBackgroundReferenceViewId* TheMSBackgroundReferenceViewIdParameter;
@@ -134,13 +131,11 @@ public:
 
    MSBackgroundLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern MSBackgroundLow* TheMSBackgroundLowParameter;
@@ -153,13 +148,11 @@ public:
 
    MSBackgroundHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern MSBackgroundHigh* TheMSBackgroundHighParameter;
@@ -172,8 +165,8 @@ public:
 
    MSUseROI( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern MSUseROI* TheMSUseROIParameter;
@@ -186,10 +179,10 @@ public:
 
    MSROIX0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern MSROIX0* TheMSROIX0Parameter;
@@ -202,10 +195,10 @@ public:
 
    MSROIY0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern MSROIY0* TheMSROIY0Parameter;
@@ -218,10 +211,10 @@ public:
 
    MSROIX1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern MSROIX1* TheMSROIX1Parameter;
@@ -234,10 +227,10 @@ public:
 
    MSROIY1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern MSROIY1* TheMSROIY1Parameter;
@@ -255,11 +248,11 @@ public:
 
    MSMaskType( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern MSMaskType* TheMSMaskTypeParameter;
@@ -273,4 +266,4 @@ PCL_END_LOCAL
 #endif   // __MaskedStretchParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchParameters.h - Released 2020-02-27T12:56:01Z
+// EOF MaskedStretchParameters.h - Released 2020-07-31T19:33:39Z

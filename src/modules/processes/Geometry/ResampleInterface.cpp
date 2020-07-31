@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ResampleInterface.cpp - Released 2020-02-27T12:56:01Z
+// ResampleInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -65,20 +65,18 @@ ResampleInterface* TheResampleInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ResampleIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 #define currentView        GUI->AllImages_ViewList.CurrentView()
 #define keepAspectRatio    GUI->PreserveAspectRatio_CheckBox.IsChecked()
 
 // ----------------------------------------------------------------------------
 
-ResampleInterface::ResampleInterface() :
-   instance( TheResampleProcess )
+ResampleInterface::ResampleInterface()
+   : m_instance( TheResampleProcess )
 {
    TheResampleInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 ResampleInterface::~ResampleInterface()
 {
@@ -86,30 +84,42 @@ ResampleInterface::~ResampleInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ResampleInterface::Id() const
 {
    return "Resample";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* ResampleInterface::Process() const
 {
    return TheResampleProcess;
 }
 
-const char** ResampleInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String ResampleInterface::IconImageSVGFile() const
 {
-   return ResampleIcon_XPM;
+   return "@module_icons_dir/Resample.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures ResampleInterface::Features() const
 {
    return InterfaceFeature::Default | InterfaceFeature::TrackViewButton;
 }
 
+// ----------------------------------------------------------------------------
+
 void ResampleInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentWindow();
+   m_instance.LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::TrackViewUpdated( bool active )
 {
@@ -124,11 +134,15 @@ void ResampleInterface::TrackViewUpdated( bool active )
       }
 }
 
+// ----------------------------------------------------------------------------
+
 void ResampleInterface::ResetInstance()
 {
    ResampleInstance defaultInstance( TheResampleProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ResampleInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -144,10 +158,14 @@ bool ResampleInterface::Launch( const MetaProcess& P, const ProcessImplementatio
    return &P == TheResampleProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* ResampleInterface::NewProcess() const
 {
-   return new ResampleInstance( instance );
+   return new ResampleInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ResampleInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -157,25 +175,33 @@ bool ResampleInterface::ValidateProcess( const ProcessImplementation& p, pcl::St
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ResampleInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool ResampleInterface::ImportProcess( const ProcessImplementation& p )
 {
    DeactivateTrackView();
    GUI->AllImages_ViewList.SelectView( View::Null() );
 
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool ResampleInterface::WantsImageNotifications() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::ImageUpdated( const View& v )
 {
@@ -186,6 +212,8 @@ void ResampleInterface::ImageUpdated( const View& v )
          UpdateControls();
       }
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::ImageFocused( const View& v )
 {
@@ -204,9 +232,9 @@ void ResampleInterface::ImageFocused( const View& v )
             bool metric;
             w.GetResolution( xRes, yRes, metric );
 
-            instance.p_resolution.x = xRes;
-            instance.p_resolution.y = yRes;
-            instance.p_metric = metric;
+            m_instance.p_resolution.x = xRes;
+            m_instance.p_resolution.y = yRes;
+            m_instance.p_metric = metric;
 
             UpdateControls();
          }
@@ -217,21 +245,21 @@ void ResampleInterface::ImageFocused( const View& v )
 void ResampleInterface::UpdateControls()
 {
    int w = sourceWidth, h = sourceHeight;
-   instance.GetNewSizes( w, h );
+   m_instance.GetNewSizes( w, h );
 
    double wcm, hcm, win, hin;
 
-   if ( instance.p_metric )
+   if ( m_instance.p_metric )
    {
-      wcm = w/instance.p_resolution.x;
-      hcm = h/instance.p_resolution.y;
+      wcm = w/m_instance.p_resolution.x;
+      hcm = h/m_instance.p_resolution.y;
       win = wcm/2.54;
       hin = hcm/2.54;
    }
    else
    {
-      win = w/instance.p_resolution.x;
-      hin = h/instance.p_resolution.y;
+      win = w/m_instance.p_resolution.x;
+      hin = h/m_instance.p_resolution.y;
       wcm = win*2.54;
       hcm = hin*2.54;
    }
@@ -252,13 +280,13 @@ void ResampleInterface::UpdateControls()
    GUI->TargetHeightCentimeters_NumericEdit.SetValue( hcm );
    GUI->TargetHeightInches_NumericEdit.SetValue( hin );
 
-   GUI->PreserveAspectRatio_CheckBox.Enable( instance.p_mode == int( RSMode::RelativeDimensions ) );
+   GUI->PreserveAspectRatio_CheckBox.Enable( m_instance.p_mode == int( RSMode::RelativeDimensions ) );
 
-   if ( instance.p_mode != int( RSMode::RelativeDimensions ) )
+   if ( m_instance.p_mode != int( RSMode::RelativeDimensions ) )
       GUI->PreserveAspectRatio_CheckBox.SetChecked(
-         instance.p_mode == int( RSMode::ForceArea ) ||
-            instance.p_mode != int( RSMode::RelativeDimensions ) &&
-            instance.p_absMode != int( RSAbsoluteMode::ForceWidthAndHeight ) );
+         m_instance.p_mode == int( RSMode::ForceArea ) ||
+            m_instance.p_mode != int( RSMode::RelativeDimensions ) &&
+            m_instance.p_absMode != int( RSAbsoluteMode::ForceWidthAndHeight ) );
 
    String info;
    size_type wasArea = size_type( sourceWidth )*size_type( sourceHeight );
@@ -275,27 +303,27 @@ void ResampleInterface::UpdateControls()
 
    GUI->SizeInfo_Label.SetText( info );
 
-   GUI->HorizontalResolution_NumericEdit.SetValue( instance.p_resolution.x );
-   GUI->VerticalResolution_NumericEdit.SetValue( instance.p_resolution.y );
+   GUI->HorizontalResolution_NumericEdit.SetValue( m_instance.p_resolution.x );
+   GUI->VerticalResolution_NumericEdit.SetValue( m_instance.p_resolution.y );
 
-   GUI->CentimeterUnits_RadioButton.SetChecked( instance.p_metric );
-   GUI->InchUnits_RadioButton.SetChecked( !instance.p_metric );
+   GUI->CentimeterUnits_RadioButton.SetChecked( m_instance.p_metric );
+   GUI->InchUnits_RadioButton.SetChecked( !m_instance.p_metric );
 
-   GUI->ForceResolution_CheckBox.SetChecked( instance.p_forceResolution );
+   GUI->ForceResolution_CheckBox.SetChecked( m_instance.p_forceResolution );
 
-   GUI->Algorithm_ComboBox.SetCurrentItem( instance.p_interpolation );
+   GUI->Algorithm_ComboBox.SetCurrentItem( m_instance.p_interpolation );
 
-   GUI->ClampingThreshold_NumericControl.SetValue( instance.p_clampingThreshold );
-   GUI->ClampingThreshold_NumericControl.Enable( InterpolationAlgorithm::IsClampedInterpolation( instance.p_interpolation ) );
+   GUI->ClampingThreshold_NumericControl.SetValue( m_instance.p_clampingThreshold );
+   GUI->ClampingThreshold_NumericControl.Enable( InterpolationAlgorithm::IsClampedInterpolation( m_instance.p_interpolation ) );
 
-   GUI->Smoothness_NumericControl.SetValue( instance.p_smoothness );
-   GUI->Smoothness_NumericControl.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( instance.p_interpolation ) );
+   GUI->Smoothness_NumericControl.SetValue( m_instance.p_smoothness );
+   GUI->Smoothness_NumericControl.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( m_instance.p_interpolation ) );
 
-   GUI->ResampleMode_ComboBox.SetCurrentItem( instance.p_mode );
+   GUI->ResampleMode_ComboBox.SetCurrentItem( m_instance.p_mode );
 
-   GUI->AbsMode_ComboBox.SetCurrentItem( instance.p_absMode );
-   GUI->AbsMode_ComboBox.Enable( instance.p_mode != int( RSMode::RelativeDimensions ) &&
-                                 instance.p_mode != int( RSMode::ForceArea ) );
+   GUI->AbsMode_ComboBox.SetCurrentItem( m_instance.p_absMode );
+   GUI->AbsMode_ComboBox.Enable( m_instance.p_mode != int( RSMode::RelativeDimensions ) &&
+                                 m_instance.p_mode != int( RSMode::ForceArea ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -314,13 +342,15 @@ void ResampleInterface::__ViewList_ViewSelected( ViewList&, View& )
       bool metric;
       w.GetResolution( xRes, yRes, metric );
 
-      instance.p_resolution.x = xRes;
-      instance.p_resolution.y = yRes;
-      instance.p_metric = metric;
+      m_instance.p_resolution.x = xRes;
+      m_instance.p_resolution.y = yRes;
+      m_instance.p_metric = metric;
    }
 
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::__Width_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -337,16 +367,16 @@ void ResampleInterface::__Width_ValueUpdated( NumericEdit& sender, double value 
       else if ( sender == GUI->TargetWidthCentimeters_NumericEdit )
       {
          double u = value;
-         if ( !instance.p_metric )
+         if ( !m_instance.p_metric )
             u /= 2.54;
-         px = RoundI( u*instance.p_resolution.x );
+         px = RoundI( u*m_instance.p_resolution.x );
       }
       else if ( sender == GUI->TargetWidthInches_NumericEdit )
       {
          double u = value;
-         if ( instance.p_metric )
+         if ( m_instance.p_metric )
             u *= 2.54;
-         px = RoundI( u*instance.p_resolution.x );
+         px = RoundI( u*m_instance.p_resolution.x );
       }
       else
          return; // ??
@@ -355,49 +385,51 @@ void ResampleInterface::__Width_ValueUpdated( NumericEdit& sender, double value 
 
       px = Max( 1, px );
 
-      switch ( instance.p_mode )
+      switch ( m_instance.p_mode )
       {
       default:
       case RSMode::RelativeDimensions:
-         instance.p_size.x = double( px )/sourceWidth;
+         m_instance.p_size.x = double( px )/sourceWidth;
          if ( keepAspectRatio )
-            instance.p_size.y = instance.p_size.x;
+            m_instance.p_size.y = m_instance.p_size.x;
          break;
       case RSMode::AbsolutePixels:
-         instance.p_size.x = px;
+         m_instance.p_size.x = px;
          if ( keepAspectRatio )
-            instance.p_size.y = py;
+            m_instance.p_size.y = py;
          break;
       case RSMode::AbsoluteCentimeters:
-         instance.p_size.x = px/instance.p_resolution.x;
-         if ( !instance.p_metric )
-            instance.p_size.x *= 2.54;
+         m_instance.p_size.x = px/m_instance.p_resolution.x;
+         if ( !m_instance.p_metric )
+            m_instance.p_size.x *= 2.54;
          if ( keepAspectRatio )
          {
-            instance.p_size.y = py/instance.p_resolution.y;
-            if ( !instance.p_metric )
-               instance.p_size.y *= 2.54;
+            m_instance.p_size.y = py/m_instance.p_resolution.y;
+            if ( !m_instance.p_metric )
+               m_instance.p_size.y *= 2.54;
          }
          break;
       case RSMode::AbsoluteInches:
-         instance.p_size.x = px/instance.p_resolution.x;
-         if ( instance.p_metric )
-            instance.p_size.x /= 2.54;
+         m_instance.p_size.x = px/m_instance.p_resolution.x;
+         if ( m_instance.p_metric )
+            m_instance.p_size.x /= 2.54;
          if ( keepAspectRatio )
          {
-            instance.p_size.y = py/instance.p_resolution.y;
-            if ( instance.p_metric )
-               instance.p_size.y /= 2.54;
+            m_instance.p_size.y = py/m_instance.p_resolution.y;
+            if ( m_instance.p_metric )
+               m_instance.p_size.y /= 2.54;
          }
          break;
       case RSMode::ForceArea:
-         instance.p_size.x = size_type( px )*size_type( py ); // size.x is area in pixels; size.y not used
+         m_instance.p_size.x = size_type( px )*size_type( py ); // size.x is area in pixels; size.y not used
          break;
       }
    }
 
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::__Height_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -414,16 +446,16 @@ void ResampleInterface::__Height_ValueUpdated( NumericEdit& sender, double value
       else if ( sender == GUI->TargetHeightCentimeters_NumericEdit )
       {
          double u = value;
-         if ( !instance.p_metric )
+         if ( !m_instance.p_metric )
             u /= 2.54;
-         py = RoundI( u*instance.p_resolution.y );
+         py = RoundI( u*m_instance.p_resolution.y );
       }
       else if ( sender == GUI->TargetHeightInches_NumericEdit )
       {
          double u = value;
-         if ( instance.p_metric )
+         if ( m_instance.p_metric )
             u *= 2.54;
-         py = RoundI( u*instance.p_resolution.y );
+         py = RoundI( u*m_instance.p_resolution.y );
       }
       else
          return; // ??
@@ -432,43 +464,43 @@ void ResampleInterface::__Height_ValueUpdated( NumericEdit& sender, double value
 
       py = Max( 1, py );
 
-      switch ( instance.p_mode )
+      switch ( m_instance.p_mode )
       {
       default:
       case RSMode::RelativeDimensions:
-         instance.p_size.y = double( py )/sourceHeight;
+         m_instance.p_size.y = double( py )/sourceHeight;
          if ( keepAspectRatio )
-            instance.p_size.x = instance.p_size.y;
+            m_instance.p_size.x = m_instance.p_size.y;
          break;
       case RSMode::AbsolutePixels:
-         instance.p_size.y = py;
+         m_instance.p_size.y = py;
          if ( keepAspectRatio )
-            instance.p_size.x = px;
+            m_instance.p_size.x = px;
          break;
       case RSMode::AbsoluteCentimeters:
-         instance.p_size.y = py/instance.p_resolution.y;
-         if ( !instance.p_metric )
-            instance.p_size.y *= 2.54;
+         m_instance.p_size.y = py/m_instance.p_resolution.y;
+         if ( !m_instance.p_metric )
+            m_instance.p_size.y *= 2.54;
          if ( keepAspectRatio )
          {
-            instance.p_size.x = px/instance.p_resolution.x;
-            if ( !instance.p_metric )
-               instance.p_size.x *= 2.54;
+            m_instance.p_size.x = px/m_instance.p_resolution.x;
+            if ( !m_instance.p_metric )
+               m_instance.p_size.x *= 2.54;
          }
          break;
       case RSMode::AbsoluteInches:
-         instance.p_size.y = py/instance.p_resolution.y;
-         if ( instance.p_metric )
-            instance.p_size.y /= 2.54;
+         m_instance.p_size.y = py/m_instance.p_resolution.y;
+         if ( m_instance.p_metric )
+            m_instance.p_size.y /= 2.54;
          if ( keepAspectRatio )
          {
-            instance.p_size.x = px/instance.p_resolution.x;
-            if ( instance.p_metric )
-               instance.p_size.x /= 2.54;
+            m_instance.p_size.x = px/m_instance.p_resolution.x;
+            if ( m_instance.p_metric )
+               m_instance.p_size.x /= 2.54;
          }
          break;
       case RSMode::ForceArea:
-         instance.p_size.x = size_type( py )*size_type( px ); // size.x is area in pixels; size.y not used
+         m_instance.p_size.x = size_type( py )*size_type( px ); // size.x is area in pixels; size.y not used
          break;
       }
    }
@@ -476,110 +508,126 @@ void ResampleInterface::__Height_ValueUpdated( NumericEdit& sender, double value
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void ResampleInterface::__Resolution_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->HorizontalResolution_NumericEdit )
-      instance.p_resolution.x = value;
+      m_instance.p_resolution.x = value;
    else if ( sender == GUI->VerticalResolution_NumericEdit )
-      instance.p_resolution.y = value;
+      m_instance.p_resolution.y = value;
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::__Units_ButtonClick( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->CentimeterUnits_RadioButton )
-      instance.p_metric = true;
+      m_instance.p_metric = true;
    else if ( sender == GUI->InchUnits_RadioButton )
-      instance.p_metric = false;
+      m_instance.p_metric = false;
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::__ForceResolution_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->ForceResolution_CheckBox  )
-      instance.p_forceResolution = checked;
+      m_instance.p_forceResolution = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::__Algorithm_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->Algorithm_ComboBox  )
    {
-      instance.p_interpolation = itemIndex;
-      GUI->ClampingThreshold_NumericControl.Enable( InterpolationAlgorithm::IsClampedInterpolation( instance.p_interpolation ) );
-      GUI->Smoothness_NumericControl.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( instance.p_interpolation ) );
+      m_instance.p_interpolation = itemIndex;
+      GUI->ClampingThreshold_NumericControl.Enable( InterpolationAlgorithm::IsClampedInterpolation( m_instance.p_interpolation ) );
+      GUI->Smoothness_NumericControl.Enable( InterpolationAlgorithm::IsCubicFilterInterpolation( m_instance.p_interpolation ) );
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::__Algorithm_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->ClampingThreshold_NumericControl )
-      instance.p_clampingThreshold = value;
+      m_instance.p_clampingThreshold = value;
    else if ( sender == GUI->Smoothness_NumericControl )
-      instance.p_smoothness = value;
+      m_instance.p_smoothness = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::__Mode_ItemSelected( ComboBox& sender, int itemIndex )
 {
    int w = sourceWidth, h = sourceHeight;
 
-   instance.GetNewSizes( w, h );
+   m_instance.GetNewSizes( w, h );
 
    if ( sender == GUI->ResampleMode_ComboBox )
-      instance.p_mode = itemIndex;
+      m_instance.p_mode = itemIndex;
    else if ( sender == GUI->AbsMode_ComboBox )
-      instance.p_absMode = itemIndex;
+      m_instance.p_absMode = itemIndex;
 
-   switch ( instance.p_mode )
+   switch ( m_instance.p_mode )
    {
    default:
    case RSMode::RelativeDimensions:
-      instance.p_size.x = double( w )/sourceWidth;
-      instance.p_size.y = double( h )/sourceHeight;
-      GUI->PreserveAspectRatio_CheckBox.SetChecked( instance.p_size.x == instance.p_size.y );
+      m_instance.p_size.x = double( w )/sourceWidth;
+      m_instance.p_size.y = double( h )/sourceHeight;
+      GUI->PreserveAspectRatio_CheckBox.SetChecked( m_instance.p_size.x == m_instance.p_size.y );
       break;
 
    case RSMode::AbsolutePixels:
-      instance.p_size.x = w;
-      instance.p_size.y = h;
+      m_instance.p_size.x = w;
+      m_instance.p_size.y = h;
       break;
 
    case RSMode::AbsoluteCentimeters:
-      instance.p_size.x = w/instance.p_resolution.x;
-      instance.p_size.y = h/instance.p_resolution.y;
+      m_instance.p_size.x = w/m_instance.p_resolution.x;
+      m_instance.p_size.y = h/m_instance.p_resolution.y;
 
-      if ( !instance.p_metric )
+      if ( !m_instance.p_metric )
       {
-         instance.p_size.x *= 2.54;
-         instance.p_size.y *= 2.54;
+         m_instance.p_size.x *= 2.54;
+         m_instance.p_size.y *= 2.54;
       }
 
       break;
 
    case RSMode::AbsoluteInches:
-      instance.p_size.x = w/instance.p_resolution.x;
-      instance.p_size.y = h/instance.p_resolution.y;
+      m_instance.p_size.x = w/m_instance.p_resolution.x;
+      m_instance.p_size.y = h/m_instance.p_resolution.y;
 
-      if ( instance.p_metric )
+      if ( m_instance.p_metric )
       {
-         instance.p_size.x /= 2.54;
-         instance.p_size.y /= 2.54;
+         m_instance.p_size.x /= 2.54;
+         m_instance.p_size.y /= 2.54;
       }
 
       break;
 
    case RSMode::ForceArea:
-      instance.p_size.x = size_type( w )*size_type( h );
+      m_instance.p_size.x = size_type( w )*size_type( h );
       break;
    }
 
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->AllImages_ViewList )
       wantsView = view.IsMainView();
 }
+
+// ----------------------------------------------------------------------------
 
 void ResampleInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -593,6 +641,7 @@ void ResampleInterface::__ViewDrop( Control& sender, const Point& pos, const Vie
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 ResampleInterface::GUIData::GUIData( ResampleInterface& w )
 {
@@ -604,13 +653,13 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
    int ui4 = w.LogicalPixelsToPhysical( 4 );
    int ui6 = w.LogicalPixelsToPhysical( 6 );
 
-   // -------------------------------------------------------------------------
+   //
 
    AllImages_ViewList.OnViewSelected( (ViewList::view_event_handler)&ResampleInterface::__ViewList_ViewSelected, w );
    AllImages_ViewList.OnViewDrag( (Control::view_drag_event_handler)&ResampleInterface::__ViewDrag, w );
    AllImages_ViewList.OnViewDrop( (Control::view_drop_event_handler)&ResampleInterface::__ViewDrop, w );
 
-   // -------------------------------------------------------------------------
+   //
 
    Dimensions_SectionBar.SetTitle( "Dimensions" );
    Dimensions_SectionBar.SetSection( Dimensions_Control );
@@ -759,7 +808,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
 
    Dimensions_Control.SetSizer( Dimensions_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Interpolation_SectionBar.SetTitle( "Interpolation" );
    Interpolation_SectionBar.SetSection( Interpolation_Control );
@@ -816,7 +865,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
 
    Interpolation_Control.SetSizer( Interpolation_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Resolution_SectionBar.SetTitle( "Resolution" );
    Resolution_SectionBar.SetSection( Resolution_Control );
@@ -862,7 +911,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
 
    Resolution_Control.SetSizer( Resolution_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Mode_SectionBar.SetTitle( "Process Mode" );
    Mode_SectionBar.SetSection( Mode_Control );
@@ -905,7 +954,7 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
 
    Mode_Control.SetSizer( Mode_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
@@ -935,4 +984,4 @@ ResampleInterface::GUIData::GUIData( ResampleInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ResampleInterface.cpp - Released 2020-07-31T19:33:39Z

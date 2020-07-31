@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.115
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.118
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-11-29T09:40:28.949Z
+# Generated on .... 2020-07-31T19:36:17.934Z
 # Project id ...... zlib
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
@@ -96,6 +96,6 @@ post-build:
 	cp $(OBJ_DIR)/libzlib-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.c
-	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver1 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver2 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

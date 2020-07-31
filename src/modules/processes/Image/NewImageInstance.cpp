@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageInstance.cpp - Released 2020-02-27T12:56:01Z
+// NewImageInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -59,38 +59,38 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-NewImageInstance::NewImageInstance( const MetaProcess* p ) :
-   ProcessImplementation( p )
+NewImageInstance::NewImageInstance( const MetaProcess* p )
+   : ProcessImplementation( p )
+   , width( TheNewImageWidthParameter->DefaultValue() )
+   , height( TheNewImageHeightParameter->DefaultValue() )
+   , numberOfChannels( TheNewImageNumberOfChannelsParameter->DefaultValue() )
+   , colorSpace( NewImageColorSpace::Default )
+   , sampleFormat( NewImageSampleFormat::Default )
+   , v0( TheNewImageV0Parameter->DefaultValue() )
+   , v1( TheNewImageV1Parameter->DefaultValue() )
+   , v2( TheNewImageV2Parameter->DefaultValue() )
+   , va( TheNewImageVAParameter->DefaultValue() )
 {
-   width = height = 256;
-   numberOfChannels = 3;
-   colorSpace = NewImageColorSpace::RGB;
-   sampleFormat = NewImageSampleFormat::F32;
-   v0 = v1 = v2 = 0;
-   va = 1;
 }
 
 // ----------------------------------------------------------------------------
 
-NewImageInstance::NewImageInstance( const NewImageInstance& x ) :
-   ProcessImplementation( x ),
-   id( x.id ),
-   width( x.width ), height( x.height ), numberOfChannels( x.numberOfChannels ),
-   colorSpace( x.colorSpace ),
-   sampleFormat( x.sampleFormat ),
-   v0( x.v0 ), v1( x.v1 ), v2( x.v2 ), va( x.va )
+NewImageInstance::NewImageInstance( const NewImageInstance& x )
+   : ProcessImplementation( x )
 {
+   Assign( x );
 }
 
 // ----------------------------------------------------------------------------
 
 bool NewImageInstance::Validate( pcl::String& info )
 {
-   if ( !id.IsEmpty() && !id.IsValidIdentifier() )
-   {
-      info = "Invalid image identifier: " + id;
-      return false;
-   }
+   if ( !id.IsEmpty() )
+      if ( !id.IsValidIdentifier() )
+      {
+         info = "Invalid image identifier: " + id;
+         return false;
+      }
 
    if ( width < 1 || height < 1 )
    {
@@ -98,11 +98,12 @@ bool NewImageInstance::Validate( pcl::String& info )
       return false;
    }
 
-   if ( colorSpace != NewImageColorSpace::RGB && colorSpace != NewImageColorSpace::Gray )
-   {
-      info = "Invalid color space";
-      return false;
-   }
+   if ( colorSpace != NewImageColorSpace::RGB )
+      if ( colorSpace != NewImageColorSpace::Gray )
+      {
+         info = "Invalid color space";
+         return false;
+      }
 
    if ( numberOfChannels < ((colorSpace == NewImageColorSpace::RGB) ? 3 : 1) )
    {
@@ -150,16 +151,16 @@ void NewImageInstance::Assign( const ProcessImplementation& p )
    const NewImageInstance* x = dynamic_cast<const NewImageInstance*>( &p );
    if ( x != nullptr )
    {
-      id               = x->id;
-      width            = x->width;
-      height           = x->height;
+      id = x->id;
+      width = x->width;
+      height = x->height;
       numberOfChannels = x->numberOfChannels;
-      colorSpace       = x->colorSpace;
-      sampleFormat     = x->sampleFormat;
-      v0               = x->v0;
-      v1               = x->v1;
-      v2               = x->v2;
-      va               = x->va;
+      colorSpace = x->colorSpace;
+      sampleFormat = x->sampleFormat;
+      v0 = x->v0;
+      v1 = x->v1;
+      v2 = x->v2;
+      va = x->va;
    }
 }
 
@@ -384,4 +385,4 @@ size_type NewImageInstance::ParameterLength( const MetaParameter* p, size_type t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF NewImageInstance.cpp - Released 2020-07-31T19:33:39Z

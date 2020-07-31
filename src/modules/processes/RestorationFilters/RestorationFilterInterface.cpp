@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterInterface.cpp - Released 2020-02-27T12:56:01Z
+// RestorationFilterInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -64,19 +64,13 @@ namespace pcl
 
 RestorationFilterInterface* TheRestorationFilterInterface = nullptr;
 
-// ----------------------------------------------------------------------------
-
-#include "RestorationFilterIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 // Target ComboBox items
 enum { ToCIEL, ToCIEY, ToRGB };
 
 // ----------------------------------------------------------------------------
 
-RestorationFilterInterface::RestorationFilterInterface() :
-   instance( TheRestorationFilterProcess )
+RestorationFilterInterface::RestorationFilterInterface()
+   : instance( TheRestorationFilterProcess )
 {
    TheRestorationFilterInterface = this;
 }
@@ -105,9 +99,9 @@ MetaProcess* RestorationFilterInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** RestorationFilterInterface::IconImageXPM() const
+String RestorationFilterInterface::IconImageSVGFile() const
 {
-   return RestorationFilterIcon_XPM;
+   return "@module_icons_dir/RestorationFilter.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -173,7 +167,6 @@ bool RestorationFilterInterface::ImportProcess( const ProcessImplementation& p )
    return true;
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void RestorationFilterInterface::UpdateControls()
@@ -261,7 +254,6 @@ void RestorationFilterInterface::UpdateRangeControls()
    GUI->RangeHigh_NumericControl.SetValue( instance.rangeHigh );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void RestorationFilterInterface::__PSF_PageSelected( TabBox& sender, int pageIndex )
@@ -856,4 +848,4 @@ RestorationFilterInterface::GUIData::GUIData( RestorationFilterInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF RestorationFilterInterface.cpp - Released 2020-07-31T19:33:39Z

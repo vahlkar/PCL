@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInterface.h - Released 2020-02-27T12:56:01Z
+// CosmeticCorrectionInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,16 +54,16 @@
 #ifndef __CosmeticCorrectionInterface_h
 #define __CosmeticCorrectionInterface_h
 
-#include <pcl/ProcessInterface.h>
-#include <pcl/Sizer.h>
-#include <pcl/SectionBar.h>
-#include <pcl/ToolButton.h>
-#include <pcl/PushButton.h>
-#include <pcl/RadioButton.h>
-#include <pcl/NumericControl.h>
-#include <pcl/TreeBox.h>
 #include <pcl/CheckBox.h>
 #include <pcl/GroupBox.h>
+#include <pcl/NumericControl.h>
+#include <pcl/ProcessInterface.h>
+#include <pcl/PushButton.h>
+#include <pcl/RadioButton.h>
+#include <pcl/SectionBar.h>
+#include <pcl/Sizer.h>
+#include <pcl/ToolButton.h>
+#include <pcl/TreeBox.h>
 
 #include "CosmeticCorrectionInstance.h"
 
@@ -81,31 +81,22 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   //const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
    void ApplyInstance() const override;
-
    void RealTimePreviewUpdated( bool active ) override;
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
-
    bool WantsReadoutNotifications() const override;
    void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A ) override;
-
    bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect& rect, int zoomLevel ) const override;
    bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect& rect, int zoomLevel, String& info ) const override;
    bool WantsRealTimePreviewNotifications() const override;
    void RealTimePreviewOwnerChanged( ProcessInterface& ) override;
-
    void SaveSettings() const override;
 
 private:
@@ -116,199 +107,195 @@ private:
    {
       GUIData( CosmeticCorrectionInterface& );
 
-      VerticalSizer  Global_Sizer;
+      VerticalSizer Global_Sizer;
 
-      SectionBar        TargetImages_SectionBar;
-      Control           TargetImages_Control;
-      HorizontalSizer   TargetImages_Sizer;
-         TreeBox           TargetImages_TreeBox;
-         VerticalSizer     TargetButtons_Sizer;
-            PushButton        AddFiles_PushButton;
-            PushButton        SelectAll_PushButton;
-            PushButton        InvertSelection_PushButton;
-            PushButton        ToggleSelected_PushButton;
-            PushButton        RemoveSelected_PushButton;
-            PushButton        Clear_PushButton;
-            CheckBox          FullPaths_CheckBox;
+      SectionBar TargetImages_SectionBar;
+      Control TargetImages_Control;
+      HorizontalSizer TargetImages_Sizer;
+      TreeBox TargetImages_TreeBox;
+      VerticalSizer TargetButtons_Sizer;
+      PushButton AddFiles_PushButton;
+      PushButton SelectAll_PushButton;
+      PushButton InvertSelection_PushButton;
+      PushButton ToggleSelected_PushButton;
+      PushButton RemoveSelected_PushButton;
+      PushButton Clear_PushButton;
+      CheckBox FullPaths_CheckBox;
 
-      SectionBar        Output_SectionBar;
-      Control           Output_Control;
-      VerticalSizer     Output_Sizer;
-         HorizontalSizer   OutputDir_Sizer;
-            Label             OutputDir_Label;
-            Edit              OutputDir_Edit;
-            ToolButton        OutputDir_SelectButton;
-            ToolButton        OutputDir_ClearButton;
-         HorizontalSizer   OutputChunks_Sizer;
-            Label             Prefix_Label;
-            Edit              Prefix_Edit;
-            Label             Postfix_Label;
-            Edit              Postfix_Edit;
-         HorizontalSizer   CFA_Sizer;
-            CheckBox          CFA_CheckBox;
-         HorizontalSizer   Overwrite_Sizer;
-            CheckBox          Overwrite_CheckBox;
-         NumericControl    Amount_NumericControl;
+      SectionBar Output_SectionBar;
+      Control Output_Control;
+      VerticalSizer Output_Sizer;
+      HorizontalSizer OutputDir_Sizer;
+      Label OutputDir_Label;
+      Edit OutputDir_Edit;
+      ToolButton OutputDir_SelectButton;
+      ToolButton OutputDir_ClearButton;
+      HorizontalSizer OutputChunks_Sizer;
+      Label Prefix_Label;
+      Edit Prefix_Edit;
+      Label Postfix_Label;
+      Edit Postfix_Edit;
+      HorizontalSizer CFA_Sizer;
+      CheckBox CFA_CheckBox;
+      HorizontalSizer Overwrite_Sizer;
+      CheckBox Overwrite_CheckBox;
+      NumericControl Amount_NumericControl;
 
       // detect via MasterDark section
-      SectionBar        UseMasterDark_SectionBar;
-      Control           UseMasterDark_Control;
-      VerticalSizer     UseMasterDark_Sizer;
+      SectionBar UseMasterDark_SectionBar;
+      Control UseMasterDark_Control;
+      VerticalSizer UseMasterDark_Sizer;
 
-         GroupBox          MasterDark_GroupBox;
-         VerticalSizer     MasterDark_Sizer;
-            HorizontalSizer   MasterDarkPath_Sizer;
-               Edit              MasterDarkPath_Edit;
-               ToolButton        MasterDarkPath_SelectButton;
-               ToolButton         MasterDarkPath_ClearButton;
+      GroupBox MasterDark_GroupBox;
+      VerticalSizer MasterDark_Sizer;
+      HorizontalSizer MasterDarkPath_Sizer;
+      Edit MasterDarkPath_Edit;
+      ToolButton MasterDarkPath_SelectButton;
+      ToolButton MasterDarkPath_ClearButton;
 
-         GroupBox          Hot_GroupBox;
-         VerticalSizer     Hot_Sizer;
-            CheckBox          HotDark_CheckBox;
-            NumericControl    HotDarkLevel_NumericControl;
-            NumericControl    HotDarkSigma_NumericControl;
-            NumericControl    HotDarkQty_NumericControl;
-            HorizontalSizer   HotRealQty_Sizer;
-               Label             HotRealQty_Label;
-               Label               HotRealQty_Value;
+      GroupBox Hot_GroupBox;
+      VerticalSizer Hot_Sizer;
+      CheckBox HotDark_CheckBox;
+      NumericControl HotDarkLevel_NumericControl;
+      NumericControl HotDarkSigma_NumericControl;
+      NumericControl HotDarkQty_NumericControl;
+      HorizontalSizer HotRealQty_Sizer;
+      Label HotRealQty_Label;
+      Label HotRealQty_Value;
 
-         GroupBox          Cold_GroupBox;
-         VerticalSizer     Cold_Sizer;
-            CheckBox          ColdDark_CheckBox;
-            NumericControl    ColdDarkLevel_NumericControl;
-            NumericControl    ColdDarkSigma_NumericControl;
-            NumericControl    ColdDarkQty_NumericControl;
-            HorizontalSizer   ColdRealQty_Sizer;
-               Label               ColdRealQty_Label;
-               Label               ColdRealQty_Value;
+      GroupBox Cold_GroupBox;
+      VerticalSizer Cold_Sizer;
+      CheckBox ColdDark_CheckBox;
+      NumericControl ColdDarkLevel_NumericControl;
+      NumericControl ColdDarkSigma_NumericControl;
+      NumericControl ColdDarkQty_NumericControl;
+      HorizontalSizer ColdRealQty_Sizer;
+      Label ColdRealQty_Label;
+      Label ColdRealQty_Value;
 
       // auto detect section
-      SectionBar        UseAutoDetect_SectionBar;
-      Control           UseAutoDetect_Control;
-      VerticalSizer     UseAutoDetect_Sizer;
-         CheckBox          DetectHot_CheckBox;
-            NumericControl      DetectHot_NumericControl;
-         CheckBox          DetectCold_CheckBox;
-            NumericControl      DetectCold_NumericControl;
+      SectionBar UseAutoDetect_SectionBar;
+      Control UseAutoDetect_Control;
+      VerticalSizer UseAutoDetect_Sizer;
+      CheckBox DetectHot_CheckBox;
+      NumericControl DetectHot_NumericControl;
+      CheckBox DetectCold_CheckBox;
+      NumericControl DetectCold_NumericControl;
 
       // via defective list section
-      SectionBar        UseDefectList_SectionBar;
-      Control           UseDefectList_Control;
-      VerticalSizer     UseDefectList_Sizer;
+      SectionBar UseDefectList_SectionBar;
+      Control UseDefectList_Control;
+      VerticalSizer UseDefectList_Sizer;
 
-         HorizontalSizer   DefectListTreeBox_Sizer;
-            TreeBox           DefectList_TreeBox;
-            VerticalSizer     DefectListButtons_Sizer;
-               PushButton         LoadList_PushButton;
-               PushButton         SaveList_PushButton;
-               PushButton         SelectAllDefect_PushButton;
-               PushButton         InvertSelectionDefect_PushButton;
-               PushButton         ToggleSelectedDefect_PushButton;
-               PushButton         RemoveSelectedDefect_PushButton;
-               PushButton         ClearDefect_PushButton;
+      HorizontalSizer DefectListTreeBox_Sizer;
+      TreeBox DefectList_TreeBox;
+      VerticalSizer DefectListButtons_Sizer;
+      PushButton LoadList_PushButton;
+      PushButton SaveList_PushButton;
+      PushButton SelectAllDefect_PushButton;
+      PushButton InvertSelectionDefect_PushButton;
+      PushButton ToggleSelectedDefect_PushButton;
+      PushButton RemoveSelectedDefect_PushButton;
+      PushButton ClearDefect_PushButton;
 
-         VerticalSizer      DefineDefect_Sizer;
-            HorizontalSizer   DefineDefect_Sizer1;
-               RadioButton         Row_RadioButton;
-               RadioButton         Col_RadioButton;
-               NumericEdit         DefectPosition;
-               PushButton          AddDefect_PushButton;
+      VerticalSizer DefineDefect_Sizer;
+      HorizontalSizer DefineDefect_Sizer1;
+      RadioButton Row_RadioButton;
+      RadioButton Col_RadioButton;
+      NumericEdit DefectPosition;
+      PushButton AddDefect_PushButton;
 
-            HorizontalSizer   DefineDefect_Sizer2;
-               CheckBox            SelectRange_CheckBox;
-               NumericEdit         DefectStart;
-               NumericEdit         DefectEnd;
+      HorizontalSizer DefineDefect_Sizer2;
+      CheckBox SelectRange_CheckBox;
+      NumericEdit DefectStart;
+      NumericEdit DefectEnd;
 
       // RTP section
-      SectionBar        RTP_SectionBar;
-      Control           RTP_Control;
-      VerticalSizer     RTP_Sizer;
-         HorizontalSizer      RTPLine1_Sizer;
-            Label                  TRPTitleHot_Label;
-            Label                  TRPTitleCold_Label;
-         HorizontalSizer      RTPLine2_Sizer;
-            NumericEdit            RTPDarkQtyHot_Edit;
-            NumericEdit            RTPDarkQtyCold_Edit;
-         HorizontalSizer      RTPLine3_Sizer;
-            NumericEdit            RTPAutoQtyHot_Edit;
-            NumericEdit            RTPAutoQtyCold_Edit;
-            CheckBox               RTPShowMap_CheckBox;
-            PushButton             RTPSnapshot_PushButton;
-
+      SectionBar RTP_SectionBar;
+      Control RTP_Control;
+      VerticalSizer RTP_Sizer;
+      HorizontalSizer RTPLine1_Sizer;
+      Label TRPTitleHot_Label;
+      Label TRPTitleCold_Label;
+      HorizontalSizer RTPLine2_Sizer;
+      NumericEdit RTPDarkQtyHot_Edit;
+      NumericEdit RTPDarkQtyCold_Edit;
+      HorizontalSizer RTPLine3_Sizer;
+      NumericEdit RTPAutoQtyHot_Edit;
+      NumericEdit RTPAutoQtyCold_Edit;
+      CheckBox RTPShowMap_CheckBox;
+      PushButton RTPSnapshot_PushButton;
    };
 
    GUIData* GUI = nullptr;
 
    // Workbench
-
-   DarkImg*         m_md;                              // masterDark image
-   int              m_channels;                        // qty channels in MasterDark image
-   Array<Histogram> m_H;                               // histograms, native PI's resolution
-   double           m_Mean;                            // average mean of all chanels
-   double           m_StdDev;                          // average StdDev of all chanels
-   int              m_MinSlider;                       // Slider range <= minimum
-   int              m_MaxSlider;                       // Slider range >= maximum
+   DarkImg* m_md = nullptr; // masterDark image
+   int m_channels = 1;      // qty channels in MasterDark image
+   Array<Histogram> m_H;    // histograms, native PI's resolution
+   double m_Mean = 0.5;     // average mean of all chanels
+   double m_StdDev = 0.01;  // average StdDev of all chanels
+   int m_MinSlider = 0;     // Slider range <= minimum
+   int m_MaxSlider = 65535; // Slider range >= maximum
 
    // Main routines
-   void   SelectDir();                                 // Select output directory
-   void   LoadMasterDark( const String& filePath );
-   void   SelectMasterFrameDialog();
+   void SelectDir();
+   void LoadMasterDark( const String& filePath );
+   void SelectMasterFrameDialog();
 
-   void   HotUpdateGUI( const size_t );
-   void   HotLevelUpdated( const float, const bool );  // calculate & set Qty from Level
-   void   HotQtyUpdated( const size_t );               // calculate & set Level from Qty
-   void   HotSigmaUpdated( const float );              // calculate Level and QTY
+   void HotUpdateGUI( const size_t );
+   void HotLevelUpdated( const float, const bool ); // calculate & set Qty from Level
+   void HotQtyUpdated( const size_t );              // calculate & set Level from Qty
+   void HotSigmaUpdated( const float );             // calculate Level and QTY
 
-   void   ColdUpdateGUI( const size_t );
-   void   ColdLevelUpdated( const float, const bool);  // calculate & set Qty from Level
-   void   ColdQtyUpdated( const size_t );              // calculate & set Level from Qty
-   void   ColdSigmaUpdated( const float );             // calculate Level and QTY
+   void ColdUpdateGUI( const size_t );
+   void ColdLevelUpdated( const float, const bool ); // calculate & set Qty from Level
+   void ColdQtyUpdated( const size_t );              // calculate & set Level from Qty
+   void ColdSigmaUpdated( const float );             // calculate Level and QTY
 
-   void   AddDefect( const bool isRow, const int position, const bool setRange, const int start, const int end );
+   void AddDefect( const bool isRow, const int position, const bool setRange, const int start, const int end );
 
-   // CosmeticCorrectionInterface Updates
-   void   UpdateControls();
-   void   UpdateTargetImageItem( size_type );
-   void   UpdateTargetImagesList();
-   void   UpdateImageSelectionButtons();
-   void   ClearMasterDark();
-   void   UpdateMasterDarkControls();
-   void   UpdateAutoDetectControls();
-   void   UpdateDefectListSelectionButtons();
-   void   UpdateDefectListItem( size_type );
-   void   UpdateDefectListControls();
+   void UpdateControls();
+   void UpdateTargetImageItem( size_type );
+   void UpdateTargetImagesList();
+   void UpdateImageSelectionButtons();
+   void ClearMasterDark();
+   void UpdateMasterDarkControls();
+   void UpdateAutoDetectControls();
+   void UpdateDefectListSelectionButtons();
+   void UpdateDefectListItem( size_type );
+   void UpdateDefectListControls();
 
-   // RTP
-          void RTPApplyBadMap( UInt16Image& target, const UInt8Image& map, const UInt16Image& value ) const;
-   inline void RTPGetStatistics( Array<double>& avgDev, const View& view )const;
-   inline void RTPGetImageRectangle( UInt16Image& wrk, const View& view ) const;
-   inline void RTPGetDarkRectangle( UInt16Image& mdRect ) const;
+   void RTPApplyBadMap( UInt16Image& target, const UInt8Image& map, const UInt16Image& value ) const;
+   void RTPGetStatistics( Array<double>& avgDev, const View& view ) const;
+   void RTPGetImageRectangle( UInt16Image& wrk, const View& view ) const;
+   void RTPGetDarkRectangle( UInt16Image& mdRect ) const;
 
-   inline void RTPGetAvr( UInt16Image& avr, const UInt16Image& wrk ) const;
-   inline void RTPGetMed( UInt16Image& med, const UInt16Image& wrk ) const;
-   inline void RTPGetBkg( UInt16Image& bkg, const UInt16Image& wrk ) const;
+   void RTPGetAvr( UInt16Image& avr, const UInt16Image& wrk ) const;
+   void RTPGetMed( UInt16Image& med, const UInt16Image& wrk ) const;
+   void RTPGetBkg( UInt16Image& bkg, const UInt16Image& wrk ) const;
 
-   inline int RTPGetHotAutoMap( UInt8Image& mapAutoHot, float& hotAutoValue, const UInt16Image& med, const UInt16Image& bkg, const UInt16Image& avr, const UInt16Image& wrk, const Array<double>& avgDev) const;
-   inline int RTPGetColdAutoMap( UInt8Image& mapAutoCold, float& coldAutoValue, const UInt16Image& med, const UInt16Image& bkg,   const UInt16Image& wrk, const Array<double>& avgDev) const;
-   inline int RTPGetHotDarkMap( UInt8Image& mapDarkHot, float& hotDarkValue, const UInt16Image& mdRect ) const;
-   inline int RTPGetColdDarkMap( UInt8Image& mapDarkCold, float& coldDarkValue, const UInt16Image& mdRect ) const;
-   inline void RTPGetListDefectMap( UInt8Image& mapListDef, const View& view ) const;
-   inline void RTPMakeSnapshot( const UInt16Image& img, const View& view ) const;
-          void RTPUpdate();
+   int RTPGetHotAutoMap( UInt8Image& mapAutoHot, float& hotAutoValue, const UInt16Image& med, const UInt16Image& bkg, const UInt16Image& avr, const UInt16Image& wrk, const Array<double>& avgDev ) const;
+   int RTPGetColdAutoMap( UInt8Image& mapAutoCold, float& coldAutoValue, const UInt16Image& med, const UInt16Image& bkg, const UInt16Image& wrk, const Array<double>& avgDev ) const;
+   int RTPGetHotDarkMap( UInt8Image& mapDarkHot, float& hotDarkValue, const UInt16Image& mdRect ) const;
+   int RTPGetColdDarkMap( UInt8Image& mapDarkCold, float& coldDarkValue, const UInt16Image& mdRect ) const;
+   void RTPGetListDefectMap( UInt8Image& mapListDef, const View& view ) const;
+   void RTPMakeSnapshot( const UInt16Image& img, const View& view ) const;
+   void RTPUpdate();
 
-   void   __TargetImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
-   void   __NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
-   void   __NodeUpdated( TreeBox& sender, TreeBox::Node& node, int col );
-   void   __NodeSelectionUpdated( TreeBox& sender );
-   void   __TargetImages_Click( Button& sender, bool checked );
-   void   __ToggleSection( SectionBar& sender, Control& section, bool start );
-   void   __MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
-   void   __EditCompleted( Edit& sender );
-   void   __Button_Click( Button& sender, bool checked );
-   void   __RealValueUpdated( NumericEdit& sender, double value );
-   void   __CheckSection( SectionBar& sender, bool checked );
-   void   __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
-   void   __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
+   void __TargetImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
+   void __NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
+   void __NodeUpdated( TreeBox& sender, TreeBox::Node& node, int col );
+   void __NodeSelectionUpdated( TreeBox& sender );
+   void __TargetImages_Click( Button& sender, bool checked );
+   void __ToggleSection( SectionBar& sender, Control& section, bool start );
+   void __MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
+   void __EditCompleted( Edit& sender );
+   void __Button_Click( Button& sender, bool checked );
+   void __RealValueUpdated( NumericEdit& sender, double value );
+   void __CheckSection( SectionBar& sender, bool checked );
+   void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
 
    friend struct GUIData;
 };
@@ -321,9 +308,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __CosmeticCorrectionInterface_h
+#endif // __CosmeticCorrectionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInterface.h - Released 2020-02-27T12:56:01Z
+// EOF CosmeticCorrectionInterface.h - Released 2020-07-31T19:33:39Z

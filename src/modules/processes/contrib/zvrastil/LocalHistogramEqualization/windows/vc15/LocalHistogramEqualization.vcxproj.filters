@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:10.298Z
+# Generated on .... 2020-07-31T19:36:48.125Z
 # Project id ...... LocalHistogramEqualization
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>c0892dde-a4e8-4e70-8877-5a0a0ac47324</UniqueIdentifier>
+      <UniqueIdentifier>6807bc70-d4f7-4c7c-8c0f-255852e44b21</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>99b72a42-ea0d-42cb-8347-404d36c1183a</UniqueIdentifier>
+      <UniqueIdentifier>8b9078c5-9c6f-4d64-a913-349de7245d37</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>72de5034-0763-481b-8bdb-4eaa4a9a9411</UniqueIdentifier>
+      <UniqueIdentifier>16b8f461-938e-41b6-9346-3bf0584d5b80</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -60,7 +60,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\LocalHistogramEqualizationIcon.png">
+    <None Include="..\..\icons\LocalHistogramEqualization.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

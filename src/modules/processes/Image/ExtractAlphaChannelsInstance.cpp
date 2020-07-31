@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsInstance.cpp - Released 2020-02-27T12:56:01Z
+// ExtractAlphaChannelsInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -62,18 +62,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ExtractAlphaChannelsInstance::ExtractAlphaChannelsInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   channels( EAChannels::Default ),
-   channelList( TheEAChannelListParameter->DefaultValue() ),
-   extractChannels( TheEAExtractParameter->DefaultValue() ),
-   deleteChannels( TheEADeleteParameter->DefaultValue() )
+ExtractAlphaChannelsInstance::ExtractAlphaChannelsInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , channels( EAChannels::Default )
+   , channelList( TheEAChannelListParameter->DefaultValue() )
+   , extractChannels( TheEAExtractParameter->DefaultValue() )
+   , deleteChannels( TheEADeleteParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ExtractAlphaChannelsInstance::ExtractAlphaChannelsInstance( const ExtractAlphaChannelsInstance& x ) : ProcessImplementation( x )
+ExtractAlphaChannelsInstance::ExtractAlphaChannelsInstance( const ExtractAlphaChannelsInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -621,4 +622,4 @@ void ExtractAlphaChannelsInstance::ParseChannelList( SortedArray<int>& list, con
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ExtractAlphaChannelsInstance.cpp - Released 2020-07-31T19:33:39Z

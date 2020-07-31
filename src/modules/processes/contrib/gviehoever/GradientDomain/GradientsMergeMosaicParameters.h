@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaicParameters.h - Released 2020-02-27T12:56:01Z
+// GradientsMergeMosaicParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,6 @@
 #ifndef __GradientsMergeMosaicParameters_h
 #define __GradientsMergeMosaicParameters_h
 
-
 #include <pcl/MetaParameter.h>
 
 namespace pcl
@@ -47,7 +46,7 @@ public:
 
    GradientsMergeMosaicTargetFrames( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern GradientsMergeMosaicTargetFrames* TheGradientsMergeMosaicTargetFramesParameter;
@@ -60,8 +59,8 @@ public:
 
    GradientsMergeMosaicTargetFrameEnabled( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern GradientsMergeMosaicTargetFrameEnabled* TheGradientsMergeMosaicTargetFrameEnabledParameter;
@@ -74,31 +73,33 @@ public:
 
    GradientsMergeMosaicTargetFramePath( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern GradientsMergeMosaicTargetFramePath* TheGradientsMergeMosaicTargetFramePathParameter;
 
 // ----------------------------------------------------------------------------
 
-
 class GradientsMergeMosaicType : public MetaEnumeration
 {
 public:
 
-   typedef enum { Overlay,
-          Average,
-          NumberOfItems,
-          Default = Average } eType_t;
+   typedef enum
+   {
+      Overlay,
+      Average,
+      NumberOfItems,
+      Default = Average
+   } eType_t;
 
    GradientsMergeMosaicType( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern GradientsMergeMosaicType* TheGradientsMergeMosaicTypeParameter;
@@ -112,15 +113,14 @@ public:
 
    GradientsMergeMosaicShrinkCount( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GradientsMergeMosaicShrinkCount* TheGradientsMergeMosaicShrinkCountParameter;
-
 
 // ----------------------------------------------------------------------------
 
@@ -131,11 +131,11 @@ public:
 
    GradientsMergeMosaicFeatherRadius( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GradientsMergeMosaicFeatherRadius* TheGradientsMergeMosaicFeatherRadiusParameter;
@@ -148,13 +148,13 @@ public:
 
    GradientsMergeMosaicBlackPoint( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual int Precision() const;
+   int Precision() const override;
 
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GradientsMergeMosaicBlackPoint* TheGradientsMergeMosaicBlackPointParameter;
@@ -167,21 +167,20 @@ public:
 
    GradientsMergeMosaicGenerateMask( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual bool DefaultValue() const;
+   bool DefaultValue() const override;
 };
 
 extern GradientsMergeMosaicGenerateMask* TheGradientsMergeMosaicGenerateMaskParameter;
 
 // ----------------------------------------------------------------------------
 
-
 PCL_END_LOCAL
 
-} // pcl
+} // namespace pcl
 
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaicParameters.h - Released 2020-02-27T12:56:01Z
+// EOF GradientsMergeMosaicParameters.h - Released 2020-07-31T19:33:39Z

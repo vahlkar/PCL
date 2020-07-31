@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorParameters.h - Released 2020-02-27T12:56:01Z
+// StarGeneratorParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -68,7 +68,7 @@ public:
 
    SGStarDatabasePath( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern SGStarDatabasePath* TheSGStarDatabasePathParameter;
@@ -81,11 +81,11 @@ public:
 
    SGCenterRA( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGCenterRA* TheSGCenterRAParameter;
@@ -98,11 +98,11 @@ public:
 
    SGCenterDec( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGCenterDec* TheSGCenterDecParameter;
@@ -115,11 +115,11 @@ public:
 
    SGEpoch( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGEpoch* TheSGEpochParameter;
@@ -137,11 +137,11 @@ public:
 
    SGProjectionSystem( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern SGProjectionSystem* TheSGProjectionSystemParameter;
@@ -154,11 +154,11 @@ public:
 
    SGFocalLength( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGFocalLength* TheSGFocalLengthParameter;
@@ -171,11 +171,11 @@ public:
 
    SGPixelSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGPixelSize* TheSGPixelSizeParameter;
@@ -188,10 +188,10 @@ public:
 
    SGSensorWidth( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGSensorWidth* TheSGSensorWidthParameter;
@@ -204,10 +204,10 @@ public:
 
    SGSensorHeight( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGSensorHeight* TheSGSensorHeightParameter;
@@ -220,11 +220,11 @@ public:
 
    SGLimitMagnitude( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGLimitMagnitude* TheSGLimitMagnitudeParameter;
@@ -237,11 +237,11 @@ public:
 
    SGStarFWHM( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGStarFWHM* TheSGStarFWHMParameter;
@@ -254,8 +254,8 @@ public:
 
    SGNonlinear( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern SGNonlinear* TheSGNonlinearParameter;
@@ -268,11 +268,11 @@ public:
 
    SGTargetMinimumValue( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SGTargetMinimumValue* TheSGTargetMinimumValueParameter;
@@ -290,11 +290,11 @@ public:
 
    SGOutputMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern SGOutputMode* TheSGOutputModeParameter;
@@ -307,7 +307,7 @@ public:
 
    SGOutputFilePath( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern SGOutputFilePath* TheSGOutputFilePathParameter;
@@ -321,4 +321,4 @@ PCL_END_LOCAL
 #endif   // __StarGeneratorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorParameters.h - Released 2020-02-27T12:56:01Z
+// EOF StarGeneratorParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionInstance.cpp - Released 2020-02-27T12:56:01Z
+// GradientsHdrCompositionInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,8 +29,8 @@
 // ----------------------------------------------------------------------------
 
 #include "GradientsHdrCompositionInstance.h"
-#include "GradientsHdrCompositionParameters.h"
 #include "GradientsHdrComposition.h"
+#include "GradientsHdrCompositionParameters.h"
 
 namespace pcl
 {
@@ -38,25 +38,29 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 GradientsHdrCompositionInstance::GradientsHdrCompositionInstance( const MetaProcess* m )
-  :ProcessImplementation( m )
-  ,targetFrames()
-  ,dLogBias(TheGradientsHdrCompositionLogBiasParameter->DefaultValue())
-  ,bKeepLog(TheGradientsHdrCompositionKeepLogParameter->DefaultValue())
-  ,bNegativeBias(TheGradientsHdrCompositionNegativeBiasParameter->DefaultValue())
-  ,generateMask(TheGradientsHdrCompositionGenerateMaskParameter->DefaultValue())
+   : ProcessImplementation( m )
+   , targetFrames()
+   , dLogBias( TheGradientsHdrCompositionLogBiasParameter->DefaultValue() )
+   , bKeepLog( TheGradientsHdrCompositionKeepLogParameter->DefaultValue() )
+   , bNegativeBias( TheGradientsHdrCompositionNegativeBiasParameter->DefaultValue() )
+   , generateMask( TheGradientsHdrCompositionGenerateMaskParameter->DefaultValue() )
 {
 }
 
-GradientsHdrCompositionInstance::GradientsHdrCompositionInstance( const GradientsHdrCompositionInstance& x ) :
-ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+GradientsHdrCompositionInstance::GradientsHdrCompositionInstance( const GradientsHdrCompositionInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
 
+// ----------------------------------------------------------------------------
+
 void GradientsHdrCompositionInstance::Assign( const ProcessImplementation& p )
 {
    const GradientsHdrCompositionInstance* x = dynamic_cast<const GradientsHdrCompositionInstance*>( &p );
-   if ( x != 0 )
+   if ( x != nullptr )
    {
       targetFrames = x->targetFrames;
       dLogBias = x->dLogBias;
@@ -66,21 +70,28 @@ void GradientsHdrCompositionInstance::Assign( const ProcessImplementation& p )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 bool GradientsHdrCompositionInstance::CanExecuteOn( const View& view, String& whyNot ) const
 {
    whyNot = "GradientsHdrComposition can only be executed in the global context.";
-   if (dLogBias>1.0) {
-     whyNot = "GradientsHdrComposition needs in range 0..1.";
-     return false;
+   if ( dLogBias > 1.0 )
+   {
+      whyNot = "GradientsHdrComposition needs in range 0..1.";
+      return false;
    }
 
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool GradientsHdrCompositionInstance::IsHistoryUpdater( const View& view ) const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsHdrCompositionInstance::CanExecuteGlobal( String& whyNot ) const
 {
@@ -96,89 +107,97 @@ bool GradientsHdrCompositionInstance::CanExecuteGlobal( String& whyNot ) const
 // ----------------------------------------------------------------------------
 
 //static
-ImageWindow GradientsHdrCompositionInstance::CreateImageWindow( const IsoString& id, GradientsHdrComposition::imageType_t const &rImage_p)
+ImageWindow GradientsHdrCompositionInstance::CreateImageWindow( const IsoString& id, GradientsHdrComposition::imageType_t const& rImage_p )
 {
-  int const nRows=rImage_p.Height();
-  int const nCols=rImage_p.Width();
-  int const nChannels=rImage_p.NumberOfNominalChannels();
-  int const nBitsPerSample=rImage_p.BitsPerSample();
-  bool const bIsFloatSample=rImage_p.IsFloatSample();
-  bool const bIsColor=rImage_p.IsColor();
+   int const nRows = rImage_p.Height();
+   int const nCols = rImage_p.Width();
+   int const nChannels = rImage_p.NumberOfNominalChannels();
+   int const nBitsPerSample = rImage_p.BitsPerSample();
+   bool const bIsFloatSample = rImage_p.IsFloatSample();
+   bool const bIsColor = rImage_p.IsColor();
 
-  ImageWindow window( nCols, nRows, nChannels,
-		      nBitsPerSample, bIsFloatSample, bIsColor, true, id );
-  if ( window.IsNull() )
-    throw Error( "Unable to create image window: " + id );
-  window.MainView().Image().CopyImage(rImage_p);
-  return window;
+   ImageWindow window( nCols, nRows, nChannels,
+      nBitsPerSample, bIsFloatSample, bIsColor, true, id );
+   if ( window.IsNull() )
+      throw Error( "Unable to create image window: " + id );
+   window.MainView().Image().CopyImage( rImage_p );
+   return window;
 }
+
+// ----------------------------------------------------------------------------
 
 //static
-ImageWindow GradientsHdrCompositionInstance::CreateImageWindow( const IsoString& id, GradientsHdrComposition::numImageType_t const &rImage_p)
+ImageWindow GradientsHdrCompositionInstance::CreateImageWindow( const IsoString& id, GradientsHdrComposition::numImageType_t const& rImage_p )
 {
-  // FIXME change to template style
-  int const nRows=rImage_p.Height();
-  int const nCols=rImage_p.Width();
-  int const nChannels=rImage_p.NumberOfNominalChannels();
-  int const nBitsPerSample=rImage_p.BitsPerSample();
-  bool const bIsFloatSample=rImage_p.IsFloatSample();
-  bool const bIsColor=rImage_p.IsColor();
+   // FIXME change to template style
+   int const nRows = rImage_p.Height();
+   int const nCols = rImage_p.Width();
+   int const nChannels = rImage_p.NumberOfNominalChannels();
+   int const nBitsPerSample = rImage_p.BitsPerSample();
+   bool const bIsFloatSample = rImage_p.IsFloatSample();
+   bool const bIsColor = rImage_p.IsColor();
 
-  ImageWindow window( nCols, nRows, nChannels,
-		      nBitsPerSample, bIsFloatSample, bIsColor, true, id );
-  if ( window.IsNull() )
-    throw Error( "Unable to create image window: " + id );
-  window.MainView().Image().CopyImage(rImage_p);
-  return window;
+   ImageWindow window( nCols, nRows, nChannels,
+      nBitsPerSample, bIsFloatSample, bIsColor, true, id );
+   if ( window.IsNull() )
+      throw Error( "Unable to create image window: " + id );
+   window.MainView().Image().CopyImage( rImage_p );
+   return window;
 }
 
+// ----------------------------------------------------------------------------
 
 bool GradientsHdrCompositionInstance::ExecuteGlobal()
 {
    /*
     * Start with a general validation of working parameters.
     */
-  GradientsHdrComposition::imageListType_t imageList;
-  {
-    String why;
-    if ( !CanExecuteGlobal( why ) )
-      throw Error( why );
-    for ( image_list::const_iterator i = targetFrames.Begin(); i != targetFrames.End(); ++i ){
-      if ( i->enabled){
-	if (!File::Exists( i->path ) )
-	  throw( "No such file exists on the local filesystem: " + i->path );
-	imageList.Add(i->path);
+   GradientsHdrComposition::imageListType_t imageList;
+   {
+      String why;
+      if ( !CanExecuteGlobal( why ) )
+         throw Error( why );
+      for ( image_list::const_iterator i = targetFrames.Begin(); i != targetFrames.End(); ++i )
+      {
+         if ( i->enabled )
+         {
+            if ( !File::Exists( i->path ) )
+               throw( "No such file exists on the local filesystem: " + i->path );
+            imageList.Add( i->path );
+         }
       }
-    }
-  }
-  double bias=0.0;
-  const double biasRange=TheGradientsHdrCompositionLogBiasParameter->MaximumValue()-TheGradientsHdrCompositionLogBiasParameter->MinimumValue();
-  if(dLogBias>TheGradientsHdrCompositionLogBiasParameter->MinimumValue()+0.05*biasRange){
-    bias=std::pow(10.0,dLogBias);
-  }
-  if(bNegativeBias){
-    bias= -bias;
-  }
+   }
+   double bias = 0.0;
+   const double biasRange = TheGradientsHdrCompositionLogBiasParameter->MaximumValue() - TheGradientsHdrCompositionLogBiasParameter->MinimumValue();
+   if ( dLogBias > TheGradientsHdrCompositionLogBiasParameter->MinimumValue() + 0.05 * biasRange )
+   {
+      bias = std::pow( 10.0, dLogBias );
+   }
+   if ( bNegativeBias )
+   {
+      bias = -bias;
+   }
 
-  GradientsHdrComposition::imageType_t result;
-  GradientsHdrComposition::numImageType_t dxNumImage,dyNumImage;
-  GradientsHdrComposition gradientsHdrComposition;
+   GradientsHdrComposition::imageType_t result;
+   GradientsHdrComposition::numImageType_t dxNumImage, dyNumImage;
+   GradientsHdrComposition gradientsHdrComposition;
 
-  // std::cerr<<"Bias="<<bias<<std::endl;
-  gradientsHdrComposition.hdrComposition(imageList,bKeepLog,bias,result,dxNumImage,dyNumImage);
+   // std::cerr<<"Bias="<<bias<<std::endl;
+   gradientsHdrComposition.hdrComposition( imageList, bKeepLog, bias, result, dxNumImage, dyNumImage );
 
-  ImageWindow window=CreateImageWindow("HdrComposition",result);
-  window.Show();
-  if(generateMask){
-    dxNumImage.Rescale();
-    ImageWindow maskWindow=CreateImageWindow("HdrCompositionDxMask",dxNumImage);
-    maskWindow.Show();
-    dyNumImage.Rescale();
-    maskWindow=CreateImageWindow("HdrCompositionDyMask",dyNumImage);
-    maskWindow.Show();
-  }
+   ImageWindow window = CreateImageWindow( "HdrComposition", result );
+   window.Show();
+   if ( generateMask )
+   {
+      dxNumImage.Rescale();
+      ImageWindow maskWindow = CreateImageWindow( "HdrCompositionDxMask", dxNumImage );
+      maskWindow.Show();
+      dyNumImage.Rescale();
+      maskWindow = CreateImageWindow( "HdrCompositionDyMask", dyNumImage );
+      maskWindow.Show();
+   }
 
-  return true;
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -190,16 +209,18 @@ void* GradientsHdrCompositionInstance::LockParameter( const MetaParameter* p, si
    if ( p == TheGradientsHdrCompositionTargetFramePathParameter )
       return targetFrames[tableRow].path.Begin();
    if ( p == TheGradientsHdrCompositionKeepLogParameter )
-     return &bKeepLog;
+      return &bKeepLog;
    if ( p == TheGradientsHdrCompositionLogBiasParameter )
-     return &dLogBias;
+      return &dLogBias;
    if ( p == TheGradientsHdrCompositionNegativeBiasParameter )
-     return &bNegativeBias;
+      return &bNegativeBias;
    if ( p == TheGradientsHdrCompositionGenerateMaskParameter )
-     return &generateMask;
+      return &generateMask;
 
-   return 0;
+   return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsHdrCompositionInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
@@ -221,18 +242,21 @@ bool GradientsHdrCompositionInstance::AllocateParameter( size_type sizeOrLength,
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type GradientsHdrCompositionInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheGradientsHdrCompositionTargetFramesParameter )
       return targetFrames.Length();
    if ( p == TheGradientsHdrCompositionTargetFramePathParameter )
       return targetFrames[tableRow].path.Length();
+
    return 0;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrCompositionInstance.cpp - Released 2020-07-31T19:33:39Z

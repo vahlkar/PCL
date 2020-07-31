@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchCurveGraphInterface.cpp - Released 2020-02-27T12:56:01Z
+// AdaptiveStretchCurveGraphInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -63,20 +63,13 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "AdaptiveStretchIcon.xpm"
-#include "CurvesTransformationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 AdaptiveStretchCurveGraphInterface* TheAdaptiveStretchCurveGraphInterface = nullptr;
 
 static int s_sizeItems[] = { 400, 500, 600, 800, 1000 };
 
 // ----------------------------------------------------------------------------
 
-AdaptiveStretchCurveGraphInterface::AdaptiveStretchCurveGraphInterface() :
-   m_gridBitmap( Bitmap::Null() ),
-   m_curveBitmap( Bitmap::Null() )
+AdaptiveStretchCurveGraphInterface::AdaptiveStretchCurveGraphInterface()
 {
    TheAdaptiveStretchCurveGraphInterface = this;
 }
@@ -105,9 +98,9 @@ MetaProcess* AdaptiveStretchCurveGraphInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** AdaptiveStretchCurveGraphInterface::IconImageXPM() const
+String AdaptiveStretchCurveGraphInterface::IconImageSVGFile() const
 {
-   return AdaptiveStretchIcon_XPM;
+   return "@module_icons_dir/AdaptiveStretch.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -411,7 +404,7 @@ AdaptiveStretchCurveGraphInterface::GUIData::GUIData( AdaptiveStretchCurveGraphI
    Render_ToolButton.SetToolTip( "<p>Render the current graph as a new image.</p>" );
    Render_ToolButton.OnClick( (Button::click_event_handler)&AdaptiveStretchCurveGraphInterface::__Click, w );
 
-   Edit_ToolButton.SetIcon( Bitmap( CurvesTransformationIcon_XPM ) );
+   Edit_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/document-edit.png" ) ) );
    Edit_ToolButton.SetScaledFixedSize( 20, 20 );
    Edit_ToolButton.SetToolTip( "<p>Edit as a CurvesTransformation instance.</p>" );
    Edit_ToolButton.OnClick( (Button::click_event_handler)&AdaptiveStretchCurveGraphInterface::__Click, w );
@@ -443,4 +436,4 @@ AdaptiveStretchCurveGraphInterface::GUIData::GUIData( AdaptiveStretchCurveGraphI
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchCurveGraphInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF AdaptiveStretchCurveGraphInterface.cpp - Released 2020-07-31T19:33:39Z

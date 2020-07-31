@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// IntensityTransformationsModule.cpp - Released 2020-02-27T12:56:01Z
+// IntensityTransformationsModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "AdaptiveStretchCurveGraphInterface.h"
 #include "AdaptiveStretchInterface.h"
@@ -97,6 +97,8 @@ IntensityTransformationsModule::IntensityTransformationsModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* IntensityTransformationsModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
@@ -106,35 +108,49 @@ const char* IntensityTransformationsModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString IntensityTransformationsModule::Name() const
 {
    return "IntensityTransformations";
 }
+
+// ----------------------------------------------------------------------------
 
 String IntensityTransformationsModule::Description() const
 {
    return "PixInsight Standard IntensityTransformations Process Module";
 }
 
+// ----------------------------------------------------------------------------
+
 String IntensityTransformationsModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String IntensityTransformationsModule::Author() const
 {
    return "Juan Conejero, PTeam / Carlos Milovic F., PTeam";
 }
 
+// ----------------------------------------------------------------------------
+
 String IntensityTransformationsModule::Copyright() const
 {
-   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String IntensityTransformationsModule::TradeMarks() const
 {
    return "PixInsight";
 }
+
+// ----------------------------------------------------------------------------
 
 String IntensityTransformationsModule::OriginalFileName() const
 {
@@ -152,12 +168,16 @@ String IntensityTransformationsModule::OriginalFileName() const
 #endif
 }
 
+// ----------------------------------------------------------------------------
+
 void IntensityTransformationsModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
    year  = MODULE_RELEASE_YEAR;
    month = MODULE_RELEASE_MONTH;
    day   = MODULE_RELEASE_DAY;
 }
+
+// ----------------------------------------------------------------------------
 
 void IntensityTransformationsModule::OnLoad()
 {
@@ -177,6 +197,8 @@ void IntensityTransformationsModule::OnLoad()
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -212,4 +234,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF IntensityTransformationsModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF IntensityTransformationsModule.cpp - Released 2020-07-31T19:33:39Z

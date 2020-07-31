@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2020-02-27T12:55:33Z
+// pcl/AstrometricMetadata.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -65,11 +65,11 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 AstrometricMetadata::AstrometricMetadata( ProjectionBase* projection,
-                                          WorldTransformation* worldTransformation, int width, int height ) :
-   m_projection( projection ),
-   m_transformWI( worldTransformation ),
-   m_width( width ),
-   m_height( height )
+                                          WorldTransformation* worldTransformation, int width, int height )
+   : m_projection( projection )
+   , m_transformWI( worldTransformation )
+   , m_width( width )
+   , m_height( height )
 {
    LinearTransformation linearTransIW = m_transformWI->ApproximateLinearTransform();
    double resx = Sqrt( linearTransIW.A00() * linearTransIW.A00() + linearTransIW.A01() * linearTransIW.A01() );
@@ -809,8 +809,10 @@ static String CelestialToString( const DPoint& pRD )
    if ( ra < 0 )
       ra += 360;
    return String()
-      << "RA: "    << String().ToSexagesimal( ra/15, RAConversionOptions( 3/*precision*/ ) )
-      << "  Dec: " << String().ToSexagesimal( pRD.y, DecConversionOptions( 2/*precision*/ ) );
+      << "RA: "
+      << String().ToSexagesimal( ra/15, RAConversionOptions( 3/*precision*/ ) )
+      << "  Dec: "
+      << String().ToSexagesimal( pRD.y, DecConversionOptions( 2/*precision*/ ) );
 }
 
 static String ImageToCelestialToString( const AstrometricMetadata* A, const DPoint& pI )
@@ -921,4 +923,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2020-07-31T19:33:12Z

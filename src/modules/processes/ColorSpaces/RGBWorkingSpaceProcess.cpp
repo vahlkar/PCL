@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceProcess.cpp - Released 2020-02-27T12:56:01Z
+// RGBWorkingSpaceProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -64,15 +64,9 @@ RGBWorkingSpaceProcess*  TheRGBWorkingSpaceProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "RGBWorkingSpaceIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 RGBWorkingSpaceProcess::RGBWorkingSpaceProcess()
 {
    TheRGBWorkingSpaceProcess = this;
-
-   // Instantiate process parameters
 
    new RGBWSChannelTable( this );
    new RGBWSLuminanceCoefficient( TheRGBWSChannelTableParameter );
@@ -135,9 +129,9 @@ String RGBWorkingSpaceProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** RGBWorkingSpaceProcess::IconImageXPM() const
+String RGBWorkingSpaceProcess::IconImageSVGFile() const
 {
-   return RGBWorkingSpaceIcon_XPM;
+   return "@module_icons_dir/RGBWorkingSpace.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -174,4 +168,4 @@ bool RGBWorkingSpaceProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF RGBWorkingSpaceProcess.cpp - Released 2020-07-31T19:33:39Z

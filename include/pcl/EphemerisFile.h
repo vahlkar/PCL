@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.h - Released 2020-02-27T12:55:23Z
+// pcl/EphemerisFile.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -131,8 +131,9 @@ struct PCL_CLASS EphemerisConstant
    /*!
     * Memberwise constructor.
     */
-   EphemerisConstant( const IsoString& n = IsoString(), double v = 0 ) :
-      name( n ), value( v )
+   EphemerisConstant( const IsoString& n = IsoString(), double v = 0 )
+      : name( n )
+      , value( v )
    {
    }
 
@@ -231,9 +232,9 @@ struct PCL_CLASS SerializableEphemerisData
    /*!
     * Memberwise constructor.
     */
-   SerializableEphemerisData( TimePoint t, const ChebyshevFit& T ) :
-      startTime( t ),
-      expansion( T )
+   SerializableEphemerisData( TimePoint t, const ChebyshevFit& T )
+      : startTime( t )
+      , expansion( T )
    {
    }
 
@@ -396,11 +397,11 @@ struct PCL_CLASS SerializableEphemerisObjectData
    SerializableEphemerisObjectData( const IsoString& id,
                                     const IsoString& origin,
                                     const String& name = String(),
-                                    const String& desc = String() ) :
-      objectId( id.Trimmed() ),
-      originId( origin.Trimmed() ),
-      objectName( name.Trimmed() ),
-      description( desc )
+                                    const String& desc = String() )
+      : objectId( id.Trimmed() )
+      , originId( origin.Trimmed() )
+      , objectName( name.Trimmed() )
+      , description( desc )
    {
    }
 
@@ -529,15 +530,15 @@ struct PCL_CLASS EphemerisObject
                     Optional<double> H_ = Optional<double>(),
                     Optional<double> G_ = Optional<double>(),
                     Optional<double> B_V_ = Optional<double>(),
-                    Optional<double> D_ = Optional<double>() ) :
-      objectId( objectId_ ),
-      originId( originId_ ),
-      objectName( objectName_ ),
-      objectDescription( objectDescription_ ),
-      H( H_ ),
-      G( G_ ),
-      B_V( B_V_ ),
-      D( D_ )
+                    Optional<double> D_ = Optional<double>() )
+      : objectId( objectId_ )
+      , originId( originId_ )
+      , objectName( objectName_ )
+      , objectDescription( objectDescription_ )
+      , H( H_ )
+      , G( G_ )
+      , B_V( B_V_ )
+      , D( D_ )
    {
    }
 
@@ -639,12 +640,12 @@ public:
    /*!
     * Move constructor.
     */
-   EphemerisFile( EphemerisFile&& x ) :
-      m_file( std::move( x.m_file ) ),
-      m_startTime( x.m_startTime ),
-      m_endTime( x.m_endTime ),
-      m_constants( std::move( x.m_constants ) ),
-      m_index( std::move( x.m_index ) )
+   EphemerisFile( EphemerisFile&& x )
+      : m_file( std::move( x.m_file ) )
+      , m_startTime( x.m_startTime )
+      , m_endTime( x.m_endTime )
+      , m_constants( std::move( x.m_constants ) )
+      , m_index( std::move( x.m_index ) )
    {
    }
 
@@ -1443,11 +1444,11 @@ private:
       Index( const IsoString& objectId_,
              const IsoString& originId_ = IsoString(),
              const String& objectName_ = String(),
-             const String& objectDescription_ = String() ) :
-         objectId( objectId_.Trimmed() ),
-         originId( originId_.Trimmed() ),
-         objectName( objectName_.Trimmed() ),
-         objectDescription( objectDescription_.Trimmed() )
+             const String& objectDescription_ = String() )
+         : objectId( objectId_.Trimmed() )
+         , originId( originId_.Trimmed() )
+         , objectName( objectName_.Trimmed() )
+         , objectDescription( objectDescription_.Trimmed() )
       {
       }
 
@@ -1997,4 +1998,4 @@ private:
 #endif  // __PCL_EphemerisFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/EphemerisFile.h - Released 2020-07-31T19:33:04Z

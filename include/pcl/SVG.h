@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SVG.h - Released 2020-02-27T12:55:23Z
+// pcl/SVG.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -86,7 +86,7 @@ public:
     * specified \a filePath.
     *
     * The optional \a width and \a height values, if nonzero, will be written
-    * as the corresponding attributes of the &lt;svg&gt; XML element.
+    * as the corresponding attributes of the root &lt;svg&gt; XML element.
     */
    SVG( const String& filePath, int width = 0, int height = 0 );
 
@@ -256,4 +256,4 @@ protected:
 #endif   // __PCL_SVG_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SVG.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/SVG.h - Released 2020-07-31T19:33:04Z

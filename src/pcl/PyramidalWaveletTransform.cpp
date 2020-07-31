@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/PyramidalWaveletTransform.cpp - Released 2020-02-27T12:55:33Z
+// pcl/PyramidalWaveletTransform.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -68,7 +68,7 @@ PCL_DATA Daubechies20Filter   Daubechies20;
 
 // ----------------------------------------------------------------------------
 
-Daubechies4Filter::Daubechies4Filter() : WaveletFilter()
+Daubechies4Filter::Daubechies4Filter()
 {
    static const double K[] =
    {
@@ -85,7 +85,7 @@ Daubechies4Filter::Daubechies4Filter() : WaveletFilter()
 
 // ----------------------------------------------------------------------------
 
-Daubechies6Filter::Daubechies6Filter() : WaveletFilter()
+Daubechies6Filter::Daubechies6Filter()
 {
    static const double K[] =
    {
@@ -104,7 +104,7 @@ Daubechies6Filter::Daubechies6Filter() : WaveletFilter()
 
 // ----------------------------------------------------------------------------
 
-Daubechies8Filter::Daubechies8Filter() : WaveletFilter()
+Daubechies8Filter::Daubechies8Filter()
 {
    static const double K[] =
    {
@@ -125,7 +125,7 @@ Daubechies8Filter::Daubechies8Filter() : WaveletFilter()
 
 // ----------------------------------------------------------------------------
 
-Daubechies10Filter::Daubechies10Filter() : WaveletFilter()
+Daubechies10Filter::Daubechies10Filter()
 {
    static const double K[] =
    {
@@ -148,7 +148,7 @@ Daubechies10Filter::Daubechies10Filter() : WaveletFilter()
 
 // ----------------------------------------------------------------------------
 
-Daubechies12Filter::Daubechies12Filter() : WaveletFilter()
+Daubechies12Filter::Daubechies12Filter()
 {
    static const double K[] =
    {
@@ -173,7 +173,7 @@ Daubechies12Filter::Daubechies12Filter() : WaveletFilter()
 
 // ----------------------------------------------------------------------------
 
-Daubechies20Filter::Daubechies20Filter() : WaveletFilter()
+Daubechies20Filter::Daubechies20Filter()
 {
    static const double K[ 20 ] =
    {
@@ -615,4 +615,4 @@ void PyramidalWaveletTransform::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PyramidalWaveletTransform.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/PyramidalWaveletTransform.cpp - Released 2020-07-31T19:33:12Z

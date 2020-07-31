@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ExternalProcess.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ExternalProcess.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -116,8 +116,8 @@ public:
 
 // ----------------------------------------------------------------------------
 
-ExternalProcess::ExternalProcess() :
-   UIObject( (*API->ExternalProcess->CreateExternalProcess)( ModuleHandle(), this ) )
+ExternalProcess::ExternalProcess()
+   : UIObject( (*API->ExternalProcess->CreateExternalProcess)( ModuleHandle(), this ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateExternalProcess" );
@@ -125,8 +125,8 @@ ExternalProcess::ExternalProcess() :
 
 // ----------------------------------------------------------------------------
 
-ExternalProcess::ExternalProcess( void* h ) :
-   UIObject( h )
+ExternalProcess::ExternalProcess( void* h )
+   : UIObject( h )
 {
 }
 
@@ -594,4 +594,4 @@ void ExternalProcess::OnError( process_error_event_handler handler, Control& rec
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ExternalProcess.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ExternalProcess.cpp - Released 2020-07-31T19:33:12Z

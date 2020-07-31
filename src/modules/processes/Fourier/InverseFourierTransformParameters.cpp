@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformParameters.cpp - Released 2020-02-27T12:56:01Z
+// InverseFourierTransformParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -57,9 +57,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-IFTIdOfFirstComponent*  TheIFTIdOfFirstComponentParameter = 0;
-IFTIdOfSecondComponent* TheIFTIdOfSecondComponentParameter = 0;
-IFTOnOutOfRangeResult*  TheIFTOnOutOfRangeResultParameter = 0;
+IFTIdOfFirstComponent*  TheIFTIdOfFirstComponentParameter = nullptr;
+IFTIdOfSecondComponent* TheIFTIdOfSecondComponentParameter = nullptr;
+IFTOnOutOfRangeResult*  TheIFTOnOutOfRangeResultParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -148,4 +148,4 @@ size_type IFTOnOutOfRangeResult::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF InverseFourierTransformParameters.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// TIFFOptionsDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -57,9 +57,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-TIFFOptionsDialog::TIFFOptionsDialog( const pcl::ImageOptions& o, const pcl::TIFFImageOptions& t ) :
-   options( o ),
-   tiffOptions( t )
+TIFFOptionsDialog::TIFFOptionsDialog( const pcl::ImageOptions& o, const pcl::TIFFImageOptions& t )
+   : options( o )
+   , tiffOptions( t )
 {
    int labelWidth = Font().Width( String( "64-bit IEEE 754 floating point" ) + 'M' );
 
@@ -296,4 +296,4 @@ void TIFFOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF TIFFOptionsDialog.cpp - Released 2020-07-31T19:33:23Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2020-02-27T12:55:23Z
+// pcl/AstrometricMetadata.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -150,19 +150,19 @@ public:
    /*!
     * Copy constructor.
     */
-   AstrometricMetadata( const AstrometricMetadata& x ) :
-      m_projection( x.m_projection->Clone() ),
-      m_transformWI( x.m_transformWI->Clone() ),
-      m_width( x.m_width ),
-      m_height( x.m_height ),
-      m_pixelSize( x.m_pixelSize ),
-      m_obsStartTime( x.m_obsStartTime ),
-      m_obsEndTime( x.m_obsEndTime ),
-      m_geoLongitude( x.m_geoLongitude ),
-      m_geoLatitude( x.m_geoLatitude ),
-      m_geoHeight( x.m_geoHeight ),
-      m_resolution( x.m_resolution ),
-      m_focalLength( x.m_focalLength )
+   AstrometricMetadata( const AstrometricMetadata& x )
+      : m_projection( x.m_projection->Clone() )
+      , m_transformWI( x.m_transformWI->Clone() )
+      , m_width( x.m_width )
+      , m_height( x.m_height )
+      , m_pixelSize( x.m_pixelSize )
+      , m_obsStartTime( x.m_obsStartTime )
+      , m_obsEndTime( x.m_obsEndTime )
+      , m_geoLongitude( x.m_geoLongitude )
+      , m_geoLatitude( x.m_geoLatitude )
+      , m_geoHeight( x.m_geoHeight )
+      , m_resolution( x.m_resolution )
+      , m_focalLength( x.m_focalLength )
    {
    }
 
@@ -934,4 +934,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/AstrometricMetadata.h - Released 2020-07-31T19:33:04Z

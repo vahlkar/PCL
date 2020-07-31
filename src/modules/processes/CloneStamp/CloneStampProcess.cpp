@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampProcess.cpp - Released 2020-02-27T12:56:01Z
+// CloneStampProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -64,15 +64,9 @@ CloneStampProcess* TheCloneStampProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "CloneStampIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 CloneStampProcess::CloneStampProcess()
 {
    TheCloneStampProcess = this;
-
-   // Instantiate process parameters
 
    new CSClonerTable( this );
    new CSActionIndex( TheCSClonerTableParameter );
@@ -125,9 +119,9 @@ String CloneStampProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** CloneStampProcess::IconImageXPM() const
+String CloneStampProcess::IconImageSVGFile() const
 {
-   return CloneStampIcon_XPM;
+   return "@module_icons_dir/CloneStamp.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -171,4 +165,4 @@ ProcessImplementation* CloneStampProcess::TestClone( const ProcessImplementation
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF CloneStampProcess.cpp - Released 2020-07-31T19:33:39Z

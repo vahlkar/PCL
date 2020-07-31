@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:03.290Z
+# Generated on .... 2020-07-31T19:36:38.141Z
 # Project id ...... NoiseGeneration
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>05f36065-116f-432b-931f-857ed8c876d1</UniqueIdentifier>
+      <UniqueIdentifier>0cf78278-d1d7-4cd0-b73c-6735cf262b47</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>d9794e44-ba64-46e8-85f9-0303cf80acd4</UniqueIdentifier>
+      <UniqueIdentifier>a3c61928-ce73-4694-a16c-3a3016f3a055</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>54751f3a-b160-4930-880e-a24218bdd32e</UniqueIdentifier>
+      <UniqueIdentifier>4af3e047-eda5-4ff2-8203-27efdc3b10d3</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -84,10 +84,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\NoiseGeneratorIcon.png">
+    <None Include="..\..\icons\NoiseGenerator.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\SimplexNoiseIcon.png">
+    <None Include="..\..\icons\SimplexNoise.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

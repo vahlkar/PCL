@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.h - Released 2020-02-27T12:56:01Z
+// SubframeSelectorInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -79,13 +79,10 @@ public:
    SubframeSelectorInstance( const SubframeSelectorInstance& );
 
    void Assign( const ProcessImplementation& ) override;
-
    bool CanExecuteOn( const View&, String& whyNot ) const override;
    bool IsHistoryUpdater( const View& v ) const override;
-
    bool CanExecuteGlobal( String& whyNot ) const override;
    bool ExecuteGlobal() override;
-
    void* LockParameter( const MetaParameter*, size_type tableRow ) override;
    bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
    size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
@@ -100,9 +97,9 @@ private:
       pcl_bool enabled; // if disabled, skip (ignore) this image
       String   path;    // absolute file path
 
-      SubframeItem( const String& p = String() ) :
-         enabled( TheSSSubframeEnabledParameter->DefaultValue() ),
-         path( p )
+      SubframeItem( const String& p = String() )
+         : enabled( TheSSSubframeEnabledParameter->DefaultValue() )
+         , path( p )
       {
       }
 
@@ -141,9 +138,9 @@ private:
    pcl_enum           p_psfFit;
    pcl_bool           p_psfFitCircular;
    uint16             p_pedestal;
-   Rect               p_roi;
+   Rect               p_roi = 0;
 
-   // Format hints
+   // Format hints.
    String             p_inputHints;
    String             p_outputHints;
 
@@ -196,4 +193,4 @@ private:
 #endif   // __SubframeSelectorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.h - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorInstance.h - Released 2020-07-31T19:33:39Z

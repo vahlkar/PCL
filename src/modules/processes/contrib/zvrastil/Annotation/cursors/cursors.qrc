@@ -1,0 +1,19 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+<file>move_all.png</file>
+<file>move_all_active.png</file>
+<file>1.5/move_all.png</file>
+<file>1.5/move_all_active.png</file>
+<file>2.0/move_all.png</file>
+<file>2.0/move_all_active.png</file>
+<file>2.5/move_all.png</file>
+<file>2.5/move_all_active.png</file>
+<file>3.0/move_all.png</file>
+<file>3.0/move_all_active.png</file>
+<file>3.5/move_all.png</file>
+<file>3.5/move_all_active.png</file>
+<file>4.0/move_all.png</file>
+<file>4.0/move_all_active.png</file>
+</qresource>
+</RCC>

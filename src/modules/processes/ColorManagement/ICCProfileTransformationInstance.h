@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationInstance.h - Released 2020-02-27T12:56:01Z
+// ICCProfileTransformationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -68,27 +68,22 @@ public:
    ICCProfileTransformationInstance( const MetaProcess* );
    ICCProfileTransformationInstance( const ICCProfileTransformationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-
-   virtual bool IsMaskable( const View&, const ImageWindow& ) const;
-
-   virtual UndoFlags UndoMode( const View& ) const;
-
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-
-   virtual void* LockParameter( const MetaParameter*, size_type /*tableRow*/ );
-
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool IsMaskable( const View&, const ImageWindow& ) const override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type /*tableRow*/ ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
-   String   targetProfile;
-   pcl_bool toDefaultProfile;
-   pcl_enum renderingIntent;
-   pcl_bool useBlackPointCompensation;
-   pcl_bool useFloatingPointTransformation;
+   String   p_targetProfile;
+   pcl_bool p_toDefaultProfile;
+   pcl_enum p_renderingIntent;
+   pcl_bool p_useBlackPointCompensation;
+   pcl_bool p_useFloatingPointTransformation;
 
    friend class ICCProfileTransformationProcess;
    friend class ICCProfileTransformationInterface;
@@ -101,4 +96,4 @@ private:
 #endif   // __ICCProfileTransformationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ICCProfileTransformationInstance.h - Released 2020-07-31T19:33:39Z

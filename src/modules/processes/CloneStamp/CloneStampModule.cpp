@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampModule.cpp - Released 2020-02-27T12:56:01Z
+// CloneStampModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "CloneStampInterface.h"
 #include "CloneStampModule.h"
@@ -116,7 +116,7 @@ String CloneStampModule::Author() const
 
 String CloneStampModule::Copyright() const
 {
-   return "Copyright (c) 2007-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2007-2020 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -157,6 +157,8 @@ void CloneStampModule::GetReleaseDate( int& year, int& month, int& day ) const
 
 } // pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::CloneStampModule;
@@ -171,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF CloneStampModule.cpp - Released 2020-07-31T19:33:39Z

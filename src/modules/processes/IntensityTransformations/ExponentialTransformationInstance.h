@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInstance.h - Released 2020-02-27T12:56:01Z
+// ExponentialTransformationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -70,11 +70,11 @@ public:
    ExponentialTransformationInstance( const MetaProcess* );
    ExponentialTransformationInstance( const ExponentialTransformationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View& v, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View& v, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
 
    String TypeAsString() const;
 
@@ -98,4 +98,4 @@ private:
 #endif   // __ExponentialTransformationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ExponentialTransformationInstance.h - Released 2020-07-31T19:33:39Z

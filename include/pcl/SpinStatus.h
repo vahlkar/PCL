@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SpinStatus.h - Released 2020-02-27T12:55:23Z
+// pcl/SpinStatus.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -109,19 +109,20 @@ public:
    /*!
     * Copy constructor.
     */
-   SpinStatus( const SpinStatus& x ) :
-      StatusCallback( x ), m_spinCount( x.m_spinCount )
+   SpinStatus( const SpinStatus& x )
+      : StatusCallback( x )
+      , m_spinCount( x.m_spinCount )
    {
    }
 
    /*!
     * Move constructor.
     */
-   SpinStatus( SpinStatus&& x ) :
-      StatusCallback( std::move( x ) ),
-      m_console( std::move( x.m_console ) ),
-      m_spinCount( x.m_spinCount ),
-      m_thread( x.m_thread )
+   SpinStatus( SpinStatus&& x )
+      : StatusCallback( std::move( x ) )
+      , m_console( std::move( x.m_console ) )
+      , m_spinCount( x.m_spinCount )
+      , m_thread( x.m_thread )
    {
       x.m_thread = nullptr;
    }
@@ -199,4 +200,4 @@ private:
 #endif   // __PCL_SpinStatus_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SpinStatus.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/SpinStatus.h - Released 2020-07-31T19:33:04Z

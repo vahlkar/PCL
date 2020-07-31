@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MetaProcess.cpp - Released 2020-02-27T12:55:33Z
+// pcl/MetaProcess.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -76,7 +76,8 @@ static void MandatoryError( const IsoString& procId, const char* funcName )
 
 // ----------------------------------------------------------------------------
 
-MetaProcess::MetaProcess() : MetaObject( Module )
+MetaProcess::MetaProcess()
+   : MetaObject( Module )
 {
    if ( Module == nullptr )
       throw Error( "MetaProcess: Module not initialized - illegal MetaProcess instantiation." );
@@ -111,19 +112,59 @@ bool MetaProcess::BrowseDocumentation() const
 
 // ----------------------------------------------------------------------------
 
+void MetaProcess::IPCStart( int instance, const IsoString& messageUID, const String& parameters ) const
+{
+   MANDATORY( "IPCStart" );
+}
+
+// ----------------------------------------------------------------------------
+
+void MetaProcess::IPCStop( int instance, const IsoString& messageUID ) const
+{
+   MANDATORY( "IPCStop" );
+}
+
+// ----------------------------------------------------------------------------
+
+void MetaProcess::IPCSetParameters( int instance, const IsoString& messageUID, const String& parameters ) const
+{
+   MANDATORY( "IPCSetParameters" );
+}
+
+// ----------------------------------------------------------------------------
+
+int MetaProcess::IPCStatus( int instance, const IsoString& messageUID ) const
+{
+   MANDATORY( "IPCStatus" );
+   return 0;
+}
+
+// ----------------------------------------------------------------------------
+
 Bitmap MetaProcess::Icon() const
 {
+   IsoString svg = IconImageSVG();
+   if ( !svg.IsEmpty() )
+      return Bitmap( svg.Begin(), svg.Length(), "SVG" );
+
+   String filePath = IconImageSVGFile();
+   if ( !filePath.IsEmpty() )
+      return Bitmap( filePath );
+
    const char** xpm = IconImageXPM();
    if ( xpm != nullptr )
       return Bitmap( xpm );
 
-   String filePath = IconImageFile();
+   filePath = IconImageFile();
    if ( !filePath.IsEmpty() )
       return Bitmap( filePath );
 
    return Bitmap();
 }
 
+// ----------------------------------------------------------------------------
+
+// ### DEPRECATED
 Bitmap MetaProcess::SmallIcon() const
 {
    const char** xpm = SmallIconImageXPM();
@@ -713,6 +754,133 @@ public:
 
    // -------------------------------------------------------------------------
 
+   static void api_func IPCStart( meta_process_handle hp, int32 coreInstance, const char* messageUID, const char16_type* parameters )
+   {
+      bool wasConsoleOutput = Exception::IsConsoleOutputEnabled();
+      bool wasGUIOutput = Exception::IsGUIOutputEnabled();
+
+      try
+      {
+         Exception::EnableConsoleOutput();
+         Exception::DisableGUIOutput();
+
+         process->IPCStart( coreInstance, IsoString( messageUID ), String( parameters ) );
+      }
+      catch ( Exception& x )
+      {
+         Console().WriteLn( "<end><cbr>" + x.FormatInfo() );
+      }
+      catch ( ... )
+      {
+         try
+         {
+            throw;
+         }
+         ERROR_HANDLER
+      }
+
+      Exception::EnableConsoleOutput( wasConsoleOutput );
+      Exception::EnableGUIOutput( wasGUIOutput );
+   }
+
+   // -------------------------------------------------------------------------
+
+   static void api_func IPCStop( meta_process_handle hp, int32 coreInstance, const char* messageUID, const char16_type* /*parameters*/ )
+   {
+      bool wasConsoleOutput = Exception::IsConsoleOutputEnabled();
+      bool wasGUIOutput = Exception::IsGUIOutputEnabled();
+
+      try
+      {
+         Exception::EnableConsoleOutput();
+         Exception::DisableGUIOutput();
+
+         process->IPCStop( coreInstance, IsoString( messageUID ) );
+      }
+      catch ( Exception& x )
+      {
+         Console().WriteLn( "<end><cbr>" + x.FormatInfo() );
+      }
+      catch ( ... )
+      {
+         try
+         {
+            throw;
+         }
+         ERROR_HANDLER
+      }
+
+      Exception::EnableConsoleOutput( wasConsoleOutput );
+      Exception::EnableGUIOutput( wasGUIOutput );
+   }
+
+   // -------------------------------------------------------------------------
+
+   static void api_func IPCSetParameters( meta_process_handle hp, int32 coreInstance, const char* messageUID, const char16_type* parameters )
+   {
+      bool wasConsoleOutput = Exception::IsConsoleOutputEnabled();
+      bool wasGUIOutput = Exception::IsGUIOutputEnabled();
+
+      try
+      {
+         Exception::EnableConsoleOutput();
+         Exception::DisableGUIOutput();
+
+         process->IPCSetParameters( coreInstance, IsoString( messageUID ), String( parameters ) );
+      }
+      catch ( Exception& x )
+      {
+         Console().WriteLn( "<end><cbr>" + x.FormatInfo() );
+      }
+      catch ( ... )
+      {
+         try
+         {
+            throw;
+         }
+         ERROR_HANDLER
+      }
+
+      Exception::EnableConsoleOutput( wasConsoleOutput );
+      Exception::EnableGUIOutput( wasGUIOutput );
+   }
+
+   // -------------------------------------------------------------------------
+
+   static int32 api_func IPCGetStatus( meta_process_handle hp, int32 coreInstance, const char* messageUID )
+   {
+      bool wasConsoleOutput = Exception::IsConsoleOutputEnabled();
+      bool wasGUIOutput = Exception::IsGUIOutputEnabled();
+      int status = -1;
+
+      try
+      {
+         Exception::EnableConsoleOutput();
+         Exception::DisableGUIOutput();
+
+         status = process->IPCStatus( coreInstance, IsoString( messageUID ) );
+      }
+      catch ( Exception& x )
+      {
+         Console().WriteLn( "<end><cbr>" + x.FormatInfo() );
+      }
+      catch ( ... )
+      {
+         try
+         {
+            throw;
+         }
+         ERROR_HANDLER
+      }
+
+      Exception::EnableConsoleOutput( wasConsoleOutput );
+      Exception::EnableGUIOutput( wasGUIOutput );
+
+      return status;
+   }
+
+   // -------------------------------------------------------------------------
+
    static int32 api_func ProcessCommandLine( meta_process_handle hp, int32 argc, const char16_type** argv )
    {
       bool wasConsoleOutput = Exception::IsConsoleOutputEnabled();
@@ -822,22 +990,40 @@ void MetaProcess::PerformAPIDefinitions() const
          (*API->ProcessDefinition->SetProcessScriptComment)( cmnt.c_str() );
    }
 
-   if ( IconImageXPM() != nullptr )
-      (*API->ProcessDefinition->SetProcessIconImage)( IconImageXPM() );
-   else
    {
-      String path = IconImageFile();
-      if ( !path.IsEmpty() )
-         (*API->ProcessDefinition->SetProcessIconImageFile)( path.c_str() );
-   }
+      IsoString svg = IconImageSVG();
+      if ( !svg.IsEmpty() )
+         (*API->ProcessDefinition->SetProcessIconSVG)( svg.c_str() );
+      else
+      {
+         String filePath = IconImageSVGFile();
+         if ( !filePath.IsEmpty() )
+            (*API->ProcessDefinition->SetProcessIconSVGFile)( filePath.c_str() );
+         else
+         {
+            // ### DEPRECATED - Process icon images in raster bitmap formats.
 
-   if ( SmallIconImageXPM() != nullptr )
-      (*API->ProcessDefinition->SetProcessIconSmallImage)( SmallIconImageXPM() );
-   else
-   {
-      String path = SmallIconImageFile();
-      if ( !path.IsEmpty() )
-         (*API->ProcessDefinition->SetProcessIconSmallImageFile)( path.c_str() );
+            const char** xpm = IconImageXPM();
+            if ( xpm != nullptr )
+               (*API->ProcessDefinition->SetProcessIconImage)( xpm );
+            else
+            {
+               String path = IconImageFile();
+               if ( !path.IsEmpty() )
+                  (*API->ProcessDefinition->SetProcessIconImageFile)( path.c_str() );
+            }
+
+            xpm = SmallIconImageXPM();
+            if ( xpm != nullptr )
+               (*API->ProcessDefinition->SetProcessIconSmallImage)( xpm );
+            else
+            {
+               String path = SmallIconImageFile();
+               if ( !path.IsEmpty() )
+                  (*API->ProcessDefinition->SetProcessIconSmallImageFile)( path.c_str() );
+            }
+         }
+      }
    }
 
    (*API->ProcessDefinition->SetProcessClassInitializationRoutine)( ProcessContextDispatcher::InitializeClass );
@@ -900,6 +1086,14 @@ void MetaProcess::PerformAPIDefinitions() const
    (*API->ProcessDefinition->SetProcessPreWritingRoutine)( ProcessContextDispatcher::BeforeWritingProcess );
    (*API->ProcessDefinition->SetProcessPostWritingRoutine)( ProcessContextDispatcher::AfterWritingProcess );
 
+   if ( CanProcessIPCMessages() )
+   {
+      (*API->ProcessDefinition->SetProcessIPCStartRoutine)( ProcessContextDispatcher::IPCStart );
+      (*API->ProcessDefinition->SetProcessIPCStopRoutine)( ProcessContextDispatcher::IPCStop );
+      (*API->ProcessDefinition->SetProcessIPCSetParametersRoutine)( ProcessContextDispatcher::IPCSetParameters );
+      (*API->ProcessDefinition->SetProcessIPCGetStatusRoutine)( ProcessContextDispatcher::IPCGetStatus );
+   }
+
    for ( size_type j = 0; j < Length(); ++j )
       (*this)[j]->PerformAPIDefinitions();
 
@@ -913,4 +1107,4 @@ void MetaProcess::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaProcess.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/MetaProcess.cpp - Released 2020-07-31T19:33:12Z

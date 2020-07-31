@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2020-02-27T12:56:01Z
+// ImageIntegrationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -135,6 +135,7 @@ public:
    IIInputHints( MetaProcess* );
 
    IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern IIInputHints* TheIIInputHintsParameter;
@@ -212,12 +213,12 @@ public:
    enum { AvgDev,    // average deviation from the median
           MAD,       // median deviation from the median (MAD)
           BWMV,      // biweight midvariance
-          PBMV,      // percentage bend midvariance
-          Sn,        // Rousseeuw/Croux Sn estimator of scale
-          Qn,        // Rousseeuw/Croux Qn estimator of scale
-          IKSS,      // iterative k-sigma estimator of scale
+          PBMV,      // DEPRECATED - percentage bend midvariance
+          Sn,        // DEPRECATED - Rousseeuw/Croux Sn estimator of scale
+          Qn,        // DEPRECATED - Rousseeuw/Croux Qn estimator of scale
+          IKSS,      // DEPRECATED - iterative k-sigma estimator of scale
           NumberOfWeightScales,
-          Default = IKSS };
+          Default = BWMV };
 
    IIWeightScale( MetaProcess* );
 
@@ -229,6 +230,38 @@ public:
 };
 
 extern IIWeightScale* TheIIWeightScaleParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIAdaptiveNX : public MetaInt32
+{
+public:
+
+   IIAdaptiveNX( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIAdaptiveNX* TheIIAdaptiveNXParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIAdaptiveNY : public MetaInt32
+{
+public:
+
+   IIAdaptiveNY( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIAdaptiveNY* TheIIAdaptiveNYParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -256,6 +289,7 @@ public:
           AdditiveWithScaling,
           MultiplicativeWithScaling,
           LocalNormalization,
+          AdaptiveNormalization,
           NumberOfNormalizationAlgorithms,
           Default = AdditiveWithScaling };
 
@@ -309,6 +343,7 @@ public:
           Scale,
           EqualizeFluxes,
           LocalRejectionNormalization,
+          AdaptiveRejectionNormalization,
           NumberOfRejectionNormalizationAlgorithms,
           Default = Scale };
 
@@ -1071,6 +1106,7 @@ extern IITruncateOnOutOfRange* TheIITruncateOnOutOfRangeParameter;
 
 // ----------------------------------------------------------------------------
 
+// ### DEPRECATED
 class IINoGUIMessages : public MetaBoolean
 {
 public:
@@ -1082,6 +1118,20 @@ public:
 };
 
 extern IINoGUIMessages* TheIINoGUIMessagesParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIShowImages : public MetaBoolean
+{
+public:
+
+   IIShowImages( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern IIShowImages* TheIIShowImagesParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -1113,6 +1163,36 @@ public:
 };
 
 extern IIFileThreadOverload* TheIIFileThreadOverloadParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIUseBufferThreads : public MetaBoolean
+{
+public:
+
+   IIUseBufferThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern IIUseBufferThreads* TheIIUseBufferThreadsParameter;
+
+// ----------------------------------------------------------------------------
+
+class IIMaxBufferThreads : public MetaInt32
+{
+public:
+
+   IIMaxBufferThreads( MetaProcess* );
+
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern IIMaxBufferThreads* TheIIMaxBufferThreadsParameter;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -1808,4 +1888,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ImageIntegrationParameters.h - Released 2020-07-31T19:33:39Z

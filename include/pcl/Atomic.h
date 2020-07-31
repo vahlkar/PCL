@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Atomic.h - Released 2020-02-27T12:55:23Z
+// pcl/Atomic.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -99,8 +99,8 @@ public:
     * Constructs an %AtomicInt instance with the specified \a value. When not
     * explicitly specified, the default value is zero.
     */
-   AtomicInt( int value = 0 ) :
-      m_value( value )
+   AtomicInt( int value = 0 )
+      : m_value( value )
    {
       // ### N.B.:
       // The default zero initialization is *critical* - DO NOT change it.
@@ -462,7 +462,8 @@ public:
     * PCL_CLASS_REENTRANCY_GUARDED_END to implement per-instance function
     * member protection.
     */
-   AutoReentrancyGuard( AtomicInt& guard ) : m_guard( guard )
+   AutoReentrancyGuard( AtomicInt& guard )
+      : m_guard( guard )
    {
       m_guarded = m_guard.TestAndSet( 0, 1 );
    }
@@ -662,4 +663,4 @@ private:
 #endif  // __PCL_Atomic_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Atomic.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Atomic.h - Released 2020-07-31T19:33:04Z

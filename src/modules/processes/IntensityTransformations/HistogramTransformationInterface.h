@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationInterface.h - Released 2020-02-27T12:56:01Z
+// HistogramTransformationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -85,42 +85,31 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
    void ApplyInstance() const override;
    void RealTimePreviewUpdated( bool active ) override;
    void TrackViewUpdated( bool active ) override;
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
-
    bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const override;
    bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const override;
-
    bool WantsImageNotifications() const override;
    void ImageUpdated( const View& v ) override;
    void ImageFocused( const View& v ) override;
-
    bool WantsViewPropertyNotifications() const override;
    void ViewPropertyUpdated( const View& v, const IsoString& property ) override;
    void ViewPropertyDeleted( const View& v, const IsoString& property ) override;
-
    bool WantsReadoutNotifications() const override;
    void BeginReadout( const View& v ) override;
    void UpdateReadout( const View& v, const DPoint& p, double R, double G, double B, double A ) override;
    void EndReadout( const View& v ) override;
-
    bool WantsRealTimePreviewNotifications() const override;
    void RealTimePreviewOwnerChanged( ProcessInterface& ) override;
-
    void SaveSettings() const override;
    void LoadSettings() override;
 
@@ -257,98 +246,98 @@ private:
    typedef GenericVector<RGBA>         channel_colors;
 
    // Histogram data.
-   histogram_list m_sourceData;           // source input histograms, 16-bit resolution
-   histogram_list m_inputData;            // input histograms, rescaled to the plot resolution
-   histogram_list m_outputData;           // output RGBA histograms (R,G,B include the combined RGB/K transformation)
-   histogram_list m_outputRGBData;        // intermediate RGB histograms, after individual RGB transformations
+   histogram_list m_sourceData;        // source input histograms, 16-bit resolution
+   histogram_list m_inputData;         // input histograms, rescaled to the plot resolution
+   histogram_list m_outputData;        // output RGBA histograms (R,G,B include the combined RGB/K transformation)
+   histogram_list m_outputRGBData;     // intermediate RGB histograms, after individual RGB transformations
 
    // Histogram plot resolution, or the number of discrete histogram levels to
    // be represented.
-   int            m_plotResolution = 256;
+   int            m_plotResolution         = 256;
 
    // Working modes.
-   working_mode   m_mode = ReadoutMode;
-   working_mode   m_savedMode = NoMode;   // for temporary keyboard mode switch
-   readout_mode   m_readoutMode = NormalReadout;
+   working_mode   m_mode                   = ReadoutMode;
+   working_mode   m_savedMode              = NoMode; // for temporary keyboard mode switch
+   readout_mode   m_readoutMode            = NormalReadout;
 
    // Current histogram channel.
    // 0=R 1=G 2=B 3=RGB/K 4=Alpha
-   int            m_channel = 3;
+   int            m_channel                = 3;
 
    // Current graph style.
-   graph_style    m_graphStyle = LineStyle;
+   graph_style    m_graphStyle             = LineStyle;
 
    // Automatic histogram clippings.
    // Values in fraction of total pixels.
-   double         m_shadowsAutoClipping = 0.01;
+   double         m_shadowsAutoClipping    = 0.01;
    double         m_highlightsAutoClipping = 0.01;
 
    // Clipping pixel counts.
    // 0=R 1=G 2=B 3=RGB/K 4=Alpha
-   histogram_type m_shadowsCount;
-   histogram_type m_highlightsCount;
+   histogram_type m_shadowsCount           = histogram_type( uint64( 0 ), 5 );
+   histogram_type m_highlightsCount        = histogram_type( uint64( 0 ), 5 );
 
    // Image readouts.
-   bool           m_readoutActive = false;
-   DVector        m_inputReadouts;  // 0=R 1=G 2=B 3=notUsed 4=Alpha
-   DVector        m_outputReadouts;
+   bool           m_readoutActive          = false;
+   DVector        m_inputReadouts          = DVector( 0.0, 5 ); // 0=R 1=G 2=B 3=notUsed 4=Alpha
+   DVector        m_outputReadouts         = DVector( 0.0, 5 );
 
    // Graph amplification factors.
-   int            m_inputZoomX = 1;
-   int            m_inputZoomY = 1;
-   int            m_outputZoomX = 1;
-   int            m_outputZoomY = 1;
+   int            m_inputZoomX             = 1;
+   int            m_inputZoomY             = 1;
+   int            m_outputZoomX            = 1;
+   int            m_outputZoomY            = 1;
 
    // Accumulated 1/8-degree wheel steps.
-   int            m_wheelSteps = 0;
+   int            m_wheelSteps             = 0;
 
    // Histogram representation options.
-   bool           m_rejectSaturated = true;   // ignore the first and last histogram counts to compute peaks
-   bool           m_rawRGBInput = true;       // always show raw RGB input histograms when channel=RGB/K
-   bool           m_lockOutputChannel = true; // always show RGB output histograms
-   bool           m_showMTF = true;           // draw the midtones transfer function curve
-   bool           m_showGrid = true;          // draw coordinate grids
+   bool           m_rejectSaturated        = true; // ignore the first and last histogram counts to compute peaks
+   bool           m_rawRGBInput            = true; // always show raw RGB input histograms when channel=RGB/K
+   bool           m_lockOutputChannel      = true; // always show RGB output histograms
+   bool           m_showMTF                = true; // draw the midtones transfer function curve
+   bool           m_showGrid               = true; // draw coordinate grids
 
    // Interactive states.
-   slider_id      m_sliderBeingDragged = NoSlider; // moving one of our little triangular things?
-   int            m_panning = 0;                   // panning one of our histogram viewports?
-   Point          m_panOrigin = 0;
+   slider_id      m_sliderBeingDragged     = NoSlider; // moving one of our little triangular things?
+   int            m_panning                = 0;        // panning one of our histogram viewports?
+   Point          m_panOrigin              = 0;
 
    // Graph cursor.
-   cursor_status  m_cursorStatus = NoCursor;
-   Point          m_cursorPos = -1;    // cursor position in viewport crds.
-   DPoint         m_histogramPos = 0;  // cursor position in normalized crds.
+   cursor_status  m_cursorStatus           = NoCursor;
+   Point          m_cursorPos              = -1; // cursor position in viewport crds.
+   DPoint         m_histogramPos           = 0;  // cursor position in normalized crds.
 
    // Screen bitmap, input histogram viewport.
-   Bitmap         m_inputBitmap;
-   bool           m_inputDirty = true;
+   Bitmap         m_inputBitmap            = Bitmap::Null();
+   bool           m_inputDirty             = true;
 
    // Screen bitmap, output histogram viewport.
-   Bitmap         m_outputBitmap;
-   bool           m_outputDirty = true;
+   Bitmap         m_outputBitmap           = Bitmap::Null();
+   bool           m_outputDirty            = true;
 
    // Screen bitmap, slider area.
-   Bitmap         m_slidersBitmap;
-   bool           m_slidersDirty = true;
+   Bitmap         m_slidersBitmap          = Bitmap::Null();
+   bool           m_slidersDirty           = true;
 
    // States of extensible interface sections.
-   bool           m_outputSectionVisible = true;
-   bool           m_rangeSectionVisible = false;
+   bool           m_outputSectionVisible   = true;
+   bool           m_rangeSectionVisible    = false;
 
    // Graph colors
    // 0=R 1=G 2=B 3=RGB/K 4=Alpha
-   channel_colors m_channelColors;
-   RGBA           m_gridColor0;
-   RGBA           m_gridColor1;
-   RGBA           m_backgroundColor;
+   channel_colors m_channelColors          = channel_colors( 5 );
+   RGBA           m_gridColor0             = RGBAColor( 0x50, 0x50, 0x50 );
+   RGBA           m_gridColor1             = RGBAColor( 0x37, 0x37, 0x37 );
+   RGBA           m_backgroundColor        = RGBAColor( 0x00, 0x00, 0x00 );
 
    // Minimum graph dimensions.
-   int            m_minHistogramWidth = 400;
-   int            m_minHistogramHeight = 200;
-   int            m_sliderControlSize = 12;
+   int            m_minHistogramWidth      = 400;
+   int            m_minHistogramHeight     = 200;
+   int            m_sliderControlSize      = 12;
 
    // Flag true during viewport transitional states (e.g. resizing).
-   bool           m_settingUp = false;
+   bool           m_settingUp              = false;
 
    /*
     * Main calculation routines
@@ -374,8 +363,8 @@ private:
    void SetPlotResolution( int );
    void SetGraphStyle( graph_style );
    void SetRejectSaturated( bool );
-   void SetInputZoom( int, int, const Point* = 0 );
-   void SetOutputZoom( int, int, const Point* = 0 );
+   void SetInputZoom( int, int, const Point* = nullptr );
+   void SetOutputZoom( int, int, const Point* = nullptr );
    void SetMode( working_mode );
    void SetReadoutMode( readout_mode );
 
@@ -490,4 +479,4 @@ PCL_END_LOCAL
 #endif   // __HistogramTransformationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF HistogramTransformationInterface.h - Released 2020-07-31T19:33:39Z

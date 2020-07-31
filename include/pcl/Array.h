@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Array.h - Released 2020-02-27T12:55:23Z
+// pcl/Array.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -179,14 +179,16 @@ public:
     * \code Array( l.begin(), l.end() ) \endcode
     */
    template <typename T1>
-   Array( std::initializer_list<T1> l ) : Array( l.begin(), l.end() )
+   Array( std::initializer_list<T1> l )
+      : Array( l.begin(), l.end() )
    {
    }
 
    /*!
     * Copy constructor.
     */
-   Array( const Array& x ) : m_data( x.m_data )
+   Array( const Array& x )
+      : m_data( x.m_data )
    {
       if ( m_data != nullptr )
          m_data->Attach();
@@ -195,7 +197,8 @@ public:
    /*!
     * Move constructor.
     */
-   Array( Array&& x ) : m_data( x.m_data )
+   Array( Array&& x )
+      : m_data( x.m_data )
    {
       x.m_data = nullptr;
    }
@@ -1796,6 +1799,20 @@ public:
    }
 
    /*!
+    * Generates a newline-separated sequence of string tokens. Returns a
+    * reference to the target string \a s.
+    *
+    * This function is equivalent to:
+    *
+    * \code ToSeparated( s, '\n' ); \endcode
+    */
+   template <class S>
+   S& ToNewLineSeparated( S& s ) const
+   {
+      return ToSeparated( s, '\n' );
+   }
+
+   /*!
     * Returns a 64-bit non-cryptographic hash value computed for this array.
     *
     * This function calls pcl::Hash64() for the internal array buffer.
@@ -2151,4 +2168,4 @@ Array<T,A>& operator <<( Array<T,A>&& x1, const Array<T,A>& x2 )
 #endif  // __PCL_Array_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Array.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Array.h - Released 2020-07-31T19:33:04Z

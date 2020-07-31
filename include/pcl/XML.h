@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/XML.h - Released 2020-02-27T12:55:23Z
+// pcl/XML.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -457,8 +457,9 @@ struct XMLNodeLocation
     * Constructs an %XMLNodeLocation object with the specified zero-based text
     * line and column numbers.
     */
-   XMLNodeLocation( int line_, int column_ ) :
-      line( line_ ), column( column_ )
+   XMLNodeLocation( int line_, int column_ )
+      : line( line_ )
+      , column( column_ )
    {
    }
 
@@ -510,8 +511,8 @@ public:
     * specified \a type, with no parent element and undefined source code
     * location.
     */
-   XMLNode( node_type type ) :
-      XMLComponent(), m_type( type ), m_location()
+   XMLNode( node_type type )
+      : m_type( type )
    {
    }
 
@@ -522,8 +523,9 @@ public:
     * have no parent element even if the source object \a x is a child node.
     * This reflects the fact that document nodes are unique objects.
     */
-   XMLNode( const XMLNode& x ) :
-      XMLComponent(), m_type( x.NodeType() ), m_location( x.m_location )
+   XMLNode( const XMLNode& x )
+      : m_type( x.NodeType() )
+      , m_location( x.m_location )
    {
    }
 
@@ -673,8 +675,8 @@ public:
     * This constructor inserts node location information, if available, and
     * joins the strings appropriately to build an error message.
     */
-   XMLParseError( const XMLNode& node, const String& whileDoing, const String& whatHappened ) :
-      Error( whileDoing + node.Location().ToString() + ": " + whatHappened )
+   XMLParseError( const XMLNode& node, const String& whileDoing, const String& whatHappened )
+      : Error( whileDoing + node.Location().ToString() + ": " + whatHappened )
    {
    }
 
@@ -694,8 +696,8 @@ public:
     * This constructor inserts node location information, if available, and
     * joins the strings appropriately to build an error message.
     */
-   XMLParseError( const XMLNodeLocation& where, const String& whileDoing, const String& whatHappened ) :
-      Error( whileDoing + where.ToString() + ": " + whatHappened )
+   XMLParseError( const XMLNodeLocation& where, const String& whileDoing, const String& whatHappened )
+      : Error( whileDoing + where.ToString() + ": " + whatHappened )
    {
    }
 
@@ -741,10 +743,9 @@ public:
     * performance reasons. Attribute and element names are verified during the
     * document parsing and generation tasks.
     */
-   XMLAttribute( const String& name, const String& value = String() ) :
-      XMLComponent(),
-      m_name( name ),
-      m_value( value )
+   XMLAttribute( const String& name, const String& value = String() )
+      : m_name( name )
+      , m_value( value )
    {
    }
 
@@ -1156,8 +1157,8 @@ public:
    /*!
     * Default constructor. Constructs an uninitialized %XMLElement structure.
     */
-   XMLElement() :
-      XMLNode( XMLNodeType::Element )
+   XMLElement()
+      : XMLNode( XMLNodeType::Element )
    {
    }
 
@@ -1165,10 +1166,10 @@ public:
     * Constructs an empty %XMLElement object with the specified qualified
     * \a name and \a attributes.
     */
-   XMLElement( const String& name, const XMLAttributeList& attributes = XMLAttributeList() ) :
-      XMLNode( XMLNodeType::Element ),
-      m_name( name ),
-      m_attributes( attributes )
+   XMLElement( const String& name, const XMLAttributeList& attributes = XMLAttributeList() )
+      : XMLNode( XMLNodeType::Element )
+      , m_name( name )
+      , m_attributes( attributes )
    {
    }
 
@@ -1177,10 +1178,10 @@ public:
     * \a name and \a attributes, as a child node of the specified \a parent
     * element.
     */
-   XMLElement( XMLElement& parent, const String& name, const XMLAttributeList& attributes = XMLAttributeList() ) :
-      XMLNode( XMLNodeType::Element ),
-      m_name( name ),
-      m_attributes( attributes )
+   XMLElement( XMLElement& parent, const String& name, const XMLAttributeList& attributes = XMLAttributeList() )
+      : XMLNode( XMLNodeType::Element )
+      , m_name( name )
+      , m_attributes( attributes )
    {
       parent.AddChildNode( this );
    }
@@ -1896,11 +1897,11 @@ public:
     * (\#x0A) are never used to separate text blocks from their parent or
     * sibling nodes when space preservation is enabled.
     */
-   XMLText( const String& text, bool preserveSpaces = true, bool verbatim = false ) :
-      XMLNode( XMLNodeType::Text ),
-      m_text( preserveSpaces ? text : XML::CollapsedSpaces( XML::TrimmedSpaces( text ) ) ),
-      m_preserveSpaces( preserveSpaces ),
-      m_verbatim( verbatim )
+   XMLText( const String& text, bool preserveSpaces = true, bool verbatim = false )
+      : XMLNode( XMLNodeType::Text )
+      , m_text( preserveSpaces ? text : XML::CollapsedSpaces( XML::TrimmedSpaces( text ) ) )
+      , m_preserveSpaces( preserveSpaces )
+      , m_verbatim( verbatim )
    {
    }
 
@@ -2008,9 +2009,9 @@ public:
     * The specified \a data must not contain the sequence "]]>". Any occurrence
     * of this forbidden sequence will be removed for serialization.
     */
-   XMLCDATA( const String& data = String() ) :
-      XMLNode( XMLNodeType::CDATA ),
-      m_cdata( data )
+   XMLCDATA( const String& data = String() )
+      : XMLNode( XMLNodeType::CDATA )
+      , m_cdata( data )
    {
    }
 
@@ -2065,10 +2066,10 @@ public:
     * Any occurrence of this forbidden sequence will be removed for
     * serialization.
     */
-   XMLProcessingInstructions( const String& target, const String& instructions ) :
-      XMLNode( XMLNodeType::ProcessingInstructions ),
-      m_target( target ),
-      m_instructions( instructions )
+   XMLProcessingInstructions( const String& target, const String& instructions )
+      : XMLNode( XMLNodeType::ProcessingInstructions )
+      , m_target( target )
+      , m_instructions( instructions )
    {
    }
 
@@ -2130,9 +2131,9 @@ public:
     * a '-' character. Any occurrence of these forbidden sequences will be
     * removed for serialization.
     */
-   XMLComment( const String& comment ) :
-      XMLNode( XMLNodeType::Comment ),
-      m_comment( comment )
+   XMLComment( const String& comment )
+      : XMLNode( XMLNodeType::Comment )
+      , m_comment( comment )
    {
    }
 
@@ -2183,10 +2184,10 @@ public:
     * Constructs an %XMLUnknownElement with the specified qualified \a name and
     * element \a parameters.
     */
-   XMLUnknownElement( const String& name, const String& parameters = String() ) :
-      XMLNode( XMLNodeType::Unknown ),
-      m_name( name ),
-      m_parameters( parameters )
+   XMLUnknownElement( const String& name, const String& parameters = String() )
+      : XMLNode( XMLNodeType::Unknown )
+      , m_name( name )
+      , m_parameters( parameters )
    {
    }
 
@@ -2244,10 +2245,10 @@ public:
     * Constructs a new %XMLDeclaration object with the specified \a version,
     * optional \a encoding and \a standalone document specification.
     */
-   XMLDeclaration( const String& version = String(), const String& encoding = String(), bool standalone = false ) :
-      m_version( version ),
-      m_encoding( encoding ),
-      m_standalone( standalone )
+   XMLDeclaration( const String& version = String(), const String& encoding = String(), bool standalone = false )
+      : m_version( version )
+      , m_encoding( encoding )
+      , m_standalone( standalone )
    {
    }
 
@@ -2329,9 +2330,9 @@ public:
     * Constructs a new %XMLDocTypeDeclaration object with the specified
     * document type \a name and type \a definition.
     */
-   XMLDocTypeDeclaration( const String& name = String(), const String& definition = String() ) :
-      m_name( name ),
-      m_definition( definition )
+   XMLDocTypeDeclaration( const String& name = String(), const String& definition = String() )
+      : m_name( name )
+      , m_definition( definition )
    {
    }
 
@@ -3034,4 +3035,4 @@ private:
 #endif   // __PCL_XML_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XML.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/XML.h - Released 2020-07-31T19:33:04Z

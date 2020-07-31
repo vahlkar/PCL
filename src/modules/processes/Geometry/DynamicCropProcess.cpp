@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// DynamicCropProcess.cpp - Released 2020-02-27T12:56:01Z
+// DynamicCropProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -61,10 +61,6 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 DynamicCropProcess* TheDynamicCropProcess = nullptr;
-
-// ----------------------------------------------------------------------------
-
-#include "DynamicCropIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -161,9 +157,9 @@ String DynamicCropProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** DynamicCropProcess::IconImageXPM() const
+String DynamicCropProcess::IconImageSVGFile() const
 {
-   return DynamicCropIcon_XPM;
+   return "@module_icons_dir/DynamicCrop.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -193,4 +189,4 @@ ProcessImplementation* DynamicCropProcess::Clone( const ProcessImplementation& p
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF DynamicCropProcess.cpp - Released 2020-07-31T19:33:39Z

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:01.850Z
+# Generated on .... 2020-07-31T19:36:36.036Z
 # Project id ...... IntensityTransformations
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{32234C6B-E9C6-41BE-A2AB-C248716BA2AB}</ProjectGuid>
+    <ProjectGuid>{970969D6-9257-4129-80B4-DAD44E2F18A8}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -118,7 +118,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\IntensityTransformations-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
@@ -157,7 +157,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR32)\IntensityTransformations-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
@@ -191,7 +191,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR64)\IntensityTransformations-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
@@ -219,7 +219,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(PCLBINDIR32)\IntensityTransformations-pxm.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PCLLIBDIR32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
@@ -338,59 +338,35 @@
     <ClInclude Include="..\..\ScreenTransferFunctionProcess.h"/>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\AdaptiveStretchIcon.png"/>
-    <None Include="..\..\AutoHistogramIcon.png"/>
-    <None Include="..\..\BinarizeActionIcon.png"/>
-    <None Include="..\..\BinarizeIcon.png"/>
-    <None Include="..\..\ColorSaturationIcon.png"/>
-    <None Include="..\..\CurvesTransformationIcon.png"/>
-    <None Include="..\..\ExponentialTransformationIcon.png"/>
-    <None Include="..\..\H_channel.png"/>
-    <None Include="..\..\HistogramTransformationIcon.png"/>
-    <None Include="..\..\InvertActionIcon.png"/>
-    <None Include="..\..\InvertIcon.png"/>
-    <None Include="..\..\L_channel.png"/>
-    <None Include="..\..\MaskedStretchIcon.png"/>
-    <None Include="..\..\RescaleIcon.png"/>
-    <None Include="..\..\RescaleLumActionIcon.png"/>
-    <None Include="..\..\RescaleRGBActionIcon.png"/>
-    <None Include="..\..\S_channel.png"/>
-    <None Include="..\..\ScreenTransferFunctionIcon.png"/>
-    <None Include="..\..\a_channel.png"/>
-    <None Include="..\..\akima_interpolation.png"/>
-    <None Include="..\..\alpha_channel.png"/>
-    <None Include="..\..\alpha_small_channel.png"/>
-    <None Include="..\..\auto_clip_highlights.png"/>
-    <None Include="..\..\auto_clip_shadows.png"/>
-    <None Include="..\..\auto_zero_highlights.png"/>
-    <None Include="..\..\auto_zero_shadows.png"/>
-    <None Include="..\..\b_channel.png"/>
-    <None Include="..\..\blue_channel.png"/>
-    <None Include="..\..\blue_small_channel.png"/>
-    <None Include="..\..\c_channel.png"/>
-    <None Include="..\..\cubic_spline_interpolation.png"/>
-    <None Include="..\..\delete_point_mode.png"/>
-    <None Include="..\..\edit_point_mode.png"/>
-    <None Include="..\..\green_channel.png"/>
-    <None Include="..\..\green_small_channel.png"/>
-    <None Include="..\..\linear_interpolation.png"/>
-    <None Include="..\..\lock_output.png"/>
-    <None Include="..\..\pan_cursor.png"/>
-    <None Include="..\..\raw_rgb.png"/>
-    <None Include="..\..\red_channel.png"/>
-    <None Include="..\..\red_small_channel.png"/>
-    <None Include="..\..\reject_saturated.png"/>
-    <None Include="..\..\restore_curve.png"/>
-    <None Include="..\..\reverse.png"/>
-    <None Include="..\..\rgbk_channel.png"/>
-    <None Include="..\..\rgbk_small_channel.png"/>
-    <None Include="..\..\select_point_mode.png"/>
-    <None Include="..\..\show_all_curves.png"/>
-    <None Include="..\..\show_curve.png"/>
-    <None Include="..\..\show_grid.png"/>
-    <None Include="..\..\store_curve.png"/>
-    <None Include="..\..\zoom_in_cursor.png"/>
-    <None Include="..\..\zoom_out_cursor.png"/>
+    <None Include="..\..\icons\AdaptiveStretch.svg"/>
+    <None Include="..\..\icons\AutoHistogram.svg"/>
+    <None Include="..\..\icons\Binarize.svg"/>
+    <None Include="..\..\icons\ColorSaturation.svg"/>
+    <None Include="..\..\icons\CurvesTransformation.svg"/>
+    <None Include="..\..\icons\ExponentialTransformation.svg"/>
+    <None Include="..\..\icons\HistogramTransformation.svg"/>
+    <None Include="..\..\icons\Invert.svg"/>
+    <None Include="..\..\icons\MaskedStretch.svg"/>
+    <None Include="..\..\icons\Rescale.svg"/>
+    <None Include="..\..\icons\RescaleLumAction.svg"/>
+    <None Include="..\..\icons\RescaleRGBAction.svg"/>
+    <None Include="..\..\icons\ScreenTransferFunction.svg"/>
+    <None Include="..\..\icons\akima_interpolation.svg"/>
+    <None Include="..\..\icons\auto_clip_highlights.svg"/>
+    <None Include="..\..\icons\auto_clip_shadows.svg"/>
+    <None Include="..\..\icons\auto_zero_highlights.svg"/>
+    <None Include="..\..\icons\auto_zero_shadows.svg"/>
+    <None Include="..\..\icons\cubic_spline_interpolation.svg"/>
+    <None Include="..\..\icons\delete_point_mode.svg"/>
+    <None Include="..\..\icons\edit_point_mode.svg"/>
+    <None Include="..\..\icons\linear_interpolation.svg"/>
+    <None Include="..\..\icons\lock_output.svg"/>
+    <None Include="..\..\icons\raw_rgb.svg"/>
+    <None Include="..\..\icons\reject_saturated.svg"/>
+    <None Include="..\..\icons\select_point_mode.svg"/>
+    <None Include="..\..\icons\show_all_curves.svg"/>
+    <None Include="..\..\icons\show_curve.svg"/>
+    <None Include="..\..\icons\show_grid.svg"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets">

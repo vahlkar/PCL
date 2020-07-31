@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// MercatorCylindricalProjection.h - Released 2020-02-27T12:56:01Z
+// MercatorCylindricalProjection.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -64,36 +64,33 @@ class MercatorCylindricalProjection : public ProjectionSystem
 {
 public:
 
-   MercatorCylindricalProjection( double lon ) : ProjectionSystem( lon, 0 )
+   MercatorCylindricalProjection( double lon )
+      : ProjectionSystem( lon, 0 )
    {
    }
 
-   virtual ~MercatorCylindricalProjection()
-   {
-   }
-
-   virtual bool IsCylindricalProjection() const
+   bool IsCylindricalProjection() const override
    {
       return true;
    }
 
-   virtual bool IsConformalProjection() const
+   bool IsConformalProjection() const override
    {
       return true;
    }
 
-   virtual String Name() const
+   String Name() const override
    {
       return "Mercator Cylindrical Projection";
    }
 
-   virtual void SphericalToRectangular( double& x, double& y, double lon, double lat ) const
+   void SphericalToRectangular( double& x, double& y, double lon, double lat ) const override
    {
       x = InPiRange( lon - lon0 );
       y = ArcSinh( Tan( lat ) );
    }
 
-   virtual void RectangularToSpherical( double& lon, double& lat, double x, double y ) const
+   void RectangularToSpherical( double& lon, double& lat, double x, double y ) const override
    {
       lon = In2PiRange( lon0 + x );
       lat = ArcTan( Sinh( y ) );
@@ -107,4 +104,4 @@ public:
 #endif   // __MercatorCylindricalProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF MercatorCylindricalProjection.h - Released 2020-02-27T12:56:01Z
+// EOF MercatorCylindricalProjection.h - Released 2020-07-31T19:33:39Z

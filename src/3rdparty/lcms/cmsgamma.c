@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------------
 //
 //  Little Color Management System
-//  Copyright (c) 1998-2013 Marti Maria Saguer
+//  Copyright (c) 1998-2020 Marti Maria Saguer
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -300,7 +300,8 @@ cmsToneCurve* AllocateToneCurveStruct(cmsContext ContextID, cmsUInt32Number nEnt
         return p;
 
 Error:
-    if (p -> Segments) _cmsFree(ContextID, p ->Segments);
+    if (p -> SegInterp) _cmsFree(ContextID, p -> SegInterp);
+    if (p -> Segments) _cmsFree(ContextID, p -> Segments);
     if (p -> Evals) _cmsFree(ContextID, p -> Evals);
     if (p ->Table16) _cmsFree(ContextID, p ->Table16);
     _cmsFree(ContextID, p);
@@ -888,7 +889,7 @@ void CMSEXPORT cmsFreeToneCurve(cmsToneCurve* Curve)
     if (Curve -> Evals)
         _cmsFree(ContextID, Curve -> Evals);
 
-    if (Curve) _cmsFree(ContextID, Curve);
+    _cmsFree(ContextID, Curve);
 }
 
 // Utility function, free 3 gamma tables
@@ -1430,4 +1431,15 @@ cmsFloat64Number CMSEXPORT cmsEstimateGamma(const cmsToneCurve* t, cmsFloat64Num
         return -1.0;
 
     return (sum / n);   // The mean
+}
+
+
+// Retrieve parameters on one-segment tone curves
+
+cmsFloat64Number* CMSEXPORT cmsGetToneCurveParams(const cmsToneCurve* t)
+{
+    _cmsAssert(t != NULL);
+
+    if (t->nSegments != 1) return NULL;
+    return t->Segments[0].Params;
 }

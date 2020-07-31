@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// HistogramTransformationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,10 +68,9 @@ public:
 
    HistogramTransformationTable( MetaProcess* P );
 
-   virtual IsoString Id() const;
-
-   virtual size_type MinLength() const;
-   virtual size_type MaxLength() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   size_type MaxLength() const override;
 };
 
 extern HistogramTransformationTable* TheHistogramTransformationTableParameter;
@@ -84,13 +83,11 @@ public:
 
    ShadowsClipping( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ShadowsClipping* TheShadowsClippingParameter;
@@ -103,13 +100,11 @@ public:
 
    HighlightsClipping( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HighlightsClipping* TheHighlightsClippingParameter;
@@ -122,13 +117,11 @@ public:
 
    MidtonesBalance( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern MidtonesBalance* TheMidtonesBalanceParameter;
@@ -141,13 +134,11 @@ public:
 
    LowRange( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LowRange* TheLowRangeParameter;
@@ -160,13 +151,11 @@ public:
 
    HighRange( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern HighRange* TheHighRangeParameter;
@@ -180,4 +169,4 @@ PCL_END_LOCAL
 #endif   // __HistogramTransformationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF HistogramTransformationParameters.h - Released 2020-07-31T19:33:39Z

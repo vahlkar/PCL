@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FastRotationInstance.cpp - Released 2020-02-27T12:56:01Z
+// FastRotationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -64,19 +64,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FastRotationInstance::FastRotationInstance( const MetaProcess* m, int r ) :
-   ProcessImplementation( m ),
-   p_mode( r ),
-   p_noGUIMessages( TheFRNoGUIMessagesParameter->DefaultValue() )
+FastRotationInstance::FastRotationInstance( const MetaProcess* m, int r )
+   : ProcessImplementation( m )
+   , p_mode( r )
+   , p_noGUIMessages( TheFRNoGUIMessagesParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-FastRotationInstance::FastRotationInstance( const FastRotationInstance& x ) :
-   ProcessImplementation( x ),
-   p_mode( x.p_mode ),
-   p_noGUIMessages( x.p_noGUIMessages )
+FastRotationInstance::FastRotationInstance( const FastRotationInstance& x )
+   : ProcessImplementation( x )
+   , p_mode( x.p_mode )
+   , p_noGUIMessages( x.p_noGUIMessages )
 {
 }
 
@@ -117,7 +117,6 @@ bool FastRotationInstance::CanExecuteOn( const View& v, String& whyNot ) const
       whyNot = "FastRotation cannot be executed on previews.";
       return false;
    }
-
    return true;
 }
 
@@ -189,4 +188,4 @@ void* FastRotationInstance::LockParameter( const MetaParameter* p, size_type /*t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF FastRotationInstance.cpp - Released 2020-07-31T19:33:39Z

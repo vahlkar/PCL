@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// ImageIntegrationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -50,10 +50,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "ImageIntegrationProcess.h"
-#include "ImageIntegrationParameters.h"
 #include "ImageIntegrationInstance.h"
 #include "ImageIntegrationInterface.h"
+#include "ImageIntegrationParameters.h"
+#include "ImageIntegrationProcess.h"
 
 namespace pcl
 {
@@ -61,10 +61,6 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 ImageIntegrationProcess* TheImageIntegrationProcess = nullptr;
-
-// ----------------------------------------------------------------------------
-
-#include "ImageIntegrationIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -83,6 +79,8 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIWeightMode( this );
    new IIWeightKeyword( this );
    new IIWeightScale( this );
+   new IIAdaptiveNX( this );
+   new IIAdaptiveNY( this );
    new IIIgnoreNoiseKeywords( this );
    new IINormalization( this );
    new IIRejection( this );
@@ -136,8 +134,11 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IISubtractPedestals( this );
    new IITruncateOnOutOfRange( this );
    new IINoGUIMessages( this );
+   new IIShowImages( this );
    new IIUseFileThreads( this );
    new IIFileThreadOverload( this );
+   new IIUseBufferThreads( this );
+   new IIMaxBufferThreads( this );
 
    new IIIntegrationImageId( this );
    new IILowRejectionMapImageId( this );
@@ -219,9 +220,9 @@ String ImageIntegrationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ImageIntegrationProcess::IconImageXPM() const
+String ImageIntegrationProcess::IconImageSVGFile() const
 {
-   return ImageIntegrationIcon_XPM;
+   return "@module_icons_dir/ImageIntegration.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -251,4 +252,4 @@ ProcessImplementation* ImageIntegrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ImageIntegrationProcess.cpp - Released 2020-07-31T19:33:39Z

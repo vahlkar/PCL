@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchCurveGraphInterface.h - Released 2020-02-27T12:56:01Z
+// AdaptiveStretchCurveGraphInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -75,18 +75,13 @@ public:
    virtual ~AdaptiveStretchCurveGraphInterface();
 
    IsoString Id() const override;
-
    MetaProcess* Process() const override;
-
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
-
    bool IsInstanceGenerator() const override;
    bool CanImportInstances() const override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
    using ProcessInterface::Launch;
-
    void SaveSettings() const override;
    void LoadSettings() override;
 
@@ -111,24 +106,24 @@ private:
    /*
     * Parameters
     */
-   int    m_width = 400;
-   int    m_height = 400;
+   int    m_width           = 400;
+   int    m_height          = 400;
    RGBA   m_backgroundColor = 0xFFFFFFFF; // white
-   RGBA   m_curveColor = 0xFFFF0000;      // red
-   RGBA   m_gridColor = 0xFFD0D0D0;       // light gray
-   RGBA   m_axisColor = 0xFF000000;       // black
-   String m_fontFace = "Helvetica";
-   int    m_fontSize = 12;
-   int    m_tickSize = 5;
-   int    m_margin = 15;
+   RGBA   m_curveColor      = 0xFFFF0000; // red
+   RGBA   m_gridColor       = 0xFFD0D0D0; // light gray
+   RGBA   m_axisColor       = 0xFF000000; // black
+   String m_fontFace        = "Helvetica";
+   int    m_fontSize        = 12;
+   int    m_tickSize        = 5;
+   int    m_margin          = 15;
 
    /*
     * Working data
     */
    StretchCurve m_curve;
-   Rect         m_curveRect = Rect( 0 );
-   Bitmap       m_gridBitmap;
-   Bitmap       m_curveBitmap;
+   Rect         m_curveRect   = 0;
+   Bitmap       m_gridBitmap  = Bitmap::Null();
+   Bitmap       m_curveBitmap = Bitmap::Null();
 
    void UpdateControls();
    void Resize( int width, int height );
@@ -156,4 +151,4 @@ PCL_END_LOCAL
 #endif   // __AdaptiveStretchCurveGraphInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchCurveGraphInterface.h - Released 2020-02-27T12:56:01Z
+// EOF AdaptiveStretchCurveGraphInterface.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.h - Released 2020-02-27T12:56:01Z
+// ImageIntegrationProcess.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -70,7 +70,7 @@ public:
    IsoString Category() const override;
    uint32 Version() const override;
    String Description() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    ProcessInterface* DefaultInterface() const override;
    ProcessImplementation* Create() const override;
    ProcessImplementation* Clone( const ProcessImplementation& ) const override;
@@ -87,4 +87,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.h - Released 2020-02-27T12:56:01Z
+// EOF ImageIntegrationProcess.h - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ImageSelections.h - Released 2020-02-27T12:55:23Z
+// pcl/ImageSelections.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -55,7 +55,6 @@
 /// \file pcl/ImageSelections.h
 
 #include <pcl/Defs.h>
-#include <pcl/Diagnostics.h>
 
 #include <pcl/Array.h>
 #include <pcl/Point.h>
@@ -72,22 +71,23 @@ namespace pcl
  * \brief A structure used to store rectangular image selections, channel
  *        ranges, anchor points, and clipping ranges.
  *
- * %ImageSelections Defines a rectangular area, a channel range and an anchor
+ * %ImageSelections defines a rectangular area, a channel range, and an anchor
  * point that can be used as a selection for 2D images.
  *
- * %ImageSelections also defines a clipping range in the normalized [0,1] range.
- * Range clipping is used for calculation of statistics such as mean, standard
- * deviation, average deviation, etc.
+ * This structure also defines a clipping range in the normalized [0,1] range.
+ * Range clipping is used for calculation of statistics such as mean, median,
+ * standard deviation, average and median deviations, etc.
  */
 struct PCL_CLASS ImageSelections
 {
-   int    channel;       //!< First selected channel
-   int    lastChannel;   //!< Last selected channel
-   Point  point;         //!< Current anchor point
-   Rect   rectangle;     //!< Current rectangular selection
-   double clipLow;       //!< Clipping range, lower bound
-   double clipHigh;      //!< Clipping range, upper bound
-   bool   clipped : 1;   //!< Use range clipping
+   int    channel     = 0;     //!< First selected channel
+   int    lastChannel = 0;     //!< Last selected channel
+   Point  point       = 0;     //!< Current anchor point
+   Rect   rectangle   = 0;     //!< Current rectangular selection
+   double clipLow     = 0.0;   //!< Clipping range, lower bound
+   double clipHigh    = 1.0;   //!< Clipping range, upper bound
+   bool   clippedLow  = false; //!< Use range clipping, low pixels
+   bool   clippedHigh = false; //!< Use range clipping, high pixels
 
    /*!
     * Constructs a default %ImageSelections instance:
@@ -97,36 +97,19 @@ struct PCL_CLASS ImageSelections
     * \li Anchor point at the origin of image coordinates: point = Point( 0 ).
     * \li Clipping range lower bound = 0.0
     * \li Clipping range upper bound = 1.0
-    * \li Range clipping disabled
+    * \li Range clipping disabled.
     */
-   ImageSelections() :
-   channel( 0 ), lastChannel( 0 ), point( 0 ), rectangle( 0 ), clipLow( 0 ), clipHigh( 1 ), clipped( false )
-   {
-   }
+   ImageSelections() = default;
 
    /*!
     * Copy constructor.
     */
-   ImageSelections( const ImageSelections& x ) :
-   channel( x.channel ), lastChannel( x.lastChannel ), point( x.point ), rectangle( x.rectangle ),
-   clipLow( x.clipLow ), clipHigh( x.clipHigh ), clipped( x.clipped )
-   {
-   }
+   ImageSelections( const ImageSelections& ) = default;
 
    /*!
     * Assignment operator. Returns a reference to this object.
     */
-   ImageSelections& operator =( const ImageSelections& x )
-   {
-      channel = x.channel;
-      lastChannel = x.lastChannel;
-      point = x.point;
-      rectangle = x.rectangle;
-      clipLow = x.clipLow;
-      clipHigh = x.clipHigh;
-      clipped = x.clipped;
-      return *this;
-   }
+   ImageSelections& operator =( const ImageSelections& ) = default;
 };
 
 // ----------------------------------------------------------------------------
@@ -136,4 +119,4 @@ struct PCL_CLASS ImageSelections
 #endif   // __PCL_ImageSelections_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageSelections.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ImageSelections.h - Released 2020-07-31T19:33:04Z

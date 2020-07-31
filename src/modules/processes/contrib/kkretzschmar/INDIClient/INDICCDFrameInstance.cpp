@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDICCDFrameInstance.cpp - Released 2020-02-27T12:56:01Z
+// INDICCDFrameInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -76,44 +76,44 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-INDICCDFrameInstance::INDICCDFrameInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_deviceName( TheICFDeviceNameParameter->DefaultValue() ),
-   p_uploadMode( ICFUploadMode::Default ),
-   p_serverUploadDirectory( TheICFServerUploadDirectoryParameter->DefaultValue() ),
-   p_serverFileNameTemplate( TheICFServerFileNameTemplateParameter->DefaultValue() ),
-   p_frameType( ICFFrameType::Default ),
-   p_binningX( int32( TheICFBinningXParameter->DefaultValue() ) ),
-   p_binningY( int32( TheICFBinningYParameter->DefaultValue() ) ),
-   p_filterSlot( int32( TheICFFilterSlotParameter->DefaultValue() ) ),
-   p_exposureTime( TheICFExposureTimeParameter->DefaultValue() ),
-   p_exposureDelay( TheICFExposureDelayParameter->DefaultValue() ),
-   p_exposureCount( TheICFExposureCountParameter->DefaultValue() ),
-   p_openClientImages( TheICFOpenClientImagesParameter->DefaultValue() ),
-   p_newImageIdTemplate( TheICFNewImageIdTemplateParameter->DefaultValue() ),
-   p_reuseImageWindow( TheICFReuseImageWindowParameter->DefaultValue() ),
-   p_autoStretch( TheICFAutoStretchParameter->DefaultValue() ),
-   p_linkedAutoStretch( TheICFLinkedAutoStretchParameter->DefaultValue() ),
-   p_saveClientImages( TheICFSaveClientImagesParameter->DefaultValue() ),
-   p_overwriteClientImages( TheICFOverwriteClientImagesParameter->DefaultValue() ),
-   p_clientDownloadDirectory( TheICFClientDownloadDirectoryParameter->DefaultValue() ),
-   p_clientFileNameTemplate( TheICFClientFileNameTemplateParameter->DefaultValue() ),
-   p_clientOutputFormatHints( TheICFClientOutputFormatHintsParameter->DefaultValue() ),
-   p_objectName( TheICFObjectNameParameter->DefaultValue() ),
-   p_telescopeSelection( ICFTelescopeSelection::Default ),
-   p_requireSelectedTelescope( TheICFRequireSelectedTelescopeParameter->DefaultValue() ),
-   p_telescopeDeviceName( TheICFTelescopeDeviceNameParameter->DefaultValue() ),
-   p_extFilterWheelDeviceName( TheICFExternalFilterWheelDeviceNameParameter->DefaultValue() ),
-   p_enableAlignmentCorrection( TheICFEnableAlignmentCorrectionParameter->DefaultValue() ),
-   p_alignmentFile( TheICFAlignmentFileParameter->DefaultValue() ),
-   p_telescopeFocalLength( TheICFTelescopeFocalLengthParameter->DefaultValue() )
+INDICCDFrameInstance::INDICCDFrameInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_deviceName( TheICFDeviceNameParameter->DefaultValue() )
+   , p_uploadMode( ICFUploadMode::Default )
+   , p_serverUploadDirectory( TheICFServerUploadDirectoryParameter->DefaultValue() )
+   , p_serverFileNameTemplate( TheICFServerFileNameTemplateParameter->DefaultValue() )
+   , p_frameType( ICFFrameType::Default )
+   , p_binningX( int32( TheICFBinningXParameter->DefaultValue() ) )
+   , p_binningY( int32( TheICFBinningYParameter->DefaultValue() ) )
+   , p_filterSlot( int32( TheICFFilterSlotParameter->DefaultValue() ) )
+   , p_exposureTime( TheICFExposureTimeParameter->DefaultValue() )
+   , p_exposureDelay( TheICFExposureDelayParameter->DefaultValue() )
+   , p_exposureCount( TheICFExposureCountParameter->DefaultValue() )
+   , p_openClientImages( TheICFOpenClientImagesParameter->DefaultValue() )
+   , p_newImageIdTemplate( TheICFNewImageIdTemplateParameter->DefaultValue() )
+   , p_reuseImageWindow( TheICFReuseImageWindowParameter->DefaultValue() )
+   , p_autoStretch( TheICFAutoStretchParameter->DefaultValue() )
+   , p_linkedAutoStretch( TheICFLinkedAutoStretchParameter->DefaultValue() )
+   , p_saveClientImages( TheICFSaveClientImagesParameter->DefaultValue() )
+   , p_overwriteClientImages( TheICFOverwriteClientImagesParameter->DefaultValue() )
+   , p_clientDownloadDirectory( TheICFClientDownloadDirectoryParameter->DefaultValue() )
+   , p_clientFileNameTemplate( TheICFClientFileNameTemplateParameter->DefaultValue() )
+   , p_clientOutputFormatHints( TheICFClientOutputFormatHintsParameter->DefaultValue() )
+   , p_objectName( TheICFObjectNameParameter->DefaultValue() )
+   , p_telescopeSelection( ICFTelescopeSelection::Default )
+   , p_requireSelectedTelescope( TheICFRequireSelectedTelescopeParameter->DefaultValue() )
+   , p_telescopeDeviceName( TheICFTelescopeDeviceNameParameter->DefaultValue() )
+   , p_extFilterWheelDeviceName( TheICFExternalFilterWheelDeviceNameParameter->DefaultValue() )
+   , p_enableAlignmentCorrection( TheICFEnableAlignmentCorrectionParameter->DefaultValue() )
+   , p_alignmentFile( TheICFAlignmentFileParameter->DefaultValue() )
+   , p_telescopeFocalLength( TheICFTelescopeFocalLengthParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-INDICCDFrameInstance::INDICCDFrameInstance( const INDICCDFrameInstance& x ) :
-   ProcessImplementation( x )
+INDICCDFrameInstance::INDICCDFrameInstance( const INDICCDFrameInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -434,8 +434,8 @@ class INDICCDFrameInstanceExecution : public AbstractINDICCDFrameExecution
 {
 public:
 
-   INDICCDFrameInstanceExecution( INDICCDFrameInstance& instance ) :
-      AbstractINDICCDFrameExecution( instance )
+   INDICCDFrameInstanceExecution( INDICCDFrameInstance& instance )
+      : AbstractINDICCDFrameExecution( instance )
    {
       m_monitor.SetCallback( &m_status );
       m_waitMonitor.SetCallback( &m_spin );
@@ -1718,4 +1718,4 @@ int AbstractINDICCDFrameExecution::s_numberOfChannels = 0;
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF INDICCDFrameInstance.cpp - Released 2020-07-31T19:33:39Z

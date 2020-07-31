@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2020-02-27T12:56:01Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -66,16 +66,12 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-//#include "SubframeSelectorIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 SubframeSelectorMeasurementsInterface* TheSubframeSelectorMeasurementsInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-SubframeSelectorMeasurementsInterface::SubframeSelectorMeasurementsInterface( SubframeSelectorInstance& instance ) :
-   m_instance( instance )
+SubframeSelectorMeasurementsInterface::SubframeSelectorMeasurementsInterface( SubframeSelectorInstance& instance )
+   : m_instance( instance )
 {
    TheSubframeSelectorMeasurementsInterface = this;
 }
@@ -104,9 +100,9 @@ MetaProcess* SubframeSelectorMeasurementsInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** SubframeSelectorMeasurementsInterface::IconImageXPM() const
+String SubframeSelectorMeasurementsInterface::IconImageSVGFile() const
 {
-   return nullptr; // SubframeSelectorIcon_XPM; ---> put a nice icon here
+   return "@module_icons_dir/SubframeSelector.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -765,10 +761,11 @@ void SubframeSelectorMeasurementsInterface::e_ItemSelected( ComboBox& sender, in
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasurementsInterface& w ) :
-   MeasurementGraph_Graph( w ),
-   MeasurementDistribution_Graph( w )
+SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasurementsInterface& w )
+   : MeasurementGraph_Graph( w )
+   , MeasurementDistribution_Graph( w )
 {
    int buttonWidth1 = w.Font().Width( String( "Toggle Approve" ) + "MMMM" );
 
@@ -938,4 +935,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2020-07-31T19:33:39Z

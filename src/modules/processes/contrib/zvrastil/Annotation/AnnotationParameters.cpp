@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationParameters.cpp - Released 2020-02-27T12:56:01Z
+// AnnotationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -53,19 +53,33 @@
 
 #include "AnnotationParameters.h"
 
-#include "pcl/Font.h"
 #include "pcl/Color.h"
+#include "pcl/Font.h"
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-AnnotationText*   TheAnnotationTextParameter = 0;
+AnnotationText*            TheAnnotationTextParameter = nullptr;
+AnnotationFont*            TheAnnotationFontParameter = nullptr;
+AnnotationFontSize*        TheAnnotationFontSizeParameter = nullptr;
+AnnotationFontBold*        TheAnnotationFontBoldParameter = nullptr;
+AnnotationFontItalic*      TheAnnotationFontItalicParameter = nullptr;
+AnnotationFontUnderline*   TheAnnotationFontUnderlineParameter = nullptr;
+AnnotationFontShadow*      TheAnnotationFontShadowParameter = nullptr;
+AnnotationColor*           TheAnnotationColorParameter = nullptr;
+AnnotationPositionX*       TheAnnotationPositionXParameter = nullptr;
+AnnotationPositionY*       TheAnnotationPositionYParameter = nullptr;
+AnnotationShowLeader*      TheAnnotationShowLeaderParameter = nullptr;
+AnnotationLeaderPositionX* TheAnnotationLeaderPositionXParameter = nullptr;
+AnnotationLeaderPositionY* TheAnnotationLeaderPositionYParameter = nullptr;
+AnnotationOpacity*         TheAnnotationOpacityParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
-AnnotationText::AnnotationText( MetaProcess* P ) : MetaString( P )
+AnnotationText::AnnotationText( MetaProcess* P )
+   : MetaString( P )
 {
    TheAnnotationTextParameter = this;
 }
@@ -87,11 +101,8 @@ String AnnotationText::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationFont*   TheAnnotationFontParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationFont::AnnotationFont( MetaProcess* P ) : MetaString( P )
+AnnotationFont::AnnotationFont( MetaProcess* P )
+   : MetaString( P )
 {
    TheAnnotationFontParameter = this;
 }
@@ -108,16 +119,13 @@ size_type AnnotationFont::MinLength() const
 
 String AnnotationFont::DefaultValue() const
 {
-   return FontFamily::FamilyToFace(FontFamily::Default);
+   return FontFamily::FamilyToFace( FontFamily::Default );
 }
 
 // ----------------------------------------------------------------------------
 
-AnnotationFontSize*   TheAnnotationFontSizeParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationFontSize::AnnotationFontSize( MetaProcess* P ) : MetaUInt8( P )
+AnnotationFontSize::AnnotationFontSize( MetaProcess* P )
+   : MetaUInt8( P )
 {
    TheAnnotationFontSizeParameter = this;
 }
@@ -134,11 +142,8 @@ double AnnotationFontSize::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationFontBold*   TheAnnotationFontBoldParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationFontBold::AnnotationFontBold( MetaProcess* P ) : MetaBoolean( P )
+AnnotationFontBold::AnnotationFontBold( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheAnnotationFontBoldParameter = this;
 }
@@ -150,11 +155,8 @@ IsoString AnnotationFontBold::Id() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationFontItalic*   TheAnnotationFontItalicParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationFontItalic::AnnotationFontItalic( MetaProcess* P ) : MetaBoolean( P )
+AnnotationFontItalic::AnnotationFontItalic( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheAnnotationFontItalicParameter = this;
 }
@@ -166,11 +168,8 @@ IsoString AnnotationFontItalic::Id() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationFontUnderline*   TheAnnotationFontUnderlineParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationFontUnderline::AnnotationFontUnderline( MetaProcess* P ) : MetaBoolean( P )
+AnnotationFontUnderline::AnnotationFontUnderline( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheAnnotationFontUnderlineParameter = this;
 }
@@ -182,11 +181,8 @@ IsoString AnnotationFontUnderline::Id() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationFontShadow*   TheAnnotationFontShadowParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationFontShadow::AnnotationFontShadow( MetaProcess* P ) : MetaBoolean( P )
+AnnotationFontShadow::AnnotationFontShadow( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheAnnotationFontShadowParameter = this;
 }
@@ -198,11 +194,8 @@ IsoString AnnotationFontShadow::Id() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationColor*   TheAnnotationColorParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationColor::AnnotationColor( MetaProcess* P ) : MetaUInt32( P )
+AnnotationColor::AnnotationColor( MetaProcess* P )
+   : MetaUInt32( P )
 {
    TheAnnotationColorParameter = this;
 }
@@ -214,16 +207,13 @@ IsoString AnnotationColor::Id() const
 
 double AnnotationColor::DefaultValue() const
 {
-   return RGBAColor(192, 192, 192); //Silver
+   return RGBAColor( 192, 192, 192 ); //Silver
 }
 
 // ----------------------------------------------------------------------------
 
-AnnotationPositionX*   TheAnnotationPositionXParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationPositionX::AnnotationPositionX( MetaProcess* P ) : MetaInt32( P )
+AnnotationPositionX::AnnotationPositionX( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheAnnotationPositionXParameter = this;
 }
@@ -235,11 +225,8 @@ IsoString AnnotationPositionX::Id() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationPositionY*   TheAnnotationPositionYParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationPositionY::AnnotationPositionY( MetaProcess* P ) : MetaInt32( P )
+AnnotationPositionY::AnnotationPositionY( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheAnnotationPositionYParameter = this;
 }
@@ -251,11 +238,8 @@ IsoString AnnotationPositionY::Id() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationShowLeader*   TheAnnotationShowLeaderParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationShowLeader::AnnotationShowLeader( MetaProcess* P ) : MetaBoolean( P )
+AnnotationShowLeader::AnnotationShowLeader( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheAnnotationShowLeaderParameter = this;
 }
@@ -267,11 +251,8 @@ IsoString AnnotationShowLeader::Id() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationLeaderPositionX*   TheAnnotationLeaderPositionXParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationLeaderPositionX::AnnotationLeaderPositionX( MetaProcess* P ) : MetaInt32( P )
+AnnotationLeaderPositionX::AnnotationLeaderPositionX( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheAnnotationLeaderPositionXParameter = this;
 }
@@ -283,11 +264,8 @@ IsoString AnnotationLeaderPositionX::Id() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationLeaderPositionY*   TheAnnotationLeaderPositionYParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationLeaderPositionY::AnnotationLeaderPositionY( MetaProcess* P ) : MetaInt32( P )
+AnnotationLeaderPositionY::AnnotationLeaderPositionY( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheAnnotationLeaderPositionYParameter = this;
 }
@@ -299,11 +277,8 @@ IsoString AnnotationLeaderPositionY::Id() const
 
 // ----------------------------------------------------------------------------
 
-AnnotationOpacity*   TheAnnotationOpacityParameter = 0;
-
-// ----------------------------------------------------------------------------
-
-AnnotationOpacity::AnnotationOpacity( MetaProcess* P ) : MetaUInt8( P )
+AnnotationOpacity::AnnotationOpacity( MetaProcess* P )
+   : MetaUInt8( P )
 {
    TheAnnotationOpacityParameter = this;
 }
@@ -320,7 +295,7 @@ double AnnotationOpacity::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF AnnotationParameters.cpp - Released 2020-07-31T19:33:39Z

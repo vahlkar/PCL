@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaInterface.cpp - Released 2020-02-27T12:56:01Z
+// LarsonSekaninaInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -51,66 +51,76 @@
 // ----------------------------------------------------------------------------
 
 #include "LarsonSekaninaInterface.h"
-#include "LarsonSekaninaProcess.h"
 #include "LarsonSekaninaParameters.h"
-
-//#include <pcl/RealTimePreview.h>
+#include "LarsonSekaninaProcess.h"
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-LarsonSekaninaInterface* TheLarsonSekaninaInterface = 0;
+LarsonSekaninaInterface* TheLarsonSekaninaInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "LarsonSekaninaIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-LarsonSekaninaInterface::LarsonSekaninaInterface() :
-ProcessInterface(), instance( TheLarsonSekaninaProcess ), GUI( 0 )
+LarsonSekaninaInterface::LarsonSekaninaInterface()
+   : instance( TheLarsonSekaninaProcess )
 {
    TheLarsonSekaninaInterface = this;
 }
 
+// ----------------------------------------------------------------------------
+
 LarsonSekaninaInterface::~LarsonSekaninaInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString LarsonSekaninaInterface::Id() const
 {
    return "LarsonSekanina";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* LarsonSekaninaInterface::Process() const
 {
    return TheLarsonSekaninaProcess;
 }
 
-const char** LarsonSekaninaInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String LarsonSekaninaInterface::IconImageSVGFile() const
 {
-   return LarsonSekaninaIcon_XPM;
+   return "@module_icons_dir/LarsonSekanina.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures LarsonSekaninaInterface::Features() const
 {
    return InterfaceFeature::Default /*| InterfaceFeature::RealTimeButton*/;
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void LarsonSekaninaInterface::ResetInstance()
 {
    LarsonSekaninaInstance defaultInstance( TheLarsonSekaninaProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool LarsonSekaninaInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -125,10 +135,14 @@ bool LarsonSekaninaInterface::Launch( const MetaProcess& P, const ProcessImpleme
    return &P == TheLarsonSekaninaProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* LarsonSekaninaInterface::NewProcess() const
 {
    return new LarsonSekaninaInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool LarsonSekaninaInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -138,10 +152,14 @@ bool LarsonSekaninaInterface::ValidateProcess( const ProcessImplementation& p, S
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool LarsonSekaninaInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool LarsonSekaninaInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -158,6 +176,8 @@ void LarsonSekaninaInterface::UpdateControls()
    UpdateApplyModeControls();
    UpdateRangeControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void LarsonSekaninaInterface::UpdateFilterControls()
 {
@@ -195,6 +215,8 @@ void LarsonSekaninaInterface::UpdateFilterControls()
    GUI->Interpolation_ComboBox.SetCurrentItem( instance.interpolation );
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::UpdateApplyModeControls()
 {
    GUI->Amount_NumericControl.SetValue( instance.amount );
@@ -203,6 +225,8 @@ void LarsonSekaninaInterface::UpdateApplyModeControls()
    GUI->UseLuminance_CheckBox.SetChecked( instance.useLuminance );
    GUI->HighPassMode_CheckBox.SetChecked( instance.highPass );
 }
+
+// ----------------------------------------------------------------------------
 
 void LarsonSekaninaInterface::UpdateRangeControls()
 {
@@ -223,6 +247,8 @@ void LarsonSekaninaInterface::__RadiusEdit_ValueUpdated( NumericEdit& sender, do
    UpdateFilterControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::__Radius_ValueUpdated( Slider& sender, int value )
 {
    if ( sender == GUI->RadiusCoarse_Slider )
@@ -233,11 +259,15 @@ void LarsonSekaninaInterface::__Radius_ValueUpdated( Slider& sender, int value )
    UpdateFilterControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::__AngleEdit_ValueUpdated( NumericEdit& sender, double value )
 {
    instance.angleDiff = value;
    UpdateFilterControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void LarsonSekaninaInterface::__Angle_ValueUpdated( Slider& sender, int value )
 {
@@ -249,6 +279,8 @@ void LarsonSekaninaInterface::__Angle_ValueUpdated( Slider& sender, int value )
    UpdateFilterControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::__Coords_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->X_NumericEdit )
@@ -259,10 +291,14 @@ void LarsonSekaninaInterface::__Coords_ValueUpdated( NumericEdit& sender, double
    UpdateFilterControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::__Interpolation_ItemSelected( ComboBox& sender, int itemIndex )
 {
     instance.interpolation = itemIndex;
 }
+
+// ----------------------------------------------------------------------------
 
 void LarsonSekaninaInterface::__Amount_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -270,11 +306,15 @@ void LarsonSekaninaInterface::__Amount_ValueUpdated( NumericEdit& sender, double
    UpdateApplyModeControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::__Threshold_ValueUpdated( NumericEdit& sender, double value )
 {
    instance.threshold = value;
    UpdateApplyModeControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void LarsonSekaninaInterface::__Deringing_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -282,17 +322,23 @@ void LarsonSekaninaInterface::__Deringing_ValueUpdated( NumericEdit& sender, dou
    UpdateApplyModeControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::__UseLuminance_Click( Button& sender, bool checked )
 {
    instance.useLuminance = checked;
    UpdateApplyModeControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::__HighPassMode_Click( Button& sender, bool checked )
 {
    instance.highPass = checked;
    UpdateApplyModeControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void LarsonSekaninaInterface::__Range_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -304,12 +350,15 @@ void LarsonSekaninaInterface::__Range_ValueUpdated( NumericEdit& sender, double 
    UpdateRangeControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void LarsonSekaninaInterface::__Disable_Click( Button& sender, bool checked )
 {
    instance.disableExtension = checked;
    UpdateRangeControls();
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 LarsonSekaninaInterface::GUIData::GUIData( LarsonSekaninaInterface& w )
@@ -572,4 +621,4 @@ LarsonSekaninaInterface::GUIData::GUIData( LarsonSekaninaInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF LarsonSekaninaInterface.cpp - Released 2020-07-31T19:33:39Z

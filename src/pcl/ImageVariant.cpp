@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ImageVariant.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -139,11 +139,11 @@ public:
 
    typedef ReferenceArray<SwapFileThread>   thread_list;
 
-   SwapFileThread( const String& path, size_type offsetBegin, size_type offsetEnd, bool hasHeader ) :
-      m_path( path ),
-      m_offsetBegin( offsetBegin ),
-      m_offsetEnd( offsetEnd ),
-      m_hasHeader( hasHeader )
+   SwapFileThread( const String& path, size_type offsetBegin, size_type offsetEnd, bool hasHeader )
+      : m_path( path )
+      , m_offsetBegin( offsetBegin )
+      , m_offsetEnd( offsetEnd )
+      , m_hasHeader( hasHeader )
    {
    }
 
@@ -301,7 +301,8 @@ protected:
    {
    public:
 
-      IncrementalReader( File& file, const Compression* compressor, size_type size ) : m_file( file )
+      IncrementalReader( File& file, const Compression* compressor, size_type size )
+         : m_file( file )
       {
          if ( compressor != nullptr )
          {
@@ -356,11 +357,11 @@ public:
                      const String& path,
                      size_type offsetBegin, size_type offsetEnd,
                      const Compression* compressor,
-                     const SwapFileHeader* header ) :
-      SwapFileThread( path, offsetBegin, offsetEnd, header != nullptr ),
-      m_image( image ),
-      m_compressor( compressor ),
-      m_header( header )
+                     const SwapFileHeader* header )
+      : SwapFileThread( path, offsetBegin, offsetEnd, header != nullptr )
+      , m_image( image )
+      , m_compressor( compressor )
+      , m_header( header )
    {
    }
 
@@ -436,10 +437,10 @@ public:
                      const String& path,
                      size_type offsetBegin, size_type offsetEnd,
                      const Compression* compressor,
-                     bool hasHeader ) :
-      SwapFileThread( path, offsetBegin, offsetEnd, hasHeader ),
-      m_image( image ),
-      m_compressor( compressor )
+                     bool hasHeader )
+      : SwapFileThread( path, offsetBegin, offsetEnd, hasHeader )
+      , m_image( image )
+      , m_compressor( compressor )
    {
    }
 
@@ -515,12 +516,12 @@ public:
                      const GenericImage<M>& mask, bool invert,
                      size_type offsetBegin, size_type offsetEnd,
                      const Compression* compressor,
-                     bool hasHeader ) :
-      SwapFileThread( srcPath, offsetBegin, offsetEnd, hasHeader ),
-      m_image( image ),
-      m_mask( mask ),
-      m_invert( invert ),
-      m_compressor( compressor )
+                     bool hasHeader )
+      : SwapFileThread( srcPath, offsetBegin, offsetEnd, hasHeader )
+      , m_image( image )
+      , m_mask( mask )
+      , m_invert( invert )
+      , m_compressor( compressor )
    {
    }
 
@@ -1371,4 +1372,4 @@ void ImageVariant::MaskImage( const ImageVariant& src, const ImageVariant& mask,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ImageVariant.cpp - Released 2020-07-31T19:33:12Z

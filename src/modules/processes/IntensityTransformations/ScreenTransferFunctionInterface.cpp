@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionInterface.cpp - Released 2020-02-27T12:56:01Z
+// ScreenTransferFunctionInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -83,8 +83,6 @@ ScreenTransferFunctionInterface* TheScreenTransferFunctionInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ScreenTransferFunctionIcon.xpm"
-
 static const char* chToolTip[ 4 ] =
 { "Red/Gray Channel", "Green Channel", "Blue Channel", "CIE L* and CIE Y" };
 
@@ -120,8 +118,8 @@ private:
 
 // ----------------------------------------------------------------------------
 
-STFParametersDialog::STFParametersDialog( const ScreenTransferFunctionInstance& instance ) :
-   m_instance( instance )
+STFParametersDialog::STFParametersDialog( const ScreenTransferFunctionInstance& instance )
+   : m_instance( instance )
 {
    static const char* chLabel[ 4 ] = { "R/K:", "G:", "B:", "L:" };
 
@@ -275,10 +273,10 @@ class STFAutoStretchDialog : public Dialog
 public:
 
    View   view;
-   double shadowsClipping;       // in sigma units
-   double targetBackground;      // in [0,1]
-   double boostClippingFactor;   // in [0,1]
-   double boostBackgroundFactor; // in [1,10]
+   double shadowsClipping       = DEFAULT_AUTOSTRETCH_SCLIP;       // in sigma units
+   double targetBackground      = DEFAULT_AUTOSTRETCH_TBGND;       // in [0,1]
+   double boostClippingFactor   = DEFAULT_AUTOSTRETCH_BOOST_SCLIP; // in [0,1]
+   double boostBackgroundFactor = DEFAULT_AUTOSTRETCH_BOOST_TBGND; // in [1,10]
 
    STFAutoStretchDialog();
 
@@ -311,11 +309,7 @@ private:
 
 // ----------------------------------------------------------------------------
 
-STFAutoStretchDialog::STFAutoStretchDialog() :
-   shadowsClipping( DEFAULT_AUTOSTRETCH_SCLIP ),
-   targetBackground( DEFAULT_AUTOSTRETCH_TBGND ),
-   boostClippingFactor( DEFAULT_AUTOSTRETCH_BOOST_SCLIP ),
-   boostBackgroundFactor( DEFAULT_AUTOSTRETCH_BOOST_TBGND )
+STFAutoStretchDialog::STFAutoStretchDialog()
 {
    int labelWidth1 = Font().Width( String( "Boost background factor:" ) + 'T' );
    int editWidth1 = Font().Width( String( '0', 10 ) );
@@ -564,11 +558,8 @@ void STFAutoStretchDialog::__Button_Click( Button& sender, bool checked )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-ScreenTransferFunctionInterface::ScreenTransferFunctionInterface() :
-   m_instance( TheScreenTransferFunctionProcess ),
-   m_mode( EditMode ),
-   m_readoutMode( NoReadout ),
-   m_rgbLinked( true )
+ScreenTransferFunctionInterface::ScreenTransferFunctionInterface()
+   : m_instance( TheScreenTransferFunctionProcess )
 {
    TheScreenTransferFunctionInterface = this;
 }
@@ -599,9 +590,9 @@ MetaProcess* ScreenTransferFunctionInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ScreenTransferFunctionInterface::IconImageXPM() const
+String ScreenTransferFunctionInterface::IconImageSVGFile() const
 {
-   return ScreenTransferFunctionIcon_XPM;
+   return "@module_icons_dir/ScreenTransferFunction.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -1633,4 +1624,4 @@ ScreenTransferFunctionInterface::GUIData::GUIData( ScreenTransferFunctionInterfa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ScreenTransferFunctionInterface.cpp - Released 2020-07-31T19:33:39Z

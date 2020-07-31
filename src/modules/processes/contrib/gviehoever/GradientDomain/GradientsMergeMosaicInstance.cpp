@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaicInstance.cpp - Released 2020-02-27T12:56:01Z
+// GradientsMergeMosaicInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,8 +29,8 @@
 // ----------------------------------------------------------------------------
 
 #include "GradientsMergeMosaicInstance.h"
-#include "GradientsMergeMosaicParameters.h"
 #include "GradientsMergeMosaic.h"
+#include "GradientsMergeMosaicParameters.h"
 
 namespace pcl
 {
@@ -38,35 +38,40 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 GradientsMergeMosaicInstance::GradientsMergeMosaicInstance( const MetaProcess* m )
-  :ProcessImplementation( m )
-  ,targetFrames()
-  ,type(GradientsMergeMosaicType::Default)
-  ,shrinkCount(TheGradientsMergeMosaicShrinkCountParameter->DefaultValue())
-  ,featherRadius(TheGradientsMergeMosaicFeatherRadiusParameter->DefaultValue())
-  ,blackPoint(TheGradientsMergeMosaicBlackPointParameter->DefaultValue())
-  ,generateMask(TheGradientsMergeMosaicGenerateMaskParameter->DefaultValue())
+   : ProcessImplementation( m )
+   , type( GradientsMergeMosaicType::Default )
+   , shrinkCount( TheGradientsMergeMosaicShrinkCountParameter->DefaultValue() )
+   , featherRadius( TheGradientsMergeMosaicFeatherRadiusParameter->DefaultValue() )
+   , blackPoint( TheGradientsMergeMosaicBlackPointParameter->DefaultValue() )
+   , generateMask( TheGradientsMergeMosaicGenerateMaskParameter->DefaultValue() )
 {
 }
 
-GradientsMergeMosaicInstance::GradientsMergeMosaicInstance( const GradientsMergeMosaicInstance& x ) :
-ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+GradientsMergeMosaicInstance::GradientsMergeMosaicInstance( const GradientsMergeMosaicInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
 
+// ----------------------------------------------------------------------------
+
 void GradientsMergeMosaicInstance::Assign( const ProcessImplementation& p )
 {
    const GradientsMergeMosaicInstance* x = dynamic_cast<const GradientsMergeMosaicInstance*>( &p );
-   if ( x != 0 )
+   if ( x != nullptr )
    {
       targetFrames = x->targetFrames;
       type = x->type;
-      shrinkCount=x->shrinkCount;
-      featherRadius=x->featherRadius;
+      shrinkCount = x->shrinkCount;
+      featherRadius = x->featherRadius;
       blackPoint = x->blackPoint;
       generateMask = x->generateMask;
    }
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsMergeMosaicInstance::CanExecuteOn( const View& view, String& whyNot ) const
 {
@@ -74,10 +79,14 @@ bool GradientsMergeMosaicInstance::CanExecuteOn( const View& view, String& whyNo
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool GradientsMergeMosaicInstance::IsHistoryUpdater( const View& view ) const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsMergeMosaicInstance::CanExecuteGlobal( String& whyNot ) const
 {
@@ -93,56 +102,61 @@ bool GradientsMergeMosaicInstance::CanExecuteGlobal( String& whyNot ) const
 // ----------------------------------------------------------------------------
 
 //static
-ImageWindow GradientsMergeMosaicInstance::CreateImageWindow( const IsoString& id, GradientsMergeMosaic::imageType_t const &rImage_p)
+ImageWindow GradientsMergeMosaicInstance::CreateImageWindow( const IsoString& id, GradientsMergeMosaic::imageType_t const& rImage_p )
 {
-  int const nRows=rImage_p.Height();
-  int const nCols=rImage_p.Width();
-  int const nChannels=rImage_p.NumberOfNominalChannels();
-  int const nBitsPerSample=rImage_p.BitsPerSample();
-  bool const bIsFloatSample=rImage_p.IsFloatSample();
-  bool const bIsColor=rImage_p.IsColor();
+   int const nRows = rImage_p.Height();
+   int const nCols = rImage_p.Width();
+   int const nChannels = rImage_p.NumberOfNominalChannels();
+   int const nBitsPerSample = rImage_p.BitsPerSample();
+   bool const bIsFloatSample = rImage_p.IsFloatSample();
+   bool const bIsColor = rImage_p.IsColor();
 
-  ImageWindow window( nCols, nRows, nChannels,
-		      nBitsPerSample, bIsFloatSample, bIsColor, true, id );
-  if ( window.IsNull() )
-    throw Error( "Unable to create image window: " + id );
-  window.MainView().Image().CopyImage(rImage_p);
-  return window;
+   ImageWindow window( nCols, nRows, nChannels,
+      nBitsPerSample, bIsFloatSample, bIsColor, true, id );
+   if ( window.IsNull() )
+      throw Error( "Unable to create image window: " + id );
+   window.MainView().Image().CopyImage( rImage_p );
+   return window;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsMergeMosaicInstance::ExecuteGlobal()
 {
    /*
     * Start with a general validation of working parameters.
     */
-  GradientsMergeMosaic::imageListType_t imageList;
-  {
-    String why;
-    if ( !CanExecuteGlobal( why ) )
-      throw Error( why );
-    for ( image_list::const_iterator i = targetFrames.Begin(); i != targetFrames.End(); ++i ){
-      if ( i->enabled){
-	if (!File::Exists( i->path ) )
-	  throw( "No such file exists on the local filesystem: " + i->path );
-	imageList.Add(i->path);
+   GradientsMergeMosaic::imageListType_t imageList;
+   {
+      String why;
+      if ( !CanExecuteGlobal( why ) )
+         throw Error( why );
+      for ( image_list::const_iterator i = targetFrames.Begin(); i != targetFrames.End(); ++i )
+      {
+         if ( i->enabled )
+         {
+            if ( !File::Exists( i->path ) )
+               throw( "No such file exists on the local filesystem: " + i->path );
+            imageList.Add( i->path );
+         }
       }
-    }
-  }
-  GradientsMergeMosaic::imageType_t result;
-  GradientsMergeMosaic::sumMaskImageType_t sumMask;
-  GradientsMergeMosaic gradientsMergeMosaic;
+   }
+   GradientsMergeMosaic::imageType_t result;
+   GradientsMergeMosaic::sumMaskImageType_t sumMask;
+   GradientsMergeMosaic gradientsMergeMosaic;
 
-  gradientsMergeMosaic.mergeMosaic(imageList,blackPoint,type,shrinkCount,featherRadius,result,sumMask);
+   gradientsMergeMosaic.mergeMosaic( imageList, blackPoint, type, shrinkCount, featherRadius, result, sumMask );
 
-  ImageWindow window=CreateImageWindow("MergeMosaic",result);
-  window.Show();
-  if(generateMask){
-    sumMask.Rescale();
-    ImageWindow maskWindow=CreateImageWindow("MergeMosaicMask",sumMask);
-    maskWindow.Show();
-  }
+   ImageWindow window = CreateImageWindow( "MergeMosaic", result );
+   window.Show();
+   if ( generateMask )
+   {
+      sumMask.Rescale();
+      ImageWindow maskWindow = CreateImageWindow( "MergeMosaicMask", sumMask );
+      maskWindow.Show();
+   }
 
-  return true;
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -154,19 +168,20 @@ void* GradientsMergeMosaicInstance::LockParameter( const MetaParameter* p, size_
    if ( p == TheGradientsMergeMosaicTargetFramePathParameter )
       return targetFrames[tableRow].path.Begin();
    if ( p == TheGradientsMergeMosaicTypeParameter )
-     return &type;
+      return &type;
    if ( p == TheGradientsMergeMosaicShrinkCountParameter )
-     return &shrinkCount;
+      return &shrinkCount;
    if ( p == TheGradientsMergeMosaicFeatherRadiusParameter )
-     return &featherRadius;
+      return &featherRadius;
    if ( p == TheGradientsMergeMosaicBlackPointParameter )
-     return &blackPoint;
+      return &blackPoint;
    if ( p == TheGradientsMergeMosaicGenerateMaskParameter )
-     return &generateMask;
+      return &generateMask;
 
-
-   return 0;
+   return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsMergeMosaicInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
@@ -188,18 +203,21 @@ bool GradientsMergeMosaicInstance::AllocateParameter( size_type sizeOrLength, co
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type GradientsMergeMosaicInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheGradientsMergeMosaicTargetFramesParameter )
       return targetFrames.Length();
    if ( p == TheGradientsMergeMosaicTargetFramePathParameter )
       return targetFrames[tableRow].path.Length();
+
    return 0;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaicInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF GradientsMergeMosaicInstance.cpp - Released 2020-07-31T19:33:39Z

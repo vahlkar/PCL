@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:03.980Z
+# Generated on .... 2020-07-31T19:36:39.125Z
 # Project id ...... NoOperation
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>6a608df9-b5cb-485d-b624-fb4372143be6</UniqueIdentifier>
+      <UniqueIdentifier>8dcacfdf-9667-4fe5-9175-d5d2b351bfec</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>20a990e8-2955-43db-b61a-b511d426bcd1</UniqueIdentifier>
+      <UniqueIdentifier>9e11d866-ce68-4f0b-8725-2616935cb154</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>19387c53-beed-4241-950f-3728641fb458</UniqueIdentifier>
+      <UniqueIdentifier>90886c9c-bbe4-48d2-9e55-645197ba982a</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,7 +48,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\NoOperationIcon.png">
+    <None Include="..\..\icons\NoOperation.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

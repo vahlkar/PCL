@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.h - Released 2020-02-27T12:56:01Z
+// ImageIntegrationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -80,7 +80,7 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
    void EditPreferences() override;
    void ResetInstance() override;
@@ -93,7 +93,7 @@ public:
 
 private:
 
-   ImageIntegrationInstance instance;
+   ImageIntegrationInstance m_instance;
 
    struct GUIData
    {
@@ -274,27 +274,27 @@ private:
    void UpdateRejectionControls();
    void UpdateROIControls();
 
-   void __InputImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
-   void __InputImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
-   void __InputImages_NodeSelectionUpdated( TreeBox& sender );
-   void __InputImages_Click( Button& sender, bool checked );
-   void __FormatHints_EditCompleted( Edit& sender );
-   void __Integration_ItemSelected( ComboBox& sender, int itemIndex );
-   void __Integration_EditCompleted( Edit& sender );
-   void __Integration_SpinValueUpdated( SpinBox& sender, int value );
-   void __Integration_Click( Button& sender, bool checked );
-   void __Rejection_ItemSelected( ComboBox& sender, int itemIndex );
-   void __Rejection_SpinValueUpdated( SpinBox& sender, int value );
-   void __Rejection_EditValueUpdated( NumericEdit& sender, double value );
-   void __Rejection_Click( Button& sender, bool checked );
-   void __ROI_Check( SectionBar& sender, bool checked );
-   void __ROI_SpinValueUpdated( SpinBox& sender, int value );
-   void __ROI_Click( Button& sender, bool checked );
-   void __ToggleSection( SectionBar& sender, Control& section, bool start );
-   void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
-   void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
-   void __ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
-   void __ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
+   void e_InputImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
+   void e_InputImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
+   void e_InputImages_NodeSelectionUpdated( TreeBox& sender );
+   void e_InputImages_Click( Button& sender, bool checked );
+   void e_FormatHints_EditCompleted( Edit& sender );
+   void e_Integration_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_Integration_EditCompleted( Edit& sender );
+   void e_Integration_SpinValueUpdated( SpinBox& sender, int value );
+   void e_Integration_Click( Button& sender, bool checked );
+   void e_Rejection_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_Rejection_SpinValueUpdated( SpinBox& sender, int value );
+   void e_Rejection_EditValueUpdated( NumericEdit& sender, double value );
+   void e_Rejection_Click( Button& sender, bool checked );
+   void e_ROI_Check( SectionBar& sender, bool checked );
+   void e_ROI_SpinValueUpdated( SpinBox& sender, int value );
+   void e_ROI_Click( Button& sender, bool checked );
+   void e_ToggleSection( SectionBar& sender, Control& section, bool start );
+   void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
+   void e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
+   void e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
 
    String LocalNormalizationTargetName( const String& filePath );
    String DrizzleTargetName( const String& filePath );
@@ -315,4 +315,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF ImageIntegrationInterface.h - Released 2020-07-31T19:33:39Z

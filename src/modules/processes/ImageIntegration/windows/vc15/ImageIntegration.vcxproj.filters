@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:00.915Z
+# Generated on .... 2020-07-31T19:36:34.904Z
 # Project id ...... ImageIntegration
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,16 +16,19 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>1f751b58-9dc4-4b3a-8756-47671206aad3</UniqueIdentifier>
+      <UniqueIdentifier>a436dadb-e5aa-49e9-aab4-1a91c1574b95</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>5c5ebfc9-f028-4fc0-be39-6411481dfba7</UniqueIdentifier>
+      <UniqueIdentifier>89144f48-a863-40fd-9461-00e24e437c18</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>ba9e91cf-1e48-4436-9281-0f2eac53a912</UniqueIdentifier>
+      <UniqueIdentifier>2c528272-97ad-4868-afa6-b6e9d1de5e06</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\AdaptiveNormalizationData.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\DrizzleIntegrationInstance.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
@@ -74,11 +77,35 @@
     <ClCompile Include="..\..\IntegrationCache.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\SystemMemory.cpp">
+    <ClCompile Include="..\..\IntegrationDataLoaderEngine.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\IntegrationDescription.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\IntegrationEngine.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\IntegrationFile.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\IntegrationRejectionEngine.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\LargeScaleRejectionMapGenerationEngine.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MapIntegrationEngine.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RejectionMapGenerationEngine.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\AdaptiveNormalizationData.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\DrizzleIntegrationInstance.h">
         <Filter>Header Files</Filter>
     </ClInclude>
@@ -127,21 +154,39 @@
     <ClInclude Include="..\..\IntegrationCache.h">
         <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SystemMemory.h">
+    <ClInclude Include="..\..\IntegrationDataLoaderEngine.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IntegrationEngine.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IntegrationEngineBase.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IntegrationFile.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IntegrationRejectionEngine.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\LargeScaleRejectionMapGenerationEngine.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MapIntegrationEngine.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RejectionMapGenerationEngine.h">
         <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\DrizzleIntegrationIcon.png">
+    <None Include="..\..\icons\DrizzleIntegration.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\HDRCompositionIcon.png">
+    <None Include="..\..\icons\HDRComposition.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ImageIntegrationIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\grid.png">
+    <None Include="..\..\icons\ImageIntegration.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// Projection.cpp - Released 2020-02-27T12:56:01Z
+// Projection.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -63,8 +63,8 @@ namespace pcl
 
 void Projection::Initialize( double lon, double lat, double fov, double w, double h, bool conformal )
 {
-   if ( system != 0 )
-      delete system, system = 0;
+   if ( system != nullptr )
+      delete system, system = nullptr;
 
    clon = In2PiRange( lon );
    clat = lat;
@@ -92,7 +92,7 @@ void Projection::Initialize( double lon, double lat, double fov, double w, doubl
                system = new LambertConformalConicProjection( clon, clat, sp1, sp2 );
          }
       }
-      while ( system == 0 );
+      while ( system == nullptr );
    }
    else
    {
@@ -179,4 +179,4 @@ void Projection::Initialize( double lon, double lat, double fov, double w, doubl
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Projection.cpp - Released 2020-02-27T12:56:01Z
+// EOF Projection.cpp - Released 2020-07-31T19:33:39Z

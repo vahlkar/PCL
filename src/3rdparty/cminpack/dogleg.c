@@ -3,25 +3,25 @@
 	-lf2c -lm   (in that order)
 */
 
-#include <math.h>
 #include "cminpack.h"
-#define min(a,b) ((a) <= (b) ? (a) : (b))
-#define max(a,b) ((a) >= (b) ? (a) : (b))
+#include <math.h>
+#include "cminpackP.h"
 
 /* Table of constant values */
 
-/* Subroutine */ void dogleg(int n, const double *r, int lr, 
-	const double *diag, const double *qtb, double delta, double *x, 
-	double *wa1, double *wa2)
+__cminpack_attr__
+void __cminpack_func__(dogleg)(int n, const real *r, int lr, 
+	const real *diag, const real *qtb, real delta, real *x, 
+	real *wa1, real *wa2)
 {
     /* System generated locals */
-    double d1, d2, d3, d4;
+    real d1, d2, d3, d4;
 
     /* Local variables */
     int i, j, k, l, jj, jp1;
-    double sum, temp, alpha, bnorm;
-    double gnorm, qnorm, epsmch;
-    double sgnorm;
+    real sum, temp, alpha, bnorm;
+    real gnorm, qnorm, epsmch;
+    real sgnorm;
 
 /*     ********** */
 
@@ -87,12 +87,13 @@
     --qtb;
     --diag;
     --r;
+    (void)lr;
 
     /* Function Body */
 
 /*     epsmch is the machine precision. */
 
-    epsmch = dpmpar(1);
+    epsmch = __cminpack_func__(dpmpar)(1);
 
 /*     first, calculate the gauss-newton direction. */
 
@@ -132,7 +133,7 @@
 	wa1[j] = 0.;
 	wa2[j] = diag[j] * x[j];
     }
-    qnorm = enorm(n, &wa2[1]);
+    qnorm = __cminpack_enorm__(n, &wa2[1]);
     if (qnorm <= delta) {
         return;
     }
@@ -153,7 +154,7 @@
 /*     calculate the norm of the scaled gradient and test for */
 /*     the special case in which the scaled gradient is zero. */
 
-    gnorm = enorm(n, &wa1[1]);
+    gnorm = __cminpack_enorm__(n, &wa1[1]);
     sgnorm = 0.;
     alpha = delta / qnorm;
     if (gnorm != 0.) {
@@ -173,7 +174,7 @@
             }
             wa2[j] = sum;
         }
-        temp = enorm(n, &wa2[1]);
+        temp = __cminpack_enorm__(n, &wa2[1]);
         sgnorm = gnorm / temp / temp;
 
 /*     test whether the scaled gradient direction is acceptable. */
@@ -185,7 +186,7 @@
 /*     finally, calculate the point along the dogleg */
 /*     at which the quadratic is minimized. */
 
-            bnorm = enorm(n, &qtb[1]);
+            bnorm = __cminpack_enorm__(n, &qtb[1]);
             temp = bnorm / gnorm * (bnorm / qnorm) * (sgnorm / delta);
             /* Computing 2nd power */
             d1 = sgnorm / delta;

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationInstance.cpp - Released 2020-02-27T12:56:01Z
+// GREYCstorationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -83,6 +83,8 @@ static bool           GREYCstoration_abort = false;
 
 #define cimg_debug 0
 #define cimg_display 0
+#define cimg_use_openmp 0
+#define cimg_verbosity 0
 
 #define cimg_pixinsight_module_greycstoration 1
 
@@ -95,27 +97,27 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GREYCstorationInstance::GREYCstorationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   amplitude( TheGREYCsAmplitudeParameter->DefaultValue() ),
-   numberOfIterations( int32( TheGREYCsIterationsParameter->DefaultValue() ) ),
-   sharpness( TheGREYCsSharpnessParameter->DefaultValue() ),
-   anisotropy( TheGREYCsAnisotropyParameter->DefaultValue() ),
-   alpha( TheGREYCsAlphaParameter->DefaultValue() ),
-   sigma( TheGREYCsSigmaParameter->DefaultValue() ),
-   fastApproximation( TheGREYCsFastApproximationParameter->DefaultValue() ),
-   precision( TheGREYCsPrecisionParameter->DefaultValue() ),
-   spatialStepSize( TheGREYCsSpatialStepSizeParameter->DefaultValue() ),
-   angularStepSize( TheGREYCsAngularStepSizeParameter->DefaultValue() ),
-   interpolation( GREYCsInterpolation::Default ),
-   coupledChannels( TheGREYCsCoupledChannelsParameter->DefaultValue() )
+GREYCstorationInstance::GREYCstorationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , amplitude( TheGREYCsAmplitudeParameter->DefaultValue() )
+   , numberOfIterations( int32( TheGREYCsIterationsParameter->DefaultValue() ) )
+   , sharpness( TheGREYCsSharpnessParameter->DefaultValue() )
+   , anisotropy( TheGREYCsAnisotropyParameter->DefaultValue() )
+   , alpha( TheGREYCsAlphaParameter->DefaultValue() )
+   , sigma( TheGREYCsSigmaParameter->DefaultValue() )
+   , fastApproximation( TheGREYCsFastApproximationParameter->DefaultValue() )
+   , precision( TheGREYCsPrecisionParameter->DefaultValue() )
+   , spatialStepSize( TheGREYCsSpatialStepSizeParameter->DefaultValue() )
+   , angularStepSize( TheGREYCsAngularStepSizeParameter->DefaultValue() )
+   , interpolation( GREYCsInterpolation::Default )
+   , coupledChannels( TheGREYCsCoupledChannelsParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-GREYCstorationInstance::GREYCstorationInstance( const GREYCstorationInstance& x ) :
-   ProcessImplementation( x )
+GREYCstorationInstance::GREYCstorationInstance( const GREYCstorationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -163,6 +165,7 @@ bool GREYCstorationInstance::CanExecuteOn( const View& view, pcl::String& whyNot
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 template <typename T>
 class GREYCstorationThread : public Thread
@@ -171,18 +174,21 @@ public:
 
    GREYCstorationThread( cimg_library::CImg<T>* aImage,
                          const GREYCstorationInstance& aInstance,
-                         int startRow, int endRow ) :
-      cimg( aImage ), instance( aInstance ), y0( startRow ), y1( endRow )
+                         int startRow, int endRow )
+      : cimg( aImage )
+      , instance( aInstance )
+      , y0( startRow )
+      , y1( endRow )
    {
    }
 
    virtual ~GREYCstorationThread()
    {
-      if ( cimg != 0 )
-         delete cimg, cimg = 0;
+      if ( cimg != nullptr )
+         delete cimg, cimg = nullptr;
    }
 
-   virtual void Run(); // Defined after GREYCstorationEngine
+   void Run() override; // Defined after GREYCstorationEngine
 
    const cimg_library::CImg<T>* Image() const
    {
@@ -211,6 +217,9 @@ private:
    int y0, y1;
 };
 
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
 class GREYCstorationEngine
 {
 public:
@@ -225,7 +234,7 @@ public:
        * Size of overlapping regions.
        * The optimal factor of 0.25 has been found by experimentation.
        */
-      int d = Max( 6, RoundI( 0.25*instance.amplitude ) );
+      int d = Max( 6, RoundInt( 0.25*instance.amplitude ) );
 
       /*
        * Processing threads
@@ -235,7 +244,7 @@ public:
       /*
        * Temporary storage for alpha channels
        */
-      typename P::sample** alphaChannels = 0;
+      typename P::sample** alphaChannels = nullptr;
 
       /*
        * Image geometry, color space and status monitor.
@@ -466,7 +475,6 @@ public:
             alphaChannels = 0;
          }
       }
-
       catch ( ... )
       {
          threads.Destroy();
@@ -532,6 +540,8 @@ public:
 #undef CALL_CImg
 };
 
+// ----------------------------------------------------------------------------
+
 template <class T>
 void GREYCstorationThread<T>::Run()
 {
@@ -543,6 +553,9 @@ void GREYCstorationThread<T>::Run()
    {
    }
 }
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 bool GREYCstorationInstance::ExecuteOn( View& view )
 {
@@ -615,7 +628,8 @@ void* GREYCstorationInstance::LockParameter( const MetaParameter* p, size_type/*
       return &interpolation;
    if ( p == TheGREYCsCoupledChannelsParameter )
       return &coupledChannels;
-   return 0;
+
+   return nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -623,4 +637,4 @@ void* GREYCstorationInstance::LockParameter( const MetaParameter* p, size_type/*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF GREYCstorationInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="b" cx="1026.9" cy="533.74" r="185" gradientTransform="matrix(.31464 0 0 .31464 -239.87 59.885)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#bababa" offset="1"/>
+</radialGradient>
+<radialGradient id="a" cx="958.24" cy="934.19" r="223.99" gradientTransform="matrix(.81156 1.5723e-8 -1.5164e-8 .78276 180.57 202.95)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f00" offset="0"/>
+<stop stop-color="#0f0" offset=".61684"/>
+<stop stop-color="#00f" offset="1"/>
+</radialGradient>
+</defs>
+<g transform="translate(0 -161.53)">
+<g transform="translate(-15.499 1.4448)">
+<rect x="25.024" y="169.61" width="116.42" height="116.42" fill="url(#b)" stroke="#000" stroke-width="6.35"/>
+<path transform="matrix(.24535 -.0094142 .0091776 .25166 -161.01 2.2316)" d="m1182.2 1003.2-134.94 15.478 4.8065 135.74-96.237-95.852-103.13 88.392 14.937-135-133.41-25.52 114.86-72.495-63.227-120.21 128.3 44.604 54.566-124.39 45.118 128.12 131.27-34.892-72.034 115.15z" fill="url(#a)" fill-rule="evenodd"/>
+</g>
+</g>
+</svg>

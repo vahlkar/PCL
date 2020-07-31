@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkVideoDialog.cpp - Released 2020-02-27T12:56:01Z
+// BlinkVideoDialog.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -76,28 +76,17 @@ static IsoString Timestamp()
 
 void BlinkVideoDialog::Init()
 {
-#if debug
-   Console().WriteLn( String().Format( "<br>Init() Start" ) );
-#endif
-
    Program_Edit.SetText( m_parent->m_program );
    Arguments_Edit.SetText( m_parent->m_arguments );
    OutputDir_Edit.SetText( m_parent->m_frameOutputDir );
    FrameExtension_Edit.SetText( m_parent->m_frameExtension );
    DeleteVideoFrames_CheckBox.SetChecked( m_parent->m_deleteVideoFrames );
-
    EnableGUI();
-
-#if debug
-   Console().WriteLn( String().Format( "Init() End" ) );
-#endif
 }
 
 // ----------------------------------------------------------------------------
-// Processing
-// ----------------------------------------------------------------------------
 
-inline void BlinkVideoDialog::DeleteFrames()
+void BlinkVideoDialog::DeleteFrames()
 {
    if( !m_parent->m_deleteVideoFrames )
       return;
@@ -121,7 +110,7 @@ inline void BlinkVideoDialog::DeleteFrames()
          }
          catch(...)
          {
-            Console().CriticalLn( "<end><cbr><raw>*** Couldn't delete file: " + f + "</raw>" );
+            Console().CriticalLn( "<end><cbr>*** Error: Couldn't delete file: <raw>" + f + "</raw>" );
             throw CaughtException();
          }
       }
@@ -129,6 +118,8 @@ inline void BlinkVideoDialog::DeleteFrames()
       ProcessEvents();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 struct FrameData
 {
@@ -215,6 +206,8 @@ void BlinkVideoDialog::CreateFrames()
    m_framesDone.Add( m_parent->m_frameExtension );
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkVideoDialog::DisableGUI( bool d )
 {
    Load_PushButton.Disable( d );
@@ -231,6 +224,8 @@ void BlinkVideoDialog::DisableGUI( bool d )
    StdIn_Edit.Enable( d );
    StdOut_TextBox.Insert( "<end>" );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkVideoDialog::ExecuteVideoEncoder()
 {
@@ -285,6 +280,8 @@ void BlinkVideoDialog::ExecuteVideoEncoder()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 bool BlinkVideoDialog::TerminateVideoEncoder()
 {
    if ( !m_videoEncoder.IsRunning() )
@@ -318,6 +315,8 @@ bool BlinkVideoDialog::TerminateVideoEncoder()
       }
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkVideoDialog::WriteLogFile()
 {
@@ -361,6 +360,8 @@ void BlinkVideoDialog::AddLog( const String& s )
    ProcessEvents();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkVideoDialog::__Process_Finished( ExternalProcess& p, int exitCode, bool exitOk )
 {
    Console().WriteLn( "<end><cbr><br>* Blink: External process finished." );
@@ -368,16 +369,22 @@ void BlinkVideoDialog::__Process_Finished( ExternalProcess& p, int exitCode, boo
    EnableGUI();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkVideoDialog::__Process_Started( ExternalProcess& p)
 {
    //StdIn_Edit.Focus();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkVideoDialog::__Process_StandardOutputDataAvailable( ExternalProcess& p )
 {
    ByteArray d( p.Read() );
    AddLog( String::UTF8ToUTF16( reinterpret_cast<const char*>( d.Begin() ), 0, d.Length() ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkVideoDialog::__Process_Error( ExternalProcess& p, ExternalProcess::error_code error )
 {
@@ -387,6 +394,8 @@ void BlinkVideoDialog::__Process_Error( ExternalProcess& p, ExternalProcess::err
    Console().CriticalLn( s );
    EnableGUI();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkVideoDialog::__Edit_Completed( Edit& sender )
 {
@@ -425,6 +434,8 @@ void BlinkVideoDialog::__Edit_Completed( Edit& sender )
    sender.SetText( text );
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkVideoDialog::__Button_Click( Button& sender, bool checked )
 {
    if ( sender == Load_PushButton )
@@ -462,19 +473,24 @@ void BlinkVideoDialog::__Button_Click( Button& sender, bool checked )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkVideoDialog::__Dialog_Close( Control& sender, bool& allowClose )
 {
    allowClose = TerminateVideoEncoder();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkVideoDialog::__Dialog_Return( Dialog& sender, int retVal )
 {
    m_parent->Enable();
 }
 
-BlinkVideoDialog::BlinkVideoDialog( BlinkInterface* parent ) :
-   m_parent( parent ),
-   m_frameCount( 0 )
+// ----------------------------------------------------------------------------
+
+BlinkVideoDialog::BlinkVideoDialog( BlinkInterface* parent )
+   : m_parent( parent )
 {
    pcl::Font fnt = this->Font();
    int labelWidth1 = fnt.Width( String( "Frame extension:" ) + 'T' );
@@ -626,4 +642,4 @@ BlinkVideoDialog::BlinkVideoDialog( BlinkInterface* parent ) :
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkVideoDialog.cpp - Released 2020-02-27T12:56:01Z
+// EOF BlinkVideoDialog.cpp - Released 2020-07-31T19:33:39Z

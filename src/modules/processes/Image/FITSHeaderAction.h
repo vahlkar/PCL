@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderAction.h - Released 2020-02-27T12:56:01Z
+// FITSHeaderAction.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -63,9 +63,11 @@ namespace pcl
 class FITSHeaderAction : public Action
 {
 public:
+
    FITSHeaderAction();
-   virtual void Execute();
-   virtual bool IsEnabled( ActionInfo info ) const;
+
+   void Execute() override;
+   bool IsEnabled( ActionInfo info ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -75,4 +77,4 @@ public:
 #endif   // __FITSHeaderActions_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderAction.h - Released 2020-02-27T12:56:01Z
+// EOF FITSHeaderAction.h - Released 2020-07-31T19:33:39Z

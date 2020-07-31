@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/AutoViewLock.h - Released 2020-02-27T12:55:23Z
+// pcl/AutoViewLock.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -184,8 +184,10 @@ public:
     * See AutoViewWriteLock for a convenience class to implements this
     * functionality in a cleaner way.
     */
-   explicit AutoViewLock( View& view, bool lock = true ) :
-      m_view( view ), m_readLock( 0 ), m_writeLock( 0 )
+   explicit AutoViewLock( View& view, bool lock = true )
+      : m_view( view )
+      , m_readLock( 0 )
+      , m_writeLock( 0 )
    {
       if ( lock )
          Lock();
@@ -326,7 +328,8 @@ public:
     * lock.LockForWrite();
     * \endcode
     */
-   explicit AutoViewWriteLock( View& view ) : AutoViewLock( view, false/*lock*/ )
+   explicit AutoViewWriteLock( View& view )
+      : AutoViewLock( view, false/*lock*/ )
    {
       LockForWrite();
    }
@@ -339,4 +342,4 @@ public:
 #endif   // __PCL_AutoViewLock_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AutoViewLock.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/AutoViewLock.h - Released 2020-07-31T19:33:04Z

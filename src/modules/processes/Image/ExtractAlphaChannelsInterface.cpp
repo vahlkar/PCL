@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsInterface.cpp - Released 2020-02-27T12:56:01Z
+// ExtractAlphaChannelsInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -65,12 +65,8 @@ ExtractAlphaChannelsInterface* TheExtractAlphaChannelsInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ExtractAlphaChannelsIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ExtractAlphaChannelsInterface::ExtractAlphaChannelsInterface() :
-   instance( TheExtractAlphaChannelsProcess )
+ExtractAlphaChannelsInterface::ExtractAlphaChannelsInterface()
+   : instance( TheExtractAlphaChannelsProcess )
 {
    TheExtractAlphaChannelsInterface = this;
 }
@@ -99,9 +95,9 @@ MetaProcess* ExtractAlphaChannelsInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ExtractAlphaChannelsInterface::IconImageXPM() const
+String ExtractAlphaChannelsInterface::IconImageSVGFile() const
 {
-   return ExtractAlphaChannelsIcon_XPM;
+   return "@module_icons_dir/ExtractAlphaChannels.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -195,6 +191,8 @@ void ExtractAlphaChannelsInterface::__Channels_Click( Button& sender, bool check
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void ExtractAlphaChannelsInterface::__ChannelList_EditCompleted( Edit& sender )
 {
    try
@@ -224,6 +222,8 @@ void ExtractAlphaChannelsInterface::__ChannelList_EditCompleted( Edit& sender )
       sender.Focus()
    )
 }
+
+// ----------------------------------------------------------------------------
 
 void ExtractAlphaChannelsInterface::__Mode_Click( Button& sender, bool checked )
 {
@@ -308,4 +308,4 @@ ExtractAlphaChannelsInterface::GUIData::GUIData( ExtractAlphaChannelsInterface& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ExtractAlphaChannelsInterface.cpp - Released 2020-07-31T19:33:39Z

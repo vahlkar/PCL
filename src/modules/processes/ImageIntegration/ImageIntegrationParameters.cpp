@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// ImageIntegrationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -67,6 +67,8 @@ IICombination*                       TheIICombinationParameter = nullptr;
 IIWeightMode*                        TheIIWeightModeParameter = nullptr;
 IIWeightKeyword*                     TheIIWeightKeywordParameter = nullptr;
 IIWeightScale*                       TheIIWeightScaleParameter = nullptr;
+IIAdaptiveNX*                        TheIIAdaptiveNXParameter = nullptr;
+IIAdaptiveNY*                        TheIIAdaptiveNYParameter = nullptr;
 IIIgnoreNoiseKeywords*               TheIIIgnoreNoiseKeywordsParameter = nullptr;
 IINormalization*                     TheIINormalizationParameter = nullptr;
 IIRejection*                         TheIIRejectionParameter = nullptr;
@@ -120,8 +122,11 @@ IIMRSMinDataFraction*                TheIIMRSMinDataFractionParameter = nullptr;
 IISubtractPedestals*                 TheIISubtractPedestalsParameter = nullptr;
 IITruncateOnOutOfRange*              TheIITruncateOnOutOfRangeParameter = nullptr;
 IINoGUIMessages*                     TheIINoGUIMessagesParameter = nullptr;
+IIShowImages*                        TheIIShowImagesParameter = nullptr;
 IIUseFileThreads*                    TheIIUseFileThreadsParameter = nullptr;
 IIFileThreadOverload*                TheIIFileThreadOverloadParameter = nullptr;
+IIUseBufferThreads*                  TheIIUseBufferThreadsParameter = nullptr;
+IIMaxBufferThreads*                  TheIIMaxBufferThreadsParameter = nullptr;
 
 IIIntegrationImageId*                TheIIIntegrationImageIdParameter = nullptr;
 IILowRejectionMapImageId*            TheIILowRejectionMapImageIdParameter = nullptr;
@@ -247,6 +252,15 @@ IsoString IIInputHints::Id() const
    return "inputHints";
 }
 
+String IIInputHints::DefaultValue() const
+{
+   // Input format hints:
+   // * XISF: fits-keywords normalize
+   // * RAW: raw cfa
+   // * FITS: signed-is-physical
+   return "fits-keywords normalize raw cfa signed-is-physical";
+}
+
 // ----------------------------------------------------------------------------
 
 IICombination::IICombination( MetaProcess* P ) : MetaEnumeration( P )
@@ -363,11 +377,13 @@ IsoString IIWeightScale::ElementId( size_type i ) const
    {
    case AvgDev: return "WeightScale_AvgDev";
    case MAD:    return "WeightScale_MAD";
+   default:
    case BWMV:   return "WeightScale_BWMV";
+
+   // DEPRECATED
    case PBMV:   return "WeightScale_PBMV";
    case Sn:     return "WeightScale_Sn";
    case Qn:     return "WeightScale_Qn";
-   default:
    case IKSS:   return "WeightScale_IKSS";
    }
 }
@@ -380,6 +396,60 @@ int IIWeightScale::ElementValue( size_type i ) const
 size_type IIWeightScale::DefaultValueIndex() const
 {
    return size_type( Default );
+}
+
+// ----------------------------------------------------------------------------
+
+IIAdaptiveNX::IIAdaptiveNX( MetaProcess* P ) : MetaInt32( P )
+{
+   TheIIAdaptiveNXParameter = this;
+}
+
+IsoString IIAdaptiveNX::Id() const
+{
+   return "adaptiveNX";
+}
+
+double IIAdaptiveNX::DefaultValue() const
+{
+   return 4;
+}
+
+double IIAdaptiveNX::MinimumValue() const
+{
+   return 2;
+}
+
+double IIAdaptiveNX::MaximumValue() const
+{
+   return 16;
+}
+
+// ----------------------------------------------------------------------------
+
+IIAdaptiveNY::IIAdaptiveNY( MetaProcess* P ) : MetaInt32( P )
+{
+   TheIIAdaptiveNYParameter = this;
+}
+
+IsoString IIAdaptiveNY::Id() const
+{
+   return "adaptiveNY";
+}
+
+double IIAdaptiveNY::DefaultValue() const
+{
+   return 4;
+}
+
+double IIAdaptiveNY::MinimumValue() const
+{
+   return 2;
+}
+
+double IIAdaptiveNY::MaximumValue() const
+{
+   return 16;
 }
 
 // ----------------------------------------------------------------------------
@@ -427,6 +497,7 @@ IsoString IINormalization::ElementId( size_type i ) const
    case AdditiveWithScaling:       return "AdditiveWithScaling";
    case MultiplicativeWithScaling: return "MultiplicativeWithScaling";
    case LocalNormalization:        return "LocalNormalization";
+   case AdaptiveNormalization:     return "AdaptiveNormalization";
    }
 }
 
@@ -505,11 +576,12 @@ IsoString IIRejectionNormalization::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   case NoRejectionNormalization:    return "NoRejectionNormalization";
+   case NoRejectionNormalization:       return "NoRejectionNormalization";
    default:
-   case Scale:                       return "Scale";
-   case EqualizeFluxes:              return "EqualizeFluxes";
-   case LocalRejectionNormalization: return "LocalRejectionNormalization";
+   case Scale:                          return "Scale";
+   case EqualizeFluxes:                 return "EqualizeFluxes";
+   case LocalRejectionNormalization:    return "LocalRejectionNormalization";
+   case AdaptiveRejectionNormalization: return "AdaptiveRejectionNormalization";
    }
 }
 
@@ -1684,7 +1756,7 @@ IsoString IISubtractPedestals::Id() const
 
 bool IISubtractPedestals::DefaultValue() const
 {
-   return true;
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -1706,6 +1778,7 @@ bool IITruncateOnOutOfRange::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+// ### DEPRECATED
 IINoGUIMessages::IINoGUIMessages( MetaProcess* p ) : MetaBoolean( p )
 {
    TheIINoGUIMessagesParameter = this;
@@ -1717,6 +1790,23 @@ IsoString IINoGUIMessages::Id() const
 }
 
 bool IINoGUIMessages::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIShowImages::IIShowImages( MetaProcess* p ) : MetaBoolean( p )
+{
+   TheIIShowImagesParameter = this;
+}
+
+IsoString IIShowImages::Id() const
+{
+   return "showImages";
+}
+
+bool IIShowImages::DefaultValue() const
 {
    return true;
 }
@@ -1768,6 +1858,50 @@ double IIFileThreadOverload::MinimumValue() const
 double IIFileThreadOverload::MaximumValue() const
 {
    return 10;
+}
+
+// ----------------------------------------------------------------------------
+
+IIUseBufferThreads::IIUseBufferThreads( MetaProcess* p ) : MetaBoolean( p )
+{
+   TheIIUseBufferThreadsParameter = this;
+}
+
+IsoString IIUseBufferThreads::Id() const
+{
+   return "useBufferThreads";
+}
+
+bool IIUseBufferThreads::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+IIMaxBufferThreads::IIMaxBufferThreads( MetaProcess* P ) : MetaInt32( P )
+{
+   TheIIMaxBufferThreadsParameter = this;
+}
+
+IsoString IIMaxBufferThreads::Id() const
+{
+   return "maxBufferThreads";
+}
+
+double IIMaxBufferThreads::DefaultValue() const
+{
+   return 8;
+}
+
+double IIMaxBufferThreads::MinimumValue() const
+{
+   return 1;
+}
+
+double IIMaxBufferThreads::MaximumValue() const
+{
+   return 1024;
 }
 
 // ----------------------------------------------------------------------------
@@ -2746,4 +2880,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF ImageIntegrationParameters.cpp - Released 2020-07-31T19:33:39Z

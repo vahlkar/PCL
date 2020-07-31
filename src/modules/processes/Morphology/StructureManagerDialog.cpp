@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StructureManagerDialog.cpp - Released 2020-02-27T12:56:01Z
+// StructureManagerDialog.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -61,8 +61,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-StructureManagerDialog::StructureManagerDialog( MorphologicalTransformationInterface& i ) :
-   iface( i )
+StructureManagerDialog::StructureManagerDialog( MorphologicalTransformationInterface& i )
+   : m_interface( i )
 {
    pcl::Font fnt = Font();
    int labelWidth = fnt.Width( String( 'M', 50 ) );
@@ -189,36 +189,40 @@ StructureManagerDialog::StructureManagerDialog( MorphologicalTransformationInter
    Update();
 }
 
+// ----------------------------------------------------------------------------
+
 void StructureManagerDialog::Update()
 {
-   ModulePath_Label.SetText( iface.collection.Path() );
+   ModulePath_Label.SetText( m_interface.collection.Path() );
 
-   SaveModule_PushButton.Enable( !iface.collection.IsEmpty() );
+   SaveModule_PushButton.Enable( !m_interface.collection.IsEmpty() );
 
    StructureList_ComboBox.Clear();
-   if ( iface.collection.IsEmpty() )
+   if ( m_interface.collection.IsEmpty() )
       StructureList_ComboBox.AddItem( "<No structures available>" );
    else
    {
-      for ( size_type i = 0; i < iface.collection.Length(); ++i )
-         StructureList_ComboBox.AddItem( iface.collection[i].Name() );
+      for ( size_type i = 0; i < m_interface.collection.Length(); ++i )
+         StructureList_ComboBox.AddItem( m_interface.collection[i].Name() );
 
-      if ( !iface.instance.GetStructure().Name().IsEmpty() )
+      if ( !m_interface.instance.GetStructure().Name().IsEmpty() )
       {
-         size_type idx = iface.collection.FindStructure( iface.instance.GetStructure().Name() );
+         size_type idx = m_interface.collection.FindStructure( m_interface.instance.GetStructure().Name() );
          if ( idx != StructureCollection::notFound )
             StructureList_ComboBox.SetCurrentItem( idx );
       }
    }
 
-   PickStructure_PushButton.Enable( !iface.collection.IsEmpty() );
-   DeleteStructure_PushButton.Enable( !iface.collection.IsEmpty() );
-   DeleteAll_PushButton.Enable( !iface.collection.IsEmpty() );
+   PickStructure_PushButton.Enable( !m_interface.collection.IsEmpty() );
+   DeleteStructure_PushButton.Enable( !m_interface.collection.IsEmpty() );
+   DeleteAll_PushButton.Enable( !m_interface.collection.IsEmpty() );
 
-   CurrentStructure_Label.SetText( iface.instance.GetStructure().Name() );
+   CurrentStructure_Label.SetText( m_interface.instance.GetStructure().Name() );
 
-   SaveStructure_PushButton.Enable( !iface.instance.GetStructure().Name().IsEmpty() );
+   SaveStructure_PushButton.Enable( !m_interface.instance.GetStructure().Name().IsEmpty() );
 }
+
+// ----------------------------------------------------------------------------
 
 void StructureManagerDialog::ModuleClick( Button& sender, bool /*checked*/ )
 {
@@ -229,10 +233,10 @@ void StructureManagerDialog::ModuleClick( Button& sender, bool /*checked*/ )
       d.SetFilter( FileFilter( "Structure Set Modules", ".ssm" ) );
       d.DisableMultipleSelections();
 
-      if ( !iface.collection.Path().IsEmpty() )
+      if ( !m_interface.collection.Path().IsEmpty() )
       {
-         String initialPath = File::ExtractDrive( iface.collection.Path() ) +
-                              File::ExtractDirectory( iface.collection.Path() );
+         String initialPath = File::ExtractDrive( m_interface.collection.Path() ) +
+                              File::ExtractDirectory( m_interface.collection.Path() );
          if ( !initialPath.EndsWith( '/' ) )
             initialPath += '/';
          d.SetInitialPath( initialPath );
@@ -246,7 +250,7 @@ void StructureManagerDialog::ModuleClick( Button& sender, bool /*checked*/ )
             if ( File::ExtractExtension( fileName ).IsEmpty() )
                fileName.Append( ".ssm" );
 
-            iface.collection.Read( fileName );
+            m_interface.collection.Read( fileName );
          }
 
          ERROR_HANDLER
@@ -259,7 +263,7 @@ void StructureManagerDialog::ModuleClick( Button& sender, bool /*checked*/ )
       SaveFileDialog d;
       d.SetCaption( "Save Structure Set Module" );
       d.SetFilter( FileFilter( "Structure Set Modules", ".ssm" ) );
-      d.SetInitialPath( iface.collection.Path() );
+      d.SetInitialPath( m_interface.collection.Path() );
       d.EnableOverwritePrompt();
 
       if ( d.Execute() )
@@ -270,7 +274,7 @@ void StructureManagerDialog::ModuleClick( Button& sender, bool /*checked*/ )
             if ( File::ExtractExtension( fileName ).IsEmpty() )
                fileName.Append( ".ssm" );
 
-            iface.collection.Write( fileName );
+            m_interface.collection.Write( fileName );
          }
 
          ERROR_HANDLER
@@ -280,14 +284,18 @@ void StructureManagerDialog::ModuleClick( Button& sender, bool /*checked*/ )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void StructureManagerDialog::ItemSelected( ComboBox& /*sender*/, int /*itemIndex*/ )
 {
    // Placeholder
 }
 
+// ----------------------------------------------------------------------------
+
 void StructureManagerDialog::StructureListClick( Button& sender, bool /*checked*/ )
 {
-   if ( iface.collection.IsEmpty() )
+   if ( m_interface.collection.IsEmpty() )
       return;
 
    int idx = StructureList_ComboBox.CurrentItem();
@@ -297,16 +305,16 @@ void StructureManagerDialog::StructureListClick( Button& sender, bool /*checked*
       if ( idx < 0 )
          return;
 
-      if ( iface.CanUndo() &&
+      if ( m_interface.CanUndo() &&
            pcl::MessageBox( "<p>The current structure has been modified and is unsaved. Ok to throw it away?</p>",
-                            iface.WindowTitle(),
+                            m_interface.WindowTitle(),
                             StdIcon::Warning,
                             StdButton::No, StdButton::Yes ).Execute() != StdButton::Yes ) return;
 
-      iface.instance.GetStructure() = iface.collection[idx];
-      iface.currentWayIndex = 0;
-      iface.ResetUndo();
-      iface.initialStructureName = iface.instance.GetStructure().Name();
+      m_interface.instance.GetStructure() = m_interface.collection[idx];
+      m_interface.currentWayIndex = 0;
+      m_interface.ResetUndo();
+      m_interface.initialStructureName = m_interface.instance.GetStructure().Name();
       Ok();
    }
    else if ( sender == DuplicateStructure_PushButton )
@@ -317,13 +325,13 @@ void StructureManagerDialog::StructureListClick( Button& sender, bool /*checked*
       for ( unsigned i = 1; ; )
       {
          newName = name + String().Format( " (%u)", i );
-         if ( !iface.collection.HasStructure( newName ) )
+         if ( !m_interface.collection.HasStructure( newName ) )
             break;
       }
 
-      Structure s( iface.collection[idx] );
+      Structure s( m_interface.collection[idx] );
       s.Rename( newName );
-      iface.collection.AddStructure( s );
+      m_interface.collection.AddStructure( s );
 
       Update();
       StructureList_ComboBox.FindItem( newName );
@@ -335,60 +343,66 @@ void StructureManagerDialog::StructureListClick( Button& sender, bool /*checked*
 
       if ( pcl::MessageBox( "<p>The requested operation cannot be undone</p>"
                             "<p><b>Delete \'" + StructureList_ComboBox.ItemText( idx ) + "\' structure?</b></p>",
-                            iface.WindowTitle(),
+                            m_interface.WindowTitle(),
                             StdIcon::Warning,
                             StdButton::No, StdButton::Yes ).Execute() != StdButton::Yes ) return;
 
-      iface.collection.DeleteStructure( idx );
+      m_interface.collection.DeleteStructure( idx );
       Update();
    }
    else if ( sender == DeleteAll_PushButton )
    {
       if ( pcl::MessageBox( "<p>The requested operation cannot be undone</p>"
                             "<p><b>Delete all structures in the current structure set?</b<</p>",
-                            iface.WindowTitle(),
+                            m_interface.WindowTitle(),
                             StdIcon::Warning,
                             StdButton::No, StdButton::Yes ).Execute() != StdButton::Yes ) return;
 
-      iface.collection.Destroy();
+      m_interface.collection.Destroy();
       Update();
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void StructureManagerDialog::SaveStructureClick( Button& sender, bool checked )
 {
-   String name = iface.instance.GetStructure().Name();
+   String name = m_interface.instance.GetStructure().Name();
 
    if ( !name.IsEmpty() )
    {
-      size_type idx = iface.collection.FindStructure( name );
+      size_type idx = m_interface.collection.FindStructure( name );
 
       if ( idx != StructureCollection::notFound )
       {
          if ( pcl::MessageBox( "<p>Replace existing \'" + name + "\' structure?</p>",
-                              iface.WindowTitle(),
+                              m_interface.WindowTitle(),
                               StdIcon::Warning,
                               StdButton::No, StdButton::Yes ).Execute() != StdButton::Yes ) return;
 
-         iface.collection[idx] = iface.instance.GetStructure();
-         iface.collection.Reindex();
+         m_interface.collection[idx] = m_interface.instance.GetStructure();
+         m_interface.collection.Reindex();
       }
       else
       {
-         iface.collection.AddStructure( iface.instance.GetStructure() );
+         m_interface.collection.AddStructure( m_interface.instance.GetStructure() );
       }
 
       Update();
       StructureList_ComboBox.SetCurrentItem( StructureList_ComboBox.FindItem( name ) );
 
-      iface.ResetUndo();
+      m_interface.ResetUndo();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void StructureManagerDialog::DoneClick( Button& sender, bool checked )
 {
    Ok();
 }
+
+// ----------------------------------------------------------------------------
 
 void StructureManagerDialog::ControlShow( Control& sender )
 {
@@ -402,4 +416,4 @@ void StructureManagerDialog::ControlShow( Control& sender )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StructureManagerDialog.cpp - Released 2020-02-27T12:56:01Z
+// EOF StructureManagerDialog.cpp - Released 2020-07-31T19:33:39Z

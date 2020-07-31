@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MultiVector.h - Released 2020-02-27T12:55:23Z
+// pcl/MultiVector.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -155,8 +155,8 @@ public:
     * This constructor does not initialize component vectors. The newly created
     * multivector will contain \a length empty vectors.
     */
-   GenericMultiVector( size_type length ) :
-      multivector_implementation( length )
+   GenericMultiVector( size_type length )
+      : multivector_implementation( length )
    {
    }
 
@@ -170,8 +170,8 @@ public:
     * This constructor does not initialize vector components. The newly created
     * vectors will contain unpredictable values.
     */
-   GenericMultiVector( size_type length, int vectorLength ) :
-      multivector_implementation( length )
+   GenericMultiVector( size_type length, int vectorLength )
+      : multivector_implementation( length )
    {
       for ( iterator i = this->Begin(), j = this->End(); i < j; ++i )
          *i = vector( vectorLength );
@@ -186,8 +186,8 @@ public:
     *
     * \param vectorLength  Number of vector components (>= 0).
     */
-   GenericMultiVector( const scalar& value, size_type length, int vectorLength ) :
-      multivector_implementation( length )
+   GenericMultiVector( const scalar& value, size_type length, int vectorLength )
+      : multivector_implementation( length )
    {
       for ( iterator i = this->Begin(), j = this->End(); i < j; ++i )
          *i = vector( value, vectorLength );
@@ -198,8 +198,8 @@ public:
     * specified vectors \a v0 and \a v1, respectively for the first and second
     * component vectors.
     */
-   GenericMultiVector( const vector& v0, const vector& v1 ) :
-      GenericMultiVector( size_type( 2 ) )
+   GenericMultiVector( const vector& v0, const vector& v1 )
+      : GenericMultiVector( size_type( 2 ) )
    {
       iterator i = this->Begin();
       *i = v0; *++i = v1;
@@ -210,8 +210,8 @@ public:
     * the specified vectors \a v0, \a v1 and \a v2, respectively for the first,
     * second and third component vectors.
     */
-   GenericMultiVector( const vector& v0, const vector& v1, const vector& v2 ) :
-      GenericMultiVector( size_type( 3 ) )
+   GenericMultiVector( const vector& v0, const vector& v1, const vector& v2 )
+      : GenericMultiVector( size_type( 3 ) )
    {
       iterator i = this->Begin();
       *i = v0; *++i = v1; *++i = v2;
@@ -222,8 +222,8 @@ public:
     * the specified vectors \a v0, \a v1, \a v2 and \a v3, respectively for the
     * first, second, third and fourth component vectors.
     */
-   GenericMultiVector( const vector& v0, const vector& v1, const vector& v2, const vector& v3 ) :
-      GenericMultiVector( size_type( 4 ) )
+   GenericMultiVector( const vector& v0, const vector& v1, const vector& v2, const vector& v3 )
+      : GenericMultiVector( size_type( 4 ) )
    {
       iterator i = this->Begin();
       *i = v0; *++i = v1; *++i = v2; *++i = v3;
@@ -429,4 +429,4 @@ typedef DMultiVector               MultiVector;
 #endif   // __PCL_MultiVector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MultiVector.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/MultiVector.h - Released 2020-07-31T19:33:04Z

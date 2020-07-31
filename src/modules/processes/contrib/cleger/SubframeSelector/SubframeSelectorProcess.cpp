@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.cpp - Released 2020-02-27T12:56:01Z
+// SubframeSelectorProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -60,10 +60,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-//#include "SubframeSelectorIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 SubframeSelectorProcess* TheSubframeSelectorProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -72,9 +68,6 @@ SubframeSelectorProcess::SubframeSelectorProcess()
 {
    TheSubframeSelectorProcess = this;
 
-   /*
-    * Instantiate process parameters.
-    */
    new SSRoutine( this );
 
    new SSSubframes( this );
@@ -164,7 +157,7 @@ IsoString SubframeSelectorProcess::Category() const
 
 uint32 SubframeSelectorProcess::Version() const
 {
-   return 0x140; // required
+   return 0x140;
 }
 
 // ----------------------------------------------------------------------------
@@ -184,10 +177,11 @@ String SubframeSelectorProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** SubframeSelectorProcess::IconImageXPM() const
+String SubframeSelectorProcess::IconImageSVGFile() const
 {
-   return nullptr; // SubframeSelectorIcon_XPM; ---> put a nice icon here
+   return "@module_icons_dir/SubframeSelector.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* SubframeSelectorProcess::DefaultInterface() const
@@ -215,4 +209,4 @@ ProcessImplementation* SubframeSelectorProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorProcess.cpp - Released 2020-07-31T19:33:39Z

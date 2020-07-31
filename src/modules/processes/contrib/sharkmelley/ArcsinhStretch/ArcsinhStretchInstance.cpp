@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInstance.cpp - Released 2020-02-27T12:56:01Z
+// ArcsinhStretchInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
-// Copyright (c) 2017-2018 Mark Shelley
+// Copyright (c) 2017-2020 Mark Shelley
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -63,22 +63,20 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ArcsinhStretchInstance::ArcsinhStretchInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_stretch( TheArcsinhStretchParameter->DefaultValue() ),
-   p_blackpoint( TheArcsinhStretchBlackPointParameter->DefaultValue() ),
-   p_coarse( 0 ),
-   p_fine( 0 ),
-   p_protectHighlights( TheArcsinhStretchProtectHighlightsParameter->DefaultValue() ),
-   p_useRgbws( TheArcsinhStretchUseRgbwsParameter->DefaultValue() ),
-   p_previewClipped( TheArcsinhStretchPreviewClippedParameter->DefaultValue() )
+ArcsinhStretchInstance::ArcsinhStretchInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_stretch( TheArcsinhStretchParameter->DefaultValue() )
+   , p_blackpoint( TheArcsinhStretchBlackPointParameter->DefaultValue() )
+   , p_protectHighlights( TheArcsinhStretchProtectHighlightsParameter->DefaultValue() )
+   , p_useRgbws( TheArcsinhStretchUseRgbwsParameter->DefaultValue() )
+   , p_previewClipped( TheArcsinhStretchPreviewClippedParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ArcsinhStretchInstance::ArcsinhStretchInstance( const ArcsinhStretchInstance& x ) :
-   ProcessImplementation( x )
+ArcsinhStretchInstance::ArcsinhStretchInstance( const ArcsinhStretchInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -312,6 +310,7 @@ void* ArcsinhStretchInstance::LockParameter( const MetaParameter* p, size_type /
       return &p_useRgbws;
    if ( p == TheArcsinhStretchPreviewClippedParameter )
       return &p_previewClipped;
+
    return nullptr;
 }
 
@@ -320,4 +319,4 @@ void* ArcsinhStretchInstance::LockParameter( const MetaParameter* p, size_type /
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ArcsinhStretchInstance.cpp - Released 2020-07-31T19:33:39Z

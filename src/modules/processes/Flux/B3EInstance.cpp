@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInstance.cpp - Released 2020-02-27T12:56:01Z
+// B3EInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -69,38 +69,31 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-B3EInstance::InputViewParameters::InputViewParameters() :
-   center( 0 ),
-   subtractBackground( TheB3ESubstractBackground1Parameter->DefaultValue() ),
-   backgroundReferenceViewId(),
-   backgroundLow( TheB3EBackgroundLow1Parameter->DefaultValue() ),
-   backgroundHigh( TheB3EBackgroundHigh1Parameter->DefaultValue() ),
-   backgroundUseROI( TheB3EBackgroundUseROI1Parameter->DefaultValue() ),
-   backgroundROI( 0 ),
-   outputBackgroundReferenceMask( TheB3EOutputBackgroundReferenceMask1Parameter->DefaultValue() )
+B3EInstance::InputViewParameters::InputViewParameters()
+   : subtractBackground( TheB3ESubstractBackground1Parameter->DefaultValue() )
+   , backgroundLow( TheB3EBackgroundLow1Parameter->DefaultValue() )
+   , backgroundHigh( TheB3EBackgroundHigh1Parameter->DefaultValue() )
+   , backgroundUseROI( TheB3EBackgroundUseROI1Parameter->DefaultValue() )
+   , outputBackgroundReferenceMask( TheB3EOutputBackgroundReferenceMask1Parameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-B3EInstance::B3EInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_outputCenter( 0 ),
-   p_intensityUnits( B3EIntensityUnits::Default ),
-   p_syntheticImage( TheB3ESyntheticImageParameter->DefaultValue() ),
-   p_thermalMap( TheB3EThermalMapParameter->DefaultValue() ),
-   p_outOfRangeMask( TheB3EOutOfRangeMaskParameter->DefaultValue() ),
-   o_syntheticImageViewId(),
-   o_thermalMapViewId(),
-   o_outOfRangeMaskViewId()
+B3EInstance::B3EInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_intensityUnits( B3EIntensityUnits::Default )
+   , p_syntheticImage( TheB3ESyntheticImageParameter->DefaultValue() )
+   , p_thermalMap( TheB3EThermalMapParameter->DefaultValue() )
+   , p_outOfRangeMask( TheB3EOutOfRangeMaskParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-B3EInstance::B3EInstance( const B3EInstance& x ) :
-   ProcessImplementation( x )
+B3EInstance::B3EInstance( const B3EInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -308,13 +301,13 @@ private:
                   UInt16Image* a_It, Image* a_Ic, UInt8Image* a_Im,
                   const GenericImage<P1>& a_Ia, double a_ra, double a_ma, double a_ba,
                   const GenericImage<P2>& a_Ib, double a_rb, double a_mb, double a_bb, double a_rc,
-                  const StatusMonitor& status, size_type count ) :
-         AbstractImage::ThreadData( status, count ),
-         engine( a_engine ),
-         It( a_It ), Ic( a_Ic ), Im( a_Im ),
-         Ia( a_Ia ), ra( a_ra ), ma( a_ma ),  ba( a_ba ),
-         Ib( a_Ib ), rb( a_rb ), mb( a_mb ),  bb( a_bb ),
-         rc( a_rc )
+                  const StatusMonitor& status, size_type count )
+         : AbstractImage::ThreadData( status, count )
+         , engine( a_engine )
+         , It( a_It ), Ic( a_Ic ), Im( a_Im )
+         , Ia( a_Ia ), ra( a_ra ), ma( a_ma ), ba( a_ba )
+         , Ib( a_Ib ), rb( a_rb ), mb( a_mb ), bb( a_bb )
+         , rc( a_rc )
       {
       }
 
@@ -334,13 +327,14 @@ private:
    {
    public:
 
-      B3EThread( ThreadData<P1,P2>& data, size_type start, size_type end ) :
-         Thread(),
-         m_data( data ), m_start( start ), m_end( end )
+      B3EThread( ThreadData<P1,P2>& data, size_type start, size_type end )
+         : m_data( data )
+         , m_start( start )
+         , m_end( end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -977,4 +971,4 @@ size_type B3EInstance::ParameterLength( const MetaParameter* p, size_type tableR
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF B3EInstance.cpp - Released 2020-07-31T19:33:39Z

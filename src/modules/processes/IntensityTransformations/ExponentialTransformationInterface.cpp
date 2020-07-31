@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInterface.cpp - Released 2020-02-27T12:56:01Z
+// ExponentialTransformationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -66,12 +66,8 @@ ExponentialTransformationInterface* TheExponentialTransformationInterface = null
 
 // ----------------------------------------------------------------------------
 
-#include "ExponentialTransformationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ExponentialTransformationInterface::ExponentialTransformationInterface() :
-   instance( TheExponentialTransformationProcess )
+ExponentialTransformationInterface::ExponentialTransformationInterface()
+   : m_instance( TheExponentialTransformationProcess )
 {
    TheExponentialTransformationInterface = this;
 }
@@ -100,9 +96,9 @@ MetaProcess* ExponentialTransformationInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ExponentialTransformationInterface::IconImageXPM() const
+String ExponentialTransformationInterface::IconImageSVGFile() const
 {
-   return ExponentialTransformationIcon_XPM;
+   return "@module_icons_dir/ExponentialTransformation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -116,7 +112,7 @@ InterfaceFeatures ExponentialTransformationInterface::Features() const
 
 void ExponentialTransformationInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
 
 // ----------------------------------------------------------------------------
@@ -157,7 +153,7 @@ bool ExponentialTransformationInterface::Launch( const MetaProcess& P, const Pro
 
 ProcessImplementation* ExponentialTransformationInterface::NewProcess() const
 {
-   return new ExponentialTransformationInstance( instance );
+   return new ExponentialTransformationInstance( m_instance );
 }
 
 // ----------------------------------------------------------------------------
@@ -181,7 +177,7 @@ bool ExponentialTransformationInterface::RequiresInstanceValidation() const
 
 bool ExponentialTransformationInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
 
    UpdateControls();
    UpdateRealTimePreview();
@@ -197,8 +193,8 @@ bool ExponentialTransformationInterface::RequiresRealTimePreviewUpdate( const UI
 
 // ----------------------------------------------------------------------------
 
-ExponentialTransformationInterface::RealTimeThread::RealTimeThread() :
-   m_instance( TheExponentialTransformationProcess )
+ExponentialTransformationInterface::RealTimeThread::RealTimeThread()
+   : m_instance( TheExponentialTransformationProcess )
 {
 }
 
@@ -224,7 +220,7 @@ bool ExponentialTransformationInterface::GenerateRealTimePreview( UInt16Image& i
 
    for ( ;; )
    {
-      ExponentialTransformationInstance previewInstance( instance );
+      ExponentialTransformationInstance previewInstance( m_instance );
       if ( zoomLevel < 0 )
          previewInstance.sigma /= -zoomLevel;
 
@@ -262,10 +258,10 @@ bool ExponentialTransformationInterface::GenerateRealTimePreview( UInt16Image& i
 
 void ExponentialTransformationInterface::UpdateControls()
 {
-   GUI->Function_ComboBox.SetCurrentItem( instance.type );
-   GUI->Order_NumericControl.SetValue( instance.order );
-   GUI->Smoothing_NumericControl.SetValue( instance.sigma );
-   GUI->LightnessMask_CheckBox.SetChecked( instance.useLightnessMask );
+   GUI->Function_ComboBox.SetCurrentItem( m_instance.type );
+   GUI->Order_NumericControl.SetValue( m_instance.order );
+   GUI->Smoothing_NumericControl.SetValue( m_instance.sigma );
+   GUI->LightnessMask_CheckBox.SetChecked( m_instance.useLightnessMask );
 }
 
 void ExponentialTransformationInterface::UpdateRealTimePreview()
@@ -283,23 +279,23 @@ void ExponentialTransformationInterface::UpdateRealTimePreview()
 
 void ExponentialTransformationInterface::__Function_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
-   instance.type = itemIndex;
+   m_instance.type = itemIndex;
    UpdateRealTimePreview();
 }
 
 void ExponentialTransformationInterface::__FunctionParameter_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->Order_NumericControl )
-      instance.order = value;
+      m_instance.order = value;
    else if ( sender == GUI->Smoothing_NumericControl )
-      instance.sigma = value;
+      m_instance.sigma = value;
 
    UpdateRealTimePreview();
 }
 
 void ExponentialTransformationInterface::__LightnessMask_ButtonClick( Button& /*sender*/, bool checked )
 {
-   instance.useLightnessMask = checked;
+   m_instance.useLightnessMask = checked;
    UpdateRealTimePreview();
 }
 
@@ -392,4 +388,4 @@ ExponentialTransformationInterface::GUIData::GUIData( ExponentialTransformationI
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ExponentialTransformationInterface.cpp - Released 2020-07-31T19:33:39Z

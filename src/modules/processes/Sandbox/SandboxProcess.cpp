@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxProcess.cpp - Released 2020-02-27T12:56:01Z
+// SandboxProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-//#include "SandboxIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 SandboxProcess* TheSandboxProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -98,14 +94,19 @@ IsoString SandboxProcess::Id() const
 
 IsoString SandboxProcess::Category() const
 {
-   return IsoString(); // No category
+   /*
+    * Comma-separated list of categories to which this process belongs.
+    * Return an empty IsoString() if no category is applicable to this process,
+    * which is *not recommended*.
+    */
+   return IsoString();
 }
 
 // ----------------------------------------------------------------------------
 
 uint32 SandboxProcess::Version() const
 {
-   return 0x100; // required
+   return 0x100;
 }
 
 // ----------------------------------------------------------------------------
@@ -114,24 +115,29 @@ String SandboxProcess::Description() const
 {
    return
    "<html>"
-   "<p>Sandbox is just a starting point for development of PixInsight modules. It is an empty module that "
-   "does nothing but to provide the basic structure of a module with a process, a few parameters, and a "
-   "process interface.</p>"
+   "<p>"
+   "Sandbox is just a starting point for development of new PixInsight "
+   "modules. It is an empty module that does nothing but to provide the basic "
+   "structure of a module with a process, a few parameters, and a simple "
+   "process interface."
+   "</p>"
    "</html>";
 }
 
 // ----------------------------------------------------------------------------
 
-const char** SandboxProcess::IconImageXPM() const
+String SandboxProcess::IconImageSVGFile() const
 {
-   return nullptr; // SandboxIcon_XPM; ---> put a nice icon here
+   return "@module_icons_dir/Sandbox.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* SandboxProcess::DefaultInterface() const
 {
    return TheSandboxInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* SandboxProcess::Create() const
@@ -242,4 +248,4 @@ int SandboxProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SandboxProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF SandboxProcess.cpp - Released 2020-07-31T19:33:39Z

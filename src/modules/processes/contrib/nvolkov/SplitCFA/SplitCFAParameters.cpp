@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAParameters.cpp - Released 2020-02-27T12:56:01Z
+// SplitCFAParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -58,26 +58,27 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SplitCFATargetFrames*       TheTargetFramesParameter = nullptr;
+SplitCFATargetFrames* TheTargetFramesParameter = nullptr;
 SplitCFATargetFrameEnabled* TheTargetFrameEnabledParameter = nullptr;
-SplitCFATargetFramePath*    TheTargetFramePathParameter = nullptr;
-SplitCFATargetFrameFolder*  TheTargetFrameFolderParameter = nullptr;
+SplitCFATargetFramePath* TheTargetFramePathParameter = nullptr;
+SplitCFATargetFrameFolder* TheTargetFrameFolderParameter = nullptr;
 
-SplitCFAOutputTree*         TheOutputTreeParameter = nullptr;
-SplitCFAOutputSubDirCFA*    TheOutputSubDirCFAParameter = nullptr;
-SplitCFAOutputDir*          TheOutputDirParameter = nullptr;
-SplitCFAPrefix*             ThePrefixParameter = nullptr;
-SplitCFAPostfix*            ThePostfixParameter = nullptr;
-SplitCFAOverwrite*          TheOverwriteParameter = nullptr;
+SplitCFAOutputTree* TheOutputTreeParameter = nullptr;
+SplitCFAOutputSubDirCFA* TheOutputSubDirCFAParameter = nullptr;
+SplitCFAOutputDir* TheOutputDirParameter = nullptr;
+SplitCFAPrefix* ThePrefixParameter = nullptr;
+SplitCFAPostfix* ThePostfixParameter = nullptr;
+SplitCFAOverwrite* TheOverwriteParameter = nullptr;
 
-SplitCFAOutputViewId0*      TheSplitCFAOutputViewId0Parameter = nullptr;
-SplitCFAOutputViewId1*      TheSplitCFAOutputViewId1Parameter = nullptr;
-SplitCFAOutputViewId2*      TheSplitCFAOutputViewId2Parameter = nullptr;
-SplitCFAOutputViewId3*      TheSplitCFAOutputViewId3Parameter = nullptr;
+SplitCFAOutputViewId0* TheSplitCFAOutputViewId0Parameter = nullptr;
+SplitCFAOutputViewId1* TheSplitCFAOutputViewId1Parameter = nullptr;
+SplitCFAOutputViewId2* TheSplitCFAOutputViewId2Parameter = nullptr;
+SplitCFAOutputViewId3* TheSplitCFAOutputViewId3Parameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
-SplitCFATargetFrames::SplitCFATargetFrames( MetaProcess* P ) : MetaTable( P )
+SplitCFATargetFrames::SplitCFATargetFrames( MetaProcess* P )
+   : MetaTable( P )
 {
    TheTargetFramesParameter = this;
 }
@@ -89,7 +90,8 @@ IsoString SplitCFATargetFrames::Id() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFATargetFrameEnabled::SplitCFATargetFrameEnabled( MetaTable* T ) : MetaBoolean( T )
+SplitCFATargetFrameEnabled::SplitCFATargetFrameEnabled( MetaTable* T )
+   : MetaBoolean( T )
 {
    TheTargetFrameEnabledParameter = this;
 }
@@ -106,7 +108,8 @@ bool SplitCFATargetFrameEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFATargetFramePath::SplitCFATargetFramePath( MetaTable* T ) : MetaString( T )
+SplitCFATargetFramePath::SplitCFATargetFramePath( MetaTable* T )
+   : MetaString( T )
 {
    TheTargetFramePathParameter = this;
 }
@@ -118,7 +121,8 @@ IsoString SplitCFATargetFramePath::Id() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFATargetFrameFolder::SplitCFATargetFrameFolder( MetaTable* T ) : MetaString( T )
+SplitCFATargetFrameFolder::SplitCFATargetFrameFolder( MetaTable* T )
+   : MetaString( T )
 {
    TheTargetFrameFolderParameter = this;
 }
@@ -130,7 +134,8 @@ IsoString SplitCFATargetFrameFolder::Id() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAOutputTree::SplitCFAOutputTree( MetaProcess* P ) : MetaBoolean( P )
+SplitCFAOutputTree::SplitCFAOutputTree( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheOutputTreeParameter = this;
 }
@@ -147,7 +152,8 @@ bool SplitCFAOutputTree::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAOutputSubDirCFA::SplitCFAOutputSubDirCFA( MetaProcess* P ) : MetaBoolean( P )
+SplitCFAOutputSubDirCFA::SplitCFAOutputSubDirCFA( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheOutputSubDirCFAParameter = this;
 }
@@ -164,7 +170,8 @@ bool SplitCFAOutputSubDirCFA::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAOutputDir::SplitCFAOutputDir( MetaProcess* P ) : MetaString( P )
+SplitCFAOutputDir::SplitCFAOutputDir( MetaProcess* P )
+   : MetaString( P )
 {
    TheOutputDirParameter = this;
 }
@@ -181,7 +188,8 @@ String SplitCFAOutputDir::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAPrefix::SplitCFAPrefix( MetaProcess* P ) : MetaString( P )
+SplitCFAPrefix::SplitCFAPrefix( MetaProcess* P )
+   : MetaString( P )
 {
    ThePrefixParameter = this;
 }
@@ -198,7 +206,8 @@ String SplitCFAPrefix::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAPostfix::SplitCFAPostfix( MetaProcess* P ) : MetaString( P )
+SplitCFAPostfix::SplitCFAPostfix( MetaProcess* P )
+   : MetaString( P )
 {
    ThePostfixParameter = this;
 }
@@ -215,7 +224,8 @@ String SplitCFAPostfix::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAOverwrite::SplitCFAOverwrite( MetaProcess* P ) : MetaBoolean( P )
+SplitCFAOverwrite::SplitCFAOverwrite( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheOverwriteParameter = this;
 }
@@ -232,7 +242,8 @@ bool SplitCFAOverwrite::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAOutputViewId0::SplitCFAOutputViewId0( MetaProcess* P ) : MetaString( P )
+SplitCFAOutputViewId0::SplitCFAOutputViewId0( MetaProcess* P )
+   : MetaString( P )
 {
    TheSplitCFAOutputViewId0Parameter = this;
 }
@@ -249,7 +260,8 @@ bool SplitCFAOutputViewId0::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAOutputViewId1::SplitCFAOutputViewId1( MetaProcess* P ) : MetaString( P )
+SplitCFAOutputViewId1::SplitCFAOutputViewId1( MetaProcess* P )
+   : MetaString( P )
 {
    TheSplitCFAOutputViewId1Parameter = this;
 }
@@ -266,7 +278,8 @@ bool SplitCFAOutputViewId1::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAOutputViewId2::SplitCFAOutputViewId2( MetaProcess* P ) : MetaString( P )
+SplitCFAOutputViewId2::SplitCFAOutputViewId2( MetaProcess* P )
+   : MetaString( P )
 {
    TheSplitCFAOutputViewId2Parameter = this;
 }
@@ -283,7 +296,8 @@ bool SplitCFAOutputViewId2::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-SplitCFAOutputViewId3::SplitCFAOutputViewId3( MetaProcess* P ) : MetaString( P )
+SplitCFAOutputViewId3::SplitCFAOutputViewId3( MetaProcess* P )
+   : MetaString( P )
 {
    TheSplitCFAOutputViewId3Parameter = this;
 }
@@ -300,7 +314,7 @@ bool SplitCFAOutputViewId3::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF SplitCFAParameters.cpp - Released 2020-07-31T19:33:39Z

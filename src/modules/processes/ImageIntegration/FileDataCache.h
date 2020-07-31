@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// FileDataCache.h - Released 2020-02-27T12:56:01Z
+// FileDataCache.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -54,10 +54,10 @@
 #define __FileDataCache_h
 
 #include <pcl/File.h>
+#include <pcl/MultiVector.h>
 #include <pcl/Mutex.h>
 #include <pcl/ReferenceSortedArray.h>
 #include <pcl/StringList.h>
-#include <pcl/Vector.h>
 
 namespace pcl
 {
@@ -144,6 +144,8 @@ protected:
    // Utility auxiliary routines
    static String VectorAsString( const DVector& );
    static bool GetVector( DVector&, StringList::const_iterator&, const StringList& );
+   static String MultiVectorAsString( const DMultiVector& );
+   static bool GetMultiVector( DMultiVector&, StringList::const_iterator&, const StringList& );
 
    // Fake ctor. for searching items
    FileDataCacheItem( const String& p = String() ) : path( p )
@@ -173,18 +175,7 @@ class PCL_CLASS FileDataCache
 {
 public:
 
-   FileDataCache( const IsoString& key, int days = 30 ) :
-      m_keyPrefix( key.Trimmed() ),
-      m_durationDays( Max( 0, days ) )
-   {
-      PCL_PRECONDITION( !m_keyPrefix.IsEmpty() )
-      if ( m_keyPrefix.IsEmpty() )
-         throw Error( "FileDataCache: Invalid key" );
-      if ( !m_keyPrefix.StartsWith( '/' ) )
-         m_keyPrefix.Prepend( '/' );
-      if ( !m_keyPrefix.EndsWith( '/' ) )
-         m_keyPrefix.Append( '/' );
-   }
+   FileDataCache( const IsoString& key, int days = 30 );
 
    virtual ~FileDataCache()
    {
@@ -194,6 +185,16 @@ public:
    virtual String CacheName() const
    {
       return "File Cache";
+   }
+
+   virtual int Version() const
+   {
+      return 1;
+   }
+
+   virtual int MinSupportedVersion() const
+   {
+      return 1;
    }
 
    bool IsEnabled() const
@@ -259,4 +260,4 @@ private:
 #endif   // __FileDataCache_h
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCache.h - Released 2020-02-27T12:56:01Z
+// EOF FileDataCache.h - Released 2020-07-31T19:33:39Z

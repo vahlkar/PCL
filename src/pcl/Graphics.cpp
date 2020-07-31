@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Graphics.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Graphics.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -63,15 +63,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GraphicsContextBase::GraphicsContextBase() :
-UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
+GraphicsContextBase::GraphicsContextBase()
+   : UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateGraphics" );
 }
 
-GraphicsContextBase::GraphicsContextBase( Control& w ) :
-UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
+GraphicsContextBase::GraphicsContextBase( Control& w )
+   : UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateGraphics" );
@@ -80,8 +80,8 @@ UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
       throw APIFunctionError( "BeginControlPaint" );
 }
 
-GraphicsContextBase::GraphicsContextBase( Bitmap& bmp ) :
-UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
+GraphicsContextBase::GraphicsContextBase( Bitmap& bmp )
+   : UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateGraphics" );
@@ -90,8 +90,8 @@ UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
       throw APIFunctionError( "BeginBitmapPaint" );
 }
 
-GraphicsContextBase::GraphicsContextBase( SVG& svg ) :
-UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
+GraphicsContextBase::GraphicsContextBase( SVG& svg )
+   : UIObject( (*API->Graphics->CreateGraphics)( ModuleHandle() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateGraphics" );
@@ -932,4 +932,4 @@ pcl::DRect VectorGraphics::TextRect( double x0, double y0, double x1, double y1,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Graphics.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Graphics.cpp - Released 2020-07-31T19:33:12Z

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="d" x1="76.708" x2="85.259" y1="70.357" y2="79.71" gradientTransform="matrix(2.1091 0 0 2.1091 -19.373 -84.296)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#cfc1c1" offset="0"/>
+<stop stop-color="#dd8989" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="114.66" x2="123.61" y1="79.042" y2="71.025" gradientTransform="matrix(2.1091 0 0 2.1091 -130.98 -84.296)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#bdbcbd" offset="0"/>
+<stop stop-color="#c8c9c9" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="85.928" x2="76.04" y1="108.56" y2="118.6" gradientTransform="matrix(2.1091 0 0 2.1091 -19.373 -195.9)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#8d8" offset="0"/>
+<stop stop-color="#c6cdc7" offset="1"/>
+</linearGradient>
+<linearGradient id="a" x1="114.23" x2="124.55" y1="108.83" y2="118.46" gradientTransform="matrix(2.1091 0 0 2.1091 -130.98 -195.9)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#9493da" offset="0"/>
+<stop stop-color="#ccc" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-68.476 9.8415)">
+<g transform="translate(6.323e-6 -2.4539e-6)">
+<rect x="136.21" y="2.0888" width="55.803" height="55.803" fill="#898989" style="paint-order:stroke markers fill"/>
+<rect x="136.21" y="57.892" width="55.803" height="55.803" fill="#00f" style="paint-order:stroke markers fill"/>
+<rect x="80.406" y="2.0888" width="55.803" height="55.803" fill="#f00" style="paint-order:stroke markers fill"/>
+<path d="m186.43 57.892h-50.223v50.223z" fill="url(#d)" fill-rule="evenodd"/>
+<path d="m136.21 7.6691v50.223h-50.223z" fill="url(#a)" fill-rule="evenodd"/>
+<rect x="80.406" y="57.892" width="55.803" height="55.803" fill="#0f0" style="paint-order:stroke markers fill"/>
+<path d="m186.43 57.892h-50.223v-50.223z" fill="url(#b)" fill-rule="evenodd"/>
+<path d="m85.987 57.892h50.223v50.223z" fill="url(#c)" fill-rule="evenodd"/>
+<rect x="77.616" y="-.70136" width="117.19" height="117.19" fill="none" stroke="#000" stroke-width="6.35" style="paint-order:stroke markers fill"/>
+</g>
+</g>
+</svg>

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ColorFilterArray.h - Released 2020-02-27T12:55:23Z
+// pcl/ColorFilterArray.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -113,8 +113,11 @@ public:
     * \param name       An optional string identifying the type or model of CFA
     *                   that is being described by this object.
     */
-   ColorFilterArray( const IsoString& pattern, int width, int height, const String& name = String() ) :
-      m_pattern( pattern.Uppercase() ), m_width( width ), m_height( height ), m_name( name )
+   ColorFilterArray( const IsoString& pattern, int width, int height, const String& name = String() )
+      : m_pattern( pattern.Uppercase() )
+      , m_width( width )
+      , m_height( height )
+      , m_name( name )
    {
       if ( m_width < 1 || m_height < 1 || size_type( NumberOfElements() ) != m_pattern.Length() )
          throw Error( "Malformed CFA pattern" );
@@ -281,7 +284,8 @@ class PCL_CLASS BayerFilterRGGB : public ColorFilterArray
 {
 public:
 
-   BayerFilterRGGB() : ColorFilterArray( "RGGB", 2, 2, "RGGB Bayer Filter" )
+   BayerFilterRGGB()
+      : ColorFilterArray( "RGGB", 2, 2, "RGGB Bayer Filter" )
    {
    }
 };
@@ -296,7 +300,8 @@ class PCL_CLASS BayerFilterBGGR : public ColorFilterArray
 {
 public:
 
-   BayerFilterBGGR() : ColorFilterArray( "BGGR", 2, 2, "BGGR Bayer Filter" )
+   BayerFilterBGGR()
+      : ColorFilterArray( "BGGR", 2, 2, "BGGR Bayer Filter" )
    {
    }
 };
@@ -311,7 +316,8 @@ class PCL_CLASS BayerFilterGBRG : public ColorFilterArray
 {
 public:
 
-   BayerFilterGBRG() : ColorFilterArray( "GBRG", 2, 2, "GBRG Bayer Filter" )
+   BayerFilterGBRG()
+      : ColorFilterArray( "GBRG", 2, 2, "GBRG Bayer Filter" )
    {
    }
 };
@@ -326,7 +332,8 @@ class PCL_CLASS BayerFilterGRBG : public ColorFilterArray
 {
 public:
 
-   BayerFilterGRBG() : ColorFilterArray( "GRBG", 2, 2, "GRBG Bayer Filter" )
+   BayerFilterGRBG()
+      : ColorFilterArray( "GRBG", 2, 2, "GRBG Bayer Filter" )
    {
    }
 };
@@ -338,4 +345,4 @@ public:
 #endif   // __PCL_ColorFilterArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ColorFilterArray.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ColorFilterArray.h - Released 2020-07-31T19:33:04Z

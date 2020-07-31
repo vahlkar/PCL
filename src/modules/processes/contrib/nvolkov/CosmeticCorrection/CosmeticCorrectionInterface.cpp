@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInterface.cpp - Released 2020-02-27T12:56:01Z
+// CosmeticCorrectionInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -65,10 +65,12 @@
 #include <pcl/SpinStatus.h>
 #include <pcl/StdStatus.h>
 
-
 namespace pcl
 {
-static Rect s_rect;
+
+// ----------------------------------------------------------------------------
+
+static Rect   s_rect;
 static String s_viewId; //RTP view.FullId();
 static String s_MasterDarkId;
 
@@ -90,19 +92,19 @@ static uint16 s_hotBad;
 static uint16 s_coldBad;
 
 // ----------------------------------------------------------------------------
+
 CosmeticCorrectionInterface* TheCosmeticCorrectionInterface = nullptr;
 
-CosmeticCorrectionInterface::CosmeticCorrectionInterface() : instance( TheCosmeticCorrectionProcess )
-{
-   m_md = 0;
-   m_Mean = 0.5;
-   m_StdDev = 0.01;
-   m_MinSlider = 0;
-   m_MaxSlider = 65535;
+// ----------------------------------------------------------------------------
 
+CosmeticCorrectionInterface::CosmeticCorrectionInterface()
+   : instance( TheCosmeticCorrectionProcess )
+{
    TheCosmeticCorrectionInterface = this;
    DisableAutoSaveGeometry();
 }
+
+// ----------------------------------------------------------------------------
 
 CosmeticCorrectionInterface::~CosmeticCorrectionInterface()
 {
@@ -110,20 +112,35 @@ CosmeticCorrectionInterface::~CosmeticCorrectionInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString CosmeticCorrectionInterface::Id() const
 {
    return "CosmeticCorrection";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* CosmeticCorrectionInterface::Process() const
 {
    return TheCosmeticCorrectionProcess;
 }
 
+// ----------------------------------------------------------------------------
+
+String CosmeticCorrectionInterface::IconImageSVGFile() const
+{
+   return "@module_icons_dir/CosmeticCorrection.svg";
+}
+
+// ----------------------------------------------------------------------------
+
 InterfaceFeatures CosmeticCorrectionInterface::Features() const
 {
    return InterfaceFeature::DefaultGlobal | InterfaceFeature::RealTimeButton;
 }
+
+// ----------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::ApplyInstance() const
 {
@@ -136,6 +153,8 @@ void CosmeticCorrectionInterface::ResetInstance()
    CosmeticCorrectionInstance defaultInstance( TheCosmeticCorrectionProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool CosmeticCorrectionInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -155,10 +174,14 @@ bool CosmeticCorrectionInterface::Launch( const MetaProcess& P, const ProcessImp
    return &P == TheCosmeticCorrectionProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* CosmeticCorrectionInterface::NewProcess() const
 {
    return new CosmeticCorrectionInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool CosmeticCorrectionInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -168,10 +191,14 @@ bool CosmeticCorrectionInterface::ValidateProcess( const ProcessImplementation& 
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool CosmeticCorrectionInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool CosmeticCorrectionInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -191,13 +218,14 @@ bool CosmeticCorrectionInterface::ImportProcess( const ProcessImplementation& p 
    {
       if ( File::Exists( instance.p_masterDark ) )
       {
-         //if ( darkPath != instance.p_masterDark ) //no or wrong H in RAM
-            LoadMasterDark( instance.p_masterDark );
+         //if ( darkPath != instance.p_masterDark ) // no or wrong H in RAM
+         LoadMasterDark( instance.p_masterDark );
       }
       else //the file was deleted from disk
       {
-         MessageBox("MasterDark not found: " + instance.p_masterDark,
-            "CosmeticCorrection", StdIcon::Error).Execute();
+         MessageBox( "MasterDark not found: " + instance.p_masterDark,
+            "CosmeticCorrection", StdIcon::Error )
+            .Execute();
          ResetInstance();
       }
    }
@@ -206,12 +234,12 @@ bool CosmeticCorrectionInterface::ImportProcess( const ProcessImplementation& p 
    return true;
 }
 
+// ----------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::SaveSettings() const
-{ //at close PixInsight
+{
    SaveGeometry();
 }
-
 
 //-------------------------------------------------------------------------
 
@@ -220,19 +248,25 @@ bool CosmeticCorrectionInterface::WantsReadoutNotifications() const
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::UpdateReadout( const View& view, const DPoint& point, double, double, double, double )
 {
-   if ( GUI != 0 && GUI->UseDefectList_SectionBar.Section().IsVisible() && GUI->UseDefectList_SectionBar.IsChecked() )
-   {
-      Point p( point.TruncatedToInt() );
-      if ( !view.IsMainView() ) p.MoveBy( view.Window().PreviewRect( view.Id() ).LeftTop() );
-      int x = p.x, y = p.y;
-      if ( GUI->Row_RadioButton.IsChecked() ) Swap( x, y );
+   if ( GUI != nullptr )
+      if ( GUI->UseDefectList_SectionBar.Section().IsVisible() )
+         if ( GUI->UseDefectList_SectionBar.IsChecked() )
+         {
+            Point p( point.TruncatedToInt() );
+            if ( !view.IsMainView() )
+               p.MoveBy( view.Window().PreviewRect( view.Id() ).LeftTop() );
+            int x = p.x, y = p.y;
+            if ( GUI->Row_RadioButton.IsChecked() )
+               Swap( x, y );
 
-      GUI->DefectPosition.SetValue( x );
-      GUI->DefectStart.SetValue( y );
-      GUI->DefectEnd.SetValue( y );
-   }
+            GUI->DefectPosition.SetValue( x );
+            GUI->DefectStart.SetValue( y );
+            GUI->DefectEnd.SetValue( y );
+         }
 }
 
 //-------------------------------------------------------------------------
@@ -242,53 +276,48 @@ bool CosmeticCorrectionInterface::WantsRealTimePreviewNotifications() const
    return true;
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::RealTimePreviewOwnerChanged( ProcessInterface& iface )
 {
-   if ( GUI != 0 )
+   if ( GUI != nullptr )
    {
-      #if debug
-      static int runCount = 0;
-      Console().WriteLn( "RealTimePreviewOwnerChanged() Run # " + String( runCount++ ));
-      //Console().WriteLn( "Curent owner is " + String( iface.Id() ) );
-      #endif
       s_requiresUpdate = false;
-
       GUI->RTP_Control.Enable( iface == *this && IsRealTimePreviewActive() );
    }
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::RealTimePreviewUpdated( bool active ) //RTP button click
 {
    s_requiresUpdate = true;
-   if ( GUI != 0 )
+   if ( GUI != nullptr )
    {
-      #if debug
-      static int runCount = 0;
-      Console().Write( "<br>RealTimePreviewUpdated() Run # " + String( runCount++ ));
-      Console().WriteLn( " RTP is active: " + String( active ));
-      #endif
       if ( active )
       {
-         if ( pcl::ImageWindow::AllWindows().IsEmpty() ||
-            ( !instance.p_useMasterDark && !instance.p_useAutoDetect && !instance.p_useDefectList ) )
+         if ( pcl::ImageWindow::AllWindows().IsEmpty() || ( !instance.p_useMasterDark && !instance.p_useAutoDetect && !instance.p_useDefectList ) )
          {
             active = false; // because no Images or no one correction method selected
          }
          else if ( instance.p_useMasterDark && m_md && ( m_md->Bounds() != pcl::ImageWindow::ActiveWindow().MainView().Bounds() ) )
          {
-            MessageBox("Wrong image geometry!<br><br> MasterDark "+String(m_md->Width())+"x"+String(m_md->Height())+
-               ", MainView "+String(pcl::ImageWindow::ActiveWindow().MainView().Width())+"x"+String(pcl::ImageWindow::ActiveWindow().MainView().Height())+
-               ".<br><br> Can't use MasterDark.",
-               "CosmeticCorrection", StdIcon::Error ).Execute();
+            MessageBox( "Wrong image geometry!<br><br> MasterDark: "
+                        + String( m_md->Width() )
+                        + " x " + String( m_md->Height() )
+                        + "; MainView: " + String( pcl::ImageWindow::ActiveWindow().MainView().Width() )
+                        + " x " + String( pcl::ImageWindow::ActiveWindow().MainView().Height() )
+                        + ".<br><br> Can't use MasterDark.",
+                        "CosmeticCorrection", StdIcon::Error ).Execute();
             active = false; // because masterDark and Image geometry is not equal
          }
-		}
+      }
 
       if ( active )
       {
          //this->SetCursor( StdCursor::ArrowWait );
          //Console().Show();
-         Disable();                           // disable GUI while caclulate filtered images
+         Disable();                          // disable GUI while caclulate filtered images
          RealTimePreview::SetOwner( *this ); // implicitly updates the r-t preview
          Enable();
          //Console().Hide();
@@ -299,21 +328,13 @@ void CosmeticCorrectionInterface::RealTimePreviewUpdated( bool active ) //RTP bu
          DeactivateRealTimePreview();
          RealTimePreview::SetOwner( ProcessInterface::Null() );
       }
-
-      #if debug
-      Console().WriteLn( "RealTimePreviewUpdated():End active is " + String( active ));
-      #endif
    }
 }
 
-bool CosmeticCorrectionInterface::RequiresRealTimePreviewUpdate( const UInt16Image& img, const View& view,
-                                                                 const Rect& rect, int zoomLevel ) const
-{
-   #if debug
-   static int runCount = 0;
-   Console().WriteLn( "<br>RequiresRealTimePreviewUpdate() Run # " + String( runCount++ ));
-   #endif
+//-------------------------------------------------------------------------
 
+bool CosmeticCorrectionInterface::RequiresRealTimePreviewUpdate( const UInt16Image& img, const View& view, const Rect& rect, int zoomLevel ) const
+{
    // is other View selected ? Compare curent and previouse View Id.
    if ( s_viewId.Compare( view.FullId() ) ) // true == Selected other View
    {
@@ -340,12 +361,12 @@ bool CosmeticCorrectionInterface::RequiresRealTimePreviewUpdate( const UInt16Ima
 
    int minSize = instance.p_cfa ? 13 : 7;
 
-   if ( (r.Width() < minSize) || (r.Height() < minSize) ) // MorphologicalTransformation can't process images less then BitmapStructure size
+   if ( ( r.Width() < minSize ) || ( r.Height() < minSize ) ) // MorphologicalTransformation can't process images less then BitmapStructure size
    {
       s_viewId = "";
       Console().WarningLn( "<br><br>** Warning: Can't generate RTP, size of Preview image must be > "
-                         + String( minSize )
-                         + "x" + String( minSize ) );
+         + String( minSize )
+         + "x" + String( minSize ) );
       Console().Show();
       return false;
    }
@@ -354,8 +375,10 @@ bool CosmeticCorrectionInterface::RequiresRealTimePreviewUpdate( const UInt16Ima
    {
       s_rect = r;
       s_requiresGetImageRectangle = true;
-      if ( m_md ) s_requiresGetDarkRectangle = true;
-      if ( !instance.p_defects.IsEmpty() ) s_requiresListMapGeneration = true;
+      if ( m_md )
+         s_requiresGetDarkRectangle = true;
+      if ( !instance.p_defects.IsEmpty() )
+         s_requiresListMapGeneration = true;
    }
 
    // is other MasterDark selected ? Compare curent and previouse MasterDark path.
@@ -365,46 +388,29 @@ bool CosmeticCorrectionInterface::RequiresRealTimePreviewUpdate( const UInt16Ima
       s_requiresGetDarkRectangle = true;
    }
 
-   if (  GUI->RTPShowMap_CheckBox.IsChecked() )
+   if ( GUI->RTPShowMap_CheckBox.IsChecked() )
       s_requiresUpdate = true;
 
-   if (  s_requiresGetImageRectangle
-      || s_requiresGetDarkRectangle
+   if ( s_requiresGetImageRectangle
+     || s_requiresGetDarkRectangle
 
-      || s_requiresDarkHotMapGeneration
-      || s_requiresDarkColdMapGeneration
-      || s_requiresAutoHotMapGeneration
-      || s_requiresAutoColdMapGeneration
-      || s_requiresListMapGeneration
+     || s_requiresDarkHotMapGeneration
+     || s_requiresDarkColdMapGeneration
+     || s_requiresAutoHotMapGeneration
+     || s_requiresAutoColdMapGeneration
+     || s_requiresListMapGeneration
 
-      || s_requiresSnapshot
-      || s_requiresUpdate
-      )
+     || s_requiresSnapshot
+     || s_requiresUpdate )
    {
-      #if debug
-      Console().WriteLn( "s_requiresGetImageRectangle     " + String( s_requiresGetImageRectangle ) );
-      Console().WriteLn( "s_requiresGetDarkRectangle      " + String( s_requiresGetDarkRectangle ) );
-      Console().WriteLn( "s_requiresDarkHotMapGeneration  " + String( s_requiresDarkHotMapGeneration ) );
-      Console().WriteLn( "s_requiresDarkColdMapGeneration " + String( s_requiresDarkColdMapGeneration ) );
-      Console().WriteLn( "s_requiresAutoHotMapGeneration  " + String( s_requiresAutoHotMapGeneration ) );
-      Console().WriteLn( "s_requiresAutoColdMapGeneration " + String( s_requiresAutoColdMapGeneration ) );
-      Console().WriteLn( "s_requiresListMapGeneration     " + String( s_requiresListMapGeneration ) );
-      Console().WriteLn( "s_requiresSnapshot              " + String( s_requiresSnapshot ) );
-      Console().WriteLn( "s_requiresUpdate                " + String( s_requiresUpdate ) );
-      #endif
-
       //++img.Status();
       return true;
    }
-   else
-   {
-      #if debug
-      Console().WriteLn( "RequiresRealTimePreviewUpdate:false");
-      #endif
 
-      return false;
-   }
+   return false;
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::RTPApplyBadMap( UInt16Image& target, const UInt8Image& map, const UInt16Image& value ) const
 {
@@ -413,22 +419,22 @@ void CosmeticCorrectionInterface::RTPApplyBadMap( UInt16Image& target, const UIn
    const int n = map.NumberOfNominalChannels() - 1;
    for ( int c = 0; c < target.NumberOfChannels(); ++c )
    {
-      const UInt8Image::sample *m = map.PixelData( Min( c, n ) );
-      const UInt16Image::sample *a = value.PixelData( c );
-      UInt16Image::sample *t = target.PixelData( c );
-      const UInt16Image::sample *end = t + target.NumberOfPixels();
+      const UInt8Image::sample* m = map.PixelData( Min( c, n ) );
+      const UInt16Image::sample* a = value.PixelData( c );
+      UInt16Image::sample* t = target.PixelData( c );
+      const UInt16Image::sample* end = t + target.NumberOfPixels();
       while ( t < end )
       {
-         if ( *m ) *t = *a * f0 + *t * f1;
+         if ( *m )
+            *t = *a * f0 + *t * f1;
          t++, a++, m++;
       }
    }
-   #if debug
-   Console().WriteLn( "RTPApplyBadMap() End.");
-   #endif
 }
 
-inline void CosmeticCorrectionInterface::RTPGetStatistics( Array<double>& avgDev, const View& view ) const
+//-------------------------------------------------------------------------
+
+void CosmeticCorrectionInterface::RTPGetStatistics( Array<double>& avgDev, const View& view ) const
 {
    // Calculate MainImage Statistics -----------------------------------------------
    const ImageVariant v = view.Window().MainView().Image();
@@ -438,101 +444,85 @@ inline void CosmeticCorrectionInterface::RTPGetStatistics( Array<double>& avgDev
    monitor.SetCallback( &callback );
    monitor.Initialize( "<end><cbr>Calculate ImageStatistics", v.NumberOfNominalChannels() );
 
-   avgDev.Clear();                     // clear old statistics
-   for ( int c = 0; c < v->NumberOfNominalChannels(); c++, ++monitor  )
+   avgDev.Clear(); // clear old statistics
+   for ( int c = 0; c < v->NumberOfNominalChannels(); c++, ++monitor )
    {
       ProcessEvents();
       avgDev.Add( v.AvgDev( v.Median( v.Bounds(), c, c ), v.Bounds(), c, c ) );
    }
 
-   #if debug
-   for ( int c = 0; c < v->NumberOfNominalChannels(); c++ )
-      Console().WriteLn( "avgDev[c]: "+ String(avgDev[c]*65535) );
-   #endif
-
    s_requiresStatistics = false;
 }
 
-inline void CosmeticCorrectionInterface::RTPGetImageRectangle( UInt16Image& wrk, const View& view ) const
-{
-   #if debug
-   Console().Write( "Update working rectangle.");
-   #endif
+//-------------------------------------------------------------------------
 
+void CosmeticCorrectionInterface::RTPGetImageRectangle( UInt16Image& wrk, const View& view ) const
+{
    ImageVariant v;
    v.CreateUIntImage( 16 );
    v.CopyImage( view.Window().MainView().Image() );
    v->SelectRectangle( s_rect );
    wrk = static_cast<UInt16Image&>( *v );
    v->ResetSelection();
-
    s_requiresGetImageRectangle = false;
-
-   #if debug
-   Console().WriteLn( " done.");
-   #endif
 }
 
-inline void CosmeticCorrectionInterface::RTPGetDarkRectangle( UInt16Image& mdRect ) const
-{
-   #if debug
-   Console().Write( "Update MasterDark rectangle.");
-   #endif
+//-------------------------------------------------------------------------
 
+void CosmeticCorrectionInterface::RTPGetDarkRectangle( UInt16Image& mdRect ) const
+{
    // if MasterDark selected, create badMap with geomety of MasterDark RTP rect
    // and fill badMap by MasterDark pixelData
    m_md->SelectRectangle( s_rect );
    mdRect.Assign( *m_md );
 
    s_requiresGetDarkRectangle = false;
-
-   #if debug
-   Console().WriteLn( " done.");
-   #endif
 }
 
-inline void CosmeticCorrectionInterface::RTPGetBkg( UInt16Image& bkg, const UInt16Image& wrk ) const
+//-------------------------------------------------------------------------
+
+void CosmeticCorrectionInterface::RTPGetBkg( UInt16Image& bkg, const UInt16Image& wrk ) const
 {
    MorphologicalTransformation MT;
 
    if ( instance.p_cfa )
    {
       const char* Box[] = // define bacground CFA area arround star
-      {
-         "x-x-x-x-x-x-x"
-         "-------------"
-         "x-x-x-x-x-x-x"
-         "-------------"
-         "x-x-------x-x"
-         "-------------"
-         "x-x-------x-x"
-         "-------------"
-         "x-x-------x-x"
-         "-------------"
-         "x-x-x-x-x-x-x"
-         "-------------"
-         "x-x-x-x-x-x-x"
-      };
+         {
+            "x-x-x-x-x-x-x"
+            "-------------"
+            "x-x-x-x-x-x-x"
+            "-------------"
+            "x-x-------x-x"
+            "-------------"
+            "x-x-------x-x"
+            "-------------"
+            "x-x-------x-x"
+            "-------------"
+            "x-x-x-x-x-x-x"
+            "-------------"
+            "x-x-x-x-x-x-x"
+         };
       BitmapStructure s( Box, 13 );
       MT.SetStructure( s );
    }
    else
    {
       const char* Box[] = // define bacground area arround star
-      {
-         "xxxxxxx"
-         "xxxxxxx"
-         "xx---xx"
-         "xx---xx"
-         "xx---xx"
-         "xxxxxxx"
-         "xxxxxxx"
-      };
+         {
+            "xxxxxxx"
+            "xxxxxxx"
+            "xx---xx"
+            "xx---xx"
+            "xx---xx"
+            "xxxxxxx"
+            "xxxxxxx"
+         };
       BitmapStructure s( Box, 7 );
       MT.SetStructure( s );
    }
 
-   Console().Write(String().Format("Create%s backgound image...", instance.p_cfa ? " CFA":"" ));
+   Console().Write( String().Format( "Create%s backgound image...", instance.p_cfa ? " CFA" : "" ) );
    ProcessEvents(); //for update console output
 
    // set the pixel value to filtered by median backgound 7x7 arrea arround central 3x3 area of centaral pixel
@@ -540,18 +530,19 @@ inline void CosmeticCorrectionInterface::RTPGetBkg( UInt16Image& bkg, const UInt
    MT.SetOperator( MedianFilter() );
    MT >> bkg;
 
-   Console().WriteLn("done.");
+   Console().WriteLn( "done." );
    ProcessEvents();
 }
 
-inline void CosmeticCorrectionInterface::RTPGetMed( UInt16Image& med, const UInt16Image& wrk ) const
+//-------------------------------------------------------------------------
+
+void CosmeticCorrectionInterface::RTPGetMed( UInt16Image& med, const UInt16Image& wrk ) const
 {
    MorphologicalTransformation MT;
 
    if ( instance.p_cfa )
    {
-      const char* Box[] =
-      {
+      const char* Box[] = {
          "x-x-x"
          "-----"
          "x---x"
@@ -564,16 +555,16 @@ inline void CosmeticCorrectionInterface::RTPGetMed( UInt16Image& med, const UInt
    else
    {
       const char* Box[] = // define area arround pixel
-      {
-         "xxx"
-         "x-x"
-         "xxx"
-      };
+         {
+            "xxx"
+            "x-x"
+            "xxx"
+         };
       BitmapStructure s( Box, 3 );
       MT.SetStructure( s );
    }
 
-   Console().Write(String().Format("Create%s median filtered image...", instance.p_cfa ? " CFA":"" ));
+   Console().Write( String().Format( "Create%s median filtered image...", instance.p_cfa ? " CFA" : "" ) );
    ProcessEvents(); //for update console output
 
    // set the pixel value to filter by median 3x3 arrea around centaral pixel
@@ -581,18 +572,19 @@ inline void CosmeticCorrectionInterface::RTPGetMed( UInt16Image& med, const UInt
    MT.SetOperator( MedianFilter() );
    MT >> med;
 
-   Console().WriteLn("done.");
+   Console().WriteLn( "done." );
    ProcessEvents();
 }
 
-inline void CosmeticCorrectionInterface::RTPGetAvr( UInt16Image& avr, const UInt16Image& wrk ) const
+//-------------------------------------------------------------------------
+
+void CosmeticCorrectionInterface::RTPGetAvr( UInt16Image& avr, const UInt16Image& wrk ) const
 {
    MorphologicalTransformation MT;
 
    if ( instance.p_cfa )
    {
-      const char* Box[] =
-      {
+      const char* Box[] = {
          "x-x-x"
          "-----"
          "x---x"
@@ -605,11 +597,11 @@ inline void CosmeticCorrectionInterface::RTPGetAvr( UInt16Image& avr, const UInt
    else
    {
       const char* Box[] = // define area arround pixel
-      {
-         "xxx"
-         "x-x"
-         "xxx"
-      };
+         {
+            "xxx"
+            "x-x"
+            "xxx"
+         };
       BitmapStructure s( Box, 3 );
       MT.SetStructure( s );
    }
@@ -618,8 +610,8 @@ inline void CosmeticCorrectionInterface::RTPGetAvr( UInt16Image& avr, const UInt
    //StatusMonitor m;
    //m.SetCallback( &s );
    //m.Initialize( "<end><cbr>Create average filtered image", 1 );
-   Console().Write(String().Format("Create%s average filtered image...", instance.p_cfa ? " CFA":"" ));
-   ProcessEvents();   //for update console output
+   Console().Write( String().Format( "Create%s average filtered image...", instance.p_cfa ? " CFA" : "" ) );
+   ProcessEvents(); //for update console output
 
    // set the pixel value to ad value of 3x3 arrea around centaral pixel
    avr.Assign( wrk );
@@ -627,33 +619,23 @@ inline void CosmeticCorrectionInterface::RTPGetAvr( UInt16Image& avr, const UInt
    MT >> avr;
 
    //++m;
-   Console().WriteLn("done.");
+   Console().WriteLn( "done." );
    ProcessEvents();
 }
 
-inline int CosmeticCorrectionInterface::RTPGetHotAutoMap( UInt8Image& mapAutoHot, float& hotAutoValue, const UInt16Image& med, const UInt16Image& bkg, const UInt16Image& avr,   const UInt16Image& wrk, const Array<double>& avgDev) const
+//-------------------------------------------------------------------------
+
+int CosmeticCorrectionInterface::RTPGetHotAutoMap( UInt8Image& mapAutoHot, float& hotAutoValue, const UInt16Image& med, const UInt16Image& bkg, const UInt16Image& avr, const UInt16Image& wrk, const Array<double>& avgDev ) const
 {
    static int count = 0;
    s_requiresAutoHotMapGeneration = false;
-   if ( !instance.p_hotAutoCheck ) return 0;
+   if ( !instance.p_hotAutoCheck )
+      return 0;
 
-   #if debug
-   Console().WriteLn( "hotAutoValue: "+ String(hotAutoValue)+" ,instance.p_hotAutoValue: "+ String(instance.p_hotAutoValue) );
-   #endif
    if ( hotAutoValue == instance.p_hotAutoValue )
-   {
-      #if debug
-      Console().WriteLn( "Use old AutoHotMap.");
-      #endif
       return count;
-   }
-   hotAutoValue = instance.p_hotAutoValue;   // save curent value to avoid unusual regeneration if user check/uncheck CheckCold
 
-   #if debug
-   //Console().Show();
-   Console().Write( "Generate AutoHotMap."); //instance.p_hotAutoValue changed >> regenerate map
-   #endif
-
+   hotAutoValue = instance.p_hotAutoValue; // save curent value to avoid unusual regeneration if user check/uncheck CheckCold
    mapAutoHot.AllocateData( wrk.Width(), wrk.Height(), wrk.NumberOfNominalChannels(), wrk.IsColor() ? ColorSpace::RGB : ColorSpace::Gray );
    mapAutoHot.Zero();
    count = 0;
@@ -664,48 +646,39 @@ inline int CosmeticCorrectionInterface::RTPGetHotAutoMap( UInt8Image& mapAutoHot
       const UInt16Image::sample* f = med.PixelData( c );
       const UInt16Image::sample* b = bkg.PixelData( c );
       const UInt16Image::sample* a = avr.PixelData( c );
-            UInt8Image::sample*  m = mapAutoHot.PixelData(c);
+      UInt8Image::sample* m = mapAutoHot.PixelData( c );
 
       const double k1 = avgDev[c] * 65535;            // avrDev * 65535
-      const double k2 = k1 / 2;                        // ( avrDev / 2 ) * 65535
-      const double k3 = instance.p_hotAutoValue * k1;   // k * avrDev * 65535
+      const double k2 = k1 / 2;                       // ( avrDev / 2 ) * 65535
+      const double k3 = instance.p_hotAutoValue * k1; // k * avrDev * 65535
 
       while ( t < end )
       {
-         if (  ( *a < *b + k2 )   //ignore pixel surrounded by other bright pixels at avrDev/2
-            && ( *t > *b + k1 )   //ignore pixel with brightnes less then (background + avrDev)
-            && ( *t > *f + k3 )   //ignore pixel with brightnes less then avr of surrounded pixels * k * avrDev
-            ) *m = -1,   count++;
+         if ( ( *a < *b + k2 )  //ignore pixel surrounded by other bright pixels at avrDev/2
+            && ( *t > *b + k1 ) //ignore pixel with brightnes less then (background + avrDev)
+            && ( *t > *f + k3 ) //ignore pixel with brightnes less then avr of surrounded pixels * k * avrDev
+         )
+            *m = -1, count++;
          t++, f++, b++, a++, m++;
       }
    }
-   #if debug
-   Console().WriteLn( " Done.");
-   #endif
 
    return count;
 }
 
-inline int CosmeticCorrectionInterface::RTPGetColdAutoMap( UInt8Image& mapAutoCold, float& coldAutoValue, const UInt16Image& med, const UInt16Image& bkg,   const UInt16Image& wrk, const Array<double>& avgDev) const
+//-------------------------------------------------------------------------
+
+int CosmeticCorrectionInterface::RTPGetColdAutoMap( UInt8Image& mapAutoCold, float& coldAutoValue, const UInt16Image& med, const UInt16Image& bkg, const UInt16Image& wrk, const Array<double>& avgDev ) const
 {
    static int count = 0;
    s_requiresAutoColdMapGeneration = false;
-   if ( !instance.p_coldAutoCheck ) return 0;
+   if ( !instance.p_coldAutoCheck )
+      return 0;
 
    if ( coldAutoValue == instance.p_coldAutoValue )
-   {
-      #if debug
-      Console().Write( "Use old ColdMap.");
-      #endif
       return count;
-   }
 
-   coldAutoValue = instance.p_coldAutoValue;   // save curent value to avoid unusual regeneration if user check/uncheck CheckCold
-
-   #if debug
-   //Console().Show();
-   Console().Write( "Generate ColdMap."); //instance.p_coldAutoValue changed >> regenerate map
-   #endif
+   coldAutoValue = instance.p_coldAutoValue; // save curent value to avoid unusual regeneration if user check/uncheck CheckCold
 
    mapAutoCold.AllocateData( wrk.Width(), wrk.Height(), wrk.NumberOfNominalChannels(), wrk.IsColor() ? ColorSpace::RGB : ColorSpace::Gray );
    mapAutoCold.Zero();
@@ -716,43 +689,36 @@ inline int CosmeticCorrectionInterface::RTPGetColdAutoMap( UInt8Image& mapAutoCo
       const UInt16Image::sample* end = t + wrk.NumberOfPixels();
       const UInt16Image::sample* f = med.PixelData( c );
       const UInt16Image::sample* b = bkg.PixelData( c );
-            UInt8Image::sample*  m = mapAutoCold.PixelData(c);
+      UInt8Image::sample* m = mapAutoCold.PixelData( c );
 
-      const double k = avgDev[c] * instance.p_coldAutoValue * 65535;   // k * avrDev * 65535 == how much pixel must be less
+      const double k = avgDev[c] * instance.p_coldAutoValue * 65535; // k * avrDev * 65535 == how much pixel must be less
 
       while ( t < end )
       {
          const double T = *t + k;
-         if ( ( T < *b ) && ( T < *f ) ) *m = -1, count++;
+         if ( ( T < *b ) && ( T < *f ) )
+            *m = -1, count++;
          t++, f++, b++, m++;
-      } //end while
-   } //end for
-   #if debug
-   Console().WriteLn( " Done.");
-   #endif
+      }
+   }
 
    return count;
 }
 
-inline int CosmeticCorrectionInterface::RTPGetHotDarkMap( UInt8Image& mapDarkHot, float& hotDarkValue, const UInt16Image& mdRect ) const
+//-------------------------------------------------------------------------
+
+int CosmeticCorrectionInterface::RTPGetHotDarkMap( UInt8Image& mapDarkHot, float& hotDarkValue, const UInt16Image& mdRect ) const
 {
    // prepare Hot Map via MasterDark ----------------------------------------------
    static int count = 0;
 
    s_requiresDarkHotMapGeneration = false;
-   if ( !instance.p_hotDarkCheck ) return 0;
+   if ( !instance.p_hotDarkCheck )
+      return 0;
    if ( hotDarkValue == instance.p_hotDarkLevel )
-   {
-      #if debug
-      Console().WriteLn( "Use old DarkHotMap.");
-      #endif
       return count;
-   }
-   hotDarkValue = instance.p_hotDarkLevel;
 
-   #if debug
-   Console().Write( "Generate DarkHotMap.");
-   #endif
+   hotDarkValue = instance.p_hotDarkLevel;
 
    mapDarkHot.AllocateData( mdRect.Width(), mdRect.Height(), mdRect.NumberOfNominalChannels(), mdRect.IsColor() ? ColorSpace::RGB : ColorSpace::Gray );
    mapDarkHot.Zero();
@@ -761,9 +727,9 @@ inline int CosmeticCorrectionInterface::RTPGetHotDarkMap( UInt8Image& mapDarkHot
    count = 0;
    for ( int c = 0; c < mdRect.NumberOfNominalChannels(); ++c )
    {
-      UInt8Image::sample* m = mapDarkHot.PixelData(c);
+      UInt8Image::sample* m = mapDarkHot.PixelData( c );
       const UInt8Image::sample* end = m + mapDarkHot.NumberOfPixels();
-      const UInt16Image::sample* d = mdRect.PixelData(c);
+      const UInt16Image::sample* d = mdRect.PixelData( c );
       while ( m < end )
       {
          if ( ( *d > 0 || !cfaMode ) && ( *d >= s_hotBad ) )
@@ -775,32 +741,23 @@ inline int CosmeticCorrectionInterface::RTPGetHotDarkMap( UInt8Image& mapDarkHot
       }
    }
 
-   #if debug
-   Console().WriteLn( " Done.");
-   #endif
-
    return count;
 }
 
-inline int CosmeticCorrectionInterface::RTPGetColdDarkMap( UInt8Image& mapDarkCold, float& coldDarkValue, const UInt16Image& mdRect ) const
+//-------------------------------------------------------------------------
+
+int CosmeticCorrectionInterface::RTPGetColdDarkMap( UInt8Image& mapDarkCold, float& coldDarkValue, const UInt16Image& mdRect ) const
 {
    // prepare Cold Map via MasterDark ----------------------------------------------
    static int count = 0;
 
    s_requiresDarkColdMapGeneration = false;
-   if ( !instance.p_coldDarkCheck ) return 0;
+   if ( !instance.p_coldDarkCheck )
+      return 0;
    if ( coldDarkValue == instance.p_coldDarkLevel )
-   {
-      #if debug
-      Console().WriteLn( "Use old DarkColdMap.");
-      #endif
       return count;
-   }
-   coldDarkValue = instance.p_coldDarkLevel;
 
-   #if debug
-   Console().Write( "Generate DarkColdMap.");
-   #endif
+   coldDarkValue = instance.p_coldDarkLevel;
 
    mapDarkCold.AllocateData( mdRect.Width(), mdRect.Height(), mdRect.NumberOfNominalChannels(), mdRect.IsColor() ? ColorSpace::RGB : ColorSpace::Gray );
    mapDarkCold.Zero();
@@ -809,9 +766,9 @@ inline int CosmeticCorrectionInterface::RTPGetColdDarkMap( UInt8Image& mapDarkCo
    count = 0;
    for ( int c = 0; c < mdRect.NumberOfNominalChannels(); ++c )
    {
-      UInt8Image::sample* m = mapDarkCold.PixelData(c);
+      UInt8Image::sample* m = mapDarkCold.PixelData( c );
       const UInt8Image::sample* end = m + mapDarkCold.NumberOfPixels();
-      const UInt16Image::sample* d = mdRect.PixelData(c);
+      const UInt16Image::sample* d = mdRect.PixelData( c );
       while ( m < end )
       {
          if ( ( *d > 0 || !cfaMode ) && ( *d <= s_coldBad ) )
@@ -823,25 +780,21 @@ inline int CosmeticCorrectionInterface::RTPGetColdDarkMap( UInt8Image& mapDarkCo
       }
    }
 
-   #if debug
-   Console().WriteLn( " Done.");
-   #endif
-
    return count;
 }
 
-inline void CosmeticCorrectionInterface::RTPGetListDefectMap( UInt8Image& mapListDef, const View& view ) const
+//-------------------------------------------------------------------------
+
+void CosmeticCorrectionInterface::RTPGetListDefectMap( UInt8Image& mapListDef, const View& view ) const
 {
    // prepare Map via ListDefect ----------------------------------------------
    s_requiresListMapGeneration = false;
 
-   #if debug
-   Console().WriteLn( "Generate ListDefectMap.");
-   #endif
-
    Rect r;
-   if ( view.IsMainView() ) r = view.Bounds();
-   else r  = view.Window().PreviewRect( view.Id() );
+   if ( view.IsMainView() )
+      r = view.Bounds();
+   else
+      r = view.Window().PreviewRect( view.Id() );
 
    mapListDef.AllocateData( s_rect.Width(), s_rect.Height(), view.Image().NumberOfNominalChannels(), view.IsColor() ? ColorSpace::RGB : ColorSpace::Gray );
    mapListDef.Zero();
@@ -849,56 +802,61 @@ inline void CosmeticCorrectionInterface::RTPGetListDefectMap( UInt8Image& mapLis
    for ( size_t i = 0; i < instance.p_defects.Length(); i++ )
    {
       const CosmeticCorrectionInstance::DefectItem& item = instance.p_defects[i];
-      if ( !item.enabled ) continue;
+      if ( !item.enabled )
+         continue;
 
-      int x0 = r.x0, x1 = r.x1-1, y0 = r.y0, y1 = r.y1-1;
-      if ( !item.isRow ) Swap( x0, y0 ), Swap( x1, y1 );
+      int x0 = r.x0, x1 = r.x1 - 1, y0 = r.y0, y1 = r.y1 - 1;
+      if ( !item.isRow )
+         Swap( x0, y0 ), Swap( x1, y1 );
 
-      int k = item.address;                        // address in mainView coordinate
-      if ( k < y0 || k > y1 ) continue;            // skip because the defect out of image view
-      k -= y0;                                     // convert from mainView to RTP view coordinate
+      int k = item.address; // address in mainView coordinate
+      if ( k < y0 || k > y1 )
+         continue; // skip because the defect out of image view
+      k -= y0;     // convert from mainView to RTP view coordinate
 
-      int begin = x0, end = x1;                    // first and last visible pixel
+      int begin = x0, end = x1; // first and last visible pixel
 
       if ( item.isRange )
       {
          begin = Min( item.begin, item.end );
-         if ( begin > x1 ) continue;               // skip out of view defects
+         if ( begin > x1 )
+            continue; // skip out of view defects
 
          end = Max( item.begin, item.end );
-         if ( end < x0 ) continue;                 // skip out of view defects
+         if ( end < x0 )
+            continue; // skip out of view defects
 
-         begin = Max( begin, x0 );                 // cut begin of out of view defects
-         end = Min( end, x1 );                     // cut end of out of view defects
+         begin = Max( begin, x0 ); // cut begin of out of view defects
+         end = Min( end, x1 );     // cut end of out of view defects
       }
 
-      begin -= x0; end -= x0;                      // convert to RTP view coordinate
+      begin -= x0;
+      end -= x0; // convert to RTP view coordinate
 
       for ( int c = 0; c < mapListDef.NumberOfNominalChannels(); c++ )
       {
          for ( int j = begin; j <= end; j++ )
          {
-            if ( item.isRow ) mapListDef.Pixel( j, k, c ) = -1;
-            else mapListDef.Pixel( k, j, c ) = -1;
-
+            if ( item.isRow )
+               mapListDef.Pixel( j, k, c ) = -1;
+            else
+               mapListDef.Pixel( k, j, c ) = -1;
          }
       }
    }
 }
 
+//-------------------------------------------------------------------------
 
-inline void CosmeticCorrectionInterface::RTPMakeSnapshot( const UInt16Image& img, const View& view ) const
+void CosmeticCorrectionInterface::RTPMakeSnapshot( const UInt16Image& img, const View& view ) const
 {
-   #if debug
-   Console().WriteLn( "s_requiresSnapshot ");
-   #endif
-
    String id = view.Id();
-   if ( view.IsPreview() ) id.Prepend(view.Window().MainView().Id() + "_" );
+   if ( view.IsPreview() )
+      id.Prepend( view.Window().MainView().Id() + "_" );
 
    ImageWindow targetWindow( img.Width(), img.Height(),
       img.NumberOfChannels(), img.BitsPerSample(), img.IsFloatSample(),
-      img.IsColor(),   true, id + "_Snapshot" );
+      img.IsColor(), true, id + "_Snapshot" );
 
    targetWindow.MainView().Image().CopyImage( img );
 
@@ -913,45 +871,35 @@ inline void CosmeticCorrectionInterface::RTPMakeSnapshot( const UInt16Image& img
    s_requiresSnapshot = false;
 }
 
+//-------------------------------------------------------------------------
 
 bool CosmeticCorrectionInterface::GenerateRealTimePreview( UInt16Image& img, const View& view,
                                                            const Rect&, int zoomLevel, String& info ) const
 {
-   #if debug
-   static int runCount = 0;
-   Console().WriteLn( "<br>GenerateRealTimePreview() Run # " + String( runCount++ ) );
-   Console().WriteLn( "masterDark: " + String( m_md != 0 )
-      + ", p_hotAutoCheck: "  + String( bool(instance.p_hotAutoCheck ) )
-      + ", p_coldAutoCheck: " + String( bool(instance.p_coldAutoCheck) )
-      + ", p_hotDarkCheck: "  + String( bool(instance.p_hotDarkCheck ) )
-      + ", p_coldDarkCheck: " + String( bool(instance.p_coldDarkCheck) ) );
-   Console().Flush();
-   #endif
-
-   static UInt16Image wrk;         // == view.Window().CurrentView().Image(). Changed only if other View or rectangle selected.
-   static UInt16Image med;         // Filtered by median 3x3 arrea arround centaral pixel. Used for Hot/Cold AutoDetection and Dark corection Cold pixels.
-   static UInt16Image bkg;         // Filtered by median backgound 7x7 arrea arround central 3x3 area of centaral pixel. Used for Hot/Cold AutoDetection and Auto corection Cold pixels.
-   static UInt16Image avr;         // Averaged value of 3x3 arrea arround centaral pixel. Used for Hot AutoDetection and Auto/Dark corection Hot pixels.
+   static UInt16Image wrk; // == view.Window().CurrentView().Image(). Changed only if other View or rectangle selected.
+   static UInt16Image med; // Filtered by median 3x3 arrea arround centaral pixel. Used for Hot/Cold AutoDetection and Dark corection Cold pixels.
+   static UInt16Image bkg; // Filtered by median backgound 7x7 arrea arround central 3x3 area of centaral pixel. Used for Hot/Cold AutoDetection and Auto corection Cold pixels.
+   static UInt16Image avr; // Averaged value of 3x3 arrea arround centaral pixel. Used for Hot AutoDetection and Auto/Dark corection Hot pixels.
    static bool requiresAvr = false;
    static bool requiresMed = false;
    static bool requiresBkg = false;
    static bool cfa = false;
 
-   static UInt16Image mdRect;      // Rectangle form masterDark
+   static UInt16Image mdRect; // Rectangle form masterDark
 
-   static UInt8Image mapDarkHot;   // Defective Map via DarkMaster
-   static UInt8Image mapDarkCold;  // Defective Map via DarkMaster
-   static UInt8Image mapAutoHot;   // Defective Map via AutoDetect
-   static UInt8Image mapAutoCold;  // Defective Map via AutoDetect
-   static UInt8Image mapListDef;   // Defective Map via ListDefect
+   static UInt8Image mapDarkHot;  // Defective Map via DarkMaster
+   static UInt8Image mapDarkCold; // Defective Map via DarkMaster
+   static UInt8Image mapAutoHot;  // Defective Map via AutoDetect
+   static UInt8Image mapAutoCold; // Defective Map via AutoDetect
+   static UInt8Image mapListDef;  // Defective Map via ListDefect
 
-   static Array<double> avgDev;   // statictics by channel
+   static Array<double> avgDev; // statictics by channel
    static int countDarkHot, countDarkCold, countAutoHot, countAutoCold;
 
-   static float hotDarkValue = -1; // -1 == mapDarkHot  is not generated
-   static float coldDarkValue = -1;// -1 == mapDarkCold is not generated
-   static float hotAutoValue = -1; // -1 == mapAutoHot  is not generated
-   static float coldAutoValue = -1;// -1 == mapAutoCold is not generated
+   static float hotDarkValue = -1;  // -1 == mapDarkHot  is not generated
+   static float coldDarkValue = -1; // -1 == mapDarkCold is not generated
+   static float hotAutoValue = -1;  // -1 == mapAutoHot  is not generated
+   static float coldAutoValue = -1; // -1 == mapAutoCold is not generated
 
    // prepare MainImage statistics if image changed and required for Auto correction -------------
    if ( s_requiresStatistics && ( instance.p_hotAutoCheck || instance.p_coldAutoCheck ) )
@@ -963,28 +911,18 @@ bool CosmeticCorrectionInterface::GenerateRealTimePreview( UInt16Image& img, con
    if ( s_requiresGetImageRectangle )
    {
       RTPGetImageRectangle( wrk, view );
-      cfa = !instance.p_cfa;                  // forse regenerate filtered images
-      hotAutoValue = coldAutoValue = -1;   // forse regenerate Auto maps
+      cfa = !instance.p_cfa;             // forse regenerate filtered images
+      hotAutoValue = coldAutoValue = -1; // forse regenerate Auto maps
       s_requiresListMapGeneration = true;
    }
-
-   #if debug
-   Console().WriteLn( "cfa: "+ String(cfa)+" ,instance.cfa: "+ String(bool(instance.p_cfa)) );
-   Console().Flush();
-   #endif
 
    // if (cfa mode changed) regenetate filtered images
    if ( cfa == !instance.p_cfa )
    {
-      #if debug
-      Console().WriteLn( "cfa == !instance.p_cfa" );
-      Console().Flush();
-      #endif
-
       cfa = instance.p_cfa;
       s_requiresFiltering = true;
       requiresAvr = requiresMed = requiresBkg = true; // required regenerate filtered images
-      hotAutoValue = coldAutoValue = -1;   // recuired generate AutoMaps
+      hotAutoValue = coldAutoValue = -1;              // recuired generate AutoMaps
    }
 
    // Create image from MasterDark with size of View rectangle -----------------------
@@ -998,22 +936,14 @@ bool CosmeticCorrectionInterface::GenerateRealTimePreview( UInt16Image& img, con
    // Create Average, Median and Background images from View rectangle -------------------
    if ( s_requiresFiltering )
    {
-      if ( requiresAvr && (
-            ( instance.p_useMasterDark && instance.p_hotDarkCheck )
-            ||
-            ( instance.p_useAutoDetect && instance.p_hotAutoCheck )
-         ))
+      if ( requiresAvr && ( ( instance.p_useMasterDark && instance.p_hotDarkCheck ) || ( instance.p_useAutoDetect && instance.p_hotAutoCheck ) ) )
       {
          requiresAvr = false;
          RTPGetAvr( avr, wrk );
          s_requiresAutoHotMapGeneration = true;
       }
 
-      if ( requiresMed && (
-            ( instance.p_useMasterDark && instance.p_coldDarkCheck )
-            ||
-            ( instance.p_useAutoDetect && ( instance.p_hotAutoCheck || instance.p_coldAutoCheck ) )
-         ))
+      if ( requiresMed && ( ( instance.p_useMasterDark && instance.p_coldDarkCheck ) || ( instance.p_useAutoDetect && ( instance.p_hotAutoCheck || instance.p_coldAutoCheck ) ) ) )
       {
          requiresMed = false;
          RTPGetMed( med, wrk );
@@ -1021,13 +951,7 @@ bool CosmeticCorrectionInterface::GenerateRealTimePreview( UInt16Image& img, con
          s_requiresAutoHotMapGeneration = true;
       }
 
-      if ( requiresBkg &&
-            (
-               ( instance.p_useAutoDetect && ( instance.p_hotAutoCheck || instance.p_coldAutoCheck ) )
-               ||
-               ( instance.p_useDefectList && !instance.p_defects.IsEmpty() )
-            )
-         )
+      if ( requiresBkg && ( ( instance.p_useAutoDetect && ( instance.p_hotAutoCheck || instance.p_coldAutoCheck ) ) || ( instance.p_useDefectList && !instance.p_defects.IsEmpty() ) ) )
       {
          requiresBkg = false;
          RTPGetBkg( bkg, wrk );
@@ -1048,7 +972,7 @@ bool CosmeticCorrectionInterface::GenerateRealTimePreview( UInt16Image& img, con
    if ( s_requiresAutoColdMapGeneration )
    {
       countAutoCold = RTPGetColdAutoMap( mapAutoCold, coldAutoValue, med, bkg, wrk, avgDev );
-      GUI->RTPAutoQtyCold_Edit.SetValue(  countAutoCold );
+      GUI->RTPAutoQtyCold_Edit.SetValue( countAutoCold );
    }
    if ( s_requiresDarkHotMapGeneration )
    {
@@ -1058,7 +982,7 @@ bool CosmeticCorrectionInterface::GenerateRealTimePreview( UInt16Image& img, con
    if ( s_requiresDarkColdMapGeneration )
    {
       countDarkCold = RTPGetColdDarkMap( mapDarkCold, coldDarkValue, mdRect );
-      GUI->RTPDarkQtyCold_Edit.SetValue(  countDarkCold );
+      GUI->RTPDarkQtyCold_Edit.SetValue( countDarkCold );
    }
    if ( s_requiresListMapGeneration && instance.p_useDefectList )
    {
@@ -1070,63 +994,66 @@ bool CosmeticCorrectionInterface::GenerateRealTimePreview( UInt16Image& img, con
 
    if ( GUI->RTPShowMap_CheckBox.IsChecked() )
    {
-      #if debug
-      Console().Write( "Show BadMap. " );
-      #endif
-
       tmp.AllocateData( wrk.Width(), wrk.Height(), wrk.NumberOfNominalChannels(), wrk.IsColor() ? ColorSpace::RGB : ColorSpace::Gray );
       tmp.Zero();
 
       // accumulate bad pixels from all bad maps to one map
-      if ( instance.p_useAutoDetect && instance.p_hotAutoCheck       ) tmp.Or( mapAutoHot  );
-      if ( instance.p_useAutoDetect && instance.p_coldAutoCheck      ) tmp.Or( mapAutoCold );
-      if ( instance.p_useMasterDark && instance.p_hotDarkCheck       ) tmp.Or( mapDarkHot  );
-      if ( instance.p_useMasterDark && instance.p_coldDarkCheck      ) tmp.Or( mapDarkCold );
-      if ( instance.p_useDefectList && !instance.p_defects.IsEmpty() ) tmp.Or( mapListDef  );
+      if ( instance.p_useAutoDetect && instance.p_hotAutoCheck )
+         tmp.Or( mapAutoHot );
+      if ( instance.p_useAutoDetect && instance.p_coldAutoCheck )
+         tmp.Or( mapAutoCold );
+      if ( instance.p_useMasterDark && instance.p_hotDarkCheck )
+         tmp.Or( mapDarkHot );
+      if ( instance.p_useMasterDark && instance.p_coldDarkCheck )
+         tmp.Or( mapDarkCold );
+      if ( instance.p_useDefectList && !instance.p_defects.IsEmpty() )
+         tmp.Or( mapListDef );
    }
    else
    {
-      #if debug
-      Console().WriteLn( "Show Light" );
-      #endif
-
       tmp.Assign( wrk );
 
-      if ( instance.p_useMasterDark && instance.p_hotDarkCheck       ) RTPApplyBadMap( tmp, mapDarkHot,  avr );   // replace hot pixel by surrounding neighbors Mean
-      if ( instance.p_useMasterDark && instance.p_coldDarkCheck      ) RTPApplyBadMap( tmp, mapDarkCold, med );   // replace hot pixel by surrounding neighbors Median
-      if ( instance.p_useAutoDetect && instance.p_hotAutoCheck       ) RTPApplyBadMap( tmp, mapAutoHot,  avr );   // replace hot pixel by surrounding neighbors Mean
-      if ( instance.p_useAutoDetect && instance.p_coldAutoCheck      ) RTPApplyBadMap( tmp, mapAutoCold, bkg );   // replace cold pixel by background Median
-      if ( instance.p_useDefectList && !instance.p_defects.IsEmpty() ) RTPApplyBadMap( tmp, mapListDef,  bkg );   // replace Defective List pixels by background Median
+      if ( instance.p_useMasterDark && instance.p_hotDarkCheck )
+         RTPApplyBadMap( tmp, mapDarkHot, avr ); // replace hot pixel by surrounding neighbors Mean
+      if ( instance.p_useMasterDark && instance.p_coldDarkCheck )
+         RTPApplyBadMap( tmp, mapDarkCold, med ); // replace hot pixel by surrounding neighbors Median
+      if ( instance.p_useAutoDetect && instance.p_hotAutoCheck )
+         RTPApplyBadMap( tmp, mapAutoHot, avr ); // replace hot pixel by surrounding neighbors Mean
+      if ( instance.p_useAutoDetect && instance.p_coldAutoCheck )
+         RTPApplyBadMap( tmp, mapAutoCold, bkg ); // replace cold pixel by background Median
+      if ( instance.p_useDefectList && !instance.p_defects.IsEmpty() )
+         RTPApplyBadMap( tmp, mapListDef, bkg ); // replace Defective List pixels by background Median
    }
 
    img.Assign( tmp ); // Send Output image to RTP
 
    // make Snapshot ---------------------------------------------------------------------------
-   if ( s_requiresSnapshot )   RTPMakeSnapshot( img, view );
+   if ( s_requiresSnapshot )
+      RTPMakeSnapshot( img, view );
 
-   //s_requiresUpdate = false;
-   #if debug
-   Console().WriteLn( "GenerateRealTimePreview() End." );
-   #endif
-
+// s_requiresUpdate = false;
    return true;
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::RTPUpdate()
 {
-   if ( !GUI->RTP_Control.IsEnabled() ) return;
+   if ( !GUI->RTP_Control.IsEnabled() )
+      return;
    Disable();
    RealTimePreview::Update();
    //Console().Hide();
    Enable();
 }
+
 // ----------------------------------------------------------------------------
 
 void FileShow( String& path )
 {
    if ( ImageWindow::WindowByFilePath( path ).IsNull() )
    {
-      Array<ImageWindow> windows = ImageWindow::Open( path, IsoString()/*id*/, "raw cfa"/*formatHints*/ );
+      Array<ImageWindow> windows = ImageWindow::Open( path, IsoString() /*id*/, "raw cfa" /*formatHints*/ );
       for ( ImageWindow& window : windows )
          window.Show();
    }
@@ -1134,17 +1061,15 @@ void FileShow( String& path )
       ImageWindow::WindowByFilePath( path ).BringToFront();
 }
 
-void CosmeticCorrectionInterface::LoadMasterDark( const String& filePath)
-{
-   #if debug
-   Console().WriteLn( "LoadMasterDark()" );
-   #endif
+//-------------------------------------------------------------------------
 
-   if ( m_md != 0 )
-	{
-		delete m_md, m_md = 0;
-		m_H.Clear();
-	}
+void CosmeticCorrectionInterface::LoadMasterDark( const String& filePath )
+{
+   if ( m_md != nullptr )
+   {
+      delete m_md, m_md = nullptr;
+      m_H.Clear();
+   }
 
    Console().WriteLn( "<end><cbr>Loading MasterDark image:" );
    Console().WriteLn( filePath );
@@ -1170,102 +1095,85 @@ void CosmeticCorrectionInterface::LoadMasterDark( const String& filePath)
       m_md->IsFloatSample(), m_md->IsColor(), true, "CosmeticCorrectionDark2" );
 
    ImageVariant v = w.MainView().Image();
-   v.CopyImage(*m_md);
+   v.CopyImage( *m_md );
 
    m_H.Clear();
    UI64Matrix histogram = w.MainView().ComputeOrFetchProperty( "Histogram16", false/*notify*/ ).ToUI64Matrix();
    for ( int i = 0; i < histogram.Rows(); ++i )
       m_H.Add( Histogram( histogram.RowVector( i ) ) );
 
-   ImageStatistics ss;
-   ss.DisableExtremes();
-   ss.DisableMedian();
-   ss.EnableRejection( (m_channels > 1) , false ); //During Mean calculation reject zero if RGB CFA dark
-
-   int max = 0;
+   v->EnableRangeClipping( m_channels > 1, false ); // during mean calculation reject zero if RGB CFA dark
    m_StdDev = m_Mean = 0;
-   int min = m_H[0].LastLevel(); //65535
+   int max = 0;
+   int min = m_H[0].LastLevel(); // 65535
    for ( int c = 0; c < m_channels; c++ )
    {
-      v->SelectChannel(c);
-      ss << v;
-      m_Mean += ss.Mean();
-      m_StdDev += ss.StdDev();
-
-      max = Max( max , m_H[c].ClipHigh(0) );
-      min = Min( min , m_H[c].ClipLow(0) );
-
-      #if debug
-      Console().WriteLn("min = H[c].ClipLow(0):" + String( m_H[c].ClipLow(0) ));
-      Console().WriteLn("min:" + String( min ));
-      Console().WriteLn("max:" + String( max ));
-      for( int i = 0; i<min; i++)
-      {
-         size_t v = m_H[c].Count(i);
-         if ( v != 0)
-            Console().WriteLn("H[c].Count("+String(i)+"):" + String( m_H[c].Count(i) ));
-      }
-
-      Console().WriteLn("H[c].Count():" + String( m_H[c].Count() ));
-      Console().WriteLn("H[c].Count( 0, min-1 ):" + String( m_H[c].Count( 0, min-1 ) ));
-      Console().WriteLn("H[c].Count( max+1, 65535 ):" + String( m_H[c].Count( max+1, 65535 ) ));
-      Console().WriteLn("H[c].Count( min, max ):" + String( m_H[c].Count( min, max ) ));
-      #endif
+      v->SelectChannel( c );
+      m_Mean += v.Mean();
+      m_StdDev += v.StdDev();
+      max = Max( max, m_H[c].ClipHigh( 0 ) );
+      min = Min( min, m_H[c].ClipLow( 0 ) );
    }
    w.Close();
 
    m_Mean /= m_channels;
    m_StdDev /= m_channels;
 
-   m_MaxSlider = Histogram().HistogramLevel( Histogram().NormalizedLevel(max+1) );
-   m_MinSlider = Histogram().HistogramLevel( Histogram().NormalizedLevel(min-1) );
+   m_MaxSlider = Histogram().HistogramLevel( Histogram().NormalizedLevel( max + 1 ) );
+   m_MinSlider = Histogram().HistogramLevel( Histogram().NormalizedLevel( min - 1 ) );
 
    UpdateMasterDarkControls();
 
    s_requiresGetDarkRectangle = true; // if RTP enabled and MD is changed >> requiresDarkMapGeneration
-   if ( GUI->RTP_Control.IsEnabled() ) RealTimePreviewUpdated( true ); //Call to check geometry with RTP mainView
-   RTPUpdate(); //Call update badMap
+   if ( GUI->RTP_Control.IsEnabled() )
+      RealTimePreviewUpdated( true ); // check geometry with RTP mainView
+   RTPUpdate();                       // update badMap
 }
 
-void CosmeticCorrectionInterface::SelectMasterFrameDialog ()
-{
-   #if debug
-   Console().WriteLn( "SelectMasterFrameDialog()");
-   #endif
+//-------------------------------------------------------------------------
 
+void CosmeticCorrectionInterface::SelectMasterFrameDialog()
+{
    OpenFileDialog d;
    d.LoadImageFilters();
    d.DisableMultipleSelections();
    d.SetCaption( "CosmeticCorrection: Select MasterDark Frame" );
    if ( d.Execute() )
    {
-      if (instance.p_masterDark == d.FileName()) return;
+      if ( instance.p_masterDark == d.FileName() )
+         return;
       instance.p_masterDark = d.FileName();
       LoadMasterDark( instance.p_masterDark );
    }
 }
 
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::HotUpdateGUI( const size_t count )
 {
-   const float sigma = (instance.p_hotDarkLevel - m_Mean)/m_StdDev;
+   const float sigma = ( instance.p_hotDarkLevel - m_Mean ) / m_StdDev;
    GUI->HotDarkSigma_NumericControl.SetValue( sigma );
    GUI->HotRealQty_Value.SetText( String().Format( "Qty: %u, Level: %1.10f, Sigma: %f",
-      count, instance.p_hotDarkLevel, sigma ));
+      count, instance.p_hotDarkLevel, sigma ) );
 }
+
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::HotQtyUpdated( size_t qty ) //caclulate Level and Sigma
 {
    size_t count = 0;
-   for ( int i = m_MaxSlider; i >= m_MinSlider; i--)
+   for ( int i = m_MaxSlider; i >= m_MinSlider; i-- )
    {
-      for ( int c = 0; c < m_channels; c++ ) count += m_H[c].Count(i);
+      for ( int c = 0; c < m_channels; c++ )
+         count += m_H[c].Count( i );
       if ( count >= qty )
       {
          instance.p_hotDarkLevel = Histogram().NormalizedLevel( i );
          if ( s_hotBad != i )
          {
             s_hotBad = i;
-            if ( instance.p_hotDarkCheck ) s_requiresDarkHotMapGeneration = true;
+            if ( instance.p_hotDarkCheck )
+               s_requiresDarkHotMapGeneration = true;
          }
          break;
       }
@@ -1275,21 +1183,28 @@ void CosmeticCorrectionInterface::HotQtyUpdated( size_t qty ) //caclulate Level 
    HotUpdateGUI( count );
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::HotLevelUpdated( const float value, const bool recalculate = false ) //calculate Qty and Sigma
 {
-   static int min = -1;                              //previous HistogramLevel
-   int v = Histogram().HistogramLevel( value );      // =RoundI(float*65535)
-   if ( (min == v) && !recalculate ) return;         //same HistogramLevel
+   static int min = -1;                         //previous HistogramLevel
+   int v = Histogram().HistogramLevel( value ); // =RoundI(float*65535)
+   if ( ( min == v ) && !recalculate )
+      return; //same HistogramLevel
    instance.p_hotDarkLevel = Histogram().NormalizedLevel( min = v );
    s_hotBad = v;
-   if ( instance.p_hotDarkCheck ) s_requiresDarkHotMapGeneration = true;
+   if ( instance.p_hotDarkCheck )
+      s_requiresDarkHotMapGeneration = true;
 
    size_t count = 0;
-   for ( int c = 0; c < m_channels; c++ ) count += m_H[c].Count( min, m_MaxSlider );
+   for ( int c = 0; c < m_channels; c++ )
+      count += m_H[c].Count( min, m_MaxSlider );
 
    GUI->HotDarkQty_NumericControl.SetValue( count );
    HotUpdateGUI( count );
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::HotSigmaUpdated( const float sigma ) // calculate Level and QTY
 {
@@ -1298,30 +1213,37 @@ void CosmeticCorrectionInterface::HotSigmaUpdated( const float sigma ) // calcul
    GUI->HotDarkLevel_NumericControl.SetValue( instance.p_hotDarkLevel );
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::ColdUpdateGUI( const size_t count )
 {
-   const float sigma = (m_Mean - instance.p_coldDarkLevel)/m_StdDev;
+   const float sigma = ( m_Mean - instance.p_coldDarkLevel ) / m_StdDev;
    GUI->ColdDarkSigma_NumericControl.SetValue( sigma );
    GUI->ColdRealQty_Value.SetText( String().Format( "Qty: %u, Level: %1.10f, Sigma: %f",
       count, instance.p_coldDarkLevel, sigma ) );
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::ColdQtyUpdated( size_t qty ) //caclulate Level
 {
    size_t count = 0;
    int min = m_MinSlider;
-   if ( instance.p_cfa && m_channels>1 && min==0 ) min++;
+   if ( instance.p_cfa && m_channels > 1 && min == 0 )
+      min++;
 
-   for ( int i = min; i <= m_MaxSlider; i++)
+   for ( int i = min; i <= m_MaxSlider; i++ )
    {
-      for ( int c = 0; c < m_channels; c++ ) count += m_H[c].Count(i);
+      for ( int c = 0; c < m_channels; c++ )
+         count += m_H[c].Count( i );
       if ( count >= qty )
       {
          instance.p_coldDarkLevel = Histogram().NormalizedLevel( i );
          if ( s_coldBad != i )
          {
             s_coldBad = i;
-            if ( instance.p_coldDarkCheck ) s_requiresDarkColdMapGeneration = true;
+            if ( instance.p_coldDarkCheck )
+               s_requiresDarkColdMapGeneration = true;
          }
          break;
       }
@@ -1331,27 +1253,34 @@ void CosmeticCorrectionInterface::ColdQtyUpdated( size_t qty ) //caclulate Level
    ColdUpdateGUI( count );
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::ColdLevelUpdated( const float value, const bool recalculate = false ) //calculate Qty
 {
-   static int max = -1;                           //previous HistogramLevel
-   int v = Histogram().HistogramLevel( value );   // =RoundI(float*65535)
-   if ( (max == v) && !recalculate ) return;      //same HistogramLevel
-   max = v;                                       //save new HistogramLevel
+   static int max = -1;                         //previous HistogramLevel
+   int v = Histogram().HistogramLevel( value ); // =RoundI(float*65535)
+   if ( ( max == v ) && !recalculate )
+      return; //same HistogramLevel
+   max = v;   //save new HistogramLevel
    s_coldBad = v;
 
-   if ( instance.p_coldDarkCheck ) s_requiresDarkColdMapGeneration = true;
+   if ( instance.p_coldDarkCheck )
+      s_requiresDarkColdMapGeneration = true;
    int min = m_MinSlider;
-   if ( instance.p_cfa && m_channels>1 && min==0 )
+   if ( instance.p_cfa && m_channels > 1 && min == 0 )
       max = Max( ++min, max ); // for CFA RGB
 
    instance.p_coldDarkLevel = Histogram().NormalizedLevel( max ); // =float(max/65535)
 
    size_t count = 0;
-   for ( int c = 0; c < m_channels; c++ ) count += m_H[c].Count( min, max );
+   for ( int c = 0; c < m_channels; c++ )
+      count += m_H[c].Count( min, max );
 
    GUI->ColdDarkQty_NumericControl.SetValue( count );
    ColdUpdateGUI( count );
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::ColdSigmaUpdated( const float sigma ) // calculate Level and QTY
 {
@@ -1360,6 +1289,8 @@ void CosmeticCorrectionInterface::ColdSigmaUpdated( const float sigma ) // calcu
    ColdLevelUpdated( level, false );
    GUI->ColdDarkLevel_NumericControl.SetValue( instance.p_coldDarkLevel );
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::UpdateControls()
 {
@@ -1380,15 +1311,17 @@ void CosmeticCorrectionInterface::UpdateControls()
    UpdateDefectListControls();
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::UpdateTargetImageItem( size_type i )
 {
-   TreeBox::Node* node = GUI->TargetImages_TreeBox[int(i)];
-   if ( node == 0 )
+   TreeBox::Node* node = GUI->TargetImages_TreeBox[int( i )];
+   if ( node == nullptr )
       return;
 
    const CosmeticCorrectionInstance::ImageItem& item = instance.p_targetFrames[i];
 
-   node->SetText( 0, String( i+1 ) );
+   node->SetText( 0, String( i + 1 ) );
    node->SetAlignment( 0, TextAlign::Right );
 
    node->SetIcon( 1, Bitmap( ScaledResource( item.enabled ? ":/browser/enabled.png" : ":/browser/disabled.png" ) ) );
@@ -1402,6 +1335,8 @@ void CosmeticCorrectionInterface::UpdateTargetImageItem( size_type i )
    node->SetToolTip( 2, item.path );
    node->SetAlignment( 2, TextAlign::Left );
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::UpdateTargetImagesList()
 {
@@ -1427,6 +1362,8 @@ void CosmeticCorrectionInterface::UpdateTargetImagesList()
    GUI->TargetImages_TreeBox.EnableUpdates();
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::UpdateImageSelectionButtons()
 {
    bool hasItems = GUI->TargetImages_TreeBox.NumberOfChildren() > 0;
@@ -1439,12 +1376,10 @@ void CosmeticCorrectionInterface::UpdateImageSelectionButtons()
    GUI->Clear_PushButton.Enable( hasItems );
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::UpdateMasterDarkControls()
 {
-   #if debug
-   Console().WriteLn( "UpdateMasterDarkControls():instance.p_masterDark:" + instance.p_masterDark );
-   #endif
-
    const int hotPrecision = TheHotLevel->Precision();
    const double hotMinRound = Round<double>( m_Mean, hotPrecision );
    const double hotMaxRound = Round<double>( Histogram().NormalizedLevel( m_MaxSlider ), hotPrecision );
@@ -1453,22 +1388,22 @@ void CosmeticCorrectionInterface::UpdateMasterDarkControls()
    const int coldPrecision = TheHotLevel->Precision();
    const double coldMaxRound = Round<double>( m_Mean, coldPrecision );
    const double coldMinRound = Round<double>( Histogram().NormalizedLevel( m_MinSlider ), coldPrecision );
-   GUI->ColdDarkLevel_NumericControl.SetRange( coldMinRound, coldMaxRound);
+   GUI->ColdDarkLevel_NumericControl.SetRange( coldMinRound, coldMaxRound );
 
    GUI->UseMasterDark_SectionBar.SetChecked( instance.p_useMasterDark );
    GUI->MasterDarkPath_Edit.SetText( instance.p_masterDark );
 
-   GUI->Hot_GroupBox.Enable( m_md != 0 );
-   GUI->Cold_GroupBox.Enable( m_md != 0 );
+   GUI->Hot_GroupBox.Enable( m_md != nullptr );
+   GUI->Cold_GroupBox.Enable( m_md != nullptr );
 
    GUI->HotDark_CheckBox.SetChecked( instance.p_hotDarkCheck );
    GUI->HotDarkLevel_NumericControl.SetValue( instance.p_hotDarkLevel );
    GUI->ColdDark_CheckBox.SetChecked( instance.p_coldDarkCheck );
    GUI->ColdDarkLevel_NumericControl.SetValue( instance.p_coldDarkLevel );
-   if ( m_md != 0 )
+   if ( m_md != nullptr )
    {
-      HotLevelUpdated( instance.p_hotDarkLevel, true );      // Level >> Qty; Level >> Sigma
-      ColdLevelUpdated( instance.p_coldDarkLevel, true );   // Level >> Qty; Level >> Sigma
+      HotLevelUpdated( instance.p_hotDarkLevel, true );   // Level >> Qty; Level >> Sigma
+      ColdLevelUpdated( instance.p_coldDarkLevel, true ); // Level >> Qty; Level >> Sigma
    }
    else
    {
@@ -1480,21 +1415,22 @@ void CosmeticCorrectionInterface::UpdateMasterDarkControls()
    }
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::ClearMasterDark()
 {
-   #if debug
-   Console().WriteLn( "ClearMasterDark()");
-   #endif
    instance.p_masterDark = TheOutputDir->DefaultValue();
-   if ( m_md != 0 )
-	{
-		delete m_md, m_md = 0;
-		m_H.Clear();
-	}
+   if ( m_md != nullptr )
+   {
+      delete m_md, m_md = nullptr;
+      m_H.Clear();
+   }
    UpdateMasterDarkControls();
    s_requiresUpdate = true;
    RTPUpdate();
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::UpdateAutoDetectControls()
 {
@@ -1505,23 +1441,29 @@ void CosmeticCorrectionInterface::UpdateAutoDetectControls()
    GUI->DetectCold_NumericControl.SetValue( instance.p_coldAutoValue );
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::UpdateDefectListItem( size_type i )
 {
-   TreeBox::Node* node = GUI->DefectList_TreeBox[int(i)];
-   if ( node == 0 ) return;
+   TreeBox::Node* node = GUI->DefectList_TreeBox[int( i )];
+   if ( node == nullptr )
+      return;
 
    const CosmeticCorrectionInstance::DefectItem& item = instance.p_defects[i];
 
    node->Check( item.enabled );
-   node->SetText( 0, item.isRow ? "Row": "Col"  );
-   node->SetText( 1, String( int(item.address) ) );
-   if( item.isRange )
+   node->SetText( 0, item.isRow ? "Row" : "Col" );
+   node->SetText( 1, String( int( item.address ) ) );
+   if ( item.isRange )
    {
       node->SetText( 2, String( int( item.begin ) ) );
       node->SetText( 3, String( int( item.end ) ) );
    }
-   else node->SetText( 2, "All" );
+   else
+      node->SetText( 2, "All" );
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::UpdateDefectListControls()
 {
@@ -1542,12 +1484,14 @@ void CosmeticCorrectionInterface::UpdateDefectListControls()
       if ( currentIdx >= 0 && currentIdx < GUI->DefectList_TreeBox.NumberOfChildren() )
          GUI->DefectList_TreeBox.SetCurrentNode( GUI->DefectList_TreeBox[currentIdx] );
 
-   for ( int i =0; i < GUI->DefectList_TreeBox.NumberOfColumns(); i++)
+   for ( int i = 0; i < GUI->DefectList_TreeBox.NumberOfColumns(); i++ )
       GUI->DefectList_TreeBox.AdjustColumnWidthToContents( i );
 
    GUI->DefectList_TreeBox.EnableUpdates();
    UpdateDefectListSelectionButtons();
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::UpdateDefectListSelectionButtons()
 {
@@ -1561,12 +1505,17 @@ void CosmeticCorrectionInterface::UpdateDefectListSelectionButtons()
    GUI->ClearDefect_PushButton.Enable( hasItems );
    GUI->SaveList_PushButton.Enable( hasItems );
 }
+
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::AddDefect( const bool isRow, const int position, const bool setRange, const int start, const int end )
 {
    instance.p_defects.Add( CosmeticCorrectionInstance::DefectItem( true, isRow, position, setRange, start, end ) );
    UpdateDefectListControls();
 }
+
 //-------------------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::SelectDir()
 {
    GetDirectoryDialog d;
@@ -1575,22 +1524,20 @@ void CosmeticCorrectionInterface::SelectDir()
       GUI->OutputDir_Edit.SetText( instance.p_outputDir = d.Directory() );
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::__TargetImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent )
 {
    // Actually do nothing (placeholder). Just perform a sanity check.
    int index = sender.ChildIndex( &current );
    if ( index < 0 || size_type( index ) >= instance.p_targetFrames.Length() )
       throw Error( "CosmeticCorrectionInterface: *Warning* Corrupted interface structures" );
-
-   // ### If there's something else that depends on which image is selected in the list, do it here.
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::__NodeActivated( TreeBox& sender, TreeBox::Node& node, int col )
 {
-   #if debug
-   Console().WriteLn( "__NodeActivated()");
-   #endif
-
    int index = sender.ChildIndex( &node );
    if ( sender == GUI->TargetImages_TreeBox )
    {
@@ -1603,17 +1550,15 @@ void CosmeticCorrectionInterface::__NodeActivated( TreeBox& sender, TreeBox::Nod
       }
       else if ( col == 2 ) // Activate the item's path: open the image.
       {
-         FileShow(item.path);
+         FileShow( item.path );
       }
    }
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::__NodeUpdated( TreeBox& sender, TreeBox::Node& node, int col )
 {
-   #if debug
-   Console().WriteLn( "__NodeUpdated()");
-   #endif
-
    if ( sender == GUI->DefectList_TreeBox )
    {
       const int index = sender.ChildIndex( &node );
@@ -1624,6 +1569,8 @@ void CosmeticCorrectionInterface::__NodeUpdated( TreeBox& sender, TreeBox::Node&
    }
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::__NodeSelectionUpdated( TreeBox& sender )
 {
    if ( sender == GUI->TargetImages_TreeBox )
@@ -1632,11 +1579,15 @@ void CosmeticCorrectionInterface::__NodeSelectionUpdated( TreeBox& sender )
       UpdateDefectListSelectionButtons();
 }
 
+//-------------------------------------------------------------------------
+
 static size_type TreeInsertionIndex( const TreeBox& tree )
 {
    const TreeBox::Node* n = tree.CurrentNode();
-   return (n != 0) ? tree.ChildIndex( n ) + 1 : tree.NumberOfChildren();
+   return ( n != 0 ) ? tree.ChildIndex( n ) + 1 : tree.NumberOfChildren();
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::__TargetImages_Click( Button& sender, bool checked )
 {
@@ -1697,11 +1648,17 @@ void CosmeticCorrectionInterface::__TargetImages_Click( Button& sender, bool che
    }
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::__ToggleSection( SectionBar& sender, Control& section, bool start )
 {
-   if ( start ) GUI->TargetImages_TreeBox.SetFixedHeight();
-   else GUI->TargetImages_TreeBox.SetVariableHeight();
+   if ( start )
+      GUI->TargetImages_TreeBox.SetFixedHeight();
+   else
+      GUI->TargetImages_TreeBox.SetVariableHeight();
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::__MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
 {
@@ -1710,32 +1667,25 @@ void CosmeticCorrectionInterface::__MouseDoubleClick( Control& sender, const Poi
       if ( instance.p_masterDark.IsEmpty() )
          SelectMasterFrameDialog();
       else
-         FileShow(instance.p_masterDark);
+         FileShow( instance.p_masterDark );
    }
    else if ( sender == GUI->OutputDir_Edit )
       SelectDir();
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::__EditCompleted( Edit& sender )
 {
-   if ( !sender.IsModified() ) return;
+   if ( !sender.IsModified() )
+      return;
 
-   //static bool busy = false;
-   //if ( busy ) return;
-   //busy = true;
    sender.SetModified( false );
-
-   //try
-   //{
-
-   #if debug
-   Console().WriteLn( "__EditCompleted()" );
-   #endif
 
    String text = sender.Text().Trimmed();
 
    if ( sender == GUI->Prefix_Edit )
-   instance.p_prefix = text;
+      instance.p_prefix = text;
    else if ( sender == GUI->Postfix_Edit )
       instance.p_postfix = text;
    else if ( sender == GUI->OutputDir_Edit )
@@ -1744,13 +1694,14 @@ void CosmeticCorrectionInterface::__EditCompleted( Edit& sender )
    {
       if ( text.IsEmpty() )
       {
-         if ( !instance.p_masterDark.IsEmpty() ) ClearMasterDark();
+         if ( !instance.p_masterDark.IsEmpty() )
+            ClearMasterDark();
       }
       else if ( text != instance.p_masterDark )
       {
          if ( !File::Exists( text ) )
          {
-            Console().WriteLn("No such file!");
+            Console().WriteLn( "No such file!" );
             //MessageBox( "No such file!" ).Execute();
             text = instance.p_masterDark;
          }
@@ -1763,35 +1714,21 @@ void CosmeticCorrectionInterface::__EditCompleted( Edit& sender )
       }
    }
    sender.SetText( text );
-
-   //busy = false;
-   //}
-   //catch ( ... )
-   //{
-   //   busy = false;
-   //   throw;
-   //}
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::__Button_Click( Button& sender, bool checked )
 {
-   #if debug
-   Console().WriteLn( "__Button_Click():" + sender.Text() );
-   Console().Flush();
-   #endif
-
    if ( sender == GUI->OutputDir_SelectButton )
       SelectDir();
 
    else if ( sender == GUI->OutputDir_ClearButton )
       GUI->OutputDir_Edit.SetText( instance.p_outputDir = TheOutputDir->DefaultValue() );
-
    else if ( sender == GUI->Overwrite_CheckBox )
       instance.p_overwrite = checked;
-
    else if ( sender == GUI->MasterDarkPath_SelectButton )
       SelectMasterFrameDialog();
-
    else if ( sender == GUI->MasterDarkPath_ClearButton )
    {
       ClearMasterDark();
@@ -1799,8 +1736,8 @@ void CosmeticCorrectionInterface::__Button_Click( Button& sender, bool checked )
    else if ( sender == GUI->CFA_CheckBox )
    {
       instance.p_cfa = checked;
-		if ( !m_H.IsEmpty() )
-			ColdLevelUpdated(instance.p_coldDarkLevel, true ); // true = CFA Click
+      if ( !m_H.IsEmpty() )
+         ColdLevelUpdated( instance.p_coldDarkLevel, true ); // true = CFA Click
       s_requiresUpdate = true;
       //if ( GUI->RTP_Control.IsEnabled() )   Console().Show();
       RTPUpdate();
@@ -1901,15 +1838,15 @@ void CosmeticCorrectionInterface::__Button_Click( Button& sender, bool checked )
       if ( !d.Execute() )
          return;
 
-      IsoStringList list( File::ReadLines( d.FileName(), ReadTextOption::RemoveEmptyLines|ReadTextOption::TrimTrailingSpaces|ReadTextOption::TrimLeadingSpaces ) );
+      IsoStringList list( File::ReadLines( d.FileName(), ReadTextOption::RemoveEmptyLines | ReadTextOption::TrimTrailingSpaces | ReadTextOption::TrimLeadingSpaces ) );
       instance.p_defects.Clear();
       for ( size_t i = 0; i < list.Length(); i++ )
       {
-         IsoString line( list[i] );               //get one line
+         IsoString line( list[i] ); //get one line
          StringList s;
-         line.Break( s, ' ');                     //breake line to Array<String>
-         const bool setRange = s.Length() > 2;   //if more then 2 string value available >> swich to Range mode, else select All pixels in the col/row
-         instance.p_defects.Add( CosmeticCorrectionInstance::DefectItem( true, s[0] == "Row", s[1].ToUInt(), setRange, setRange ? s[2].ToUInt() : 0 , setRange ? s[3].ToUInt() : 0  ) );
+         line.Break( s, ' ' );                 //breake line to Array<String>
+         const bool setRange = s.Length() > 2; //if more then 2 string value available >> swich to Range mode, else select All pixels in the col/row
+         instance.p_defects.Add( CosmeticCorrectionInstance::DefectItem( true, s[0] == "Row", s[1].ToUInt(), setRange, setRange ? s[2].ToUInt() : 0, setRange ? s[3].ToUInt() : 0 ) );
       }
       UpdateDefectListControls();
       s_requiresListMapGeneration = true;
@@ -1918,19 +1855,21 @@ void CosmeticCorrectionInterface::__Button_Click( Button& sender, bool checked )
    else if ( sender == GUI->SaveList_PushButton )
    {
       const int n = int( instance.p_defects.Length() );
-      if ( n == 0 ) return;
+      if ( n == 0 )
+         return;
       SaveFileDialog d;
       d.SetCaption( "CosmeticCorrection: Save Defect Map List" );
       d.SetFilter( FileFilter( "Text Files", ".txt" ) );
       d.EnableOverwritePrompt();
-      if ( !d.Execute() ) return;
+      if ( !d.Execute() )
+         return;
 
-      File f( d.FileName(), FileMode::Write|FileMode::Create );
+      File f( d.FileName(), FileMode::Write | FileMode::Create );
 
       for ( int i = 0; i < n; i++ )
       {
          const CosmeticCorrectionInstance::DefectItem& item = instance.p_defects[i];
-         f.OutText( item.isRow ? "Row":"Col");
+         f.OutText( item.isRow ? "Row" : "Col" );
          f.OutText( ' ' + IsoString( item.address ) );
          if ( item.isRange )
             f.OutText( ' ' + IsoString( item.begin ) + ' ' + IsoString( item.end ) );
@@ -1946,15 +1885,24 @@ void CosmeticCorrectionInterface::__Button_Click( Button& sender, bool checked )
    }
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::__RealValueUpdated( NumericEdit& sender, double value )
 {
-   if ( sender == GUI->HotDarkLevel_NumericControl )        HotLevelUpdated( value );
-   else if ( sender == GUI->HotDarkSigma_NumericControl )   HotSigmaUpdated( value );
-   else if ( sender == GUI->HotDarkQty_NumericControl )     HotQtyUpdated( value );
-   else if ( sender == GUI->ColdDarkLevel_NumericControl )  ColdLevelUpdated( value );
-   else if ( sender == GUI->ColdDarkSigma_NumericControl )  ColdSigmaUpdated( value );
-   else if ( sender == GUI->ColdDarkQty_NumericControl )    ColdQtyUpdated( value );
-   else if ( sender == GUI->Amount_NumericControl )         instance.p_amount = value;
+   if ( sender == GUI->HotDarkLevel_NumericControl )
+      HotLevelUpdated( value );
+   else if ( sender == GUI->HotDarkSigma_NumericControl )
+      HotSigmaUpdated( value );
+   else if ( sender == GUI->HotDarkQty_NumericControl )
+      HotQtyUpdated( value );
+   else if ( sender == GUI->ColdDarkLevel_NumericControl )
+      ColdLevelUpdated( value );
+   else if ( sender == GUI->ColdDarkSigma_NumericControl )
+      ColdSigmaUpdated( value );
+   else if ( sender == GUI->ColdDarkQty_NumericControl )
+      ColdQtyUpdated( value );
+   else if ( sender == GUI->Amount_NumericControl )
+      instance.p_amount = value;
    else if ( sender == GUI->DetectHot_NumericControl )
    {
       instance.p_hotAutoValue = value;
@@ -1967,21 +1915,23 @@ void CosmeticCorrectionInterface::__RealValueUpdated( NumericEdit& sender, doubl
       if ( instance.p_coldAutoCheck )
          s_requiresAutoColdMapGeneration = true;
    }
-   if (   s_requiresDarkHotMapGeneration || s_requiresDarkColdMapGeneration || s_requiresAutoHotMapGeneration || s_requiresAutoColdMapGeneration
-      || (   sender == GUI->Amount_NumericControl && !GUI->RTPShowMap_CheckBox.IsChecked()
-            &&   ( instance.p_hotDarkCheck || instance.p_hotAutoCheck || instance.p_coldDarkCheck || instance.p_coldAutoCheck )
-         )
-      )
+   if ( s_requiresDarkHotMapGeneration || s_requiresDarkColdMapGeneration || s_requiresAutoHotMapGeneration || s_requiresAutoColdMapGeneration
+      || ( sender == GUI->Amount_NumericControl && !GUI->RTPShowMap_CheckBox.IsChecked()
+         && ( instance.p_hotDarkCheck || instance.p_hotAutoCheck || instance.p_coldDarkCheck || instance.p_coldAutoCheck ) ) )
    {
       RealTimePreview::Update();
    }
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::__CheckSection( SectionBar& sender, bool checked )
 {
    GUI->TargetImages_TreeBox.SetFixedHeight();
-   if ( checked ) sender.Section().Show();
-   else sender.Section().Hide();
+   if ( checked )
+      sender.Section().Show();
+   else
+      sender.Section().Hide();
    AdjustToContents();
    GUI->TargetImages_TreeBox.SetVariableHeight();
 
@@ -1990,11 +1940,13 @@ void CosmeticCorrectionInterface::__CheckSection( SectionBar& sender, bool check
       instance.p_useMasterDark = checked;
       // N.B.: The code below has been disabled because it prevents using
       // FileDrop events on GUI->MasterDarkPath_Edit
-//       if ( checked && !m_md )         // if master dark is not loaded
-//          SelectMasterFrameDialog();   // forse to select master dark
+      //       if ( checked && !m_md )         // if master dark is not loaded
+      //          SelectMasterFrameDialog();   // forse to select master dark
    }
-   else if ( sender == GUI->UseAutoDetect_SectionBar ) instance.p_useAutoDetect = checked;
-   else if ( sender == GUI->UseDefectList_SectionBar ) instance.p_useDefectList = checked;
+   else if ( sender == GUI->UseAutoDetect_SectionBar )
+      instance.p_useAutoDetect = checked;
+   else if ( sender == GUI->UseDefectList_SectionBar )
+      instance.p_useDefectList = checked;
 
    if ( sender == GUI->UseMasterDark_SectionBar || sender == GUI->UseAutoDetect_SectionBar || sender == GUI->UseDefectList_SectionBar )
    {
@@ -2002,6 +1954,8 @@ void CosmeticCorrectionInterface::__CheckSection( SectionBar& sender, bool check
       RTPUpdate();
    }
 }
+
+//-------------------------------------------------------------------------
 
 void CosmeticCorrectionInterface::__FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles )
 {
@@ -2013,6 +1967,8 @@ void CosmeticCorrectionInterface::__FileDrag( Control& sender, const Point& pos,
       wantsFiles = files.Length() == 1 && File::Exists( files[0] );
 }
 
+//-------------------------------------------------------------------------
+
 void CosmeticCorrectionInterface::__FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers )
 {
    if ( sender == GUI->TargetImages_TreeBox.Viewport() )
@@ -2023,7 +1979,7 @@ void CosmeticCorrectionInterface::__FileDrop( Control& sender, const Point& pos,
          if ( File::Exists( item ) )
             inputFiles << item;
          else if ( File::DirectoryExists( item ) )
-            inputFiles << FileFormat::SupportedImageFiles( item, true/*toRead*/, false/*toWrite*/, recursive );
+            inputFiles << FileFormat::SupportedImageFiles( item, true /*toRead*/, false /*toWrite*/, recursive );
 
       inputFiles.Sort();
       size_type i0 = TreeInsertionIndex( GUI->TargetImages_TreeBox );
@@ -2050,6 +2006,7 @@ void CosmeticCorrectionInterface::__FileDrop( Control& sender, const Point& pos,
 }
 
 // ----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 {
@@ -2090,7 +2047,7 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 
    ToggleSelected_PushButton.SetText( "Toggle Selected" );
    ToggleSelected_PushButton.SetToolTip( "<p>Toggle the enabled/disabled state of currently selected target frames.</p>"
-      "<p>Disabled target frames will be ignored during the CosmeticCorrection process.</p>" );
+                                         "<p>Disabled target frames will be ignored during the CosmeticCorrection process.</p>" );
    ToggleSelected_PushButton.OnClick( (Button::click_event_handler)&CosmeticCorrectionInterface::__TargetImages_Click, w );
 
    RemoveSelected_PushButton.SetText( "Remove Selected" );
@@ -2127,14 +2084,14 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
    Output_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&CosmeticCorrectionInterface::__ToggleSection, w );
 
    const char* ToolTipOutputDir = "<p>This is the directory (or folder) where all output files "
-      "will be written.</p>"
-      "<p>If this field is left blank, output files will be written to the same directories as their "
-      "corresponding target files. In this case, make sure that source directories are writable, or the "
-      "CosmeticCorrection process will fail.</p>";
+                                  "will be written.</p>"
+                                  "<p>If this field is left blank, output files will be written to the same directories as their "
+                                  "corresponding target files. In this case, make sure that source directories are writable, or the "
+                                  "CosmeticCorrection process will fail.</p>";
 
    OutputDir_Label.SetText( "Output directory:" );
    OutputDir_Label.SetFixedWidth( labelWidth2 );
-   OutputDir_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   OutputDir_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    OutputDir_Label.SetToolTip( ToolTipOutputDir );
 
    OutputDir_Edit.SetToolTip( ToolTipOutputDir );
@@ -2163,7 +2120,7 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
       "<p>This is a prefix that will be appended to the file name of each corrected image.</p>";
    Prefix_Label.SetText( "Prefix:" );
    Prefix_Label.SetFixedWidth( labelWidth2 );
-   Prefix_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Prefix_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    Prefix_Label.SetToolTip( ToolTipPrefix );
    Prefix_Edit.SetFixedWidth( fnt.Width( String( 'M', 6 ) ) );
    Prefix_Edit.SetToolTip( ToolTipPrefix );
@@ -2172,7 +2129,7 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
    const char* ToolTipPostfix =
       "<p>This is a postfix that will be appended to the file name of each corrected image.</p>";
    Postfix_Label.SetText( "Postfix:" );
-   Postfix_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   Postfix_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    Postfix_Label.SetToolTip( ToolTipPostfix );
    Postfix_Edit.SetFixedWidth( fnt.Width( String( 'M', 6 ) ) );
    Postfix_Edit.SetToolTip( ToolTipPostfix );
@@ -2188,8 +2145,8 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 
    CFA_CheckBox.SetText( "CFA" );
    CFA_CheckBox.SetToolTip( "<p>Enable this option if the image has been mosaiced with a "
-      "Color Filter Array (CFA) or Bayer matrix (OSC CCD, DSLR camera).<br/>"
-      "Disable if the image comes from a monochrome imager or has already been deBayered.</p>" );
+                            "Color Filter Array (CFA) or Bayer matrix (OSC CCD, DSLR camera).<br/>"
+                            "Disable if the image comes from a monochrome imager or has already been deBayered.</p>" );
    CFA_CheckBox.OnClick( (Button::click_event_handler)&CosmeticCorrectionInterface::__Button_Click, w );
 
    CFA_Sizer.AddUnscaledSpacing( labelWidth2 );
@@ -2199,9 +2156,9 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 
    Overwrite_CheckBox.SetText( "Overwrite" );
    Overwrite_CheckBox.SetToolTip( "<p>If this option is selected, CosmeticCorrection will p_overwrite "
-      "existing files with the same names as generated output files. This can be dangerous because the original "
-      "contents of overwritten files will be lost.</p>"
-      "<p><b>Enable this option <u>at your own risk.</u></b></p>" );
+                                  "existing files with the same names as generated output files. This can be dangerous because the original "
+                                  "contents of overwritten files will be lost.</p>"
+                                  "<p><b>Enable this option <u>at your own risk.</u></b></p>" );
    Overwrite_CheckBox.OnClick( (Button::click_event_handler)&CosmeticCorrectionInterface::__Button_Click, w );
 
    Overwrite_Sizer.AddUnscaledSpacing( labelWidth2 );
@@ -2213,7 +2170,7 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
    Amount_NumericControl.label.SetText( "Amount:" );
    Amount_NumericControl.label.SetFixedWidth( labelWidth2 );
    Amount_NumericControl.label.SetToolTip( ToolTipTransferFunction );
-   Amount_NumericControl.slider.SetRange( TheAmount->MinimumValue(), TheAmount->MaximumValue()*65535 );
+   Amount_NumericControl.slider.SetRange( TheAmount->MinimumValue(), TheAmount->MaximumValue() * 65535 );
    Amount_NumericControl.SetRange( TheAmount->MinimumValue(), TheAmount->MaximumValue() );
    Amount_NumericControl.SetPrecision( TheAmount->Precision() );
    Amount_NumericControl.SetToolTip( ToolTipTransferFunction );
@@ -2268,15 +2225,14 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
    MasterDark_GroupBox.SetTitle( "Master Dark" );
    MasterDark_GroupBox.SetSizer( MasterDark_Sizer );
 
-
    //---------------------------------------------------
    // Hot
 
    const char* ToolTipLevel = "<p>Define the %s pixel clipping level.</p>";
    const char* ToolTipQty = "<p>Quantity: How many %s pixels you want to replace?</p>";
    const char* ToolTipRealQty = "<p>At the selected <i>Level</i>, <i>Qty</i> is the actual amount of pixels "
-      "that will be processed.<br/>"
-      "<i>Sigma</i> is the corresponding standard deviation from the mean.</p>";
+                                "that will be processed.<br/>"
+                                "<i>Sigma</i> is the corresponding standard deviation from the mean.</p>";
    const char* ToolTipUse = "<p>Use a master dark frame to detect and correct %s pixels.</p>";
 
    HotDark_CheckBox.SetText( "Enable" );
@@ -2402,7 +2358,7 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
    UseAutoDetect_SectionBar.OnCheck( (SectionBar::check_event_handler)&CosmeticCorrectionInterface::__CheckSection, w );
 
    const String AutoDetect_toolTip = "<p>How many times (in average deviation units) the value of a pixel must differ "
-      "from the surrounding neighbors to be considered as a defective pixel?<p/>";
+                                     "from the surrounding neighbors to be considered as a defective pixel?<p/>";
    int labelWidth3 = fnt.Width( String( "Cold Sigma:" ) );
 
    DetectHot_CheckBox.SetToolTip( "Enable/Disable Detection" + AutoDetect_toolTip );
@@ -2435,7 +2391,6 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 
    UseAutoDetect_Control.SetSizer( UseAutoDetect_Sizer );
 
-
    //---------------------------------------------------
    // via defective list section
 
@@ -2463,7 +2418,7 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 
    ToggleSelectedDefect_PushButton.SetText( "Toggle Selected" );
    ToggleSelectedDefect_PushButton.SetToolTip( "<p>Toggle the enabled/disabled state of currently selected defects.</p>"
-      "<p>Disabled defects will be ignored during the CosmeticCorrection process.</p>" );
+                                               "<p>Disabled defects will be ignored during the CosmeticCorrection process.</p>" );
    ToggleSelectedDefect_PushButton.OnClick( (Button::click_event_handler)&CosmeticCorrectionInterface::__Button_Click, w );
 
    RemoveSelectedDefect_PushButton.SetText( "Remove Selected" );
@@ -2508,7 +2463,7 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 
    SelectRange_CheckBox.SetText( "Limit" );
    SelectRange_CheckBox.SetToolTip( "<p>Set the start and end coordinates in the selected column or row defect.</p>"
-      "<p>Uncheck to select all pixels in the selected column or row.</p>");
+                                    "<p>Uncheck to select all pixels in the selected column or row.</p>" );
    SelectRange_CheckBox.OnClick( (Button::click_event_handler)&CosmeticCorrectionInterface::__Button_Click, w );
 
    DefectStart.SetInteger();
@@ -2565,28 +2520,28 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 
    RTPSnapshot_PushButton.SetText( "Snapshot" );
    RTPSnapshot_PushButton.SetToolTip( "<p>Take a snapshot of the current defect map or target frame<br/>"
-      "Note: The dimensions of the snapshot image will be the same of the defined preview.</p>" );
+                                      "Note: The dimensions of the snapshot image will be the same of the defined preview.</p>" );
    RTPSnapshot_PushButton.OnClick( (Button::click_event_handler)&CosmeticCorrectionInterface::__Button_Click, w );
 
    // QTY columns
 #define range 0, 9999999
 
    RTPAutoQtyHot_Edit.label.SetText( "Auto" );
-   RTPAutoQtyHot_Edit.label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   RTPAutoQtyHot_Edit.label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    RTPAutoQtyHot_Edit.SetInteger();
    RTPAutoQtyHot_Edit.SetRange( range );
    RTPAutoQtyHot_Edit.edit.SetRightAlignment();
    RTPAutoQtyHot_Edit.edit.SetReadOnly();
 
    RTPAutoQtyCold_Edit.label.Hide();
-   RTPAutoQtyCold_Edit.label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   RTPAutoQtyCold_Edit.label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    RTPAutoQtyCold_Edit.SetInteger();
    RTPAutoQtyCold_Edit.SetRange( range );
    RTPAutoQtyCold_Edit.edit.SetRightAlignment();
    RTPAutoQtyCold_Edit.edit.SetReadOnly();
 
    RTPDarkQtyHot_Edit.label.SetText( "Dark" );
-   RTPDarkQtyHot_Edit.label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   RTPDarkQtyHot_Edit.label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    RTPDarkQtyHot_Edit.SetInteger();
    RTPDarkQtyHot_Edit.SetRange( range );
    RTPDarkQtyHot_Edit.edit.SetRightAlignment();
@@ -2594,7 +2549,7 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
    RTPDarkQtyHot_Edit.label.SetFixedWidth( fnt.Width( RTPAutoQtyHot_Edit.label.Text() ) );
 
    RTPDarkQtyCold_Edit.label.Hide();
-   RTPDarkQtyCold_Edit.label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   RTPDarkQtyCold_Edit.label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    RTPDarkQtyCold_Edit.SetInteger();
    RTPDarkQtyCold_Edit.SetRange( range );
    RTPDarkQtyCold_Edit.edit.SetRightAlignment();
@@ -2603,11 +2558,11 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
    //QTY title
    TRPTitleHot_Label.SetText( "Hot" );
    TRPTitleHot_Label.SetFixedWidth( RTPDarkQtyHot_Edit.edit.Width() );
-   TRPTitleHot_Label.SetTextAlignment( TextAlign::HorzCenter|TextAlign::Bottom );
+   TRPTitleHot_Label.SetTextAlignment( TextAlign::HorzCenter | TextAlign::Bottom );
 
    TRPTitleCold_Label.SetText( "Cold" );
    TRPTitleCold_Label.SetFixedWidth( RTPDarkQtyCold_Edit.edit.Width() );
-   TRPTitleCold_Label.SetTextAlignment( TextAlign::HorzCenter|TextAlign::Bottom );
+   TRPTitleCold_Label.SetTextAlignment( TextAlign::HorzCenter | TextAlign::Bottom );
 
    // RTP Seizers ----------------------------------------------------------
    RTPLine1_Sizer.AddSpacing( RTPDarkQtyHot_Edit.label.Width() + 4 );
@@ -2665,7 +2620,7 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF CosmeticCorrectionInterface.cpp - Released 2020-07-31T19:33:39Z

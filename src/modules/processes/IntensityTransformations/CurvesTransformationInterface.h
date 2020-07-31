@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationInterface.h - Released 2020-02-27T12:56:01Z
+// CurvesTransformationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -84,31 +84,23 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
    void ApplyInstance() const override;
    void TrackViewUpdated( bool active ) override;
    void RealTimePreviewUpdated( bool active ) override;
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
-
    bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const override;
    bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const override;
-
    bool WantsImageNotifications() const override;
    void ImageUpdated( const View& ) override;
    void ImageFocused( const View& ) override;
    void ImageDeleted( const View& ) override;
-
    bool WantsReadoutNotifications() const override;
    void BeginReadout( const View& ) override;
    void UpdateReadout( const View&, const DPoint& p, double R, double G, double B, double A ) override;
@@ -199,48 +191,48 @@ private:
 
    enum working_mode { EditMode, SelectMode, DeleteMode, ZoomInMode, ZoomOutMode, PanMode, NoMode = -1 };
 
-   working_mode   m_mode;
-   working_mode   m_savedMode;      // for temporary keyboard mode switch
+   working_mode   m_mode            = EditMode;
+   working_mode   m_savedMode       = NoMode; // for temporary keyboard mode switch
 
-   int            m_channel;
+   int            m_channel         = CurveIndex::RGBK;
 
-   UIVector       m_currentPoint;   // point indices
+   UIVector       m_currentPoint    = UIVector( 0u, CurveIndex::NumberOfCurves ); // point indices
 
-   histogram_list m_histograms;     // image histograms, 16-bit resolution
-   View           m_histogramView;
-   bool           m_histogramColor;
+   histogram_list m_histograms;              // image histograms, 16-bit resolution
+   View           m_histogramView   = View::Null();
+   bool           m_histogramColor  = false;
 
-   bool           m_readoutActive;
-   DVector        m_readouts;       // 0=R 1=G 2=B 3=Alpha
+   bool           m_readoutActive   = false;
+   DVector        m_readouts        = DVector( 0.0, 4 ); // 0=R 1=G 2=B 3=Alpha
    RGBColorSystem m_readoutRGBWS;
 
-   int            m_zoomX;
-   int            m_zoomY;
+   int            m_zoomX           = 1;
+   int            m_zoomY           = 1;
 
-   int            m_wheelSteps;     // accumulated 1/8-degree wheel steps
+   int            m_wheelSteps      = 0;     // accumulated 1/8-degree wheel steps
 
-   bool           m_showAllCurves;
-   bool           m_showGrid;       // draw coordinate grids
+   bool           m_showAllCurves   = true;
+   bool           m_showGrid        = true;  // draw coordinate grids
 
-   int            m_panning;        // panning the viewport?
-   Point          m_panOrigin;
+   int            m_panning         = 0;     // panning the viewport?
+   Point          m_panOrigin       = 0;
 
-   bool           m_cursorVisible;
-   bool           m_dragging;       // dragging a curve point?
-   Point          m_cursorPos;      // cursor position in viewport coordinates.
-   DPoint         m_curvePos;       // cursor position in normalized coordinates.
+   bool           m_cursorVisible   = false;
+   bool           m_dragging        = false; // dragging a curve point?
+   Point          m_cursorPos       = -1;    // cursor position in viewport coordinates.
+   DPoint         m_curvePos        = 0;     // cursor position in normalized coordinates.
 
-   Bitmap         m_viewportBitmap; // screen bitmap
-   bool           m_viewportDirty;
+   Bitmap         m_viewportBitmap  = Bitmap::Null(); // screen bitmap
+   bool           m_viewportDirty   = true;
 
    Curve          m_storedCurve;
 
-   channel_colors m_channelColor;
-   RGBA           m_gridColor0;
-   RGBA           m_gridColor1;
-   RGBA           m_backgroundColor;
+   channel_colors m_channelColor    = channel_colors( CurveIndex::NumberOfCurves );
+   RGBA           m_gridColor0      = RGBAColor( 0x50, 0x50, 0x50 );
+   RGBA           m_gridColor1      = RGBAColor( 0x37, 0x37, 0x37 );
+   RGBA           m_backgroundColor = RGBAColor( 0x00, 0x00, 0x00 );
 
-   bool           m_settingUp;      // true during viewport transitional states (e.g. resizing)
+   bool           m_settingUp       = false; // true during viewport transitional states (e.g. resizing)
 
    /*
     * Current curve point
@@ -388,4 +380,4 @@ PCL_END_LOCAL
 #endif   // __CurvesTransformationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF CurvesTransformationInterface.h - Released 2020-07-31T19:33:39Z

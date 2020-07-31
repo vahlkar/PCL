@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ProcessParameter.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ProcessParameter.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -65,16 +65,12 @@ class ProcessParameterPrivate
 {
 public:
 
-   meta_parameter_handle handle;
+   meta_parameter_handle handle = nullptr;
    mutable AutoPointer<Process>  process;
 
-   ProcessParameterPrivate() :
-      handle( nullptr )
-   {
-   }
+   ProcessParameterPrivate() = default;
 
-   ProcessParameterPrivate( meta_parameter_handle hParam ) :
-      handle( nullptr )
+   ProcessParameterPrivate( meta_parameter_handle hParam )
    {
       if ( hParam != nullptr )
       {
@@ -544,4 +540,4 @@ const void* ProcessParameter::Handle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessParameter.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ProcessParameter.cpp - Released 2020-07-31T19:33:12Z

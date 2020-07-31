@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StatisticsInterface.h - Released 2020-02-27T12:56:01Z
+// StatisticsInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -75,25 +75,18 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
-
    void TrackViewUpdated( bool active ) override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
    bool IsInstanceGenerator() const override;
    bool CanImportInstances() const override;
-
    bool WantsImageNotifications() const override;
    void ImageUpdated( const View& ) override;
    void ImageFocused( const View& ) override;
    void ImageDeleted( const View& ) override;
-
    bool WantsViewPropertyNotifications() const override;
    void ViewPropertyDeleted( const View& v, const IsoString& property ) override;
-
    void SaveSettings() const override;
    void LoadSettings() override;
 
@@ -206,4 +199,4 @@ PCL_END_LOCAL
 #endif   // __StatisticsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsInterface.h - Released 2020-02-27T12:56:01Z
+// EOF StatisticsInterface.h - Released 2020-07-31T19:33:39Z

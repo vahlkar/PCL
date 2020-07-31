@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<g transform="translate(-68.476 9.8415)">
+<g transform="translate(-81.756 16.555)">
+<g transform="matrix(2.0952 0 0 2.0952 97.985 -244.37)" stroke-width="1.2628">
+<rect x="30.805" y="109.9" width="26.458" height="26.458" fill="#00aeef" style="paint-order:stroke markers fill"/>
+<rect x="57.263" y="109.9" width="26.458" height="26.458" fill="#ec008c" style="paint-order:stroke markers fill"/>
+<rect x="30.805" y="136.36" width="26.458" height="26.458" fill="#fff200" style="paint-order:stroke markers fill"/>
+<rect x="57.263" y="136.36" width="26.458" height="26.458" style="paint-order:stroke markers fill"/>
+</g>
+<rect x="159.76" y="-16.872" width="116.42" height="116.42" fill="none" stroke="#00f" stroke-width="6.35" style="paint-order:stroke markers fill"/>
+<path d="m217.97-8.5564v49.893h-49.893z" fill="#f00" fill-rule="evenodd"/>
+<path d="m267.86 41.336h-49.893v-49.893z" fill="#0f0" fill-rule="evenodd"/>
+<path d="m217.97 91.229v-49.893h49.893z" fill="#fff" fill-rule="evenodd"/>
+<path d="m168.07 41.336h49.893v49.893z" fill="#00f" fill-rule="evenodd"/>
+</g>
+</g>
+</svg>

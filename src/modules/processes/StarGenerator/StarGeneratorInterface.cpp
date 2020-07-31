@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInterface.cpp - Released 2020-02-27T12:56:01Z
+// StarGeneratorInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -67,12 +67,8 @@ StarGeneratorInterface* TheStarGeneratorInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "StarGeneratorIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-StarGeneratorInterface::StarGeneratorInterface() :
-   instance( TheStarGeneratorProcess )
+StarGeneratorInterface::StarGeneratorInterface()
+   : instance( TheStarGeneratorProcess )
 {
    TheStarGeneratorInterface = this;
 }
@@ -101,9 +97,9 @@ MetaProcess* StarGeneratorInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** StarGeneratorInterface::IconImageXPM() const
+String StarGeneratorInterface::IconImageSVGFile() const
 {
-   return StarGeneratorIcon_XPM;
+   return "@module_icons_dir/StarGenerator.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -191,7 +187,6 @@ void StarGeneratorInterface::LoadSettings()
    GUI->StarDatabase_Edit.SetText( instance.starDatabasePath );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void StarGeneratorInterface::UpdateControls()
@@ -338,7 +333,6 @@ void StarGeneratorInterface::GetEpoch()
                                      0.5 /*always at noon*/ );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void StarGeneratorInterface::__EditCompleted( Edit& sender )
@@ -766,4 +760,4 @@ StarGeneratorInterface::GUIData::GUIData( StarGeneratorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF StarGeneratorInterface.cpp - Released 2020-07-31T19:33:39Z

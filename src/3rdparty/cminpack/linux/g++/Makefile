@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.115
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.118
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-11-29T09:40:26.297Z
+# Generated on .... 2020-07-31T19:36:14.981Z
 # Project id ...... cminpack
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++

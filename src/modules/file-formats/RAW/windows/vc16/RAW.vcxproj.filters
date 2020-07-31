@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+######################################################################
+# PixInsight Makefile Generator Script v1.118
+# Copyright (C) 2009-2020 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2020-07-31T19:36:26.480Z
+# Project id ...... RAW
+# Project type .... Module
+# Platform ........ Windows/vc16
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional preprocessor definitions:
+# _CRT_SECURE_NO_WARNINGS
+# WIN32
+# LIBRAW_NODLL
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional libraries:
+# libraw_r-pxi
+######################################################################
+-->
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>ed191a0b-185a-41a0-80e3-82ff6a7c90c7</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>8d25e685-6d89-4c66-a6d1-ac947378f98b</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>5b800b0d-4199-4728-8252-dc386f12d004</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\RawFormat.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RawInstance.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RawModule.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RawPreferencesDialog.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\RawFormat.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RawInstance.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RawModule.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RawPreferences.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RawPreferencesDialog.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\RAW.svg">
+        <Filter>Image Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

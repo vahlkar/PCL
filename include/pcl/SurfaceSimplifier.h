@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSimplifier.h - Released 2020-02-27T12:55:23Z
+// pcl/SurfaceSimplifier.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -162,8 +162,10 @@ private:
       point( const point& ) = default;
 
       template <typename T>
-      point( T a_x, T a_y, T a_z ) :
-         x( double( a_x ) ), y( double( a_y ) ), z( double( a_z ) )
+      point( T a_x, T a_y, T a_z )
+         : x( double( a_x ) )
+         , y( double( a_y ) )
+         , z( double( a_z ) )
       {
       }
 
@@ -222,8 +224,8 @@ public:
     *
     *
     */
-   SurfaceSimplifier( double tolerance ) :
-      m_tolerance( Abs( tolerance ) )
+   SurfaceSimplifier( double tolerance )
+      : m_tolerance( Abs( tolerance ) )
    {
       PCL_PRECONDITION( tolerance >= 0 )
    }
@@ -578,4 +580,4 @@ private:
 #endif   // __PCL_SurfaceSimplifier_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSimplifier.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/SurfaceSimplifier.h - Released 2020-07-31T19:33:04Z

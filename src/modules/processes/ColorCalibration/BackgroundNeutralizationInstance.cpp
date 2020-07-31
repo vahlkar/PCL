@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationInstance.cpp - Released 2020-02-27T12:56:01Z
+// BackgroundNeutralizationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -63,21 +63,20 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-BackgroundNeutralizationInstance::BackgroundNeutralizationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   backgroundLow( TheBNBackgroundLowParameter->DefaultValue() ),
-   backgroundHigh( TheBNBackgroundHighParameter->DefaultValue() ),
-   useROI( TheBNUseROIParameter->DefaultValue() ),
-   roi( 0 ),
-   mode( BNMode::Default ),
-   targetBackground( TheBNTargetBackgroundParameter->DefaultValue() )
+BackgroundNeutralizationInstance::BackgroundNeutralizationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , backgroundLow( TheBNBackgroundLowParameter->DefaultValue() )
+   , backgroundHigh( TheBNBackgroundHighParameter->DefaultValue() )
+   , useROI( TheBNUseROIParameter->DefaultValue() )
+   , mode( BNMode::Default )
+   , targetBackground( TheBNTargetBackgroundParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-BackgroundNeutralizationInstance::BackgroundNeutralizationInstance( const BackgroundNeutralizationInstance& x ) :
-   ProcessImplementation( x )
+BackgroundNeutralizationInstance::BackgroundNeutralizationInstance( const BackgroundNeutralizationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -323,8 +322,11 @@ void* BackgroundNeutralizationInstance::LockParameter( const MetaParameter* p, s
       return &mode;
    if ( p == TheBNTargetBackgroundParameter )
       return &targetBackground;
-   return 0;
+
+   return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool BackgroundNeutralizationInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
@@ -340,10 +342,13 @@ bool BackgroundNeutralizationInstance::AllocateParameter( size_type sizeOrLength
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type BackgroundNeutralizationInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheBNBackgroundReferenceViewIdParameter )
       return backgroundReferenceViewId.Length();
+
    return 0;
 }
 
@@ -352,4 +357,4 @@ size_type BackgroundNeutralizationInstance::ParameterLength( const MetaParameter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF BackgroundNeutralizationInstance.cpp - Released 2020-07-31T19:33:39Z

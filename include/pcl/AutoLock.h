@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/AutoLock.h - Released 2020-02-27T12:55:23Z
+// pcl/AutoLock.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -94,8 +94,8 @@ public:
     * unlocked automatically when this %AutoLock object gets out of scope, or
     * if it is destroyed explicitly.
     */
-   explicit AutoLock( pcl::Mutex& mutex ) :
-      m_mutex( &mutex )
+   explicit AutoLock( pcl::Mutex& mutex )
+      : m_mutex( &mutex )
    {
       Lock();
    }
@@ -103,8 +103,9 @@ public:
    /*!
     * Move constructor.
     */
-   AutoLock( AutoLock&& x ) :
-      m_mutex( x.m_mutex ), m_lock( x.m_lock )
+   AutoLock( AutoLock&& x )
+      : m_mutex( x.m_mutex )
+      , m_lock( x.m_lock )
    {
       x.m_mutex = nullptr;
    }
@@ -239,8 +240,10 @@ public:
     * automatically or explicitly, it will be unlocked automatically when this
     * %AutoLockCounter object is destroyed or gets out of scope.
     */
-   explicit AutoLockCounter( pcl::Mutex& mutex, AtomicInt& count, int limit ) :
-      m_mutex( &mutex ), m_count( &count ), m_lock( 0 )
+   explicit AutoLockCounter( pcl::Mutex& mutex, AtomicInt& count, int limit )
+      : m_mutex( &mutex )
+      , m_count( &count )
+      , m_lock( 0 )
    {
       if ( m_count->FetchAndAdd( 1 ) >= limit-1 )
       {
@@ -253,8 +256,10 @@ public:
    /*!
     * Move constructor.
     */
-   AutoLockCounter( AutoLockCounter&& x ) :
-      m_mutex( x.m_mutex ), m_count( x.m_count ), m_lock( x.m_lock )
+   AutoLockCounter( AutoLockCounter&& x )
+      : m_mutex( x.m_mutex )
+      , m_count( x.m_count )
+      , m_lock( x.m_lock )
    {
       x.m_mutex = nullptr;
       x.m_count = nullptr;
@@ -327,8 +332,8 @@ public:
 
 private:
 
-   pcl::Mutex* m_mutex;
-   AtomicInt*  m_count;
+   pcl::Mutex* m_mutex = nullptr;
+   AtomicInt*  m_count = nullptr;
    AtomicInt   m_lock;
 };
 
@@ -372,4 +377,4 @@ private:
 #endif   // __PCL_AutoLock_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AutoLock.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/AutoLock.h - Released 2020-07-31T19:33:04Z

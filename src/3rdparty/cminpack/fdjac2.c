@@ -1,23 +1,16 @@
-/* fdjac2.f -- translated by f2c (version 20020621).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
-#include <math.h>
 #include "cminpack.h"
-#define max(a,b) ((a) >= (b) ? (a) : (b))
+#include <math.h>
+#include "cminpackP.h"
 
-/* Subroutine */ int fdjac2(minpack_func_mn fcn, void *p, int m, int n, double *x, 
-	const double *fvec, double *fjac, int ldfjac,
-	double epsfcn, double *wa)
+__cminpack_attr__
+int __cminpack_func__(fdjac2)(__cminpack_decl_fcn_mn__ void *p, int m, int n, real *x, 
+	const real *fvec, real *fjac, int ldfjac,
+	real epsfcn, real *wa)
 {
-    /* System generated locals */
-    int fjac_dim1, fjac_offset;
-
     /* Local variables */
-    double h;
+    real h;
     int i, j;
-    double eps, temp, epsmch;
+    real eps, temp, epsmch;
     int iflag;
 
 /*     ********** */
@@ -95,35 +88,30 @@
 /*     burton s. garbow, kenneth e. hillstrom, jorge j. more */
 
 /*     ********** */
-    /* Parameter adjustments */
-    --wa;
-    --fvec;
-    --x;
-    fjac_dim1 = ldfjac;
-    fjac_offset = 1 + fjac_dim1 * 1;
-    fjac -= fjac_offset;
-
-    /* Function Body */
 
 /*     epsmch is the machine precision. */
 
-    epsmch = dpmpar(1);
+    epsmch = __cminpack_func__(dpmpar)(1);
 
     eps = sqrt((max(epsfcn,epsmch)));
-    for (j = 1; j <= n; ++j) {
+    for (j = 0; j < n; ++j) {
 	temp = x[j];
 	h = eps * fabs(temp);
 	if (h == 0.) {
 	    h = eps;
 	}
 	x[j] = temp + h;
-	iflag = (*fcn)(p, m, n, &x[1], &wa[1], 2);
+        /* the last parameter of fcn_mn() is set to 2 to differentiate
+           calls made to compute the function from calls made to compute
+           the Jacobian (see fcn() in examples/lmfdrv.c, and how njev
+           is used to compute the number of Jacobian evaluations) */
+	iflag = fcn_mn(p, m, n, x, wa, 2);
 	if (iflag < 0) {
             return iflag;
 	}
 	x[j] = temp;
-	for (i = 1; i <= m; ++i) {
-	    fjac[i + j * fjac_dim1] = (wa[i] - fvec[i]) / h;
+	for (i = 0; i < m; ++i) {
+	    fjac[i + j * ldfjac] = (wa[i] - fvec[i]) / h;
 	}
     }
     return 0;

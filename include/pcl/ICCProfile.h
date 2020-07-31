@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ICCProfile.h - Released 2020-02-27T12:55:23Z
+// pcl/ICCProfile.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -219,7 +219,7 @@ namespace ICCRenderingDirection
  * \brief A high-level interface to ICC color profiles
  *
  * %ICCProfile is a high-level interface to the ICC profile handling
- * functionality implemented in the PixInsight Core application. An instance of
+ * functionality implemented in the PixInsight core application. An instance of
  * %ICCProfile transports an ICC profile structure that can be embedded in
  * image files or used to build color management transformations with the
  * ICCProfileTransformation class.
@@ -736,7 +736,7 @@ public:
     * for system-wide or user-local profiles, respectively. If none of the
     * above directories exists (and is readable) on the local filesystem, the
     * routine will return a fallback directory within the installation
-    * directory tree of the PixInsight Core application.
+    * directory tree of the PixInsight core application.
     *
     * On OS X, the returned list may contain one or more from the following
     * directories:
@@ -835,8 +835,9 @@ public:
       /*!
        * Constructs an %ICCProfile::Info structure.
        */
-      Info( const String& a_description, const String& a_path = String() ) :
-      description( a_description ), path( a_path )
+      Info( const String& a_description, const String& a_path = String() )
+         : description( a_description )
+         , path( a_path )
       {
       }
 
@@ -901,4 +902,4 @@ private:
 #endif   // __PCL_ICCProfile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ICCProfile.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ICCProfile.h - Released 2020-07-31T19:33:04Z

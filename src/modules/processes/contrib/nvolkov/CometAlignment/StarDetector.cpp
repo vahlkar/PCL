@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// StarDetector.cpp - Released 2020-02-27T12:56:01Z
+// StarDetector.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -60,8 +60,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-static
-void Threshold( Image& img, float threshold )
+static void Threshold( Image& img, float threshold )
 {
    img.Status().DisableInitialization();
 
@@ -71,12 +70,14 @@ void Threshold( Image& img, float threshold )
    SeparableConvolution C( G5 );
    C >> img;
 
-   img.Truncate( Range( img.Median() + threshold*img.StdDev(), 0.0, 1.0 ), 1.0 );
+   img.Truncate( Range( img.Median() + threshold * img.StdDev(), 0.0, 1.0 ), 1.0 );
    img.Rescale();
 }
 
-template <class P> static
-StarDetector::Status Detect( DPoint& pos, int& radius, float threshold, const GenericImage<P>& img )
+// ----------------------------------------------------------------------------
+
+template <class P>
+static StarDetector::Status Detect( DPoint& pos, int& radius, float threshold, const GenericImage<P>& img )
 {
    img.Status().DisableInitialization();
 
@@ -89,7 +90,7 @@ StarDetector::Status Detect( DPoint& pos, int& radius, float threshold, const Ge
       Point p0 = pos;
 
       // Search box
-      Rect r0( p0-radius, p0+radius+1 );
+      Rect r0( p0 - radius, p0 + radius + 1 );
       if ( !img.Intersects( r0 ) )
          return StarDetector::OutsideImage;
 
@@ -113,10 +114,10 @@ StarDetector::Status Detect( DPoint& pos, int& radius, float threshold, const Ge
 
       for ( int down = 0; down < 2; ++down )
       {
-         if ( down ? (p0.y == simg.Height()-1) : (p0.y == 0) )
+         if ( down ? ( p0.y == simg.Height() - 1 ) : ( p0.y == 0 ) )
             continue;
 
-         for ( int y = down ? p0.y+1 : p0.y; ; )
+         for ( int y = down ? p0.y + 1 : p0.y;; )
          {
             double yc = y + 0.5;
             int xa, xb;
@@ -124,38 +125,38 @@ StarDetector::Status Detect( DPoint& pos, int& radius, float threshold, const Ge
             /*
              * Explore the left segment of this row.
              */
-            for ( xa = p0.x+1; xa > 0; )
+            for ( xa = p0.x + 1; xa > 0; )
             {
-               Image::sample f = simg.Pixel( xa-1, y );
+               Image::sample f = simg.Pixel( xa - 1, y );
                if ( f == 0 )
                   break;
                --xa;
-               sx += f*(xa + 0.5);
-               sy += f*yc;
+               sx += f * ( xa + 0.5 );
+               sy += f * yc;
                si += f;
             }
 
             /*
              * Explore the right segment of this row.
              */
-            for ( xb = p0.x; xb < simg.Width()-1; )
+            for ( xb = p0.x; xb < simg.Width() - 1; )
             {
-               Image::sample f = simg.Pixel( xb+1, y );
+               Image::sample f = simg.Pixel( xb + 1, y );
                if ( f == 0 )
                   break;
                ++xb;
-               sx += f*(xb + 0.5);
-               sy += f*yc;
+               sx += f * ( xb + 0.5 );
+               sy += f * yc;
                si += f;
             }
 
             /*
              * Update horizontal boundaries.
              */
-            if ( xa < r.x0 )  // left boundary
+            if ( xa < r.x0 ) // left boundary
                r.x0 = xa;
             if ( xb >= r.x1 ) // right boundary
-               r.x1 = xb+1;
+               r.x1 = xb + 1;
 
             /*
              * Update y to explore the next row.
@@ -193,9 +194,9 @@ StarDetector::Status Detect( DPoint& pos, int& radius, float threshold, const Ge
              * Update vertical boundaries.
              */
             if ( down )
-               r.y1 = y+1; // bottom boundary
+               r.y1 = y + 1; // bottom boundary
             else
-               r.y0 = y;   // top boundary
+               r.y0 = y; // top boundary
          }
       }
 
@@ -209,8 +210,8 @@ StarDetector::Status Detect( DPoint& pos, int& radius, float threshold, const Ge
        * Update barycenter coordinates.
        */
       DPoint lastPos = pos;
-      pos.x = r0.x0 + sx/si;
-      pos.y = r0.y0 + sy/si;
+      pos.x = r0.x0 + sx / si;
+      pos.y = r0.y0 + sy / si;
 
       /*
        * Update search radius.
@@ -225,13 +226,16 @@ StarDetector::Status Detect( DPoint& pos, int& radius, float threshold, const Ge
           * convergence. We converge to within +/- 0.01 px.
           */
          if ( Abs( pos.x - lastPos.x ) < 0.005 && Abs( pos.y - lastPos.y ) < 0.005 )
-            return (r.x0 > 0 && r.y0 > 0 && r.x1 < simg.Width() && r.y1 < simg.Height()) ?
-                        StarDetector::DetectedOk : StarDetector::CrossingEdges;
+            return ( r.x0 > 0 && r.y0 > 0 && r.x1 < simg.Width() && r.y1 < simg.Height() ) ?
+               StarDetector::DetectedOk :
+               StarDetector::CrossingEdges;
       }
    }
 
    return StarDetector::NoConvergence;
 }
+
+// ----------------------------------------------------------------------------
 
 StarDetector::StarDetector( const ImageVariant& image, int channel,
                             const DPoint& pos, int radius, float threshold, bool autoAperture )
@@ -248,15 +252,25 @@ StarDetector::StarDetector( const ImageVariant& image, int channel,
       if ( image.IsFloatSample() )
          switch ( image.BitsPerSample() )
          {
-         case 32: star.status = Detect( star.pos, radius, threshold, static_cast<const Image&>( *image ) ); break;
-         case 64: star.status = Detect( star.pos, radius, threshold, static_cast<const DImage&>( *image ) ); break;
+         case 32:
+            star.status = Detect( star.pos, radius, threshold, static_cast<const Image&>( *image ) );
+            break;
+         case 64:
+            star.status = Detect( star.pos, radius, threshold, static_cast<const DImage&>( *image ) );
+            break;
          }
       else
          switch ( image.BitsPerSample() )
          {
-         case  8: star.status = Detect( star.pos, radius, threshold, static_cast<const UInt8Image&>( *image ) ); break;
-         case 16: star.status = Detect( star.pos, radius, threshold, static_cast<const UInt16Image&>( *image ) ); break;
-         case 32: star.status = Detect( star.pos, radius, threshold, static_cast<const UInt32Image&>( *image ) ); break;
+         case 8:
+            star.status = Detect( star.pos, radius, threshold, static_cast<const UInt8Image&>( *image ) );
+            break;
+         case 16:
+            star.status = Detect( star.pos, radius, threshold, static_cast<const UInt16Image&>( *image ) );
+            break;
+         case 32:
+            star.status = Detect( star.pos, radius, threshold, static_cast<const UInt32Image&>( *image ) );
+            break;
          }
 
       star.rect = DRect( star.pos - double( radius ), star.pos + double( radius ) );
@@ -265,11 +279,11 @@ StarDetector::StarDetector( const ImageVariant& image, int channel,
       {
          Rect r = star.rect.RoundedToInt();
 
-         for ( double m0 = 1; ; )
+         for ( double m0 = 1;; )
          {
             image->SelectRectangle( r );
             double m = Matrix::FromImage( image ).Median();
-            if ( m0 < m || (m0 - m)/m0 < 0.01 )
+            if ( m0 < m || ( m0 - m ) / m0 < 0.01 )
                break;
             m0 = m;
             r.InflateBy( 1, 1 );
@@ -282,7 +296,7 @@ StarDetector::StarDetector( const ImageVariant& image, int channel,
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.cpp - Released 2020-02-27T12:56:01Z
+// EOF StarDetector.cpp - Released 2020-07-31T19:33:39Z

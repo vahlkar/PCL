@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:58.875Z
+# Generated on .... 2020-07-31T19:36:32.485Z
 # Project id ...... Geometry
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>63865da3-4ad1-4149-b8f0-dbe0f0ffd39b</UniqueIdentifier>
+      <UniqueIdentifier>ad9bdebe-a3a6-4cbd-8622-0c6f74dc10e4</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>e1cdd184-a1cc-4ed2-8e1d-7a590c180ff5</UniqueIdentifier>
+      <UniqueIdentifier>98188f4d-70af-41cb-822d-02ba5163a54c</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>d58a1ab2-90a5-475a-a562-0a259a634061</UniqueIdentifier>
+      <UniqueIdentifier>648d3a0d-ac1b-4631-a0c4-e85a1c57d59a</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -222,42 +222,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\ChannelMatchIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\CropIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\DynamicCropIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\FastRotationIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\HorizontalMirrorActionIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\IntegerResampleIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\ResampleIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\Rotate180ActionIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\Rotate90CCWActionIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\Rotate90CWActionIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\RotationIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\VerticalMirrorActionIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
     <None Include="..\..\cursors\1.5\move.png">
         <Filter>Image Files</Filter>
     </None>
@@ -529,6 +493,45 @@
         <Filter>Image Files</Filter>
     </None>
     <None Include="..\..\cursors\rotate.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\ChannelMatch.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\Crop.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\DynamicCrop.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\FastRotation.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\HorizontalMirrorAction.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\IntegerResample.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\Resample.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\Rotate180Action.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\Rotate90CCWAction.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\Rotate90CWAction.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\Rotation.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\VerticalMirrorAction.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\dynamic-cursors.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

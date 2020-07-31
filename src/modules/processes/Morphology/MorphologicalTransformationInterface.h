@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInterface.h - Released 2020-02-27T12:56:01Z
+// MorphologicalTransformationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -70,8 +70,6 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInterface
-// ----------------------------------------------------------------------------
 
 class MorphologicalTransformationInterface : public ProcessInterface
 {
@@ -80,26 +78,18 @@ public:
    MorphologicalTransformationInterface();
    virtual ~MorphologicalTransformationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual void SaveSettings() const;
-   virtual void LoadSettings();
-
-   // -------------------------------------------------------------------------
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   void SaveSettings() const override;
+   void LoadSettings() override;
 
    const MorphologicalTransformationInstance& Instance() const
    {
@@ -110,8 +100,6 @@ public:
    {
       return instance;
    }
-
-   // -------------------------------------------------------------------------
 
 private:
 
@@ -144,27 +132,20 @@ private:
    {
    public:
 
-      PaintUndo( const MorphologicalTransformationInterface& i, const String& dsc = "Paint" ) :
-      UndoItem(), description( dsc )
+      PaintUndo( const MorphologicalTransformationInterface& i, const String& dsc = "Paint" )
+         : description( dsc )
       {
          i.instance.GetStructure().GetWay( wayIndex = i.currentWayIndex, wayData );
       }
 
-      PaintUndo( const PaintUndo& x ) :
-      UndoItem( x ), wayIndex( x.wayIndex ), wayData( x.wayData ), description( x.description )
-      {
-      }
+      PaintUndo( const PaintUndo& ) = default;
 
-      virtual ~PaintUndo()
-      {
-      }
-
-      virtual String Description() const
+      String Description() const override
       {
          return description;
       }
 
-      virtual void Apply( MorphologicalTransformationInterface& i )
+      void Apply( MorphologicalTransformationInterface& i ) override
       {
          ByteArray oldWayData;
          i.instance.GetStructure().GetWay( wayIndex, oldWayData );
@@ -176,6 +157,7 @@ private:
       }
 
    private:
+
       int       wayIndex;
       ByteArray wayData;
       String    description;
@@ -185,30 +167,24 @@ private:
    {
    public:
 
-      RenameUndo( const MorphologicalTransformationInterface& i ) :
-      UndoItem(), name( i.instance.GetStructure().Name() )
+      RenameUndo( const MorphologicalTransformationInterface& i )
+         : name( i.instance.GetStructure().Name() )
       {
       }
 
-      RenameUndo( const RenameUndo& x ) : UndoItem( x ), name( x.name )
-      {
-      }
+      RenameUndo( const RenameUndo& ) = default;
 
-      virtual ~RenameUndo()
-      {
-      }
-
-      virtual bool UndoesStructureName() const
+      bool UndoesStructureName() const override
       {
          return true;
       }
 
-      virtual String Description() const
+      String Description() const override
       {
          return "Rename";
       }
 
-      virtual void Apply( MorphologicalTransformationInterface& i )
+      void Apply( MorphologicalTransformationInterface& i ) override
       {
          String oldName = i.instance.GetStructure().Name();
          i.instance.GetStructure().Rename( name );
@@ -217,6 +193,7 @@ private:
       }
 
    private:
+
       String name;
    };
 
@@ -224,26 +201,21 @@ private:
    {
    public:
 
-      WholeStructureUndo( const MorphologicalTransformationInterface& i ) : UndoItem(), structure( i.instance.GetStructure() )
+      WholeStructureUndo( const MorphologicalTransformationInterface& i )
+         : structure( i.instance.GetStructure() )
       {
       }
 
-      WholeStructureUndo( const WholeStructureUndo& x ) : UndoItem( x ), structure( x.structure )
-      {
-      }
+      WholeStructureUndo( const WholeStructureUndo& ) = default;
 
-      virtual ~WholeStructureUndo()
-      {
-      }
-
-      virtual bool UndoesStructureName() const
+      bool UndoesStructureName() const override
       {
          return true;
       }
 
       virtual String Description() const = 0;
 
-      virtual void Apply( MorphologicalTransformationInterface& i )
+      void Apply( MorphologicalTransformationInterface& i ) override
       {
          Structure oldStructure = i.instance.GetStructure();
 
@@ -258,6 +230,7 @@ private:
       }
 
    private:
+
       Structure structure;
    };
 
@@ -265,25 +238,21 @@ private:
    {
    public:
 
-      GlobalPaintUndo( const MorphologicalTransformationInterface& i, const String& dsc = "Global paint" ) :
-      WholeStructureUndo( i ), description( dsc )
+      GlobalPaintUndo( const MorphologicalTransformationInterface& i, const String& dsc = "Global paint" )
+         : WholeStructureUndo( i )
+         , description( dsc )
       {
       }
 
-      GlobalPaintUndo( const GlobalPaintUndo& x ) : WholeStructureUndo( x ), description( x.description )
-      {
-      }
+      GlobalPaintUndo( const GlobalPaintUndo& ) = default;
 
-      virtual ~GlobalPaintUndo()
-      {
-      }
-
-      virtual String Description() const
+      String Description() const override
       {
          return description;
       }
 
    private:
+
       String description;
    };
 
@@ -291,19 +260,14 @@ private:
    {
    public:
 
-      ResizeUndo( const MorphologicalTransformationInterface& i ) : WholeStructureUndo( i )
+      ResizeUndo( const MorphologicalTransformationInterface& i )
+         : WholeStructureUndo( i )
       {
       }
 
-      ResizeUndo( const ResizeUndo& x ) : WholeStructureUndo( x )
-      {
-      }
+      ResizeUndo( const ResizeUndo& ) = default;
 
-      virtual ~ResizeUndo()
-      {
-      }
-
-      virtual String Description() const
+      String Description() const override
       {
          return "Resize";
       }
@@ -313,19 +277,14 @@ private:
    {
    public:
 
-      ChangeWayCountUndo( const MorphologicalTransformationInterface& i ) : WholeStructureUndo( i )
+      ChangeWayCountUndo( const MorphologicalTransformationInterface& i )
+         : WholeStructureUndo( i )
       {
       }
 
-      ChangeWayCountUndo( const ChangeWayCountUndo& x ) : WholeStructureUndo( x )
-      {
-      }
+      ChangeWayCountUndo( const ChangeWayCountUndo& ) = default;
 
-      virtual ~ChangeWayCountUndo()
-      {
-      }
-
-      virtual String Description() const
+      String Description() const override
       {
          return "Change way count";
       }
@@ -333,31 +292,23 @@ private:
 
    typedef IndirectArray<UndoItem>  undo_item_list;
 
-   // -------------------------------------------------------------------------
-
-   //
-   // Current instance and structure collection
-   //
+   /*
+    * Current instance and structure collection
+    */
    MorphologicalTransformationInstance instance;
    StructureCollection                 collection;
 
-   //
-   // Workflow
-   //
-
-   int                  currentWayIndex;
-
-   undo_item_list  undoList;
-   undo_item_list  redoList;
-
-   String               initialStructureName;
-
-   ByteArray            storedWay;
-
-   bool                 paintMode;
-   bool                 painting;
-
-   bool                 showAllWays;
+   /*
+    * Workflow
+    */
+   int            currentWayIndex = 0;
+   undo_item_list undoList;
+   undo_item_list redoList;
+   String         initialStructureName;
+   ByteArray      storedWay;
+   bool           paintMode = true;
+   bool           painting = false;
+   bool           showAllWays = true;
 
    bool CanUndo() const
    {
@@ -458,8 +409,6 @@ private:
    }
 
    //
-   // GUI
-   //
 
    struct GUIData
    {
@@ -530,20 +479,13 @@ private:
          NumericControl    HighThreshold_NumericControl;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
-   //
-   // GUI Updates
-   //
    void UpdateControls();
    void UpdateFilterControls();
    void UpdateStructureControls();
    void UpdateStructureUndoControls();
    void UpdateThresholdControls();
-
-   //
-   // GUI Event Handlers
-   //
 
    void __Operator_ItemSelected( ComboBox& sender, int itemIndex );
    void __Interlacing_ValueUpdated( SpinBox& sender, int value );
@@ -572,8 +514,6 @@ private:
 
    void __Threshold_ValueUpdated( NumericEdit& sender, double value );
 
-   // -------------------------------------------------------------------------
-
    friend struct GUIData;
 
    friend class StructureManagerDialog;
@@ -595,4 +535,4 @@ PCL_END_LOCAL
 #endif   // __MorphologicalTransformationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF MorphologicalTransformationInterface.h - Released 2020-07-31T19:33:39Z

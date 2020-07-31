@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkStatisticsDialog.cpp - Released 2020-02-27T12:56:01Z
+// BlinkStatisticsDialog.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -68,7 +68,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-BlinkStatisticsDialog::BlinkStatisticsDialog( BlinkInterface* parent ) : m_parent( parent )
+BlinkStatisticsDialog::BlinkStatisticsDialog( BlinkInterface* parent )
+   : m_parent( parent )
 {
    // File_ComboBox
    File_ComboBox.SetToolTip( "<p>Select Image to see FITS keywords.</p>" );
@@ -183,13 +184,10 @@ BlinkStatisticsDialog::BlinkStatisticsDialog( BlinkInterface* parent ) : m_paren
    OnReturn( (Dialog::return_event_handler)&BlinkStatisticsDialog::__Dialog_Return, *this );
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkStatisticsDialog::Init()
 {
-#if debug
-   Console().WriteLn(String().Format( "<br>Init() Start" ) );
-   Console().WriteLn(String().Format( "<br>Total filesData records in memory: %u", m_parent->m_blink.m_filesData.Length() ) );
-#endif
-
    // Default state
    SortChannels_CheckBox.SetChecked( m_parent->m_sortChannels );     // mode: sort by channel(true) or not(false)?
    StatCropMode_CheckBox.SetChecked( m_parent->m_cropMode );         // true = Statistics only for Green rectangle
@@ -206,15 +204,9 @@ void BlinkStatisticsDialog::Init()
    OutputDir_Edit.Enable( m_parent->m_writeStatsFile );
    OutputDir_SelectButton.Enable( m_parent->m_writeStatsFile );
 
-   for ( int i = 0 ; i < ftb.NumberOfChildren(); i++ ) // Add Files to File_ComboBox
+   for ( int i = 0 ; i < ftb.NumberOfChildren(); ++i ) // Add Files to File_ComboBox
    {
-      const int fileNumber = BlinkInterface::FileNumberGet( i ); //extract file # from GUI TreeBox
-
-#if debug
-      Console().WriteLn( String().Format( "<br>Add to File_ComboBox file #%u", fileNumber ) );
-      Console().WriteLn( m_parent->m_blink.m_filesData[fileNumber].m_filePath );
-#endif
-
+      const int fileNumber = BlinkInterface::FileNumberGet( i ); // extract file # from GUI TreeBox
       File_ComboBox.AddItem( m_parent->m_blink.m_filesData[fileNumber].m_filePath );
    }
 
@@ -222,12 +214,8 @@ void BlinkStatisticsDialog::Init()
 
    __TreeBox_ItemSelected( File_ComboBox, m_parent->m_blink.m_currentImage );   // Fill Keyword_TreeBox by keywords from currentImage
 
-   for ( int i = 0; i < Keyword_TreeBox.NumberOfColumns()-1; i++ )   //Adjust width only Columns: Name and Value
+   for ( int i = 0; i < Keyword_TreeBox.NumberOfColumns()-1; ++i )   // Adjust width only Columns: Name and Value
       Keyword_TreeBox.AdjustColumnWidthToContents( i );
-
-#if debug
-   Console().WriteLn( String().Format( "Init() End" ) );
-#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -271,13 +259,10 @@ StringList BlinkStatisticsDialog::FindKeywords( int fileIndex )
    return keys;
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkStatisticsDialog::ConvertStatisticsToText()
 {
-#if debug
-   Console().WriteLn( "ConvertStatisticsToText() Start" );
-   Console().Flush();
-#endif
-
    String fileName = "Statistics";
 
    bool Channel[] = { false, false, false, false };
@@ -289,7 +274,6 @@ void BlinkStatisticsDialog::ConvertStatisticsToText()
    /*
     * Prepare headers
     */
-
    const char* h0[] = { "FileName", "#", "#", "Ch", "Exposure", "Mean", "Median", "MAD", "AvgDev", "StdDev", "Minimum", "Maximum" };
    StringList h;
    h.Add( h0[0] );
@@ -321,12 +305,6 @@ void BlinkStatisticsDialog::ConvertStatisticsToText()
    /*
     * Convert to text
     */
-
-#if debug
-   Console().WriteLn( "Convert to text" );
-   Console().Flush();
-#endif
-
    for ( int i = 0 ; i < ftb.NumberOfChildren(); i++ ) // circle by open files; prepare m_stat table
    {
       if ( !ftb.Child( i )->IsChecked() )
@@ -400,25 +378,16 @@ void BlinkStatisticsDialog::ConvertStatisticsToText()
    /*
     * Correct column widths
     */
-#if debug
-   Console().WriteLn( "Correcting column widths" );
-   Console().Flush();
-#endif
-
-   for ( int column = 0; column < ftb.NumberOfColumns()-1; column++ )
+   for ( int column = 0; column < ftb.NumberOfColumns()-1; ++column )
    {
       // calculate maximum width of the Row
       int width = 0;
-      for ( int row = 0; row < int( m_stat.Length() ); row++ )
+      for ( int row = 0; row < int( m_stat.Length() ); ++row )
          width = Max( width, int( m_stat[row][column].Length() ) );
 
       // apply correction width
-      for ( int row = 0; row < int( m_stat.Length() ); row++ )
-#if debug
-         m_stat[row][column].Append( '_', width - m_stat[row][column].Length() );
-#else
+      for ( int row = 0; row < int( m_stat.Length() ); ++row )
          m_stat[row][column].Append( ' ', width - m_stat[row][column].Length() );
-#endif
 
       // adjust main GUI
       ftb.AdjustColumnWidthToContents( column );
@@ -429,11 +398,6 @@ void BlinkStatisticsDialog::ConvertStatisticsToText()
    /*
     * Prepare output file
     */
-#if debug
-   Console().WriteLn( "Prepare output file" );
-   Console().Flush();
-#endif
-
    String fileDir = OutputDir_Edit.Text();
    if ( fileDir.IsEmpty() )   // output dir not selected = write to dir of Images[0]
    {
@@ -456,10 +420,6 @@ void BlinkStatisticsDialog::ConvertStatisticsToText()
    /*
     * Write to output file and/or console
     */
-#if debug
-   Console().WriteLn( "Write output file" );
-#endif
-
    bool writeFile = WriteStatsFile_CheckBox.IsChecked();
    File f;
    if ( writeFile )
@@ -468,10 +428,6 @@ void BlinkStatisticsDialog::ConvertStatisticsToText()
    bool sort = SortChannels_CheckBox.IsChecked();
    for ( int c = sort ? 0 : 3; c < 4; c++ )
    {
-#if debug
-      Console().WriteLn( "Channel " + String ( c ) + ": " + String( Channel[c] ) );
-#endif
-
       if ( !Channel[c] && sort )
          continue;
 
@@ -497,25 +453,18 @@ void BlinkStatisticsDialog::ConvertStatisticsToText()
             f.OutTextLn( out );
       }
    }
+
    if ( writeFile )
    {
       f.Close();
       Console().NoteLn( "* Saved to " + tp );
    }
-
-#if debug
-   Console().WriteLn( "ConvertStatisticsToText() Exit" );
-   Console().Flush();
-#endif
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkStatisticsDialog::PrepareData()
 {
-#if debug
-   Console().WriteLn( "PrepareData() Start" );
-   Console().WriteLn( "StatCropMode_CheckBox: " + String( StatCropMode_CheckBox.IsChecked() ) );
-#endif
-
    BlinkInterface::BlinkData& blink = m_parent->m_blink;
 
    if ( !blink.m_screen.IsNull() && StatCropMode_CheckBox.IsChecked() )  // set m_rect to CurrentView Rectangle
@@ -528,30 +477,16 @@ void BlinkStatisticsDialog::PrepareData()
    else
       m_rect = blink.m_screenRect;      // set m_rect full size
 
-#if debug
-   Console().WriteLn( String().Format( "m_rect %i, %i, %i, %i", m_rect.x0, m_rect.y0, m_rect.x1, m_rect.y1 ) );
-   Console().WriteLn( "Crop mode: " + String( StatCropMode_CheckBox.IsChecked() ) );
-#endif
-
    for ( int i = 0; i < ftb.NumberOfChildren(); i++ )
    {
-      if ( !ftb.Child( i )->IsChecked() ) continue;    // skip unchecked file
-#if debug
-      Console().WriteLn();
-#endif
+      if ( !ftb.Child( i )->IsChecked() )
+         continue;    // skip unchecked file
 
       const int fileNumber = BlinkInterface::FileNumberGet( i ); //extract file # from GUI TreeBox
-
       BlinkInterface::FileData& fd = blink.m_filesData[fileNumber];
 
       if ( fd.m_statRealRect != m_rect && !fd.m_statReal.IsEmpty() )  // wrong geometry?
-      {
-#if debug
-         Console().WriteLn( "delete old data in statReal" );
-#endif
-
          fd.m_statReal.Clear();                             // Destroy old data
-      }
 
       if ( !fd.m_statReal.IsEmpty() )
          continue;                                          // statReal size and data is good
@@ -561,12 +496,8 @@ void BlinkStatisticsDialog::PrepareData()
          {                                                  // Copy Statistics from statSTF
             Console().WriteLn( "<br>Using image statistics in memory: " + fd.m_filePath  );
             ProcessEvents();
-            for ( int c = 0; c < int( fd.m_statSTF.Length() ); c++ )
+            for ( int c = 0; c < int( fd.m_statSTF.Length() ); ++c )
                fd.m_statReal.Add( fd.m_statSTF[c] );
-
-#if debug
-            Console().WriteLn( "Copy Statistics from statSTF sucesful" );
-#endif
             fd.m_statRealRect = m_rect;                     // save new geometry
             continue;
          }
@@ -595,7 +526,7 @@ void BlinkStatisticsDialog::PrepareData()
       if ( m_rect != blink.m_screenRect )                   // Crop mode
          img.SelectRectangle( m_rect );
 
-      for ( int i = 0; i < img.NumberOfNominalChannels(); i++, ++monitor )
+      for ( int i = 0; i < img.NumberOfNominalChannels(); ++i, ++monitor )
       {
          img.SelectChannel( i );
          ImageStatistics S;
@@ -608,36 +539,20 @@ void BlinkStatisticsDialog::PrepareData()
          fd.m_statReal.Add( S );
       }
 
-#if debug
-      Console().WriteLn( "Calculate Statistics successful" );
-#endif
-
       // In full size mode copy real statistics to statSTF for future use
       if ( m_rect == blink.m_screenRect )
       {
          if ( !fd.m_statSTF.IsEmpty() )
-         {
-#if debug
-            Console().WriteLn( "delete old data in statSTF" );
-#endif
             fd.m_statSTF.Clear();                           // Destroy old data
-         }
-#if debug
-         Console().WriteLn( "Copy Statistics from statReal to statSTF" );
-#endif
-         for ( int c = 0; c < int( fd.m_statReal.Length() ); c++ )
+         for ( int c = 0; c < int( fd.m_statReal.Length() ); ++c )
             fd.m_statSTF.Add( fd.m_statReal[c] );
-
          fd.m_isSTFStatisticsEqualToReal = true;
       }
-
       fd.m_statRealRect = m_rect;                           // save new geometry
    }
-
-#if debug
-   Console().WriteLn( "PrepareData() Exit" );
-#endif
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkStatisticsDialog::ExecuteStatistics()
 {
@@ -660,6 +575,8 @@ void BlinkStatisticsDialog::ExecuteStatistics()
    SetCursor( StdCursor::Arrow );
    m_parent->SetCursor( StdCursor::Arrow );
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkStatisticsDialog::SelectOutputDir()
 {
@@ -685,10 +602,6 @@ void BlinkStatisticsDialog::__TreeBox_ItemSelected( ComboBox& sender, int itemIn
       TreeBox::Node* node = new TreeBox::Node( Keyword_TreeBox ); // add new line in Keyword_TreeBox
       node->SetText( 0, keywords[i].name );
       node->SetText( 1, keywords[i].value );
-#if debug
-      Console().Write(String().Format( "keywords[i].comment.Length() %u", keywords[i].comment.Length() ) );
-      Console().WriteLn(" :"+ keywords[i].comment );
-#endif
       node->SetText( 2, keywords[i].comment );
       node->Uncheck();
    }
@@ -701,6 +614,8 @@ void BlinkStatisticsDialog::__TreeBox_ItemSelected( ComboBox& sender, int itemIn
 
    Keyword_TreeBox.EnableUpdates();
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkStatisticsDialog::__Control_DoubleClick( Control& sender, const Point& /*pos*/, unsigned /*buttons*/, unsigned /*modifiers*/ )
 {
@@ -727,6 +642,8 @@ void BlinkStatisticsDialog::__Edit_Completed( Edit& sender )
    sender.SetText( text );
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkStatisticsDialog::__RangeMode_Click( Button& /*sender*/, bool /*checked*/ )
 {
    if ( Range0_RadioButton.IsChecked() )
@@ -740,6 +657,8 @@ void BlinkStatisticsDialog::__RangeMode_Click( Button& /*sender*/, bool /*checke
       Digits1_SpinBox.Show();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void BlinkStatisticsDialog::__Button_Click( Button& sender, bool checked )
 {
@@ -759,6 +678,8 @@ void BlinkStatisticsDialog::__Button_Click( Button& sender, bool checked )
       SelectOutputDir();
 }
 
+// ----------------------------------------------------------------------------
+
 void BlinkStatisticsDialog::__Dialog_Return( Dialog& sender, int retVal )
 {
    // Transfer settings to main GUI
@@ -775,4 +696,4 @@ void BlinkStatisticsDialog::__Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkStatisticsDialog.cpp - Released 2020-02-27T12:56:01Z
+// EOF BlinkStatisticsDialog.cpp - Released 2020-07-31T19:33:39Z

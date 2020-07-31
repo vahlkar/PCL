@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/APIException.h - Released 2020-02-27T12:55:23Z
+// pcl/APIException.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -82,7 +82,8 @@ public:
 
    APIError( const pcl::APIError& ) = default;
 
-   APIError( const String& s ) : Error( s )
+   APIError( const String& s )
+      : Error( s )
    {
       GetAPIErrorCode();
    }
@@ -107,12 +108,13 @@ class PCL_CLASS APIFunctionError : public pcl::APIError
 {
 public:
 
-   APIFunctionError( const pcl::APIFunctionError& x ) : pcl::APIError( x )
+   APIFunctionError( const pcl::APIFunctionError& x )
+      : pcl::APIError( x )
    {
    }
 
-   APIFunctionError( const String& funcId ) :
-      pcl::APIError( funcId + "(): Low-level API function error" )
+   APIFunctionError( const String& funcId )
+      : pcl::APIError( funcId + "(): Low-level API function error" )
    {
    }
 };
@@ -124,4 +126,4 @@ public:
 #endif   // __PCL_API_APIException_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIException.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/APIException.h - Released 2020-07-31T19:33:04Z

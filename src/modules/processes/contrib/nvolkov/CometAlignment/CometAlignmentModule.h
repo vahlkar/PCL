@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentModule.h - Released 2020-02-27T12:56:01Z
+// CometAlignmentModule.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -58,7 +58,6 @@
 
 namespace pcl
 {
-
 // ----------------------------------------------------------------------------
 
 class CometAlignmentModule : public MetaModule
@@ -67,22 +66,22 @@ public:
 
    CometAlignmentModule();
 
-   virtual const char* Version() const;
-   virtual IsoString Name() const;
-   virtual String Description() const;
-   virtual String Company() const;
-   virtual String Author() const;
-   virtual String Copyright() const;
-   virtual String TradeMarks() const;
-   virtual String OriginalFileName() const;
-   virtual void GetReleaseDate( int& year, int& month, int& day ) const;
+   const char* Version() const override;
+   IsoString Name() const override;
+   String Description() const override;
+   String Company() const override;
+   String Author() const override;
+   String Copyright() const override;
+   String TradeMarks() const override;
+   String OriginalFileName() const override;
+   void GetReleaseDate( int& year, int& month, int& day ) const override;
 };
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __CometAlignmentModule_h
+#endif // __CometAlignmentModule_h
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentModule.h - Released 2020-02-27T12:56:01Z
+// EOF CometAlignmentModule.h - Released 2020-07-31T19:33:39Z

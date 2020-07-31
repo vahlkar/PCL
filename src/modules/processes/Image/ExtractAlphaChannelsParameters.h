@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsParameters.h - Released 2020-02-27T12:56:01Z
+// ExtractAlphaChannelsParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -74,14 +74,11 @@ public:
 
    EAChannels( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern EAChannels* TheEAChannelsParameter;
@@ -94,10 +91,9 @@ public:
 
    EAChannelList( MetaProcess* );
 
-   virtual String DefaultValue() const;
-
-   virtual IsoString Id() const;
-   virtual String AllowedCharacters() const;
+   String DefaultValue() const override;
+   IsoString Id() const override;
+   String AllowedCharacters() const override;
 };
 
 extern EAChannelList* TheEAChannelListParameter;
@@ -110,8 +106,8 @@ public:
 
    EAExtract( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern EAExtract* TheEAExtractParameter;
@@ -124,8 +120,8 @@ public:
 
    EADelete( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern EADelete* TheEADeleteParameter;
@@ -139,4 +135,4 @@ PCL_END_LOCAL
 #endif   // __ExtractAlphaChannelsParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ExtractAlphaChannelsParameters.h - Released 2020-07-31T19:33:39Z

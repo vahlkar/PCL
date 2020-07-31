@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// Structure.cpp - Released 2020-02-27T12:56:01Z
+// Structure.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -62,8 +62,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-Structure::Structure( int nw, int sz, const String& nm ) :
-name( nm ), size( Max( 3, sz|1 ) ), mask()
+Structure::Structure( int nw, int sz, const String& nm )
+   : name( nm )
+   , size( Max( 3, sz|1 ) )
 {
    nw = Max( 1, nw );
 
@@ -77,20 +78,7 @@ name( nm ), size( Max( 3, sz|1 ) ), mask()
    }
 }
 
-Structure::Structure( const Structure& s ) :
-name( s.name ), size( s.size ), mask( s.mask )
-{
-}
-
-Structure::Structure( File& f ) : name(), size( 0 ), mask()
-{
-   Read( f );
-}
-
-Structure::Structure( const IsoString& key ) : name(), size( 0 ), mask()
-{
-   Load( key );
-}
+// ----------------------------------------------------------------------------
 
 bool Structure::SameStructure( const Structure& x ) const
 {
@@ -101,6 +89,8 @@ bool Structure::SameStructure( const Structure& x ) const
          return false;
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void Structure::Resize( int sz )
 {
@@ -135,12 +125,16 @@ void Structure::Resize( int sz )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void Structure::Invert( int w )
 {
    for ( int y = 0; y < Size(); ++y )
       for ( int x = 0; x < Size(); ++x )
          SetElement( w, x, y, !Element( w, x, y ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void Structure::Rotate( int w )
 {
@@ -149,6 +143,8 @@ void Structure::Rotate( int w )
       for ( int x = 0; x < Size(); ++x )
          SetElement( w, y, Size()-1-x, t[y*Size() + x] != 0 );
 }
+
+// ----------------------------------------------------------------------------
 
 void Structure::Circular( int w )
 {
@@ -165,6 +161,8 @@ void Structure::Circular( int w )
       }
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void Structure::Diamond( int w )
 {
@@ -191,6 +189,8 @@ void Structure::Diamond( int w )
       SetElement( w, x, n2, true );
 }
 
+// ----------------------------------------------------------------------------
+
 void Structure::Orthogonal( int w )
 {
    int n2 = Size() >> 1;
@@ -206,6 +206,8 @@ void Structure::Orthogonal( int w )
       SetElement( w, x, n2, true );
 }
 
+// ----------------------------------------------------------------------------
+
 void Structure::Diagonal( int w )
 {
    int n2 = Size() >> 1;
@@ -214,32 +216,38 @@ void Structure::Diagonal( int w )
          SetElement( w, x, y, Abs( x-n2 ) == Abs( y-n2 ) );
 }
 
-void Structure::Read( File& f )
+// ----------------------------------------------------------------------------
+
+void Structure::Read( File& file )
 {
    mask.Clear();
 
-   f.Read( name );
-   f.ReadUI32( size );
+   file.Read( name );
+   file.ReadUI32( size );
 
    uint32 numberOfWays;
-   f.ReadUI32( numberOfWays );
+   file.ReadUI32( numberOfWays );
 
    for ( size_type i = 0; i < numberOfWays; ++i )
    {
       mask.Add( ByteArray() );
       mask[i].Add( uint8( 0 ), size*size );
-      f.ReadArray( mask[i].Begin(), mask[i].Length() );
+      file.ReadArray( mask[i].Begin(), mask[i].Length() );
    }
 }
 
-void Structure::Write( File& f ) const
+// ----------------------------------------------------------------------------
+
+void Structure::Write( File& file ) const
 {
-   f.Write( name );
-   f.Write( uint32( size ) );
-   f.Write( uint32( mask.Length() ) );
+   file.Write( name );
+   file.Write( uint32( size ) );
+   file.Write( uint32( mask.Length() ) );
    for ( size_type i = 0; i < mask.Length(); ++i )
-      f.WriteArray( mask[i].Begin(), mask[i].Length() );
+      file.WriteArray( mask[i].Begin(), mask[i].Length() );
 }
+
+// ----------------------------------------------------------------------------
 
 void Structure::Load( const IsoString& key )
 {
@@ -269,6 +277,8 @@ void Structure::Load( const IsoString& key )
    mask = newMask;
 }
 
+// ----------------------------------------------------------------------------
+
 void Structure::Save( const IsoString& key ) const
 {
    Settings::Write( key + "Name", name );
@@ -278,6 +288,7 @@ void Structure::Save( const IsoString& key ) const
       Settings::Write( key + IsoString().Format( "Mask%03d", i ), mask[i] );
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 #define SSM_MAGIC    0x464D5353  // 'SSMF'
@@ -303,6 +314,8 @@ struct STRHeader
    void Write( pcl::File& );
 };
 
+// ----------------------------------------------------------------------------
+
 void STRHeader::Initialize()
 {
    magic = SSM_MAGIC;
@@ -311,6 +324,8 @@ void STRHeader::Initialize()
    numberOfStructures = 0;
    dataPosition = SSM_DATAPOS;
 }
+
+// ----------------------------------------------------------------------------
 
 void STRHeader::Read( pcl::File& f )
 {
@@ -331,6 +346,8 @@ void STRHeader::Read( pcl::File& f )
 
    f.Seek( dataPosition, pcl::SeekMode::FromBegin );
 }
+
+// ----------------------------------------------------------------------------
 
 void STRHeader::Write( pcl::File& f )
 {
@@ -360,6 +377,7 @@ void STRHeader::Write( pcl::File& f )
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 void StructureCollection::Read( const String& filePath )
 {
@@ -385,6 +403,8 @@ void StructureCollection::Read( const String& filePath )
    ERROR_CLEANUP( Destroy() )
 }
 
+// ----------------------------------------------------------------------------
+
 void StructureCollection::Write( const String& filePath )
 {
    try
@@ -406,6 +426,8 @@ void StructureCollection::Write( const String& filePath )
    ERROR_HANDLER
 }
 
+// ----------------------------------------------------------------------------
+
 void StructureCollection::Load( const IsoString& key )
 {
    try
@@ -425,6 +447,8 @@ void StructureCollection::Load( const IsoString& key )
    ERROR_CLEANUP( Destroy() )
 }
 
+// ----------------------------------------------------------------------------
+
 void StructureCollection::Save( const IsoString& key ) const
 {
    try
@@ -442,4 +466,4 @@ void StructureCollection::Save( const IsoString& key ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Structure.cpp - Released 2020-02-27T12:56:01Z
+// EOF Structure.cpp - Released 2020-07-31T19:33:39Z

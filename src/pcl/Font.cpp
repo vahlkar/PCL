@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Font.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Font.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -60,15 +60,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-Font::Font( family f, double ptSize ) :
-   UIObject( (*API->Font->CreateFontByFamily)( ModuleHandle(), f, ptSize ) )
+Font::Font( family f, double ptSize )
+   : UIObject( (*API->Font->CreateFontByFamily)( ModuleHandle(), f, ptSize ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateFontByFamily" );
 }
 
-Font::Font( const String& face, double ptSize ) :
-   UIObject( (*API->Font->CreateFontByFace)( ModuleHandle(), face.c_str(), ptSize ) )
+Font::Font( const String& face, double ptSize )
+   : UIObject( (*API->Font->CreateFontByFace)( ModuleHandle(), face.c_str(), ptSize ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateFontByFace" );
@@ -579,4 +579,4 @@ String PCL_FUNC FamilyToFace( value_type family )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Font.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Font.cpp - Released 2020-07-31T19:33:12Z

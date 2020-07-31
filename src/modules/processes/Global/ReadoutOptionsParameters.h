@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ReadoutOptionsParameters.h - Released 2020-02-27T12:56:01Z
+// ReadoutOptionsParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -70,11 +70,11 @@ public:
 
    ReadoutOptionsData( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ReadoutOptionsData* TheReadoutOptionsDataParameter;
@@ -89,11 +89,11 @@ public:
 
    ReadoutOptionsMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ReadoutOptionsMode* TheReadoutOptionsModeParameter;
@@ -106,11 +106,11 @@ public:
 
    ReadoutOptionsProbeSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool NeedsValidation() const; // to ensure an odd value
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   bool NeedsValidation() const override; // to ensure an odd value
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ReadoutOptionsProbeSize* TheReadoutOptionsProbeSizeParameter;
@@ -123,11 +123,11 @@ public:
 
    ReadoutOptionsPreviewSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool NeedsValidation() const; // to ensure an odd value
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   bool NeedsValidation() const override; // to ensure an odd value
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ReadoutOptionsPreviewSize* TheReadoutOptionsPreviewSizeParameter;
@@ -140,10 +140,10 @@ public:
 
    ReadoutOptionsPreviewZoomFactor( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ReadoutOptionsPreviewZoomFactor* TheReadoutOptionsPreviewZoomFactorParameter;
@@ -156,10 +156,10 @@ public:
 
    ReadoutRealPrecision( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ReadoutRealPrecision* TheReadoutRealPrecisionParameter;
@@ -172,10 +172,10 @@ public:
 
    ReadoutIntegerRange( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ReadoutIntegerRange* TheReadoutIntegerRangeParameter;
@@ -188,8 +188,8 @@ public:
 
    ReadoutAlpha( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ReadoutAlpha* TheReadoutAlphaParameter;
@@ -202,8 +202,8 @@ public:
 
    ReadoutMask( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ReadoutMask* TheReadoutMaskParameter;
@@ -216,8 +216,8 @@ public:
 
    ReadoutPreview( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ReadoutPreview* TheReadoutPreviewParameter;
@@ -230,8 +230,8 @@ public:
 
    ReadoutPreviewCenter( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ReadoutPreviewCenter* TheReadoutPreviewCenterParameter;
@@ -244,8 +244,8 @@ public:
 
    ReadoutShowEquatorial( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ReadoutShowEquatorial* TheReadoutShowEquatorialParameter;
@@ -258,8 +258,8 @@ public:
 
    ReadoutShowEcliptic( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ReadoutShowEcliptic* TheReadoutShowEclipticParameter;
@@ -272,8 +272,8 @@ public:
 
    ReadoutShowGalactic( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ReadoutShowGalactic* TheReadoutShowGalacticParameter;
@@ -286,10 +286,10 @@ public:
 
    ReadoutCoordinateItems( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ReadoutCoordinateItems* TheReadoutCoordinateItemsParameter;
@@ -302,10 +302,10 @@ public:
 
    ReadoutCoordinatePrecision( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ReadoutCoordinatePrecision* TheReadoutCoordinatePrecisionParameter;
@@ -318,8 +318,8 @@ public:
 
    ReadoutBroadcast( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ReadoutBroadcast* TheReadoutBroadcastParameter;
@@ -332,8 +332,8 @@ public:
 
    ReadoutReal( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ReadoutReal* TheReadoutRealParameter;
@@ -347,4 +347,4 @@ PCL_END_LOCAL
 #endif   // __ReadoutOptionsParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ReadoutOptionsParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionDialog.h - Released 2020-02-27T12:56:01Z
+// ConvolutionDialog.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -79,13 +79,12 @@ public:
 
    const Filter& BeingEdited() const
    {
-      return filter;
+      return m_filter;
    }
 
 private:
 
-   int line, column;
-   Filter filter;
+   Filter m_filter;
 
    VerticalSizer  Global_Sizer;
       TextBox           FilterCode_TextBox;
@@ -106,4 +105,4 @@ private:
 #endif   // __ConvolutionDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionDialog.h - Released 2020-02-27T12:56:01Z
+// EOF ConvolutionDialog.h - Released 2020-07-31T19:33:39Z

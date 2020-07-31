@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// FluxCalibrationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "FluxCalibrationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 FluxCalibrationProcess* TheFluxCalibrationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -76,8 +72,6 @@ FluxCalibrationProcess* TheFluxCalibrationProcess = nullptr;
 FluxCalibrationProcess::FluxCalibrationProcess()
 {
    TheFluxCalibrationProcess = this;
-
-   // Instantiate process parameters
 
    new FCWavelengthValue( this );
    new FCWavelengthMode( this );
@@ -127,38 +121,37 @@ IsoString FluxCalibrationProcess::Id() const
 
 IsoString FluxCalibrationProcess::Category() const
 {
-   return "Flux"; // No category
+   return "Flux";
 }
 
 // ----------------------------------------------------------------------------
 
 uint32 FluxCalibrationProcess::Version() const
 {
-   return 0x100; // required
+   return 0x100;
 }
 
 // ----------------------------------------------------------------------------
 
 String FluxCalibrationProcess::Description() const
 {
-   return
-
-   "<html>"
-   "</html>";
+   return "";
 }
 
 // ----------------------------------------------------------------------------
 
-const char** FluxCalibrationProcess::IconImageXPM() const
+String FluxCalibrationProcess::IconImageSVGFile() const
 {
-   return FluxCalibrationIcon_XPM;
+   return "@module_icons_dir/FluxCalibration.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* FluxCalibrationProcess::DefaultInterface() const
 {
    return TheFluxCalibrationInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* FluxCalibrationProcess::Create() const
@@ -330,4 +323,4 @@ int FluxCalibrationProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF FluxCalibrationProcess.cpp - Released 2020-07-31T19:33:39Z

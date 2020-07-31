@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertAction.h - Released 2020-02-27T12:56:01Z
+// InvertAction.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -59,8 +59,6 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// InvertAction
-// ----------------------------------------------------------------------------
 
 class InvertAction : public Action
 {
@@ -68,9 +66,8 @@ public:
 
    InvertAction();
 
-   virtual void Execute();
-
-   virtual bool IsEnabled( ActionInfo ) const;
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -80,4 +77,4 @@ public:
 #endif   // __InvertAction_h
 
 // ----------------------------------------------------------------------------
-// EOF InvertAction.h - Released 2020-02-27T12:56:01Z
+// EOF InvertAction.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceInstance.cpp - Released 2020-02-27T12:56:01Z
+// RGBWorkingSpaceInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -64,35 +64,35 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-RGBWorkingSpaceInstance::RGBWorkingSpaceInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   Y( RGBColorSystem::sRGB.LuminanceCoefficients() ),
-   x( RGBColorSystem::sRGB.ChromaticityXCoordinates() ),
-   y( RGBColorSystem::sRGB.ChromaticityYCoordinates() ),
-   gamma( RGBColorSystem::sRGB.Gamma() ),
-   sRGB( true ),
-   applyGlobalRGBWS( false )
+RGBWorkingSpaceInstance::RGBWorkingSpaceInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , Y( RGBColorSystem::sRGB.LuminanceCoefficients() )
+   , x( RGBColorSystem::sRGB.ChromaticityXCoordinates() )
+   , y( RGBColorSystem::sRGB.ChromaticityYCoordinates() )
+   , gamma( RGBColorSystem::sRGB.Gamma() )
+   , sRGB( true )
+   , applyGlobalRGBWS( false )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-RGBWorkingSpaceInstance::RGBWorkingSpaceInstance( const RGBWorkingSpaceInstance& p ) :
-   ProcessImplementation( p )
+RGBWorkingSpaceInstance::RGBWorkingSpaceInstance( const RGBWorkingSpaceInstance& p )
+   : ProcessImplementation( p )
 {
    Assign( p );
 }
 
 // ----------------------------------------------------------------------------
 
-RGBWorkingSpaceInstance::RGBWorkingSpaceInstance( const MetaProcess* P, const RGBColorSystem& rgbws ) :
-   ProcessImplementation( P ),
-   Y( rgbws.LuminanceCoefficients() ),
-   x( rgbws.ChromaticityXCoordinates() ),
-   y( rgbws.ChromaticityYCoordinates() ),
-   gamma( rgbws.Gamma() ),
-   sRGB( rgbws.IsSRGB() ),
-   applyGlobalRGBWS( false )
+RGBWorkingSpaceInstance::RGBWorkingSpaceInstance( const MetaProcess* P, const RGBColorSystem& rgbws )
+   : ProcessImplementation( P )
+   , Y( rgbws.LuminanceCoefficients() )
+   , x( rgbws.ChromaticityXCoordinates() )
+   , y( rgbws.ChromaticityYCoordinates() )
+   , gamma( rgbws.Gamma() )
+   , sRGB( rgbws.IsSRGB() )
+   , applyGlobalRGBWS( false )
 {
 }
 
@@ -238,4 +238,4 @@ size_type RGBWorkingSpaceInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF RGBWorkingSpaceInstance.cpp - Released 2020-07-31T19:33:39Z

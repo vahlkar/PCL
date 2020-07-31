@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// XISFOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// XISFOptionsDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -57,8 +57,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-XISFOptionsDialogBase::XISFOptionsDialogBase( const XISFOptions& xisfOptions, const char* labelForWidth ) :
-   options( xisfOptions )
+XISFOptionsDialogBase::XISFOptionsDialogBase( const XISFOptions& xisfOptions, const char* labelForWidth )
+   : options( xisfOptions )
 {
    m_labelWidth = Font().Width( String( labelForWidth ? labelForWidth : "Compression codec:" ) + "MM" );
    int ui4 = LogicalPixelsToPhysical( 4 );
@@ -291,8 +291,10 @@ void XISFOptionsDialogBase::Base_Button_Click( Button& sender, bool checked )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-XISFOptionsDialog::XISFOptionsDialog( const ImageOptions& o, const XISFOptions& x, const IsoString& h ) :
-   XISFOptionsDialogBase( x ), imageOptions( o ), outputHints( h )
+XISFOptionsDialog::XISFOptionsDialog( const ImageOptions& o, const XISFOptions& x, const IsoString& h )
+   : XISFOptionsDialogBase( x )
+   , imageOptions( o )
+   , outputHints( h )
 {
    int ui4 = LogicalPixelsToPhysical( 4 );
 
@@ -539,4 +541,4 @@ void XISFOptionsDialog::Dialog_Return( Dialog&/*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF XISFOptionsDialog.cpp - Released 2020-07-31T19:33:23Z

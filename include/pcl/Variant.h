@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Variant.h - Released 2020-02-27T12:55:23Z
+// pcl/Variant.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -340,7 +340,8 @@ public:
    /*!
     * Constructs an invalid %Variant instance that stores no object.
     */
-   Variant() : m_type( VariantType::Invalid )
+   Variant()
+      : m_type( VariantType::Invalid )
    {
       m_data.anyValue = 0;
    }
@@ -348,7 +349,8 @@ public:
    /*!
     * Constructs a %Variant instance to store a \c bool value.
     */
-   Variant( bool b ) : m_type( VariantType::Bool )
+   Variant( bool b )
+      : m_type( VariantType::Bool )
    {
       m_data.boolValue = b;
    }
@@ -356,7 +358,8 @@ public:
    /*!
     * Constructs a %Variant instance to store a signed 8-bit integer value.
     */
-   Variant( int8 i8 ) : m_type( VariantType::Int8 )
+   Variant( int8 i8 )
+      : m_type( VariantType::Int8 )
    {
       m_data.int8Value = i8;
    }
@@ -364,7 +367,8 @@ public:
    /*!
     * Constructs a %Variant instance to store a signed 16-bit integer value.
     */
-   Variant( int16 i16 ) : m_type( VariantType::Int16 )
+   Variant( int16 i16 )
+      : m_type( VariantType::Int16 )
    {
       m_data.int16Value = i16;
    }
@@ -372,7 +376,8 @@ public:
    /*!
     * Constructs a %Variant instance to store a signed 32-bit integer value.
     */
-   Variant( int32 i32 ) : m_type( VariantType::Int32 )
+   Variant( int32 i32 )
+      : m_type( VariantType::Int32 )
    {
       m_data.int32Value = i32;
    }
@@ -380,7 +385,8 @@ public:
    /*!
     * Constructs a %Variant instance to store a signed 64-bit integer value.
     */
-   Variant( int64 i64 ) : m_type( VariantType::Int64 )
+   Variant( int64 i64 )
+      : m_type( VariantType::Int64 )
    {
       m_data.int64Value = i64;
    }
@@ -388,7 +394,8 @@ public:
    /*!
     * Constructs a %Variant instance to store an unsigned 8-bit integer value.
     */
-   Variant( uint8 u8 ) : m_type( VariantType::UInt8 )
+   Variant( uint8 u8 )
+      : m_type( VariantType::UInt8 )
    {
       m_data.uint8Value = u8;
    }
@@ -396,7 +403,8 @@ public:
    /*!
     * Constructs a %Variant instance to store an unsigned 16-bit integer value.
     */
-   Variant( uint16 u16 ) : m_type( VariantType::UInt16 )
+   Variant( uint16 u16 )
+      : m_type( VariantType::UInt16 )
    {
       m_data.uint16Value = u16;
    }
@@ -412,7 +420,8 @@ public:
    /*!
     * Constructs a %Variant instance to store an unsigned 64-bit integer value.
     */
-   Variant( uint64 u64 ) : m_type( VariantType::UInt64 )
+   Variant( uint64 u64 )
+      : m_type( VariantType::UInt64 )
    {
       m_data.uint64Value = u64;
    }
@@ -421,7 +430,8 @@ public:
     * Constructs a %Variant instance to store a \c float value (32-bit floating
     * point).
     */
-   Variant( float f ) : m_type( VariantType::Float )
+   Variant( float f )
+      : m_type( VariantType::Float )
    {
       m_data.float32Value = f;
    }
@@ -430,7 +440,8 @@ public:
     * Constructs a %Variant instance to store a \c double value (64-bit
     * floating point).
     */
-   Variant( double d ) : m_type( VariantType::Double )
+   Variant( double d )
+      : m_type( VariantType::Double )
    {
       m_data.float64Value = d;
    }
@@ -439,7 +450,8 @@ public:
     * Constructs a %Variant instance to store a complex number with \c float
     * components (fcomplex).
     */
-   Variant( fcomplex fc ) : m_type( VariantType::FComplex )
+   Variant( fcomplex fc )
+      : m_type( VariantType::FComplex )
    {
       m_data.anyValue = 0;
       m_data.complex32Value = new fcomplex( fc );
@@ -449,7 +461,8 @@ public:
     * Constructs a %Variant instance to store a complex number with \c double
     * components (dcomplex).
     */
-   Variant( dcomplex dc ) : m_type( VariantType::DComplex )
+   Variant( dcomplex dc )
+      : m_type( VariantType::DComplex )
    {
       m_data.anyValue = 0;
       m_data.complex64Value = new dcomplex( dc );
@@ -458,7 +471,8 @@ public:
    /*!
     * Constructs a %Variant instance to store a time point value (TimePoint).
     */
-   Variant( const TimePoint& t ) : m_type( VariantType::TimePoint )
+   Variant( const TimePoint& t )
+      : m_type( VariantType::TimePoint )
    {
       m_data.anyValue = 0;
       m_data.timePointValue = new TimePoint( t );
@@ -468,7 +482,8 @@ public:
     * Constructs a %Variant instance to store a two-dimensional point with
     * integer coordinates (Point).
     */
-   Variant( const Point& p ) : m_type( VariantType::Point )
+   Variant( const Point& p )
+      : m_type( VariantType::Point )
    {
       m_data.anyValue = 0;
       m_data.i32PointValue = new Point( p );
@@ -478,7 +493,8 @@ public:
     * Constructs a %Variant instance to store a two-dimensional point with
     * \c float coordinates (FPoint).
     */
-   Variant( const FPoint& fp ) : m_type( VariantType::FPoint )
+   Variant( const FPoint& fp )
+      : m_type( VariantType::FPoint )
    {
       m_data.anyValue = 0;
       m_data.f32PointValue = new FPoint( fp );
@@ -488,7 +504,8 @@ public:
     * Constructs a %Variant instance to store a two-dimensional point with
     * \c double coordinates (DPoint).
     */
-   Variant( const DPoint& dp ) : m_type( VariantType::DPoint )
+   Variant( const DPoint& dp )
+      : m_type( VariantType::DPoint )
    {
       m_data.anyValue = 0;
       m_data.f64PointValue = new DPoint( dp );
@@ -498,7 +515,8 @@ public:
     * Constructs a %Variant instance to store a two-dimensional rectangle with
     * integer coordinates (Rect).
     */
-   Variant( const Rect& r ) : m_type( VariantType::Rect )
+   Variant( const Rect& r )
+      : m_type( VariantType::Rect )
    {
       m_data.anyValue = 0;
       m_data.i32RectValue = new Rect( r );
@@ -508,7 +526,8 @@ public:
     * Constructs a %Variant instance to store a two-dimensional rectangle with
     * \c float coordinates (FRect).
     */
-   Variant( const FRect& fr ) : m_type( VariantType::FRect )
+   Variant( const FRect& fr )
+      : m_type( VariantType::FRect )
    {
       m_data.anyValue = 0;
       m_data.f32RectValue = new FRect( fr );
@@ -518,7 +537,8 @@ public:
     * Constructs a %Variant instance to store a two-dimensional rectangle with
     * \c double coordinates (DRect).
     */
-   Variant( const DRect& dr ) : m_type( VariantType::DRect )
+   Variant( const DRect& dr )
+      : m_type( VariantType::DRect )
    {
       m_data.anyValue = 0;
       m_data.f64RectValue = new DRect( dr );
@@ -528,7 +548,8 @@ public:
     * Constructs a %Variant instance to store a vector of 8-bit signed integer
     * components (CharVector).
     */
-   Variant( const CharVector& cv ) : m_type( VariantType::CharVector )
+   Variant( const CharVector& cv )
+      : m_type( VariantType::CharVector )
    {
       m_data.anyValue = 0;
       m_data.i8VectorValue = new CharVector( cv );
@@ -538,7 +559,8 @@ public:
     * Constructs a %Variant instance to store a vector of 8-bit unsigned
     * integer components (ByteVector).
     */
-   Variant( const ByteVector& bv ) : m_type( VariantType::ByteVector )
+   Variant( const ByteVector& bv )
+      : m_type( VariantType::ByteVector )
    {
       m_data.anyValue = 0;
       m_data.ui8VectorValue = new ByteVector( bv );
@@ -548,7 +570,8 @@ public:
     * Constructs a %Variant instance to store a vector of 16-bit signed integer
     * components (I16Vector).
     */
-   Variant( const I16Vector& i16v ) : m_type( VariantType::I16Vector )
+   Variant( const I16Vector& i16v )
+      : m_type( VariantType::I16Vector )
    {
       m_data.anyValue = 0;
       m_data.i16VectorValue = new I16Vector( i16v );
@@ -558,7 +581,8 @@ public:
     * Constructs a %Variant instance to store a vector of 16-bit unsigned
     * integer components (UI16Vector).
     */
-   Variant( const UI16Vector& ui16v ) : m_type( VariantType::UI16Vector )
+   Variant( const UI16Vector& ui16v )
+      : m_type( VariantType::UI16Vector )
    {
       m_data.anyValue = 0;
       m_data.ui16VectorValue = new UI16Vector( ui16v );
@@ -568,7 +592,8 @@ public:
     * Constructs a %Variant instance to store a vector of 32-bit signed integer
     * components (IVector).
     */
-   Variant( const IVector& iv ) : m_type( VariantType::IVector )
+   Variant( const IVector& iv )
+      : m_type( VariantType::IVector )
    {
       m_data.anyValue = 0;
       m_data.i32VectorValue = new IVector( iv );
@@ -578,7 +603,8 @@ public:
     * Constructs a %Variant instance to store a vector of 32-bit unsigned
     * integer components (UIVector).
     */
-   Variant( const UIVector& uiv ) : m_type( VariantType::UIVector )
+   Variant( const UIVector& uiv )
+      : m_type( VariantType::UIVector )
    {
       m_data.anyValue = 0;
       m_data.ui32VectorValue = new UIVector( uiv );
@@ -588,7 +614,8 @@ public:
     * Constructs a %Variant instance to store a vector of 64-bit signed integer
     * components (I64Vector).
     */
-   Variant( const I64Vector& i64v ) : m_type( VariantType::I64Vector )
+   Variant( const I64Vector& i64v )
+      : m_type( VariantType::I64Vector )
    {
       m_data.anyValue = 0;
       m_data.i64VectorValue = new I64Vector( i64v );
@@ -598,7 +625,8 @@ public:
     * Constructs a %Variant instance to store a vector of 64-bit unsigned
     * integer components (UI64Vector).
     */
-   Variant( const UI64Vector& ui64v ) : m_type( VariantType::UI64Vector )
+   Variant( const UI64Vector& ui64v )
+      : m_type( VariantType::UI64Vector )
    {
       m_data.anyValue = 0;
       m_data.ui64VectorValue = new UI64Vector( ui64v );
@@ -608,7 +636,8 @@ public:
     * Constructs a %Variant instance to store a vector of 32-bit floating point
     * real components (FVector).
     */
-   Variant( const FVector& fv ) : m_type( VariantType::FVector )
+   Variant( const FVector& fv )
+      : m_type( VariantType::FVector )
    {
       m_data.anyValue = 0;
       m_data.f32VectorValue = new FVector( fv );
@@ -618,7 +647,8 @@ public:
     * Constructs a %Variant instance to store a vector of 64-bit floating point
     * real components (DVector).
     */
-   Variant( const DVector& dv ) : m_type( VariantType::DVector )
+   Variant( const DVector& dv )
+      : m_type( VariantType::DVector )
    {
       m_data.anyValue = 0;
       m_data.f64VectorValue = new DVector( dv );
@@ -628,7 +658,8 @@ public:
     * Constructs a %Variant instance to store a vector of 32-bit floating point
     * complex components (C32Vector).
     */
-   Variant( const C32Vector& c32v ) : m_type( VariantType::C32Vector )
+   Variant( const C32Vector& c32v )
+      : m_type( VariantType::C32Vector )
    {
       m_data.anyValue = 0;
       m_data.c32VectorValue = new C32Vector( c32v );
@@ -638,7 +669,8 @@ public:
     * Constructs a %Variant instance to store a vector of 64-bit floating point
     * complex components (C64Vector).
     */
-   Variant( const C64Vector& c64v ) : m_type( VariantType::C64Vector )
+   Variant( const C64Vector& c64v )
+      : m_type( VariantType::C64Vector )
    {
       m_data.anyValue = 0;
       m_data.c64VectorValue = new C64Vector( c64v );
@@ -648,7 +680,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 8-bit signed integer
     * elements (CharMatrix).
     */
-   Variant( const CharMatrix& cm ) : m_type( VariantType::CharMatrix )
+   Variant( const CharMatrix& cm )
+      : m_type( VariantType::CharMatrix )
    {
       m_data.anyValue = 0;
       m_data.i8MatrixValue = new CharMatrix( cm );
@@ -658,7 +691,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 8-bit unsigned
     * integer elements (ByteMatrix).
     */
-   Variant( const ByteMatrix& bm ) : m_type( VariantType::ByteMatrix )
+   Variant( const ByteMatrix& bm )
+      : m_type( VariantType::ByteMatrix )
    {
       m_data.anyValue = 0;
       m_data.ui8MatrixValue = new ByteMatrix( bm );
@@ -668,7 +702,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 16-bit signed integer
     * elements (I16Matrix).
     */
-   Variant( const I16Matrix& i16m ) : m_type( VariantType::I16Matrix )
+   Variant( const I16Matrix& i16m )
+      : m_type( VariantType::I16Matrix )
    {
       m_data.anyValue = 0;
       m_data.i16MatrixValue = new I16Matrix( i16m );
@@ -678,7 +713,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 16-bit unsigned
     * integer elements (UI16Matrix).
     */
-   Variant( const UI16Matrix& ui16m ) : m_type( VariantType::UI16Matrix )
+   Variant( const UI16Matrix& ui16m )
+      : m_type( VariantType::UI16Matrix )
    {
       m_data.anyValue = 0;
       m_data.ui16MatrixValue = new UI16Matrix( ui16m );
@@ -688,7 +724,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 32-bit signed integer
     * elements (IMatrix).
     */
-   Variant( const IMatrix& im ) : m_type( VariantType::IMatrix )
+   Variant( const IMatrix& im )
+      : m_type( VariantType::IMatrix )
    {
       m_data.anyValue = 0;
       m_data.i32MatrixValue = new IMatrix( im );
@@ -698,7 +735,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 32-bit unsigned
     * integer elements (UIMatrix).
     */
-   Variant( const UIMatrix& uim ) : m_type( VariantType::UIMatrix )
+   Variant( const UIMatrix& uim )
+      : m_type( VariantType::UIMatrix )
    {
       m_data.anyValue = 0;
       m_data.ui32MatrixValue = new UIMatrix( uim );
@@ -708,7 +746,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 64-bit integer
     * elements (I64Matrix).
     */
-   Variant( const I64Matrix& i64m ) : m_type( VariantType::I64Matrix )
+   Variant( const I64Matrix& i64m )
+      : m_type( VariantType::I64Matrix )
    {
       m_data.anyValue = 0;
       m_data.i64MatrixValue = new I64Matrix( i64m );
@@ -718,7 +757,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 64-bit unsigned
     * integer elements (UI64Matrix).
     */
-   Variant( const UI64Matrix& ui64m ) : m_type( VariantType::UI64Matrix )
+   Variant( const UI64Matrix& ui64m )
+      : m_type( VariantType::UI64Matrix )
    {
       m_data.anyValue = 0;
       m_data.ui64MatrixValue = new UI64Matrix( ui64m );
@@ -728,7 +768,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 32-bit floating point
     * real elements (FMatrix).
     */
-   Variant( const FMatrix& fm ) : m_type( VariantType::FMatrix )
+   Variant( const FMatrix& fm )
+      : m_type( VariantType::FMatrix )
    {
       m_data.anyValue = 0;
       m_data.f32MatrixValue = new FMatrix( fm );
@@ -738,7 +779,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 64-bit floating point
     * real elements (DMatrix).
     */
-   Variant( const DMatrix& dm ) : m_type( VariantType::DMatrix )
+   Variant( const DMatrix& dm )
+      : m_type( VariantType::DMatrix )
    {
       m_data.anyValue = 0;
       m_data.f64MatrixValue = new DMatrix( dm );
@@ -748,7 +790,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 32-bit floating point
     * complex elements (C32Matrix).
     */
-   Variant( const C32Matrix& c32m ) : m_type( VariantType::C32Matrix )
+   Variant( const C32Matrix& c32m )
+      : m_type( VariantType::C32Matrix )
    {
       m_data.anyValue = 0;
       m_data.c32MatrixValue = new C32Matrix( c32m );
@@ -758,7 +801,8 @@ public:
     * Constructs a %Variant instance to store a matrix of 64-bit floating point
     * complex elements (C64Matrix).
     */
-   Variant( const C64Matrix& c64m ) : m_type( VariantType::C64Matrix )
+   Variant( const C64Matrix& c64m )
+      : m_type( VariantType::C64Matrix )
    {
       m_data.anyValue = 0;
       m_data.c64MatrixValue = new C64Matrix( c64m );
@@ -768,7 +812,8 @@ public:
     * Constructs a %Variant instance to store a dynamic array of unsigned 8-bit
     * integers (ByteArray).
     */
-   Variant( const ByteArray& ba ) : m_type( VariantType::ByteArray )
+   Variant( const ByteArray& ba )
+      : m_type( VariantType::ByteArray )
    {
       m_data.anyValue = 0;
       m_data.byteArrayValue = new ByteArray( ba );
@@ -777,7 +822,8 @@ public:
    /*!
     * Constructs a %Variant instance to store a UTF-16 Unicode string (String).
     */
-   Variant( const String& s ) : m_type( VariantType::String )
+   Variant( const String& s )
+      : m_type( VariantType::String )
    {
       m_data.anyValue = 0;
       m_data.stringValue = new String( s );
@@ -787,7 +833,8 @@ public:
     * Constructs a %Variant instance to store an 8-bit ISO/IEC 8859-1 or UTF-8
     * Unicode string (IsoString).
     */
-   Variant( const IsoString& s8 ) : m_type( VariantType::IsoString )
+   Variant( const IsoString& s8 )
+      : m_type( VariantType::IsoString )
    {
       m_data.anyValue = 0;
       m_data.isoStringValue = new IsoString( s8 );
@@ -797,7 +844,8 @@ public:
     * Constructs a %Variant instance to store an 8-bit ISO/IEC 8859-1 or UTF-8
     * Unicode string (IsoString), constructed from a null-terminated C string.
     */
-   Variant( const char* cp ) : m_type( VariantType::IsoString )
+   Variant( const char* cp )
+      : m_type( VariantType::IsoString )
    {
       m_data.anyValue = 0;
       m_data.isoStringValue = new IsoString( cp );
@@ -807,7 +855,8 @@ public:
     * Constructs a %Variant instance to store a list of UTF-16 Unicode strings
     * (StringList).
     */
-   Variant( const StringList& sl ) : m_type( VariantType::StringList )
+   Variant( const StringList& sl )
+      : m_type( VariantType::StringList )
    {
       m_data.anyValue = 0;
       m_data.stringListValue = new StringList( sl );
@@ -817,7 +866,8 @@ public:
     * Constructs a %Variant instance to store a list of 8-bit strings
     * (IsoStringList).
     */
-   Variant( const IsoStringList& isl ) : m_type( VariantType::IsoStringList )
+   Variant( const IsoStringList& isl )
+      : m_type( VariantType::IsoStringList )
    {
       m_data.anyValue = 0;
       m_data.isoStringListValue = new IsoStringList( isl );
@@ -827,7 +877,8 @@ public:
     * Constructs a %Variant instance to store a key/value pair of UTF-16
     * Unicode strings (StringKeyValue).
     */
-   Variant( const StringKeyValue& skv ) : m_type( VariantType::StringKeyValue )
+   Variant( const StringKeyValue& skv )
+      : m_type( VariantType::StringKeyValue )
    {
       m_data.anyValue = 0;
       m_data.stringKeyValueValue = new StringKeyValue( skv );
@@ -837,7 +888,8 @@ public:
     * Constructs a %Variant instance to store a key/value pair of 8-bit strings
     * (IsoStringKeyValue).
     */
-   Variant( const IsoStringKeyValue& iskv ) : m_type( VariantType::IsoStringKeyValue )
+   Variant( const IsoStringKeyValue& iskv )
+      : m_type( VariantType::IsoStringKeyValue )
    {
       m_data.anyValue = 0;
       m_data.isoStringKeyValueValue = new IsoStringKeyValue( iskv );
@@ -847,7 +899,8 @@ public:
     * Constructs a %Variant instance to store a list of key/value pairs of
     * UTF-16 Unicode strings (StringKeyValueList).
     */
-   Variant( const StringKeyValueList& skvl ) : m_type( VariantType::StringKeyValueList )
+   Variant( const StringKeyValueList& skvl )
+      : m_type( VariantType::StringKeyValueList )
    {
       m_data.anyValue = 0;
       m_data.stringKeyValueListValue = new StringKeyValueList( skvl );
@@ -857,7 +910,8 @@ public:
     * Constructs a %Variant instance to store a list of key/value pairs of
     * 8-bit strings (IsoStringKeyValueList).
     */
-   Variant( const IsoStringKeyValueList& iskvl ) : m_type( VariantType::IsoStringKeyValueList )
+   Variant( const IsoStringKeyValueList& iskvl )
+      : m_type( VariantType::IsoStringKeyValueList )
    {
       m_data.anyValue = 0;
       m_data.isoStringKeyValueListValue = new IsoStringKeyValueList( iskvl );
@@ -867,7 +921,8 @@ public:
     * Copy constructor. This %Variant will store a copy of the object stored in
     * another %Variant \a x.
     */
-   Variant( const Variant& x ) : m_type( VariantType::Invalid )
+   Variant( const Variant& x )
+      : m_type( VariantType::Invalid )
    {
       m_data.anyValue = 0;
       Copy( x );
@@ -1842,4 +1897,4 @@ namespace pcl
 #endif   // __PCL_Variant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Variant.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Variant.h - Released 2020-07-31T19:33:04Z

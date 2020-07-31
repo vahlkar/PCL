@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/GlobalSettings.h - Released 2020-02-27T12:55:23Z
+// pcl/GlobalSettings.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -234,6 +234,7 @@ namespace GlobalVariableType
  * <tr><td>TransparencyBrush/Brush</td><td>See the pcl::BackgroundBrush namespace.</td></tr>
  * <tr><td>Workspace/PrimaryScreenCenterX</td><td>Read-only. In physical device pixels.</td></tr>
  * <tr><td>Workspace/PrimaryScreenCenterY</td><td>Read-only. In physical device pixels.</td></tr>
+ * <tr><td>Workspace/IconGridSpacing</td><td>Grid distance for aligned icon positions on all workspaces. In logical device pixels.</td></tr>
  * </table>
  *
  * <h4>Global Reals</h4>
@@ -254,7 +255,7 @@ namespace GlobalVariableType
  *
  * <h4>Global Colors</h4>
  *
- * Since PixInsight Core version 1.8.0, most UI colors and fonts are defined in
+ * Since PixInsight core version 1.8.0, most UI colors and fonts are defined in
  * cascading style sheet files loaded automatically on startup. Only the
  * following four color variables remain because they are purely functional
  * (i.e., not related to the appearance of GUI controls).
@@ -268,7 +269,7 @@ namespace GlobalVariableType
  *
  * <h4>Global Fonts</h4>
  *
- * Currently there are no global font variables. Since PixInsight Core version
+ * Currently there are no global font variables. Since PixInsight core version
  * 1.8.0, all UI fonts are defined through cascading style sheet files loaded
  * automatically on startup.
  *
@@ -509,4 +510,4 @@ public:
 #endif   // __PCL_GlobalSettings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GlobalSettings.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/GlobalSettings.h - Released 2020-07-31T19:33:04Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIMountInstance.cpp - Released 2020-02-27T12:56:01Z
+// INDIMountInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -73,37 +73,41 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-INDIMountInstance::INDIMountInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_deviceName( TheIMCDeviceNameParameter->DefaultValue() ),
-   p_command( IMCCommand::Default ),
-   p_slewRate( IMCSlewRate::Default ),
-   p_alignmentMethod( IMCAlignmentMethod::Default ),
-   p_pierSide( IMCPierSide::Default ),
-   p_targetRA( TheIMCTargetRAParameter->DefaultValue() ),
-   p_targetDec( TheIMCTargetDecParameter->DefaultValue() ),
-   p_enableAlignmentCorrection( TheIMCEnableAlignmentCorrectionParameter->DefaultValue() ),
-   p_alignmentFile( TheIMCAlignmentFileParameter->DefaultValue() ),
-   p_alignmentConfig( TheIMCAlignmentConfigParameter->DefaultValue() ),
-   o_currentLST( TheIMCCurrentLSTParameter->DefaultValue() ),
-   o_currentRA( TheIMCCurrentRAParameter->DefaultValue() ),
-   o_currentDec( TheIMCCurrentDecParameter->DefaultValue() ),
-   o_apparentTargetRA( TheIMCApparentTargetRAParameter->DefaultValue() ),
-   o_apparentTargetDec( TheIMCApparentTargetDecParameter->DefaultValue() ),
-   o_geographicLatitude( TheIMCGeographicLatitudeParameter->DefaultValue() ),
-   o_syncLST( TheIMCSyncLSTParameter->DefaultValue() ),
-   o_syncCelestialRA( TheIMCSyncCelestialRAParameter->DefaultValue() ),
-   o_syncCelestialDEC( TheIMCSyncCelestialDecParameter->DefaultValue() ),
-   o_syncTelescopeRA( TheIMCSyncTelescopeRAParameter->DefaultValue() ),
-   o_syncTelescopeDEC( TheIMCSyncTelescopeDecParameter->DefaultValue() )
+INDIMountInstance::INDIMountInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_deviceName( TheIMCDeviceNameParameter->DefaultValue() )
+   , p_command( IMCCommand::Default )
+   , p_slewRate( IMCSlewRate::Default )
+   , p_alignmentMethod( IMCAlignmentMethod::Default )
+   , p_pierSide( IMCPierSide::Default )
+   , p_targetRA( TheIMCTargetRAParameter->DefaultValue() )
+   , p_targetDec( TheIMCTargetDecParameter->DefaultValue() )
+   , p_enableAlignmentCorrection( TheIMCEnableAlignmentCorrectionParameter->DefaultValue() )
+   , p_alignmentFile( TheIMCAlignmentFileParameter->DefaultValue() )
+   , p_alignmentConfig( TheIMCAlignmentConfigParameter->DefaultValue() )
+   , o_currentLST( TheIMCCurrentLSTParameter->DefaultValue() )
+   , o_currentRA( TheIMCCurrentRAParameter->DefaultValue() )
+   , o_currentDec( TheIMCCurrentDecParameter->DefaultValue() )
+   , o_apparentTargetRA( TheIMCApparentTargetRAParameter->DefaultValue() )
+   , o_apparentTargetDec( TheIMCApparentTargetDecParameter->DefaultValue() )
+   , o_geographicLatitude( TheIMCGeographicLatitudeParameter->DefaultValue() )
+   , o_syncLST( TheIMCSyncLSTParameter->DefaultValue() )
+   , o_syncCelestialRA( TheIMCSyncCelestialRAParameter->DefaultValue() )
+   , o_syncCelestialDEC( TheIMCSyncCelestialDecParameter->DefaultValue() )
+   , o_syncTelescopeRA( TheIMCSyncTelescopeRAParameter->DefaultValue() )
+   , o_syncTelescopeDEC( TheIMCSyncTelescopeDecParameter->DefaultValue() )
 {
 }
 
-INDIMountInstance::INDIMountInstance( const INDIMountInstance& x ) :
-   ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+INDIMountInstance::INDIMountInstance( const INDIMountInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
+
+// ----------------------------------------------------------------------------
 
 void INDIMountInstance::Assign( const ProcessImplementation& p )
 {
@@ -133,6 +137,8 @@ void INDIMountInstance::Assign( const ProcessImplementation& p )
       o_syncTelescopeDEC = x->o_syncTelescopeDEC;
    }
 }
+
+// ----------------------------------------------------------------------------
 
 bool INDIMountInstance::CanExecuteOn( const View& view, pcl::String& whyNot ) const
 {
@@ -174,10 +180,14 @@ bool INDIMountInstance::CanExecuteOn( const View& view, pcl::String& whyNot ) co
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool INDIMountInstance::IsHistoryUpdater( const View& ) const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool INDIMountInstance::CanExecuteGlobal( pcl::String& whyNot ) const
 {
@@ -190,8 +200,8 @@ class INDIMountInstanceExecution : public AbstractINDIMountExecution
 {
 public:
 
-   INDIMountInstanceExecution( INDIMountInstance& instance ) :
-      AbstractINDIMountExecution( instance )
+   INDIMountInstanceExecution( INDIMountInstance& instance )
+      : AbstractINDIMountExecution( instance )
    {
       m_command = IMCCommand::Default;
    }
@@ -338,6 +348,8 @@ bool INDIMountInstance::ExecuteGlobal()
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool INDIMountInstance::ExecuteOn( View& view )
 {
    double telescopePointingRA, telescopePointingDec;
@@ -446,6 +458,8 @@ bool INDIMountInstance::ExecuteOn( View& view )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void* INDIMountInstance::LockParameter( const MetaParameter* p, size_type tableRow )
 {
    if ( p == TheIMCDeviceNameParameter )
@@ -494,6 +508,8 @@ void* INDIMountInstance::LockParameter( const MetaParameter* p, size_type tableR
    return nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 bool INDIMountInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
    if ( p == TheIMCDeviceNameParameter )
@@ -514,6 +530,8 @@ bool INDIMountInstance::AllocateParameter( size_type sizeOrLength, const MetaPar
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type INDIMountInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheIMCDeviceNameParameter )
@@ -524,6 +542,8 @@ size_type INDIMountInstance::ParameterLength( const MetaParameter* p, size_type 
 
    return 0;
 }
+
+// ----------------------------------------------------------------------------
 
 bool INDIMountInstance::ValidateDevice( bool throwErrors ) const
 {
@@ -556,6 +576,8 @@ bool INDIMountInstance::ValidateDevice( bool throwErrors ) const
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 void INDIMountInstance::SendDeviceProperties( bool async ) const
 {
    INDIClient* indi = INDIClient::TheClientOrDie();
@@ -566,6 +588,8 @@ void INDIMountInstance::SendDeviceProperties( bool async ) const
                                    "ON",
                                    async );
 }
+
+// ----------------------------------------------------------------------------
 
 String INDIMountInstance::MountSlewRatePropertyString( int slewRateIdx )
 {
@@ -583,6 +607,8 @@ String INDIMountInstance::MountSlewRatePropertyString( int slewRateIdx )
       throw Error( "Internal error: INDIMountInstance: Invalid slew rate." );
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void INDIMountInstance::GetCurrentCoordinates()
 {
@@ -620,11 +646,15 @@ void INDIMountInstance::GetCurrentCoordinates()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void INDIMountInstance::GetTargetCoordinates( double& targetRA, double& targetDec ) const
 {
    targetRA = p_targetRA;
    targetDec = p_targetDec;
 }
+
+// ----------------------------------------------------------------------------
 
 void INDIMountInstance::GetPierSide()
 {
@@ -658,6 +688,8 @@ void INDIMountInstance::GetPierSide()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 bool INDIMountInstance::isForceCounterWeightUp() const
 {
    INDIClient* indi = INDIClient::TheClientOrDie();
@@ -669,10 +701,14 @@ bool INDIMountInstance::isForceCounterWeightUp() const
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 void INDIMountInstance::AddSyncDataPoint( const SyncDataPoint& syncDataPoint )
 {
    this->syncDataArray.Add( syncDataPoint );
 }
+
+// ----------------------------------------------------------------------------
 
 void INDIMountInstance::loadSyncData( Array<SyncDataPoint>& syncDataList, String syncDataFile )
 {
@@ -696,6 +732,8 @@ void INDIMountInstance::loadSyncData( Array<SyncDataPoint>& syncDataList, String
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void AbstractINDIMountExecution::ApplyPointingModelCorrection( AlignmentModel* aModel, double& targetRA, double& targetDec )
 {
    double localSiderialTime = m_instance.o_currentLST;
@@ -710,6 +748,8 @@ void AbstractINDIMountExecution::ApplyPointingModelCorrection( AlignmentModel* a
    targetRA = localSiderialTime - newHourAngle;
    targetDec = newDec;
 }
+
+// ----------------------------------------------------------------------------
 
 void AbstractINDIMountExecution::Perform()
 {
@@ -1194,6 +1234,8 @@ void AbstractINDIMountExecution::Perform()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void AbstractINDIMountExecution::Abort()
 {
    if ( IsRunning() )
@@ -1205,4 +1247,4 @@ void AbstractINDIMountExecution::Abort()
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF INDIMountInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformParameters.cpp - Released 2020-02-27T12:56:01Z
+// FourierTransformParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -57,8 +57,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FTRadialCoordinates* TheFTRadialCoordinatesParameter = 0;
-FTCentered*          TheFTCenteredParameter = 0;
+FTRadialCoordinates* TheFTRadialCoordinatesParameter = nullptr;
+FTCentered*          TheFTCenteredParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -99,4 +99,4 @@ bool FTCentered::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF FourierTransformParameters.cpp - Released 2020-07-31T19:33:39Z

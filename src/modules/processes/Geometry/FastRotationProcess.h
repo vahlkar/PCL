@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FastRotationProcess.h - Released 2020-02-27T12:56:01Z
+// FastRotationProcess.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -68,18 +68,12 @@ public:
 
    IsoString Id() const override;
    IsoString Category() const override;
-
    uint32 Version() const override;
-
    String Description() const override;
-
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    ProcessInterface* DefaultInterface() const override;
-
    ProcessImplementation* Create() const override;
    ProcessImplementation* Clone( const ProcessImplementation& ) const override;
-
    bool CanProcessCommandLines() const override;
    int ProcessCommandLine( const StringList& ) const override;
 };
@@ -97,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __FastRotationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationProcess.h - Released 2020-02-27T12:56:01Z
+// EOF FastRotationProcess.h - Released 2020-07-31T19:33:39Z

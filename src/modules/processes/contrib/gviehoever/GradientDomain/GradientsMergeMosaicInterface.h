@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaicInterface.h - Released 2020-02-27T12:56:01Z
+// GradientsMergeMosaicInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -49,33 +49,26 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-class GradientsMergeMosaicInterface: public ProcessInterface
+class GradientsMergeMosaicInterface : public ProcessInterface
 {
 public:
 
    GradientsMergeMosaicInterface();
    virtual ~GradientsMergeMosaicInterface();
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   InterfaceFeatures Features() const;
-
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual void SaveSettings() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   void SaveSettings() const override;
 
 private:
 
@@ -83,43 +76,43 @@ private:
 
    struct GUIData
    {
-      GUIData(GradientsMergeMosaicInterface& );
+      GUIData( GradientsMergeMosaicInterface& );
 
-      VerticalSizer  Global_Sizer;
+      VerticalSizer Global_Sizer;
 
-      SectionBar        TargetImages_SectionBar;
-      Control           TargetImages_Control;
-      HorizontalSizer   TargetImages_Sizer;
-         TreeBox           TargetImages_TreeBox;
-         VerticalSizer     TargetButtons_Sizer;
-            PushButton        AddFiles_PushButton;
-            PushButton        MoveUp_PushButton;
-            PushButton        MoveDown_PushButton;
-            PushButton        SelectAll_PushButton;
-            PushButton        InvertSelection_PushButton;
-            PushButton        ToggleSelected_PushButton;
-            PushButton        RemoveSelected_PushButton;
-            PushButton        Clear_PushButton;
-            CheckBox          FullPaths_CheckBox;
+      SectionBar TargetImages_SectionBar;
+      Control TargetImages_Control;
+      HorizontalSizer TargetImages_Sizer;
+      TreeBox TargetImages_TreeBox;
+      VerticalSizer TargetButtons_Sizer;
+      PushButton AddFiles_PushButton;
+      PushButton MoveUp_PushButton;
+      PushButton MoveDown_PushButton;
+      PushButton SelectAll_PushButton;
+      PushButton InvertSelection_PushButton;
+      PushButton ToggleSelected_PushButton;
+      PushButton RemoveSelected_PushButton;
+      PushButton Clear_PushButton;
+      CheckBox FullPaths_CheckBox;
 
-      SectionBar        Parameters_SectionBar;
-      Control           Parameters_Control;
-      VerticalSizer     Parameters_Sizer;
-         HorizontalSizer   Type_Sizer;
-            Label             Type_Label;
-            ComboBox          Type_ComboBox;
-         HorizontalSizer   ShrinkCount_Sizer;
-            Label             ShrinkCount_Label;
-            SpinBox           ShrinkCount_SpinBox;
+      SectionBar Parameters_SectionBar;
+      Control Parameters_Control;
+      VerticalSizer Parameters_Sizer;
+      HorizontalSizer Type_Sizer;
+      Label Type_Label;
+      ComboBox Type_ComboBox;
+      HorizontalSizer ShrinkCount_Sizer;
+      Label ShrinkCount_Label;
+      SpinBox ShrinkCount_SpinBox;
 
-      HorizontalSizer   FeatherRadius_Sizer;
-         Label             FeatherRadius_Label;
-         SpinBox           FeatherRadius_SpinBox;
+      HorizontalSizer FeatherRadius_Sizer;
+      Label FeatherRadius_Label;
+      SpinBox FeatherRadius_SpinBox;
 
-      NumericControl    BlackPoint_NumericControl;
-      HorizontalSizer   GenerateMask_Sizer;
-         Label            GenerateMask_Label;
-         CheckBox         GenerateMask_CheckBox;
+      NumericControl BlackPoint_NumericControl;
+      HorizontalSizer GenerateMask_Sizer;
+      Label GenerateMask_Label;
+      CheckBox GenerateMask_CheckBox;
    };
 
    GUIData* GUI = nullptr;
@@ -134,25 +127,12 @@ private:
    void __TargetImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
    void __TargetImages_NodeSelectionUpdated( TreeBox& sender );
    void __TargetImages_Click( Button& sender, bool checked );
-
-   // void __CheckSection( SectionBar& sender, bool checked );
    void __ToggleSection( SectionBar& sender, Control& section, bool start );
-
-   /// callback for type selection
-   void __TypeItemSelected( ComboBox &sender, int itemIndex );
-
-   /// callback for shrinkCount spinbox
+   void __TypeItemSelected( ComboBox& sender, int itemIndex );
    void __ShrinkCountValueUpdated( SpinBox& sender, int value );
-
-   /// callback for featherRadius spinbox
    void __FeatherRadiusValueUpdated( SpinBox& sender, int value );
-
-   /// callback for black point
    void __BlackPointValueUpdated( NumericEdit& sender, double value );
-
-   /// callback for generate mask checkbox
-   void _GenerateMaskClicked( Button& sender, bool checked );
-
+   void __GenerateMaskClicked( Button& sender, bool checked );
    void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
    void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
 
@@ -162,14 +142,14 @@ private:
 // ----------------------------------------------------------------------------
 
 PCL_BEGIN_LOCAL
-   extern GradientsMergeMosaicInterface* TheGradientsMergeMosaicInterface;
+extern GradientsMergeMosaicInterface* TheGradientsMergeMosaicInterface;
 PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaicInterface.h - Released 2020-02-27T12:56:01Z
+// EOF GradientsMergeMosaicInterface.h - Released 2020-07-31T19:33:39Z

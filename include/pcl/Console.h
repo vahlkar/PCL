@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Console.h - Released 2020-02-27T12:55:23Z
+// pcl/Console.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -245,7 +245,7 @@ class PCL_CLASS View;
  *
  * <h2>ANSI Escape Codes</h2>
  *
- * Since version 1.8.1 of the PixInsight Core application, PixInsight consoles
+ * Since version 1.8.1 of the PixInsight core application, PixInsight consoles
  * support a large set of ANSI CSI (Control Sequence Introducer) codes. For a
  * detailed description of ANSI escape codes, refer to the following documents:
  *
@@ -373,8 +373,9 @@ public:
    /*!
     * Move constructor.
     */
-   Console( Console&& x ) :
-      m_handle( x.m_handle ), m_thread( x.m_thread )
+   Console( Console&& x )
+      : m_handle( x.m_handle )
+      , m_thread( x.m_thread )
    {
       x.m_handle = x.m_thread = nullptr;
    }
@@ -612,7 +613,7 @@ public:
    void Flush();
 
    /*!
-    * Shows the %Process %Console window in the PixInsight Core application.
+    * Shows the %Process %Console window in the PixInsight core application.
     *
     * The visibility of a console can only be controlled if it is the process
     * console window. Furthermore, a module cannot show or hide the console if
@@ -630,7 +631,7 @@ public:
    bool Show( bool show = true );
 
    /*!
-    * Hides the %Process %Console window in the PixInsight Core application.
+    * Hides the %Process %Console window in the PixInsight core application.
     *
     * This is a convenience function, equivalent to: Show( !hide )
     *
@@ -825,4 +826,4 @@ inline Console& operator >>( Console& o, String& s )
 #endif   // __PCL_Console_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Console.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Console.h - Released 2020-07-31T19:33:04Z

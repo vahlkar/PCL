@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionParameters.cpp - Released 2020-02-27T12:56:01Z
+// ConvolutionParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -57,16 +57,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ConMode*            TheConModeParameter = 0;
-ConSigma*           TheConSigmaParameter = 0;
-ConShape*           TheConShapeParameter = 0;
-ConAspectRatio*     TheConAspectRatioParameter = 0;
-ConRotationAngle*   TheConRotationAngleParameter = 0;
-ConSourceCode*      TheConSourceCodeParameter = 0;
+ConMode*            TheConModeParameter = nullptr;
+ConSigma*           TheConSigmaParameter = nullptr;
+ConShape*           TheConShapeParameter = nullptr;
+ConAspectRatio*     TheConAspectRatioParameter = nullptr;
+ConRotationAngle*   TheConRotationAngleParameter = nullptr;
+ConSourceCode*      TheConSourceCodeParameter = nullptr;
 ConRescaleHighPass* TheConRescaleHighPassParameter;
-ConViewId*          TheConViewIdParameter = 0;
+ConViewId*          TheConViewIdParameter = nullptr;
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 ConMode::ConMode( MetaProcess* P ) : MetaEnumeration( P )
@@ -284,4 +283,4 @@ IsoString ConViewId::Id() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF ConvolutionParameters.cpp - Released 2020-07-31T19:33:39Z

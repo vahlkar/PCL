@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Crop.h - Released 2020-02-27T12:55:23Z
+// pcl/Crop.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -112,8 +112,9 @@ public:
     * Constructs a %Crop object with the specified cropping margins for
     * the \a left, \a top, \a right and \a bottom sides.
     */
-   Crop( double left = 0, double top = 0, double right = 0, double bottom = 0 ) :
-      m_margins( left, top, right, bottom ), m_mode( CropMode::RelativeMargins )
+   Crop( double left = 0, double top = 0, double right = 0, double bottom = 0 )
+      : m_margins( left, top, right, bottom )
+      , m_mode( CropMode::RelativeMargins )
    {
    }
 
@@ -122,8 +123,9 @@ public:
     * components of a rectangle \a r.
     */
    template <typename T>
-   Crop( const GenericRectangle<T>& r ) :
-      m_margins( r ), m_mode( CropMode::RelativeMargins )
+   Crop( const GenericRectangle<T>& r )
+      : m_margins( r )
+      , m_mode( CropMode::RelativeMargins )
    {
    }
 
@@ -256,4 +258,4 @@ protected:
 #endif   // __PCL_Crop_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Crop.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Crop.h - Released 2020-07-31T19:33:04Z

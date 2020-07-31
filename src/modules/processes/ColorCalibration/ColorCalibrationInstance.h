@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ColorCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// ColorCalibrationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -68,13 +68,13 @@ public:
    ColorCalibrationInstance( const MetaProcess* );
    ColorCalibrationInstance( const ColorCalibrationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
@@ -82,7 +82,7 @@ private:
    float    whiteLow;
    float    whiteHigh;
    pcl_bool whiteUseROI;
-   Rect     whiteROI;
+   Rect     whiteROI = 0;
    pcl_bool structureDetection;
    int32    structureLayers;
    int32    noiseLayers;
@@ -96,7 +96,7 @@ private:
    float    backgroundLow;
    float    backgroundHigh;
    pcl_bool backgroundUseROI;
-   Rect     backgroundROI;
+   Rect     backgroundROI = 0;
 
    pcl_bool outputWhiteReferenceMask;
    pcl_bool outputBackgroundReferenceMask;
@@ -113,4 +113,4 @@ private:
 #endif   // __ColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ColorCalibrationInstance.h - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ViewSelectionDialog.h - Released 2020-02-27T12:55:23Z
+// pcl/ViewSelectionDialog.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -90,8 +90,8 @@ public:
     */
    ViewSelectionDialog( const IsoString& id = IsoString(), bool allowPreviews = true );
 
-   ViewSelectionDialog( const IsoString::ustring_base& id, bool allowPreviews = true ) :
-      ViewSelectionDialog( IsoString( id ), allowPreviews )
+   ViewSelectionDialog( const IsoString::ustring_base& id, bool allowPreviews = true )
+      : ViewSelectionDialog( IsoString( id ), allowPreviews )
    {
    }
 
@@ -146,4 +146,4 @@ private:
 #endif   // __PCL_ViewSelectionDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ViewSelectionDialog.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ViewSelectionDialog.h - Released 2020-07-31T19:33:04Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionInstance.h - Released 2020-02-27T12:56:01Z
+// ScreenTransferFunctionInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -93,6 +93,8 @@ struct STF
    }
 };
 
+// ----------------------------------------------------------------------------
+
 class ScreenTransferFunctionInstance : public ProcessImplementation
 {
 public:
@@ -102,13 +104,13 @@ public:
    ScreenTransferFunctionInstance( const MetaProcess* );
    ScreenTransferFunctionInstance( const ScreenTransferFunctionInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool IsHistoryUpdater( const View& ) const;
-   virtual bool IsMaskable( const View&, const ImageWindow& ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter*, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter*, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool IsHistoryUpdater( const View& ) const override;
+   bool IsMaskable( const View&, const ImageWindow& ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter*, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter*, size_type tableRow ) const override;
 
    void GetViewSTF( const View& );
 
@@ -116,28 +118,28 @@ public:
 
    const STF& operator []( int i ) const
    {
-      return stf[i];
+      return p_stf[i];
    }
 
    STF& operator []( int i )
    {
-      return stf[i];
+      return p_stf[i];
    }
 
    pcl_enum Interaction() const
    {
-      return interaction;
+      return p_interaction;
    }
 
 private:
 
-   stf_list stf;
+   stf_list p_stf;
 
    /*
     * The following parameter is updated by ScreenTransferFunctionInterface and
     * is used to import STF instances by HistogramTransformationInterface.
     */
-   pcl_enum interaction;
+   pcl_enum p_interaction;
 };
 
 // ----------------------------------------------------------------------------
@@ -147,4 +149,4 @@ private:
 #endif   // __ScreenTransferFunctionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ScreenTransferFunctionInstance.h - Released 2020-07-31T19:33:39Z

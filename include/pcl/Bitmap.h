@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Bitmap.h - Released 2020-02-27T12:55:23Z
+// pcl/Bitmap.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -110,6 +110,46 @@ namespace BitmapFormat
       Invalid = -1
    };
 }
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \namespace pcl::SVGRenderOption
+ * \brief Rendering options for raster image representation of SVG documents.
+ *
+ * <table border="1" cellpadding="4" cellspacing="0">
+ * <tr><td>SVGRenderOption::PreserveAspectRatio</td>
+ *     <td>Render within the specified rectangular area, preserving the
+ *         original aspect ratio of the SVG drawing. If not selected, render
+ *         freely to fill the specified rectangular area entirely.</td></tr>
+ * <tr><td>SVGRenderOption::HighQuality</td>
+ *     <td>Render with a high-quality, thread-unsafe implementation supporting
+ *         the entire SVG 1.1 specification. If not selected, use a fast
+ *         thread-safe implementation that supports most of the SVG 1.1
+ *         specification.</td></tr>
+ * <tr><td>SVGRenderOption::Default</td>
+ *     <td>Default rendering options:
+ *         SVGRenderOption::PreserveAspectRatio | SVGRenderOption::Fast</td></tr>
+ * </table>
+ */
+namespace SVGRenderOption
+{
+   enum mask_type
+   {
+      IgnoreAspectRatio   = 0x00000000,  // Render freely to fill the specified rectangular area entirely, ignoring aspect ratio.
+      PreserveAspectRatio = 0x00000001,  // Render within the specified rectangular area, preserving the original aspect ratio of the SVG drawing.
+      Fast                = 0x00000000,  // Render with a fast, thread-safe implementation that supports most of the SVG 1.1 specification.
+      HighQuality         = 0x00000010,  // Render with a high-quality, thread-unsafe implementation supporting the entire SVG 1.1 specification.
+      Default             = PreserveAspectRatio|Fast
+   };
+};
+
+/*!
+ * \class pcl::SVGRenderOptions
+ * \brief A collection of rendering options for raster image representation of
+ * SVG documents.
+ */
+typedef Flags<SVGRenderOption::mask_type>  SVGRenderOptions;
 
 // ----------------------------------------------------------------------------
 
@@ -1369,9 +1409,9 @@ public:
     * core bitmap rendering routines to reproduce bitmaps on high-dpi screens
     * and other high-density graphics output devices.
     *
-    * The specified \e ratio must be greater than or equal to one. On OS X with
-    * Retina monitors working in high-dpi modes, this function can be used to
-    * ensure that a bitmap will be reproduced as a high-resolution image by
+    * The specified \e ratio must be greater than or equal to one. On macOS
+    * with Retina monitors working in high-dpi modes, this function can be used
+    * to ensure that a bitmap will be reproduced as a high-resolution image by
     * setting its output pixel ratio to 2.0. In such case the bitmap will be
     * drawn on the screen with one half its actual pixel dimensions in logical
     * pixels, using the native physical monitor resoluton. On other platforms
@@ -1382,6 +1422,75 @@ public:
     * \sa PhysicalPixelRatio()
     */
    void SetPhysicalPixelRatio( double ratio );
+
+   /*!
+    * Renders an SVG document file as a raster image into a new %Bitmap object.
+    *
+    * \param filePath   Path to an existing file in the local file system,
+    *                   which must store a valid SVG document representing the
+    *                   image to be rendered. The SVG source code must be
+    *                   encoded in UTF-8.
+    *
+    * \param width,height  The width and height in pixels of the image where
+    *                   the SVG rendition will be generated. If a dimension is
+    *                   &le; 0, the rendition will use the corresponding
+    *                   dimension specified by the SVG document: either viewBox
+    *                   coordinates, if available, or the width and height
+    *                   attributes of the root svg element.
+    *
+    * \param options    Rendering options. See the SVGRenderOption namespace
+    *                   for possible values.
+    *
+    * <b>Automatic Resource Location</b>
+    *
+    * This function can load SVG documents from arbitrary locations on the
+    * local file system. However, modules typically install their process and
+    * interface icons on the /rsc/icons/module directory under the local
+    * PixInsight installation. A module can specify the "@module_icons_dir/"
+    * prefix in the \a filePath argument to this function to let the PixInsight
+    * core application load the corresponding SVG document from the appropriate
+    * standard distribution directory automatically. For example, suppose that
+    * this function is invoked by a "Foo" module as follows:
+    *
+    * \code
+    * Bitmap RenderSpecialIcon()
+    * {
+    *    return Bitmap::FromSVGFile( "@module_icons_dir/special/icon.svg" );
+    * }
+    * \endcode
+    *
+    * Then the core application will attempt to load the following SVG file:
+    *
+    * &lt;install-dir&gt;/rsc/icons/module/Foo/special/icon.svg
+    *
+    * where &lt;install-dir&gt; is the local directory where the running
+    * PixInsight core application is installed.
+    *
+    * \sa FromSVG()
+    */
+   static Bitmap FromSVGFile( const String& filePath, int width = 0, int height = 0,
+                              SVGRenderOptions options = SVGRenderOption::Default );
+
+   /*!
+    * Renders an SVG document as a raster image into a new %Bitmap object.
+    *
+    * \param filePath   The source code of a valid SVG document representing
+    *                   the image to be rendered, encoded in UTF-8.
+    *
+    * \param width,height  The width and height in pixels of the image where
+    *                   the SVG rendition will be generated. If a dimension is
+    *                   &le; 0, the rendition will use the corresponding
+    *                   dimension specified by the SVG document: either viewBox
+    *                   coordinates, if available, or the width and height
+    *                   attributes of the root svg element.
+    *
+    * \param options    Rendering options. See the SVGRenderOption namespace
+    *                   for possible values.
+    *
+    * \sa FromSVGFile()
+    */
+   static Bitmap FromSVG( const IsoString& svgSource, int width = 0, int height = 0,
+                          SVGRenderOptions options = SVGRenderOption::Default );
 
 private:
 
@@ -1419,4 +1528,4 @@ private:
 #endif   // __PCL_Bitmap_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Bitmap.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Bitmap.h - Released 2020-07-31T19:33:04Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeInstance.cpp - Released 2020-02-27T12:56:01Z
+// BinarizeInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -63,17 +63,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-BinarizeInstance::BinarizeInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   isGlobal( TheBinarizeIsGlobalParameter->DefaultValue() )
+BinarizeInstance::BinarizeInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_global( TheBinarizeIsGlobalParameter->DefaultValue() )
 {
-   level[0] = TheBinarizeLevelRParameter->DefaultValue();
-   level[1] = TheBinarizeLevelGParameter->DefaultValue();
-   level[2] = TheBinarizeLevelBParameter->DefaultValue();
+   p_level[0] = TheBinarizeLevelRParameter->DefaultValue();
+   p_level[1] = TheBinarizeLevelGParameter->DefaultValue();
+   p_level[2] = TheBinarizeLevelBParameter->DefaultValue();
 }
 
-BinarizeInstance::BinarizeInstance( const BinarizeInstance& x ) :
-   ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+BinarizeInstance::BinarizeInstance( const BinarizeInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -86,8 +88,8 @@ void BinarizeInstance::Assign( const ProcessImplementation& p )
    if ( x != nullptr )
    {
       for ( int i = 0; i < 3; ++i )
-         level[i] = x->level[i];
-      isGlobal = x->isGlobal;
+         p_level[i] = x->p_level[i];
+      p_global = x->p_global;
    }
 }
 
@@ -122,10 +124,10 @@ public:
       for ( int c = 0; c < image.NumberOfNominalChannels(); ++c )
       {
          image.SelectChannel( c );
-         if ( instance.isGlobal )
-            image.Binarize( instance.level[0] );
+         if ( instance.p_global )
+            image.Binarize( instance.p_level[0] );
          else
-            image.Binarize( instance.level[c] );
+            image.Binarize( instance.p_level[c] );
       }
    }
 };
@@ -170,13 +172,13 @@ bool BinarizeInstance::ExecuteOn( View& view )
 void* BinarizeInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
    if ( p == TheBinarizeLevelRParameter )
-      return level+0;
+      return p_level+0;
    if ( p == TheBinarizeLevelGParameter )
-      return level+1;
+      return p_level+1;
    if ( p == TheBinarizeLevelBParameter )
-      return level+2;
+      return p_level+2;
    if ( p == TheBinarizeIsGlobalParameter )
-      return &isGlobal;
+      return &p_global;
   return 0;
 }
 
@@ -185,4 +187,4 @@ void* BinarizeInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF BinarizeInstance.cpp - Released 2020-07-31T19:33:39Z

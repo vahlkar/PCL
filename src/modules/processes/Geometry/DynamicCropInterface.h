@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// DynamicCropInterface.h - Released 2020-02-27T12:56:01Z
+// DynamicCropInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -81,48 +81,36 @@ public:
    DynamicCropInterface();
    virtual ~DynamicCropInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-
-   virtual void Execute();
-   virtual void EditPreferences();
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual bool IsDynamicInterface() const;
-
-   virtual void ExitDynamicMode();
-
-   virtual void DynamicMouseEnter( View& );
-   virtual void DynamicMouseMove( View&, const DPoint&, unsigned buttons, unsigned modifiers );
-   virtual void DynamicMousePress( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers );
-   virtual void DynamicMouseRelease( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers );
-   virtual void DynamicMouseDoubleClick( View&, const DPoint&, unsigned buttons, unsigned modifiers );
-   virtual bool DynamicKeyPress( View& v, int key, unsigned modifiers );
-
-   virtual bool RequiresDynamicUpdate( const View&, const DRect& ) const;
-   virtual void DynamicPaint( const View&, VectorGraphics&, const DRect& ) const;
-
-   virtual bool WantsReadoutNotifications() const;
-   virtual void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A );
-
-   virtual void SaveSettings() const;
-   virtual void LoadSettings();
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void Execute() override;
+   void EditPreferences() override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   bool IsDynamicInterface() const override;
+   void ExitDynamicMode() override;
+   void DynamicMouseEnter( View& ) override;
+   void DynamicMouseMove( View&, const DPoint&, unsigned buttons, unsigned modifiers ) override;
+   void DynamicMousePress( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers ) override;
+   void DynamicMouseRelease( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers ) override;
+   void DynamicMouseDoubleClick( View&, const DPoint&, unsigned buttons, unsigned modifiers ) override;
+   bool DynamicKeyPress( View& v, int key, unsigned modifiers ) override;
+   bool RequiresDynamicUpdate( const View&, const DRect& ) const override;
+   void DynamicPaint( const View&, VectorGraphics&, const DRect& ) const override;
+   bool WantsReadoutNotifications() const override;
+   void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A ) override;
+   void SaveSettings() const override;
+   void LoadSettings() override;
 
 private:
 
-   DynamicCropInstance instance;
+   DynamicCropInstance m_instance;
 
    union Flags
    {
@@ -148,22 +136,23 @@ private:
       bool operator ==( const Flags& x ) const { return allBits == x.allBits; }
    };
 
-   View     m_view;              // the dynamic target
-   double   m_width, m_height;   // dimensions of the cropping rectangle
-   DPoint   m_center;            // center of cropping rectangle
-   DPoint   m_rotationCenter;    // center of rotation
-   bool     m_rotationFixed;     // true if rotation center is fixed, false if it moves with the cropping rect.
-   int      m_anchorPoint;       // anchor point from 0=top/left to 8=bottom/right
-   DPoint   m_anchor;            // position of anchor point
-   Flags    m_flags;             // current operation flags
-   bool     m_dragging;          // dragging the mouse
-   DPoint   m_dragOrigin;        // initial drag position
-   bool     m_initializing;      // defining the initial cropping rectangle
-   Rect     m_rect;              // initial cropping rectangle
-   RGBA     m_selectionColor;    // color for the cropping rectangle
-   RGBA     m_centerColor;       // color for the center mark
-   RGBA     m_fillColor;         // color to fill the cropping rectangle
+   View     m_view;                        // the dynamic target
+   double   m_width = 0, m_height = 0;     // dimensions of the cropping rectangle
+   DPoint   m_center = 0.0;                // center of cropping rectangle
+   DPoint   m_rotationCenter = 0.0;        // center of rotation
+   bool     m_rotationFixed = false;       // true if rotation center is fixed, false if it moves with the cropping rect.
+   int      m_anchorPoint = 4;             // anchor point. Rows (left,center,right): 0,1,2=top | 3,4,5=center | 6,7,8=bottom
+   DPoint   m_anchor = 0.0;                // position of anchor point
+   Flags    m_flags;                       // current operation flags
+   bool     m_dragging = false;            // dragging the mouse
+   DPoint   m_dragOrigin = 0.0;            // initial drag position
+   bool     m_initializing = false;        // defining the initial cropping rectangle
+   Rect     m_rect = 0;                    // initial cropping rectangle
+   RGBA     m_selectionColor = 0xFFFFFFFF; // color for the cropping rectangle
+   RGBA     m_centerColor = 0xFFFFFFFF;    // color for the center mark
+   RGBA     m_fillColor = 0x28FFFFFF;      // color to fill the cropping rectangle
 
+   using ProcessInterface::Initialize;
    void Initialize( const Rect& );
 
    void GetRotatedRect( DPoint& topLeft, DPoint& topRight, DPoint& bottomLeft, DPoint& bottomRight ) const;
@@ -344,4 +333,4 @@ PCL_END_LOCAL
 #endif   // __DynamicCropInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInterface.h - Released 2020-02-27T12:56:01Z
+// EOF DynamicCropInterface.h - Released 2020-07-31T19:33:39Z

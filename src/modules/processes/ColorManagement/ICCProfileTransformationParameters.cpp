@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationParameters.cpp - Released 2020-02-27T12:56:01Z
+// ICCProfileTransformationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -57,11 +57,11 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ICCTTargetProfile*                  TheICCTTargetProfileParameter = 0;
-ICCTToDefaultProfile*               TheICCTToDefaultProfileParameter = 0;
-ICCTRenderingIntent*                TheICCTRenderingIntentParameter = 0;
-ICCTUseBlackPointCompensation*      TheICCTUseBlackPointCompensationParameter = 0;
-ICCTUseFloatingPointTransformation* TheICCTUseFloatingPointTransformationParameter = 0;
+ICCTTargetProfile*                  TheICCTTargetProfileParameter = nullptr;
+ICCTToDefaultProfile*               TheICCTToDefaultProfileParameter = nullptr;
+ICCTRenderingIntent*                TheICCTRenderingIntentParameter = nullptr;
+ICCTUseBlackPointCompensation*      TheICCTUseBlackPointCompensationParameter = nullptr;
+ICCTUseFloatingPointTransformation* TheICCTUseFloatingPointTransformationParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -170,4 +170,4 @@ bool ICCTUseFloatingPointTransformation::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF ICCProfileTransformationParameters.cpp - Released 2020-07-31T19:33:39Z

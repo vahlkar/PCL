@@ -3,23 +3,24 @@
 	-lf2c -lm   (in that order)
 */
 
-#include <math.h>
 #include "cminpack.h"
-#define max(a,b) ((a) >= (b) ? (a) : (b))
+#include <math.h>
+#include "cminpackP.h"
 
-/* Subroutine */ int fdjac1(minpack_func_nn fcn, void *p, int n, double *x, const double *
-	fvec, double *fjac, int ldfjac, int ml, 
-	int mu, double epsfcn, double *wa1, double *wa2)
+__cminpack_attr__
+int __cminpack_func__(fdjac1)(__cminpack_decl_fcn_nn__ void *p, int n, real *x, const real *
+	fvec, real *fjac, int ldfjac, int ml, 
+	int mu, real epsfcn, real *wa1, real *wa2)
 {
     /* System generated locals */
     int fjac_dim1, fjac_offset;
 
     /* Local variables */
-    double h;
+    real h;
     int i, j, k;
-    double eps, temp;
+    real eps, temp;
     int msum;
-    double epsmch;
+    real epsmch;
     int iflag = 0;
 
 /*     ********** */
@@ -120,7 +121,7 @@
 
 /*     epsmch is the machine precision. */
 
-    epsmch = dpmpar(1);
+    epsmch = __cminpack_func__(dpmpar)(1);
 
     eps = sqrt((max(epsfcn,epsmch)));
     msum = ml + mu + 1;
@@ -135,7 +136,11 @@
                 h = eps;
             }
             x[j] = temp + h;
-            iflag = (*fcn)(p, n, &x[1], &wa1[1], 2);
+            /* the last parameter of fcn_nn() is set to 2 to differentiate
+               calls made to compute the function from calls made to compute
+               the Jacobian (see fcn() in examples/hybdrv.c, and how njev
+               is used to compute the number of Jacobian evaluations) */
+            iflag = fcn_nn(p, n, &x[1], &wa1[1], 2);
             if (iflag < 0) {
                 return iflag;
             }
@@ -150,7 +155,7 @@
 /*        computation of banded approximate jacobian. */
 
     for (k = 1; k <= msum; ++k) {
-	for (j = k; msum < 0 ? j >= n : j <= n; j += msum) {
+	for (j = k; j <= n; j += msum) {
 	    wa2[j] = x[j];
 	    h = eps * fabs(wa2[j]);
 	    if (h == 0.) {
@@ -158,11 +163,11 @@
 	    }
 	    x[j] = wa2[j] + h;
 	}
-	iflag = (*fcn)(p, n, &x[1], &wa1[1], 1);
+	iflag = fcn_nn(p, n, &x[1], &wa1[1], 1);
 	if (iflag < 0) {
             return iflag;
 	}
-	for (j = k; msum < 0 ? j >= n : j <= n; j += msum) {
+	for (j = k; j <= n; j += msum) {
 	    x[j] = wa2[j];
 	    h = eps * fabs(wa2[j]);
 	    if (h == 0.) {

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/GridInterpolation.h - Released 2020-02-27T12:55:23Z
+// pcl/GridInterpolation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -342,11 +342,12 @@ private:
    public:
 
       GridInitializationThread( const AbstractImage::ThreadData& data,
-                                GridInterpolation& grid, const SI& surface, int startRow, int endRow ) :
-         m_data( data ),
-         m_grid( grid ),
-         m_surface( surface ),
-         m_startRow( startRow ), m_endRow( endRow )
+                                GridInterpolation& grid, const SI& surface, int startRow, int endRow )
+         : m_data( data )
+         , m_grid( grid )
+         , m_surface( surface )
+         , m_startRow( startRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -656,7 +657,6 @@ public:
                          bool verbose = true )
    {
       PCL_PRECONDITION( IsValid() )
-
       if ( !IsValid() )
          throw Error( "PointGridInterpolation::ApplyLocalModel(): Uninitialized interpolation." );
 
@@ -677,6 +677,39 @@ public:
       ReferenceArray<LocalModelThread<PSI> > threads;
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
          threads.Add( new LocalModelThread<PSI>( data, *this, PS, n, n + int( L[i] ) ) );
+      AbstractImage::RunThreads( threads, data );
+      threads.Destroy();
+   }
+
+   /*!
+    *
+    */
+   template <class SI>
+   void ApplyLocalModel( const SI& Sx, const SI& Sy,
+                         const String& message = "Applying local interpolation model",
+                         bool verbose = true )
+   {
+      PCL_PRECONDITION( IsValid() )
+      if ( !IsValid() )
+         throw Error( "PointGridInterpolation::ApplyLocalModel(): Uninitialized interpolation." );
+
+      StatusMonitor monitor;
+#ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
+      StandardStatus status;
+      if ( verbose )
+      {
+         monitor.SetCallback( &status );
+         monitor.Initialize( message, m_Gx.Rows() );
+      }
+#endif
+
+      Array<size_type> L = Thread::OptimalThreadLoads( m_Gx.Rows(),
+                                                       1/*overheadLimit*/,
+                                                       m_parallel ? m_maxProcessors : 1 );
+      AbstractImage::ThreadData data( monitor, m_Gx.Rows() );
+      ReferenceArray<LocalModelThread2<SI> > threads;
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new LocalModelThread2<SI>( data, *this, Sx, Sy, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
       threads.Destroy();
    }
@@ -787,11 +820,12 @@ private:
    public:
 
       GridInitializationThread( const AbstractImage::ThreadData& data,
-                                PointGridInterpolation& grid, const PSI& surface, int startRow, int endRow ) :
-         m_data( data ),
-         m_grid( grid ),
-         m_surface( surface ),
-         m_startRow( startRow ), m_endRow( endRow )
+                                PointGridInterpolation& grid, const PSI& surface, int startRow, int endRow )
+         : m_data( data )
+         , m_grid( grid )
+         , m_surface( surface )
+         , m_startRow( startRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -827,11 +861,13 @@ private:
 
       GridInitializationXYThread( const AbstractImage::ThreadData& data,
                                   PointGridInterpolation& grid,
-                                  const SI& surfaceX, const SI& surfaceY, int startRow, int endRow ) :
-         m_data( data ),
-         m_grid( grid ),
-         m_surfaceX( surfaceX ), m_surfaceY( surfaceY ),
-         m_startRow( startRow ), m_endRow( endRow )
+                                  const SI& surfaceX, const SI& surfaceY, int startRow, int endRow )
+         : m_data( data )
+         , m_grid( grid )
+         , m_surfaceX( surfaceX )
+         , m_surfaceY( surfaceY )
+         , m_startRow( startRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -866,11 +902,12 @@ private:
    public:
 
       LocalModelThread( const AbstractImage::ThreadData& data,
-                        PointGridInterpolation& grid, const PSI& model, int startRow, int endRow ) :
-         m_data( data ),
-         m_grid( grid ),
-         m_model( model ),
-         m_startRow( startRow ), m_endRow( endRow )
+                        PointGridInterpolation& grid, const PSI& model, int startRow, int endRow )
+         : m_data( data )
+         , m_grid( grid )
+         , m_model( model )
+         , m_startRow( startRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -898,6 +935,46 @@ private:
       const PSI&                       m_model;
             int                        m_startRow, m_endRow;
    };
+
+   template <class SI>
+   class LocalModelThread2 : public Thread
+   {
+   public:
+
+      LocalModelThread2( const AbstractImage::ThreadData& data,
+                         PointGridInterpolation& grid, const SI& modelX, const SI& modelY, int startRow, int endRow )
+         : m_data( data )
+         , m_grid( grid )
+         , m_modelX( modelX )
+         , m_modelY( modelY )
+         , m_startRow( startRow )
+         , m_endRow( endRow )
+      {
+      }
+
+      PCL_HOT_FUNCTION void Run() override
+      {
+         INIT_THREAD_MONITOR()
+
+         for ( int i = m_startRow, y = m_grid.m_rect.y0 + i*m_grid.m_delta; i < m_endRow; ++i, y += m_grid.m_delta )
+         {
+            for ( int j = 0, x = m_grid.m_rect.x0; j < m_grid.m_Gx.Cols(); ++j, x += m_grid.m_delta )
+            {
+               m_grid.m_Gx[i][j] += m_modelX( x, y );
+               m_grid.m_Gy[i][j] += m_modelY( x, y );
+            }
+
+            UPDATE_THREAD_MONITOR( 32 )
+         }
+      }
+
+   private:
+
+      const AbstractImage::ThreadData& m_data;
+            PointGridInterpolation&    m_grid;
+      const SI&                        m_modelX, m_modelY;
+            int                        m_startRow, m_endRow;
+   };
 };
 
 // ----------------------------------------------------------------------------
@@ -907,4 +984,4 @@ private:
 #endif   // __PCL_GridInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GridInterpolation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/GridInterpolation.h - Released 2020-07-31T19:33:04Z

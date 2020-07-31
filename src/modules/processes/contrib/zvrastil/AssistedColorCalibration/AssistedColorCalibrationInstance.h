@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// AssistedColorCalibrationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,14 +54,12 @@
 #ifndef __AssistedColorCalibrationInstance_h
 #define __AssistedColorCalibrationInstance_h
 
-#include <pcl/ProcessImplementation.h>
 #include <pcl/MetaParameter.h> // for pcl_bool, pcl_enum
+#include <pcl/ProcessImplementation.h>
 
 namespace pcl
 {
 
-// ----------------------------------------------------------------------------
-// AssistedColorCalibrationInstance
 // ----------------------------------------------------------------------------
 
 class AssistedColorCalibrationInstance : public ProcessImplementation
@@ -71,36 +69,34 @@ public:
    AssistedColorCalibrationInstance( const MetaProcess* );
    AssistedColorCalibrationInstance( const AssistedColorCalibrationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
-
-   void GetWBCorrectionFactors( double &red, double &green, double &blue ) const;
+   void GetWBCorrectionFactors( double& red, double& green, double& blue ) const;
    const String& GetBackgroundReference() const;
-   void GetHistogramTransformation( double &shadows, double &highlights, double &midtones ) const;
+   void GetHistogramTransformation( double& shadows, double& highlights, double& midtones ) const;
    double GetSaturationBoost() const;
 
-   void CalculateBackgroundReference( double &red, double &green, double &blue ) const;
-   void CorrectBackgroundReference( double &red, double &green, double &blue ) const;
+   void CalculateBackgroundReference( double& red, double& green, double& blue ) const;
+   void CorrectBackgroundReference( double& red, double& green, double& blue ) const;
 
 private:
 
-   float    redCorrectionFactor;         // white balance RED correction factor
-   float    greenCorrectionFactor;       // white balance GREEN correction factor
-   float    blueCorrectionFactor;        // white balance BLUE correction factor
+   float redCorrectionFactor;   // white balance RED correction factor
+   float greenCorrectionFactor; // white balance GREEN correction factor
+   float blueCorrectionFactor;  // white balance BLUE correction factor
 
-   String   backgroundReference;         // view with background reference (view's full id)
+   String backgroundReference; // view with background reference (view's full id)
 
-   float    histogramShadows;            // shadows clipping value of histogram transformation
-   float    histogramHighlights;         // highlights clipping value of histogram transformation
-   float    histogramMidtones;           // midtones balance of histogram transformation
+   float histogramShadows;    // shadows clipping value of histogram transformation
+   float histogramHighlights; // highlights clipping value of histogram transformation
+   float histogramMidtones;   // midtones balance of histogram transformation
 
-   float    saturationBoost;             // color saturation enhancement factor
+   float saturationBoost; // color saturation enhancement factor
 
    friend class AssistedColorCalibrationProcess;
    friend class AssistedColorCalibrationInterface;
@@ -108,10 +104,9 @@ private:
 
 // ----------------------------------------------------------------------------
 
+} // namespace pcl
 
-} // pcl
-
-#endif   // __AssistedColorCalibrationInstance_h
+#endif // __AssistedColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF AssistedColorCalibrationInstance.h - Released 2020-07-31T19:33:39Z

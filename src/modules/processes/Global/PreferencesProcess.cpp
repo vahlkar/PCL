@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2020-02-27T12:56:01Z
+// PreferencesProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -64,10 +64,6 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 PreferencesProcess* ThePreferencesProcess = nullptr;
-
-// ----------------------------------------------------------------------------
-
-#include "PreferencesIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -145,6 +141,7 @@ PreferencesProcess::PreferencesProcess()
    new METAPARAMETER_ID( MainWindow,  openURLsWithInternalBrowser )( this );
    new METAPARAMETER_ID( MainWindow,  openResourcesOnNewWebBrowserWindows )( this );
    new METAPARAMETER_ID( MainWindow,  privateWebBrowsingMode )( this );
+   new METAPARAMETER_ID( MainWindow,  iconGridSpacing )( this );
    new METAPARAMETER_ID( MainWindow,  wallpaperFile01 )( this );
    new METAPARAMETER_ID( MainWindow,  wallpaperFile02 )( this );
    new METAPARAMETER_ID( MainWindow,  wallpaperFile03 )( this );
@@ -267,9 +264,9 @@ String PreferencesProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** PreferencesProcess::IconImageXPM() const
+String PreferencesProcess::IconImageSVGFile() const
 {
-   return PreferencesIcon_XPM;
+   return "@module_icons_dir/Preferences.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -291,7 +288,7 @@ ProcessImplementation* PreferencesProcess::Create() const
 ProcessImplementation* PreferencesProcess::Clone( const ProcessImplementation& p ) const
 {
    const PreferencesInstance* instPtr = dynamic_cast<const PreferencesInstance*>( &p );
-   return (instPtr != 0) ? new PreferencesInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new PreferencesInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -378,4 +375,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF PreferencesProcess.cpp - Released 2020-07-31T19:33:39Z

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="c" x1="13.985" x2="75.028" y1="72.104" y2="13.329" gradientTransform="matrix(1.9071 0 0 1.9807 58.635 -89.185)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#191c7e" offset="0"/>
+<stop stop-color="#7cbdf9" offset="1"/>
+</linearGradient>
+<radialGradient id="a" cx="-76.54" cy="23.912" r="21.167" gradientTransform="matrix(-.024366 2.6121 -2.5525 -.023809 180.11 170.98)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#69f3cf" offset="0"/>
+<stop stop-color="#3276e7" offset="1"/>
+</radialGradient>
+<linearGradient id="b" x1="161.01" x2="145.93" y1="110.56" y2="77.694" gradientTransform="matrix(1.6034 0 0 1.6254 -74.842 -132.76)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f36e2e" offset="0"/>
+<stop stop-color="#fff6f2" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-7.3705 61.095)">
+<g transform="translate(-68.411 11.215)">
+<rect x="85.306" y="-62.785" width="116.42" height="116.42" fill="url(#c)" stroke="#1520fe" stroke-width="6.35" style="paint-order:normal"/>
+<circle cx="137.97" cy="-9.7239" r="44.349" fill="url(#a)" style="paint-order:normal"/>
+<path d="m153.71-19.17v65.61l14.909-14.744 9.7878 18.43 9.895-5.3876-9.6706-18.231h19.982z" fill="url(#b)" fill-rule="evenodd"/>
+</g>
+</g>
+</svg>

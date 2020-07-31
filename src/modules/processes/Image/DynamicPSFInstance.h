@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInstance.h - Released 2020-02-27T12:56:01Z
+// DynamicPSFInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -54,9 +54,9 @@
 #define __DynamicPSFInstance_h
 
 #include <pcl/ProcessImplementation.h>
+#include <pcl/PSFFit.h>
 
 #include "DynamicPSFParameters.h"
-#include "PSF.h"
 #include "StarDetector.h"
 
 namespace pcl
@@ -80,6 +80,7 @@ public:
    bool CanExecuteGlobal( String& whyNot ) const override;
    bool ExecuteGlobal() override;
    void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   void UnlockParameter( const MetaParameter* p, size_type tableRow ) override;
    bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
    size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
@@ -102,7 +103,9 @@ private:
       Star() = default;
       Star( const Star& ) = default;
 
-      Star( const StarData& data, uint32 v ) : StarData( data ), view( v )
+      Star( const StarData& data, uint32 v )
+         : StarData( data )
+         , view( v )
       {
       }
    };
@@ -115,10 +118,23 @@ private:
    {
       uint32 star = 0; // index of the fitted star
 
+      // Core API-compatible enumerated and Boolean parameters.
+      // Used exclusively for parameter lock/unlock calls.
+      pcl_enum p_function  = PSFunction::Invalid;
+      pcl_bool p_circular  = false;
+      pcl_enum p_status    = PSFFitStatus::NotFitted;
+      pcl_bool p_celestial = false;
+
       PSF() = default;
       PSF( const PSF& ) = default;
 
-      PSF( const PSFData& data, uint32 s ) : PSFData( data ), star( s )
+      PSF( const PSFData& data, uint32 s )
+         : PSFData( data )
+         , star( s )
+         , p_function( data.function )
+         , p_circular( data.circular )
+         , p_status( data.status )
+         , p_celestial( data.celestial )
       {
       }
    };
@@ -140,13 +156,35 @@ private:
       pcl_bool  moffat25;
       pcl_bool  moffat15;
       pcl_bool  lorentzian;
+      pcl_bool  variableShape;
+      pcl_bool  autoVariableShapePSF;
+      float     betaMin;
+      float     betaMax;
+
+      bool Validate()
+      {
+         if ( !autoPSF )
+            if ( !circular )
+               if ( !gaussian )
+                  if ( !moffat )
+                     if ( !moffatA )
+                        if ( !moffat8 )
+                           if ( !moffat6 )
+                              if ( !moffat4 )
+                                 if ( !moffat25 )
+                                    if ( !moffat15 )
+                                       if ( !lorentzian )
+                                          if ( !variableShape )
+                                          {
+                                             autoPSF = true;
+                                             return false;
+                                          }
+         return true;
+      }
    };
    PSFOptions     p_psfOptions;
-
    pcl_bool       p_signedAngles; // show rotation angles in [0,180] or [-90,+90]
-
    pcl_bool       p_regenerate;   // do a regeneration or a recalculation in ExecuteGlobal()?
-
    pcl_bool       p_astrometry;   // compute celestial coordinates using existing astrometric solutions
 
    /*
@@ -182,4 +220,4 @@ private:
 #endif   // __DynamicPSFInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInstance.h - Released 2020-02-27T12:56:01Z
+// EOF DynamicPSFInstance.h - Released 2020-07-31T19:33:39Z

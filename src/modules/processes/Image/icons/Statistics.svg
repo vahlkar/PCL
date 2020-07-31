@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="a" x1="12.027" x2="70.235" y1="86.124" y2="27.916" gradientTransform="matrix(2.1091 0 0 2.1091 91.366 -85.971)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0405ff" offset="0"/>
+<stop stop-color="#9fc9ff" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-110.38 33.443)">
+<rect x="116.73" y="-27.093" width="122.77" height="122.77" fill="url(#a)"/>
+<g transform="matrix(.98473 0 0 .98475 -187.84 62.861)" stroke-width="1.0155">
+<path d="m340.79-84.899v111.61" fill="none" stroke="#acacac" stroke-width="5.911"/>
+<path d="m362.88-84.899v111.61" fill="none" stroke="#acacac" stroke-width="5.911"/>
+<path d="m384.97-84.899v111.61" fill="none" stroke="#acacac" stroke-width="5.911"/>
+<path d="m407.06-84.899v111.61" fill="none" stroke="#acacac" stroke-width="5.911"/>
+<path d="m427.52-64.514-111.61 0.07044" fill="none" stroke="#acacac" stroke-width="5.911"/>
+<path d="m427.52-42.354h-111.61" fill="none" stroke="#acacac" stroke-width="5.911"/>
+<path d="m427.52-20.264h-111.61" fill="none" stroke="#acacac" stroke-width="5.6668"/>
+<path d="m427.52 1.8264h-111.61" fill="none" stroke="#acacac" stroke-width="5.6668"/>
+<rect x="321.44" y="-34.896" width="22.321" height="56.381" fill="#f00" style="paint-order:fill markers stroke"/>
+<rect x="343.41" y="-62.001" width="22.321" height="83.485" fill="#00a650" style="paint-order:fill markers stroke"/>
+<rect x="365.74" y="-51.637" width="22.321" height="73.172" fill="#855fa8" style="paint-order:fill markers stroke"/>
+<rect x="388.06" y="-79.06" width="22.321" height="100.28" fill="#f26521" style="paint-order:fill markers stroke"/>
+<rect x="410.37" y="-29.037" width="17.146" height="50.352" fill="#00bff3" style="paint-order:fill markers stroke"/>
+<path d="m427.52 23.916h-111.61" fill="none" stroke="#acacac" stroke-width="5.911"/>
+<path d="m318.7-84.899v111.61" fill="none" stroke="#acacac" stroke-width="5.911"/>
+</g>
+</g>
+</svg>

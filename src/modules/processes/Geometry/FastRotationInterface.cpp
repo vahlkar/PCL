@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FastRotationInterface.cpp - Released 2020-02-27T12:56:01Z
+// FastRotationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -62,12 +62,8 @@ FastRotationInterface* TheFastRotationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "FastRotationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-FastRotationInterface::FastRotationInterface() :
-   instance( TheFastRotationProcess )
+FastRotationInterface::FastRotationInterface()
+   : m_instance( TheFastRotationProcess )
 {
    TheFastRotationInterface = this;
 }
@@ -96,16 +92,16 @@ MetaProcess* FastRotationInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** FastRotationInterface::IconImageXPM() const
+String FastRotationInterface::IconImageSVGFile() const
 {
-   return FastRotationIcon_XPM;
+   return "@module_icons_dir/FastRotation.svg";
 }
 
 // ----------------------------------------------------------------------------
 
 void FastRotationInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentWindow();
+   m_instance.LaunchOnCurrentWindow();
 }
 
 // ----------------------------------------------------------------------------
@@ -135,7 +131,7 @@ bool FastRotationInterface::Launch( const MetaProcess& P, const ProcessImplement
 
 ProcessImplementation* FastRotationInterface::NewProcess() const
 {
-   return new FastRotationInstance( instance );
+   return new FastRotationInstance( m_instance );
 }
 
 // ----------------------------------------------------------------------------
@@ -159,7 +155,7 @@ bool FastRotationInterface::RequiresInstanceValidation() const
 
 bool FastRotationInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
@@ -168,7 +164,7 @@ bool FastRotationInterface::ImportProcess( const ProcessImplementation& p )
 
 void FastRotationInterface::UpdateControls()
 {
-   switch ( instance.p_mode )
+   switch ( m_instance.p_mode )
    {
    default:
    case FRMode::Rotate180:
@@ -194,17 +190,18 @@ void FastRotationInterface::UpdateControls()
 void FastRotationInterface::__ButtonClick( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->Rotate180_RadioButton )
-      instance.p_mode = FRMode::Rotate180;
+      m_instance.p_mode = FRMode::Rotate180;
    else if ( sender == GUI->Rotate90CW_RadioButton )
-      instance.p_mode = FRMode::Rotate90CW;
+      m_instance.p_mode = FRMode::Rotate90CW;
    else if ( sender == GUI->Rotate90CCW_RadioButton )
-      instance.p_mode = FRMode::Rotate90CCW;
+      m_instance.p_mode = FRMode::Rotate90CCW;
    else if ( sender == GUI->HorizontalMirror_RadioButton )
-      instance.p_mode = FRMode::HorizontalMirror;
+      m_instance.p_mode = FRMode::HorizontalMirror;
    else if ( sender == GUI->VerticalMirror_RadioButton )
-      instance.p_mode = FRMode::VerticalMirror;
+      m_instance.p_mode = FRMode::VerticalMirror;
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 FastRotationInterface::GUIData::GUIData( FastRotationInterface& w )
@@ -251,4 +248,4 @@ FastRotationInterface::GUIData::GUIData( FastRotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF FastRotationInterface.cpp - Released 2020-07-31T19:33:39Z

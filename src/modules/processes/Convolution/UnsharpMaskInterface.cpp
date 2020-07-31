@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInterface.cpp - Released 2020-02-27T12:56:01Z
+// UnsharpMaskInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -65,17 +65,13 @@ UnsharpMaskInterface* TheUnsharpMaskInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "UnsharpMaskIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 // Target ComboBox items
 enum { ToCIEL, ToCIEY, ToRGB };
 
 // ----------------------------------------------------------------------------
 
-UnsharpMaskInterface::UnsharpMaskInterface() :
-   instance( TheUnsharpMaskProcess )
+UnsharpMaskInterface::UnsharpMaskInterface()
+   : instance( TheUnsharpMaskProcess )
 {
    TheUnsharpMaskInterface = this;
 }
@@ -104,9 +100,9 @@ MetaProcess* UnsharpMaskInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** UnsharpMaskInterface::IconImageXPM() const
+String UnsharpMaskInterface::IconImageSVGFile() const
 {
-   return UnsharpMaskIcon_XPM;
+   return "@module_icons_dir/UnsharpMask.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -199,9 +195,10 @@ bool UnsharpMaskInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, co
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-UnsharpMaskInterface::RealTimeThread::RealTimeThread() :
-   m_instance( TheUnsharpMaskProcess )
+UnsharpMaskInterface::RealTimeThread::RealTimeThread()
+   : m_instance( TheUnsharpMaskProcess )
 {
 }
 
@@ -266,6 +263,8 @@ void UnsharpMaskInterface::UpdateControls()
   UpdateRangeControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void UnsharpMaskInterface::UpdateFilterControls()
 {
    if ( instance.sigma <= 10 )
@@ -290,6 +289,8 @@ void UnsharpMaskInterface::UpdateFilterControls()
    GUI->Target_ComboBox.SetCurrentItem( instance.useLuminance ? (instance.linear ? ToCIEY : ToCIEL) : ToRGB );
 }
 
+// ----------------------------------------------------------------------------
+
 void UnsharpMaskInterface::UpdateDeringingControls()
 {
    GUI->Deringing_SectionBar.SetChecked( instance.deringing );
@@ -300,11 +301,15 @@ void UnsharpMaskInterface::UpdateDeringingControls()
    GUI->OutputDeringingMaps_CheckBox.SetChecked( instance.outputDeringingMaps );
 }
 
+// ----------------------------------------------------------------------------
+
 void UnsharpMaskInterface::UpdateRangeControls()
 {
    GUI->RangeLow_NumericControl.SetValue( instance.rangeLow );
    GUI->RangeHigh_NumericControl.SetValue( instance.rangeHigh );
 }
+
+// ----------------------------------------------------------------------------
 
 void UnsharpMaskInterface::UpdateRealTimePreview()
 {
@@ -329,6 +334,8 @@ void UnsharpMaskInterface::__Filter_ValueUpdated( NumericEdit& sender, double va
    UpdateRealTimePreview();
 }
 
+// ----------------------------------------------------------------------------
+
 void UnsharpMaskInterface::__Filter_SliderUpdated( Slider& sender, int value )
 {
    if ( sender == GUI->SigmaCoarse_Slider )
@@ -339,6 +346,8 @@ void UnsharpMaskInterface::__Filter_SliderUpdated( Slider& sender, int value )
    UpdateFilterControls();
    UpdateRealTimePreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void UnsharpMaskInterface::__Target_ItemSelected( ComboBox& sender, int itemIndex )
 {
@@ -365,6 +374,8 @@ void UnsharpMaskInterface::__Target_ItemSelected( ComboBox& sender, int itemInde
    UpdateRealTimePreview();
 }
 
+// ----------------------------------------------------------------------------
+
 void UnsharpMaskInterface::__Deringing_Check( SectionBar& sender, bool checked )
 {
    if ( sender == GUI->Deringing_SectionBar )
@@ -373,6 +384,8 @@ void UnsharpMaskInterface::__Deringing_Check( SectionBar& sender, bool checked )
    UpdateDeringingControls();
    UpdateRealTimePreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void UnsharpMaskInterface::__Deringing_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -385,6 +398,8 @@ void UnsharpMaskInterface::__Deringing_ValueUpdated( NumericEdit& sender, double
    UpdateRealTimePreview();
 }
 
+// ----------------------------------------------------------------------------
+
 void UnsharpMaskInterface::__Deringing_Click( Button& sender, bool checked )
 {
    if ( sender == GUI->OutputDeringingMaps_CheckBox )
@@ -393,6 +408,8 @@ void UnsharpMaskInterface::__Deringing_Click( Button& sender, bool checked )
    UpdateDeringingControls();
    UpdateRealTimePreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void UnsharpMaskInterface::__Range_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -404,6 +421,8 @@ void UnsharpMaskInterface::__Range_ValueUpdated( NumericEdit& sender, double val
    UpdateRangeControls();
    UpdateRealTimePreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void UnsharpMaskInterface::__UpdateRealTimePreview_Timer( Timer& sender )
 {
@@ -425,7 +444,7 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
    int editWidth1 = fnt.Width( String( '0', 11 ) );
    int editHeight = CanonicalControlHeight( Edit );
 
-   // -------------------------------------------------------------------------
+   //
 
    Filter_SectionBar.SetTitle( "USM Filter" );
    Filter_SectionBar.SetSection( Filter_Control );
@@ -491,8 +510,6 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
    Target_Sizer.Add( Target_ComboBox );
    Target_Sizer.AddStretch();
 
-   //
-
    Filter_Sizer.SetSpacing( 4 );
    Filter_Sizer.Add( Sigma_Sizer );
    Filter_Sizer.Add( Amount_NumericControl );
@@ -501,14 +518,12 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
    Filter_Control.SetSizer( Filter_Sizer );
    Filter_Control.AdjustToContents();
 
-   // -------------------------------------------------------------------------
+   //
 
    Deringing_SectionBar.SetTitle( "Deringing" );
    Deringing_SectionBar.EnableTitleCheckBox();
    Deringing_SectionBar.OnCheck( (SectionBar::check_event_handler)&UnsharpMaskInterface::__Deringing_Check, w );
    Deringing_SectionBar.SetSection( Deringing_Control );
-
-   //
 
    DeringingDark_NumericControl.label.SetText( "Dark:" );
    DeringingDark_NumericControl.label.SetMinWidth( labelWidth1 );
@@ -538,8 +553,6 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
    OutputDeringingMaps_Sizer.Add( OutputDeringingMaps_CheckBox );
    OutputDeringingMaps_Sizer.AddStretch();
 
-   //
-
    Deringing_Sizer.SetSpacing( 4 );
    Deringing_Sizer.Add( DeringingDark_NumericControl );
    Deringing_Sizer.Add( DeringingBright_NumericControl );
@@ -547,12 +560,10 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
 
    Deringing_Control.SetSizer( Deringing_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Range_SectionBar.SetTitle( "Dynamic Range Extension" );
    Range_SectionBar.SetSection( Range_Control );
-
-   //
 
    RangeLow_NumericControl.label.SetText( "Low Range:" );
    RangeLow_NumericControl.label.SetFixedWidth( labelWidth1 );
@@ -576,8 +587,6 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
    RangeHigh_NumericControl.edit.SetFixedWidth( editWidth1 );
    RangeHigh_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&UnsharpMaskInterface::__Range_ValueUpdated, w );
 
-   //
-
    Range_Sizer.SetSpacing( 8 );
    Range_Sizer.Add( RangeLow_NumericControl );
    Range_Sizer.Add( RangeHigh_NumericControl );
@@ -585,7 +594,7 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
    Range_Control.SetSizer( Range_Sizer );
    Range_Control.AdjustToContents();
 
-   // -------------------------------------------------------------------------
+   //
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
@@ -595,8 +604,6 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
    Global_Sizer.Add( Deringing_Control );
    Global_Sizer.Add( Range_SectionBar );
    Global_Sizer.Add( Range_Control );
-
-   //
 
    w.SetSizer( Global_Sizer );
 
@@ -620,4 +627,4 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF UnsharpMaskInterface.cpp - Released 2020-07-31T19:33:39Z

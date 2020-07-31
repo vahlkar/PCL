@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterParameters.h - Released 2020-02-27T12:56:01Z
+// RestorationFilterParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -68,13 +68,11 @@ public:
 
    RFWienerK( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFWienerK* TheRFWienerKParameter;
@@ -87,13 +85,11 @@ public:
 
    RFLeastSquaresGamma( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFLeastSquaresGamma* TheRFLeastSquaresGammaParameter;
@@ -111,12 +107,11 @@ public:
 
    RFAlgorithm( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern RFAlgorithm* TheRFAlgorithmParameter;
@@ -135,13 +130,12 @@ public:
 
    RFPSFMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
-   virtual IsoString ElementAliases() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+   IsoString ElementAliases() const override;
 };
 
 extern RFPSFMode* TheRFPSFModeParameter;
@@ -154,14 +148,12 @@ public:
 
    RFPSFParametricSigma( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFPSFParametricSigma* TheRFPSFParametricSigmaParameter;
@@ -174,14 +166,12 @@ public:
 
    RFPSFParametricShape( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFPSFParametricShape* TheRFPSFParametricShapeParameter;
@@ -194,14 +184,12 @@ public:
 
    RFPSFParametricAspectRatio( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFPSFParametricAspectRatio* TheRFPSFParametricAspectRatioParameter;
@@ -214,14 +202,12 @@ public:
 
    RFPSFParametricRotationAngle( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFPSFParametricRotationAngle* TheRFPSFParametricRotationAngleParameter;
@@ -234,13 +220,11 @@ public:
 
    RFPSFMotionLength( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFPSFMotionLength* TheRFPSFMotionLengthParameter;
@@ -253,13 +237,11 @@ public:
 
    RFPSFMotionRotationAngle( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFPSFMotionRotationAngle* TheRFPSFMotionRotationAngleParameter;
@@ -272,7 +254,7 @@ public:
 
    RFPSFViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern RFPSFViewId* TheRFPSFViewIdParameter;
@@ -285,13 +267,11 @@ public:
 
    RFAmount( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFAmount* TheRFAmountParameter;
@@ -304,10 +284,9 @@ public:
 
    RFToLuminance( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   bool DefaultValue() const override;
 };
 
 extern RFToLuminance* TheRFToLuminanceParameter;
@@ -320,9 +299,8 @@ public:
 
    RFLinear( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern RFLinear* TheRFLinearParameter;
@@ -335,9 +313,8 @@ public:
 
    RFDeringing( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern RFDeringing* TheRFDeringingParameter;
@@ -350,13 +327,11 @@ public:
 
    RFDeringingDark( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern RFDeringingDark* TheRFDeringingDarkParameter;
@@ -369,13 +344,11 @@ public:
 
    RFDeringingBright( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern RFDeringingBright* TheRFDeringingBrightParameter;
@@ -388,9 +361,8 @@ public:
 
    RFOutputDeringingMaps( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern RFOutputDeringingMaps* TheRFOutputDeringingMapsParameter;
@@ -403,13 +375,11 @@ public:
 
    RFRangeLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFRangeLow* TheRFRangeLowParameter;
@@ -422,13 +392,11 @@ public:
 
    RFRangeHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern RFRangeHigh* TheRFRangeHighParameter;
@@ -442,4 +410,4 @@ PCL_END_LOCAL
 #endif   // __RestorationFilterParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterParameters.h - Released 2020-02-27T12:56:01Z
+// EOF RestorationFilterParameters.h - Released 2020-07-31T19:33:39Z

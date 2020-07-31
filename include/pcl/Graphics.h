@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Graphics.h - Released 2020-02-27T12:55:23Z
+// pcl/Graphics.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -109,7 +109,7 @@ namespace pcl
  * Graphics Vol. 18, Num. 3, July 1984, pp 253-259.
  *
  * In addition, the following operators are also supported starting from
- * PixInsight Core version 1.7.0.702:
+ * PixInsight core version 1.7.0.702:
  *
  * <table border="1" cellpadding="4" cellspacing="0">
  * <tr><td>CompositionOp::Min</td>              <td>Min( A, B )</td></tr>
@@ -228,9 +228,10 @@ public:
     * \a control.
     *
     * \warning Invoking this constructor outside a Control::OnPaint() event
-    * handler is illegal on all supported platforms.
+    * handler is illegal on all supported platforms. If called without an
+    * active OnPaint() event, this constructor throws an Error exception.
     */
-   GraphicsContextBase( Control& control ); // ### illegal if used outside Control::OnPaint()
+   GraphicsContextBase( Control& control );
 
    /*!
     * Constructs an active graphics context, ready to draw on the specified
@@ -247,7 +248,8 @@ public:
    /*!
     * Move constructor.
     */
-   GraphicsContextBase( GraphicsContextBase&& x ) : UIObject( std::move( x ) )
+   GraphicsContextBase( GraphicsContextBase&& x )
+      : UIObject( std::move( x ) )
    {
    }
 
@@ -288,7 +290,7 @@ public:
     * \warning Calling this function outside a Control::OnPaint() event handler
     * is illegal on all supported platforms.
     */
-   bool BeginPaint( Control& control ); // ### illegal if used outside Control::OnPaint()
+   bool BeginPaint( Control& control );
 
    /*!
     * Activates this graphics context to draw on the specified \a bitmap.
@@ -664,9 +666,11 @@ public:
     * \a control.
     *
     * \warning Invoking this constructor outside a Control::OnPaint() event
-    * handler is illegal on all supported platforms.
+    * handler is illegal on all supported platforms. If called without an
+    * active OnPaint() event, this constructor throws an Error exception.
     */
-   Graphics( Control& control ) : GraphicsContextBase( control ) // ### illegal outside Control::OnPaint()
+   Graphics( Control& control )
+      : GraphicsContextBase( control )
    {
    }
 
@@ -674,7 +678,8 @@ public:
     * Constructs an active graphics context, ready to draw on the specified
     * \a bitmap.
     */
-   Graphics( Bitmap& bitmap ) : GraphicsContextBase( bitmap )
+   Graphics( Bitmap& bitmap )
+      : GraphicsContextBase( bitmap )
    {
    }
 
@@ -682,14 +687,16 @@ public:
     * Constructs an active graphics context, ready to draw on the specified
     * \a svg object.
     */
-   Graphics( SVG& svg ) : GraphicsContextBase( svg )
+   Graphics( SVG& svg )
+      : GraphicsContextBase( svg )
    {
    }
 
    /*!
     * Move constructor.
     */
-   Graphics( Graphics&& x ) : GraphicsContextBase( std::move( x ) )
+   Graphics( Graphics&& x )
+      : GraphicsContextBase( std::move( x ) )
    {
    }
 
@@ -1476,9 +1483,11 @@ public:
     * specified \a control.
     *
     * \warning Invoking this constructor outside a Control::OnPaint() event
-    * handler is illegal on all supported platforms.
+    * handler is illegal on all supported platforms. If called without an
+    * active OnPaint() event, this constructor throws an Error exception.
     */
-   VectorGraphics( Control& control ) : GraphicsContextBase( control ) // ### illegal outside Control::OnPaint()
+   VectorGraphics( Control& control )
+      : GraphicsContextBase( control )
    {
    }
 
@@ -1486,7 +1495,8 @@ public:
     * Constructs an active vector graphics context, ready to draw on the
     * specified \a bitmap.
     */
-   VectorGraphics( Bitmap& bitmap ) : GraphicsContextBase( bitmap )
+   VectorGraphics( Bitmap& bitmap )
+      : GraphicsContextBase( bitmap )
    {
    }
 
@@ -1494,14 +1504,16 @@ public:
     * Constructs an active vector graphics context, ready to draw on the
     * specified \a svg object.
     */
-   VectorGraphics( SVG& svg ) : GraphicsContextBase( svg )
+   VectorGraphics( SVG& svg )
+      : GraphicsContextBase( svg )
    {
    }
 
    /*!
     * Move constructor.
     */
-   VectorGraphics( VectorGraphics&& x ) : GraphicsContextBase( std::move( x ) )
+   VectorGraphics( VectorGraphics&& x )
+      : GraphicsContextBase( std::move( x ) )
    {
    }
 
@@ -2314,4 +2326,4 @@ private:
 #endif   // __PCL_Graphics_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Graphics.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Graphics.h - Released 2020-07-31T19:33:04Z

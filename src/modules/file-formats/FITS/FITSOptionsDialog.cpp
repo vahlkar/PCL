@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.6
+// Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITSOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// FITSOptionsDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -57,9 +57,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FITSOptionsDialog::FITSOptionsDialog( const pcl::ImageOptions& o, const pcl::FITSImageOptions& f ) :
-   options( o ),
-   fitsOptions( f )
+FITSOptionsDialog::FITSOptionsDialog( const pcl::ImageOptions& o, const pcl::FITSImageOptions& f )
+   : options( o )
+   , fitsOptions( f )
 {
    pcl::Font fnt = Font();
    int labelWidth = fnt.Width( String( "64-bit IEEE 754 floating point" ) + String( 'M', 3 ) );
@@ -253,4 +253,4 @@ void FITSOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF FITSOptionsDialog.cpp - Released 2020-07-31T19:33:23Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformProcess.cpp - Released 2020-02-27T12:56:01Z
+// InverseFourierTransformProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -64,34 +64,37 @@ InverseFourierTransformProcess* TheInverseFourierTransformProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "InverseFourierTransformIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 InverseFourierTransformProcess::InverseFourierTransformProcess()
 {
    TheInverseFourierTransformProcess = this;
 
-   // Instantiate process parameters
    new IFTIdOfFirstComponent( this );
    new IFTIdOfSecondComponent( this );
    new IFTOnOutOfRangeResult( this );
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString InverseFourierTransformProcess::Id() const
 {
    return "InverseFourierTransform";
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString InverseFourierTransformProcess::Category() const
 {
    return "Fourier";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 InverseFourierTransformProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String InverseFourierTransformProcess::Description() const
 {
@@ -102,20 +105,28 @@ String InverseFourierTransformProcess::Description() const
    "</html>";
 }
 
-const char** InverseFourierTransformProcess::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String InverseFourierTransformProcess::IconImageSVGFile() const
 {
-   return InverseFourierTransformIcon_XPM;
+   return "@module_icons_dir/InverseFourierTransform.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* InverseFourierTransformProcess::DefaultInterface() const
 {
    return TheInverseFourierTransformInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* InverseFourierTransformProcess::Create() const
 {
    return new InverseFourierTransformInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* InverseFourierTransformProcess::Clone( const ProcessImplementation& p ) const
 {
@@ -128,4 +139,4 @@ ProcessImplementation* InverseFourierTransformProcess::Clone( const ProcessImple
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF InverseFourierTransformProcess.cpp - Released 2020-07-31T19:33:39Z

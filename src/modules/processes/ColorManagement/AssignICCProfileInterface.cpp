@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// AssignICCProfileInterface.cpp - Released 2020-02-27T12:56:01Z
+// AssignICCProfileInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -66,19 +66,17 @@ AssignICCProfileInterface* TheAssignICCProfileInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "AssignICCProfileIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 #define currentView  GUI->AllImages_ViewList.CurrentView()
 
 // ----------------------------------------------------------------------------
 
-AssignICCProfileInterface::AssignICCProfileInterface() :
-   instance( TheAssignICCProfileProcess )
+AssignICCProfileInterface::AssignICCProfileInterface()
+   : m_instance( TheAssignICCProfileProcess )
 {
    TheAssignICCProfileInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 AssignICCProfileInterface::~AssignICCProfileInterface()
 {
@@ -86,30 +84,42 @@ AssignICCProfileInterface::~AssignICCProfileInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString AssignICCProfileInterface::Id() const
 {
    return "AssignICCProfile";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* AssignICCProfileInterface::Process() const
 {
    return TheAssignICCProfileProcess;
 }
 
-const char** AssignICCProfileInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String AssignICCProfileInterface::IconImageSVGFile() const
 {
-   return AssignICCProfileIcon_XPM;
+   return "@module_icons_dir/AssignICCProfile.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures AssignICCProfileInterface::Features() const
 {
    return InterfaceFeature::Default | InterfaceFeature::TrackViewButton;
 }
 
+// ----------------------------------------------------------------------------
+
 void AssignICCProfileInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentWindow();
+   m_instance.LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::TrackViewUpdated( bool active )
 {
@@ -124,11 +134,15 @@ void AssignICCProfileInterface::TrackViewUpdated( bool active )
       }
 }
 
+// ----------------------------------------------------------------------------
+
 void AssignICCProfileInterface::ResetInstance()
 {
    AssignICCProfileInstance defaultInstance( TheAssignICCProfileProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool AssignICCProfileInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -144,10 +158,14 @@ bool AssignICCProfileInterface::Launch( const MetaProcess& P, const ProcessImple
    return &P == TheAssignICCProfileProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* AssignICCProfileInterface::NewProcess() const
 {
-   return new AssignICCProfileInstance( instance );
+   return new AssignICCProfileInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool AssignICCProfileInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -157,22 +175,30 @@ bool AssignICCProfileInterface::ValidateProcess( const ProcessImplementation& p,
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool AssignICCProfileInterface::RequiresInstanceValidation() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool AssignICCProfileInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool AssignICCProfileInterface::WantsImageNotifications() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::ImageUpdated( const View& v )
 {
@@ -180,6 +206,8 @@ void AssignICCProfileInterface::ImageUpdated( const View& v )
       if ( v == currentView )
          UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::ImageFocused( const View& v )
 {
@@ -192,6 +220,8 @@ void AssignICCProfileInterface::ImageFocused( const View& v )
          }
 }
 
+// ----------------------------------------------------------------------------
+
 void AssignICCProfileInterface::ImageCMUpdated( const View& v )
 {
    if ( GUI != nullptr )
@@ -199,10 +229,14 @@ void AssignICCProfileInterface::ImageCMUpdated( const View& v )
          UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 bool AssignICCProfileInterface::WantsGlobalNotifications() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::GlobalCMUpdated()
 {
@@ -211,7 +245,6 @@ void AssignICCProfileInterface::GlobalCMUpdated()
          UpdateControls(); // in case the selected view has no assigned profile
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::UpdateControls()
@@ -240,33 +273,34 @@ void AssignICCProfileInterface::UpdateControls()
       }
    }
 
-   GUI->AssignDefault_RadioButton.SetChecked( instance.mode == AssignMode::AssignDefaultProfile );
-   GUI->LeaveUntagged_RadioButton.SetChecked( instance.mode == AssignMode::LeaveUntagged );
-   GUI->AssignProfile_RadioButton.SetChecked( instance.mode == AssignMode::AssignNewProfile );
+   GUI->AssignDefault_RadioButton.SetChecked( m_instance.p_mode == ICCAMode::AssignDefaultProfile );
+   GUI->LeaveUntagged_RadioButton.SetChecked( m_instance.p_mode == ICCAMode::LeaveUntagged );
+   GUI->AssignProfile_RadioButton.SetChecked( m_instance.p_mode == ICCAMode::AssignNewProfile );
 
-   GUI->TargetProfile_Edit.SetText( instance.targetProfile );
-   GUI->TargetProfile_Edit.Enable( instance.mode == AssignMode::AssignNewProfile );
+   GUI->TargetProfile_Edit.SetText( m_instance.p_targetProfile );
+   GUI->TargetProfile_Edit.Enable( m_instance.p_mode == ICCAMode::AssignNewProfile );
 
-   if ( profiles.IsEmpty() )
+   if ( m_profiles.IsEmpty() )
       RefreshProfiles();
 
    GUI->AllProfiles_ComboBox.SetCurrentItem( 0 );
-   GUI->AllProfiles_ComboBox.Enable( instance.mode == AssignMode::AssignNewProfile );
+   GUI->AllProfiles_ComboBox.Enable( m_instance.p_mode == ICCAMode::AssignNewProfile );
 
-   GUI->RefreshProfiles_ToolButton.Enable( instance.mode == AssignMode::AssignNewProfile );
-}
-
-void AssignICCProfileInterface::RefreshProfiles()
-{
-   profiles = ICCProfile::FindProfilesByColorSpace( ICCColorSpace::RGB|ICCColorSpace::Gray );
-
-   GUI->AllProfiles_ComboBox.Clear();
-   GUI->AllProfiles_ComboBox.AddItem( " --> Available ICC Profiles <-- " );
-   for ( ICCProfile::profile_list::const_iterator i = profiles.Begin(); i != profiles.End(); ++i )
-      GUI->AllProfiles_ComboBox.AddItem( i->description );
+   GUI->RefreshProfiles_ToolButton.Enable( m_instance.p_mode == ICCAMode::AssignNewProfile );
 }
 
 // ----------------------------------------------------------------------------
+
+void AssignICCProfileInterface::RefreshProfiles()
+{
+   m_profiles = ICCProfile::FindProfilesByColorSpace( ICCColorSpace::RGB|ICCColorSpace::Gray );
+
+   GUI->AllProfiles_ComboBox.Clear();
+   GUI->AllProfiles_ComboBox.AddItem( " --> Available ICC Profiles <-- " );
+   for ( ICCProfile::profile_list::const_iterator i = m_profiles.Begin(); i != m_profiles.End(); ++i )
+      GUI->AllProfiles_ComboBox.AddItem( i->description );
+}
+
 // ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::__ViewList_ViewSelected( ViewList& /*sender*/, View& /*view*/ )
@@ -274,36 +308,44 @@ void AssignICCProfileInterface::__ViewList_ViewSelected( ViewList& /*sender*/, V
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void AssignICCProfileInterface::__AssignMode_ButtonClick( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->AssignDefault_RadioButton )
-      instance.mode = AssignMode::AssignDefaultProfile;
+      m_instance.p_mode = ICCAMode::AssignDefaultProfile;
    else if ( sender == GUI->LeaveUntagged_RadioButton )
-      instance.mode = AssignMode::LeaveUntagged;
+      m_instance.p_mode = ICCAMode::LeaveUntagged;
    else if ( sender == GUI->AssignProfile_RadioButton )
-      instance.mode = AssignMode::AssignNewProfile;
+      m_instance.p_mode = ICCAMode::AssignNewProfile;
 
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::__TargetProfile_EditCompleted( Edit& sender )
 {
    String txt = sender.Text().Trimmed();
-   instance.targetProfile = txt;
-   instance.mode = AssignMode::AssignNewProfile;
+   m_instance.p_targetProfile = txt;
+   m_instance.p_mode = ICCAMode::AssignNewProfile;
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::__Profile_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
    if ( itemIndex > 0 )
-      if ( itemIndex <= int( profiles.Length() ) ) // first item is title
+      if ( itemIndex <= int( m_profiles.Length() ) ) // first item is title
       {
-         instance.targetProfile = profiles[itemIndex-1].description; // skip the first title item
-         instance.mode = AssignMode::AssignNewProfile;
+         m_instance.p_targetProfile = m_profiles[itemIndex-1].description; // skip the first title item
+         m_instance.p_mode = ICCAMode::AssignNewProfile;
          UpdateControls();
       }
 }
+
+// ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::__RefreshProfiles_ButtonClick( Button& /*sender*/, bool /*checked*/ )
 {
@@ -311,11 +353,15 @@ void AssignICCProfileInterface::__RefreshProfiles_ButtonClick( Button& /*sender*
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void AssignICCProfileInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->AllImages_ViewList )
       wantsView = view.IsMainView();
 }
+
+// ----------------------------------------------------------------------------
 
 void AssignICCProfileInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -408,4 +454,4 @@ AssignICCProfileInterface::GUIData::GUIData( AssignICCProfileInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssignICCProfileInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF AssignICCProfileInterface.cpp - Released 2020-07-31T19:33:39Z

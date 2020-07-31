@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationInstance.h - Released 2020-02-27T12:56:01Z
+// GREYCstorationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -68,8 +68,8 @@
 #ifndef __GREYCstorationInstance_h
 #define __GREYCstorationInstance_h
 
+#include <pcl/MetaParameter.h>
 #include <pcl/ProcessImplementation.h>
-#include <pcl/MetaParameter.h> // for pcl_bool, pcl_enum
 
 namespace pcl
 {
@@ -83,11 +83,11 @@ public:
    GREYCstorationInstance( const MetaProcess* );
    GREYCstorationInstance( const GREYCstorationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type /*tableRow*/ );
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type /*tableRow*/ ) override;
 
 private:
 
@@ -117,4 +117,4 @@ private:
 #endif   // __GREYCstorationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF GREYCstorationInstance.h - Released 2020-07-31T19:33:39Z

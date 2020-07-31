@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInstance.h - Released 2020-02-27T12:56:01Z
+// StarGeneratorInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -68,14 +68,14 @@ public:
    StarGeneratorInstance( const MetaProcess* );
    StarGeneratorInstance( const StarGeneratorInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool IsHistoryUpdater( const View& v ) const;
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool IsHistoryUpdater( const View& v ) const override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
@@ -108,4 +108,4 @@ private:
 #endif   // __StarGeneratorInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInstance.h - Released 2020-02-27T12:56:01Z
+// EOF StarGeneratorInstance.h - Released 2020-07-31T19:33:39Z

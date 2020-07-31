@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+######################################################################
+# PixInsight Makefile Generator Script v1.118
+# Copyright (C) 2009-2020 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2020-07-31T19:36:37.209Z
+# Project id ...... Morphology
+# Project type .... Module
+# Platform ........ Windows/vc16
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional preprocessor definitions:
+# _CRT_SECURE_NO_WARNINGS
+######################################################################
+-->
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>dc1f7e62-6186-4def-b5d0-53b805907c5d</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>e3f44aa9-6c31-432d-91ef-a45984b91591</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>fdcd1d4d-9336-4b4a-9c32-3c7603caf2e9</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\MorphologicalTransformationInstance.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MorphologicalTransformationInterface.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MorphologicalTransformationParameters.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MorphologicalTransformationProcess.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MorphologyModule.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Structure.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\StructureManagerDialog.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\MorphologicalTransformationInstance.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MorphologicalTransformationInterface.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MorphologicalTransformationParameters.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MorphologicalTransformationProcess.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MorphologyModule.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Structure.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\StructureManagerDialog.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\cursors\pen.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\MorphologicalTransformation.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\paint_clear.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\paint_set.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\show_all_ways.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_add.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_circular.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_clear.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_clear_all.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_diagonal.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_diamond.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_invert.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_orthogonal.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_remove.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_restore.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_rotate.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_set.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_set_all.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\way_store.svg">
+        <Filter>Image Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleInterface.cpp - Released 2020-02-27T12:56:01Z
+// RescaleInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -62,12 +62,8 @@ RescaleInterface* TheRescaleInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "RescaleIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-RescaleInterface::RescaleInterface() :
-   instance( TheRescaleProcess )
+RescaleInterface::RescaleInterface()
+   : m_instance( TheRescaleProcess )
 {
    TheRescaleInterface = this;
 }
@@ -96,16 +92,16 @@ MetaProcess* RescaleInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** RescaleInterface::IconImageXPM() const
+String RescaleInterface::IconImageSVGFile() const
 {
-   return RescaleIcon_XPM;
+   return "@module_icons_dir/Rescale.svg";
 }
 
 // ----------------------------------------------------------------------------
 
 void RescaleInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
 
 // ----------------------------------------------------------------------------
@@ -135,7 +131,7 @@ bool RescaleInterface::Launch( const MetaProcess& P, const ProcessImplementation
 
 ProcessImplementation* RescaleInterface::NewProcess() const
 {
-   return new RescaleInstance( instance );
+   return new RescaleInstance( m_instance );
 }
 
 // ----------------------------------------------------------------------------
@@ -159,7 +155,7 @@ bool RescaleInterface::RequiresInstanceValidation() const
 
 bool RescaleInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
@@ -168,10 +164,10 @@ bool RescaleInterface::ImportProcess( const ProcessImplementation& p )
 
 void RescaleInterface::UpdateControls()
 {
-   GUI->RGBK_RadioButton.SetChecked( instance.mode == RescalingMode::RGBK );
-   GUI->RGBK_Individual_RadioButton.SetChecked( instance.mode == RescalingMode::RGBK_Individual );
-   GUI->CIEL_RadioButton.SetChecked( instance.mode == RescalingMode::CIEL );
-   GUI->CIEY_RadioButton.SetChecked( instance.mode == RescalingMode::CIEY );
+   GUI->RGBK_RadioButton.SetChecked( m_instance.p_mode == RescalingMode::RGBK );
+   GUI->RGBK_Individual_RadioButton.SetChecked( m_instance.p_mode == RescalingMode::RGBK_Individual );
+   GUI->CIEL_RadioButton.SetChecked( m_instance.p_mode == RescalingMode::CIEL );
+   GUI->CIEY_RadioButton.SetChecked( m_instance.p_mode == RescalingMode::CIEY );
 }
 
 // ----------------------------------------------------------------------------
@@ -179,13 +175,13 @@ void RescaleInterface::UpdateControls()
 void RescaleInterface::RescaleButtonClick( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->RGBK_RadioButton )
-      instance.mode = RescalingMode::RGBK;
+      m_instance.p_mode = RescalingMode::RGBK;
    else if ( sender == GUI->RGBK_Individual_RadioButton )
-      instance.mode = RescalingMode::RGBK_Individual;
+      m_instance.p_mode = RescalingMode::RGBK_Individual;
    else if ( sender == GUI->CIEL_RadioButton )
-      instance.mode = RescalingMode::CIEL;
+      m_instance.p_mode = RescalingMode::CIEL;
    else if ( sender == GUI->CIEY_RadioButton )
-      instance.mode = RescalingMode::CIEY;
+      m_instance.p_mode = RescalingMode::CIEY;
 }
 
 // ----------------------------------------------------------------------------
@@ -246,4 +242,4 @@ RescaleInterface::GUIData::GUIData( RescaleInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF RescaleInterface.cpp - Released 2020-07-31T19:33:39Z

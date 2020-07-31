@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ColorCalibrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// ColorCalibrationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -65,11 +65,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "ColorCalibrationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ColorCalibrationProcess* TheColorCalibrationProcess = 0;
+ColorCalibrationProcess* TheColorCalibrationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -77,7 +73,6 @@ ColorCalibrationProcess::ColorCalibrationProcess()
 {
    TheColorCalibrationProcess = this;
 
-   // Instantiate process parameters
    new CCWhiteReferenceViewId( this );
    new CCWhiteLow( this );
    new CCWhiteHigh( this );
@@ -135,10 +130,11 @@ String ColorCalibrationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ColorCalibrationProcess::IconImageXPM() const
+String ColorCalibrationProcess::IconImageSVGFile() const
 {
-   return ColorCalibrationIcon_XPM;
+   return "@module_icons_dir/ColorCalibration.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* ColorCalibrationProcess::DefaultInterface() const
@@ -157,7 +153,7 @@ ProcessImplementation* ColorCalibrationProcess::Create() const
 ProcessImplementation* ColorCalibrationProcess::Clone( const ProcessImplementation& p ) const
 {
    const ColorCalibrationInstance* instPtr = dynamic_cast<const ColorCalibrationInstance*>( &p );
-   return (instPtr != 0) ? new ColorCalibrationInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new ColorCalibrationInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -269,4 +265,4 @@ int ColorCalibrationProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorCalibrationProcess.cpp - Released 2020-07-31T19:33:39Z

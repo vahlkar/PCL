@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ReadoutOptionsInterface.cpp - Released 2020-02-27T12:56:01Z
+// ReadoutOptionsInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -62,12 +62,8 @@ ReadoutOptionsInterface* TheReadoutOptionsInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ReadoutOptionsIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ReadoutOptionsInterface::ReadoutOptionsInterface() :
-   instance( TheReadoutOptionsProcess )
+ReadoutOptionsInterface::ReadoutOptionsInterface()
+   : m_instance( TheReadoutOptionsProcess )
 {
    TheReadoutOptionsInterface = this;
 }
@@ -96,9 +92,9 @@ MetaProcess* ReadoutOptionsInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ReadoutOptionsInterface::IconImageXPM() const
+String ReadoutOptionsInterface::IconImageSVGFile() const
 {
-   return ReadoutOptionsIcon_XPM;
+   return "@module_icons_dir/ReadoutOptions.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -112,7 +108,7 @@ InterfaceFeatures ReadoutOptionsInterface::Features() const
 
 void ReadoutOptionsInterface::ApplyInstance() const
 {
-   instance.LaunchGlobal();
+   m_instance.LaunchGlobal();
 }
 
 // ----------------------------------------------------------------------------
@@ -142,7 +138,7 @@ bool ReadoutOptionsInterface::Launch( const MetaProcess& P, const ProcessImpleme
 
 ProcessImplementation* ReadoutOptionsInterface::NewProcess() const
 {
-   return new ReadoutOptionsInstance( instance );
+   return new ReadoutOptionsInstance( m_instance );
 }
 
 // ----------------------------------------------------------------------------
@@ -166,7 +162,7 @@ bool ReadoutOptionsInterface::RequiresInstanceValidation() const
 
 bool ReadoutOptionsInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
@@ -175,7 +171,7 @@ bool ReadoutOptionsInterface::ImportProcess( const ProcessImplementation& p )
 
 void ReadoutOptionsInterface::UpdateControls()
 {
-   ReadoutOptions o( instance.Options() );
+   ReadoutOptions o( m_instance.Options() );
 
    GUI->Data_ComboBox.SetCurrentItem( o.Data() );
 
@@ -291,7 +287,7 @@ void ReadoutOptionsInterface::UpdateControls()
 
 void ReadoutOptionsInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 {
-   ReadoutOptions o = instance.Options();
+   ReadoutOptions o = m_instance.Options();
 
    if ( sender == GUI->Data_ComboBox )
       o.SetData( ReadoutOptions::readout_data( itemIndex ) );
@@ -325,7 +321,7 @@ void ReadoutOptionsInterface::__ItemSelected( ComboBox& sender, int itemIndex )
       o.SetCoordinateItems( itemIndex+1 ); // [1,3]
    }
 
-   instance.SetOptions( o );
+   m_instance.SetOptions( o );
    UpdateControls();
 }
 
@@ -333,7 +329,7 @@ void ReadoutOptionsInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 
 void ReadoutOptionsInterface::__ButtonClick( Button& sender, bool checked )
 {
-   ReadoutOptions o = instance.Options();
+   ReadoutOptions o = m_instance.Options();
 
    if ( sender == GUI->ShowAlphaChannel_CheckBox )
       o.EnableAlphaChannel( checked );
@@ -410,7 +406,7 @@ void ReadoutOptionsInterface::__ButtonClick( Button& sender, bool checked )
    else if ( sender == GUI->LoadCurrentOptions_PushButton )
       o = ReadoutOptions::GetCurrentOptions();
 
-   instance.SetOptions( o );
+   m_instance.SetOptions( o );
    UpdateControls();
 }
 
@@ -418,7 +414,7 @@ void ReadoutOptionsInterface::__ButtonClick( Button& sender, bool checked )
 
 void ReadoutOptionsInterface::__ValueUpdated( SpinBox& sender, int value )
 {
-   ReadoutOptions o = instance.Options();
+   ReadoutOptions o = m_instance.Options();
 
    if ( sender == GUI->PreviewSize_SpinBox )
    {
@@ -431,7 +427,7 @@ void ReadoutOptionsInterface::__ValueUpdated( SpinBox& sender, int value )
    else if ( sender == GUI->CoordinatePrecision_SpinBox )
       o.SetCoordinatePrecision( value );
 
-   instance.SetOptions( o );
+   m_instance.SetOptions( o );
    UpdateControls();
 }
 
@@ -764,4 +760,4 @@ ReadoutOptionsInterface::GUIData::GUIData( ReadoutOptionsInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ReadoutOptionsInterface.cpp - Released 2020-07-31T19:33:39Z

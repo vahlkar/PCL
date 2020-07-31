@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationParameters.h - Released 2020-02-27T12:56:01Z
+// GREYCstorationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -83,13 +83,11 @@ public:
 
    GREYCsAmplitude( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GREYCsAmplitude* TheGREYCsAmplitudeParameter;
@@ -102,11 +100,10 @@ public:
 
    GREYCsIterations( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GREYCsIterations* TheGREYCsIterationsParameter;
@@ -119,13 +116,11 @@ public:
 
    GREYCsSharpness( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GREYCsSharpness* TheGREYCsSharpnessParameter;
@@ -138,13 +133,11 @@ public:
 
    GREYCsAnisotropy( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GREYCsAnisotropy* TheGREYCsAnisotropyParameter;
@@ -157,13 +150,11 @@ public:
 
    GREYCsAlpha( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GREYCsAlpha* TheGREYCsAlphaParameter;
@@ -176,13 +167,11 @@ public:
 
    GREYCsSigma( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GREYCsSigma* TheGREYCsSigmaParameter;
@@ -195,9 +184,8 @@ public:
 
    GREYCsFastApproximation( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern GREYCsFastApproximation* TheGREYCsFastApproximationParameter;
@@ -210,13 +198,11 @@ public:
 
    GREYCsPrecision( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GREYCsPrecision* TheGREYCsPrecisionParameter;
@@ -229,13 +215,11 @@ public:
 
    GREYCsSpatialStepSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GREYCsSpatialStepSize* TheGREYCsSpatialStepSizeParameter;
@@ -248,13 +232,11 @@ public:
 
    GREYCsAngularStepSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GREYCsAngularStepSize* TheGREYCsAngularStepSizeParameter;
@@ -272,12 +254,11 @@ public:
 
    GREYCsInterpolation( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern GREYCsInterpolation* TheGREYCsInterpolationParameter;
@@ -290,9 +271,8 @@ public:
 
    GREYCsCoupledChannels( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern GREYCsCoupledChannels* TheGREYCsCoupledChannelsParameter;
@@ -306,4 +286,4 @@ PCL_END_LOCAL
 #endif   // __GREYCstorationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF GREYCstorationParameters.h - Released 2020-07-31T19:33:39Z

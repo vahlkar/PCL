@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// AssistedColorCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -62,30 +62,30 @@
 #include <pcl/Thread.h>
 #include <pcl/View.h>
 
-#define REFRESH_COUNT   65536
+#define REFRESH_COUNT 65536
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-AssistedColorCalibrationInstance::AssistedColorCalibrationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   redCorrectionFactor( TheACCRedCorrectionFactor->DefaultValue() ),
-   greenCorrectionFactor( TheACCGreenCorrectionFactor->DefaultValue() ),
-   blueCorrectionFactor( TheACCBlueCorrectionFactor->DefaultValue() ),
-   backgroundReference( TheACCBackgroundReference->DefaultValue() ),
-   histogramShadows( TheACCHistogramShadows->DefaultValue() ),
-   histogramHighlights( TheACCHistogramHighlights->DefaultValue() ),
-   histogramMidtones( TheACCHistogramMidtones->DefaultValue() ),
-   saturationBoost( TheACCSaturationBoost->DefaultValue() )
+AssistedColorCalibrationInstance::AssistedColorCalibrationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , redCorrectionFactor( TheACCRedCorrectionFactor->DefaultValue() )
+   , greenCorrectionFactor( TheACCGreenCorrectionFactor->DefaultValue() )
+   , blueCorrectionFactor( TheACCBlueCorrectionFactor->DefaultValue() )
+   , backgroundReference( TheACCBackgroundReference->DefaultValue() )
+   , histogramShadows( TheACCHistogramShadows->DefaultValue() )
+   , histogramHighlights( TheACCHistogramHighlights->DefaultValue() )
+   , histogramMidtones( TheACCHistogramMidtones->DefaultValue() )
+   , saturationBoost( TheACCSaturationBoost->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-AssistedColorCalibrationInstance::AssistedColorCalibrationInstance( const AssistedColorCalibrationInstance& x ) :
-ProcessImplementation( x )
+AssistedColorCalibrationInstance::AssistedColorCalibrationInstance( const AssistedColorCalibrationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -95,7 +95,7 @@ ProcessImplementation( x )
 void AssistedColorCalibrationInstance::Assign( const ProcessImplementation& p )
 {
    const AssistedColorCalibrationInstance* x = dynamic_cast<const AssistedColorCalibrationInstance*>( &p );
-   if ( x != 0 )
+   if ( x != nullptr )
    {
       this->redCorrectionFactor = x->redCorrectionFactor;
       this->greenCorrectionFactor = x->greenCorrectionFactor;
@@ -134,18 +134,18 @@ template <class P>
 class AssistedColorCalibrationThread : public Thread
 {
 public:
-
    AssistedColorCalibrationThread( const AssistedColorCalibrationInstance& instance,
                                    const AbstractImage::ThreadData& data,
                                    GenericImage<P>& a_image,
-                                   bool prev, double* br, double lCorr, size_type p0, size_type p1 ) :
-      T( instance ),
-      m_data( data ),
-      image( a_image ),
-      isPreview( prev ),
-      start( p0 ), end( p1 ),
-      backRef( br ),
-      luminanceCorrection( lCorr )
+                                   bool prev, double* br, double lCorr, size_type p0, size_type p1 )
+      : T( instance )
+      , m_data( data )
+      , image( a_image )
+      , isPreview( prev )
+      , start( p0 )
+      , end( p1 )
+      , backRef( br )
+      , luminanceCorrection( lCorr )
    {
    }
 
@@ -196,15 +196,15 @@ public:
             B = luminanceCorrection * ( B - backRef[2] );
 
             // apply histogram transformation
-            R = HistogramTransformation::MTF( midtones, Range( (R - shadows) / ( highlights - shadows ), 0.0, 1.0 ) );
-            G = HistogramTransformation::MTF( midtones, Range( (G - shadows) / ( highlights - shadows ), 0.0, 1.0 ) );
-            B = HistogramTransformation::MTF( midtones, Range( (B - shadows) / ( highlights - shadows ), 0.0, 1.0 ) );
+            R = HistogramTransformation::MTF( midtones, Range( ( R - shadows ) / ( highlights - shadows ), 0.0, 1.0 ) );
+            G = HistogramTransformation::MTF( midtones, Range( ( G - shadows ) / ( highlights - shadows ), 0.0, 1.0 ) );
+            B = HistogramTransformation::MTF( midtones, Range( ( B - shadows ) / ( highlights - shadows ), 0.0, 1.0 ) );
 
             // apply saturation enhancement
-            if (fabs(saturation-1.0) > 1e-3)
+            if ( fabs( saturation - 1.0 ) > 1e-3 )
             {
                rgbws.RGBToHSVL( H, S, V, L, R, G, B );
-               rgbws.HSVLToRGB( R, G, B, H, Range( S*saturation, 0.0, 1.0 ), V, L );
+               rgbws.HSVLToRGB( R, G, B, H, Range( S * saturation, 0.0, 1.0 ), V, L );
             }
          }
 
@@ -234,12 +234,15 @@ private:
    double luminanceCorrection;
 };
 
+// ----------------------------------------------------------------------------
+
 template <class P>
-static void ApplyAssistedColorCalibration( GenericImage<P>& image, const AssistedColorCalibrationInstance& T, bool isPreview, double* originalMedian )
+static void ApplyAssistedColorCalibration( GenericImage<P>& image,
+                                           const AssistedColorCalibrationInstance& T, bool isPreview, double* originalMedian )
 {
    // get background reference
    double backRef[3];
-   for (int i = 0; i < 3; i++)
+   for ( int i = 0; i < 3; i++ )
       backRef[i] = 0.0;
 
    double luminanceCorrection = 1.0;
@@ -261,8 +264,8 @@ static void ApplyAssistedColorCalibration( GenericImage<P>& image, const Assiste
       T.GetWBCorrectionFactors( wbFactors[0], wbFactors[1], wbFactors[2] );
 
       // compute approximation of processed image median
-      for (int i = 0; i < 3; i++)
-         processedMedian[i] = originalMedian[i]*wbFactors[i] - backRef[i];
+      for ( int i = 0; i < 3; i++ )
+         processedMedian[i] = originalMedian[i] * wbFactors[i] - backRef[i];
 
       // compute approximation of luminance for each median using HSV system
       RGBColorSystem::sample H, S;
@@ -278,9 +281,9 @@ static void ApplyAssistedColorCalibration( GenericImage<P>& image, const Assiste
    size_type N = image.NumberOfPixels();
    image.Status().Initialize( "Assisted color calibration", N );
 
-   Array<size_type> L = Thread::OptimalThreadLoads( N, 16/*overheadLimit*/ );
+   Array<size_type> L = Thread::OptimalThreadLoads( N, 16 /*overheadLimit*/ );
    AbstractImage::ThreadData data( image, N );
-   ReferenceArray<AssistedColorCalibrationThread<P> > threads;
+   ReferenceArray<AssistedColorCalibrationThread<P>> threads;
    for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
       threads.Add( new AssistedColorCalibrationThread<P>( T, data, image, isPreview, backRef, luminanceCorrection, n, n + L[i] ) );
    AbstractImage::RunThreads( threads, data );
@@ -293,17 +296,17 @@ static void ApplyAssistedColorCalibration( GenericImage<P>& image, const Assiste
 // ----------------------------------------------------------------------------
 
 // calculates background reference from given view using median
-void AssistedColorCalibrationInstance::CalculateBackgroundReference( double &red, double &green, double &blue ) const
+void AssistedColorCalibrationInstance::CalculateBackgroundReference( double& red, double& green, double& blue ) const
 {
    View view = View::ViewById( backgroundReference );
    if ( !view.IsNull() )
       if ( view.Image()->NumberOfNominalChannels() == 3 )
       {
          // get background reference as median for each channel
-         DVector median = view.ComputeOrFetchProperty( "Median", false/*notify*/ ).ToDVector();
-         red   = median[0];
+         DVector median = view.ComputeOrFetchProperty( "Median", false /*notify*/ ).ToDVector();
+         red = median[0];
          green = median[1];
-         blue  = median[2];
+         blue = median[2];
          return;
       }
    red = green = blue = 0;
@@ -312,7 +315,7 @@ void AssistedColorCalibrationInstance::CalculateBackgroundReference( double &red
 // ----------------------------------------------------------------------------
 
 // corrects background reference with current white balance coefficients
-void AssistedColorCalibrationInstance::CorrectBackgroundReference( double &red, double &green, double &blue ) const
+void AssistedColorCalibrationInstance::CorrectBackgroundReference( double& red, double& green, double& blue ) const
 {
    // multiply background reference with coefficients
    red *= redCorrectionFactor;
@@ -329,6 +332,7 @@ void AssistedColorCalibrationInstance::CorrectBackgroundReference( double &red, 
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 bool AssistedColorCalibrationInstance::ExecuteOn( View& view )
 {
@@ -339,18 +343,18 @@ bool AssistedColorCalibrationInstance::ExecuteOn( View& view )
 
       if ( backRefView.Image().IsComplexSample() )
       {
-         MessageBox mb("Background Reference cannot be complex image.",
+         MessageBox mb( "Background Reference cannot be complex image.",
             "Not executed",
-            StdIcon::Information);
+            StdIcon::Information );
          mb.Execute();
          return false;
       }
 
       if ( !backRefView.Image()->IsColor() )
       {
-         MessageBox mb("Background Reference must be a color image.",
+         MessageBox mb( "Background Reference must be a color image.",
             "Not executed",
-            StdIcon::Information);
+            StdIcon::Information );
          mb.Execute();
          return false;
       }
@@ -368,7 +372,7 @@ bool AssistedColorCalibrationInstance::ExecuteOn( View& view )
    double originalMedian[3] = { 0.0, 0.0, 0.0 };
    if ( isPreview )
    {
-      DVector median = view.ComputeOrFetchProperty( "Median", false/*notify*/ ).ToDVector();
+      DVector median = view.ComputeOrFetchProperty( "Median", false /*notify*/ ).ToDVector();
       originalMedian[0] = median[0];
       originalMedian[1] = median[1];
       originalMedian[2] = median[2];
@@ -397,7 +401,7 @@ bool AssistedColorCalibrationInstance::ExecuteOn( View& view )
       else
          switch ( image.BitsPerSample() )
          {
-         case  8:
+         case 8:
             ApplyAssistedColorCalibration( static_cast<pcl::UInt8Image&>( *image ), *this, isPreview, originalMedian );
             break;
          case 16:
@@ -432,7 +436,7 @@ void* AssistedColorCalibrationInstance::LockParameter( const MetaParameter* p, s
    if ( p == TheACCSaturationBoost )
       return &saturationBoost;
 
-   return 0;
+   return nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -457,12 +461,13 @@ size_type AssistedColorCalibrationInstance::ParameterLength( const MetaParameter
 {
    if ( p == TheACCBackgroundReference )
       return backgroundReference.Length();
+
    return 0;
 }
 
 // ----------------------------------------------------------------------------
 
-void AssistedColorCalibrationInstance::GetWBCorrectionFactors( double &red, double &green, double &blue ) const
+void AssistedColorCalibrationInstance::GetWBCorrectionFactors( double& red, double& green, double& blue ) const
 {
    red = this->redCorrectionFactor;
    green = this->greenCorrectionFactor;
@@ -478,7 +483,7 @@ const String& AssistedColorCalibrationInstance::GetBackgroundReference() const
 
 // ----------------------------------------------------------------------------
 
-void AssistedColorCalibrationInstance::GetHistogramTransformation( double &shadows, double &highlights, double &midtones ) const
+void AssistedColorCalibrationInstance::GetHistogramTransformation( double& shadows, double& highlights, double& midtones ) const
 {
    shadows = this->histogramShadows;
    highlights = this->histogramHighlights;
@@ -494,7 +499,7 @@ double AssistedColorCalibrationInstance::GetSaturationBoost() const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF AssistedColorCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// OutputFileData.h - Released 2020-02-27T12:56:01Z
+// OutputFileData.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -77,18 +77,19 @@ struct OutputFileData
 
    OutputFileData( const OutputFileData& ) = delete;
 
-   OutputFileData( OutputFileData&& x ) :
-      format( std::move( x.format ) ),
-      fsData( x.fsData ),
-      options( x.options ),
-      properties( std::move( x.properties ) ),
-      keywords( std::move( x.keywords ) ),
-      profile( std::move( x.profile ) )
+   OutputFileData( OutputFileData&& x )
+      : format( std::move( x.format ) )
+      , fsData( x.fsData )
+      , options( x.options )
+      , properties( std::move( x.properties ) )
+      , keywords( std::move( x.keywords ) )
+      , profile( std::move( x.profile ) )
    {
       x.fsData = nullptr;
    }
 
-   OutputFileData( FileFormatInstance& file, const ImageOptions& o ) : options( o )
+   OutputFileData( FileFormatInstance& file, const ImageOptions& o )
+      : options( o )
    {
       format = new FileFormat( file.Format() );
 
@@ -138,4 +139,4 @@ struct OutputFileData
 #endif   // __OutputFileData_h
 
 // ----------------------------------------------------------------------------
-// EOF OutputFileData.h - Released 2020-02-27T12:56:01Z
+// EOF OutputFileData.h - Released 2020-07-31T19:33:39Z

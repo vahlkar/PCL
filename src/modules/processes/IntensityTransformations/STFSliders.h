@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// STFSliders.h - Released 2020-02-27T12:56:01Z
+// STFSliders.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -103,16 +103,18 @@ public:
 
 private:
 
-   int      channel;
-   bool     rgb;
-   double   m, c0, c1;
-   double   v0, v1;
-   Bitmap   gradient;
-   int      beingDragged;
-   bool     scrolling;
-   int      scrollOrigin;
-   int      m_wheelSteps;  // accumulated 1/8-degree wheel steps
-
+   int      channel      = 0;
+   bool     rgb          = true;
+   double   m            = 0.5;
+   double   c0           = 0;
+   double   c1           = 1;
+   double   v0           = 0;
+   double   v1           = 1;
+   Bitmap   gradient     = Bitmap::Null();
+   int      beingDragged = -1;
+   bool     scrolling    = false;
+   int      scrollOrigin = 0;
+   int      m_wheelSteps = 0; // accumulated 1/8-degree wheel steps
 
    value_event_handler onValueUpdated         = nullptr;
    Control*            onValueUpdatedReceiver = nullptr;
@@ -169,4 +171,4 @@ private:
 #endif   // __STFSliders_h
 
 // ----------------------------------------------------------------------------
-// EOF STFSliders.h - Released 2020-02-27T12:56:01Z
+// EOF STFSliders.h - Released 2020-07-31T19:33:39Z

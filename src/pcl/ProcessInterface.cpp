@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ProcessInterface.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -68,8 +68,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ProcessInterface::ProcessInterface() :
-   Control( nullptr ), MetaObject( Module )
+ProcessInterface::ProcessInterface()
+   : Control( nullptr )
+   , MetaObject( Module )
 {
    if ( Module == nullptr )
       throw Error( "ProcessInterface: Module not initialized - illegal ProcessInterface instantiation" );
@@ -78,8 +79,9 @@ ProcessInterface::ProcessInterface() :
 // ----------------------------------------------------------------------------
 
 // Private ctor. to create a null object
-ProcessInterface::ProcessInterface( int ) :
-   Control( nullptr ), MetaObject( nullptr )
+ProcessInterface::ProcessInterface( int )
+   : Control( nullptr )
+   , MetaObject( nullptr )
 {
 }
 
@@ -87,7 +89,8 @@ class NullInterface : public ProcessInterface
 {
 public:
 
-   NullInterface() : ProcessInterface( -1 )
+   NullInterface()
+      : ProcessInterface( -1 )
    {
    }
 
@@ -1068,22 +1071,40 @@ void ProcessInterface::PerformAPIDefinitions() const
          (*API->InterfaceDefinition->SetInterfaceDescription)( desc.c_str() );
    }
 
-   if ( IconImageXPM() != nullptr )
-      (*API->InterfaceDefinition->SetInterfaceIconImage)( IconImageXPM() );
-   else
    {
-      String path = IconImageFile();
-      if ( !path.IsEmpty() )
-         (*API->InterfaceDefinition->SetInterfaceIconImageFile)( path.c_str() );
-   }
+      IsoString svg = IconImageSVG();
+      if ( !svg.IsEmpty() )
+         (*API->InterfaceDefinition->SetInterfaceIconSVG)( svg.c_str() );
+      else
+      {
+         String filePath = IconImageSVGFile();
+         if ( !filePath.IsEmpty() )
+            (*API->InterfaceDefinition->SetInterfaceIconSVGFile)( filePath.c_str() );
+         else
+         {
+            // ### DEPRECATED - Interface icon images in raster bitmap formats.
 
-   if ( SmallIconImageXPM() != nullptr )
-      (*API->InterfaceDefinition->SetInterfaceIconSmallImage)( SmallIconImageXPM() );
-   else
-   {
-      String path = SmallIconImageFile();
-      if ( !path.IsEmpty() )
-         (*API->InterfaceDefinition->SetInterfaceIconSmallImageFile)( path.c_str() );
+            const char** xpm = IconImageXPM();
+            if ( xpm != nullptr )
+               (*API->InterfaceDefinition->SetInterfaceIconImage)( xpm );
+            else
+            {
+               String path = IconImageFile();
+               if ( !path.IsEmpty() )
+                  (*API->InterfaceDefinition->SetInterfaceIconImageFile)( path.c_str() );
+            }
+
+            xpm = SmallIconImageXPM();
+            if ( xpm != nullptr )
+               (*API->InterfaceDefinition->SetInterfaceIconSmallImage)( xpm );
+            else
+            {
+               String path = SmallIconImageFile();
+               if ( !path.IsEmpty() )
+                  (*API->InterfaceDefinition->SetInterfaceIconSmallImageFile)( path.c_str() );
+            }
+         }
+      }
    }
 
    (*API->InterfaceDefinition->SetInterfaceFeatures)( Features(), 0 );
@@ -1221,4 +1242,4 @@ void ProcessInterface::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ProcessInterface.cpp - Released 2020-07-31T19:33:12Z

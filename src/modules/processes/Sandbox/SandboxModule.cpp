@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxModule.cpp - Released 2020-02-27T12:56:01Z
+// SandboxModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "SandboxModule.h"
 #include "SandboxProcess.h"
@@ -88,6 +88,9 @@ const char* SandboxModule::Version() const
 
 IsoString SandboxModule::Name() const
 {
+   /*
+    * Replace with the actual name of this module. Must be unique.
+    */
    return "Sandbox";
 }
 
@@ -95,35 +98,53 @@ IsoString SandboxModule::Name() const
 
 String SandboxModule::Description() const
 {
-   return "PixInsight Sandbox Process Module"; // Replace with your own description
+   /*
+    * Replace with a short (one-line) description of this module.
+    */
+   return "PixInsight Sandbox Process Module";
 }
 
 // ----------------------------------------------------------------------------
 
 String SandboxModule::Company() const
 {
-   return "Your company comes here";
+   /*
+    * Replace with the name of the company that has developed this module, or
+    * return an empty String() if not applicable.
+    */
+   return "Pleiades Astrophoto S.L.";
 }
 
 // ----------------------------------------------------------------------------
 
 String SandboxModule::Author() const
 {
-   return "Your name comes here";
+   /*
+    * Comma-separated list of module authors.
+    * Replace with the name(s) of the actual author(s) of this module.
+    */
+   return "PTeam";
 }
 
 // ----------------------------------------------------------------------------
 
 String SandboxModule::Copyright() const
 {
-   return "Copyright (c) the year you wrote this, your name";
+   /*
+    * Replace with the actual copyright information.
+    */
+   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
 
 String SandboxModule::TradeMarks() const
 {
-   return "Your trade marks come here";
+   /*
+    * Comma-separated list of trade marks.
+    * PixInsight should always be included in the list.
+    */
+   return "PixInsight";
 }
 
 // ----------------------------------------------------------------------------
@@ -160,8 +181,6 @@ void SandboxModule::GetReleaseDate( int& year, int& month, int& day ) const
 // ----------------------------------------------------------------------------
 
 /*
- * PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
- *
  * Module installation routine.
  *
  * If this routine is defined as a public symbol in a module, the PixInsight
@@ -197,4 +216,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF SandboxModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF SandboxModule.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StatisticsProcess.cpp - Released 2020-02-27T12:56:01Z
+// StatisticsProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -62,10 +62,6 @@ StatisticsProcess* TheStatisticsProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "StatisticsIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 StatisticsProcess::StatisticsProcess()
 {
    TheStatisticsProcess = this;
@@ -101,9 +97,9 @@ String StatisticsProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** StatisticsProcess::IconImageXPM() const
+String StatisticsProcess::IconImageSVGFile() const
 {
-   return StatisticsIcon_XPM;
+   return "@module_icons_dir/Statistics.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -139,4 +135,4 @@ bool StatisticsProcess::IsAssignable() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF StatisticsProcess.cpp - Released 2020-07-31T19:33:39Z

@@ -292,8 +292,8 @@ class RawProgress
 {
 public:
 
-   RawProgress( RawInstance& instance ) :
-      m_instance( instance )
+   RawProgress( RawInstance& instance )
+      : m_instance( instance )
    {
       m_instance.m_raw->set_progress_handler( Callback, this );
    }

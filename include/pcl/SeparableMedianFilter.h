@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SeparableMedianFilter.h - Released 2020-02-27T12:55:23Z
+// pcl/SeparableMedianFilter.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -83,8 +83,8 @@ public:
     * \param size    Size of the separable median filter in pixels. Must be an
     *                odd integer &gt;= 3 (3, 5, 7, ...).
     */
-   SeparableMedianFilter( int size = 3 ) :
-      m_size( PCL_VALID_KERNEL_SIZE( size ) )
+   SeparableMedianFilter( int size = 3 )
+      : m_size( PCL_VALID_KERNEL_SIZE( size ) )
    {
       PCL_PRECONDITION( size >= 3 && size&1 == 1 )
    }
@@ -140,4 +140,4 @@ protected:
 #endif   // __PCL_SeparableMedianFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableMedianFilter.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/SeparableMedianFilter.h - Released 2020-07-31T19:33:04Z

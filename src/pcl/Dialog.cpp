@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Dialog.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Dialog.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -60,8 +60,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-Dialog::Dialog( Control& parent ) :
-   Control( (*API->Dialog->CreateDialog)( ModuleHandle(), this, parent.handle, 0/*flags*/ ) )
+Dialog::Dialog( Control& parent )
+   : Control( (*API->Dialog->CreateDialog)( ModuleHandle(), this, parent.handle, 0/*flags*/ ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateDialog" );
@@ -169,4 +169,4 @@ void Dialog::OnReturn( return_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Dialog.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Dialog.cpp - Released 2020-07-31T19:33:12Z

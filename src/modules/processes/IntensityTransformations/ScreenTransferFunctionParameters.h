@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionParameters.h - Released 2020-02-27T12:56:01Z
+// ScreenTransferFunctionParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -80,10 +80,9 @@ public:
 
    STFSet( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type MinLength() const;
-   virtual size_type MaxLength() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   size_type MaxLength() const override;
 };
 
 extern STFSet* TheSTFSetParameter;
@@ -96,13 +95,11 @@ public:
 
    STFShadowsClipping( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern STFShadowsClipping* TheSTFShadowsClippingParameter;
@@ -115,13 +112,11 @@ public:
 
    STFHighlightsClipping( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern STFHighlightsClipping* TheSTFHighlightsClippingParameter;
@@ -134,13 +129,11 @@ public:
 
    STFMidtonesBalance( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern STFMidtonesBalance* TheSTFMidtonesBalanceParameter;
@@ -153,13 +146,11 @@ public:
 
    STFLowRange( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern STFLowRange* TheSTFLowRangeParameter;
@@ -172,13 +163,11 @@ public:
 
    STFHighRange( MetaTable* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern STFHighRange* TheSTFHighRangeParameter;
@@ -196,11 +185,11 @@ public:
 
    STFInteraction( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern STFInteraction* TheSTFInteractionParameter;
@@ -214,4 +203,4 @@ PCL_END_LOCAL
 #endif   // __ScreenTransferFunctionParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ScreenTransferFunctionParameters.h - Released 2020-07-31T19:33:39Z

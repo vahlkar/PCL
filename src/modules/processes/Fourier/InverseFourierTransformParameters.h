@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformParameters.h - Released 2020-02-27T12:56:01Z
+// InverseFourierTransformParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -66,9 +66,9 @@ public:
 
    IFTIdOfFirstComponent( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern IFTIdOfFirstComponent* TheIFTIdOfFirstComponentParameter;
@@ -81,9 +81,9 @@ public:
 
    IFTIdOfSecondComponent( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern IFTIdOfSecondComponent* TheIFTIdOfSecondComponentParameter;
@@ -102,12 +102,11 @@ public:
 
    IFTOnOutOfRangeResult( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern IFTOnOutOfRangeResult* TheIFTOnOutOfRangeResultParameter;
@@ -119,4 +118,4 @@ extern IFTOnOutOfRangeResult* TheIFTOnOutOfRangeResultParameter;
 #endif   // __InverseFourierTransformParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformParameters.h - Released 2020-02-27T12:56:01Z
+// EOF InverseFourierTransformParameters.h - Released 2020-07-31T19:33:39Z

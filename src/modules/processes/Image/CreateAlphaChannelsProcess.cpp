@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsProcess.cpp - Released 2020-02-27T12:56:01Z
+// CreateAlphaChannelsProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -69,15 +69,10 @@ CreateAlphaChannelsProcess* TheCreateAlphaChannelsProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "CreateAlphaChannelsIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 CreateAlphaChannelsProcess::CreateAlphaChannelsProcess()
 {
    TheCreateAlphaChannelsProcess = this;
 
-   // Instantiate process parameter
    new CAFromImage( this );
    new CASourceImageIdentifier( this );
    new CAInvertSourceImage( this );
@@ -117,9 +112,9 @@ String CreateAlphaChannelsProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** CreateAlphaChannelsProcess::IconImageXPM() const
+String CreateAlphaChannelsProcess::IconImageSVGFile() const
 {
-   return CreateAlphaChannelsIcon_XPM;
+   return "@module_icons_dir/CreateAlphaChannels.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -300,4 +295,4 @@ int CreateAlphaChannelsProcess::ProcessCommandLine( const StringList& argv ) con
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF CreateAlphaChannelsProcess.cpp - Released 2020-07-31T19:33:39Z

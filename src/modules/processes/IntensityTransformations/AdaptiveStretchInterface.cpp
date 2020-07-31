@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInterface.cpp - Released 2020-02-27T12:56:01Z
+// AdaptiveStretchInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -62,17 +62,12 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "AdaptiveStretchIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 AdaptiveStretchInterface* TheAdaptiveStretchInterface = nullptr;
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
-AdaptiveStretchInterface::AdaptiveStretchInterface() :
-   m_instance( TheAdaptiveStretchProcess )
+AdaptiveStretchInterface::AdaptiveStretchInterface()
+   : m_instance( TheAdaptiveStretchProcess )
 {
    TheAdaptiveStretchInterface = this;
 }
@@ -101,9 +96,9 @@ MetaProcess* AdaptiveStretchInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** AdaptiveStretchInterface::IconImageXPM() const
+String AdaptiveStretchInterface::IconImageSVGFile() const
 {
-   return AdaptiveStretchIcon_XPM;
+   return "@module_icons_dir/AdaptiveStretch.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -197,9 +192,9 @@ bool AdaptiveStretchInterface::RequiresRealTimePreviewUpdate( const UInt16Image&
 
 // ----------------------------------------------------------------------------
 
-AdaptiveStretchInterface::RealTimeThread::RealTimeThread( const View& view ) :
-   m_instance( TheAdaptiveStretchProcess ),
-   m_view( view )
+AdaptiveStretchInterface::RealTimeThread::RealTimeThread( const View& view )
+   : m_instance( TheAdaptiveStretchProcess )
+   , m_view( view )
 {
 }
 
@@ -586,4 +581,4 @@ AdaptiveStretchInterface::GUIData::GUIData( AdaptiveStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF AdaptiveStretchInterface.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// Projection.h - Released 2020-02-27T12:56:01Z
+// Projection.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -66,14 +66,12 @@ class Projection
 {
 public:
 
-   Projection() : system( 0 )
-   {
-   }
+   Projection() = default;
 
    virtual ~Projection()
    {
-      if ( system != 0 )
-         delete system, system = 0;
+      if ( system != nullptr )
+         delete system, system = nullptr;
    }
 
    const ProjectionSystem& System() const
@@ -209,7 +207,7 @@ public:
 
 protected:
 
-   ProjectionSystem* system;
+   ProjectionSystem* system = nullptr;
    double            clon, clat; // map center, spherical coordinates
    double            cx, cy;     // map center, rectangular coordinates
    double            radius;     // half FOV
@@ -232,4 +230,4 @@ protected:
 #endif   // __Projection_h
 
 // ----------------------------------------------------------------------------
-// EOF Projection.h - Released 2020-02-27T12:56:01Z
+// EOF Projection.h - Released 2020-07-31T19:33:39Z

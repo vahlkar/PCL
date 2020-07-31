@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ThresholdedTransformation.h - Released 2020-02-27T12:55:23Z
+// pcl/ThresholdedTransformation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -87,8 +87,9 @@ public:
     * Constructs a %ThresholdedTransformation object with the specified \a low
     * and \a high threshold values in the normalized real range [0,1].
     */
-   ThresholdedTransformation( double low = 0, double high = 0 ) :
-      m_lowThreshold( low ), m_highThreshold( high )
+   ThresholdedTransformation( double low = 0, double high = 0 )
+      : m_lowThreshold( low )
+      , m_highThreshold( high )
    {
    }
 
@@ -166,4 +167,4 @@ private:
 #endif   // __PCL_ThresholdedTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ThresholdedTransformation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ThresholdedTransformation.h - Released 2020-07-31T19:33:04Z

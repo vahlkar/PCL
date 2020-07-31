@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsInstance.cpp - Released 2020-02-27T12:56:01Z
+// CreateAlphaChannelsInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -64,22 +64,22 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-CreateAlphaChannelsInstance::CreateAlphaChannelsInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   fromImage( TheCAFromImageParameter->DefaultValue() ),
-   imageId( TheCASourceImageIdentifierParameter->DefaultValue() ),
-   invertSourceImage( TheCAInvertSourceImageParameter->DefaultValue() ),
-   closeSourceImage( TheCACloseSourceImageParameter->DefaultValue() ),
-   transparency( TheCATransparencyParameter->DefaultValue() ),
-   replace( TheCAReplaceExistingChannelsParameter->DefaultValue() ),
-   count( int( TheCAChannelCountParameter->DefaultValue() ) )
+CreateAlphaChannelsInstance::CreateAlphaChannelsInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , fromImage( TheCAFromImageParameter->DefaultValue() )
+   , imageId( TheCASourceImageIdentifierParameter->DefaultValue() )
+   , invertSourceImage( TheCAInvertSourceImageParameter->DefaultValue() )
+   , closeSourceImage( TheCACloseSourceImageParameter->DefaultValue() )
+   , transparency( TheCATransparencyParameter->DefaultValue() )
+   , replace( TheCAReplaceExistingChannelsParameter->DefaultValue() )
+   , count( int( TheCAChannelCountParameter->DefaultValue() ) )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-CreateAlphaChannelsInstance::CreateAlphaChannelsInstance( const CreateAlphaChannelsInstance& x ) :
-   ProcessImplementation( x )
+CreateAlphaChannelsInstance::CreateAlphaChannelsInstance( const CreateAlphaChannelsInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -511,4 +511,4 @@ size_type CreateAlphaChannelsInstance::ParameterLength( const MetaParameter* p, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF CreateAlphaChannelsInstance.cpp - Released 2020-07-31T19:33:39Z

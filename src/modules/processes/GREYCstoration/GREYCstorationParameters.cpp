@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationParameters.cpp - Released 2020-02-27T12:56:01Z
+// GREYCstorationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -72,18 +72,18 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GREYCsAmplitude*         TheGREYCsAmplitudeParameter = 0;
-GREYCsIterations*        TheGREYCsIterationsParameter = 0;
-GREYCsSharpness*         TheGREYCsSharpnessParameter = 0;
-GREYCsAnisotropy*        TheGREYCsAnisotropyParameter = 0;
-GREYCsAlpha*             TheGREYCsAlphaParameter = 0;
-GREYCsSigma*             TheGREYCsSigmaParameter = 0;
-GREYCsFastApproximation* TheGREYCsFastApproximationParameter = 0;
-GREYCsPrecision*         TheGREYCsPrecisionParameter = 0;
-GREYCsSpatialStepSize*   TheGREYCsSpatialStepSizeParameter = 0;
-GREYCsAngularStepSize*   TheGREYCsAngularStepSizeParameter = 0;
-GREYCsInterpolation*     TheGREYCsInterpolationParameter = 0;
-GREYCsCoupledChannels*   TheGREYCsCoupledChannelsParameter = 0;
+GREYCsAmplitude*         TheGREYCsAmplitudeParameter = nullptr;
+GREYCsIterations*        TheGREYCsIterationsParameter = nullptr;
+GREYCsSharpness*         TheGREYCsSharpnessParameter = nullptr;
+GREYCsAnisotropy*        TheGREYCsAnisotropyParameter = nullptr;
+GREYCsAlpha*             TheGREYCsAlphaParameter = nullptr;
+GREYCsSigma*             TheGREYCsSigmaParameter = nullptr;
+GREYCsFastApproximation* TheGREYCsFastApproximationParameter = nullptr;
+GREYCsPrecision*         TheGREYCsPrecisionParameter = nullptr;
+GREYCsSpatialStepSize*   TheGREYCsSpatialStepSizeParameter = nullptr;
+GREYCsAngularStepSize*   TheGREYCsAngularStepSizeParameter = nullptr;
+GREYCsInterpolation*     TheGREYCsInterpolationParameter = nullptr;
+GREYCsCoupledChannels*   TheGREYCsCoupledChannelsParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -445,4 +445,4 @@ bool GREYCsCoupledChannels::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF GREYCstorationParameters.cpp - Released 2020-07-31T19:33:39Z

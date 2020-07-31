@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// FileDataCachePreferencesDialog.cpp - Released 2020-02-27T12:56:01Z
+// FileDataCachePreferencesDialog.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -50,8 +50,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "FileDataCachePreferencesDialog.h"
 #include "FileDataCache.h"
+#include "FileDataCachePreferencesDialog.h"
 
 #include <pcl/MessageBox.h>
 
@@ -60,8 +60,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* cache ) :
-   m_cache( cache )
+FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* cache )
+   : m_cache( cache )
 {
    int labelWidth1 = Font().Width( String( "Cache duration (days):" ) + 'T' );
    int ui4 = LogicalPixelsToPhysical( 4 );
@@ -82,7 +82,7 @@ FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* c
 
    PersistentCache_CheckBox.SetText( "Persistent file cache" );
    PersistentCache_CheckBox.SetToolTip( persistentCacheToolTip );
-   PersistentCache_CheckBox.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::Button_Click, *this );
+   PersistentCache_CheckBox.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::e_Click, *this );
 
    PersistentCache_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    PersistentCache_Sizer.Add( PersistentCache_CheckBox );
@@ -105,7 +105,7 @@ FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* c
    CacheDuration_SpinBox.SetRange( 0, 90 );
    CacheDuration_SpinBox.SetMinimumValueText( "<Forever>" );
    CacheDuration_SpinBox.SetToolTip( cacheDurationToolTip );
-   CacheDuration_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&FileDataCachePreferencesDialog::SpinBox_ValueUpdated, *this );
+   CacheDuration_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&FileDataCachePreferencesDialog::e_ValueUpdated, *this );
 
    CacheDuration_Sizer.SetSpacing( 4 );
    CacheDuration_Sizer.Add( CacheDuration_Label );
@@ -117,7 +117,7 @@ FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* c
    ClearCache_PushButton.SetText( "Clear Memory Cache Now" );
    ClearCache_PushButton.SetToolTip(
       "Click this button to remove all cache items currently stored in volatile RAM." );
-   ClearCache_PushButton.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::Button_Click, *this );
+   ClearCache_PushButton.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::e_Click, *this );
 
    ClearCache_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    ClearCache_Sizer.Add( ClearCache_PushButton, 100 );
@@ -127,7 +127,7 @@ FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* c
    PurgeCache_PushButton.SetText( "Purge Persistent Cache Now" );
    PurgeCache_PushButton.SetToolTip(
       "Click this button to remove all stored persistent cache items." );
-   PurgeCache_PushButton.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::Button_Click, *this );
+   PurgeCache_PushButton.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::e_Click, *this );
 
    PurgeCache_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    PurgeCache_Sizer.Add( PurgeCache_PushButton, 100 );
@@ -137,11 +137,11 @@ FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* c
    OK_PushButton.SetText( "OK" );
    OK_PushButton.SetDefault();
    OK_PushButton.SetCursor( StdCursor::Checkmark );
-   OK_PushButton.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::Button_Click, *this );
+   OK_PushButton.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::e_Click, *this );
 
    Cancel_PushButton.SetText( "Cancel" );
    Cancel_PushButton.SetCursor( StdCursor::Crossmark );
-   Cancel_PushButton.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::Button_Click, *this );
+   Cancel_PushButton.OnClick( (pcl::Button::click_event_handler)&FileDataCachePreferencesDialog::e_Click, *this );
 
    Buttons_Sizer.SetSpacing( 8 );
    Buttons_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -167,7 +167,7 @@ FileDataCachePreferencesDialog::FileDataCachePreferencesDialog( FileDataCache* c
 
    SetWindowTitle( m_cache->CacheName() + " Preferences" );
 
-   OnReturn( (pcl::Dialog::return_event_handler)&FileDataCachePreferencesDialog::Dialog_Return, *this );
+   OnReturn( (pcl::Dialog::return_event_handler)&FileDataCachePreferencesDialog::e_Return, *this );
 
    m_cacheEnabled = m_cache->IsEnabled();
    m_cacheDuration = m_cache->Duration();
@@ -187,7 +187,7 @@ void FileDataCachePreferencesDialog::Update()
 
 // ----------------------------------------------------------------------------
 
-void FileDataCachePreferencesDialog::SpinBox_ValueUpdated( SpinBox& sender, int value )
+void FileDataCachePreferencesDialog::e_ValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == CacheDuration_SpinBox )
    {
@@ -198,7 +198,7 @@ void FileDataCachePreferencesDialog::SpinBox_ValueUpdated( SpinBox& sender, int 
 
 // ----------------------------------------------------------------------------
 
-void FileDataCachePreferencesDialog::Button_Click( Button& sender, bool checked )
+void FileDataCachePreferencesDialog::e_Click( Button& sender, bool checked )
 {
    if ( sender == ClearCache_PushButton )
    {
@@ -244,7 +244,7 @@ void FileDataCachePreferencesDialog::Button_Click( Button& sender, bool checked 
 
 // ----------------------------------------------------------------------------
 
-void FileDataCachePreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
+void FileDataCachePreferencesDialog::e_Return( Dialog& sender, int retVal )
 {
    if ( retVal == StdDialogCode::Ok )
    {
@@ -258,4 +258,4 @@ void FileDataCachePreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCachePreferencesDialog.cpp - Released 2020-02-27T12:56:01Z
+// EOF FileDataCachePreferencesDialog.cpp - Released 2020-07-31T19:33:39Z

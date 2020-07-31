@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAInterface.h - Released 2020-02-27T12:56:01Z
+// SplitCFAInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -79,23 +79,17 @@ public:
    SplitCFAInterface();
    virtual ~SplitCFAInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   //virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-   virtual void ApplyInstance() const;
-
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
@@ -105,66 +99,61 @@ private:
    {
       GUIData( SplitCFAInterface& );
 
-      VerticalSizer  Global_Sizer;
+      VerticalSizer Global_Sizer;
 
-      SectionBar        TargetImages_SectionBar;
-      Control           TargetImages_Control;
-      HorizontalSizer   TargetImages_Sizer;
-         TreeBox           Files_TreeBox;
-         VerticalSizer     TargetButtons_Sizer;
-            PushButton        AddFolder_PushButton;
-            PushButton        AddFiles_PushButton;
-            PushButton        SelectAll_PushButton;
-            PushButton        InvertSelection_PushButton;
-            PushButton        ToggleSelected_PushButton;
-            PushButton        RemoveSelected_PushButton;
-            PushButton        Clear_PushButton;
-            CheckBox          FullPaths_CheckBox;
+      SectionBar TargetImages_SectionBar;
+      Control TargetImages_Control;
+      HorizontalSizer TargetImages_Sizer;
+      TreeBox Files_TreeBox;
+      VerticalSizer TargetButtons_Sizer;
+      PushButton AddFolder_PushButton;
+      PushButton AddFiles_PushButton;
+      PushButton SelectAll_PushButton;
+      PushButton InvertSelection_PushButton;
+      PushButton ToggleSelected_PushButton;
+      PushButton RemoveSelected_PushButton;
+      PushButton Clear_PushButton;
+      CheckBox FullPaths_CheckBox;
 
-      SectionBar         Output_SectionBar;
-      Control           Output_Control;
-      VerticalSizer     Output_Sizer;
-         HorizontalSizer   OutputDir_Sizer;
-            CheckBox          OutputTree_CheckBox;
-            Edit              OutputDir_Edit;
-            ToolButton        OutputDir_SelectButton;
-            ToolButton        OutputDir_ClearButton;
-         HorizontalSizer   OutputChunks_Sizer;
-            CheckBox          OutputSubDirCFA_CheckBox;
-            CheckBox          Overwrite_CheckBox;
-            Label             Prefix_Label;
-            Edit              Prefix_Edit;
-            Label             Postfix_Label;
-            Edit              Postfix_Edit;
+      SectionBar Output_SectionBar;
+      Control Output_Control;
+      VerticalSizer Output_Sizer;
+      HorizontalSizer OutputDir_Sizer;
+      CheckBox OutputTree_CheckBox;
+      Edit OutputDir_Edit;
+      ToolButton OutputDir_SelectButton;
+      ToolButton OutputDir_ClearButton;
+      HorizontalSizer OutputChunks_Sizer;
+      CheckBox OutputSubDirCFA_CheckBox;
+      CheckBox Overwrite_CheckBox;
+      Label Prefix_Label;
+      Edit Prefix_Edit;
+      Label Postfix_Label;
+      Edit Postfix_Edit;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
-   // Workbench
-   //size_t m_length;
+   void SelectDir();                                        // Select output directory
+   void SearchFile( const String&, const String& );         // Recursiv Search file in sub-folders
+   int FileInList( const String& );                         // is a file in target frames or not? : -1 = not found; otherwise return pointer >=0
+   void AddFile( const String&, const String& = String() ); // add one file to target list
+   void AddFiles();                                         // add selected files
+   void AddFolders();                                       // search all sub-folders and add all files
+   void RemoveSelectedFiles();
 
+   void UpdateControls();
+   void UpdateTargetImagesList();
+   void UpdateImageSelectionButtons();
 
-   // Main routines
-   void  SelectDir();               // Select output directory
-   void  SearchFile(const String&, const String& ); // Recursiv Search file in sub-folders
-   int   FileInList(const String&);	// Are is file in target frames or not? : -1 = not found; othervice return pointer >=0
-   void  AddFile(const String&, const String& = String() );     // add one file to target list
-   void  AddFiles();                // add selected files
-   void  AddFolders();              // search all sub-filders and add all files
-   void  RemoveSelectedFiles();
-
-   void  UpdateControls();
-   void  UpdateTargetImagesList();
-   void  UpdateImageSelectionButtons();
-
-   void  __TargetImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
-   void  __TargetImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
-   void  __TargetImages_NodeSelectionUpdated( TreeBox& sender );
-   void  __TargetImages_BottonClick( Button& sender, bool checked );
-   void  __ToggleSection( SectionBar& sender, Control& section, bool start );
-   void  __MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
-   void  __EditCompleted( Edit& sender );
-   void  __Button_Click( Button& sender, bool checked );
+   void __TargetImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
+   void __TargetImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
+   void __TargetImages_NodeSelectionUpdated( TreeBox& sender );
+   void __TargetImages_BottonClick( Button& sender, bool checked );
+   void __ToggleSection( SectionBar& sender, Control& section, bool start );
+   void __MouseDoubleClick( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers );
+   void __EditCompleted( Edit& sender );
+   void __Button_Click( Button& sender, bool checked );
 
    friend struct GUIData;
 };
@@ -177,9 +166,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __SplitCFAInterface_h
+#endif // __SplitCFAInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAInterface.h - Released 2020-02-27T12:56:01Z
+// EOF SplitCFAInterface.h - Released 2020-07-31T19:33:39Z

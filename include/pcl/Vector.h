@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2020-02-27T12:55:23Z
+// pcl/Vector.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -190,7 +190,8 @@ public:
     * \code GenericVector( c.begin(), int( c.size() ) ) \endcode
     */
    template <typename T1>
-   GenericVector( std::initializer_list<T1> c ) : GenericVector( c.begin(), int( c.size() ) )
+   GenericVector( std::initializer_list<T1> c )
+      : GenericVector( c.begin(), int( c.size() ) )
    {
    }
 
@@ -227,7 +228,8 @@ public:
     * Copy constructor. This object references the same data that is being
     * referenced by the specified vector \a x.
     */
-   GenericVector( const GenericVector& x ) : m_data( x.m_data )
+   GenericVector( const GenericVector& x )
+      : m_data( x.m_data )
    {
       m_data->Attach();
    }
@@ -235,7 +237,8 @@ public:
    /*!
     * Move constructor.
     */
-   GenericVector( GenericVector&& x ) : m_data( x.m_data )
+   GenericVector( GenericVector&& x )
+      : m_data( x.m_data )
    {
       x.m_data = nullptr;
    }
@@ -1103,6 +1106,30 @@ public:
    }
 
    /*!
+    * Computes the two-sided, asymmetric trimmed mean of the values in this
+    * vector. See pcl::TrimmedMean() for a complete description of the
+    * implemented algorithm with information on function parameters.
+    *
+    * For empty vectors, this function returns zero.
+    */
+   double TrimmedMean( distance_type l = 1, distance_type h = 1 ) const
+   {
+      return pcl::TrimmedMean( m_data->Begin(), m_data->End(), l, h );
+   }
+
+   /*!
+    * Computes the two-sided, asymmetric trimmed mean of the squared values in
+    * this vector. See pcl::TrimmedMeanOfSquares() for a complete description
+    * of the implemented algorithm with information on function parameters.
+    *
+    * For empty vectors, this function returns zero.
+    */
+   double TrimmedMeanOfSquares( distance_type l = 1, distance_type h = 1 ) const
+   {
+      return pcl::TrimmedMeanOfSquares( m_data->Begin(), m_data->End(), l, h );
+   }
+
+   /*!
     * Returns the variance from the mean for the values in this vector.
     *
     * For vectors with less than two components, this function returns zero.
@@ -1127,35 +1154,10 @@ public:
     * Returns the median of the values in this vector.
     *
     * For vectors of length < 2, this function returns zero conventionally.
-    *
-    * Before computing the median, this function ensures that this instance
-    * uniquely references its vector data, generating a duplicate if necessary.
-    *
-    * \note This is a \e destructive median calculation algorithm: it alters
-    * the order in the sequence of vector components. For a nondestructive
-    * version, see the const version of this member function.
-    */
-   double Median()
-   {
-      EnsureUnique();
-      return pcl::Median( m_data->Begin(), m_data->End() );
-   }
-
-   /*!
-    * Returns the median of the values in this vector, without modifying this
-    * instance.
-    *
-    * For vectors of length < 2, this function returns zero conventionally.
-    *
-    * This is a \e nondestructive median calculation routine that doesn't
-    * modify the order of existing vector components. To achieve that goal,
-    * this routine simply generates a temporary working vector as a copy of
-    * this object, then calls its Median() member function to obtain the
-    * function's return value.
     */
    double Median() const
    {
-      return GenericVector( *this ).Median();
+      return pcl::Median( m_data->Begin(), m_data->End() );
    }
 
    /*!
@@ -1233,6 +1235,27 @@ public:
    }
 
    /*!
+    * Returns the two-sided average absolute deviation with respect to the
+    * specified \a center value.
+    *
+    * See AvgDev( double ) for more information.
+    */
+   TwoSidedEstimate TwoSidedAvgDev( double center ) const
+   {
+      return pcl::TwoSidedAvgDev( m_data->Begin(), m_data->End(), center );
+   }
+
+   /*!
+    * Returns the two-sided average absolute deviation from the median.
+    *
+    * See AvgDev() for more information.
+    */
+   TwoSidedEstimate TwoSidedAvgDev() const
+   {
+      return pcl::TwoSidedAvgDev( m_data->Begin(), m_data->End() );
+   }
+
+   /*!
     * Returns the median absolute deviation (MAD) with respect to the specified
     * \a center value.
     *
@@ -1264,7 +1287,28 @@ public:
    }
 
    /*!
-    * Returns a biweight midvariance (BWMV).
+    * Returns the two-sided median absolute deviation (MAD) with respect to the
+    * specified \a center value.
+    *
+    * See MAD( double ) for more information.
+    */
+   TwoSidedEstimate TwoSidedMAD( double center ) const
+   {
+      return pcl::TwoSidedMAD( m_data->Begin(), m_data->End(), center );
+   }
+
+   /*!
+    * Returns the two-sided median absolute deviation from the median (MAD).
+    *
+    * See MAD() for more information.
+    */
+   TwoSidedEstimate TwoSidedMAD() const
+   {
+      return pcl::TwoSidedMAD( m_data->Begin(), m_data->End() );
+   }
+
+   /*!
+    * Returns the biweight midvariance (BWMV).
     *
     * \param center  Reference center value. Normally, the median of the vector
     *                components should be used.
@@ -1275,6 +1319,16 @@ public:
     *
     * \param k       Rejection limit in sigma units. The default value is k=9.
     *
+    * \param reducedLength    If true, reduce the sample size to exclude
+    *                rejected vector components. This tends to approximate the
+    *                true dispersion of the data more accurately for relatively
+    *                small samples, or samples with large amounts of outliers.
+    *                Note that this departs from the standard definition of
+    *                biweight midvariance, where the total number of data items
+    *                is used to scale the variance estimate. If false, use the
+    *                full vector length, including rejected components, which
+    *                gives a standard biweight midvariance estimate.
+    *
     * The square root of the biweight midvariance is a robust estimator of
     * scale. It is an efficient estimator with respect to many statistical
     * distributions (about 87% Gaussian efficiency), and appears to have a
@@ -1284,19 +1338,29 @@ public:
     *
     * \b References
     *
-    * Rand R. Wilcox (2012), <em>Introduction to Robust Estimation and
-    * Hypothesis Testing, 3rd Edition</em>, Elsevier Inc., Section 3.12.1.
+    * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and
+    * Hypothesis Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.1.
     */
-   double BiweightMidvariance( double center, double sigma, int k = 9 ) const
+   double BiweightMidvariance( double center, double sigma, int k = 9, bool reducedLength = false ) const
    {
-      return pcl::BiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k );
+      return pcl::BiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k, reducedLength );
    }
 
    /*!
     * Returns the biweight midvariance (BWMV) with respect to the median and
-    * median absolute deviation (MAD).
+    * the median absolute deviation from the median (MAD).
     *
     * \param k       Rejection limit in sigma units. The default value is k=9.
+    *
+    * \param reducedLength    If true, reduce the sample size to exclude
+    *                rejected vector components. This tends to approximate the
+    *                true dispersion of the data more accurately for relatively
+    *                small samples, or samples with large amounts of outliers.
+    *                Note that this departs from the standard definition of
+    *                biweight midvariance, where the total number of data items
+    *                is used to scale the variance estimate. If false, use the
+    *                full vector length, including rejected components, which
+    *                gives a standard biweight midvariance estimate.
     *
     * The square root of the biweight midvariance is a robust estimator of
     * scale. It is an efficient estimator with respect to many statistical
@@ -1307,14 +1371,45 @@ public:
     *
     * \b References
     *
-    * Rand R. Wilcox (2012), <em>Introduction to Robust Estimation and
-    * Hypothesis Testing, 3rd Edition</em>, Elsevier Inc., Section 3.12.1.
+    * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and
+    * Hypothesis Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.1.
     */
-   double BiweightMidvariance( int k = 9 ) const
+   double BiweightMidvariance( int k = 9, bool reducedLength = false ) const
    {
       double center = Median();
-      double sigma = 1.4826*MAD( center );
-      return pcl::BiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k );
+      return BiweightMidvariance( center, MAD( center ), k, reducedLength );
+   }
+
+   /*!
+    * Returns the two-sided biweight midvariance (BWMV).
+    *
+    * \param center  Reference center value. Normally, the median of the vector
+    *                components should be used.
+    *
+    * \param sigma   A two-sided reference estimate of dispersion. Normally,
+    *                the two-sided median absolute deviation from the median
+    *                (MAD) of the vector components should be used. See the
+    *                TwoSidedMAD() member function.
+    *
+    * See BiweightMidvariance( double, double, int, bool ) for more information
+    * on the rest of parameters and references.
+    */
+   TwoSidedEstimate TwoSidedBiweightMidvariance( double center, const TwoSidedEstimate& sigma,
+                                                 int k = 9, bool reducedLength = false ) const
+   {
+      return pcl::TwoSidedBiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k, reducedLength );
+   }
+
+   /*!
+    * Returns the two-sided biweight midvariance (BWMV) with respect to the
+    * median and the two-sided median absolute deviation from the median (MAD).
+    *
+    * See BiweightMidvariance( int, bool ) for more information and references.
+    */
+   TwoSidedEstimate TwoSidedBiweightMidvariance( int k = 9, bool reducedLength = false ) const
+   {
+      double center = Median();
+      return TwoSidedBiweightMidvariance( center, TwoSidedMAD( center ), k, reducedLength );
    }
 
    /*!
@@ -1325,8 +1420,8 @@ public:
     *
     * \param beta    Rejection parameter in the [0,0.5] range. Higher values
     *                improve robustness to outliers (i.e., increase the
-    *                breakdown point of the estimator) at the expense of lower
-    *                efficiency. The default value is beta=0.2.
+    *                breakdown point of the estimator) at the expense of a
+    *                lower efficiency. The default value is beta=0.2.
     *
     * The square root of the percentage bend midvariance is a robust estimator
     * of scale. With the default beta=0.2, its Gaussian efficiency is 67%. With
@@ -1336,8 +1431,8 @@ public:
     *
     * \b References
     *
-    * Rand R. Wilcox (2012), <em>Introduction to Robust Estimation and
-    * Hypothesis Testing, 3rd Edition</em>, Elsevier Inc., Section 3.12.3.
+    * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and
+    * Hypothesis Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.3.
     */
    double BendMidvariance( double center, double beta = 0.2 ) const
    {
@@ -1349,8 +1444,8 @@ public:
     *
     * \param beta    Rejection parameter in the [0,0.5] range. Higher values
     *                improve robustness to outliers (i.e., increase the
-    *                breakdown point of the estimator) at the expense of lower
-    *                efficiency. The default value is beta=0.2.
+    *                breakdown point of the estimator) at the expense of a
+    *                lower efficiency. The default value is beta=0.2.
     *
     * The square root of the percentage bend midvariance is a robust estimator
     * of scale. With the default beta=0.2, its Gaussian efficiency is 67%. With
@@ -1360,8 +1455,8 @@ public:
     *
     * \b References
     *
-    * Rand R. Wilcox (2012), <em>Introduction to Robust Estimation and
-    * Hypothesis Testing, 3rd Edition</em>, Elsevier Inc., Section 3.12.3.
+    * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and
+    * Hypothesis Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.3.
     */
    double BendMidvariance( double beta = 0.2 ) const
    {
@@ -2751,11 +2846,20 @@ typedef GenericVector<int64>        I64Vector;
 /*!
  * \class pcl::UI64Vector
  * \ingroup vector_types
- * \brief 64-bit unsigned integer components.
+ * \brief 64-bit unsigned integer vector.
  *
  * %UI64Vector is a template instantiation of GenericVector for \c uint64.
  */
 typedef GenericVector<uint64>       UI64Vector;
+
+/*!
+ * \class pcl::SzVector
+ * \ingroup vector_types
+ * \brief size_type integer vector.
+ *
+ * %SzVector is a template instantiation of GenericVector for \c size_type.
+ */
+typedef GenericVector<size_type>    SzVector;
 
 /*!
  * \class pcl::F32Vector
@@ -2862,4 +2966,4 @@ typedef F80Vector                   LDVector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Vector.h - Released 2020-07-31T19:33:04Z

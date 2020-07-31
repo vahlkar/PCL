@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInterface.h - Released 2020-02-27T12:56:01Z
+// ArcsinhStretchInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
-// Copyright (c) 2017-2018 Mark Shelley
+// Copyright (c) 2017-2020 Mark Shelley
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -83,26 +83,18 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
-
    bool WantsRealTimePreviewNotifications() const override;
    void RealTimePreviewOwnerChanged(ProcessInterface& iface) override;
    void RealTimePreviewUpdated(bool active) override;
-
    void ApplyInstance() const override;
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
-
    bool RequiresRealTimePreviewUpdate(const UInt16Image&, const View&, const Rect&, int zoomLevel) const override;
    bool GenerateRealTimePreview(UInt16Image&, const View&, const Rect&, int zoomLevel, String& info) const override;
 
@@ -118,9 +110,9 @@ private:
 
       RealTimeThread();
 
-      void Reset(const UInt16Image&, const ArcsinhStretchInstance&);
+      void Reset( const UInt16Image&, const ArcsinhStretchInstance& );
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
@@ -157,7 +149,6 @@ private:
    void UpdateSliderControls();
    void UpdateRealTimePreview();
 
-   // Event Handlers
    void __RealValueUpdated( NumericEdit& sender, double value );
    void __SliderValueUpdated( Slider& sender, int value );
    void __ItemClicked( Button& sender, bool checked );
@@ -185,4 +176,4 @@ PCL_END_LOCAL
 #endif   // __ArcsinhStretchInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInterface.h - Released 2020-02-27T12:56:01Z
+// EOF ArcsinhStretchInterface.h - Released 2020-07-31T19:33:39Z

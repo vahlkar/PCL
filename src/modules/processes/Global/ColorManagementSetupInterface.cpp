@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInterface.cpp - Released 2020-02-27T12:56:01Z
+// ColorManagementSetupInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -68,15 +68,13 @@ ColorManagementSetupInterface* TheColorManagementSetupInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ColorManagementSetupIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ColorManagementSetupInterface::ColorManagementSetupInterface() :
-   instance( TheColorManagementSetupProcess )
+ColorManagementSetupInterface::ColorManagementSetupInterface()
+   : m_instance( TheColorManagementSetupProcess )
 {
    TheColorManagementSetupInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 ColorManagementSetupInterface::~ColorManagementSetupInterface()
 {
@@ -84,25 +82,35 @@ ColorManagementSetupInterface::~ColorManagementSetupInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ColorManagementSetupInterface::Id() const
 {
    return "ColorManagementSetup";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* ColorManagementSetupInterface::Process() const
 {
    return TheColorManagementSetupProcess;
 }
 
-const char** ColorManagementSetupInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String ColorManagementSetupInterface::IconImageSVGFile() const
 {
-   return ColorManagementSetupIcon_XPM;
+   return "@module_icons_dir/ColorManagementSetup.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures ColorManagementSetupInterface::Features() const
 {
    return InterfaceFeature::DefaultGlobal;
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::Initialize()
 {
@@ -114,19 +122,25 @@ void ColorManagementSetupInterface::Initialize()
     * settings variables. See also the constructor of
     * ColorManagementSetupInstance.
     */
-   instance = ColorManagementSetupInstance( TheColorManagementSetupProcess );
+   m_instance = ColorManagementSetupInstance( TheColorManagementSetupProcess );
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::ApplyInstance() const
 {
-   instance.LaunchGlobal();
+   m_instance.LaunchGlobal();
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::ResetInstance()
 {
    ColorManagementSetupInstance defaultInstance( TheColorManagementSetupProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ColorManagementSetupInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -141,10 +155,14 @@ bool ColorManagementSetupInterface::Launch( const MetaProcess& P, const ProcessI
    return &P == TheColorManagementSetupProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* ColorManagementSetupInterface::NewProcess() const
 {
-   return new ColorManagementSetupInstance( instance );
+   return new ColorManagementSetupInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ColorManagementSetupInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -154,19 +172,22 @@ bool ColorManagementSetupInterface::ValidateProcess( const ProcessImplementation
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ColorManagementSetupInterface::RequiresInstanceValidation() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ColorManagementSetupInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::UpdateControls()
@@ -179,47 +200,49 @@ void ColorManagementSetupInterface::UpdateControls()
    GUI->MonitorProfile_Edit.SetText( ICCProfile( monitorProfilePath ).Description() );
    GUI->MonitorProfileFullPath_Edit.SetText( monitorProfilePath );
 
-   GUI->RenderingIntent_ComboBox.SetCurrentItem( instance.defaultRenderingIntent );
+   GUI->RenderingIntent_ComboBox.SetCurrentItem( m_instance.defaultRenderingIntent );
 
-   GUI->NewMonitorProfile_Edit.SetText( instance.updateMonitorProfile );
+   GUI->NewMonitorProfile_Edit.SetText( m_instance.updateMonitorProfile );
    GUI->NewMonitorProfile_ComboBox.SetCurrentItem( 0 );
 
-   GUI->RGBProfileId_Edit.SetText( instance.defaultRGBProfile );
+   GUI->RGBProfileId_Edit.SetText( m_instance.defaultRGBProfile );
    GUI->RGBProfile_ComboBox.SetCurrentItem( 0 );
 
-   GUI->GrayscaleProfileId_Edit.SetText( instance.defaultGrayProfile );
+   GUI->GrayscaleProfileId_Edit.SetText( m_instance.defaultGrayProfile );
    GUI->GrayscaleProfile_ComboBox.SetCurrentItem( 0 );
 
-   GUI->OnProfileMismatch_Ask_RadioButton.SetChecked( instance.onProfileMismatch == CMSOnProfileMismatch::AskUser );
-   GUI->OnProfileMismatch_Keep_RadioButton.SetChecked( instance.onProfileMismatch == CMSOnProfileMismatch::KeepEmbedded );
-   GUI->OnProfileMismatch_Convert_RadioButton.SetChecked( instance.onProfileMismatch == CMSOnProfileMismatch::ConvertToDefault );
-   GUI->OnProfileMismatch_Discard_RadioButton.SetChecked( instance.onProfileMismatch == CMSOnProfileMismatch::DiscardEmbedded );
-   GUI->OnProfileMismatch_Disable_RadioButton.SetChecked( instance.onProfileMismatch == CMSOnProfileMismatch::DisableCM );
+   GUI->OnProfileMismatch_Ask_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::AskUser );
+   GUI->OnProfileMismatch_Keep_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::KeepEmbedded );
+   GUI->OnProfileMismatch_Convert_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::ConvertToDefault );
+   GUI->OnProfileMismatch_Discard_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::DiscardEmbedded );
+   GUI->OnProfileMismatch_Disable_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::DisableCM );
 
-   GUI->OnMissingProfile_Ask_RadioButton.SetChecked( instance.onMissingProfile == CMSOnMissingProfile::AskUser );
-   GUI->OnMissingProfile_Assign_RadioButton.SetChecked( instance.onMissingProfile == CMSOnMissingProfile::AssignDefault );
-   GUI->OnMissingProfile_Leave_RadioButton.SetChecked( instance.onMissingProfile == CMSOnMissingProfile::LeaveUntagged );
-   GUI->OnMissingProfile_Disable_RadioButton.SetChecked( instance.onMissingProfile == CMSOnMissingProfile::DisableCM );
+   GUI->OnMissingProfile_Ask_RadioButton.SetChecked( m_instance.onMissingProfile == CMSOnMissingProfile::AskUser );
+   GUI->OnMissingProfile_Assign_RadioButton.SetChecked( m_instance.onMissingProfile == CMSOnMissingProfile::AssignDefault );
+   GUI->OnMissingProfile_Leave_RadioButton.SetChecked( m_instance.onMissingProfile == CMSOnMissingProfile::LeaveUntagged );
+   GUI->OnMissingProfile_Disable_RadioButton.SetChecked( m_instance.onMissingProfile == CMSOnMissingProfile::DisableCM );
 
-   GUI->ProofingProfileId_Edit.SetText( instance.proofingProfile );
+   GUI->ProofingProfileId_Edit.SetText( m_instance.proofingProfile );
    GUI->ProofingProfile_ComboBox.SetCurrentItem( 0 );
 
-   GUI->ProofingIntent_ComboBox.SetCurrentItem( instance.proofingIntent );
+   GUI->ProofingIntent_ComboBox.SetCurrentItem( m_instance.proofingIntent );
 
-   GUI->UseProofingBPC_CheckBox.SetChecked( instance.useProofingBPC );
+   GUI->UseProofingBPC_CheckBox.SetChecked( m_instance.useProofingBPC );
 
-   GUI->DefaultProofingEnabled_CheckBox.SetChecked( instance.defaultProofingEnabled );
-   GUI->DefaultGamutCheckEnabled_CheckBox.SetChecked( instance.defaultGamutCheckEnabled );
+   GUI->DefaultProofingEnabled_CheckBox.SetChecked( m_instance.defaultProofingEnabled );
+   GUI->DefaultGamutCheckEnabled_CheckBox.SetChecked( m_instance.defaultGamutCheckEnabled );
 
-   GUI->GamutWarningColor_ComboBox.SetCurrentColor( instance.gamutWarningColor );
+   GUI->GamutWarningColor_ComboBox.SetCurrentColor( m_instance.gamutWarningColor );
    GUI->GamutWarningColor_Control.Update();
 
-   GUI->EnableColorManagement_CheckBox.SetChecked( instance.enabled );
-   GUI->UseLowResolutionCLUTs_CheckBox.SetChecked( instance.useLowResolutionCLUTs );
+   GUI->EnableColorManagement_CheckBox.SetChecked( m_instance.enabled );
+   GUI->UseLowResolutionCLUTs_CheckBox.SetChecked( m_instance.useLowResolutionCLUTs );
 
-   GUI->EmbedProfilesInRGBImages_CheckBox.SetChecked( instance.defaultEmbedProfilesInRGBImages );
-   GUI->EmbedProfilesInGrayscaleImages_CheckBox.SetChecked( instance.defaultEmbedProfilesInGrayscaleImages );
+   GUI->EmbedProfilesInRGBImages_CheckBox.SetChecked( m_instance.defaultEmbedProfilesInRGBImages );
+   GUI->EmbedProfilesInGrayscaleImages_CheckBox.SetChecked( m_instance.defaultEmbedProfilesInGrayscaleImages );
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::RefreshProfiles()
 {
@@ -252,15 +275,16 @@ void ColorManagementSetupInterface::RefreshProfiles()
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::__RenderingIntent_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->RenderingIntent_ComboBox )
-      instance.defaultRenderingIntent = itemIndex;
+      m_instance.defaultRenderingIntent = itemIndex;
    else if ( sender == GUI->ProofingIntent_ComboBox )
-      instance.proofingIntent = itemIndex;
+      m_instance.proofingIntent = itemIndex;
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::__Profile_ItemSelected( ComboBox& sender, int itemIndex )
 {
@@ -269,7 +293,7 @@ void ColorManagementSetupInterface::__Profile_ItemSelected( ComboBox& sender, in
       if ( itemIndex > 0 )
          if ( itemIndex <= int( rgbProfiles.Length() ) ) // first item is title
          {
-            instance.defaultRGBProfile = rgbProfiles[itemIndex-1].description; // skip the first title item
+            m_instance.defaultRGBProfile = rgbProfiles[itemIndex-1].description; // skip the first title item
             UpdateControls();
          }
    }
@@ -278,7 +302,7 @@ void ColorManagementSetupInterface::__Profile_ItemSelected( ComboBox& sender, in
       if ( itemIndex > 0 )
          if ( itemIndex <= int( grayProfiles.Length() ) ) // first item is title
          {
-            instance.defaultGrayProfile = grayProfiles[itemIndex-1].description; // skip the first title item
+            m_instance.defaultGrayProfile = grayProfiles[itemIndex-1].description; // skip the first title item
             UpdateControls();
          }
    }
@@ -287,7 +311,7 @@ void ColorManagementSetupInterface::__Profile_ItemSelected( ComboBox& sender, in
       if ( itemIndex > 0 )
          if ( itemIndex <= int( proofingProfiles.Length() ) ) // first item is title
          {
-            instance.proofingProfile = proofingProfiles[itemIndex-1].description; // skip the first title item
+            m_instance.proofingProfile = proofingProfiles[itemIndex-1].description; // skip the first title item
             UpdateControls();
          }
    }
@@ -297,79 +321,93 @@ void ColorManagementSetupInterface::__Profile_ItemSelected( ComboBox& sender, in
          if ( itemIndex <= int( rgbProfiles.Length()+1 ) ) // first item is title, 2nd item is <reset-profiles>
          {
             if ( itemIndex > 1 )
-               instance.updateMonitorProfile = rgbProfiles[itemIndex-2].description; // skip the first two items
+               m_instance.updateMonitorProfile = rgbProfiles[itemIndex-2].description; // skip the first two items
             else
-               instance.updateMonitorProfile = sender.ItemText( itemIndex ).Trimmed(); // <reset-profiles>
+               m_instance.updateMonitorProfile = sender.ItemText( itemIndex ).Trimmed(); // <reset-profiles>
             UpdateControls();
          }
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorManagementSetupInterface::__Profile_EditCompleted( Edit& sender )
 {
    String txt = sender.Text().Trimmed();
    if ( sender == GUI->RGBProfileId_Edit )
-      instance.defaultRGBProfile = txt;
+      m_instance.defaultRGBProfile = txt;
    else if ( sender == GUI->GrayscaleProfileId_Edit )
-      instance.defaultGrayProfile = txt;
+      m_instance.defaultGrayProfile = txt;
    else if ( sender == GUI->ProofingProfileId_Edit )
-      instance.proofingProfile = txt;
+      m_instance.proofingProfile = txt;
    else if ( sender == GUI->NewMonitorProfile_Edit )
-      instance.updateMonitorProfile = txt;
+      m_instance.updateMonitorProfile = txt;
 
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorManagementSetupInterface::__OnProfileMismatch_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->OnProfileMismatch_Ask_RadioButton )
-      instance.onProfileMismatch = CMSOnProfileMismatch::AskUser;
+      m_instance.onProfileMismatch = CMSOnProfileMismatch::AskUser;
    else if ( sender == GUI->OnProfileMismatch_Keep_RadioButton )
-      instance.onProfileMismatch = CMSOnProfileMismatch::KeepEmbedded;
+      m_instance.onProfileMismatch = CMSOnProfileMismatch::KeepEmbedded;
    else if ( sender == GUI->OnProfileMismatch_Convert_RadioButton )
-      instance.onProfileMismatch = CMSOnProfileMismatch::ConvertToDefault;
+      m_instance.onProfileMismatch = CMSOnProfileMismatch::ConvertToDefault;
    else if ( sender == GUI->OnProfileMismatch_Discard_RadioButton )
-      instance.onProfileMismatch = CMSOnProfileMismatch::DiscardEmbedded;
+      m_instance.onProfileMismatch = CMSOnProfileMismatch::DiscardEmbedded;
    else if ( sender == GUI->OnProfileMismatch_Disable_RadioButton )
-      instance.onProfileMismatch = CMSOnProfileMismatch::DisableCM;
+      m_instance.onProfileMismatch = CMSOnProfileMismatch::DisableCM;
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::__OnMissingProfile_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->OnMissingProfile_Ask_RadioButton )
-      instance.onMissingProfile = CMSOnMissingProfile::AskUser;
+      m_instance.onMissingProfile = CMSOnMissingProfile::AskUser;
    else if ( sender == GUI->OnMissingProfile_Assign_RadioButton )
-      instance.onMissingProfile = CMSOnMissingProfile::AssignDefault;
+      m_instance.onMissingProfile = CMSOnMissingProfile::AssignDefault;
    else if ( sender == GUI->OnMissingProfile_Leave_RadioButton )
-      instance.onMissingProfile = CMSOnMissingProfile::LeaveUntagged;
+      m_instance.onMissingProfile = CMSOnMissingProfile::LeaveUntagged;
    else if ( sender == GUI->OnMissingProfile_Disable_RadioButton )
-      instance.onMissingProfile = CMSOnMissingProfile::DisableCM;
+      m_instance.onMissingProfile = CMSOnMissingProfile::DisableCM;
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::__ProofingOptions_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->UseProofingBPC_CheckBox )
-      instance.useProofingBPC = checked;
+      m_instance.useProofingBPC = checked;
    else if ( sender == GUI->DefaultProofingEnabled_CheckBox )
-      instance.defaultProofingEnabled = checked;
+      m_instance.defaultProofingEnabled = checked;
    else if ( sender == GUI->DefaultGamutCheckEnabled_CheckBox )
-      instance.defaultGamutCheckEnabled = checked;
+      m_instance.defaultGamutCheckEnabled = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::__ColorSelected( ColorComboBox& /*sender*/, RGBA color )
 {
-   instance.gamutWarningColor = uint32( color );
+   m_instance.gamutWarningColor = uint32( color );
    GUI->GamutWarningColor_Control.Update();
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::__ColorSample_Paint( Control& sender, const Rect& /*updateRect*/ )
 {
    Graphics g( sender );
    g.EnableAntialiasing();
-   g.SetBrush( instance.gamutWarningColor );
+   g.SetBrush( m_instance.gamutWarningColor );
    g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
    g.DrawRect( sender.BoundsRect() );
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::__ColorSample_MouseRelease( Control& sender,
                                              const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
@@ -377,39 +415,46 @@ void ColorManagementSetupInterface::__ColorSample_MouseRelease( Control& sender,
    if ( sender.IsUnderMouse() )
    {
       SimpleColorDialog dlg;
-      dlg.SetColor( instance.gamutWarningColor );
+      dlg.SetColor( m_instance.gamutWarningColor );
       if ( dlg.Execute() == StdDialogCode::Ok )
       {
-         instance.gamutWarningColor = dlg.Color();
-         GUI->GamutWarningColor_ComboBox.SetCurrentColor( instance.gamutWarningColor );
+         m_instance.gamutWarningColor = dlg.Color();
+         GUI->GamutWarningColor_ComboBox.SetCurrentColor( m_instance.gamutWarningColor );
          GUI->GamutWarningColor_Control.Update();
       }
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorManagementSetupInterface::__GlobalOptions_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->EnableColorManagement_CheckBox )
-      instance.enabled = checked;
+      m_instance.enabled = checked;
    else if ( sender == GUI->UseLowResolutionCLUTs_CheckBox )
-      instance.useLowResolutionCLUTs = checked;
+      m_instance.useLowResolutionCLUTs = checked;
    else if ( sender == GUI->EmbedProfilesInRGBImages_CheckBox )
-      instance.defaultEmbedProfilesInRGBImages = checked;
+      m_instance.defaultEmbedProfilesInRGBImages = checked;
    else if ( sender == GUI->EmbedProfilesInGrayscaleImages_CheckBox )
-      instance.defaultEmbedProfilesInGrayscaleImages = checked;
+      m_instance.defaultEmbedProfilesInGrayscaleImages = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupInterface::__RefreshProfiles_ButtonClick( Button& sender, bool checked )
 {
    RefreshProfiles();
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorManagementSetupInterface::__LoadCurrentSettings_ButtonClick( Button& sender, bool checked )
 {
-   instance.LoadCurrentSettings();
+   m_instance.LoadCurrentSettings();
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& w )
@@ -880,4 +925,4 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorManagementSetupInterface.cpp - Released 2020-07-31T19:33:39Z

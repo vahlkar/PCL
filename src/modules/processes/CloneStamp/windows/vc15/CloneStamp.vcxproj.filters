@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:55.470Z
+# Generated on .... 2020-07-31T19:36:28.528Z
 # Project id ...... CloneStamp
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>0abe9169-91a0-4d47-a842-d4ed34b36dfd</UniqueIdentifier>
+      <UniqueIdentifier>301b32e8-1209-4583-bb0b-b2f8ed4f59e0</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>5276cc88-3ef4-4ccc-bf4e-2976acae9dcc</UniqueIdentifier>
+      <UniqueIdentifier>efb7351e-c6d4-4e5d-9a92-fac25bc4c0ae</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>3cf31e94-1365-46ef-81fb-28301377fbc3</UniqueIdentifier>
+      <UniqueIdentifier>0a20b961-a7f7-45c8-94b1-adc8e9d5f149</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -60,7 +60,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\CloneStampIcon.png">
+    <None Include="..\..\icons\CloneStamp.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

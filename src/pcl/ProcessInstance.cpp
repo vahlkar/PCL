@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ProcessInstance.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ProcessInstance.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -70,13 +70,13 @@ namespace pcl
 
 static void APIHackingAttempt( const String& routineId )
 {
-   throw Error( "* Warning * Hacking attempt detected in low-level API call: Process->" + routineId );
+   throw Error( "Possible hacking attempt detected in low-level API call: " + String( "Process->" ) + routineId );
 }
 
 // ----------------------------------------------------------------------------
 
-ProcessInstance::ProcessInstance( const Process& process ) :
-   UIObject( (*API->Process->CreateProcessInstance)( ModuleHandle(), process.Handle() ) )
+ProcessInstance::ProcessInstance( const Process& process )
+   : UIObject( (*API->Process->CreateProcessInstance)( ModuleHandle(), process.Handle() ) )
 {
    if ( handle == 0 )
       throw APIFunctionError( "CreateProcessInstance" );
@@ -323,7 +323,8 @@ struct ProcessIconsByProcessIdEnumerationData
    IsoString     processId;
    IsoStringList icons;
 
-   ProcessIconsByProcessIdEnumerationData( const IsoString& id ) : processId( id )
+   ProcessIconsByProcessIdEnumerationData( const IsoString& id )
+      : processId( id )
    {
    }
 };
@@ -544,4 +545,4 @@ void* ProcessInstance::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInstance.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ProcessInstance.cpp - Released 2020-07-31T19:33:12Z

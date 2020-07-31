@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2020-02-27T12:56:01Z
+// DebayerInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -114,39 +114,38 @@ static IsoString ValidMethodId( const IsoString& id )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-DebayerInstance::DebayerInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_bayerPattern( DebayerBayerPatternParameter::Default ),
-   p_debayerMethod( DebayerMethodParameter::Default ),
-   p_fbddNoiseReduction( int32( TheDebayerFBDDNoiseReductionParameter->DefaultValue() ) ),
-   p_evaluateNoise( TheDebayerEvaluateNoiseParameter->DefaultValue() ),
-   p_noiseEvaluationAlgorithm( DebayerNoiseEvaluationAlgorithm::Default ),
-   p_showImages( TheDebayerShowImagesParameter->DefaultValue() ),
-   p_cfaSourceFilePath( TheDebayerCFASourceFilePathParameter->DefaultValue() ),
-   p_noGUIMessages( TheDebayerNoGUIMessagesParameter->DefaultValue() ), // ### DEPRECATED
-   p_inputHints( TheDebayerInputHintsParameter->DefaultValue() ),
-   p_outputHints( TheDebayerOutputHintsParameter->DefaultValue() ),
-   p_outputDirectory( TheDebayerOutputDirectoryParameter->DefaultValue() ),
-   p_outputExtension( TheDebayerOutputExtensionParameter->DefaultValue() ),
-   p_outputPrefix( TheDebayerOutputPrefixParameter->DefaultValue() ),
-   p_outputPostfix( TheDebayerOutputPostfixParameter->DefaultValue() ),
-   p_overwriteExistingFiles( TheDebayerOverwriteExistingFilesParameter->DefaultValue() ),
-   p_onError( DebayerOnError::Default ),
-   p_useFileThreads( TheDebayerUseFileThreadsParameter->DefaultValue() ),
-   p_fileThreadOverload( TheDebayerFileThreadOverloadParameter->DefaultValue() ),
-   p_maxFileReadThreads( int32( TheDebayerMaxFileReadThreadsParameter->DefaultValue() ) ),
-   p_maxFileWriteThreads( int32( TheDebayerMaxFileWriteThreadsParameter->DefaultValue() ) ),
-
-   o_noiseEstimates( 0.0F, 3 ),
-   o_noiseFractions( 0.0F, 3 ),
-   o_noiseAlgorithms( 3 )
+DebayerInstance::DebayerInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_bayerPattern( DebayerBayerPatternParameter::Default )
+   , p_debayerMethod( DebayerMethodParameter::Default )
+   , p_fbddNoiseReduction( int32( TheDebayerFBDDNoiseReductionParameter->DefaultValue() ) )
+   , p_evaluateNoise( TheDebayerEvaluateNoiseParameter->DefaultValue() )
+   , p_noiseEvaluationAlgorithm( DebayerNoiseEvaluationAlgorithm::Default )
+   , p_showImages( TheDebayerShowImagesParameter->DefaultValue() )
+   , p_cfaSourceFilePath( TheDebayerCFASourceFilePathParameter->DefaultValue() )
+   , p_noGUIMessages( TheDebayerNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
+   , p_inputHints( TheDebayerInputHintsParameter->DefaultValue() )
+   , p_outputHints( TheDebayerOutputHintsParameter->DefaultValue() )
+   , p_outputDirectory( TheDebayerOutputDirectoryParameter->DefaultValue() )
+   , p_outputExtension( TheDebayerOutputExtensionParameter->DefaultValue() )
+   , p_outputPrefix( TheDebayerOutputPrefixParameter->DefaultValue() )
+   , p_outputPostfix( TheDebayerOutputPostfixParameter->DefaultValue() )
+   , p_overwriteExistingFiles( TheDebayerOverwriteExistingFilesParameter->DefaultValue() )
+   , p_onError( DebayerOnError::Default )
+   , p_useFileThreads( TheDebayerUseFileThreadsParameter->DefaultValue() )
+   , p_fileThreadOverload( TheDebayerFileThreadOverloadParameter->DefaultValue() )
+   , p_maxFileReadThreads( int32( TheDebayerMaxFileReadThreadsParameter->DefaultValue() ) )
+   , p_maxFileWriteThreads( int32( TheDebayerMaxFileWriteThreadsParameter->DefaultValue() ) )
+   , o_noiseEstimates( 0.0F, 3 )
+   , o_noiseFractions( 0.0F, 3 )
+   , o_noiseAlgorithms( 3 )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-DebayerInstance::DebayerInstance( const DebayerInstance& x ) :
-   ProcessImplementation( x )
+DebayerInstance::DebayerInstance( const DebayerInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -200,9 +199,9 @@ public:
    float     noiseFraction = 0;
    IsoString noiseAlgorithm;
 
-   NoiseEvaluationThread( const Image& image, int channel, int algorithm, int numberOfSubthreads ) :
-      m_algorithm( algorithm ),
-      m_numberOfSubthreads( numberOfSubthreads )
+   NoiseEvaluationThread( const Image& image, int channel, int algorithm, int numberOfSubthreads )
+      : m_algorithm( algorithm )
+      , m_numberOfSubthreads( numberOfSubthreads )
    {
       image.SelectChannel( channel );
       m_image = image;
@@ -290,7 +289,8 @@ struct OutputFileData
 
    OutputFileData() = default;
 
-   OutputFileData( FileFormatInstance& file, const ImageOptions& o ) : options( o )
+   OutputFileData( FileFormatInstance& file, const ImageOptions& o )
+      : options( o )
    {
       format = new FileFormat( file.Format() );
 
@@ -309,13 +309,13 @@ struct OutputFileData
 
    OutputFileData( const OutputFileData& ) = delete;
 
-   OutputFileData( OutputFileData&& x ) :
-      format( x.format ),
-      fsData( x.fsData ),
-      options( std::move( x.options ) ),
-      properties( std::move( x.properties ) ),
-      keywords( std::move( x.keywords ) ),
-      profile( std::move( x.profile ) )
+   OutputFileData( OutputFileData&& x )
+      : format( x.format )
+      , fsData( x.fsData )
+      , options( std::move( x.options ) )
+      , properties( std::move( x.properties ) )
+      , keywords( std::move( x.keywords ) )
+      , profile( std::move( x.profile ) )
    {
       x.format = nullptr;
       x.fsData = nullptr;
@@ -410,10 +410,10 @@ class DebayerEngine
 {
 public:
 
-   DebayerEngine( Image& output, const DebayerInstance& instance, pcl_enum bayerPattern ) :
-      m_output( output ),
-      m_instance( instance ),
-      m_bayerPattern( bayerPattern )
+   DebayerEngine( Image& output, const DebayerInstance& instance, pcl_enum bayerPattern )
+      : m_output( output )
+      , m_instance( instance )
+      , m_bayerPattern( bayerPattern )
    {
    }
 
@@ -479,10 +479,13 @@ private:
    public:
 
       DebayerThreadBase( const AbstractImage::ThreadData& data,
-                         Image& output, const GenericImage<P>& source, pcl_enum bayerPattern, int start, int end ) :
-         m_data( data ),
-         m_output( output ), m_source( source ),
-         m_bayerPattern( bayerPattern ), m_start( start ), m_end( end )
+                         Image& output, const GenericImage<P>& source, pcl_enum bayerPattern, int start, int end )
+         : m_data( data )
+         , m_output( output )
+         , m_source( source )
+         , m_bayerPattern( bayerPattern )
+         , m_start( start )
+         , m_end( end )
       {
       }
 
@@ -512,8 +515,8 @@ private:
    public:
 
       SuperPixelThread( const AbstractImage::ThreadData& data,
-                        Image& output, const GenericImage<P>& source, pcl_enum bayerPattern, int start, int end ) :
-         DebayerThreadBase<P>( data, output, source, bayerPattern, start, end )
+                        Image& output, const GenericImage<P>& source, pcl_enum bayerPattern, int start, int end )
+         : DebayerThreadBase<P>( data, output, source, bayerPattern, start, end )
       {
       }
 
@@ -639,8 +642,8 @@ private:
    public:
 
       BilinearThread( const AbstractImage::ThreadData& data,
-                      Image& output, const GenericImage<P>& source, pcl_enum bayerPattern, int start, int end ) :
-         DebayerThreadBase<P>( data, output, source, bayerPattern, start, end )
+                      Image& output, const GenericImage<P>& source, pcl_enum bayerPattern, int start, int end )
+         : DebayerThreadBase<P>( data, output, source, bayerPattern, start, end )
       {
       }
 
@@ -725,8 +728,8 @@ private:
    public:
 
       VNGThread( const AbstractImage::ThreadData& data,
-                 Image& output, const GenericImage<P>& source, pcl_enum bayerPattern, int start, int end ) :
-         DebayerThreadBase<P>( data, output, source, bayerPattern, start, end )
+                 Image& output, const GenericImage<P>& source, pcl_enum bayerPattern, int start, int end )
+         : DebayerThreadBase<P>( data, output, source, bayerPattern, start, end )
       {
       }
 
@@ -1147,8 +1150,8 @@ class FBDDEngine
 {
 public:
 
-   FBDDEngine( int bayerPattern, bool full ) :
-      m_full( full )
+   FBDDEngine( int bayerPattern, bool full )
+      : m_full( full )
    {
       BayerPatternToColorIndices( m_color, bayerPattern );
    }
@@ -1629,8 +1632,8 @@ class XTransInterpolationEngine
 {
 public:
 
-   XTransInterpolationEngine( const FMatrix& cameraTosRGB, const IMatrix& filters ) :
-      m_filters( filters )
+   XTransInterpolationEngine( const FMatrix& cameraTosRGB, const IMatrix& filters )
+      : m_filters( filters )
    {
       // Validate X-Trans CFA pattern.
       int n[ 4 ] = { 0 };
@@ -1938,9 +1941,11 @@ private:
    public:
 
       XTransThread( XTransInterpolationEngine& engine,
-                    const AbstractImage::ThreadData& data, int startTile, int endTile ) :
-         m_engine( engine ),
-         m_data( data ), m_startTile( startTile ), m_endTile( endTile )
+                    const AbstractImage::ThreadData& data, int startTile, int endTile )
+         : m_engine( engine )
+         , m_data( data )
+         , m_startTile( startTile )
+         , m_endTile( endTile )
       {
       }
 
@@ -1953,7 +1958,7 @@ private:
          return x*x;
       }
 
-      virtual void Run()
+      void Run() override
       {
 #define m_image  m_engine.m_image
 #define m_width  m_engine.m_width
@@ -2258,14 +2263,14 @@ class DebayerFileThread : public Thread
 {
 public:
 
-   DebayerFileThread( const DebayerInstance& instance, size_type index ) :
-      m_instance( instance ),
-      m_index( index ),
-      m_targetFilePath( m_instance.p_targets[m_index].path )
+   DebayerFileThread( const DebayerInstance& instance, size_type index )
+      : m_instance( instance )
+      , m_index( index )
+      , m_targetFilePath( m_instance.p_targets[m_index].path )
    {
    }
 
-   virtual void Run()
+   void Run() override
    {
       try
       {
@@ -3621,4 +3626,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF DebayerInstance.cpp - Released 2020-07-31T19:33:39Z

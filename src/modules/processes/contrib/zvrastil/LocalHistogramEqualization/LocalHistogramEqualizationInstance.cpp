@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInstance.cpp - Released 2020-02-27T12:56:01Z
+// LocalHistogramEqualizationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
-// Copyright (c) 2011-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -67,20 +67,20 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LocalHistogramEqualizationInstance::LocalHistogramEqualizationInstance( const MetaProcess* m ) :
-ProcessImplementation( m ),
-radius( int32( TheLHERadiusParameter->DefaultValue() ) ),
-histogramBins( LHEHistogramBins::Default ),
-slopeLimit( TheLHESlopeLimitParameter->DefaultValue() ),
-amount( TheLHEAmountParameter->DefaultValue() ),
-circularKernel( TheLHECircularKernelParameter->DefaultValue() )
+LocalHistogramEqualizationInstance::LocalHistogramEqualizationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , radius( int32( TheLHERadiusParameter->DefaultValue() ) )
+   , histogramBins( LHEHistogramBins::Default )
+   , slopeLimit( TheLHESlopeLimitParameter->DefaultValue() )
+   , amount( TheLHEAmountParameter->DefaultValue() )
+   , circularKernel( TheLHECircularKernelParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-LocalHistogramEqualizationInstance::LocalHistogramEqualizationInstance( const LocalHistogramEqualizationInstance& x ) :
-ProcessImplementation( x )
+LocalHistogramEqualizationInstance::LocalHistogramEqualizationInstance( const LocalHistogramEqualizationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -90,7 +90,7 @@ ProcessImplementation( x )
 void LocalHistogramEqualizationInstance::Assign( const ProcessImplementation& p )
 {
    const LocalHistogramEqualizationInstance* x = dynamic_cast<const LocalHistogramEqualizationInstance*>( &p );
-   if ( x != 0 )
+   if ( x != nullptr )
    {
       radius = x->radius;
       histogramBins = x->histogramBins;
@@ -119,21 +119,30 @@ bool LocalHistogramEqualizationInstance::CanExecuteOn( const View& view, pcl::St
 class LocalHistogramEqualizationEngine
 {
 public:
-
    static void Apply( ImageVariant& image, const LocalHistogramEqualizationInstance& instance )
    {
       if ( image.IsFloatSample() )
          switch ( image.BitsPerSample() )
          {
-         case 32 : Apply( static_cast<Image&>( *image ), instance ); break;
-         case 64 : Apply( static_cast<DImage&>( *image ), instance ); break;
+         case 32:
+            Apply( static_cast<Image&>( *image ), instance );
+            break;
+         case 64:
+            Apply( static_cast<DImage&>( *image ), instance );
+            break;
          }
       else
          switch ( image.BitsPerSample() )
          {
-         case  8 : Apply( static_cast<UInt8Image&>( *image ), instance ); break;
-         case 16 : Apply( static_cast<UInt16Image&>( *image ), instance ); break;
-         case 32 : Apply( static_cast<UInt32Image&>( *image ), instance ); break;
+         case 8:
+            Apply( static_cast<UInt8Image&>( *image ), instance );
+            break;
+         case 16:
+            Apply( static_cast<UInt16Image&>( *image ), instance );
+            break;
+         case 32:
+            Apply( static_cast<UInt32Image&>( *image ), instance );
+            break;
          }
    }
 
@@ -160,7 +169,7 @@ public:
 
       Array<size_type> L = Thread::OptimalThreadLoads( image.Height() );
       AbstractImage::ThreadData data( image, N );
-      ReferenceArray<LocalHistogramEqualizationThread<P> > threads;
+      ReferenceArray<LocalHistogramEqualizationThread<P>> threads;
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
          threads.Add( new LocalHistogramEqualizationThread<P>( data, instance, image, imageCopy, n, n + int( L[i] ) ) );
       AbstractImage::RunThreads( threads, data );
@@ -170,29 +179,29 @@ public:
    }
 
 private:
-
    // Thread class, performs CLAHE on given range of lines
    template <class P>
    class LocalHistogramEqualizationThread : public Thread
    {
    public:
-
       // constructor, accepts process instance, destination and source images and pixel range
-      LocalHistogramEqualizationThread( const AbstractImage::ThreadData&          data,
+      LocalHistogramEqualizationThread( const AbstractImage::ThreadData& data,
                                         const LocalHistogramEqualizationInstance& instance,
-                                        GenericImage<P>&                          imageDst,
-                                        const GenericImage<P>&                    imageSrc,
-                                        int                                       firstRow,
-                                        int                                       endRow ) :
-         m_data( data ), m_instance( instance ),
-         m_imageDst( imageDst ), m_imageSrc( imageSrc ), m_firstRow( firstRow ), m_endRow( endRow ),
-         kernelMask( 0 ), kernelFront( 0 ), kernelBack( 0 ), histogram( 0 ), clippedHistogram( 0 )
+                                        GenericImage<P>& imageDst,
+                                        const GenericImage<P>& imageSrc,
+                                        int firstRow, int endRow )
+         : m_data( data )
+         , m_instance( instance )
+         , m_imageDst( imageDst )
+         , m_imageSrc( imageSrc )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
          // extract parameters from instance
          histogramSize = m_instance.GetHistogramSize();
          radius = m_instance.GetRadius();
          limit = m_instance.GetLimit();
-         factor = (double)(histogramSize-1);
+         factor = (double)( histogramSize - 1 );
 
          // allocate histograms
          histogram = new uint32[histogramSize];
@@ -204,16 +213,16 @@ private:
 
       virtual ~LocalHistogramEqualizationThread()
       {
-         if ( kernelMask != 0 )
-            delete [] kernelMask, kernelMask = 0;
-         if ( kernelFront != 0 )
-            delete [] kernelFront, kernelFront = 0;
-         if ( kernelBack != 0 )
-            delete [] kernelBack, kernelBack = 0;
-         if ( histogram != 0 )
-            delete [] histogram, histogram = 0;
-         if ( clippedHistogram != 0 )
-            delete [] clippedHistogram, clippedHistogram = 0;
+         if ( kernelMask != nullptr )
+            delete[] kernelMask, kernelMask = nullptr;
+         if ( kernelFront != nullptr )
+            delete[] kernelFront, kernelFront = nullptr;
+         if ( kernelBack != nullptr )
+            delete[] kernelBack, kernelBack = nullptr;
+         if ( histogram != nullptr )
+            delete[] histogram, histogram = nullptr;
+         if ( clippedHistogram != nullptr )
+            delete[] clippedHistogram, clippedHistogram = nullptr;
       }
 
       void Run() override
@@ -247,7 +256,7 @@ private:
                RGBColorSystem::sample outL = ComputeCDF( L );
 
                // blend with original luminance according to Amount parameter
-               outL = m_instance.GetAmount()*outL + (1 - m_instance.GetAmount())*L;
+               outL = m_instance.GetAmount() * outL + ( 1 - m_instance.GetAmount() ) * L;
 
                // set new pixel color and go to next pixel
                *pL++ = P::ToSample( outL );
@@ -258,16 +267,15 @@ private:
       }
 
    private:
-
       // allocates and builds kernel mask - 2D array of bool values whether
       // corresponding pixel belongs to kernel or not
       void BuildKernelMask()
       {
          // compute size of the kernel
-         kernelSize = radius * 2 -1;
+         kernelSize = radius * 2 - 1;
 
          // allocated square kernel mask
-         kernelMask = new bool[kernelSize*kernelSize];
+         kernelMask = new bool[kernelSize * kernelSize];
 
          // allocate list of pixels on the front (right) and back (left) part of the kernel
          // these lists are used to advance the histogram to next pixels
@@ -275,36 +283,37 @@ private:
          kernelBack = new int[kernelSize];
 
          // fill in the mask
-         for (int y = 0; y < kernelSize; y++)
+         for ( int y = 0; y < kernelSize; y++ )
          {
             bool firstValid = false;
-            for (int x = 0; x < kernelSize; x++)
+            for ( int x = 0; x < kernelSize; x++ )
             {
                // compute index in kernel mask array
-               int i = y*kernelSize+x;
+               int i = y * kernelSize + x;
 
                // for circular kernel, compute distance of the pixel from center and compare
                // to kernel radius
-               if (m_instance.IsCircular())
+               if ( m_instance.IsCircular() )
                {
                   int dx = x - radius + 1;
                   int dy = y - radius + 1;
                   double dist = Sqrt( (double)( dx * dx + dy * dy ) );
-                  kernelMask[i] = dist <= (double)(radius-1)+1e-6;
+                  kernelMask[i] = dist <= (double)( radius - 1 ) + 1e-6;
                }
                // for square kernel, all pixels belong to mask
-               else kernelMask[i] = true;
+               else
+                  kernelMask[i] = true;
 
                //update kernel front and back indices for this kernel row
-               if (!firstValid && kernelMask[i])
+               if ( !firstValid && kernelMask[i] )
                {
                   firstValid = true;
-                  kernelFront[y] = x-radius+1;
-                  kernelBack[y] = x-radius+1;
+                  kernelFront[y] = x - radius + 1;
+                  kernelBack[y] = x - radius + 1;
                }
-               else if (firstValid && kernelMask[i])
+               else if ( firstValid && kernelMask[i] )
                {
-                  kernelFront[y] = x-radius+1;
+                  kernelFront[y] = x - radius + 1;
                }
             }
          }
@@ -313,52 +322,55 @@ private:
       // computes the histogram for the neighborhood of the pixel at the beginning of given line
       // kernel mask is used to determine which pixels contribute to the histogram
       // image is mirorred on the boundaries in order to keep histogram size constant
-      void InitHistogram(int y)
+      void InitHistogram( int y )
       {
          // zero histogram
-         ::memset( histogram, 0, histogramSize * sizeof(uint32) );
+         ::memset( histogram, 0, histogramSize * sizeof( uint32 ) );
          valuesInHistogram = 0;
 
          // get pointer to image pixels
          const typename P::sample* pL = m_imageSrc[0];
-         int r = radius-1;
+         int r = radius - 1;
 
          // kernel mask is placed with center on the processed pixel
          // iterate through kernel mask with indices relative to center
-         for (int ky = -r; ky <= r; ky++)
+         for ( int ky = -r; ky <= r; ky++ )
          {
             // compute y position of the kernel point in the image
-            int yy = y+ky;
+            int yy = y + ky;
             // mirror it on boundaries
-            if (yy < 0) yy = -yy;
-            if (yy >= m_imageSrc.Height()) yy = 2*m_imageSrc.Height()-yy;
+            if ( yy < 0 )
+               yy = -yy;
+            if ( yy >= m_imageSrc.Height() )
+               yy = 2 * m_imageSrc.Height() - yy;
 
             // make sanity check (for images smaller than kernel size)
-            if (yy >= 0 && yy < m_imageSrc.Height())
+            if ( yy >= 0 && yy < m_imageSrc.Height() )
             {
                // compute offset of the processed line in the image
-               int offset = yy*m_imageSrc.Width();
+               int offset = yy * m_imageSrc.Width();
 
                // iterate through kernel mask row with indices relative to center
-               for (int kx = -r; kx <= r; kx++)
+               for ( int kx = -r; kx <= r; kx++ )
                {
                   // compute y position of the kernel point in the image
                   int xx = kx;
                   // mirror it on left boundary (that's where we are in this method)
-                  if (xx < 0) xx = -xx;
+                  if ( xx < 0 )
+                     xx = -xx;
 
                   // make sanity check (for images smaller than kernel size)
-                  if (xx >= 0 && xx < m_imageSrc.Width())
+                  if ( xx >= 0 && xx < m_imageSrc.Width() )
                   {
                      // if the current pixel is part of the kernel
-                     if (kernelMask[(ky+r)*kernelSize+kx+r])
+                     if ( kernelMask[( ky + r ) * kernelSize + kx + r] )
                      {
                         // get pixel luminance
                         RGBColorSystem::sample L;
-                        P::FromSample( L, *(pL+offset+xx) );
+                        P::FromSample( L, *( pL + offset + xx ) );
 
                         // sample it to current histogram resolution
-                        uint32 value = Range((uint32)(L*factor), (uint32)0, (uint32)(histogramSize-1));
+                        uint32 value = Range( ( uint32 )( L * factor ), (uint32)0, ( uint32 )( histogramSize - 1 ) );
 
                         // add it to the histogram
                         histogram[value]++;
@@ -373,49 +385,53 @@ private:
       // shifts the histogram from position (x-1, y) to (x, y)
       // it does it by removing pixels on the left of the kernel and adding pixels on the right of the kernel
       // image is mirorred on the boundaries in order to keep histogram size constant
-      void AdvanceHistogram(int x, int y)
+      void AdvanceHistogram( int x, int y )
       {
          // get pointer to image pixels
          const typename P::sample* pL = m_imageSrc[0];
 
-         int r = radius-1;
+         int r = radius - 1;
 
          // iterate through kernel mask rows with indices relative to center
-         for (int ky = -r; ky <= r; ky++)
+         for ( int ky = -r; ky <= r; ky++ )
          {
             // compute y position of the kernel point in the image
-            int yy = y+ky;
+            int yy = y + ky;
 
             // mirror it on boundaries
-            if (yy < 0) yy = -yy;
-            if (yy >= m_imageSrc.Height()) yy = 2*m_imageSrc.Height()-yy;
+            if ( yy < 0 )
+               yy = -yy;
+            if ( yy >= m_imageSrc.Height() )
+               yy = 2 * m_imageSrc.Height() - yy;
 
             // make sanity check (for images smaller than kernel size)
-            if (yy >= 0 && yy < m_imageSrc.Height())
+            if ( yy >= 0 && yy < m_imageSrc.Height() )
             {
                // compute offset of the processed line in the image
-               int offset = yy*m_imageSrc.Width();
+               int offset = yy * m_imageSrc.Width();
 
                // remove kernel back from histogram, using stored index on this row
                // get x position of the back (left) pixel in the kernel on this row
-               int kx = kernelBack[ky+r];
+               int kx = kernelBack[ky + r];
 
                // compute x position of the kernel point in the image (shifted one pixel to the left)
-               int xx = x+kx-1;
+               int xx = x + kx - 1;
 
                // mirror it on boundaries
-               if (xx < 0) xx = -xx;
-               if (xx >= m_imageSrc.Width()) xx = 2*m_imageSrc.Height()-xx;
+               if ( xx < 0 )
+                  xx = -xx;
+               if ( xx >= m_imageSrc.Width() )
+                  xx = 2 * m_imageSrc.Height() - xx;
 
                // make sanity check (for images smaller than kernel size)
-               if (xx >= 0 && xx < m_imageSrc.Width())
+               if ( xx >= 0 && xx < m_imageSrc.Width() )
                {
                   // get pixel luminance
                   RGBColorSystem::sample L;
-                  P::FromSample( L, *(pL+offset+xx) );
+                  P::FromSample( L, *( pL + offset + xx ) );
 
                   // sample it to current histogram resolution
-                  uint32 value = Range((uint32)(L*factor), (uint32)0, (uint32)(histogramSize-1));
+                  uint32 value = Range( ( uint32 )( L * factor ), (uint32)0, ( uint32 )( histogramSize - 1 ) );
 
                   // remove it from the histogram
                   histogram[value]--;
@@ -424,24 +440,26 @@ private:
 
                // add kernel front to the histogram
                // get x position of the front (right) pixel in the kernel on this row
-               kx = kernelFront[ky+r];
+               kx = kernelFront[ky + r];
 
                // compute x position of the kernel point in the image
-               xx = x+kx;
+               xx = x + kx;
 
                // mirror it on boundaries
-               if (xx < 0) xx = -xx;
-               if (xx >= m_imageSrc.Width()) xx = 2*m_imageSrc.Height()-xx;
+               if ( xx < 0 )
+                  xx = -xx;
+               if ( xx >= m_imageSrc.Width() )
+                  xx = 2 * m_imageSrc.Height() - xx;
 
                // make sanity check (for images smaller than kernel size)
-               if (xx >= 0 && xx < m_imageSrc.Width())
+               if ( xx >= 0 && xx < m_imageSrc.Width() )
                {
                   // get pixel luminance
                   RGBColorSystem::sample L;
-                  P::FromSample( L, *(pL+offset+xx) );
+                  P::FromSample( L, *( pL + offset + xx ) );
 
                   // sample it to current histogram resolution
-                  uint32 value = Range((uint32)(L*factor), (uint32)0, (uint32)(histogramSize-1));
+                  uint32 value = Range( ( uint32 )( L * factor ), (uint32)0, ( uint32 )( histogramSize - 1 ) );
 
                   // add it to the histogram
                   histogram[value]++;
@@ -458,14 +476,15 @@ private:
       void ClipHistogram()
       {
          // copy current histogram to clipped histogram
-         memcpy( clippedHistogram, histogram, histogramSize * sizeof(uint32) );
+         memcpy( clippedHistogram, histogram, histogramSize * sizeof( uint32 ) );
 
          int clippedValues = 0;
          int clippedValuesBefore;
 
          // compute maximal limit for one histogram value from required slope
-         int histLimit = ( int )( limit * valuesInHistogram / (histogramSize-1) + 0.5f );
-         if (histLimit == 0) histLimit = 1;
+         int histLimit = (int)( limit * valuesInHistogram / ( histogramSize - 1 ) + 0.5f );
+         if ( histLimit == 0 )
+            histLimit = 1;
 
          int iterations = 0;
 
@@ -502,7 +521,7 @@ private:
                if ( m != 0 )
                {
                   // distribute uniformly the rest
-                  int s = (histogramSize - 1) / m;
+                  int s = ( histogramSize - 1 ) / m;
                   for ( uint32 i = 0; i < histogramSize; i += s )
                      clippedHistogram[i]++;
                }
@@ -519,13 +538,13 @@ private:
       RGBColorSystem::sample ComputeCDF( RGBColorSystem::sample L )
       {
          // sample value to current histogram resolution
-         uint32 value = Range((uint32)(L*factor), (uint32)0, (uint32)(histogramSize-1));
+         uint32 value = Range( ( uint32 )( L * factor ), (uint32)0, ( uint32 )( histogramSize - 1 ) );
 
          // find first nonzero value in histogram
          uint32 cdfMin = 0;
-         for (uint32 i = 0; i < histogramSize; i++)
+         for ( uint32 i = 0; i < histogramSize; i++ )
          {
-            if (clippedHistogram[i] != 0)
+            if ( clippedHistogram[i] != 0 )
             {
                cdfMin = clippedHistogram[i];
                break;
@@ -534,35 +553,35 @@ private:
 
          // compute new value (value of cumulative distribution function for the original luminance value)
          uint32 cdf = 0;
-         for (uint32 i = 0; i <= value; i++)
+         for ( uint32 i = 0; i <= value; i++ )
             cdf += clippedHistogram[i];
 
          // compute total sum of histogram
          uint32 cdfMax = cdf;
-         for (uint32 i = value+1; i < histogramSize; i++)
+         for ( uint32 i = value + 1; i < histogramSize; i++ )
             cdfMax += clippedHistogram[i];
 
          // rescale result to range of CDF
-         return (RGBColorSystem::sample)(cdf-cdfMin)/(RGBColorSystem::sample)(cdfMax-cdfMin);
+         return ( RGBColorSystem::sample )( cdf - cdfMin ) / ( RGBColorSystem::sample )( cdfMax - cdfMin );
       }
 
-      const AbstractImage::ThreadData&          m_data;
+      const AbstractImage::ThreadData& m_data;
       const LocalHistogramEqualizationInstance& m_instance;
-            GenericImage<P>&                    m_imageDst;
-      const GenericImage<P>&                    m_imageSrc;
-            int                                 m_firstRow, m_endRow;
+      GenericImage<P>& m_imageDst;
+      const GenericImage<P>& m_imageSrc;
+      int m_firstRow, m_endRow;
 
-            int     kernelSize;
-            bool*   kernelMask;
-            int*    kernelFront;
-            int*    kernelBack;
-            uint32  histogramSize;
-            uint32* histogram;
-            uint32* clippedHistogram;
-            uint32  valuesInHistogram;
-            int     radius;
-            double  limit;
-            double  factor;
+      int kernelSize;
+      bool* kernelMask = nullptr;
+      int* kernelFront = nullptr;
+      int* kernelBack = nullptr;
+      uint32 histogramSize;
+      uint32* histogram = nullptr;
+      uint32* clippedHistogram = nullptr;
+      uint32 valuesInHistogram;
+      int radius;
+      double limit;
+      double factor;
    };
 };
 
@@ -612,25 +631,29 @@ void* LocalHistogramEqualizationInstance::LockParameter( const MetaParameter* p,
       return &circularKernel;
    if ( p == TheLHEAmountParameter )
       return &amount;
-   return 0;
+
+   return nullptr;
 }
 
 // ----------------------------------------------------------------------------
 
 int LocalHistogramEqualizationInstance::GetHistogramSize() const
 {
-   switch (histogramBins)
+   switch ( histogramBins )
    {
-      default:
-      case LHEHistogramBins::Bit8: return 1 << 8;
-      case LHEHistogramBins::Bit10: return 1 << 10;
-      case LHEHistogramBins::Bit12: return 1 << 12;
+   default:
+   case LHEHistogramBins::Bit8:
+      return 1 << 8;
+   case LHEHistogramBins::Bit10:
+      return 1 << 10;
+   case LHEHistogramBins::Bit12:
+      return 1 << 12;
    }
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF LocalHistogramEqualizationInstance.cpp - Released 2020-07-31T19:33:39Z

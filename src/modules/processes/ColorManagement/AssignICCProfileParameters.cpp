@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// AssignICCProfileParameters.cpp - Released 2020-02-27T12:56:01Z
+// AssignICCProfileParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -57,39 +57,39 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-TargetProfile* TheTargetProfileParameter = 0;
-AssignMode*    TheAssignModeParameter = 0;
+ICCATargetProfile* TheICCATargetProfileParameter = nullptr;
+ICCAMode*          TheICCAModeParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
-TargetProfile::TargetProfile( MetaProcess* P ) : MetaString( P )
+ICCATargetProfile::ICCATargetProfile( MetaProcess* P ) : MetaString( P )
 {
-   TheTargetProfileParameter = this;
+   TheICCATargetProfileParameter = this;
 }
 
-IsoString TargetProfile::Id() const
+IsoString ICCATargetProfile::Id() const
 {
    return "targetProfile";
 }
 
 // ----------------------------------------------------------------------------
 
-AssignMode::AssignMode( MetaProcess* P ) : MetaEnumeration( P )
+ICCAMode::ICCAMode( MetaProcess* P ) : MetaEnumeration( P )
 {
-   TheAssignModeParameter = this;
+   TheICCAModeParameter = this;
 }
 
-IsoString AssignMode::Id() const
+IsoString ICCAMode::Id() const
 {
    return "mode";
 }
 
-size_type AssignMode::NumberOfElements() const
+size_type ICCAMode::NumberOfElements() const
 {
    return NumberOfAssignModes;
 }
 
-IsoString AssignMode::ElementId( size_type id ) const
+IsoString ICCAMode::ElementId( size_type id ) const
 {
    switch ( id )
    {
@@ -100,12 +100,12 @@ IsoString AssignMode::ElementId( size_type id ) const
    }
 }
 
-int AssignMode::ElementValue( size_type i ) const
+int ICCAMode::ElementValue( size_type i ) const
 {
    return int( i );
 }
 
-size_type AssignMode::DefaultValueIndex() const
+size_type ICCAMode::DefaultValueIndex() const
 {
    return int( Default );
 }
@@ -115,4 +115,4 @@ size_type AssignMode::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssignICCProfileParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF AssignICCProfileParameters.cpp - Released 2020-07-31T19:33:39Z

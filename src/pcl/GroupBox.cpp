@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/GroupBox.cpp - Released 2020-02-27T12:55:33Z
+// pcl/GroupBox.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -59,8 +59,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GroupBox::GroupBox( const String& title, Control& parent ) :
-   Control( (*API->GroupBox->CreateGroupBox)( ModuleHandle(), this, title.c_str(), parent.handle, 0/*flags*/ ) )
+GroupBox::GroupBox( const String& title, Control& parent )
+   : Control( (*API->GroupBox->CreateGroupBox)( ModuleHandle(), this, title.c_str(), parent.handle, 0/*flags*/ ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateGroupBox" );
@@ -163,4 +163,4 @@ void GroupBox::OnCheck( check_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GroupBox.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/GroupBox.cpp - Released 2020-07-31T19:33:12Z

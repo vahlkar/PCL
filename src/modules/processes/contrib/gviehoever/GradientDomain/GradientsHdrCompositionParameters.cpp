@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionParameters.cpp - Released 2020-02-27T12:56:01Z
+// GradientsHdrCompositionParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -37,16 +37,18 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionTargetFrames*           TheGradientsHdrCompositionTargetFramesParameter = 0;
-GradientsHdrCompositionTargetFrameEnabled*     TheGradientsHdrCompositionTargetFrameEnabledParameter = 0;
-GradientsHdrCompositionTargetFramePath*        TheGradientsHdrCompositionTargetFramePathParameter = 0;
-GradientsHdrCompositionLogBias*                TheGradientsHdrCompositionLogBiasParameter = 0;
-GradientsHdrCompositionKeepLog*                TheGradientsHdrCompositionKeepLogParameter = 0;
-GradientsHdrCompositionNegativeBias*           TheGradientsHdrCompositionNegativeBiasParameter = 0;
-GradientsHdrCompositionGenerateMask*           TheGradientsHdrCompositionGenerateMaskParameter = 0;
+GradientsHdrCompositionTargetFrames* TheGradientsHdrCompositionTargetFramesParameter = nullptr;
+GradientsHdrCompositionTargetFrameEnabled* TheGradientsHdrCompositionTargetFrameEnabledParameter = nullptr;
+GradientsHdrCompositionTargetFramePath* TheGradientsHdrCompositionTargetFramePathParameter = nullptr;
+GradientsHdrCompositionLogBias* TheGradientsHdrCompositionLogBiasParameter = nullptr;
+GradientsHdrCompositionKeepLog* TheGradientsHdrCompositionKeepLogParameter = nullptr;
+GradientsHdrCompositionNegativeBias* TheGradientsHdrCompositionNegativeBiasParameter = nullptr;
+GradientsHdrCompositionGenerateMask* TheGradientsHdrCompositionGenerateMaskParameter = nullptr;
+
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionTargetFrames::GradientsHdrCompositionTargetFrames( MetaProcess* P ) : MetaTable( P )
+GradientsHdrCompositionTargetFrames::GradientsHdrCompositionTargetFrames( MetaProcess* P )
+   : MetaTable( P )
 {
    TheGradientsHdrCompositionTargetFramesParameter = this;
 }
@@ -58,7 +60,8 @@ IsoString GradientsHdrCompositionTargetFrames::Id() const
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionTargetFrameEnabled::GradientsHdrCompositionTargetFrameEnabled( MetaTable* T ) : MetaBoolean( T )
+GradientsHdrCompositionTargetFrameEnabled::GradientsHdrCompositionTargetFrameEnabled( MetaTable* T )
+   : MetaBoolean( T )
 {
    TheGradientsHdrCompositionTargetFrameEnabledParameter = this;
 }
@@ -75,7 +78,8 @@ bool GradientsHdrCompositionTargetFrameEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionTargetFramePath::GradientsHdrCompositionTargetFramePath( MetaTable* T ) : MetaString( T )
+GradientsHdrCompositionTargetFramePath::GradientsHdrCompositionTargetFramePath( MetaTable* T )
+   : MetaString( T )
 {
    TheGradientsHdrCompositionTargetFramePathParameter = this;
 }
@@ -87,7 +91,8 @@ IsoString GradientsHdrCompositionTargetFramePath::Id() const
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionLogBias::GradientsHdrCompositionLogBias( MetaProcess* P ) : MetaDouble( P )
+GradientsHdrCompositionLogBias::GradientsHdrCompositionLogBias( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheGradientsHdrCompositionLogBiasParameter = this;
 }
@@ -109,7 +114,7 @@ double GradientsHdrCompositionLogBias::DefaultValue() const
 
 double GradientsHdrCompositionLogBias::MinimumValue() const
 {
-   return -DBL_DIG/2;
+   return -DBL_DIG / 2;
 }
 
 double GradientsHdrCompositionLogBias::MaximumValue() const
@@ -119,7 +124,8 @@ double GradientsHdrCompositionLogBias::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionKeepLog::GradientsHdrCompositionKeepLog( MetaProcess* P ) : MetaBoolean( P )
+GradientsHdrCompositionKeepLog::GradientsHdrCompositionKeepLog( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheGradientsHdrCompositionKeepLogParameter = this;
 }
@@ -136,7 +142,8 @@ bool GradientsHdrCompositionKeepLog::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionNegativeBias::GradientsHdrCompositionNegativeBias( MetaProcess* P ) : MetaBoolean( P )
+GradientsHdrCompositionNegativeBias::GradientsHdrCompositionNegativeBias( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheGradientsHdrCompositionNegativeBiasParameter = this;
 }
@@ -153,7 +160,8 @@ bool GradientsHdrCompositionNegativeBias::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionGenerateMask::GradientsHdrCompositionGenerateMask( MetaProcess* P ) : MetaBoolean( P )
+GradientsHdrCompositionGenerateMask::GradientsHdrCompositionGenerateMask( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheGradientsHdrCompositionGenerateMaskParameter = this;
 }
@@ -170,7 +178,7 @@ bool GradientsHdrCompositionGenerateMask::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrCompositionParameters.cpp - Released 2020-07-31T19:33:39Z

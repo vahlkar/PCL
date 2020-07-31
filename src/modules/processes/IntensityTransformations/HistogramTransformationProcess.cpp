@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationProcess.cpp - Released 2020-02-27T12:56:01Z
+// HistogramTransformationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -64,15 +64,10 @@ HistogramTransformationProcess* TheHistogramTransformationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "HistogramTransformationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 HistogramTransformationProcess::HistogramTransformationProcess()
 {
    TheHistogramTransformationProcess = this;
 
-   // Instantiate process parameters
    new HistogramTransformationTable( this );
    new ShadowsClipping( TheHistogramTransformationTableParameter );
    new MidtonesBalance( TheHistogramTransformationTableParameter );
@@ -150,9 +145,9 @@ String HistogramTransformationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** HistogramTransformationProcess::IconImageXPM() const
+String HistogramTransformationProcess::IconImageSVGFile() const
 {
-   return HistogramTransformationIcon_XPM;
+   return "@module_icons_dir/HistogramTransformation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -189,4 +184,4 @@ ProcessImplementation* HistogramTransformationProcess::Clone( const ProcessImple
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF HistogramTransformationProcess.cpp - Released 2020-07-31T19:33:39Z

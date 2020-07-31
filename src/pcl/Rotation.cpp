@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Rotation.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Rotation.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -183,10 +183,15 @@ private:
    struct ThreadData : public AbstractImage::ThreadData
    {
       ThreadData( double sinA, double cosA, const DPoint& a_center, const DPoint& a_origin,
-                  int urWidth, int urHeight, int width, const StatusMonitor& a_status, size_type a_count ) :
-         AbstractImage::ThreadData( a_status, a_count ),
-         sa( sinA ), ca( cosA ), center( a_center ), origin( a_origin ),
-         w0( urWidth ), h0( urHeight ), width( width )
+                  int urWidth, int urHeight, int width, const StatusMonitor& a_status, size_type a_count )
+         : AbstractImage::ThreadData( a_status, a_count )
+         , sa( sinA )
+         , ca( cosA )
+         , center( a_center )
+         , origin( a_origin )
+         , w0( urWidth )
+         , h0( urHeight )
+         , width( width )
       {
       }
 
@@ -207,8 +212,11 @@ private:
 
       typedef PixelInterpolation::Interpolator<P>  interpolator_type;
 
-      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow ) :
-         m_data( data ), m_firstRow( firstRow ), m_endRow( endRow ), m_interpolator( interpolator )
+      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
+         : m_data( data )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
+         , m_interpolator( interpolator )
       {
       }
 
@@ -274,4 +282,4 @@ void Rotation::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rotation.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Rotation.cpp - Released 2020-07-31T19:33:12Z

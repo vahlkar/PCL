@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.6
+// Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITSPreferencesDialog.h - Released 2020-02-27T12:55:48Z
+// FITSPreferencesDialog.h - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -107,6 +107,8 @@ private:
       HorizontalSizer   IntegerSignedness_Sizer;
          Label             IntegerSignedness_Label;
          ComboBox          IntegerSignedness_ComboBox;
+      HorizontalSizer   UseRowOrderKeywords_Sizer;
+         CheckBox          UseRowOrderKeywords_CheckBox;
       HorizontalSizer   WriteScalingKeywordsForSignedData_Sizer;
          CheckBox          WriteScalingKeywordsForSignedData_CheckBox;
       HorizontalSizer   SignedIntegersArePhysical_Sizer;
@@ -139,4 +141,4 @@ private:
 #endif   // __FITSPreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSPreferencesDialog.h - Released 2020-02-27T12:55:48Z
+// EOF FITSPreferencesDialog.h - Released 2020-07-31T19:33:23Z

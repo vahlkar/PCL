@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationInstance.h - Released 2020-02-27T12:56:01Z
+// CurvesTransformationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -70,7 +70,7 @@ public:
    typedef CurveBase::output_list   output_list;
    typedef CurveBase::interpolator  interpolator;
 
-   Curve() : CurveBase()
+   Curve()
    {
       Initialize();
    }
@@ -78,13 +78,13 @@ public:
    Curve( const Curve& ) = default;
    Curve& operator =( const Curve& ) = default;
 
-   virtual void Reverse()
+   void Reverse() override
    {
       for ( size_type i = 0; i < x.Length(); ++i )
          y[i] = 1 - y[i];
    }
 
-   virtual bool IsIdentity() const
+   bool IsIdentity() const override
    {
       for ( size_type i = 0; i < x.Length(); ++i )
          if ( x[i] != y[i] )
@@ -94,10 +94,10 @@ public:
 
 private:
 
-   virtual void Initialize()
+   void Initialize() override
    {
-      x.Add( 0.0 ); y.Add( 0.0 );
-      x.Add( 1.0 ); y.Add( 1.0 );
+      x << 0.0 << 1.0;
+      y << 0.0 << 1.0;
    }
 };
 
@@ -112,14 +112,14 @@ public:
    CurvesTransformationInstance( const MetaProcess* );
    CurvesTransformationInstance( const CurvesTransformationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool Validate( String& info );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View& v, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool Validate( String& info ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View& v, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
    const Curve& operator[]( int curveIdx ) const
    {
@@ -145,4 +145,4 @@ private:
 #endif   // __CurvesTransformationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF CurvesTransformationInstance.h - Released 2020-07-31T19:33:39Z

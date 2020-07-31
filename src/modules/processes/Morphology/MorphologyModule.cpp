@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologyModule.cpp - Released 2020-02-27T12:56:01Z
+// MorphologyModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "MorphologyModule.h"
 #include "MorphologicalTransformationProcess.h"
@@ -73,6 +73,8 @@ MorphologyModule::MorphologyModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* MorphologyModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
@@ -82,42 +84,56 @@ const char* MorphologyModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString MorphologyModule::Name() const
 {
    return "Morphology";
 }
+
+// ----------------------------------------------------------------------------
 
 String MorphologyModule::Description() const
 {
    return "PixInsight Standard Morphology Process Module";
 }
 
+// ----------------------------------------------------------------------------
+
 String MorphologyModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String MorphologyModule::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// ----------------------------------------------------------------------------
+
 String MorphologyModule::Copyright() const
 {
-   return "Copyright (c) 2006-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2006-2020 Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String MorphologyModule::TradeMarks() const
 {
    return "PixInsight";
 }
 
+// ----------------------------------------------------------------------------
+
 String MorphologyModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "Morphology-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "Morphology-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -127,6 +143,8 @@ String MorphologyModule::OriginalFileName() const
    return "Morphology-pxm.dll";
 #endif
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologyModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -138,6 +156,8 @@ void MorphologyModule::GetReleaseDate( int& year, int& month, int& day ) const
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -153,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF MorphologyModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF MorphologyModule.cpp - Released 2020-07-31T19:33:39Z

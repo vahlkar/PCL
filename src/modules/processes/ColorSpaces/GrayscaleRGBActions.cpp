@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// GrayscaleRGBActions.cpp - Released 2020-02-27T12:56:01Z
+// GrayscaleRGBActions.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -62,12 +62,10 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "ConvertToGrayscaleActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ConvertToGrayscaleAction::ConvertToGrayscaleAction() :
-   Action( "Image > Color Spaces > Convert to Grayscale", Bitmap( ConvertToGrayscaleActionIcon_XPM ), "Color Spaces" )
+ConvertToGrayscaleAction::ConvertToGrayscaleAction()
+   : Action( "Image > Color Spaces > Convert to Grayscale",
+             "@module_icons_dir/ConvertToGrayscale.svg",
+             "Color Spaces" )
 {
    SetToolTip( "Convert to Grayscale" );
 }
@@ -89,12 +87,10 @@ bool ConvertToGrayscaleAction::IsEnabled( ActionInfo info ) const
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-#include "ConvertToRGBColorActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ConvertToRGBColorAction::ConvertToRGBColorAction() :
-   Action( "Image > Color Spaces > Convert to RGB Color", Bitmap( ConvertToRGBColorActionIcon_XPM ), "Color Spaces" )
+ConvertToRGBColorAction::ConvertToRGBColorAction()
+   : Action( "Image > Color Spaces > Convert to RGB Color",
+             "@module_icons_dir/ConvertToRGBColor.svg",
+             "Color Spaces" )
 {
    SetToolTip( "Convert to RGB Color" );
 }
@@ -118,4 +114,4 @@ bool ConvertToRGBColorAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBActions.cpp - Released 2020-02-27T12:56:01Z
+// EOF GrayscaleRGBActions.cpp - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Convolution.h - Released 2020-02-27T12:55:23Z
+// pcl/Convolution.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -110,12 +110,14 @@ public:
    /*!
     * Copy constructor.
     */
-   Convolution( const Convolution& x ) :
-      InterlacedTransformation( x ),
-      ThresholdedTransformation( x ),
-      ParallelProcess( x ),
-      m_weight( x.m_weight ),
-      m_highPass( x.m_highPass ), m_rawHighPass( x.m_rawHighPass ), m_rescaleHighPass( x.m_rescaleHighPass )
+   Convolution( const Convolution& x )
+      : InterlacedTransformation( x )
+      , ThresholdedTransformation( x )
+      , ParallelProcess( x )
+      , m_weight( x.m_weight )
+      , m_highPass( x.m_highPass )
+      , m_rawHighPass( x.m_rawHighPass )
+      , m_rescaleHighPass( x.m_rescaleHighPass )
    {
       if ( !x.m_filter.IsNull() )
          m_filter = x.m_filter->Clone();
@@ -350,4 +352,4 @@ private:
 #endif   // __PCL_Convolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Convolution.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Convolution.h - Released 2020-07-31T19:33:04Z

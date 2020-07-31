@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// RotationProcess.cpp - Released 2020-02-27T12:56:01Z
+// RotationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -64,10 +64,6 @@ RotationProcess* TheRotationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "RotationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 RotationProcess::RotationProcess()
 {
    TheRotationProcess = this;
@@ -114,9 +110,9 @@ String RotationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** RotationProcess::IconImageXPM() const
+String RotationProcess::IconImageSVGFile() const
 {
-   return RotationIcon_XPM;
+   return "@module_icons_dir/Rotation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -146,4 +142,4 @@ ProcessImplementation* RotationProcess::Clone( const ProcessImplementation& p ) 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF RotationProcess.cpp - Released 2020-07-31T19:33:39Z

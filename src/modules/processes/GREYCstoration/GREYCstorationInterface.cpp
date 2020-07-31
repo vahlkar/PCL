@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationInterface.cpp - Released 2020-02-27T12:56:01Z
+// GREYCstorationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -74,45 +74,53 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-GREYCstorationInterface* TheGREYCstorationInterface = 0;
+GREYCstorationInterface* TheGREYCstorationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "GREYCstorationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-GREYCstorationInterface::GREYCstorationInterface() :
-ProcessInterface(), instance( TheGREYCstorationProcess ), GUI( 0 )
+GREYCstorationInterface::GREYCstorationInterface()
+   : instance( TheGREYCstorationProcess )
 {
    TheGREYCstorationInterface = this;
 }
 
+// ----------------------------------------------------------------------------
+
 GREYCstorationInterface::~GREYCstorationInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString GREYCstorationInterface::Id() const
 {
    return "GREYCstoration";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* GREYCstorationInterface::Process() const
 {
    return TheGREYCstorationProcess;
 }
 
-const char** GREYCstorationInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String GREYCstorationInterface::IconImageSVGFile() const
 {
-   return GREYCstorationIcon_XPM;
+   return "@module_icons_dir/GREYCstoration.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void GREYCstorationInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void GREYCstorationInterface::ResetInstance()
 {
@@ -120,9 +128,11 @@ void GREYCstorationInterface::ResetInstance()
    ImportProcess( defaultInstance );
 }
 
+// ----------------------------------------------------------------------------
+
 bool GREYCstorationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "GREYCstoration" );
@@ -133,10 +143,14 @@ bool GREYCstorationInterface::Launch( const MetaProcess& P, const ProcessImpleme
    return &P == TheGREYCstorationProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* GREYCstorationInterface::NewProcess() const
 {
    return new GREYCstorationInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool GREYCstorationInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -146,10 +160,14 @@ bool GREYCstorationInterface::ValidateProcess( const ProcessImplementation& p, S
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool GREYCstorationInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GREYCstorationInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -198,17 +216,23 @@ void GREYCstorationInterface::__ValueUpdated( NumericEdit& sender, double value 
       instance.precision = value;
 }
 
+// ----------------------------------------------------------------------------
+
 void GREYCstorationInterface::__IntValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == GUI->Iterations_SpinBox )
       instance.numberOfIterations = value;
 }
 
+// ----------------------------------------------------------------------------
+
 void GREYCstorationInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->Interpolation_ComboBox )
       instance.interpolation = itemIndex;
 }
+
+// ----------------------------------------------------------------------------
 
 void GREYCstorationInterface::__Click( Button& sender, bool checked )
 {
@@ -218,6 +242,7 @@ void GREYCstorationInterface::__Click( Button& sender, bool checked )
       instance.coupledChannels = checked;
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 GREYCstorationInterface::GUIData::GUIData( GREYCstorationInterface& w )
@@ -389,4 +414,4 @@ GREYCstorationInterface::GUIData::GUIData( GREYCstorationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF GREYCstorationInterface.cpp - Released 2020-07-31T19:33:39Z

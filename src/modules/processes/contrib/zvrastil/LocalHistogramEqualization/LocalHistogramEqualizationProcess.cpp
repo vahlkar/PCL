@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationProcess.cpp - Released 2020-02-27T12:56:01Z
+// LocalHistogramEqualizationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
-// Copyright (c) 2011-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -52,25 +52,21 @@
 // ----------------------------------------------------------------------------
 
 #include "LocalHistogramEqualizationProcess.h"
-#include "LocalHistogramEqualizationParameters.h"
 #include "LocalHistogramEqualizationInstance.h"
 #include "LocalHistogramEqualizationInterface.h"
+#include "LocalHistogramEqualizationParameters.h"
 
-#include <pcl/Console.h>
 #include <pcl/Arguments.h>
-#include <pcl/View.h>
+#include <pcl/Console.h>
 #include <pcl/Exception.h>
+#include <pcl/View.h>
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-#include "LocalHistogramEqualizationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-LocalHistogramEqualizationProcess* TheLocalHistogramEqualizationProcess = 0;
+LocalHistogramEqualizationProcess* TheLocalHistogramEqualizationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -78,7 +74,6 @@ LocalHistogramEqualizationProcess::LocalHistogramEqualizationProcess()
 {
    TheLocalHistogramEqualizationProcess = this;
 
-   // Instantiate process parameters
    new LHERadius( this );
    new LHEHistogramBins( this );
    new LHESlopeLimit( this );
@@ -86,15 +81,21 @@ LocalHistogramEqualizationProcess::LocalHistogramEqualizationProcess()
    new LHECircularKernel( this );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString LocalHistogramEqualizationProcess::Id() const
 {
    return "LocalHistogramEqualization";
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString LocalHistogramEqualizationProcess::Category() const
 {
    return "IntensityTransformations";
 }
+
+// ----------------------------------------------------------------------------
 
 String LocalHistogramEqualizationProcess::Description() const
 {
@@ -108,71 +109,83 @@ String LocalHistogramEqualizationProcess::Description() const
    "</html>";
 }
 
-const char** LocalHistogramEqualizationProcess::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String LocalHistogramEqualizationProcess::IconImageSVGFile() const
 {
-   return LocalHistogramEqualizationIcon_XPM;
+   return "@module_icons_dir/LocalHistogramEqualization.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* LocalHistogramEqualizationProcess::DefaultInterface() const
 {
    return TheLocalHistogramEqualizationInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* LocalHistogramEqualizationProcess::Create() const
 {
    return new LocalHistogramEqualizationInstance( this );
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* LocalHistogramEqualizationProcess::Clone( const ProcessImplementation& p ) const
 {
    const LocalHistogramEqualizationInstance* instPtr = dynamic_cast<const LocalHistogramEqualizationInstance*>( &p );
-   return (instPtr != 0) ? new LocalHistogramEqualizationInstance( *instPtr ) : 0;
+   return ( instPtr != nullptr ) ? new LocalHistogramEqualizationInstance( *instPtr ) : nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool LocalHistogramEqualizationProcess::CanProcessCommandLines() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 static void ShowHelp()
 {
    Console().Write(
-"<raw>"
-"Usage: LocalHistogramEqualization [<arg_list>] [<view_list>]"
-"\n"
-"\n-r=<n> | --radius=<n>"
-"\n"
-"\n      Sets the kernel radius parameter in pixels to <n> in the range [8,512]"
-"\n      (default = 64 pixels)"
-"\n"
-"\n-l=<f> | --limit=<f>"
-"\n"
-"\n      Sets the contrast limit parameter to real <f> in the range [1,64]"
-"\n      (default = 2)"
-"\n"
-"\n-a=<f> | --amount=<f>"
-"\n"
-"\n      Sets the amount parameter to real <f> in the range [0,1]"
-"\n      (default = 1)"
-"\n"
-"\n-h=[8|10|12] | --hist=[8|10|12]"
-"\n"
-"\n      Sets the histogram resolution to 8, 10 or 12 bits, respectively."
-"\n      (default = 8 bits)"
-"\n"
-"\n-c[+|-] | --circular[+|-]"
-"\n"
-"\n      Enables or disables the circular kernel. When disabled, a square"
-"\n      kernel is used. (default = circular)"
-"\n"
-"\n--interface"
-"\n"
-"\n      Launches the interface of this process."
-"\n"
-"\n--help"
-"\n"
-"\n      Displays this help and exits."
-"</raw>" );
+      "<raw>"
+      "Usage: LocalHistogramEqualization [<arg_list>] [<view_list>]"
+      "\n"
+      "\n-r=<n> | --radius=<n>"
+      "\n"
+      "\n      Sets the kernel radius parameter in pixels to <n> in the range [8,512]"
+      "\n      (default = 64 pixels)"
+      "\n"
+      "\n-l=<f> | --limit=<f>"
+      "\n"
+      "\n      Sets the contrast limit parameter to real <f> in the range [1,64]"
+      "\n      (default = 2)"
+      "\n"
+      "\n-a=<f> | --amount=<f>"
+      "\n"
+      "\n      Sets the amount parameter to real <f> in the range [0,1]"
+      "\n      (default = 1)"
+      "\n"
+      "\n-h=[8|10|12] | --hist=[8|10|12]"
+      "\n"
+      "\n      Sets the histogram resolution to 8, 10 or 12 bits, respectively."
+      "\n      (default = 8 bits)"
+      "\n"
+      "\n-c[+|-] | --circular[+|-]"
+      "\n"
+      "\n      Enables or disables the circular kernel. When disabled, a square"
+      "\n      kernel is used. (default = circular)"
+      "\n"
+      "\n--interface"
+      "\n"
+      "\n      Launches the interface of this process."
+      "\n"
+      "\n--help"
+      "\n"
+      "\n      Displays this help and exits."
+      "</raw>" );
 }
 
 int LocalHistogramEqualizationProcess::ProcessCommandLine( const StringList& argv ) const
@@ -191,18 +204,26 @@ int LocalHistogramEqualizationProcess::ProcessCommandLine( const StringList& arg
 
       if ( arg.IsNumeric() )
       {
-         if (arg.Id() == "r" || arg.Id() == "-radius") instance.radius = (int)arg.NumericValue();
-         else if (arg.Id() == "l" || arg.Id() == "-limit") instance.slopeLimit = arg.NumericValue();
-         else if (arg.Id() == "a" || arg.Id() == "-amount") instance.amount = arg.NumericValue();
-         else if (arg.Id() == "h" || arg.Id() == "-hist")
+         if ( arg.Id() == "r" || arg.Id() == "-radius" )
+            instance.radius = (int)arg.NumericValue();
+         else if ( arg.Id() == "l" || arg.Id() == "-limit" )
+            instance.slopeLimit = arg.NumericValue();
+         else if ( arg.Id() == "a" || arg.Id() == "-amount" )
+            instance.amount = arg.NumericValue();
+         else if ( arg.Id() == "h" || arg.Id() == "-hist" )
          {
             int bins = (int)arg.NumericValue();
-            if (bins == 8) instance.histogramBins = LHEHistogramBins::Bit8;
-            else if (bins == 10) instance.histogramBins = LHEHistogramBins::Bit10;
-            else if (bins == 12) instance.histogramBins = LHEHistogramBins::Bit12;
-            else throw Error( "Invalid value for '-h' argument. Allowed values are 8, 10 or 12" );
+            if ( bins == 8 )
+               instance.histogramBins = LHEHistogramBins::Bit8;
+            else if ( bins == 10 )
+               instance.histogramBins = LHEHistogramBins::Bit10;
+            else if ( bins == 12 )
+               instance.histogramBins = LHEHistogramBins::Bit12;
+            else
+               throw Error( "Invalid value for '-h' argument. Allowed values are 8, 10 or 12" );
          }
-         else throw Error( "Unknown numeric argument: " + arg.Token() );
+         else
+            throw Error( "Unknown numeric argument: " + arg.Token() );
       }
       else if ( arg.IsString() )
       {
@@ -210,12 +231,15 @@ int LocalHistogramEqualizationProcess::ProcessCommandLine( const StringList& arg
       }
       else if ( arg.IsSwitch() )
       {
-         if (arg.Id() == "c" || arg.Id() == "-circular") instance.circularKernel = arg.SwitchState();
-         else throw Error( "Unknown switch argument: " + arg.Token() );
+         if ( arg.Id() == "c" || arg.Id() == "-circular" )
+            instance.circularKernel = arg.SwitchState();
+         else
+            throw Error( "Unknown switch argument: " + arg.Token() );
       }
       else if ( arg.IsLiteral() )
       {
-         if (arg.Id() == "c" || arg.Id() == "-circular") instance.circularKernel = true;
+         if ( arg.Id() == "c" || arg.Id() == "-circular" )
+            instance.circularKernel = true;
          // These are standard parameters that all processes should provide.
          else if ( arg.Id() == "-interface" )
             launchInterface = true;
@@ -261,7 +285,7 @@ int LocalHistogramEqualizationProcess::ProcessCommandLine( const StringList& arg
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF LocalHistogramEqualizationProcess.cpp - Released 2020-07-31T19:33:39Z

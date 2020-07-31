@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SortedArray.h - Released 2020-02-27T12:55:23Z
+// pcl/SortedArray.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -122,22 +122,22 @@ public:
    /*!
     * Constructs an empty sorted array.
     */
-   SortedArray() : m_array()
-   {
-   }
+   SortedArray() = default;
 
    /*!
     * Constructs a sorted array of \a n default-constructed objects.
     */
    explicit
-   SortedArray( size_type n ) : m_array( n )
+   SortedArray( size_type n )
+      : m_array( n )
    {
    }
 
    /*!
     * Constructs a sorted array of \a n copies of an object \a v.
     */
-   SortedArray( size_type n, const T& v ) : m_array( n, v )
+   SortedArray( size_type n, const T& v )
+      : m_array( n, v )
    {
    }
 
@@ -146,7 +146,8 @@ public:
     * objects defined by the range [i,j) of forward iterators.
     */
    template <class FI>
-   SortedArray( FI i, FI j ) : m_array( i, j )
+   SortedArray( FI i, FI j )
+      : m_array( i, j )
    {
       Sort();
    }
@@ -160,23 +161,20 @@ public:
     * \code SortedArray( l.begin(), l.end() ) \endcode
     */
    template <typename T1>
-   SortedArray( std::initializer_list<T1> l ) : SortedArray( l.begin(), l.end() )
+   SortedArray( std::initializer_list<T1> l )
+      : SortedArray( l.begin(), l.end() )
    {
    }
 
    /*!
     * Copy constructor.
     */
-   SortedArray( const SortedArray& x ) : m_array( x.m_array )
-   {
-   }
+   SortedArray( const SortedArray& ) = default;
 
    /*!
     * Move constructor.
     */
-   SortedArray( SortedArray&& x ) : m_array( std::move( x.m_array ) )
-   {
-   }
+   SortedArray( SortedArray&& ) = default;
 
    /*!
     * Destroys a %SortedArray object. Destroys and deallocates all contained
@@ -961,6 +959,20 @@ public:
    }
 
    /*!
+    * Generates a newline-separated sequence of string tokens. Returns a
+    * reference to the target string \a s.
+    *
+    * This function is equivalent to:
+    *
+    * \code ToSeparated( s, '\n' ); \endcode
+    */
+   template <class S>
+   S& ToNewLineSeparated( S& s ) const
+   {
+      return m_array.ToNewLineSeparated( s );
+   }
+
+   /*!
     * Returns a 64-bit non-cryptographic hash value computed for this array.
     *
     * This function calls pcl::Hash64() for the internal array buffer.
@@ -1089,4 +1101,4 @@ SortedArray<T,A>& operator <<( SortedArray<T,A>&& x1, const Array<T,A>& x2 )
 #endif  // __PCL_SortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SortedArray.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/SortedArray.h - Released 2020-07-31T19:33:04Z

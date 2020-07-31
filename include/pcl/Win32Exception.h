@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Win32Exception.h - Released 2020-02-27T12:55:23Z
+// pcl/Win32Exception.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -107,8 +107,10 @@ public:
     * \a code and \a data, plus optional backtrace information \a details.
     */
    Win32Exception( exception_code code, exception_data_pointer data,
-                   const IsoString& details = IsoString() ) :
-      m_code( code ), m_data( data ), m_details( details )
+                   const IsoString& details = IsoString() )
+      : m_code( code )
+      , m_data( data )
+      , m_details( details )
    {
    }
 
@@ -214,8 +216,8 @@ class PCL_CLASS Win32AccessViolationException : public Win32Exception
 public:
 
    Win32AccessViolationException( exception_code code, exception_data_pointer data,
-                                  const IsoString& details = IsoString() ) :
-      Win32Exception( code, data, details )
+                                  const IsoString& details = IsoString() )
+      : Win32Exception( code, data, details )
    {
    }
 
@@ -312,4 +314,4 @@ DECLARE_WIN32_EXCEPTION( EWin32StackOverflow,
 #endif   // __PCL_Win32Exception_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Win32Exception.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Win32Exception.h - Released 2020-07-31T19:33:04Z

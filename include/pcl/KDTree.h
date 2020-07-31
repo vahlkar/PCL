@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/KDTree.h - Released 2020-02-27T12:55:23Z
+// pcl/KDTree.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -210,9 +210,11 @@ public:
    /*!
     * Move constructor.
     */
-   KDTree( KDTree&& x ) :
-      m_root( x.m_root ), m_dimension( x.m_dimension ),
-      m_bucketCapacity( x.m_bucketCapacity ), m_length( x.m_length )
+   KDTree( KDTree&& x )
+      : m_root( x.m_root )
+      , m_dimension( x.m_dimension )
+      , m_bucketCapacity( x.m_bucketCapacity )
+      , m_length( x.m_length )
    {
       x.m_root = nullptr;
       x.m_length = 0;
@@ -441,7 +443,8 @@ private:
       Node*  left = nullptr;  // child points at coordinates <= split
       Node*  right = nullptr; // child points at coordinates > split
 
-      Node( double s = 0 ) : split( s )
+      Node( double s = 0 )
+         : split( s )
       {
       }
 
@@ -455,7 +458,8 @@ private:
    {
       point_list points;
 
-      LeafNode( const point_list& p ) : points( p )
+      LeafNode( const point_list& p )
+         : points( p )
       {
       }
    };
@@ -600,4 +604,4 @@ private:
 #endif   // __PCL_KDTree_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/KDTree.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/KDTree.h - Released 2020-07-31T19:33:04Z

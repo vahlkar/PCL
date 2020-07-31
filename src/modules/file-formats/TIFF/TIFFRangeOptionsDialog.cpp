@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFRangeOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// TIFFRangeOptionsDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -61,8 +61,8 @@ namespace pcl
 
 TIFFRangeOptionsDialog::TIFFRangeOptionsDialog( const TIFFFormat::OutOfRangePolicyOptions& options,
                                                 int bitsPerSample,
-                                                double minSampleValue, double maxSampleValue ) :
-   outOfRange( options )
+                                                double minSampleValue, double maxSampleValue )
+   : outOfRange( options )
 {
    if ( maxSampleValue < minSampleValue )
       Swap( minSampleValue, maxSampleValue );
@@ -198,4 +198,4 @@ void TIFFRangeOptionsDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFRangeOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF TIFFRangeOptionsDialog.cpp - Released 2020-07-31T19:33:23Z

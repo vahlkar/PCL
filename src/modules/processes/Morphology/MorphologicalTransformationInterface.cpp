@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInterface.cpp - Released 2020-02-27T12:56:01Z
+// MorphologicalTransformationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -68,81 +68,53 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-MorphologicalTransformationInterface* TheMorphologicalTransformationInterface = 0;
+MorphologicalTransformationInterface* TheMorphologicalTransformationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "MorphologicalTransformationIcon.xpm"
-
-#include "paint_clear.xpm"
-#include "paint_set.xpm"
-#include "show_all_ways.xpm"
-#include "way_add.xpm"
-#include "way_delete.xpm"
-#include "way_set.xpm"
-#include "way_set_all.xpm"
-#include "way_clear.xpm"
-#include "way_clear_all.xpm"
-#include "way_store.xpm"
-#include "way_restore.xpm"
-#include "way_invert.xpm"
-#include "way_rotate.xpm"
-#include "way_circular.xpm"
-#include "way_diamond.xpm"
-#include "way_orthogonal.xpm"
-#include "way_diagonal.xpm"
-#include "undo_structure.xpm"
-#include "redo_structure.xpm"
-#include "reset_structure.xpm"
-#include "add_structure.xpm"
-#include "replace_structure.xpm"
-#include "delete_structure.xpm"
-#include "delete_all_structures.xpm"
-#include "pen_cursor.xpm"
-
-// ----------------------------------------------------------------------------
-
-MorphologicalTransformationInterface::MorphologicalTransformationInterface() :
-ProcessInterface(),
-instance( TheMorphologicalTransformationProcess ),
-currentWayIndex( 0 ),
-undoList(),
-redoList(),
-initialStructureName(),
-storedWay(),
-paintMode( true ),
-painting( false ),
-showAllWays( true ),
-GUI( 0 )
+MorphologicalTransformationInterface::MorphologicalTransformationInterface()
+   : instance( TheMorphologicalTransformationProcess )
 {
    TheMorphologicalTransformationInterface = this;
 }
 
+// ----------------------------------------------------------------------------
+
 MorphologicalTransformationInterface::~MorphologicalTransformationInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString MorphologicalTransformationInterface::Id() const
 {
    return "MorphologicalTransformation";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* MorphologicalTransformationInterface::Process() const
 {
    return TheMorphologicalTransformationProcess;
 }
 
-const char** MorphologicalTransformationInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String MorphologicalTransformationInterface::IconImageSVGFile() const
 {
-   return MorphologicalTransformationIcon_XPM;
+   return "@module_icons_dir/MorphologicalTransformation.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::ResetInstance()
 {
@@ -150,9 +122,11 @@ void MorphologicalTransformationInterface::ResetInstance()
    ImportProcess( defaultInstance );
 }
 
+// ----------------------------------------------------------------------------
+
 bool MorphologicalTransformationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "MorphologicalTransformation" );
@@ -163,12 +137,16 @@ bool MorphologicalTransformationInterface::Launch( const MetaProcess& P, const P
    return &P == TheMorphologicalTransformationProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* MorphologicalTransformationInterface::NewProcess() const
 {
    return new MorphologicalTransformationInstance( instance );
 }
 
-bool MorphologicalTransformationInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
+// ----------------------------------------------------------------------------
+
+bool MorphologicalTransformationInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
    if ( dynamic_cast<const MorphologicalTransformationInstance*>( &p ) != nullptr )
       return true;
@@ -176,10 +154,14 @@ bool MorphologicalTransformationInterface::ValidateProcess( const ProcessImpleme
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool MorphologicalTransformationInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool MorphologicalTransformationInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -191,6 +173,8 @@ bool MorphologicalTransformationInterface::ImportProcess( const ProcessImplement
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::SaveSettings() const
 {
    Settings::Write( SettingsKey() + "InitialStructureName", instance.structure.name );
@@ -198,6 +182,8 @@ void MorphologicalTransformationInterface::SaveSettings() const
    Settings::Write( SettingsKey() + "StructureSetModule/FilePath", collection.Path() );
    instance.GetStructure().Save( SettingsKey() + "CurrentStructure/" );
 }
+
+// ----------------------------------------------------------------------------
 
 #define DEFAULT_SSM_FILE   "default.ssm"
 
@@ -239,6 +225,8 @@ void MorphologicalTransformationInterface::UpdateControls()
    UpdateThresholdControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::UpdateFilterControls()
 {
    GUI->Operator_ComboBox.SetCurrentItem( instance.morphologicalOperator );
@@ -250,8 +238,10 @@ void MorphologicalTransformationInterface::UpdateFilterControls()
    GUI->Amount_NumericControl.SetValue( instance.amount );
 
    GUI->Selection_NumericControl.SetValue( instance.selectionPoint );
-   GUI->Selection_NumericControl.Enable( instance.morphologicalOperator == MorphologicalOp::Selection );
+   GUI->Selection_NumericControl.Enable( instance.morphologicalOperator == MTOperator::Selection );
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::UpdateStructureControls()
 {
@@ -275,6 +265,8 @@ void MorphologicalTransformationInterface::UpdateStructureControls()
    GUI->StructureName_Edit.SetText( instance.structure.name.IsEmpty() ? AUTO_ID : instance.structure.name );
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::UpdateStructureUndoControls()
 {
    GUI->UndoStructure_ToolButton.Enable( CanUndo() );
@@ -282,6 +274,8 @@ void MorphologicalTransformationInterface::UpdateStructureUndoControls()
    GUI->RedoStructure_ToolButton.Enable( CanRedo() );
    GUI->RedoStructure_ToolButton.SetToolTip( CanRedo() ? "Redo " + redoList.Last()->Description() : "Nothing to redo" );
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::UpdateThresholdControls()
 {
@@ -294,28 +288,38 @@ void MorphologicalTransformationInterface::UpdateThresholdControls()
 void MorphologicalTransformationInterface::__Operator_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
    instance.morphologicalOperator = itemIndex;
-   GUI->Selection_NumericControl.Enable( itemIndex == MorphologicalOp::Selection );
+   GUI->Selection_NumericControl.Enable( itemIndex == MTOperator::Selection );
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::__Interlacing_ValueUpdated( SpinBox& /*sender*/, int value )
 {
    instance.interlacingDistance = value;
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__Iterations_ValueUpdated( SpinBox& /*sender*/, int value )
 {
    instance.numberOfIterations = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::__Amount_ValueUpdated( NumericEdit& /*sender*/, double value )
 {
    instance.amount = value;
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__Selection_ValueUpdated( NumericEdit& /*sender*/, double value )
 {
    instance.selectionPoint = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::__Structure_Paint( Control& sender, const Rect& /*updateRect*/ )
 {
@@ -389,6 +393,8 @@ void MorphologicalTransformationInterface::__Structure_Paint( Control& sender, c
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__Structure_MouseMove( Control& sender, const Point& pos, unsigned buttons, unsigned modifiers )
 {
    float dx = float( sender.Width() )/instance.structure.Size();
@@ -425,6 +431,8 @@ void MorphologicalTransformationInterface::__Structure_MouseMove( Control& sende
       GUI->StructureInfo_Label.Clear();
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__Structure_MousePress( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
 {
    Do( new PaintUndo( *this ) );
@@ -432,15 +440,21 @@ void MorphologicalTransformationInterface::__Structure_MousePress( Control& send
    __Structure_MouseMove( sender, pos, buttons, modifiers );
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__Structure_MouseRelease( Control& sender, const Point& pos, int button, unsigned buttons, unsigned modifiers )
 {
    painting = false;
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__Structure_Leave( Control& /*sender*/ )
 {
    GUI->StructureInfo_Label.Clear();
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::__StructureSize_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
@@ -449,11 +463,15 @@ void MorphologicalTransformationInterface::__StructureSize_ItemSelected( ComboBo
    GUI->StructureEditor_Control.Update();
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__StructureWay_ItemSelected( ComboBox& sender, int itemIndex )
 {
    currentWayIndex = itemIndex;
    UpdateStructureControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::__WayAction_ButtonClick( Button& sender, bool /*checked*/ )
 {
@@ -554,6 +572,8 @@ void MorphologicalTransformationInterface::__WayAction_ButtonClick( Button& send
    UpdateStructureControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__PaintMode_ButtonClick( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->PaintSet_ToolButton )
@@ -568,6 +588,8 @@ void MorphologicalTransformationInterface::__PaintMode_ButtonClick( Button& send
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__DrawingOption_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->ShowAllWays_ToolButton )
@@ -577,16 +599,21 @@ void MorphologicalTransformationInterface::__DrawingOption_ButtonClick( Button& 
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__StructureName_GetFocus( Control& sender )
 {
    Edit* e = dynamic_cast<Edit*>( &sender );
-   if ( e != 0 && e->Text() == AUTO_ID )
-      e->Clear();
+   if ( e != nullptr )
+      if ( e->Text() == AUTO_ID )
+         e->Clear();
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::__StructureName_EditCompleted( Edit& sender )
 {
-   pcl::String name = sender.Text();
+   String name = sender.Text();
    name.Trim();
 
    if ( name == AUTO_ID )
@@ -601,6 +628,8 @@ void MorphologicalTransformationInterface::__StructureName_EditCompleted( Edit& 
    UpdateStructureControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void MorphologicalTransformationInterface::__ManageStructures_ButtonClick( Button& /*sender*/, bool /*checked*/ )
 {
    StructureManagerDialog d( *this );
@@ -608,6 +637,8 @@ void MorphologicalTransformationInterface::__ManageStructures_ButtonClick( Butto
    d.Execute();
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void MorphologicalTransformationInterface::__Threshold_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -619,6 +650,7 @@ void MorphologicalTransformationInterface::__Threshold_ValueUpdated( NumericEdit
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformationInterface& w )
 {
@@ -626,6 +658,8 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
    int labelWidth1 = fnt.Width( String( "Interlacing:" ) + 'M' );
    int labelWidth2 = fnt.Width( String( "Size:" ) + 'M' );
    int ui4 = w.LogicalPixelsToPhysical( 4 );
+   int ri16 = w.LogicalPixelsToResource( 16 );
+   int ui32 = w.LogicalPixelsToPhysical( 32 );
 
    //
 
@@ -657,7 +691,7 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
    Interlacing_Label.SetFixedWidth( labelWidth1 );
    Interlacing_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
-   Interlacing_SpinBox.SetRange( 1, int( TheInterlacingDistanceParameter->MaximumValue() ) );
+   Interlacing_SpinBox.SetRange( 1, int( TheMTInterlacingDistanceParameter->MaximumValue() ) );
    Interlacing_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&MorphologicalTransformationInterface::__Interlacing_ValueUpdated, w );
 
    Interlacing_Sizer.SetSpacing( 4 );
@@ -671,7 +705,7 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
    Iterations_Label.SetFixedWidth( labelWidth1 );
    Iterations_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
-   Iterations_SpinBox.SetRange( 1, int( TheNumberOfIterationsParameter->MaximumValue() ) );
+   Iterations_SpinBox.SetRange( 1, int( TheMTNumberOfIterationsParameter->MaximumValue() ) );
    Iterations_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&MorphologicalTransformationInterface::__Iterations_ValueUpdated, w );
 
    Iterations_Sizer.SetSpacing( 4 );
@@ -687,7 +721,7 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
    Amount_NumericControl.slider.SetScaledMinWidth( 150 );
    Amount_NumericControl.SetReal();
    Amount_NumericControl.SetRange( 0, 1 );
-   Amount_NumericControl.SetPrecision( TheAmountParameter->Precision() );
+   Amount_NumericControl.SetPrecision( TheMTAmountParameter->Precision() );
    Amount_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&MorphologicalTransformationInterface::__Amount_ValueUpdated, w );
 
    //
@@ -698,7 +732,7 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
    Selection_NumericControl.slider.SetScaledMinWidth( 150 );
    Selection_NumericControl.SetReal();
    Selection_NumericControl.SetRange( 0, 1 );
-   Selection_NumericControl.SetPrecision( TheSelectionPointParameter->Precision() );
+   Selection_NumericControl.SetPrecision( TheMTSelectionPointParameter->Precision() );
    Selection_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&MorphologicalTransformationInterface::__Selection_ValueUpdated, w );
 
    //
@@ -719,10 +753,12 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
 
    //
 
+   Bitmap csr = Bitmap::FromSVGFile( "@module_cursors_dir/pen.svg", ui32, ui32 );
+
    StructureEditor_Control.SetBackgroundColor( StringToRGBAColor( "black" ) );
    StructureEditor_Control.SetScaledFixedSize( 126, 126 );  // 25 elements x 5 pixels + bottom/right frame
    StructureEditor_Control.EnableMouseTracking();
-   StructureEditor_Control.SetCursor( pcl::Cursor( Bitmap( pen_cursor_XPM ), 5, 0 ) );
+   StructureEditor_Control.SetCursor( pcl::Cursor( csr, csr.Width() >> 1, 0 ) );
    StructureEditor_Control.OnPaint( (Control::paint_event_handler)&MorphologicalTransformationInterface::__Structure_Paint, w );
    StructureEditor_Control.OnMousePress( (Control::mouse_button_event_handler)&MorphologicalTransformationInterface::__Structure_MousePress, w );
    StructureEditor_Control.OnMouseRelease( (Control::mouse_button_event_handler)&MorphologicalTransformationInterface::__Structure_MouseRelease, w );
@@ -739,7 +775,7 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
    StructureSize_Label.SetFixedWidth( labelWidth2 );
    StructureSize_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
 
-   for ( int i = 3, m = int( TheStructureSizeParameter->MaximumValue() ); i <= m; i += 2 )
+   for ( int i = 3, m = int( TheMTStructureSizeParameter->MaximumValue() ); i <= m; i += 2 )
       StructureSize_ComboBox.AddItem( String().Format( "%d  (%d elements)", i, i*i ) );
    StructureSize_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&MorphologicalTransformationInterface::__StructureSize_ItemSelected, w );
 
@@ -762,38 +798,38 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
 
    //
 
-   UndoStructure_ToolButton.SetIcon( Bitmap( undo_structure_XPM ) );
-   UndoStructure_ToolButton.SetScaledFixedSize( 19, 19 );
+   UndoStructure_ToolButton.SetIcon( w.ScaledResource( ":/icons/undo.png" ) );
+   UndoStructure_ToolButton.SetScaledFixedSize( 20, 20 );
    UndoStructure_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    UndoStructure_ToolButton.SetToolTip( "Undo" );
    UndoStructure_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   InvertWay_ToolButton.SetIcon( Bitmap( way_invert_XPM ) );
-   InvertWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   InvertWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_invert.svg", ri16, ri16 ) );
+   InvertWay_ToolButton.SetScaledFixedSize( 20, 20 );
    InvertWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    InvertWay_ToolButton.SetToolTip( "Invert Way" );
    InvertWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   RotateWay_ToolButton.SetIcon( Bitmap( way_rotate_XPM ) );
-   RotateWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   RotateWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_rotate.svg", ri16, ri16 ) );
+   RotateWay_ToolButton.SetScaledFixedSize( 20, 20 );
    RotateWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    RotateWay_ToolButton.SetToolTip( "Rotate Way" );
    RotateWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   SetWay_ToolButton.SetIcon( Bitmap( way_set_XPM ) );
-   SetWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   SetWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_set.svg", ri16, ri16 ) );
+   SetWay_ToolButton.SetScaledFixedSize( 20, 20 );
    SetWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    SetWay_ToolButton.SetToolTip( "Set Way" );
    SetWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   AddWay_ToolButton.SetIcon( Bitmap( way_add_XPM ) );
-   AddWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   AddWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_add.svg", ri16, ri16 ) );
+   AddWay_ToolButton.SetScaledFixedSize( 20, 20 );
    AddWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    AddWay_ToolButton.SetToolTip( "Add Way" );
    AddWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   DeleteWay_ToolButton.SetIcon( Bitmap( way_delete_XPM ) );
-   DeleteWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   DeleteWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_remove.svg", ri16, ri16 ) );
+   DeleteWay_ToolButton.SetScaledFixedSize( 20, 20 );
    DeleteWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    DeleteWay_ToolButton.SetToolTip( "Delete Way" );
    DeleteWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
@@ -811,38 +847,38 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
 
    //
 
-   RedoStructure_ToolButton.SetIcon( Bitmap( redo_structure_XPM ) );
-   RedoStructure_ToolButton.SetScaledFixedSize( 19, 19 );
+   RedoStructure_ToolButton.SetIcon( w.ScaledResource( ":/icons/redo.png" ) );
+   RedoStructure_ToolButton.SetScaledFixedSize( 20, 20 );
    RedoStructure_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    RedoStructure_ToolButton.SetToolTip( "Redo" );
    RedoStructure_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   CircularWay_ToolButton.SetIcon( Bitmap( way_circular_XPM ) );
-   CircularWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   CircularWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_circular.svg", ri16, ri16 ) );
+   CircularWay_ToolButton.SetScaledFixedSize( 20, 20 );
    CircularWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    CircularWay_ToolButton.SetToolTip( "Circular Structure" );
    CircularWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   DiamondWay_ToolButton.SetIcon( Bitmap( way_diamond_XPM ) );
-   DiamondWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   DiamondWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_diamond.svg", ri16, ri16 ) );
+   DiamondWay_ToolButton.SetScaledFixedSize( 20, 20 );
    DiamondWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    DiamondWay_ToolButton.SetToolTip( "Diamond Structure" );
    DiamondWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   ClearWay_ToolButton.SetIcon( Bitmap( way_clear_XPM ) );
-   ClearWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   ClearWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_clear.svg", ri16, ri16 ) );
+   ClearWay_ToolButton.SetScaledFixedSize( 20, 20 );
    ClearWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ClearWay_ToolButton.SetToolTip( "Clear Way" );
    ClearWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   SetAllWays_ToolButton.SetIcon( Bitmap( way_set_all_XPM ) );
-   SetAllWays_ToolButton.SetScaledFixedSize( 19, 19 );
+   SetAllWays_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_set_all.svg", ri16, ri16 ) );
+   SetAllWays_ToolButton.SetScaledFixedSize( 20, 20 );
    SetAllWays_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    SetAllWays_ToolButton.SetToolTip( "Set All" );
    SetAllWays_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   ClearAllWays_ToolButton.SetIcon( Bitmap( way_clear_all_XPM ) );
-   ClearAllWays_ToolButton.SetScaledFixedSize( 19, 19 );
+   ClearAllWays_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_clear_all.svg", ri16, ri16 ) );
+   ClearAllWays_ToolButton.SetScaledFixedSize( 20, 20 );
    ClearAllWays_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ClearAllWays_ToolButton.SetToolTip( "Clear All" );
    ClearAllWays_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
@@ -860,32 +896,32 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
 
    //
 
-   ResetStructure_ToolButton.SetIcon( Bitmap( reset_structure_XPM ) );
-   ResetStructure_ToolButton.SetScaledFixedSize( 19, 19 );
+   ResetStructure_ToolButton.SetIcon( w.ScaledResource( ":/icons/delete.png" ) );
+   ResetStructure_ToolButton.SetScaledFixedSize( 20, 20 );
    ResetStructure_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ResetStructure_ToolButton.SetToolTip( "Reset Structure" );
    ResetStructure_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   OrthogonalWay_ToolButton.SetIcon( Bitmap( way_orthogonal_XPM ) );
-   OrthogonalWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   OrthogonalWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_orthogonal.svg", ri16, ri16 ) );
+   OrthogonalWay_ToolButton.SetScaledFixedSize( 20, 20 );
    OrthogonalWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    OrthogonalWay_ToolButton.SetToolTip( "Orthogonal Structure" );
    OrthogonalWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   DiagonalWay_ToolButton.SetIcon( Bitmap( way_diagonal_XPM ) );
-   DiagonalWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   DiagonalWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_diagonal.svg", ri16, ri16 ) );
+   DiagonalWay_ToolButton.SetScaledFixedSize( 20, 20 );
    DiagonalWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    DiagonalWay_ToolButton.SetToolTip( "Diagonal Structure" );
    DiagonalWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   StoreWay_ToolButton.SetIcon( Bitmap( way_store_XPM ) );
-   StoreWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   StoreWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_store.svg", ri16, ri16 ) );
+   StoreWay_ToolButton.SetScaledFixedSize( 20, 20 );
    StoreWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    StoreWay_ToolButton.SetToolTip( "Store Way" );
    StoreWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
 
-   RestoreWay_ToolButton.SetIcon( Bitmap( way_restore_XPM ) );
-   RestoreWay_ToolButton.SetScaledFixedSize( 19, 19 );
+   RestoreWay_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/way_restore.svg", ri16, ri16 ) );
+   RestoreWay_ToolButton.SetScaledFixedSize( 20, 20 );
    RestoreWay_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    RestoreWay_ToolButton.SetToolTip( "Restore Way" );
    RestoreWay_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__WayAction_ButtonClick, w );
@@ -920,22 +956,22 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
 
    //
 
-   PaintSet_ToolButton.SetIcon( Bitmap( paint_set_XPM ) );
-   PaintSet_ToolButton.SetScaledFixedSize( 19, 19 );
+   PaintSet_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/paint_set.svg", ri16, ri16 ) );
+   PaintSet_ToolButton.SetScaledFixedSize( 20, 20 );
    PaintSet_ToolButton.SetCheckable();
    PaintSet_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    PaintSet_ToolButton.SetToolTip( "Paint mode: Set element" );
    PaintSet_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__PaintMode_ButtonClick, w );
 
-   PaintClear_ToolButton.SetIcon( Bitmap( paint_clear_XPM ) );
-   PaintClear_ToolButton.SetScaledFixedSize( 19, 19 );
+   PaintClear_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/paint_clear.svg", ri16, ri16 ) );
+   PaintClear_ToolButton.SetScaledFixedSize( 20, 20 );
    PaintClear_ToolButton.SetCheckable();
    PaintClear_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    PaintClear_ToolButton.SetToolTip( "Paint mode: Clear element" );
    PaintClear_ToolButton.OnClick( (ToolButton::click_event_handler)&MorphologicalTransformationInterface::__PaintMode_ButtonClick, w );
 
-   ShowAllWays_ToolButton.SetIcon( Bitmap( show_all_ways_XPM ) );
-   ShowAllWays_ToolButton.SetScaledFixedSize( 19, 19 );
+   ShowAllWays_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/show_all_ways.svg", ri16, ri16 ) );
+   ShowAllWays_ToolButton.SetScaledFixedSize( 20, 20 );
    ShowAllWays_ToolButton.SetCheckable();
    ShowAllWays_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ShowAllWays_ToolButton.SetToolTip( "Show all ways" );
@@ -1015,7 +1051,6 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
    //
 
    w.SetSizer( Global_Sizer );
-
    w.EnsureLayoutUpdated();
    w.AdjustToContents();
 
@@ -1033,4 +1068,4 @@ MorphologicalTransformationInterface::GUIData::GUIData( MorphologicalTransformat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF MorphologicalTransformationInterface.cpp - Released 2020-07-31T19:33:39Z

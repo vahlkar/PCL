@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Random.h - Released 2020-02-27T12:55:23Z
+// pcl/Random.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -254,7 +254,7 @@ private:
    AutoPointer<FastMersenneTwister> m_generator;
    double                           m_ymax;
    double                           m_rmax;
-   bool                             m_normal : 1;
+   bool                             m_normal;
    double                           m_vs;     // second result from Box–Muller transform
    DVector                          m_lambda; // precalculated for current Poisson lambda
 };
@@ -708,7 +708,8 @@ public:
     * Constructs a %NormalRandomDeviates objects using the specified
     * pseudo-random number generator \a R.
     */
-   NormalRandomDeviates( RNG& R ) : m_R( R )
+   NormalRandomDeviates( RNG& R )
+      : m_R( R )
    {
    }
 
@@ -768,7 +769,8 @@ public:
     * Constructs a %PoissonRandomDeviates objects using the specified
     * pseudo-random number generator \a R.
     */
-   PoissonRandomDeviates( RNG& R ) : m_R( R )
+   PoissonRandomDeviates( RNG& R )
+      : m_R( R )
    {
    }
 
@@ -829,7 +831,84 @@ public:
 
 private:
 
-   RNG&         m_R;
+   RNG& m_R;
+};
+
+// ----------------------------------------------------------------------------
+
+/*!
+ * \class GammaRandomDeviates
+ * \brief Generation of random gamma deviates.
+ * \ingroup random_numbers
+ */
+template <class RNG>
+class PCL_CLASS GammaRandomDeviates
+{
+public:
+
+   /*!
+    * Constructs a %GammaRandomDeviates objects using the specified
+    * pseudo-random number generator \a R.
+    */
+   GammaRandomDeviates( RNG& R, double shape = 1, double scale = 1 )
+      : m_R( R )
+      , m_shape( shape )
+      , m_scale( scale )
+      , m_normal( R )
+   {
+      if ( m_shape <= 0 )
+         throw Error( "GammaRandomDeviates(): The function shape parameter must be > 0." );
+      if ( m_scale <= 0 )
+         throw Error( "GammaRandomDeviates(): The scale parameter must be > 0." );
+
+      m_d = ((m_shape >= 1) ? m_shape : m_shape + 1) - 1.0/3.0;
+      m_c = 1/Sqrt( 9*m_d );
+   }
+
+   /*!
+    * Returns a random deviate from a Gaussian distribution with zero mean and
+    * unit standard deviation.
+    */
+   double operator ()()
+   {
+      /*
+       * Code adapted from 'Random number generation in C++', by John D. Cook:
+       *    https://www.johndcook.com/blog/cpp_random_number_generation/
+       *
+       * Implementation based on "A Simple Method for Generating Gamma
+       * Variables" by George Marsaglia and Wai Wan Tsang. ACM Transactions on
+       * Mathematical Software Vol 26, No 3, September 2000, pages 363-372.
+       */
+      for ( ;; )
+      {
+         double x, v;
+         do
+         {
+            x = m_normal();
+            v = 1 + m_c*x;
+         }
+         while ( v <= 0 );
+         v = v*v*v;
+         double u = m_R();
+         double xsquared = x*x;
+         if ( u < 1 - 0.0331*xsquared*xsquared || Ln( u ) < 0.5*xsquared + m_d*(1 - v + Ln( v )) )
+         {
+            double g = m_scale*m_d*v;
+            if ( m_shape < 1 )
+               g *= Pow( m_R(), 1/m_shape );
+            return g;
+         }
+      }
+   }
+
+private:
+
+   RNG&                      m_R;
+   double                    m_shape;
+   double                    m_scale;
+   double                    m_d;
+   double                    m_c;
+   NormalRandomDeviates<RNG> m_normal;
 };
 
 // ----------------------------------------------------------------------------
@@ -839,4 +918,4 @@ private:
 #endif   // __PCL_Random_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Random.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Random.h - Released 2020-07-31T19:33:04Z

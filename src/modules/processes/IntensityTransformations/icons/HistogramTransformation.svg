@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="c" x1="12.027" x2="70.235" y1="86.124" y2="27.916" gradientTransform="matrix(7.9714 0 0 7.9714 207.03 -499.98)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0405ff" offset="0"/>
+<stop stop-color="#9fc9ff" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="177.48" x2="26.403" y1="74.72" y2="213.9" gradientTransform="matrix(1.999 0 0 2.0029 295.64 -285.92)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fe6c3a" offset="0"/>
+<stop stop-color="#feba6a" offset="1"/>
+</linearGradient>
+<linearGradient id="a" x1="177.48" x2="26.403" y1="75.22" y2="214.4" gradientTransform="matrix(1.999 0 0 2.0029 295.64 -286.92)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff6733" offset="0"/>
+<stop stop-color="#feba6a" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-278.9 301.45)">
+<rect x="302.9" y="-277.45" width="464" height="464" fill="url(#c)"/>
+<path d="m418.03-256.36v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m501.52-256.36v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m585.01-256.36v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m668.5-256.36v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m745.81-179.31-421.82 0.26631" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m745.81-95.558h-421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m745.81-12.068h-421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m745.81 71.421h-421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m745.81 154.91h-421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m334.54-256.36v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m355.63 134.16 0.0253-27.988s58.347-87.733 87.474-279.35c29.127-191.62 38.872 191.16 124.39 256.96 46.031 39.672 162.36 80.711 166.82-40.851 2.2493-61.412 1.0919 90.831 1.0919 90.831z" fill="url(#b)" fill-rule="evenodd" stroke="url(#a)" stroke-width="21.091"/>
+</g>
+</svg>

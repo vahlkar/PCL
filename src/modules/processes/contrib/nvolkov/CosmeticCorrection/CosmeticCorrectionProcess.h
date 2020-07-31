@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionProcess.h - Released 2020-02-27T12:56:01Z
+// CosmeticCorrectionProcess.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -58,7 +58,6 @@
 
 namespace pcl
 {
-
 // ----------------------------------------------------------------------------
 
 class CosmeticCorrectionProcess : public MetaProcess
@@ -67,19 +66,14 @@ public:
 
    CosmeticCorrectionProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Category() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-
-   virtual const char** IconImageXPM() const;
-
-   virtual ProcessInterface* DefaultInterface() const;
-
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
+   IsoString Id() const override;
+   IsoString Category() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String IconImageSVGFile() const override;
+   ProcessInterface* DefaultInterface() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
 };
 
 PCL_BEGIN_LOCAL
@@ -88,9 +82,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __CosmeticCorrectionProcess_h
+#endif // __CosmeticCorrectionProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionProcess.h - Released 2020-02-27T12:56:01Z
+// EOF CosmeticCorrectionProcess.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// GrayscaleRGBProcesses.cpp - Released 2020-02-27T12:56:01Z
+// GrayscaleRGBProcesses.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -58,10 +58,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "ConvertToGrayscaleIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 ConvertToGrayscaleProcess* TheConvertToGrayscaleProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -105,9 +101,9 @@ String ConvertToGrayscaleProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ConvertToGrayscaleProcess::IconImageXPM() const
+String ConvertToGrayscaleProcess::IconImageSVGFile() const
 {
-   return ConvertToGrayscaleIcon_XPM;
+   return "@module_icons_dir/ConvertToGrayscale.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -133,10 +129,6 @@ bool ConvertToGrayscaleProcess::IsAssignable() const
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-
-#include "ConvertToRGBColorIcon.xpm"
-
 // ----------------------------------------------------------------------------
 
 ConvertToRGBColorProcess* TheConvertToRGBColorProcess = nullptr;
@@ -180,9 +172,9 @@ String ConvertToRGBColorProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ConvertToRGBColorProcess::IconImageXPM() const
+String ConvertToRGBColorProcess::IconImageSVGFile() const
 {
-   return ConvertToRGBColorIcon_XPM;
+   return "@module_icons_dir/ConvertToRGBColor.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -212,4 +204,4 @@ bool ConvertToRGBColorProcess::IsAssignable() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GrayscaleRGBProcesses.cpp - Released 2020-02-27T12:56:01Z
+// EOF GrayscaleRGBProcesses.cpp - Released 2020-07-31T19:33:39Z

@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInstance.h - Released 2020-02-27T12:56:01Z
+// LocalHistogramEqualizationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
-// Copyright (c) 2011-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,14 +54,12 @@
 #ifndef __LocalHistogramEqualizationInstance_h
 #define __LocalHistogramEqualizationInstance_h
 
+#include <pcl/MetaParameter.h>
 #include <pcl/ProcessImplementation.h>
-#include <pcl/MetaParameter.h> // for pcl_bool, pcl_enum
 
 namespace pcl
 {
 
-// ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInstance
 // ----------------------------------------------------------------------------
 
 class LocalHistogramEqualizationInstance : public ProcessImplementation
@@ -71,18 +69,32 @@ public:
    LocalHistogramEqualizationInstance( const MetaProcess* );
    LocalHistogramEqualizationInstance( const LocalHistogramEqualizationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
 
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
+   int GetRadius() const
+   {
+      return radius;
+   }
 
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-
-   int GetRadius() const { return radius; }
    int GetHistogramSize() const;
-   double GetLimit() const { return slopeLimit; }
-   double GetAmount() const { return amount; }
-   bool IsCircular() const { return circularKernel; }
+
+   double GetLimit() const
+   {
+      return slopeLimit;
+   }
+
+   double GetAmount() const
+   {
+      return amount;
+   }
+
+   bool IsCircular() const
+   {
+      return circularKernel;
+   }
 
    void Preview( UInt16Image& ) const;
 
@@ -101,10 +113,9 @@ private:
 
 // ----------------------------------------------------------------------------
 
+} // namespace pcl
 
-} // pcl
-
-#endif   // __LocalHistogramEqualizationInstance_h
+#endif // __LocalHistogramEqualizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF LocalHistogramEqualizationInstance.h - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/AbstractImage.h - Released 2020-02-27T12:55:23Z
+// pcl/AbstractImage.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -442,8 +442,8 @@ public:
    size_type NumberOfSelectedPixels() const
    {
       return size_type( m_selected.rectangle.Width() ) * size_type( m_selected.rectangle.Height() );
-      // ### NB: Rect::Area() cannot be used here because it performs a
-      //         *signed* multiplication of two 32-bit signed integers.
+      // ### N.B. Rect::Area() cannot be used here because it performs a
+      //          *signed* multiplication of two 32-bit signed integers.
       //return m_selected.rectangle.Area();
    }
 
@@ -471,34 +471,65 @@ public:
     * sample data types; the necessary conversions are performed transparently.
     *
     * When range clipping is disabled, the clipping range is ignored and all
-    * pixel samples are considered for statistics calculations.
+    * pixel samples are considered for statistical calculations.
+    *
+    * To make it more flexible, range clipping can be enabled/disabled
+    * separately for the low and high bounds.
     *
     * The default clipping range is the normalized (0,1) range. Range clipping
     * is disabled by default.
     */
    bool IsRangeClippingEnabled() const
    {
-      return m_selected.clipped;
+      return m_selected.clippedLow || m_selected.clippedHigh;
    }
 
    /*!
-    * Enables range clipping for statistical calculations.
+    * Returns true iff range clipping is currently enabled for the low clipping
+    * bound. When this is true, pixel samples with values less than or equal to
+    * the low clipping bound (as reported by RangeClipLow() ) will be rejected
+    * for statistical calculations.
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void EnableRangeClipping( bool enable = true ) const
+   bool IsLowRangeClippingEnabled() const
    {
-      m_selected.clipped = enable;
+      return m_selected.clippedLow;
    }
 
    /*!
-    * Disables range clipping for statistical calculations.
+    * Returns true iff range clipping is currently enabled for the high
+    * clipping bound. When this is true, pixel samples with values greater than
+    * or equal to the high clipping bound (as reported by RangeClipHigh() )
+    * will be rejected for statistical calculations.
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void DisableRangeClipping( bool disable = true ) const
+   bool IsHighRangeClippingEnabled() const
    {
-      m_selected.clipped = !disable;
+      return m_selected.clippedHigh;
+   }
+
+   /*!
+    * Enables range clippings for statistical calculations.
+    *
+    * See IsRangeClippingEnabled() for more information on range clipping.
+    */
+   void EnableRangeClipping( bool enableLow = true, bool enableHigh = true ) const
+   {
+      m_selected.clippedLow = enableLow;
+      m_selected.clippedHigh = enableHigh;
+   }
+
+   /*!
+    * Disables range clippings for statistical calculations.
+    *
+    * See IsRangeClippingEnabled() for more information on range clipping.
+    */
+   void DisableRangeClipping( bool disableLow = true, bool disableHigh = true ) const
+   {
+      m_selected.clippedLow = !disableLow;
+      m_selected.clippedHigh = !disableHigh;
    }
 
    /*!
@@ -547,7 +578,7 @@ public:
 
    /*!
     * Sets the lower and upper bounds of the clipping range and enables range
-    * clipping, in a single function call.
+    * clipping (both low and high clipping bounds), in a single function call.
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
@@ -557,7 +588,7 @@ public:
          pcl::Swap( clipLow, clipHigh );
       m_selected.clipLow = clipLow;
       m_selected.clipHigh = clipHigh;
-      m_selected.clipped = true;
+      m_selected.clippedLow = m_selected.clippedHigh = true;
    }
 
    /*!
@@ -571,7 +602,7 @@ public:
    {
       m_selected.clipLow = 0;
       m_selected.clipHigh = 1;
-      m_selected.clipped = false;
+      m_selected.clippedLow = m_selected.clippedHigh = false;
    }
 
    /*!
@@ -952,9 +983,9 @@ public:
        * an \e unbounded monitor. See the StatusMonitor::Initialize() member
        * function for more information.
        */
-      ThreadData( const AbstractImage& image, size_type N ) :
-         status( image.Status() ),
-         total( N )
+      ThreadData( const AbstractImage& image, size_type N )
+         : status( image.Status() )
+         , total( N )
       {
       }
 
@@ -966,9 +997,9 @@ public:
        * an \e unbounded monitor. See the StatusMonitor::Initialize() member
        * function for more information.
        */
-      ThreadData( const StatusMonitor& a_status, size_type N ) :
-         status( a_status ),
-         total( N )
+      ThreadData( const StatusMonitor& a_status, size_type N )
+         : status( a_status )
+         , total( N )
       {
       }
    };
@@ -1394,4 +1425,4 @@ protected:
 #endif   // __PCL_AbstractImage_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AbstractImage.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/AbstractImage.h - Released 2020-07-31T19:33:04Z

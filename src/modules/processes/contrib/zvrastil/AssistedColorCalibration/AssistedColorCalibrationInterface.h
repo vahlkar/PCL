@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationInterface.h - Released 2020-02-27T12:56:01Z
+// AssistedColorCalibrationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,13 +54,12 @@
 #ifndef __AssistedColorCalibrationInterface_h
 #define __AssistedColorCalibrationInterface_h
 
-#include <pcl/ProcessInterface.h>
-
-#include <pcl/Sizer.h>
-#include <pcl/SectionBar.h>
-#include <pcl/NumericControl.h>
 #include <pcl/GroupBox.h>
 #include <pcl/Label.h>
+#include <pcl/NumericControl.h>
+#include <pcl/ProcessInterface.h>
+#include <pcl/SectionBar.h>
+#include <pcl/Sizer.h>
 #include <pcl/ViewList.h>
 
 #include "AssistedColorCalibrationInstance.h"
@@ -81,21 +80,16 @@ public:
    AssistedColorCalibrationInterface();
    virtual ~AssistedColorCalibrationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
@@ -106,55 +100,61 @@ private:
       GUIData( AssistedColorCalibrationInterface& );
 
       // helper methods to set up repeating controls
-      void SetUpCorrectionFactorNumericControl( AssistedColorCalibrationInterface& w, NumericControl &control,
-         MetaFloat *parameter, const String &label );
-      void SetUpHistogramNumericEdit( AssistedColorCalibrationInterface& w, NumericEdit &control,
-         MetaFloat *parameter, const String &label, const String &tooltip );
-      void SetUpSaturationNumericControl( AssistedColorCalibrationInterface& w, NumericControl &control,
-         MetaFloat *parameter, const String &label, const String &tooltip );
+      void SetUpCorrectionFactorNumericControl( AssistedColorCalibrationInterface& w, NumericControl& control,
+                                                MetaFloat* parameter, const String& label );
+      void SetUpHistogramNumericEdit( AssistedColorCalibrationInterface& w, NumericEdit& control,
+                                      MetaFloat* parameter, const String& label, const String& tooltip );
+      void SetUpSaturationNumericControl( AssistedColorCalibrationInterface& w, NumericControl& control,
+                                          MetaFloat* parameter, const String& label, const String& tooltip );
 
-      VerticalSizer     Global_Sizer;
-         SectionBar        WhiteBalance_Section;
-            Control           WhiteBalance_Control;
-            HorizontalSizer   WhiteBalance_SizerH;
-               VerticalSizer     WhiteBalance_Sizer;
-                  NumericControl    RedCorrectionFactor_NumericControl;
-                  NumericControl    GreenCorrectionFactor_NumericControl;
-                  NumericControl    BlueCorrectionFactor_NumericControl;
-               VerticalSizer     WhiteBalanceReset_Sizer;
-                  ToolButton        WhiteBalanceReset_ToolButton;
-         SectionBar        PreviewParams_Section;
-            Control           PreviewParams_Control;
-            VerticalSizer     PreviewParams_Sizer;
-               GroupBox          Background_Group;
-                  VerticalSizer     Background_Sizer;
-                     HorizontalSizer   BackgroundRef_Sizer;
-                        Label             BackgroundRef_Label;
-                        ViewList          BackgroundRef_ViewList;
-               GroupBox          Histogram_Group;
-                  HorizontalSizer   Histogram_Sizer;
-                     VerticalSizer     HistogramPlot_Sizer;
-                        Control           HistogramPlot_Control;
-                        Control           HistogramSliders_Control;
-                     VerticalSizer     HistogramValues_Sizer;
-                        NumericEdit       HistogramShadows_NumericEdit;
-                        NumericEdit       HistogramHighlights_NumericEdit;
-                        NumericEdit       HistogramMidtones_NumericEdit;
-                        HorizontalSizer   HistogramReset_Sizer;
-                           ToolButton        HistogramReset_ToolButton;
-               GroupBox          Saturation_Group;
-                  HorizontalSizer   Saturation_Sizer;
-                     NumericControl    SaturationBoost_NumericControl;
+      VerticalSizer Global_Sizer;
+      SectionBar WhiteBalance_Section;
+      Control WhiteBalance_Control;
+      HorizontalSizer WhiteBalance_SizerH;
+      VerticalSizer WhiteBalance_Sizer;
+      NumericControl RedCorrectionFactor_NumericControl;
+      NumericControl GreenCorrectionFactor_NumericControl;
+      NumericControl BlueCorrectionFactor_NumericControl;
+      VerticalSizer WhiteBalanceReset_Sizer;
+      ToolButton WhiteBalanceReset_ToolButton;
+      SectionBar PreviewParams_Section;
+      Control PreviewParams_Control;
+      VerticalSizer PreviewParams_Sizer;
+      GroupBox Background_Group;
+      VerticalSizer Background_Sizer;
+      HorizontalSizer BackgroundRef_Sizer;
+      Label BackgroundRef_Label;
+      ViewList BackgroundRef_ViewList;
+      GroupBox Histogram_Group;
+      HorizontalSizer Histogram_Sizer;
+      VerticalSizer HistogramPlot_Sizer;
+      Control HistogramPlot_Control;
+      Control HistogramSliders_Control;
+      VerticalSizer HistogramValues_Sizer;
+      NumericEdit HistogramShadows_NumericEdit;
+      NumericEdit HistogramHighlights_NumericEdit;
+      NumericEdit HistogramMidtones_NumericEdit;
+      HorizontalSizer HistogramReset_Sizer;
+      ToolButton HistogramReset_ToolButton;
+      GroupBox Saturation_Group;
+      HorizontalSizer Saturation_Sizer;
+      NumericControl SaturationBoost_NumericControl;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
-   enum SliderId     { C0Slider, MSlider, C1Slider, NoSlider = -1 };
+   enum SliderId
+   {
+      C0Slider,
+      MSlider,
+      C1Slider,
+      NoSlider = -1
+   };
 
-   Bitmap*        inputScrBmp;         // screen bitmap, input histogram viewport
-   Bitmap*        slidersScrBmp;       // screen bitmap, slider area
+   Bitmap* inputScrBmp = nullptr;   // screen bitmap, input histogram viewport
+   Bitmap* slidersScrBmp = nullptr; // screen bitmap, slider area
 
-   SliderId       sliderBeingDragged;  // moving one of our little triangular things?
+   SliderId sliderBeingDragged; // moving one of our little triangular things?
 
    void UpdateControls();
 
@@ -201,9 +201,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __AssistedColorCalibrationInterface_h
+#endif // __AssistedColorCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF AssistedColorCalibrationInterface.h - Released 2020-07-31T19:33:39Z

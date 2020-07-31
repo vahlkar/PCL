@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Module.cpp - Released 2020-02-27T12:55:48Z
+// JPEG2000Module.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "JPEG2000Module.h"
 #include "JPEG2000Format.h"
@@ -129,10 +129,10 @@ String JPEG2000Module::TradeMarks() const
 
 String JPEG2000Module::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "JPEG2000-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "JPEG2000-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -156,6 +156,8 @@ void JPEG2000Module::GetReleaseDate( int& year, int& month, int& day ) const
 
 } // pcl
 
+// -------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::JPEG2000Module;
@@ -170,4 +172,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Module.cpp - Released 2020-02-27T12:55:48Z
+// EOF JPEG2000Module.cpp - Released 2020-07-31T19:33:23Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGFormat.cpp - Released 2020-02-27T12:55:48Z
+// JPEGFormat.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -61,19 +61,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-JPEGFormat::JPEGFormat()
-{
-}
-
 IsoString JPEGFormat::Name() const
 {
    return "JPEG";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList JPEGFormat::FileExtensions() const
 {
    return StringList() << ".jpg" << ".jpeg";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList JPEGFormat::MimeTypes() const
 {
@@ -81,10 +81,14 @@ IsoStringList JPEGFormat::MimeTypes() const
    return IsoStringList() << "image/jpeg" << "image/jpg" << "application/jpeg" << "application/jpg";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 JPEGFormat::Version() const
 {
    return 0x103;
 }
+
+// ----------------------------------------------------------------------------
 
 String JPEGFormat::Description() const
 {
@@ -93,6 +97,8 @@ String JPEGFormat::Description() const
    "<p>Joint Photographic Experts Group (JPEG) File Interchange Format, JFIF 1.02 Specification.</p>"
    "</html>";
 }
+
+// ----------------------------------------------------------------------------
 
 String JPEGFormat::Implementation() const
 {
@@ -109,7 +115,7 @@ String JPEGFormat::Implementation() const
    "Copyright (c) 2016, Thomas G. Lane, Guido Vollbeding</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -142,45 +148,63 @@ String JPEGFormat::Implementation() const
    "</html>";
 }
 
-String JPEGFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String JPEGFormat::IconImageSVGFile() const
 {
-   return ":/file-format/jpeg-format-icon.png";
+   return "@module_icons_dir/JPEG.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool JPEGFormat::CanStore16Bit() const
 {
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool JPEGFormat::CanStoreAlphaChannels() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool JPEGFormat::CanStoreResolution() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool JPEGFormat::CanStoreICCProfiles() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool JPEGFormat::CanEditPreferences() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool JPEGFormat::UsesFormatSpecificData() const
 {
    return true; // use format-specific data to manage some special JPEG flags and data
 }
 
+// ----------------------------------------------------------------------------
+
 bool JPEGFormat::ValidateFormatSpecificData( const void* data ) const
 {
    return FormatOptions::FromGenericDataBlock( data ) != nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 void JPEGFormat::DisposeFormatSpecificData( void* data ) const
 {
@@ -188,10 +212,14 @@ void JPEGFormat::DisposeFormatSpecificData( void* data ) const
       delete o;
 }
 
+// ----------------------------------------------------------------------------
+
 FileFormatImplementation* JPEGFormat::Create() const
 {
    return new JPEGInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 bool JPEGFormat::EditPreferences() const
 {
@@ -218,6 +246,8 @@ bool JPEGFormat::EditPreferences() const
 
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 JPEGImageOptions JPEGFormat::DefaultOptions()
 {
@@ -255,6 +285,8 @@ JPEGImageOptions JPEGFormat::DefaultOptions()
    return options;
 }
 
+// ----------------------------------------------------------------------------
+
 JPEGFormat::EmbeddingOverrides JPEGFormat::DefaultEmbeddingOverrides()
 {
    EmbeddingOverrides overrides;
@@ -266,16 +298,19 @@ JPEGFormat::EmbeddingOverrides JPEGFormat::DefaultEmbeddingOverrides()
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 #define JPEG_SIGNATURE  0x4A504547u
 
-JPEGFormat::FormatOptions::FormatOptions() :
-   signature( JPEG_SIGNATURE ), options( JPEGFormat::DefaultOptions() )
+JPEGFormat::FormatOptions::FormatOptions()
+   : signature( JPEG_SIGNATURE )
+   , options( JPEGFormat::DefaultOptions() )
 {
 }
 
-JPEGFormat::FormatOptions::FormatOptions( const JPEGFormat::FormatOptions& x ) :
-   signature( JPEG_SIGNATURE ), options( x.options )
+JPEGFormat::FormatOptions::FormatOptions( const JPEGFormat::FormatOptions& x )
+   : signature( JPEG_SIGNATURE )
+   , options( x.options )
 {
 }
 
@@ -294,4 +329,4 @@ JPEGFormat::FormatOptions* JPEGFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGFormat.cpp - Released 2020-02-27T12:55:48Z
+// EOF JPEGFormat.cpp - Released 2020-07-31T19:33:23Z

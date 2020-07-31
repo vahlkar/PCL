@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Convolution.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Convolution.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -210,10 +210,10 @@ private:
    template <class P>
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( GenericImage<P>& a_image, const Convolution& a_convolution, size_type a_count ) :
-         AbstractImage::ThreadData( a_image, a_count ),
-         image( a_image ),
-         convolution( a_convolution )
+      ThreadData( GenericImage<P>& a_image, const Convolution& a_convolution, size_type a_count )
+         : AbstractImage::ThreadData( a_image, a_count )
+         , image( a_image )
+         , convolution( a_convolution )
       {
       }
 
@@ -229,9 +229,12 @@ private:
       typedef GenericImage<P>                         region;
       typedef GenericMultiVector<typename P::sample>  raw_data;
 
-      Thread( ThreadData<P>& data, int startRow, int endRow, bool upperOvRgn, bool lowerOvRgn ) :
-         m_data( data ), m_firstRow( startRow ), m_endRow( endRow ),
-         m_haveUpperOvRgn( upperOvRgn ), m_haveLowerOvRgn( lowerOvRgn )
+      Thread( ThreadData<P>& data, int startRow, int endRow, bool upperOvRgn, bool lowerOvRgn )
+         : m_data( data )
+         , m_firstRow( startRow )
+         , m_endRow( endRow )
+         , m_haveUpperOvRgn( upperOvRgn )
+         , m_haveLowerOvRgn( lowerOvRgn )
       {
       }
 
@@ -496,4 +499,4 @@ void Convolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Convolution.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Convolution.cpp - Released 2020-07-31T19:33:12Z

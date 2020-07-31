@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:59.282Z
+# Generated on .... 2020-07-31T19:36:32.951Z
 # Project id ...... Global
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>f979aa48-8752-4a02-b0f3-91740ca36df0</UniqueIdentifier>
+      <UniqueIdentifier>0727d32d-2f79-4a35-9697-75fdf84c8700</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>a9ab7f4a-44ec-43c4-832c-5c7e0efa2e9d</UniqueIdentifier>
+      <UniqueIdentifier>7c8e9b98-9ef8-4ed6-ae38-4e1707970d42</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>830aa2bc-e9ec-4fd8-b13d-3e98f3e1f0a3</UniqueIdentifier>
+      <UniqueIdentifier>74baec95-677c-4f34-99e0-748c03ca7601</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -126,22 +126,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\ColorManagementSetupActionIcon.png">
+    <None Include="..\..\icons\ColorManagementSetup.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ColorManagementSetupIcon.png">
+    <None Include="..\..\icons\Preferences.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\PreferencesActionIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\PreferencesIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\ReadoutOptionsActionIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\ReadoutOptionsIcon.png">
+    <None Include="..\..\icons\ReadoutOptions.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

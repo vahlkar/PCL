@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationGraphInterface.cpp - Released 2020-02-27T12:56:01Z
+// PhotometricColorCalibrationGraphInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -65,10 +65,6 @@ PhotometricColorCalibrationGraphInterface* ThePhotometricColorCalibrationGraphIn
 
 // ----------------------------------------------------------------------------
 
-#include "PhotometricColorCalibrationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 PhotometricColorCalibrationGraphInterface::PhotometricColorCalibrationGraphInterface()
 {
    ThePhotometricColorCalibrationGraphInterface = this;
@@ -98,9 +94,9 @@ MetaProcess* PhotometricColorCalibrationGraphInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** PhotometricColorCalibrationGraphInterface::IconImageXPM() const
+String PhotometricColorCalibrationGraphInterface::IconImageSVGFile() const
 {
-   return PhotometricColorCalibrationIcon_XPM;
+   return "@module_icons_dir/PhotometricColorCalibration.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -364,4 +360,4 @@ PhotometricColorCalibrationGraphInterface::GUIData::GUIData( PhotometricColorCal
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationGraphInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF PhotometricColorCalibrationGraphInterface.cpp - Released 2020-07-31T19:33:39Z

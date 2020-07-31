@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageModule.cpp - Released 2020-02-27T12:56:01Z
+// ImageModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -57,28 +57,28 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
+#include "CreateAlphaChannelsInterface.h"
+#include "CreateAlphaChannelsProcess.h"
+#include "DynamicPSFInterface.h"
+#include "DynamicPSFProcess.h"
+#include "ExtractAlphaChannelsInterface.h"
+#include "ExtractAlphaChannelsProcess.h"
+#include "FITSHeaderAction.h"
+#include "FITSHeaderInterface.h"
+#include "FITSHeaderProcess.h"
+#include "ImageIdentifierInterface.h"
+#include "ImageIdentifierProcess.h"
 #include "ImageModule.h"
-#include "NewImageProcess.h"
 #include "NewImageAction.h"
 #include "NewImageInterface.h"
-#include "ImageIdentifierProcess.h"
-#include "ImageIdentifierInterface.h"
-#include "SampleFormatConversionProcess.h"
+#include "NewImageProcess.h"
 #include "SampleFormatConversionInterface.h"
-#include "CreateAlphaChannelsProcess.h"
-#include "CreateAlphaChannelsInterface.h"
-#include "ExtractAlphaChannelsProcess.h"
-#include "ExtractAlphaChannelsInterface.h"
-#include "FITSHeaderProcess.h"
-#include "FITSHeaderInterface.h"
-#include "FITSHeaderAction.h"
-#include "StatisticsProcess.h"
+#include "SampleFormatConversionProcess.h"
 #include "StatisticsInterface.h"
-#include "DynamicPSFProcess.h"
-#include "DynamicPSFInterface.h"
+#include "StatisticsProcess.h"
 
 namespace pcl
 {
@@ -126,7 +126,7 @@ String ImageModule::Author() const
 
 String ImageModule::Copyright() const
 {
-   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -140,10 +140,10 @@ String ImageModule::TradeMarks() const
 
 String ImageModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "Image-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "Image-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -175,6 +175,8 @@ void ImageModule::OnLoad()
 
 } // pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::ImageModule;
@@ -203,4 +205,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF ImageModule.cpp - Released 2020-07-31T19:33:39Z

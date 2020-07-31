@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInterface.cpp - Released 2020-02-27T12:56:01Z
+// ConvolutionInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -74,10 +74,6 @@ namespace pcl
 ConvolutionInterface* TheConvolutionInterface = nullptr;
 
 // ----------------------------------------------------------------------------
-
-#include "ConvolutionIcon.xpm"
-
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 static bool CanAddFilter( const Filter& f )
@@ -129,8 +125,8 @@ static bool CanSaveTheLibrary()
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-ConvolutionInterface::ConvolutionInterface() :
-   instance( TheConvolutionProcess )
+ConvolutionInterface::ConvolutionInterface()
+   : instance( TheConvolutionProcess )
 {
    TheConvolutionInterface = this;
 }
@@ -159,9 +155,9 @@ MetaProcess* ConvolutionInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ConvolutionInterface::IconImageXPM() const
+String ConvolutionInterface::IconImageSVGFile() const
 {
-   return ConvolutionIcon_XPM;
+   return "@module_icons_dir/Convolution.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -267,8 +263,8 @@ bool ConvolutionInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, co
 
 // ----------------------------------------------------------------------------
 
-ConvolutionInterface::RealTimeThread::RealTimeThread() :
-Thread(), m_instance( TheConvolutionProcess )
+ConvolutionInterface::RealTimeThread::RealTimeThread()
+   : m_instance( TheConvolutionProcess )
 {
 }
 
@@ -1013,4 +1009,4 @@ ConvolutionInterface::GUIData::GUIData( ConvolutionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ConvolutionInterface.cpp - Released 2020-07-31T19:33:39Z

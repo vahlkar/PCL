@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderInstance.cpp - Released 2020-02-27T12:56:01Z
+// FITSHeaderInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -60,17 +60,17 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FITSHeaderInstance::FITSHeaderInstance( const MetaProcess* m ) :
-   ProcessImplementation( m )
+FITSHeaderInstance::FITSHeaderInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-FITSHeaderInstance::FITSHeaderInstance( const FITSHeaderInstance& x ) :
-   ProcessImplementation( x )
+FITSHeaderInstance::FITSHeaderInstance( const FITSHeaderInstance& x )
+   : ProcessImplementation( x )
 {
-   keywords = x.keywords;
+   Assign( x );
 }
 
 // ----------------------------------------------------------------------------
@@ -260,4 +260,4 @@ bool FITSHeaderInstance::IsReservedKeyword( const String& id )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF FITSHeaderInstance.cpp - Released 2020-07-31T19:33:39Z

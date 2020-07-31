@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageParameters.h - Released 2020-02-27T12:56:01Z
+// NewImageParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -68,9 +68,9 @@ public:
 
    NewImageIdentifier( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern NewImageIdentifier* TheNewImageIdentifierParameter;
@@ -83,9 +83,9 @@ public:
 
    NewImageWidth( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern NewImageWidth* TheNewImageWidthParameter;
@@ -98,9 +98,9 @@ public:
 
    NewImageHeight( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern NewImageHeight* TheNewImageHeightParameter;
@@ -113,10 +113,10 @@ public:
 
    NewImageNumberOfChannels( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern NewImageNumberOfChannels* TheNewImageNumberOfChannelsParameter;
@@ -127,17 +127,17 @@ class NewImageColorSpace : public MetaEnumeration
 {
 public:
 
-   enum { RGB,     // RGB Color
-          Gray };  // Grayscale
+   enum { RGB,    // RGB Color
+          Gray,   // Grayscale
+          Default = Gray };
 
    NewImageColorSpace( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern NewImageColorSpace* TheNewImageColorSpaceParameter;
@@ -152,16 +152,16 @@ public:
           I16,    // unsigned 16-bit integer
           I32,    // unsigned 32-bit integer
           F32,    // IEEE 32-bit floating point (simple precision)
-          F64 };  // IEEE 64-bit floating point (double precision)
+          F64,    // IEEE 64-bit floating point (double precision)
+          Default = F32 };
 
    NewImageSampleFormat( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern NewImageSampleFormat* TheNewImageSampleFormatParameter;
@@ -174,11 +174,11 @@ public:
 
    NewImageV0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern NewImageV0* TheNewImageV0Parameter;
@@ -191,11 +191,11 @@ public:
 
    NewImageV1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern NewImageV1* TheNewImageV1Parameter;
@@ -208,11 +208,11 @@ public:
 
    NewImageV2( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern NewImageV2* TheNewImageV2Parameter;
@@ -225,11 +225,11 @@ public:
 
    NewImageVA( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern NewImageVA* TheNewImageVAParameter;
@@ -243,4 +243,4 @@ PCL_END_LOCAL
 #endif   // __NewImageParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF NewImageParameters.h - Released 2020-02-27T12:56:01Z
+// EOF NewImageParameters.h - Released 2020-07-31T19:33:39Z

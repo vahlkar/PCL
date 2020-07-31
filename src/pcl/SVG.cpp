@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SVG.cpp - Released 2020-02-27T12:55:33Z
+// pcl/SVG.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -60,8 +60,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SVG::SVG( const String& filePath, int width, int height ) :
-   UIObject( (*API->SVG->CreateSVGFile)( ModuleHandle(), filePath.c_str(), width, height, 0/*flags*/ ) )
+SVG::SVG( const String& filePath, int width, int height )
+   : UIObject( (*API->SVG->CreateSVGFile)( ModuleHandle(), filePath.c_str(), width, height, 0/*flags*/ ) )
 {
    if ( handle == 0 )
       throw APIFunctionError( "CreateSVGFile" );
@@ -69,8 +69,8 @@ SVG::SVG( const String& filePath, int width, int height ) :
 
 // ----------------------------------------------------------------------------
 
-SVG::SVG( int width, int height ) :
-   UIObject( (*API->SVG->CreateSVGBuffer)( ModuleHandle(), width, height, 0/*flags*/ ) )
+SVG::SVG( int width, int height )
+   : UIObject( (*API->SVG->CreateSVGBuffer)( ModuleHandle(), width, height, 0/*flags*/ ) )
 {
    if ( handle == 0 )
       throw APIFunctionError( "CreateSVGBuffer" );
@@ -261,4 +261,4 @@ void* SVG::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SVG.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/SVG.cpp - Released 2020-07-31T19:33:12Z

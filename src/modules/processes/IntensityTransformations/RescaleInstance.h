@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleInstance.h - Released 2020-02-27T12:56:01Z
+// RescaleInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -69,15 +69,15 @@ public:
    RescaleInstance( const MetaProcess*, int = RescalingMode::RGBK );
    RescaleInstance( const RescaleInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type /*tableRow*/ );
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type /*tableRow*/ ) override;
 
 private:
 
-   pcl_enum mode;
+   pcl_enum p_mode;
 
    friend class RescaleProcess;
    friend class RescaleInterface;
@@ -90,4 +90,4 @@ private:
 #endif   // __RescaleInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF RescaleInstance.h - Released 2020-02-27T12:56:01Z
+// EOF RescaleInstance.h - Released 2020-07-31T19:33:39Z

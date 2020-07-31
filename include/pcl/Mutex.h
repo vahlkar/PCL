@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Mutex.h - Released 2020-02-27T12:55:23Z
+// pcl/Mutex.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -198,10 +198,10 @@ namespace pcl
  * Mutex::Lock() for more information.
  *
  * %Mutex has been implemented as a low-level PCL class that does not depend on
- * the PixInsight Core application. On Windows platforms, %Mutex has been
+ * the PixInsight core application. On Windows platforms, %Mutex has been
  * implemented as a wrapper to a <em>critical section</em>. On UNIX/Linux
- * platforms, %Mutex uses atomic int operations implemented as inline assembly
- * code and direct calls to the pthreads library.
+ * platforms, %Mutex uses atomic integer operations implemented as inline
+ * assembly code and direct calls to the pthreads library.
  *
  * \sa AutoLock, ReadWriteMutex
  */
@@ -219,8 +219,8 @@ public:
     *             loops, the expensive wait operation can be avoided. The spin
     *             count must be >= 0. The default value is 512.
     */
-   Mutex( int spin = 512 ) :
-      m_spinCount( Max( 0, spin ) )
+   Mutex( int spin = 512 )
+      : m_spinCount( Max( 0, spin ) )
    {
 #ifdef __PCL_WINDOWS
       (void)InitializeCriticalSectionAndSpinCount( &criticalSection, DWORD( m_spinCount ) );
@@ -433,4 +433,4 @@ private:
 #endif   // __PCL_Mutex_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Mutex.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Mutex.h - Released 2020-07-31T19:33:04Z

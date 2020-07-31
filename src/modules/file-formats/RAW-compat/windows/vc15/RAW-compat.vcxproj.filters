@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:54.105Z
+# Generated on .... 2020-07-31T19:36:26.817Z
 # Project id ...... RAW-compat
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -21,10 +21,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>599a12bb-d6be-4892-8cfd-21dafc916168</UniqueIdentifier>
+      <UniqueIdentifier>cc16d2a3-0d84-42b9-82f7-7a52922de4c7</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>50d542ca-43b6-4355-b090-0ce337293ab2</UniqueIdentifier>
+      <UniqueIdentifier>2e93455e-3784-4794-848c-54f5cbfd4400</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>e4749340-93cc-438f-b714-4ea199ce2deb</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -57,5 +60,10 @@
     <ClInclude Include="..\..\RawPreferencesDialog.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\RAW.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

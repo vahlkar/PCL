@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationInterface.cpp - Released 2020-02-27T12:56:01Z
+// CurvesTransformationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -69,19 +69,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-CurvesTransformationInterface* TheCurvesTransformationInterface = 0;
-
-// ----------------------------------------------------------------------------
-
-#include "CurvesTransformationIcon.xpm"
-#include "show_all_curves.xpm"
-#include "show_grid.xpm"
-#include "akima_interpolation.xpm"
-#include "cubic_spline_interpolation.xpm"
-#include "linear_interpolation.xpm"
-#include "delete_point_mode.xpm"
-#include "select_point_mode.xpm"
-#include "edit_point_mode.xpm"
+CurvesTransformationInterface* TheCurvesTransformationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -89,31 +77,8 @@ static const int s_maxZoom = 99;
 
 // ----------------------------------------------------------------------------
 
-CurvesTransformationInterface::CurvesTransformationInterface() :
-   m_instance( TheCurvesTransformationProcess ),
-   m_mode( EditMode ),
-   m_savedMode( NoMode ),
-   m_channel( CurveIndex::RGBK ),
-   m_currentPoint( 0, CurveIndex::NumberOfCurves ),
-   m_histogramView( View::Null() ),
-   m_histogramColor( false ),
-   m_readoutActive( false ),
-   m_readouts( 0.0, 4 ),
-   m_zoomX( 1 ),
-   m_zoomY( 1 ),
-   m_wheelSteps( 0 ),
-   m_showAllCurves( true ),
-   m_showGrid( true ),
-   m_panning( 0 ),
-   m_panOrigin( 0 ),
-   m_cursorVisible( false ),
-   m_dragging( false ),
-   m_cursorPos( -1 ),
-   m_curvePos( 0 ),
-   m_viewportBitmap( Bitmap::Null() ),
-   m_viewportDirty( true ),
-   m_channelColor( CurveIndex::NumberOfCurves ),
-   m_settingUp( false )
+CurvesTransformationInterface::CurvesTransformationInterface()
+   : m_instance( TheCurvesTransformationProcess )
 {
    TheCurvesTransformationInterface = this;
 
@@ -128,9 +93,6 @@ CurvesTransformationInterface::CurvesTransformationInterface() :
    m_channelColor[CurveIndex::c   ] = RGBAColor( 0xFF, 0x80, 0x00 );
    m_channelColor[CurveIndex::H   ] = RGBAColor( 0xFF, 0xFF, 0x00 );
    m_channelColor[CurveIndex::S   ] = RGBAColor( 0xFF, 0xC0, 0xFF );
-   m_gridColor0                     = RGBAColor( 0x50, 0x50, 0x50 );
-   m_gridColor1                     = RGBAColor( 0x37, 0x37, 0x37 );
-   m_backgroundColor                = RGBAColor( 0x00, 0x00, 0x00 );
 }
 
 // ----------------------------------------------------------------------------
@@ -157,9 +119,9 @@ MetaProcess* CurvesTransformationInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** CurvesTransformationInterface::IconImageXPM() const
+String CurvesTransformationInterface::IconImageSVGFile() const
 {
-   return CurvesTransformationIcon_XPM;
+   return "@module_icons_dir/CurvesTransformation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -283,8 +245,8 @@ bool CurvesTransformationInterface::RequiresRealTimePreviewUpdate( const UInt16I
 
 // ----------------------------------------------------------------------------
 
-CurvesTransformationInterface::RealTimeThread::RealTimeThread() :
-   m_instance( TheCurvesTransformationProcess )
+CurvesTransformationInterface::RealTimeThread::RealTimeThread()
+   : m_instance( TheCurvesTransformationProcess )
 {
 }
 
@@ -2024,7 +1986,7 @@ void CurvesTransformationInterface::__UpdateRealTimePreview_Timer( Timer& sender
 
 CurvesTransformationInterface::GUIData::GUIData( CurvesTransformationInterface& w )
 {
-   int ui16 = w.LogicalPixelsToPhysical( 16 );
+   int ri16 = w.LogicalPixelsToResource( 16 );
    int ui24 = w.LogicalPixelsToPhysical( 24 );
    int labelWidth = w.Font().Width( String( "Output:" ) + 'M' );
    int channelLabelWidth = ui24 + w.Font().Width( 'M' );
@@ -2051,21 +2013,21 @@ CurvesTransformationInterface::GUIData::GUIData( CurvesTransformationInterface& 
 
    //
 
-   EditPointMode_ToolButton.SetIcon( Bitmap( edit_point_mode_XPM ).ScaledToSize( ui16, ui16 ) );
+   EditPointMode_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/edit_point_mode.svg", ri16, ri16 ) );
    EditPointMode_ToolButton.SetScaledFixedSize( 20, 20 );
    EditPointMode_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    EditPointMode_ToolButton.SetToolTip( "Edit Point mode" );
    EditPointMode_ToolButton.SetCheckable();
    EditPointMode_ToolButton.OnClick( (ToolButton::click_event_handler)&CurvesTransformationInterface::__Mode_ButtonClick, w );
 
-   SelectPointMode_ToolButton.SetIcon( Bitmap( select_point_mode_XPM ).ScaledToSize( ui16, ui16 ) );
+   SelectPointMode_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/select_point_mode.svg", ri16, ri16 ) );
    SelectPointMode_ToolButton.SetScaledFixedSize( 20, 20 );
    SelectPointMode_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    SelectPointMode_ToolButton.SetToolTip( "Select Point mode [Shift]" );
    SelectPointMode_ToolButton.SetCheckable();
    SelectPointMode_ToolButton.OnClick( (ToolButton::click_event_handler)&CurvesTransformationInterface::__Mode_ButtonClick, w );
 
-   DeletePointMode_ToolButton.SetIcon( Bitmap( delete_point_mode_XPM ).ScaledToSize( ui16, ui16 ) );
+   DeletePointMode_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/delete_point_mode.svg", ri16, ri16 ) );
    DeletePointMode_ToolButton.SetScaledFixedSize( 20, 20 );
    DeletePointMode_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    DeletePointMode_ToolButton.SetToolTip( "Delete Point mode [Ctrl]" );
@@ -2113,14 +2075,14 @@ CurvesTransformationInterface::GUIData::GUIData( CurvesTransformationInterface& 
    Zoom11_ToolButton.SetToolTip( "Zoom 1:1" );
    Zoom11_ToolButton.OnClick( (ToolButton::click_event_handler)&CurvesTransformationInterface::__Zoom_ButtonClick, w );
 
-   ShowAll_ToolButton.SetIcon( Bitmap( show_all_curves_XPM ).ScaledToSize( ui16, ui16 ) );
+   ShowAll_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/show_all_curves.svg", ri16, ri16 ) );
    ShowAll_ToolButton.SetScaledFixedSize( 20, 20 );
    ShowAll_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ShowAll_ToolButton.SetToolTip( "Show all curves" );
    ShowAll_ToolButton.SetCheckable();
    ShowAll_ToolButton.OnClick( (ToolButton::click_event_handler)&CurvesTransformationInterface::__ShowAll_ButtonClick, w );
 
-   ShowGrid_ToolButton.SetIcon( Bitmap( show_grid_XPM ).ScaledToSize( ui16, ui16 ) );
+   ShowGrid_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/show_grid.svg", ri16, ri16 ) );
    ShowGrid_ToolButton.SetScaledFixedSize( 20, 20 );
    ShowGrid_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ShowGrid_ToolButton.SetToolTip( "Show grid" );
@@ -2328,21 +2290,21 @@ CurvesTransformationInterface::GUIData::GUIData( CurvesTransformationInterface& 
 
    CurrentPoint_Label.SetTextAlignment( TextAlign::Left|TextAlign::VertCenter );
 
-   AkimaSubsplines_ToolButton.SetIcon( Bitmap( akima_interpolation_XPM ).ScaledToSize( ui16, ui16 ) );
+   AkimaSubsplines_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/akima_interpolation.svg", ri16, ri16 ) );
    AkimaSubsplines_ToolButton.SetScaledFixedSize( 20, 20 );
    AkimaSubsplines_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    AkimaSubsplines_ToolButton.SetToolTip( "Akima subspline interpolation" );
    AkimaSubsplines_ToolButton.SetCheckable();
    AkimaSubsplines_ToolButton.OnClick( (ToolButton::click_event_handler)&CurvesTransformationInterface::__Interpolation_ButtonClick, w );
 
-   CubicSpline_ToolButton.SetIcon( Bitmap( cubic_spline_interpolation_XPM ).ScaledToSize( ui16, ui16 ) );
+   CubicSpline_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/cubic_spline_interpolation.svg", ri16, ri16 ) );
    CubicSpline_ToolButton.SetScaledFixedSize( 20, 20 );
    CubicSpline_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    CubicSpline_ToolButton.SetToolTip( "Cubic spline interpolation" );
    CubicSpline_ToolButton.SetCheckable();
    CubicSpline_ToolButton.OnClick( (ToolButton::click_event_handler)&CurvesTransformationInterface::__Interpolation_ButtonClick, w );
 
-   Linear_ToolButton.SetIcon( Bitmap( linear_interpolation_XPM ).ScaledToSize( ui16, ui16 ) );
+   Linear_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/linear_interpolation.svg", ri16, ri16 ) );
    Linear_ToolButton.SetScaledFixedSize( 20, 20 );
    Linear_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    Linear_ToolButton.SetToolTip( "Linear interpolation" );
@@ -2386,4 +2348,4 @@ CurvesTransformationInterface::GUIData::GUIData( CurvesTransformationInterface& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF CurvesTransformationInterface.cpp - Released 2020-07-31T19:33:39Z

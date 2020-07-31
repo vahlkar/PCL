@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// Assert.h - Released 2020-02-27T12:56:01Z
+// Assert.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,18 +36,18 @@
  */
 
 #ifdef DEBUG
-#  ifndef __PCL_Exception_h
-#    include <pcl/Exception.h>
-#    include <pcl/String.h>
-#  endif
-#  define Assert( condition ) \
-  if ( !(condition) )							\
-      throw Error( String( "Assertion failed: \'" ) + #condition + "\' file:" + __FILE__ + " line:" + String( __LINE__ ) )
+#ifndef __PCL_Exception_h
+#include <pcl/Exception.h>
+#include <pcl/String.h>
+#endif
+#define Assert( condition ) \
+   if ( !( condition ) )    \
+   throw Error( String( "Assertion failed: \'" ) + #condition + "\' file:" + __FILE__ + " line:" + String( __LINE__ ) )
 #else
-#  define Assert( condition )
+#define Assert( condition )
 #endif
 
-#endif   // __Assert_h
+#endif // __Assert_h
 
 // ----------------------------------------------------------------------------
-// EOF Assert.h - Released 2020-02-27T12:56:01Z
+// EOF Assert.h - Released 2020-07-31T19:33:39Z

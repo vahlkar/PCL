@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/BicubicInterpolation.h - Released 2020-02-27T12:55:23Z
+// pcl/BicubicInterpolation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -387,8 +387,8 @@ public:
     * automatic linear clamping mechanism. The default value of \e clamp = 0.1
     * is appropriate for most linear images.
     */
-   BicubicSplineInterpolation( float clamp = __PCL_BICUBIC_SPLINE_CLAMPING_THRESHOLD ) :
-      m_clamp( Range( clamp, 0.0F, 1.0F ) )
+   BicubicSplineInterpolation( float clamp = __PCL_BICUBIC_SPLINE_CLAMPING_THRESHOLD )
+      : m_clamp( Range( clamp, 0.0F, 1.0F ) )
    {
       PCL_PRECONDITION( 0 <= clamp && clamp <= 1 )
    }
@@ -788,4 +788,4 @@ private:
 #endif   // __PCL_BicubicInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/BicubicInterpolation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/BicubicInterpolation.h - Released 2020-07-31T19:33:04Z

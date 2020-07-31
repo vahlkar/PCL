@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxModule.cpp - Released 2020-02-27T12:56:01Z
+// FluxModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "FluxModule.h"
 #include "B3EProcess.h"
@@ -97,7 +97,7 @@ IsoString FluxModule::Name() const
 
 String FluxModule::Description() const
 {
-   return "PixInsight Flux Process Module"; // Replace with your own description
+   return "PixInsight Flux Process Module";
 }
 
 // ----------------------------------------------------------------------------
@@ -118,7 +118,7 @@ String FluxModule::Author() const
 
 String FluxModule::Copyright() const
 {
-   return "Copyright (c) 2012-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2012-2020 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -159,6 +159,8 @@ void FluxModule::GetReleaseDate( int& year, int& month, int& day ) const
 
 } // pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::FluxModule;
@@ -175,4 +177,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF FluxModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF FluxModule.cpp - Released 2020-07-31T19:33:39Z

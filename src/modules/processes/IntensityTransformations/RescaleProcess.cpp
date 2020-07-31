@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleProcess.cpp - Released 2020-02-27T12:56:01Z
+// RescaleProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -69,15 +69,10 @@ RescaleProcess* TheRescaleProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "RescaleIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 RescaleProcess::RescaleProcess()
 {
    TheRescaleProcess = this;
 
-   // Instantiate process parameters
    new RescalingMode( this );
 }
 
@@ -120,9 +115,9 @@ String RescaleProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** RescaleProcess::IconImageXPM() const
+String RescaleProcess::IconImageSVGFile() const
 {
-   return RescaleIcon_XPM;
+   return "@module_icons_dir/Rescale.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -229,13 +224,13 @@ int RescaleProcess::ProcessCommandLine( const StringList& argv ) const
       else if ( arg.IsLiteral() )
       {
          if ( arg.Id() == "rgb" || arg.Id() == "rgbk" || arg.Id() == "RGB" || arg.Id() == "RGBK" )
-            instance.mode = RescalingMode::RGBK;
+            instance.p_mode = RescalingMode::RGBK;
          else if ( arg.Id() == "i" )
-            instance.mode = RescalingMode::RGBK_Individual;
+            instance.p_mode = RescalingMode::RGBK_Individual;
          else if ( arg.Id() == "L" || arg.Id() == "CIEL" )
-            instance.mode = RescalingMode::CIEL;
+            instance.p_mode = RescalingMode::CIEL;
          else if ( arg.Id() == "Y" || arg.Id() == "CIEY" )
-            instance.mode = RescalingMode::CIEY;
+            instance.p_mode = RescalingMode::CIEY;
          else if ( arg.Id() == "-interface" )
             launchInterface = true;
          else if ( arg.Id() == "-help" )
@@ -283,4 +278,4 @@ int RescaleProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF RescaleProcess.cpp - Released 2020-07-31T19:33:39Z

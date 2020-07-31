@@ -4,17 +4,18 @@
 */
 
 #include "cminpack.h"
-#define min(a,b) ((a) <= (b) ? (a) : (b))
+#include "cminpackP.h"
 
-/* Subroutine */ void qform(int m, int n, double *q, int
-	ldq, double *wa)
+__cminpack_attr__
+void __cminpack_func__(qform)(int m, int n, real *q, int
+	ldq, real *wa)
 {
     /* System generated locals */
     int q_dim1, q_offset;
 
     /* Local variables */
     int i, j, k, l, jm1, np1;
-    double sum, temp;
+    real sum, temp;
     int minmn;
 
 /*     ********** */

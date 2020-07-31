@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.h - Released 2020-02-27T12:56:01Z
+// ImageIntegrationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -53,9 +53,9 @@
 #ifndef __ImageIntegrationInstance_h
 #define __ImageIntegrationInstance_h
 
+#include <pcl/Matrix.h>
 #include <pcl/ProcessImplementation.h>
 #include <pcl/Vector.h>
-#include <pcl/Matrix.h>
 
 #include "ImageIntegrationParameters.h"
 
@@ -116,6 +116,9 @@ private:
    String      p_weightKeyword;
    pcl_enum    p_weightScale;   // scale estimator used for image weighting
 
+   int32       p_adaptiveNX;    // adaptive normalization, number of matrix columns
+   int32       p_adaptiveNY;    // adaptive normalization, number of matrix rows
+
    pcl_bool    p_ignoreNoiseKeywords; // always evaluate noise of input images; ignore NOISExx keywords
 
    pcl_enum    p_rejection;     // pixel rejection: None|MinMax|PClip|SigmaClip|AvgSigmaClip|CCDClip
@@ -166,27 +169,33 @@ private:
    pcl_bool    p_generateDrizzleData;     // append rejection and weight data to existing .drz files
    pcl_bool    p_closePreviousImages;     // close existing integration and map images before running
 
-   int32       p_bufferSizeMB;      // size of a row buffer in megabytes
-   int32       p_stackSizeMB;       // size of the pixel integration stack in megabytes
-   pcl_bool    p_autoMemorySize;    // compute buffer and stack sizes automatically from physical memory available
-   float       p_autoMemoryLimit;   // maximum fraction of available memory we can use
+   int32       p_bufferSizeMB;         // size of a row buffer in megabytes
+   int32       p_stackSizeMB;          // size of the pixel integration stack in megabytes
 
-   pcl_bool    p_useROI;            // use a region of interest; entire image otherwise
-   Rect        p_roi = Rect( 0 );   // region of interest
+   pcl_bool    p_autoMemorySize;       // compute buffer and stack sizes automatically from available physical memory
+   float       p_autoMemoryLimit;      // maximum fraction of available physical memory we can use
 
-   pcl_bool    p_useCache;          // use the dynamic file cache
+   pcl_bool    p_useROI;               // use a region of interest; entire image otherwise
+   Rect        p_roi = Rect( 0 );      // region of interest
 
-   pcl_bool    p_evaluateNoise;     // perform a MRS Gaussian noise estimation for the resulting image
-   float       p_mrsMinDataFraction; // minimum fraction of data for a valid MRS noise evaluation
+   pcl_bool    p_useCache;             // use the dynamic file cache
+
+   pcl_bool    p_evaluateNoise;        // perform a MRS Gaussian noise estimation for the resulting image
+   float       p_mrsMinDataFraction;   // minimum fraction of data for a valid MRS noise evaluation
 
    pcl_bool    p_subtractPedestals;    // subtract PEDESTAL keyword values from input images
    pcl_bool    p_truncateOnOutOfRange; // if the output image is out of [0,1], truncate instead of rescaling
 
-   pcl_bool    p_noGUIMessages;     // ### DEPRECATED
+   pcl_bool    p_noGUIMessages;        // ### DEPRECATED
+   pcl_bool    p_showImages;           // since 1.8.8-6: can be set to false by scripts (e.g. WBPP)
 
    // High-level parallelism
    pcl_bool    p_useFileThreads;
    float       p_fileThreadOverload;
+
+   // Buffer input threads
+   pcl_bool    p_useBufferThreads;
+   int32       p_maxBufferThreads;
 
    /*
     * Read-only output properties
@@ -213,10 +222,10 @@ private:
       DVector    finalNoiseEstimates       = DVector( 0, 3 );    // noise estimates for the integrated image
       DVector    finalScaleEstimates       = DVector( 0, 3 );    // scale estimates for the integrated image
       DVector    finalLocationEstimates    = DVector( 0, 3 );    // location estimates for the integrated image
-      FVector    referenceNoiseReductions  = FVector( 0, 3 );    // noise reduction w.r.t. reference image
+      FVector    referenceNoiseReductions  = FVector( 0, 3 );    // noise reduction w.r.t. the reference image
       FVector    medianNoiseReductions     = FVector( 0, 3 );    // median noise reduction
-      FVector    referenceSNRIncrements    = FVector( 0, 3 );    // ### DEPRECATED - SNR increment w.r.t. the reference image
-      FVector    averageSNRIncrements      = FVector( 0, 3 );    // ### DEPRECATED - average SNR increment
+      FVector    referenceSNRIncrements    = FVector( 0, 3 );    // SNR increment w.r.t. the reference image
+      FVector    averageSNRIncrements      = FVector( 0, 3 );    // average SNR increment
 
       // Per-channel data for each integrated image
 
@@ -232,7 +241,9 @@ private:
 
    OutputData o_output;
 
-   //
+   /*
+    * Rejection data structures
+    */
 
    struct RejectionDataItem
    {
@@ -287,7 +298,16 @@ private:
    typedef GenericVector<IVector>            RejectionCounts;
    typedef GenericVector<FVector>            RejectionSlopes;
 
-   ImageWindow CreateImageWindow( const IsoString& id, int bitsPerSample );
+   /*
+    * Auxiliary integration data and functions
+    */
+
+   typedef GenericVector<TwoSidedEstimate>   scale_estimates;
+
+   DVector EvaluateNoise( const ImageVariant& ) const;
+   DVector EvaluateSNR( const ImageVariant&, const DVector& noise ) const;
+
+   ImageWindow CreateImageWindow( const IsoString& id, int bitsPerSample ) const;
 
    struct IntegrationDescriptionItems
    {
@@ -307,14 +327,12 @@ private:
       IntegrationDescriptionItems( const ImageIntegrationInstance& );
    };
 
-   void GetIntegrationDescriptionItems( IntegrationDescriptionItems& ) const;
-
    String IntegrationDescription() const;
 
    friend class FileItem;
    friend class IntegrationFile;
-   friend class DataLoaderEngine;
-   friend class RejectionEngine;
+   friend class IntegrationDataLoaderEngine;
+   friend class IntegrationRejectionEngine;
    friend class IntegrationEngine;
    friend class MapIntegrationEngine;
    friend class RejectionMapGenerationEngine;
@@ -329,4 +347,4 @@ private:
 #endif   // __ImageIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ImageIntegrationInstance.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.5.3
+// Standard RAW File Format Module Version 1.5.4
 // ----------------------------------------------------------------------------
-// RawFormat.cpp - Released 2020-02-27T12:55:48Z
+// RawFormat.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -56,12 +56,6 @@
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-RawFormat::RawFormat()
-{
-}
 
 // ----------------------------------------------------------------------------
 
@@ -138,10 +132,10 @@ String RawFormat::Implementation() const
    "<html>"
    "<p>PixInsight Standard File Format Support Modules.</p>"
 
-   "<p>This implementation of digital camera raw format decoding uses LibRaw 201910 snapshot.</p>"
+   "<p>This implementation of digital camera raw format decoding uses LibRaw 0.20.0 Release.</p>"
 
    "<p><b>LibRaw</b><br/>"
-   "Copyright (C) 2008-2019 LibRaw LLC (http://www.libraw.org, info@libraw.org)</p>"
+   "Copyright (C) 2008-2020 LibRaw LLC (http://www.libraw.org, info@libraw.org)</p>"
 
    "<p>LibRaw uses code from dcraw.c -- Dave Coffin's raw photo decoder,<br/>"
    "dcraw.c is copyright 1997-2018 by Dave Coffin, dcoffin a cybercom o net.<br/>"
@@ -157,7 +151,7 @@ String RawFormat::Implementation() const
    "Copyright (c) 2005 Adobe Systems Incorporated, licensed under MIT license</p>"
 
    "<p><b>PixInsight Class Library (PCL)</b><br/>"
-   "Copyright (c) 2003-2019, Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -277,9 +271,9 @@ String RawFormat::Implementation() const
 
 // ----------------------------------------------------------------------------
 
-String RawFormat::IconImageFile() const
+String RawFormat::IconImageSVGFile() const
 {
-   return ":/file-format/raw-format-icon.png";
+   return "@module_icons_dir/RAW.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -383,4 +377,4 @@ bool RawFormat::EditPreferences() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawFormat.cpp - Released 2020-02-27T12:55:48Z
+// EOF RawFormat.cpp - Released 2020-07-31T19:33:23Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// PhotometricColorCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -87,65 +87,64 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_workingMode( PCCWorkingMode::Default ),
-   p_applyCalibration( ThePCCApplyCalibrationParameter->DefaultValue() ),
-   p_redFilterWavelength( ThePCCRedFilterWavelengthParameter->DefaultValue() ),
-   p_redFilterBandwidth( ThePCCRedFilterBandwidthParameter->DefaultValue() ),
-   p_greenFilterWavelength( ThePCCGreenFilterWavelengthParameter->DefaultValue() ),
-   p_greenFilterBandwidth( ThePCCGreenFilterBandwidthParameter->DefaultValue() ),
-   p_blueFilterWavelength( ThePCCBlueFilterWavelengthParameter->DefaultValue() ),
-   p_blueFilterBandwidth( ThePCCBlueFilterBandwidthParameter->DefaultValue() ),
-   p_whiteReferenceId( ThePCCWhiteReferenceIdParameter->DefaultValue() ),
-   p_whiteReferenceName( ThePCCWhiteReferenceNameParameter->DefaultValue() ),
-   p_whiteReferenceSr_JV( ThePCCWhiteReferenceSr_JVParameter->DefaultValue() ),
-   p_whiteReferenceJB_JV( ThePCCWhiteReferenceJB_JVParameter->DefaultValue() ),
-   p_zeroPointSr_JV( ThePCCZeroPointSr_JVParameter->DefaultValue() ),
-   p_zeroPointJB_JV( ThePCCZeroPointJB_JVParameter->DefaultValue() ),
-   p_focalLength( ThePCCFocalLengthParameter->DefaultValue() ),
-   p_pixelSize( ThePCCPixelSizeParameter->DefaultValue() ),
-   p_centerRA( ThePCCCenterRAParameter->DefaultValue() ),
-   p_centerDec( ThePCCCenterDecParameter->DefaultValue() ),
-   p_epochJD( ThePCCEpochJDParameter->DefaultValue() ),
-   p_forcePlateSolve( ThePCCForcePlateSolveParameter->DefaultValue() ),
-   p_ignoreImagePositionAndScale( ThePCCIgnoreImagePositionAndScaleParameter->DefaultValue() ),
-   p_serverURL( ThePCCServerURLParameter->DefaultValue() ),
-   p_solverCatalogName( ThePCCSolverCatalogNameParameter->DefaultValue() ),
-   p_solverAutoCatalog( ThePCCSolverAutoCatalogParameter->DefaultValue() ),
-   p_solverLimitMagnitude( ThePCCSolverLimitMagnitudeParameter->DefaultValue() ),
-   p_solverAutoLimitMagnitude( ThePCCSolverAutoLimitMagnitudeParameter->DefaultValue() ),
-   p_solverAutoLimitMagnitudeFactor( ThePCCSolverAutoLimitMagnitudeFactorParameter->DefaultValue() ),
-   p_solverStarSensitivity( ThePCCSolverStarSensitivityParameter->DefaultValue() ),
-   p_solverNoiseLayers( ThePCCSolverNoiseLayersParameter->DefaultValue() ),
-   p_solverAlignmentDevice( PCCSolverAlignmentDevice::Default ),
-   p_solverDistortionCorrection( ThePCCSolverDistortionCorrectionParameter->DefaultValue() ),
-   p_solverSplineSmoothing( ThePCCSolverSplineSmoothingParameter->DefaultValue() ),
-   p_solverProjection( PCCSolverProjection::Default ),
-   p_photCatalogName( ThePCCPhotCatalogNameParameter->DefaultValue() ),
-   p_photLimitMagnitude( ThePCCPhotLimitMagnitudeParameter->DefaultValue() ),
-   p_photAutoLimitMagnitude( ThePCCPhotAutoLimitMagnitudeParameter->DefaultValue() ),
-   p_photAutoLimitMagnitudeFactor( ThePCCPhotAutoLimitMagnitudeFactorParameter->DefaultValue() ),
-   p_photAutoAperture( ThePCCPhotAutoApertureParameter->DefaultValue() ),
-   p_photAperture( ThePCCPhotApertureParameter->DefaultValue() ),
-   p_photUsePSF( ThePCCPhotUsePSFParameter->DefaultValue() ),
-   p_photSaturationThreshold( ThePCCPhotSaturationThresholdParameter->DefaultValue() ),
-   p_photShowDetectedStars( ThePCCPhotShowDetectedStarsParameter->DefaultValue() ),
-   p_photShowBackgroundModels( ThePCCPhotShowBackgroundModelsParameter->DefaultValue() ),
-   p_photGenerateGraphs( ThePCCPhotGenerateGraphsParameter->DefaultValue() ),
-   p_neutralizeBackground( ThePCCNeutralizeBackgroundParameter->DefaultValue() ),
-   p_backgroundReferenceViewId( ThePCCBackgroundReferenceViewIdParameter->DefaultValue() ),
-   p_backgroundLow( ThePCCBackgroundLowParameter->DefaultValue() ),
-   p_backgroundHigh( ThePCCBackgroundHighParameter->DefaultValue() ),
-   p_backgroundUseROI( ThePCCBackgroundUseROIParameter->DefaultValue() ),
-   p_backgroundROI( 0 )
+PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_workingMode( PCCWorkingMode::Default )
+   , p_applyCalibration( ThePCCApplyCalibrationParameter->DefaultValue() )
+   , p_redFilterWavelength( ThePCCRedFilterWavelengthParameter->DefaultValue() )
+   , p_redFilterBandwidth( ThePCCRedFilterBandwidthParameter->DefaultValue() )
+   , p_greenFilterWavelength( ThePCCGreenFilterWavelengthParameter->DefaultValue() )
+   , p_greenFilterBandwidth( ThePCCGreenFilterBandwidthParameter->DefaultValue() )
+   , p_blueFilterWavelength( ThePCCBlueFilterWavelengthParameter->DefaultValue() )
+   , p_blueFilterBandwidth( ThePCCBlueFilterBandwidthParameter->DefaultValue() )
+   , p_whiteReferenceId( ThePCCWhiteReferenceIdParameter->DefaultValue() )
+   , p_whiteReferenceName( ThePCCWhiteReferenceNameParameter->DefaultValue() )
+   , p_whiteReferenceSr_JV( ThePCCWhiteReferenceSr_JVParameter->DefaultValue() )
+   , p_whiteReferenceJB_JV( ThePCCWhiteReferenceJB_JVParameter->DefaultValue() )
+   , p_zeroPointSr_JV( ThePCCZeroPointSr_JVParameter->DefaultValue() )
+   , p_zeroPointJB_JV( ThePCCZeroPointJB_JVParameter->DefaultValue() )
+   , p_focalLength( ThePCCFocalLengthParameter->DefaultValue() )
+   , p_pixelSize( ThePCCPixelSizeParameter->DefaultValue() )
+   , p_centerRA( ThePCCCenterRAParameter->DefaultValue() )
+   , p_centerDec( ThePCCCenterDecParameter->DefaultValue() )
+   , p_epochJD( ThePCCEpochJDParameter->DefaultValue() )
+   , p_forcePlateSolve( ThePCCForcePlateSolveParameter->DefaultValue() )
+   , p_ignoreImagePositionAndScale( ThePCCIgnoreImagePositionAndScaleParameter->DefaultValue() )
+   , p_serverURL( ThePCCServerURLParameter->DefaultValue() )
+   , p_solverCatalogName( ThePCCSolverCatalogNameParameter->DefaultValue() )
+   , p_solverAutoCatalog( ThePCCSolverAutoCatalogParameter->DefaultValue() )
+   , p_solverLimitMagnitude( ThePCCSolverLimitMagnitudeParameter->DefaultValue() )
+   , p_solverAutoLimitMagnitude( ThePCCSolverAutoLimitMagnitudeParameter->DefaultValue() )
+   , p_solverAutoLimitMagnitudeFactor( ThePCCSolverAutoLimitMagnitudeFactorParameter->DefaultValue() )
+   , p_solverStarSensitivity( ThePCCSolverStarSensitivityParameter->DefaultValue() )
+   , p_solverNoiseLayers( ThePCCSolverNoiseLayersParameter->DefaultValue() )
+   , p_solverAlignmentDevice( PCCSolverAlignmentDevice::Default )
+   , p_solverDistortionCorrection( ThePCCSolverDistortionCorrectionParameter->DefaultValue() )
+   , p_solverSplineSmoothing( ThePCCSolverSplineSmoothingParameter->DefaultValue() )
+   , p_solverProjection( PCCSolverProjection::Default )
+   , p_photCatalogName( ThePCCPhotCatalogNameParameter->DefaultValue() )
+   , p_photLimitMagnitude( ThePCCPhotLimitMagnitudeParameter->DefaultValue() )
+   , p_photAutoLimitMagnitude( ThePCCPhotAutoLimitMagnitudeParameter->DefaultValue() )
+   , p_photAutoLimitMagnitudeFactor( ThePCCPhotAutoLimitMagnitudeFactorParameter->DefaultValue() )
+   , p_photAutoAperture( ThePCCPhotAutoApertureParameter->DefaultValue() )
+   , p_photAperture( ThePCCPhotApertureParameter->DefaultValue() )
+   , p_photUsePSF( ThePCCPhotUsePSFParameter->DefaultValue() )
+   , p_photSaturationThreshold( ThePCCPhotSaturationThresholdParameter->DefaultValue() )
+   , p_photShowDetectedStars( ThePCCPhotShowDetectedStarsParameter->DefaultValue() )
+   , p_photShowBackgroundModels( ThePCCPhotShowBackgroundModelsParameter->DefaultValue() )
+   , p_photGenerateGraphs( ThePCCPhotGenerateGraphsParameter->DefaultValue() )
+   , p_neutralizeBackground( ThePCCNeutralizeBackgroundParameter->DefaultValue() )
+   , p_backgroundReferenceViewId( ThePCCBackgroundReferenceViewIdParameter->DefaultValue() )
+   , p_backgroundLow( ThePCCBackgroundLowParameter->DefaultValue() )
+   , p_backgroundHigh( ThePCCBackgroundHighParameter->DefaultValue() )
+   , p_backgroundUseROI( ThePCCBackgroundUseROIParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const PhotometricColorCalibrationInstance& x ) :
-   ProcessImplementation( x )
+PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const PhotometricColorCalibrationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -514,6 +513,8 @@ struct FromKeyword
       return !name.IsEmpty();
    }
 };
+
+// ----------------------------------------------------------------------------
 
 bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
 {
@@ -1408,4 +1409,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z

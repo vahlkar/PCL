@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.cpp - Released 2020-02-27T12:56:01Z
+// ImageCalibrationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -71,12 +71,8 @@ ImageCalibrationInterface* TheImageCalibrationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ImageCalibrationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ImageCalibrationInterface::ImageCalibrationInterface() :
-   instance( TheImageCalibrationProcess )
+ImageCalibrationInterface::ImageCalibrationInterface()
+   : m_instance( TheImageCalibrationProcess )
 {
    TheImageCalibrationInterface = this;
 
@@ -110,9 +106,9 @@ MetaProcess* ImageCalibrationInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ImageCalibrationInterface::IconImageXPM() const
+String ImageCalibrationInterface::IconImageSVGFile() const
 {
-   return ImageCalibrationIcon_XPM;
+   return "@module_icons_dir/ImageCalibration.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -154,7 +150,7 @@ bool ImageCalibrationInterface::Launch( const MetaProcess& P, const ProcessImple
 
 ProcessImplementation* ImageCalibrationInterface::NewProcess() const
 {
-   return new ImageCalibrationInstance( instance );
+   return new ImageCalibrationInstance( m_instance );
 }
 
 // ----------------------------------------------------------------------------
@@ -178,7 +174,7 @@ bool ImageCalibrationInterface::RequiresInstanceValidation() const
 
 bool ImageCalibrationInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
@@ -197,6 +193,7 @@ void ImageCalibrationInterface::UpdateControls()
 {
    UpdateTargetImagesList();
    UpdateImageSelectionButtons();
+   UpdateCFAControls();
    UpdateFormatHintsControls();
    UpdateOutputFilesControls();
    UpdatePedestalControls();
@@ -212,7 +209,7 @@ void ImageCalibrationInterface::UpdateTargetImageItem( size_type i )
    if ( node == nullptr )
       return;
 
-   const ImageCalibrationInstance::ImageItem& item = instance.targetFrames[i];
+   const ImageCalibrationInstance::ImageItem& item = m_instance.p_targetFrames[i];
 
    node->SetText( 0, String( i+1 ) );
    node->SetAlignment( 0, TextAlign::Right );
@@ -238,7 +235,7 @@ void ImageCalibrationInterface::UpdateTargetImagesList()
    GUI->TargetImages_TreeBox.DisableUpdates();
    GUI->TargetImages_TreeBox.Clear();
 
-   for ( size_type i = 0; i < instance.targetFrames.Length(); ++i )
+   for ( size_type i = 0; i < m_instance.p_targetFrames.Length(); ++i )
    {
       new TreeBox::Node( GUI->TargetImages_TreeBox );
       UpdateTargetImageItem( i );
@@ -248,7 +245,7 @@ void ImageCalibrationInterface::UpdateTargetImagesList()
    GUI->TargetImages_TreeBox.AdjustColumnWidthToContents( 1 );
    GUI->TargetImages_TreeBox.AdjustColumnWidthToContents( 2 );
 
-   if ( !instance.targetFrames.IsEmpty() )
+   if ( !m_instance.p_targetFrames.IsEmpty() )
       if ( currentIdx >= 0 && currentIdx < GUI->TargetImages_TreeBox.NumberOfChildren() )
          GUI->TargetImages_TreeBox.SetCurrentNode( GUI->TargetImages_TreeBox[currentIdx] );
 
@@ -272,108 +269,120 @@ void ImageCalibrationInterface::UpdateImageSelectionButtons()
 
 // ----------------------------------------------------------------------------
 
+void ImageCalibrationInterface::UpdateCFAControls()
+{
+   GUI->CFAData_CheckBox.SetChecked( m_instance.p_cfaData );
+
+   GUI->CFAPattern_Label.Enable( m_instance.p_cfaData );
+
+   GUI->CFAPattern_ComboBox.SetCurrentItem( m_instance.p_cfaPattern );
+   GUI->CFAPattern_ComboBox.Enable( m_instance.p_cfaData );
+}
+
+// ----------------------------------------------------------------------------
+
 void ImageCalibrationInterface::UpdateFormatHintsControls()
 {
-   GUI->InputHints_Edit.SetText( instance.inputHints );
-   GUI->OutputHints_Edit.SetText( instance.outputHints );
+   GUI->InputHints_Edit.SetText( m_instance.p_inputHints );
+   GUI->OutputHints_Edit.SetText( m_instance.p_outputHints );
 }
 
 // ----------------------------------------------------------------------------
 
 void ImageCalibrationInterface::UpdateOutputFilesControls()
 {
-   GUI->OutputDirectory_Edit.SetText( instance.outputDirectory );
+   GUI->OutputDirectory_Edit.SetText( m_instance.p_outputDirectory );
 
-   GUI->OutputPrefix_Edit.SetText( instance.outputPrefix );
+   GUI->OutputPrefix_Edit.SetText( m_instance.p_outputPrefix );
 
-   GUI->OutputPostfix_Edit.SetText( instance.outputPostfix );
+   GUI->OutputPostfix_Edit.SetText( m_instance.p_outputPostfix );
 
-   GUI->OutputSampleFormat_ComboBox.SetCurrentItem( instance.outputSampleFormat );
+   GUI->OutputSampleFormat_ComboBox.SetCurrentItem( m_instance.p_outputSampleFormat );
 
-   GUI->OutputPedestal_SpinBox.SetValue( instance.outputPedestal );
+   GUI->OutputPedestal_SpinBox.SetValue( m_instance.p_outputPedestal );
 
-   GUI->EvaluateNoise_CheckBox.SetChecked( instance.evaluateNoise );
+   GUI->EvaluateNoise_CheckBox.SetChecked( m_instance.p_evaluateNoise );
 
-   GUI->NoiseEvaluation_Label.Enable( instance.evaluateNoise );
-   GUI->NoiseEvaluation_ComboBox.SetCurrentItem( instance.noiseEvaluationAlgorithm );
+   GUI->NoiseEvaluation_Label.Enable( m_instance.p_evaluateNoise );
 
-   GUI->NoiseEvaluation_ComboBox.Enable( instance.evaluateNoise );
+   GUI->NoiseEvaluation_ComboBox.SetCurrentItem( m_instance.p_noiseEvaluationAlgorithm );
+   GUI->NoiseEvaluation_ComboBox.Enable( m_instance.p_evaluateNoise );
 
-   GUI->OverwriteExistingFiles_CheckBox.SetChecked( instance.overwriteExistingFiles );
+   GUI->OverwriteExistingFiles_CheckBox.SetChecked( m_instance.p_overwriteExistingFiles );
 
-   GUI->OnError_ComboBox.SetCurrentItem( instance.onError );
+   GUI->OnError_ComboBox.SetCurrentItem( m_instance.p_onError );
 }
 
 // ----------------------------------------------------------------------------
 
 void ImageCalibrationInterface::UpdatePedestalControls()
 {
-   GUI->PedestalMode_ComboBox.SetCurrentItem( instance.pedestalMode );
+   GUI->PedestalMode_ComboBox.SetCurrentItem( m_instance.p_pedestalMode );
 
-   GUI->PedestalValue_Label.Enable( instance.pedestalMode == ICPedestalMode::Literal );
+   GUI->PedestalValue_Label.Enable( m_instance.p_pedestalMode == ICPedestalMode::Literal );
 
-   GUI->PedestalValue_SpinBox.SetValue( instance.pedestal );
-   GUI->PedestalValue_SpinBox.Enable( instance.pedestalMode == ICPedestalMode::Literal );
+   GUI->PedestalValue_SpinBox.SetValue( m_instance.p_pedestal );
+   GUI->PedestalValue_SpinBox.Enable( m_instance.p_pedestalMode == ICPedestalMode::Literal );
 
-   GUI->PedestalKeyword_Label.Enable( instance.pedestalMode == ICPedestalMode::CustomKeyword );
+   GUI->PedestalKeyword_Label.Enable( m_instance.p_pedestalMode == ICPedestalMode::CustomKeyword );
 
-   GUI->PedestalKeyword_Edit.SetText( instance.pedestalKeyword );
-   GUI->PedestalKeyword_Edit.Enable( instance.pedestalMode == ICPedestalMode::CustomKeyword );
+   GUI->PedestalKeyword_Edit.SetText( m_instance.p_pedestalKeyword );
+   GUI->PedestalKeyword_Edit.Enable( m_instance.p_pedestalMode == ICPedestalMode::CustomKeyword );
 }
 
 // ----------------------------------------------------------------------------
 
 void ImageCalibrationInterface::UpdateMasterFrameControls()
 {
-   GUI->MasterBias_SectionBar.SetChecked( instance.masterBias.enabled );
+   GUI->MasterBias_SectionBar.SetChecked( m_instance.p_masterBias.enabled );
 
-   GUI->MasterBiasPath_Edit.SetText( instance.masterBias.path );
+   GUI->MasterBiasPath_Edit.SetText( m_instance.p_masterBias.path );
 
-   GUI->CalibrateMasterBias_CheckBox.SetChecked( instance.calibrateBias );
+   GUI->CalibrateMasterBias_CheckBox.SetChecked( m_instance.p_calibrateBias );
 
-   GUI->MasterDark_SectionBar.SetChecked( instance.masterDark.enabled );
+   GUI->MasterDark_SectionBar.SetChecked( m_instance.p_masterDark.enabled );
 
-   GUI->MasterDarkPath_Edit.SetText( instance.masterDark.path );
+   GUI->MasterDarkPath_Edit.SetText( m_instance.p_masterDark.path );
 
-   GUI->CalibrateMasterDark_CheckBox.SetChecked( instance.calibrateDark );
+   GUI->CalibrateMasterDark_CheckBox.SetChecked( m_instance.p_calibrateDark );
 
-   GUI->OptimizeDarks_CheckBox.SetChecked( instance.optimizeDarks );
+   GUI->OptimizeDarks_CheckBox.SetChecked( m_instance.p_optimizeDarks );
 
-   GUI->DarkOptimizationThreshold_NumericControl.SetValue( instance.darkOptimizationLow );
-   GUI->DarkOptimizationThreshold_NumericControl.Enable( instance.optimizeDarks );
+   GUI->DarkOptimizationThreshold_NumericControl.SetValue( m_instance.p_darkOptimizationLow );
+   GUI->DarkOptimizationThreshold_NumericControl.Enable( m_instance.p_optimizeDarks );
 
-   GUI->DarkOptimizationWindow_Label.Enable( instance.optimizeDarks );
+   GUI->DarkOptimizationWindow_Label.Enable( m_instance.p_optimizeDarks );
 
-   GUI->DarkOptimizationWindow_SpinBox.SetValue( instance.darkOptimizationWindow );
-   GUI->DarkOptimizationWindow_SpinBox.Enable( instance.optimizeDarks );
+   GUI->DarkOptimizationWindow_SpinBox.SetValue( m_instance.p_darkOptimizationWindow );
+   GUI->DarkOptimizationWindow_SpinBox.Enable( m_instance.p_optimizeDarks );
 
-   GUI->DarkCFADetectionMode_Label.Enable( instance.optimizeDarks );
+   GUI->MasterFlat_SectionBar.SetChecked( m_instance.p_masterFlat.enabled );
 
-   GUI->DarkCFADetectionMode_ComboBox.SetCurrentItem( instance.darkCFADetectionMode );
-   GUI->DarkCFADetectionMode_ComboBox.Enable( instance.optimizeDarks );
+   GUI->MasterFlatPath_Edit.SetText( m_instance.p_masterFlat.path );
 
-   GUI->MasterFlat_SectionBar.SetChecked( instance.masterFlat.enabled );
+   GUI->CalibrateMasterFlat_CheckBox.SetChecked( m_instance.p_calibrateFlat );
 
-   GUI->MasterFlatPath_Edit.SetText( instance.masterFlat.path );
+   GUI->SeparateCFAFlatScalingFactors_CheckBox.SetChecked( m_instance.p_separateCFAFlatScalingFactors );
+   GUI->SeparateCFAFlatScalingFactors_CheckBox.Enable( m_instance.p_cfaData );
 
-   GUI->CalibrateMasterFlat_CheckBox.SetChecked( instance.calibrateFlat );
+   GUI->FlatScaleClippingFactor_NumericControl.SetValue( m_instance.p_flatScaleClippingFactor );
 }
 
 // ----------------------------------------------------------------------------
 
 void ImageCalibrationInterface::UpdateOverscanControls()
 {
-   GUI->Overscan_SectionBar.SetChecked( instance.overscan.enabled );
+   GUI->Overscan_SectionBar.SetChecked( m_instance.p_overscan.enabled );
 
-   GUI->ImageRegionX0_NumericEdit.SetValue( instance.overscan.imageRect.x0 );
-   GUI->ImageRegionY0_NumericEdit.SetValue( instance.overscan.imageRect.y0 );
-   GUI->ImageRegionWidth_NumericEdit.SetValue( instance.overscan.imageRect.Width() );
-   GUI->ImageRegionHeight_NumericEdit.SetValue( instance.overscan.imageRect.Height() );
+   GUI->ImageRegionX0_NumericEdit.SetValue( m_instance.p_overscan.imageRect.x0 );
+   GUI->ImageRegionY0_NumericEdit.SetValue( m_instance.p_overscan.imageRect.y0 );
+   GUI->ImageRegionWidth_NumericEdit.SetValue( m_instance.p_overscan.imageRect.Width() );
+   GUI->ImageRegionHeight_NumericEdit.SetValue( m_instance.p_overscan.imageRect.Height() );
 
-   const ImageCalibrationInstance::OverscanRegions& ov1 = instance.overscan.overscan[0];
-   const ImageCalibrationInstance::OverscanRegions& ov2 = instance.overscan.overscan[1];
-   const ImageCalibrationInstance::OverscanRegions& ov3 = instance.overscan.overscan[2];
-   const ImageCalibrationInstance::OverscanRegions& ov4 = instance.overscan.overscan[3];
+   const ImageCalibrationInstance::OverscanRegions& ov1 = m_instance.p_overscan.overscan[0];
+   const ImageCalibrationInstance::OverscanRegions& ov2 = m_instance.p_overscan.overscan[1];
+   const ImageCalibrationInstance::OverscanRegions& ov3 = m_instance.p_overscan.overscan[2];
+   const ImageCalibrationInstance::OverscanRegions& ov4 = m_instance.p_overscan.overscan[3];
 
    bool en1 = ov1.enabled;
    bool en2 = ov2.enabled;
@@ -472,25 +481,23 @@ void ImageCalibrationInterface::UpdateOverscanControls()
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__TargetImages_CurrentNodeUpdated( TreeBox& sender,
-                                                                   TreeBox::Node& current,
-                                                                   TreeBox::Node& oldCurrent )
+void ImageCalibrationInterface::e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent )
 {
    // Actually do nothing (placeholder). Just perform a sanity check.
    int index = sender.ChildIndex( &current );
-   if ( index < 0 || size_type( index ) >= instance.targetFrames.Length() )
+   if ( index < 0 || size_type( index ) >= m_instance.p_targetFrames.Length() )
       throw Error( "ImageCalibrationInterface: *Warning* Corrupted interface structures" );
 }
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__TargetImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col )
+void ImageCalibrationInterface::e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col )
 {
    int index = sender.ChildIndex( &node );
-   if ( index < 0 || size_type( index ) >= instance.targetFrames.Length() )
+   if ( index < 0 || size_type( index ) >= m_instance.p_targetFrames.Length() )
       throw Error( "ImageCalibrationInterface: *Warning* Corrupted interface structures" );
 
-   ImageCalibrationInstance::ImageItem& item = instance.targetFrames[index];
+   ImageCalibrationInstance::ImageItem& item = m_instance.p_targetFrames[index];
 
    switch ( col )
    {
@@ -505,7 +512,7 @@ void ImageCalibrationInterface::__TargetImages_NodeActivated( TreeBox& sender, T
    case 2:
       {
          // Activate the item's path: open the image.
-         Array<ImageWindow> windows = ImageWindow::Open( item.path, IsoString()/*id*/, instance.inputHints );
+         Array<ImageWindow> windows = ImageWindow::Open( item.path, IsoString()/*id*/, m_instance.p_inputHints );
          for ( ImageWindow& window : windows )
             window.Show();
       }
@@ -515,7 +522,7 @@ void ImageCalibrationInterface::__TargetImages_NodeActivated( TreeBox& sender, T
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__TargetImages_NodeSelectionUpdated( TreeBox& sender )
+void ImageCalibrationInterface::e_NodeSelectionUpdated( TreeBox& sender )
 {
    UpdateImageSelectionButtons();
 }
@@ -530,7 +537,7 @@ static size_type TreeInsertionIndex( const TreeBox& tree )
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__TargetImages_Click( Button& sender, bool checked )
+void ImageCalibrationInterface::e_Click( Button& sender, bool checked )
 {
    if ( sender == GUI->AddFiles_PushButton )
    {
@@ -538,12 +545,11 @@ void ImageCalibrationInterface::__TargetImages_Click( Button& sender, bool check
       d.EnableMultipleSelections();
       d.LoadImageFilters();
       d.SetCaption( "ImageCalibration: Select Target Frames" );
-
       if ( d.Execute() )
       {
          size_type i0 = TreeInsertionIndex( GUI->TargetImages_TreeBox );
          for ( StringList::const_iterator i = d.FileNames().Begin(); i != d.FileNames().End(); ++i )
-            instance.targetFrames.Insert( instance.targetFrames.At( i0++ ), ImageCalibrationInstance::ImageItem( *i ) );
+            m_instance.p_targetFrames.Insert( m_instance.p_targetFrames.At( i0++ ), ImageCalibrationInstance::ImageItem( *i ) );
          UpdateTargetImagesList();
          UpdateImageSelectionButtons();
       }
@@ -563,7 +569,7 @@ void ImageCalibrationInterface::__TargetImages_Click( Button& sender, bool check
    {
       for ( int i = 0, n = GUI->TargetImages_TreeBox.NumberOfChildren(); i < n; ++i )
          if ( GUI->TargetImages_TreeBox[i]->IsSelected() )
-            instance.targetFrames[i].enabled = !instance.targetFrames[i].enabled;
+            m_instance.p_targetFrames[i].enabled = !m_instance.p_targetFrames[i].enabled;
       UpdateTargetImagesList();
       UpdateImageSelectionButtons();
    }
@@ -572,14 +578,14 @@ void ImageCalibrationInterface::__TargetImages_Click( Button& sender, bool check
       ImageCalibrationInstance::image_list newTargets;
       for ( int i = 0, n = GUI->TargetImages_TreeBox.NumberOfChildren(); i < n; ++i )
          if ( !GUI->TargetImages_TreeBox[i]->IsSelected() )
-            newTargets.Add( instance.targetFrames[i] );
-      instance.targetFrames = newTargets;
+            newTargets.Add( m_instance.p_targetFrames[i] );
+      m_instance.p_targetFrames = newTargets;
       UpdateTargetImagesList();
       UpdateImageSelectionButtons();
    }
    else if ( sender == GUI->Clear_PushButton )
    {
-      instance.targetFrames.Clear();
+      m_instance.p_targetFrames.Clear();
       UpdateTargetImagesList();
       UpdateImageSelectionButtons();
    }
@@ -588,142 +594,45 @@ void ImageCalibrationInterface::__TargetImages_Click( Button& sender, bool check
       UpdateTargetImagesList();
       UpdateImageSelectionButtons();
    }
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__FormatHints_EditCompleted( Edit& sender )
-{
-   String hints = sender.Text().Trimmed();
-
-   if ( sender == GUI->InputHints_Edit )
-      instance.inputHints = hints;
-   else if ( sender == GUI->OutputHints_Edit )
-      instance.outputHints = hints;
-
-   sender.SetText( hints );
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__OutputFiles_EditCompleted( Edit& sender )
-{
-   String text = sender.Text().Trimmed();
-
-   if ( sender == GUI->OutputDirectory_Edit )
-      instance.outputDirectory = text;
-   else if ( sender == GUI->OutputPrefix_Edit )
-      instance.outputPrefix = text;
-   else if ( sender == GUI->OutputPostfix_Edit )
-      instance.outputPostfix = text;
-
-   sender.SetText( text );
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__OutputFiles_Click( Button& sender, bool checked )
-{
-   if ( sender == GUI->OutputDirectory_ToolButton )
+   else if ( sender == GUI->CFAData_CheckBox )
+   {
+      m_instance.p_cfaData = checked;
+      UpdateCFAControls();
+      UpdateMasterFrameControls();
+   }
+   else if ( sender == GUI->OutputDirectory_ToolButton )
    {
       GetDirectoryDialog d;
       d.SetCaption( "ImageCalibration: Select Output Directory" );
       if ( d.Execute() )
-         GUI->OutputDirectory_Edit.SetText( instance.outputDirectory = d.Directory() );
+         GUI->OutputDirectory_Edit.SetText( m_instance.p_outputDirectory = d.Directory() );
    }
    else if ( sender == GUI->EvaluateNoise_CheckBox )
    {
-      instance.evaluateNoise = checked;
+      m_instance.p_evaluateNoise = checked;
       UpdateOutputFilesControls();
    }
    else if ( sender == GUI->OverwriteExistingFiles_CheckBox )
-      instance.overwriteExistingFiles = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__OutputFiles_ItemSelected( ComboBox& sender, int itemIndex )
-{
-   if ( sender == GUI->OutputSampleFormat_ComboBox )
-      instance.outputSampleFormat = itemIndex;
-   else if ( sender == GUI->NoiseEvaluation_ComboBox )
-      instance.noiseEvaluationAlgorithm = itemIndex;
-   else if ( sender == GUI->OnError_ComboBox )
-      instance.onError = itemIndex;
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__OutputFiles_SpinValueUpdated( SpinBox& sender, int value )
-{
-   if ( sender == GUI->OutputPedestal_SpinBox )
-      instance.outputPedestal = value;
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__Pedestal_SpinValueUpdated( SpinBox& sender, int value )
-{
-   if ( sender == GUI->PedestalValue_SpinBox )
-      instance.pedestal = value;
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__Pedestal_ItemSelected( ComboBox& sender, int itemIndex )
-{
-   if ( sender == GUI->PedestalMode_ComboBox )
    {
-      instance.pedestalMode = itemIndex;
-      UpdatePedestalControls();
+      m_instance.p_overwriteExistingFiles = checked;
    }
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__Pedestal_EditCompleted( Edit& sender )
-{
-   if ( sender == GUI->PedestalKeyword_Edit )
-      sender.SetText( instance.pedestalKeyword = sender.Text().Trimmed() );
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__MasterFrame_EditCompleted( Edit& sender )
-{
-   String path = sender.Text().Trimmed();
-   /*
-   if ( !path.IsEmpty() )
-   {
-      // ### Validate file path ?
-   }
-   */
-
-   if ( sender == GUI->MasterBiasPath_Edit )
-      instance.masterBias.path = path;
-   else if ( sender == GUI->MasterDarkPath_Edit )
-      instance.masterDark.path = path;
-   else if ( sender == GUI->MasterFlatPath_Edit )
-      instance.masterFlat.path = path;
-
-   sender.SetText( path );
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__MasterFrame_Click( Button& sender, bool checked )
-{
-   if ( sender == GUI->MasterBiasPath_ToolButton )
+   else if ( sender == GUI->MasterBiasPath_ToolButton )
    {
       OpenFileDialog d;
       d.DisableMultipleSelections();
       d.LoadImageFilters();
       d.SetCaption( "ImageCalibration: Select Master Bias Frame" );
       if ( d.Execute() )
-         instance.masterBias.path = d.FileName();
+      {
+         m_instance.p_masterBias.path = d.FileName();
+         UpdateMasterFrameControls();
+      }
    }
    else if ( sender == GUI->CalibrateMasterBias_CheckBox )
-      instance.calibrateBias = checked;
+   {
+      m_instance.p_calibrateBias = checked;
+      UpdateMasterFrameControls();
+   }
    else if ( sender == GUI->MasterDarkPath_ToolButton )
    {
       OpenFileDialog d;
@@ -731,12 +640,21 @@ void ImageCalibrationInterface::__MasterFrame_Click( Button& sender, bool checke
       d.LoadImageFilters();
       d.SetCaption( "ImageCalibration: Select Master Dark Frame" );
       if ( d.Execute() )
-         instance.masterDark.path = d.FileName();
+      {
+         m_instance.p_masterDark.path = d.FileName();
+         UpdateMasterFrameControls();
+      }
    }
    else if ( sender == GUI->CalibrateMasterDark_CheckBox )
-      instance.calibrateDark = checked;
+   {
+      m_instance.p_calibrateDark = checked;
+      UpdateMasterFrameControls();
+   }
    else if ( sender == GUI->OptimizeDarks_CheckBox )
-      instance.optimizeDarks = checked;
+   {
+      m_instance.p_optimizeDarks = checked;
+      UpdateMasterFrameControls();
+   }
    else if ( sender == GUI->MasterFlatPath_ToolButton )
    {
       OpenFileDialog d;
@@ -744,44 +662,117 @@ void ImageCalibrationInterface::__MasterFrame_Click( Button& sender, bool checke
       d.LoadImageFilters();
       d.SetCaption( "ImageCalibration: Select Master Flat Frame" );
       if ( d.Execute() )
-         instance.masterFlat.path = d.FileName();
+      {
+         m_instance.p_masterFlat.path = d.FileName();
+         UpdateMasterFrameControls();
+      }
    }
    else if ( sender == GUI->CalibrateMasterFlat_CheckBox )
-      instance.calibrateFlat = checked;
-
-   UpdateMasterFrameControls();
+   {
+      m_instance.p_calibrateFlat = checked;
+      UpdateMasterFrameControls();
+   }
+   else if ( sender == GUI->SeparateCFAFlatScalingFactors_CheckBox )
+   {
+      m_instance.p_separateCFAFlatScalingFactors = checked;
+   }
+   else if ( sender == GUI->Overscan1_CheckBox )
+   {
+      m_instance.p_overscan.overscan[0].enabled = checked;
+      UpdateOverscanControls();
+   }
+   else if ( sender == GUI->Overscan2_CheckBox )
+   {
+      m_instance.p_overscan.overscan[1].enabled = checked;
+      UpdateOverscanControls();
+   }
+   else if ( sender == GUI->Overscan3_CheckBox )
+   {
+      m_instance.p_overscan.overscan[2].enabled = checked;
+      UpdateOverscanControls();
+   }
+   else if ( sender == GUI->Overscan4_CheckBox )
+   {
+      m_instance.p_overscan.overscan[3].enabled = checked;
+      UpdateOverscanControls();
+   }
 }
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__MasterFrame_SpinValueUpdated( SpinBox& sender, int value )
+void ImageCalibrationInterface::e_EditCompleted( Edit& sender )
 {
-   if ( sender == GUI->DarkOptimizationWindow_SpinBox )
-      instance.darkOptimizationWindow = value;
+   String text = sender.Text().Trimmed();
+
+   if ( sender == GUI->InputHints_Edit )
+      m_instance.p_inputHints = text;
+   else if ( sender == GUI->OutputHints_Edit )
+      m_instance.p_outputHints = text;
+   else if ( sender == GUI->OutputDirectory_Edit )
+      m_instance.p_outputDirectory = text;
+   else if ( sender == GUI->OutputPrefix_Edit )
+      m_instance.p_outputPrefix = text;
+   else if ( sender == GUI->OutputPostfix_Edit )
+      m_instance.p_outputPostfix = text;
+   else if ( sender == GUI->PedestalKeyword_Edit )
+      m_instance.p_pedestalKeyword = text;
+   else if ( sender == GUI->MasterBiasPath_Edit )
+      m_instance.p_masterBias.path = text;
+   else if ( sender == GUI->MasterDarkPath_Edit )
+      m_instance.p_masterDark.path = text;
+   else if ( sender == GUI->MasterFlatPath_Edit )
+      m_instance.p_masterFlat.path = text;
+
+   sender.SetText( text );
 }
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__MasterFrame_ItemSelected( ComboBox& sender, int itemIndex )
+void ImageCalibrationInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
-   if ( sender == GUI->DarkCFADetectionMode_ComboBox )
-      instance.darkCFADetectionMode = itemIndex;
+   if ( sender == GUI->CFAPattern_ComboBox )
+      m_instance.p_cfaPattern = itemIndex;
+   else if ( sender == GUI->OutputSampleFormat_ComboBox )
+      m_instance.p_outputSampleFormat = itemIndex;
+   else if ( sender == GUI->NoiseEvaluation_ComboBox )
+      m_instance.p_noiseEvaluationAlgorithm = itemIndex;
+   else if ( sender == GUI->OnError_ComboBox )
+      m_instance.p_onError = itemIndex;
+   else if ( sender == GUI->PedestalMode_ComboBox )
+   {
+      m_instance.p_pedestalMode = itemIndex;
+      UpdatePedestalControls();
+   }
 }
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__MasterFrame_ValueUpdated( NumericEdit& sender, double value )
+void ImageCalibrationInterface::e_SpinValueUpdated( SpinBox& sender, int value )
+{
+   if ( sender == GUI->OutputPedestal_SpinBox )
+      m_instance.p_outputPedestal = value;
+   else if ( sender == GUI->PedestalValue_SpinBox )
+      m_instance.p_pedestal = value;
+   else if ( sender == GUI->DarkOptimizationWindow_SpinBox )
+      m_instance.p_darkOptimizationWindow = value;
+}
+
+// ----------------------------------------------------------------------------
+
+void ImageCalibrationInterface::e_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->DarkOptimizationThreshold_NumericControl )
    {
-      instance.darkOptimizationLow = value;
-      instance.darkOptimizationThreshold = 0; // deprecated parameter, for compatibility with old versions.
+      m_instance.p_darkOptimizationLow = value;
+      m_instance.p_darkOptimizationThreshold = 0; // deprecated parameter, for compatibility with old versions.
    }
+   else if ( sender == GUI->FlatScaleClippingFactor_NumericControl )
+      m_instance.p_flatScaleClippingFactor = value;
 }
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__Overscan_ValueUpdated( NumericEdit& sender, double value_ )
+void ImageCalibrationInterface::e_OverscanValueUpdated( NumericEdit& sender, double value_ )
 {
 #define SETX0( r, x0_ ) { int w = r.Width(); r.x1 = (r.x0 = x0_) + w; }
 #define SETY0( r, y0_ ) { int h = r.Height(); r.y1 = (r.y0 = y0_) + h; }
@@ -789,85 +780,85 @@ void ImageCalibrationInterface::__Overscan_ValueUpdated( NumericEdit& sender, do
    int value = TruncI( value_ );
 
    if ( sender == GUI->ImageRegionX0_NumericEdit )
-      SETX0( instance.overscan.imageRect, value )
+      SETX0( m_instance.p_overscan.imageRect, value )
    else if ( sender == GUI->ImageRegionY0_NumericEdit )
-      SETY0( instance.overscan.imageRect, value )
+      SETY0( m_instance.p_overscan.imageRect, value )
    else if ( sender == GUI->ImageRegionWidth_NumericEdit )
-      instance.overscan.imageRect.SetWidth( value );
+      m_instance.p_overscan.imageRect.SetWidth( value );
    else if ( sender == GUI->ImageRegionHeight_NumericEdit )
-      instance.overscan.imageRect.SetHeight( value );
+      m_instance.p_overscan.imageRect.SetHeight( value );
 
    else if ( sender == GUI->Overscan1SourceX0_NumericEdit )
-      SETX0( instance.overscan.overscan[0].sourceRect, value )
+      SETX0( m_instance.p_overscan.overscan[0].sourceRect, value )
    else if ( sender == GUI->Overscan1SourceY0_NumericEdit )
-      SETY0( instance.overscan.overscan[0].sourceRect, value )
+      SETY0( m_instance.p_overscan.overscan[0].sourceRect, value )
    else if ( sender == GUI->Overscan1SourceWidth_NumericEdit )
-      instance.overscan.overscan[0].sourceRect.SetWidth( value );
+      m_instance.p_overscan.overscan[0].sourceRect.SetWidth( value );
    else if ( sender == GUI->Overscan1SourceHeight_NumericEdit )
-      instance.overscan.overscan[0].sourceRect.SetHeight( value );
+      m_instance.p_overscan.overscan[0].sourceRect.SetHeight( value );
 
    else if ( sender == GUI->Overscan1TargetX0_NumericEdit )
-      SETX0( instance.overscan.overscan[0].targetRect, value )
+      SETX0( m_instance.p_overscan.overscan[0].targetRect, value )
    else if ( sender == GUI->Overscan1TargetY0_NumericEdit )
-      SETY0( instance.overscan.overscan[0].targetRect, value )
+      SETY0( m_instance.p_overscan.overscan[0].targetRect, value )
    else if ( sender == GUI->Overscan1TargetWidth_NumericEdit )
-      instance.overscan.overscan[0].targetRect.SetWidth( value );
+      m_instance.p_overscan.overscan[0].targetRect.SetWidth( value );
    else if ( sender == GUI->Overscan1TargetHeight_NumericEdit )
-      instance.overscan.overscan[0].targetRect.SetHeight( value );
+      m_instance.p_overscan.overscan[0].targetRect.SetHeight( value );
 
    else if ( sender == GUI->Overscan2SourceX0_NumericEdit )
-      SETX0( instance.overscan.overscan[1].sourceRect, value )
+      SETX0( m_instance.p_overscan.overscan[1].sourceRect, value )
    else if ( sender == GUI->Overscan2SourceY0_NumericEdit )
-      SETY0( instance.overscan.overscan[1].sourceRect, value )
+      SETY0( m_instance.p_overscan.overscan[1].sourceRect, value )
    else if ( sender == GUI->Overscan2SourceWidth_NumericEdit )
-      instance.overscan.overscan[1].sourceRect.SetWidth( value );
+      m_instance.p_overscan.overscan[1].sourceRect.SetWidth( value );
    else if ( sender == GUI->Overscan2SourceHeight_NumericEdit )
-      instance.overscan.overscan[1].sourceRect.SetHeight( value );
+      m_instance.p_overscan.overscan[1].sourceRect.SetHeight( value );
 
    else if ( sender == GUI->Overscan2TargetX0_NumericEdit )
-      SETX0( instance.overscan.overscan[1].targetRect, value )
+      SETX0( m_instance.p_overscan.overscan[1].targetRect, value )
    else if ( sender == GUI->Overscan2TargetY0_NumericEdit )
-      SETY0( instance.overscan.overscan[1].targetRect, value )
+      SETY0( m_instance.p_overscan.overscan[1].targetRect, value )
    else if ( sender == GUI->Overscan2TargetWidth_NumericEdit )
-      instance.overscan.overscan[1].targetRect.SetWidth( value );
+      m_instance.p_overscan.overscan[1].targetRect.SetWidth( value );
    else if ( sender == GUI->Overscan2TargetHeight_NumericEdit )
-      instance.overscan.overscan[1].targetRect.SetHeight( value );
+      m_instance.p_overscan.overscan[1].targetRect.SetHeight( value );
 
    else if ( sender == GUI->Overscan3SourceX0_NumericEdit )
-      SETX0( instance.overscan.overscan[2].sourceRect, value )
+      SETX0( m_instance.p_overscan.overscan[2].sourceRect, value )
    else if ( sender == GUI->Overscan3SourceY0_NumericEdit )
-      SETY0( instance.overscan.overscan[2].sourceRect, value )
+      SETY0( m_instance.p_overscan.overscan[2].sourceRect, value )
    else if ( sender == GUI->Overscan3SourceWidth_NumericEdit )
-      instance.overscan.overscan[2].sourceRect.SetWidth( value );
+      m_instance.p_overscan.overscan[2].sourceRect.SetWidth( value );
    else if ( sender == GUI->Overscan3SourceHeight_NumericEdit )
-      instance.overscan.overscan[2].sourceRect.SetHeight( value );
+      m_instance.p_overscan.overscan[2].sourceRect.SetHeight( value );
 
    else if ( sender == GUI->Overscan3TargetX0_NumericEdit )
-      SETX0( instance.overscan.overscan[2].targetRect, value )
+      SETX0( m_instance.p_overscan.overscan[2].targetRect, value )
    else if ( sender == GUI->Overscan3TargetY0_NumericEdit )
-      SETY0( instance.overscan.overscan[2].targetRect, value )
+      SETY0( m_instance.p_overscan.overscan[2].targetRect, value )
    else if ( sender == GUI->Overscan3TargetWidth_NumericEdit )
-      instance.overscan.overscan[2].targetRect.SetWidth( value );
+      m_instance.p_overscan.overscan[2].targetRect.SetWidth( value );
    else if ( sender == GUI->Overscan3TargetHeight_NumericEdit )
-      instance.overscan.overscan[2].targetRect.SetHeight( value );
+      m_instance.p_overscan.overscan[2].targetRect.SetHeight( value );
 
    else if ( sender == GUI->Overscan4SourceX0_NumericEdit )
-      SETX0( instance.overscan.overscan[3].sourceRect, value )
+      SETX0( m_instance.p_overscan.overscan[3].sourceRect, value )
    else if ( sender == GUI->Overscan4SourceY0_NumericEdit )
-      SETY0( instance.overscan.overscan[3].sourceRect, value )
+      SETY0( m_instance.p_overscan.overscan[3].sourceRect, value )
    else if ( sender == GUI->Overscan4SourceWidth_NumericEdit )
-      instance.overscan.overscan[3].sourceRect.SetWidth( value );
+      m_instance.p_overscan.overscan[3].sourceRect.SetWidth( value );
    else if ( sender == GUI->Overscan4SourceHeight_NumericEdit )
-      instance.overscan.overscan[3].sourceRect.SetHeight( value );
+      m_instance.p_overscan.overscan[3].sourceRect.SetHeight( value );
 
    else if ( sender == GUI->Overscan4TargetX0_NumericEdit )
-      SETX0( instance.overscan.overscan[3].targetRect, value )
+      SETX0( m_instance.p_overscan.overscan[3].targetRect, value )
    else if ( sender == GUI->Overscan4TargetY0_NumericEdit )
-      SETY0( instance.overscan.overscan[3].targetRect, value )
+      SETY0( m_instance.p_overscan.overscan[3].targetRect, value )
    else if ( sender == GUI->Overscan4TargetWidth_NumericEdit )
-      instance.overscan.overscan[3].targetRect.SetWidth( value );
+      m_instance.p_overscan.overscan[3].targetRect.SetWidth( value );
    else if ( sender == GUI->Overscan4TargetHeight_NumericEdit )
-      instance.overscan.overscan[3].targetRect.SetHeight( value );
+      m_instance.p_overscan.overscan[3].targetRect.SetHeight( value );
 
 #undef SETX0
 #undef SETY0
@@ -875,37 +866,21 @@ void ImageCalibrationInterface::__Overscan_ValueUpdated( NumericEdit& sender, do
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__Overscan_Click( Button& sender, bool checked )
-{
-   if ( sender == GUI->Overscan1_CheckBox )
-      instance.overscan.overscan[0].enabled = checked;
-   else if ( sender == GUI->Overscan2_CheckBox )
-      instance.overscan.overscan[1].enabled = checked;
-   else if ( sender == GUI->Overscan3_CheckBox )
-      instance.overscan.overscan[2].enabled = checked;
-   else if ( sender == GUI->Overscan4_CheckBox )
-      instance.overscan.overscan[3].enabled = checked;
-
-   UpdateOverscanControls();
-}
-
-// ----------------------------------------------------------------------------
-
-void ImageCalibrationInterface::__CheckSection( SectionBar& sender, bool checked )
+void ImageCalibrationInterface::e_CheckSection( SectionBar& sender, bool checked )
 {
    if ( sender == GUI->MasterBias_SectionBar )
-      instance.masterBias.enabled = checked;
+      m_instance.p_masterBias.enabled = checked;
    else if ( sender == GUI->MasterDark_SectionBar )
-      instance.masterDark.enabled = checked;
+      m_instance.p_masterDark.enabled = checked;
    else if ( sender == GUI->MasterFlat_SectionBar )
-      instance.masterFlat.enabled = checked;
+      m_instance.p_masterFlat.enabled = checked;
    else if ( sender == GUI->Overscan_SectionBar )
-      instance.overscan.enabled = checked;
+      m_instance.p_overscan.enabled = checked;
 }
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__ToggleSection( SectionBar& sender, Control& section, bool start )
+void ImageCalibrationInterface::e_ToggleSection( SectionBar& sender, Control& section, bool start )
 {
    if ( start )
       GUI->TargetImages_TreeBox.SetFixedHeight();
@@ -923,7 +898,7 @@ void ImageCalibrationInterface::__ToggleSection( SectionBar& sender, Control& se
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles )
+void ImageCalibrationInterface::e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles )
 {
    if ( sender == GUI->TargetImages_TreeBox.Viewport() )
       wantsFiles = true;
@@ -935,7 +910,7 @@ void ImageCalibrationInterface::__FileDrag( Control& sender, const Point& pos, c
 
 // ----------------------------------------------------------------------------
 
-void ImageCalibrationInterface::__FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers )
+void ImageCalibrationInterface::e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers )
 {
    if ( sender == GUI->TargetImages_TreeBox.Viewport() )
    {
@@ -950,7 +925,7 @@ void ImageCalibrationInterface::__FileDrop( Control& sender, const Point& pos, c
       inputFiles.Sort();
       size_type i0 = TreeInsertionIndex( GUI->TargetImages_TreeBox );
       for ( const String& file : inputFiles )
-         instance.targetFrames.Insert( instance.targetFrames.At( i0++ ), ImageCalibrationInstance::ImageItem( file ) );
+         m_instance.p_targetFrames.Insert( m_instance.p_targetFrames.At( i0++ ), ImageCalibrationInstance::ImageItem( file ) );
 
       UpdateTargetImagesList();
       UpdateImageSelectionButtons();
@@ -958,22 +933,22 @@ void ImageCalibrationInterface::__FileDrop( Control& sender, const Point& pos, c
    else if ( sender == GUI->OutputDirectory_Edit )
    {
       if ( File::DirectoryExists( files[0] ) )
-         GUI->OutputDirectory_Edit.SetText( instance.outputDirectory = files[0] );
+         GUI->OutputDirectory_Edit.SetText( m_instance.p_outputDirectory = files[0] );
    }
    else if ( sender == GUI->MasterBiasPath_Edit )
    {
       if ( File::Exists( files[0] ) )
-         GUI->MasterBiasPath_Edit.SetText( instance.masterBias.path = files[0] );
+         GUI->MasterBiasPath_Edit.SetText( m_instance.p_masterBias.path = files[0] );
    }
    else if ( sender == GUI->MasterDarkPath_Edit )
    {
       if ( File::Exists( files[0] ) )
-         GUI->MasterDarkPath_Edit.SetText( instance.masterDark.path = files[0] );
+         GUI->MasterDarkPath_Edit.SetText( m_instance.p_masterDark.path = files[0] );
    }
    else if ( sender == GUI->MasterFlatPath_Edit )
    {
       if ( File::Exists( files[0] ) )
-         GUI->MasterFlatPath_Edit.SetText( instance.masterFlat.path = files[0] );
+         GUI->MasterFlatPath_Edit.SetText( m_instance.p_masterFlat.path = files[0] );
    }
 }
 
@@ -992,7 +967,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    TargetImages_SectionBar.SetTitle( "Target Frames" );
    TargetImages_SectionBar.SetSection( TargetImages_Control );
-   TargetImages_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::__ToggleSection, w );
+   TargetImages_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
 
    TargetImages_TreeBox.SetMinHeight( IMAGELIST_MINHEIGHT( fnt ) );
    TargetImages_TreeBox.SetNumberOfColumns( 3 );
@@ -1000,40 +975,40 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    TargetImages_TreeBox.EnableMultipleSelections();
    TargetImages_TreeBox.DisableRootDecoration();
    TargetImages_TreeBox.EnableAlternateRowColor();
-   TargetImages_TreeBox.OnCurrentNodeUpdated( (TreeBox::node_navigation_event_handler)&ImageCalibrationInterface::__TargetImages_CurrentNodeUpdated, w );
-   TargetImages_TreeBox.OnNodeActivated( (TreeBox::node_event_handler)&ImageCalibrationInterface::__TargetImages_NodeActivated, w );
-   TargetImages_TreeBox.OnNodeSelectionUpdated( (TreeBox::tree_event_handler)&ImageCalibrationInterface::__TargetImages_NodeSelectionUpdated, w );
-   TargetImages_TreeBox.Viewport().OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::__FileDrag, w );
-   TargetImages_TreeBox.Viewport().OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::__FileDrop, w );
+   TargetImages_TreeBox.OnCurrentNodeUpdated( (TreeBox::node_navigation_event_handler)&ImageCalibrationInterface::e_CurrentNodeUpdated, w );
+   TargetImages_TreeBox.OnNodeActivated( (TreeBox::node_event_handler)&ImageCalibrationInterface::e_NodeActivated, w );
+   TargetImages_TreeBox.OnNodeSelectionUpdated( (TreeBox::tree_event_handler)&ImageCalibrationInterface::e_NodeSelectionUpdated, w );
+   TargetImages_TreeBox.Viewport().OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::e_FileDrag, w );
+   TargetImages_TreeBox.Viewport().OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::e_FileDrop, w );
 
    AddFiles_PushButton.SetText( "Add Files" );
    AddFiles_PushButton.SetToolTip( "<p>Add existing image files to the list of target frames.</p>" );
-   AddFiles_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__TargetImages_Click, w );
+   AddFiles_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    SelectAll_PushButton.SetText( "Select All" );
    SelectAll_PushButton.SetToolTip( "<p>Select all target frames.</p>" );
-   SelectAll_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__TargetImages_Click, w );
+   SelectAll_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    InvertSelection_PushButton.SetText( "Invert Selection" );
    InvertSelection_PushButton.SetToolTip( "<p>Invert the current selection of target frames.</p>" );
-   InvertSelection_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__TargetImages_Click, w );
+   InvertSelection_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    ToggleSelected_PushButton.SetText( "Toggle Selected" );
    ToggleSelected_PushButton.SetToolTip( "<p>Toggle the enabled/disabled state of currently selected target frames.</p>"
       "<p>Disabled target frames will be ignored during the calibration process.</p>" );
-   ToggleSelected_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__TargetImages_Click, w );
+   ToggleSelected_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    RemoveSelected_PushButton.SetText( "Remove Selected" );
    RemoveSelected_PushButton.SetToolTip( "<p>Remove all currently selected target frames.</p>" );
-   RemoveSelected_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__TargetImages_Click, w );
+   RemoveSelected_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    Clear_PushButton.SetText( "Clear" );
    Clear_PushButton.SetToolTip( "<p>Clear the list of target frames.</p>" );
-   Clear_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__TargetImages_Click, w );
+   Clear_PushButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    FullPaths_CheckBox.SetText( "Full paths" );
    FullPaths_CheckBox.SetToolTip( "<p>Show full paths for target frame files.</p>" );
-   FullPaths_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__TargetImages_Click, w );
+   FullPaths_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    TargetButtons_Sizer.SetSpacing( 4 );
    TargetButtons_Sizer.Add( AddFiles_PushButton );
@@ -1053,19 +1028,65 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    //
 
+   CFAData_CheckBox.SetText( "CFA data" );
+   CFAData_CheckBox.SetToolTip( "<p>Enable this option if the data set has been acquired with a digital camera that "
+      "generates images mosaiced with a Color Filter Array (CFA). Bayer and X-Trans CFAs are supported. When this "
+      "option is selected, the CFA pattern can be selected with the <i>CFA mosaic pattern</i> parameter. You normally "
+      "should leave that parameter with its default Auto selection, which should detect the correct pattern "
+      "automatically under normal conditions.</p>" );
+   CFAData_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
+
+   CFAData_Sizer.SetSpacing( 4 );
+   CFAData_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   CFAData_Sizer.Add( CFAData_CheckBox );
+   CFAData_Sizer.AddStretch();
+
+   const char* patternToolTip =
+      "<p>Select the CFA pattern of the camera (such as a DSLR or OSC camera) used to acquire the calibration master "
+      "and target frames.</p>"
+      "<p>The Auto option requires view properties available in the master and target frame files. Under normal working "
+      "conditions, these properties are either generated automatically by the RAW format support module and stored in "
+      "XISF files, or available as FITS header keywords in the case of raw OSC frames.</p>"
+      "<p>For images acquired with X-Trans sensors this parameter is ignored and CFA patterns are always extracted "
+      "from existing image properties.</p>";
+
+   CFAPattern_Label.SetText( "CFA mosaic pattern:" );
+   CFAPattern_Label.SetFixedWidth( labelWidth1 );
+   CFAPattern_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   CFAPattern_Label.SetToolTip( patternToolTip );
+
+   CFAPattern_ComboBox.AddItem( "Auto" );
+   CFAPattern_ComboBox.AddItem( "RGGB" );
+   CFAPattern_ComboBox.AddItem( "BGGR" );
+   CFAPattern_ComboBox.AddItem( "GBRG" );
+   CFAPattern_ComboBox.AddItem( "GRBG" );
+   CFAPattern_ComboBox.AddItem( "GRGB" );
+   CFAPattern_ComboBox.AddItem( "GBGR" );
+   CFAPattern_ComboBox.AddItem( "RGBG" );
+   CFAPattern_ComboBox.AddItem( "BGRG" );
+   CFAPattern_ComboBox.SetToolTip( patternToolTip );
+   CFAPattern_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::e_ItemSelected, w );
+
+   CFAPattern_Sizer.SetSpacing( 4 );
+   CFAPattern_Sizer.Add( CFAPattern_Label );
+   CFAPattern_Sizer.Add( CFAPattern_ComboBox );
+   CFAPattern_Sizer.AddStretch();
+
+   //
+
    FormatHints_SectionBar.SetTitle( "Format Hints" );
    FormatHints_SectionBar.SetSection( FormatHints_Control );
-   FormatHints_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::__ToggleSection, w );
+   FormatHints_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
 
    const char* hintsToolTip = "<p><i>Format hints</i> allow you to override global file format settings "
       "for image files used by specific processes. In ImageCalibration, input hints change the way input images "
       "of some particular file formats (target frames and master calibration frames) are read, while output hints "
       "modify the way output calibrated images are written.</p>"
-      "<p>For example, you can use the \"raw\" hint to force the DSLR_RAW format to load pure raw images without "
-      "applying any deBayering, interpolation, white balance or black point correction. Similarly, you can use the "
-      "\"up-bottom\" output hint to write all calibrated images with the coordinate origin at the top-left corner. "
-      "Most standard file format modules support hints; each format supports a number of input and/or output hints "
-      "that you can use for different purposes with tools that give you access to format hints.</p>";
+      "<p>For example, you can use the \"raw cfa\" input hints to force the RAW format to load pure raw CFA frames "
+      "without applying any demosaicing, interpolation, white balance, or black point correction. Similarly, you can "
+      "use the \"up-bottom\" input hint to load raw images from FITS files with the coordinate origin at the top-left "
+      "corner. Most standard file format modules support hints; each format supports a number of input and/or output "
+      "hints that you can use for different purposes with tools that give you access to format hints.</p>";
 
    InputHints_Label.SetText( "Input hints:" );
    InputHints_Label.SetFixedWidth( labelWidth1 );
@@ -1073,7 +1094,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    InputHints_Label.SetToolTip( hintsToolTip );
 
    InputHints_Edit.SetToolTip( hintsToolTip );
-   InputHints_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::__FormatHints_EditCompleted, w );
+   InputHints_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::e_EditCompleted, w );
 
    InputHints_Sizer.SetSpacing( 4 );
    InputHints_Sizer.Add( InputHints_Label );
@@ -1085,7 +1106,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    OutputHints_Label.SetToolTip( hintsToolTip );
 
    OutputHints_Edit.SetToolTip( hintsToolTip );
-   OutputHints_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::__FormatHints_EditCompleted, w );
+   OutputHints_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::e_EditCompleted, w );
 
    OutputHints_Sizer.SetSpacing( 4 );
    OutputHints_Sizer.Add( OutputHints_Label );
@@ -1101,7 +1122,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    OutputFiles_SectionBar.SetTitle( "Output Files" );
    OutputFiles_SectionBar.SetSection( OutputFiles_Control );
-   OutputFiles_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::__ToggleSection, w );
+   OutputFiles_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
 
    const char* outputDirectoryToolTip = "<p>This is the directory (or folder) where all output files "
       "will be written.</p>"
@@ -1115,14 +1136,14 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    OutputDirectory_Label.SetToolTip( outputDirectoryToolTip );
 
    OutputDirectory_Edit.SetToolTip( outputDirectoryToolTip );
-   OutputDirectory_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::__OutputFiles_EditCompleted, w );
-   OutputDirectory_Edit.OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::__FileDrag, w );
-   OutputDirectory_Edit.OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::__FileDrop, w );
+   OutputDirectory_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::e_EditCompleted, w );
+   OutputDirectory_Edit.OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::e_FileDrag, w );
+   OutputDirectory_Edit.OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::e_FileDrop, w );
 
    OutputDirectory_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-file.png" ) ) );
    OutputDirectory_ToolButton.SetScaledFixedSize( 20, 20 );
    OutputDirectory_ToolButton.SetToolTip( "<p>Select the output directory</p>" );
-   OutputDirectory_ToolButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__OutputFiles_Click, w );
+   OutputDirectory_ToolButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    OutputDirectory_Sizer.SetSpacing( 4 );
    OutputDirectory_Sizer.Add( OutputDirectory_Label );
@@ -1139,7 +1160,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    OutputPrefix_Edit.SetFixedWidth( editWidth1 );
    OutputPrefix_Edit.SetToolTip( outputPrefixToolTip );
-   OutputPrefix_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::__OutputFiles_EditCompleted, w );
+   OutputPrefix_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::e_EditCompleted, w );
 
    const char* outputPostfixToolTip =
       "<p>This is a postfix that will be appended to the file name of each registered image.</p>";
@@ -1150,7 +1171,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    OutputPostfix_Edit.SetFixedWidth( editWidth1 );
    OutputPostfix_Edit.SetToolTip( outputPostfixToolTip );
-   OutputPostfix_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::__OutputFiles_EditCompleted, w );
+   OutputPostfix_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::e_EditCompleted, w );
 
    OutputChunks_Sizer.SetSpacing( 4 );
    OutputChunks_Sizer.Add( OutputPrefix_Label );
@@ -1172,7 +1193,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    OutputSampleFormat_ComboBox.AddItem( "32-bit floating point" );
    OutputSampleFormat_ComboBox.AddItem( "64-bit floating point" );
    OutputSampleFormat_ComboBox.SetToolTip( sampleFormatToolTip );
-   OutputSampleFormat_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::__OutputFiles_ItemSelected, w );
+   OutputSampleFormat_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::e_ItemSelected, w );
 
    OutputSampleFormat_Sizer.SetSpacing( 4 );
    OutputSampleFormat_Sizer.Add( OutputSampleFormat_Label );
@@ -1194,7 +1215,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    OutputPedestal_SpinBox.SetRange( int( TheICOutputPedestalParameter->MinimumValue() ), int( TheICOutputPedestalParameter->MaximumValue() ) );
    OutputPedestal_SpinBox.SetToolTip( outputPedestalTip );
    OutputPedestal_SpinBox.SetFixedWidth( editWidth2 );
-   OutputPedestal_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageCalibrationInterface::__OutputFiles_SpinValueUpdated, w );
+   OutputPedestal_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageCalibrationInterface::e_SpinValueUpdated, w );
 
    OutputPedestal_Sizer.Add( OutputPedestal_Label );
    OutputPedestal_Sizer.AddSpacing( 4 );
@@ -1207,7 +1228,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "estimates will be stored as NOISExxx FITS header keywords in the output files. These estimates can be used "
       "later by several processes and scripts, most notably by the ImageIntegration tool, which uses them by default "
       "for robust image weighting based on relative SNR values.</p>" );
-   EvaluateNoise_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__OutputFiles_Click, w );
+   EvaluateNoise_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    EvaluateNoise_Sizer.SetSpacing( 4 );
    EvaluateNoise_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -1234,7 +1255,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    NoiseEvaluation_ComboBox.AddItem( "Iterative K-Sigma Clipping" );
    NoiseEvaluation_ComboBox.AddItem( "Multiresolution Support" );
    NoiseEvaluation_ComboBox.SetToolTip( noiseEvaluationToolTip );
-   NoiseEvaluation_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::__OutputFiles_ItemSelected, w );
+   NoiseEvaluation_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::e_ItemSelected, w );
 
    NoiseEvaluation_Sizer.SetSpacing( 4 );
    NoiseEvaluation_Sizer.Add( NoiseEvaluation_Label );
@@ -1246,7 +1267,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "existing files with the same names as generated output files. This can be dangerous because the original "
       "contents of overwritten files will be lost.</p>"
       "<p><b>Enable this option <u>at your own risk.</u></b></p>" );
-   OverwriteExistingFiles_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__OutputFiles_Click, w );
+   OverwriteExistingFiles_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    OverwriteExistingFiles_Sizer.SetSpacing( 4 );
    OverwriteExistingFiles_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -1264,7 +1285,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    OnError_ComboBox.AddItem( "Abort" );
    OnError_ComboBox.AddItem( "Ask User" );
    OnError_ComboBox.SetToolTip( onErrorToolTip );
-   OnError_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::__OutputFiles_ItemSelected, w );
+   OnError_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::e_ItemSelected, w );
 
    OnError_Sizer.SetSpacing( 4 );
    OnError_Sizer.Add( OnError_Label );
@@ -1287,7 +1308,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    Pedestal_SectionBar.SetTitle( "Pedestal" );
    Pedestal_SectionBar.SetSection( Pedestal_Control );
-   Pedestal_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::__ToggleSection, w );
+   Pedestal_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
 
    const char* pedestalModeTip = "<p>The <i>pedestal mode</i> option specifies how to retrieve a (usually small) "
       "quantity that is subtracted from input images as the very first calibration step. This quantity is known "
@@ -1313,7 +1334,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    PedestalMode_ComboBox.AddItem( "Default FITS keyword (PEDESTAL)" );
    PedestalMode_ComboBox.AddItem( "Custom FITS keyword" );
    PedestalMode_ComboBox.SetToolTip( pedestalModeTip );
-   PedestalMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::__Pedestal_ItemSelected, w );
+   PedestalMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::e_ItemSelected, w );
 
    PedestalMode_Sizer.SetSpacing( 4 );
    PedestalMode_Sizer.Add( PedestalMode_Label );
@@ -1331,7 +1352,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    PedestalValue_SpinBox.SetRange( int( TheICPedestalParameter->MinimumValue() ), int( TheICPedestalParameter->MaximumValue() ) );
    PedestalValue_SpinBox.SetToolTip( pedestalValueTip );
    PedestalValue_SpinBox.SetFixedWidth( editWidth2 );
-   PedestalValue_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageCalibrationInterface::__Pedestal_SpinValueUpdated, w );
+   PedestalValue_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageCalibrationInterface::e_SpinValueUpdated, w );
 
    PedestalValue_Sizer.Add( PedestalValue_Label );
    PedestalValue_Sizer.AddSpacing( 4 );
@@ -1349,7 +1370,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    PedestalKeyword_Edit.SetMinWidth( editWidth2 );
    PedestalKeyword_Edit.SetToolTip( pedestalKeywordTip );
-   PedestalKeyword_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::__Pedestal_EditCompleted, w );
+   PedestalKeyword_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::e_EditCompleted, w );
 
    PedestalKeyword_Sizer.SetSpacing( 4 );
    PedestalKeyword_Sizer.Add( PedestalKeyword_Label );
@@ -1368,8 +1389,8 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan_SectionBar.SetTitle( "Overscan" );
    Overscan_SectionBar.SetSection( Overscan_Control );
    Overscan_SectionBar.EnableTitleCheckBox();
-   Overscan_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::__ToggleSection, w );
-   Overscan_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageCalibrationInterface::__CheckSection, w );
+   Overscan_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
+   Overscan_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageCalibrationInterface::e_CheckSection, w );
 
    //
 
@@ -1385,28 +1406,28 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    ImageRegionX0_NumericEdit.label.Hide();
    ImageRegionX0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    ImageRegionX0_NumericEdit.SetToolTip( "Image region, left pixel coordinate" );
-   ImageRegionX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   ImageRegionX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    ImageRegionY0_NumericEdit.SetInteger();
    ImageRegionY0_NumericEdit.SetRange( 0, uint16_max );
    ImageRegionY0_NumericEdit.label.Hide();
    ImageRegionY0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    ImageRegionY0_NumericEdit.SetToolTip( "Image region, top pixel coordinate" );
-   ImageRegionY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   ImageRegionY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    ImageRegionWidth_NumericEdit.SetInteger();
    ImageRegionWidth_NumericEdit.SetRange( 0, uint16_max );
    ImageRegionWidth_NumericEdit.label.Hide();
    ImageRegionWidth_NumericEdit.edit.SetFixedWidth( editWidth2 );
    ImageRegionWidth_NumericEdit.SetToolTip( "Image region, width in pixels" );
-   ImageRegionWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   ImageRegionWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    ImageRegionHeight_NumericEdit.SetInteger();
    ImageRegionHeight_NumericEdit.SetRange( 0, uint16_max );
    ImageRegionHeight_NumericEdit.label.Hide();
    ImageRegionHeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
    ImageRegionHeight_NumericEdit.SetToolTip( "Image region, height in pixels" );
-   ImageRegionHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   ImageRegionHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    ImageRegion_Sizer.SetSpacing( 4 );
    ImageRegion_Sizer.Add( ImageRegion_Label );
@@ -1423,7 +1444,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "arbitrary <i>source and target overscan regions</i> in CCD pixel coordinates. A source overscan "
       "region is used to compute an overscan correction value (as the median of all source region pixels) "
       "that will be subtracted from all pixels in the corresponding target region.</p>" );
-   Overscan1_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__Overscan_Click, w );
+   Overscan1_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    Overscan1_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    Overscan1_Sizer.Add( Overscan1_CheckBox );
@@ -1439,28 +1460,28 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan1SourceX0_NumericEdit.label.Hide();
    Overscan1SourceX0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan1SourceX0_NumericEdit.SetToolTip( "Overscan #1, source region, left pixel coordinate" );
-   Overscan1SourceX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan1SourceX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan1SourceY0_NumericEdit.SetInteger();
    Overscan1SourceY0_NumericEdit.SetRange( 0, uint16_max );
    Overscan1SourceY0_NumericEdit.label.Hide();
    Overscan1SourceY0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan1SourceY0_NumericEdit.SetToolTip( "Overscan #1, source region, top pixel coordinate" );
-   Overscan1SourceY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan1SourceY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan1SourceWidth_NumericEdit.SetInteger();
    Overscan1SourceWidth_NumericEdit.SetRange( 0, uint16_max );
    Overscan1SourceWidth_NumericEdit.label.Hide();
    Overscan1SourceWidth_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan1SourceWidth_NumericEdit.SetToolTip( "Overscan #1, source region, width in pixels" );
-   Overscan1SourceWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan1SourceWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan1SourceHeight_NumericEdit.SetInteger();
    Overscan1SourceHeight_NumericEdit.SetRange( 0, uint16_max );
    Overscan1SourceHeight_NumericEdit.label.Hide();
    Overscan1SourceHeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan1SourceHeight_NumericEdit.SetToolTip( "Overscan #1, source region, height in pixels" );
-   Overscan1SourceHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan1SourceHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan1Source_Sizer.SetSpacing( 4 );
    Overscan1Source_Sizer.Add( Overscan1Source_Label );
@@ -1482,28 +1503,28 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan1TargetX0_NumericEdit.label.Hide();
    Overscan1TargetX0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan1TargetX0_NumericEdit.SetToolTip( "Overscan #1, target region, left pixel coordinate" );
-   Overscan1TargetX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan1TargetX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan1TargetY0_NumericEdit.SetInteger();
    Overscan1TargetY0_NumericEdit.SetRange( 0, uint16_max );
    Overscan1TargetY0_NumericEdit.label.Hide();
    Overscan1TargetY0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan1TargetY0_NumericEdit.SetToolTip( "Overscan #1, target region, top pixel coordinate" );
-   Overscan1TargetY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan1TargetY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan1TargetWidth_NumericEdit.SetInteger();
    Overscan1TargetWidth_NumericEdit.SetRange( 0, uint16_max );
    Overscan1TargetWidth_NumericEdit.label.Hide();
    Overscan1TargetWidth_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan1TargetWidth_NumericEdit.SetToolTip( "Overscan #1, target region, width in pixels" );
-   Overscan1TargetWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan1TargetWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan1TargetHeight_NumericEdit.SetInteger();
    Overscan1TargetHeight_NumericEdit.SetRange( 0, uint16_max );
    Overscan1TargetHeight_NumericEdit.label.Hide();
    Overscan1TargetHeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan1TargetHeight_NumericEdit.SetToolTip( "Overscan #1, target region, height in pixels" );
-   Overscan1TargetHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan1TargetHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan1Target_Sizer.SetSpacing( 4 );
    Overscan1Target_Sizer.Add( Overscan1Target_Label );
@@ -1520,7 +1541,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "arbitrary <i>source and target overscan regions</i> in CCD pixel coordinates. A source overscan "
       "region is used to compute an overscan correction value (as the median of all source region pixels) "
       "that will be subtracted from all pixels in the corresponding target region.</p>" );
-   Overscan2_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__Overscan_Click, w );
+   Overscan2_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    Overscan2_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    Overscan2_Sizer.Add( Overscan2_CheckBox );
@@ -1536,28 +1557,28 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan2SourceX0_NumericEdit.label.Hide();
    Overscan2SourceX0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan2SourceX0_NumericEdit.SetToolTip( "Overscan #2, source region, left pixel coordinate" );
-   Overscan2SourceX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan2SourceX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan2SourceY0_NumericEdit.SetInteger();
    Overscan2SourceY0_NumericEdit.SetRange( 0, uint16_max );
    Overscan2SourceY0_NumericEdit.label.Hide();
    Overscan2SourceY0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan2SourceY0_NumericEdit.SetToolTip( "Overscan #2, source region, top pixel coordinate" );
-   Overscan2SourceY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan2SourceY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan2SourceWidth_NumericEdit.SetInteger();
    Overscan2SourceWidth_NumericEdit.SetRange( 0, uint16_max );
    Overscan2SourceWidth_NumericEdit.label.Hide();
    Overscan2SourceWidth_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan2SourceWidth_NumericEdit.SetToolTip( "Overscan #2, source region, width in pixels" );
-   Overscan2SourceWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan2SourceWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan2SourceHeight_NumericEdit.SetInteger();
    Overscan2SourceHeight_NumericEdit.SetRange( 0, uint16_max );
    Overscan2SourceHeight_NumericEdit.label.Hide();
    Overscan2SourceHeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan2SourceHeight_NumericEdit.SetToolTip( "Overscan #2, source region, height in pixels" );
-   Overscan2SourceHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan2SourceHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan2Source_Sizer.SetSpacing( 4 );
    Overscan2Source_Sizer.Add( Overscan2Source_Label );
@@ -1579,28 +1600,28 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan2TargetX0_NumericEdit.label.Hide();
    Overscan2TargetX0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan2TargetX0_NumericEdit.SetToolTip( "Overscan #2, target region, left pixel coordinate" );
-   Overscan2TargetX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan2TargetX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan2TargetY0_NumericEdit.SetInteger();
    Overscan2TargetY0_NumericEdit.SetRange( 0, uint16_max );
    Overscan2TargetY0_NumericEdit.label.Hide();
    Overscan2TargetY0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan2TargetY0_NumericEdit.SetToolTip( "Overscan #2, target region, top pixel coordinate" );
-   Overscan2TargetY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan2TargetY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan2TargetWidth_NumericEdit.SetInteger();
    Overscan2TargetWidth_NumericEdit.SetRange( 0, uint16_max );
    Overscan2TargetWidth_NumericEdit.label.Hide();
    Overscan2TargetWidth_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan2TargetWidth_NumericEdit.SetToolTip( "Overscan #2, target region, width in pixels" );
-   Overscan2TargetWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan2TargetWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan2TargetHeight_NumericEdit.SetInteger();
    Overscan2TargetHeight_NumericEdit.SetRange( 0, uint16_max );
    Overscan2TargetHeight_NumericEdit.label.Hide();
    Overscan2TargetHeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan2TargetHeight_NumericEdit.SetToolTip( "Overscan #2, target region, height in pixels" );
-   Overscan2TargetHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan2TargetHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan2Target_Sizer.SetSpacing( 4 );
    Overscan2Target_Sizer.Add( Overscan2Target_Label );
@@ -1617,7 +1638,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "arbitrary <i>source and target overscan regions</i> in CCD pixel coordinates. A source overscan "
       "region is used to compute an overscan correction value (as the median of all source region pixels) "
       "that will be subtracted from all pixels in the corresponding target region.</p>" );
-   Overscan3_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__Overscan_Click, w );
+   Overscan3_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    Overscan3_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    Overscan3_Sizer.Add( Overscan3_CheckBox );
@@ -1633,28 +1654,28 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan3SourceX0_NumericEdit.label.Hide();
    Overscan3SourceX0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan3SourceX0_NumericEdit.SetToolTip( "Overscan #3, source region, left pixel coordinate" );
-   Overscan3SourceX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan3SourceX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan3SourceY0_NumericEdit.SetInteger();
    Overscan3SourceY0_NumericEdit.SetRange( 0, uint16_max );
    Overscan3SourceY0_NumericEdit.label.Hide();
    Overscan3SourceY0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan3SourceY0_NumericEdit.SetToolTip( "Overscan #3, source region, top pixel coordinate" );
-   Overscan3SourceY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan3SourceY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan3SourceWidth_NumericEdit.SetInteger();
    Overscan3SourceWidth_NumericEdit.SetRange( 0, uint16_max );
    Overscan3SourceWidth_NumericEdit.label.Hide();
    Overscan3SourceWidth_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan3SourceWidth_NumericEdit.SetToolTip( "Overscan #3, source region, width in pixels" );
-   Overscan3SourceWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan3SourceWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan3SourceHeight_NumericEdit.SetInteger();
    Overscan3SourceHeight_NumericEdit.SetRange( 0, uint16_max );
    Overscan3SourceHeight_NumericEdit.label.Hide();
    Overscan3SourceHeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan3SourceHeight_NumericEdit.SetToolTip( "Overscan #3, source region, height in pixels" );
-   Overscan3SourceHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan3SourceHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan3Source_Sizer.SetSpacing( 4 );
    Overscan3Source_Sizer.Add( Overscan3Source_Label );
@@ -1676,28 +1697,28 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan3TargetX0_NumericEdit.label.Hide();
    Overscan3TargetX0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan3TargetX0_NumericEdit.SetToolTip( "Overscan #3, target region, left pixel coordinate" );
-   Overscan3TargetX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan3TargetX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan3TargetY0_NumericEdit.SetInteger();
    Overscan3TargetY0_NumericEdit.SetRange( 0, uint16_max );
    Overscan3TargetY0_NumericEdit.label.Hide();
    Overscan3TargetY0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan3TargetY0_NumericEdit.SetToolTip( "Overscan #3, target region, top pixel coordinate" );
-   Overscan3TargetY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan3TargetY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan3TargetWidth_NumericEdit.SetInteger();
    Overscan3TargetWidth_NumericEdit.SetRange( 0, uint16_max );
    Overscan3TargetWidth_NumericEdit.label.Hide();
    Overscan3TargetWidth_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan3TargetWidth_NumericEdit.SetToolTip( "Overscan #3, target region, width in pixels" );
-   Overscan3TargetWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan3TargetWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan3TargetHeight_NumericEdit.SetInteger();
    Overscan3TargetHeight_NumericEdit.SetRange( 0, uint16_max );
    Overscan3TargetHeight_NumericEdit.label.Hide();
    Overscan3TargetHeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan3TargetHeight_NumericEdit.SetToolTip( "Overscan #3, target region, height in pixels" );
-   Overscan3TargetHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan3TargetHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan3Target_Sizer.SetSpacing( 4 );
    Overscan3Target_Sizer.Add( Overscan3Target_Label );
@@ -1714,7 +1735,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "arbitrary <i>source and target overscan regions</i> in CCD pixel coordinates. A source overscan "
       "region is used to compute an overscan correction value (as the median of all source region pixels) "
       "that will be subtracted from all pixels in the corresponding target region.</p>" );
-   Overscan4_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__Overscan_Click, w );
+   Overscan4_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    Overscan4_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    Overscan4_Sizer.Add( Overscan4_CheckBox );
@@ -1730,28 +1751,28 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan4SourceX0_NumericEdit.label.Hide();
    Overscan4SourceX0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan4SourceX0_NumericEdit.SetToolTip( "Overscan #4, source region, left pixel coordinate" );
-   Overscan4SourceX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan4SourceX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan4SourceY0_NumericEdit.SetInteger();
    Overscan4SourceY0_NumericEdit.SetRange( 0, uint16_max );
    Overscan4SourceY0_NumericEdit.label.Hide();
    Overscan4SourceY0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan4SourceY0_NumericEdit.SetToolTip( "Overscan #4, source region, top pixel coordinate" );
-   Overscan4SourceY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan4SourceY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan4SourceWidth_NumericEdit.SetInteger();
    Overscan4SourceWidth_NumericEdit.SetRange( 0, uint16_max );
    Overscan4SourceWidth_NumericEdit.label.Hide();
    Overscan4SourceWidth_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan4SourceWidth_NumericEdit.SetToolTip( "Overscan #4, source region, width in pixels" );
-   Overscan4SourceWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan4SourceWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan4SourceHeight_NumericEdit.SetInteger();
    Overscan4SourceHeight_NumericEdit.SetRange( 0, uint16_max );
    Overscan4SourceHeight_NumericEdit.label.Hide();
    Overscan4SourceHeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan4SourceHeight_NumericEdit.SetToolTip( "Overscan #4, source region, height in pixels" );
-   Overscan4SourceHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan4SourceHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan4Source_Sizer.SetSpacing( 4 );
    Overscan4Source_Sizer.Add( Overscan4Source_Label );
@@ -1773,28 +1794,28 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Overscan4TargetX0_NumericEdit.label.Hide();
    Overscan4TargetX0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan4TargetX0_NumericEdit.SetToolTip( "Overscan #4, target region, left pixel coordinate" );
-   Overscan4TargetX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan4TargetX0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan4TargetY0_NumericEdit.SetInteger();
    Overscan4TargetY0_NumericEdit.SetRange( 0, uint16_max );
    Overscan4TargetY0_NumericEdit.label.Hide();
    Overscan4TargetY0_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan4TargetY0_NumericEdit.SetToolTip( "Overscan #4, target region, top pixel coordinate" );
-   Overscan4TargetY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan4TargetY0_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan4TargetWidth_NumericEdit.SetInteger();
    Overscan4TargetWidth_NumericEdit.SetRange( 0, uint16_max );
    Overscan4TargetWidth_NumericEdit.label.Hide();
    Overscan4TargetWidth_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan4TargetWidth_NumericEdit.SetToolTip( "Overscan #4, target region, width in pixels" );
-   Overscan4TargetWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan4TargetWidth_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan4TargetHeight_NumericEdit.SetInteger();
    Overscan4TargetHeight_NumericEdit.SetRange( 0, uint16_max );
    Overscan4TargetHeight_NumericEdit.label.Hide();
    Overscan4TargetHeight_NumericEdit.edit.SetFixedWidth( editWidth2 );
    Overscan4TargetHeight_NumericEdit.SetToolTip( "Overscan #4, target region, height in pixels" );
-   Overscan4TargetHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__Overscan_ValueUpdated, w );
+   Overscan4TargetHeight_NumericEdit.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_OverscanValueUpdated, w );
 
    Overscan4Target_Sizer.SetSpacing( 4 );
    Overscan4Target_Sizer.Add( Overscan4Target_Label );
@@ -1828,18 +1849,18 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    MasterBias_SectionBar.SetTitle( "Master Bias" );
    MasterBias_SectionBar.SetSection( MasterBias_Control );
    MasterBias_SectionBar.EnableTitleCheckBox();
-   MasterBias_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::__ToggleSection, w );
-   MasterBias_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageCalibrationInterface::__CheckSection, w );
+   MasterBias_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
+   MasterBias_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageCalibrationInterface::e_CheckSection, w );
 
    MasterBiasPath_Edit.SetToolTip( "<p>File path of the master bias frame.</p>" );
-   MasterBiasPath_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::__MasterFrame_EditCompleted, w );
-   MasterBiasPath_Edit.OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::__FileDrag, w );
-   MasterBiasPath_Edit.OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::__FileDrop, w );
+   MasterBiasPath_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::e_EditCompleted, w );
+   MasterBiasPath_Edit.OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::e_FileDrag, w );
+   MasterBiasPath_Edit.OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::e_FileDrop, w );
 
    MasterBiasPath_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-file.png" ) ) );
    MasterBiasPath_ToolButton.SetScaledFixedSize( 20, 20 );
    MasterBiasPath_ToolButton.SetToolTip( "<p>Select the master bias image file.</p>" );
-   MasterBiasPath_ToolButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__MasterFrame_Click, w );
+   MasterBiasPath_ToolButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    MasterBiasPath_Sizer.Add( MasterBiasPath_Edit, 100 );
    MasterBiasPath_Sizer.AddSpacing( 4 );
@@ -1849,7 +1870,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    CalibrateMasterBias_CheckBox.SetToolTip( "<p>Select this option to calibrate the master bias frame "
       "at the beginning of the batch calibration process. Bias frames are only corrected for overscan, when "
       "one or more overscan regions have been defined and are enabled.</p>" );
-   CalibrateMasterBias_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__MasterFrame_Click, w );
+   CalibrateMasterBias_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    CalibrateMasterBias_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    CalibrateMasterBias_Sizer.Add( CalibrateMasterBias_CheckBox );
@@ -1866,18 +1887,18 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    MasterDark_SectionBar.SetTitle( "Master Dark" );
    MasterDark_SectionBar.SetSection( MasterDark_Control );
    MasterDark_SectionBar.EnableTitleCheckBox();
-   MasterDark_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::__ToggleSection, w );
-   MasterDark_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageCalibrationInterface::__CheckSection, w );
+   MasterDark_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
+   MasterDark_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageCalibrationInterface::e_CheckSection, w );
 
    MasterDarkPath_Edit.SetToolTip( "<p>File path of the master dark frame.</p>" );
-   MasterDarkPath_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::__MasterFrame_EditCompleted, w );
-   MasterDarkPath_Edit.OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::__FileDrag, w );
-   MasterDarkPath_Edit.OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::__FileDrop, w );
+   MasterDarkPath_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::e_EditCompleted, w );
+   MasterDarkPath_Edit.OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::e_FileDrag, w );
+   MasterDarkPath_Edit.OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::e_FileDrop, w );
 
    MasterDarkPath_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-file.png" ) ) );
    MasterDarkPath_ToolButton.SetScaledFixedSize( 20, 20 );
    MasterDarkPath_ToolButton.SetToolTip( "<p>Select the master dark image file.</p>" );
-   MasterDarkPath_ToolButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__MasterFrame_Click, w );
+   MasterDarkPath_ToolButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    MasterDarkPath_Sizer.Add( MasterDarkPath_Edit, 100 );
    MasterDarkPath_Sizer.AddSpacing( 4 );
@@ -1888,7 +1909,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "at the beginning of the batch calibration process. The master dark frame is corrected for overscan, "
       "when one or more overscan regions have been defined and are enabled, and bias-subtracted, if a master "
       "bias frame has been selected and is enabled.</p>" );
-   CalibrateMasterDark_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__MasterFrame_Click, w );
+   CalibrateMasterDark_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    CalibrateMasterDark_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    CalibrateMasterDark_Sizer.Add( CalibrateMasterDark_CheckBox );
@@ -1900,7 +1921,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "induced by dark subtraction. Optimization is carried out separately for each target frame, including "
       "the master flat frame, if selected. Dark frame optimization has been implemented using multiscale "
       "(wavelet-based) noise evaluation and linear minimization routines.</p>" );
-   OptimizeDarks_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__MasterFrame_Click, w );
+   OptimizeDarks_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    OptimizeDarks_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    OptimizeDarks_Sizer.Add( OptimizeDarks_CheckBox );
@@ -1920,7 +1941,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "factors adaptively. By restricting this set to relatively bright pixels, the optimization process can "
       "be more robust to readout noise present in the master bias and dark frames. Increase this parameter to "
       "remove more dark pixels from the optimization set.</p>" );
-   DarkOptimizationThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::__MasterFrame_ValueUpdated, w );
+   DarkOptimizationThreshold_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
 
    const char* darkOptimizationWindowTip = "<p>This parameter is the size in pixels of a square region "
       "used to compute noise estimates during the dark optimization procedure. The square region is centered "
@@ -1941,44 +1962,12 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    DarkOptimizationWindow_SpinBox.SetToolTip( darkOptimizationWindowTip );
    DarkOptimizationWindow_SpinBox.SetFixedWidth( editWidth2 );
    DarkOptimizationWindow_SpinBox.SetStepSize( 256 );
-   DarkOptimizationWindow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageCalibrationInterface::__MasterFrame_SpinValueUpdated, w );
+   DarkOptimizationWindow_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageCalibrationInterface::e_SpinValueUpdated, w );
 
    DarkOptimizationWindow_Sizer.Add( DarkOptimizationWindow_Label );
    DarkOptimizationWindow_Sizer.AddSpacing( 4 );
    DarkOptimizationWindow_Sizer.Add( DarkOptimizationWindow_SpinBox );
    DarkOptimizationWindow_Sizer.AddStretch();
-
-   const char* darkCFADetectionModeToolTip = "<p>Color Filter Array (CFA) detection mode for the master "
-      "dark frame.</p>"
-      "<p>Dark frame optimization of CFA images, such as Bayerized DSLR or OSC raw images, requires a "
-      "previous demosaicing step in order to compute valid noise estimates. This parameter defines how CFA "
-      "patters are handled for computation of dark frame scaling factors.</p>"
-      "<p><b>Detect CFA</b> is the default option. In this mode, ImageCalibration will honor a CFA pattern "
-      "reported by the file format that loads the master dark frame, or will try to detect a CFA pattern "
-      "automatically, if the format does not report one. Note that automatic detection of CFA patterns is "
-      "only possible for RGB separate Bayer images, such as those produced by the DSLR_RAW standard module. "
-      "In general, this is the recommended option.</p>"
-      "<p><b>Force CFA.</b> Pretend that all images have been mosaiced with a CFA pattern. This mode can be "
-      "used in case ImageCalibration cannot detect existing CFA patterns. For example, you must select this "
-      "mode if you work with monochrome CFA images.</p>"
-      "<p><b>Ignore CFA.</b> Ignore detected CFA patterns. This mode will lead to computation of erroneous "
-      "dark scaling factors if the images are mosaiced.</p>";
-
-   DarkCFADetectionMode_Label.SetText( "CFA pattern detection:" );
-   DarkCFADetectionMode_Label.SetToolTip( darkCFADetectionModeToolTip );
-   DarkCFADetectionMode_Label.SetMinWidth( labelWidth1 );
-   DarkCFADetectionMode_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
-
-   DarkCFADetectionMode_ComboBox.AddItem( "Detect CFA" );
-   DarkCFADetectionMode_ComboBox.AddItem( "Force CFA" );
-   DarkCFADetectionMode_ComboBox.AddItem( "Ignore CFA" );
-   DarkCFADetectionMode_ComboBox.SetToolTip( darkCFADetectionModeToolTip );
-   DarkCFADetectionMode_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ImageCalibrationInterface::__MasterFrame_ItemSelected, w );
-
-   DarkCFADetectionMode_Sizer.SetSpacing( 4 );
-   DarkCFADetectionMode_Sizer.Add( DarkCFADetectionMode_Label );
-   DarkCFADetectionMode_Sizer.Add( DarkCFADetectionMode_ComboBox );
-   DarkCFADetectionMode_Sizer.AddStretch();
 
    MasterDark_Sizer.SetSpacing( 4 );
    MasterDark_Sizer.Add( MasterDarkPath_Sizer );
@@ -1986,7 +1975,6 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    MasterDark_Sizer.Add( OptimizeDarks_Sizer );
    MasterDark_Sizer.Add( DarkOptimizationThreshold_NumericControl );
    MasterDark_Sizer.Add( DarkOptimizationWindow_Sizer );
-   MasterDark_Sizer.Add( DarkCFADetectionMode_Sizer );
 
    MasterDark_Control.SetSizer( MasterDark_Sizer );
 
@@ -1995,18 +1983,18 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    MasterFlat_SectionBar.SetTitle( "Master Flat" );
    MasterFlat_SectionBar.SetSection( MasterFlat_Control );
    MasterFlat_SectionBar.EnableTitleCheckBox();
-   MasterFlat_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::__ToggleSection, w );
-   MasterFlat_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageCalibrationInterface::__CheckSection, w );
+   MasterFlat_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&ImageCalibrationInterface::e_ToggleSection, w );
+   MasterFlat_SectionBar.OnCheck( (SectionBar::check_event_handler)&ImageCalibrationInterface::e_CheckSection, w );
 
    MasterFlatPath_Edit.SetToolTip( "<p>File path of the master flat frame.</p>" );
-   MasterFlatPath_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::__MasterFrame_EditCompleted, w );
-   MasterFlatPath_Edit.OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::__FileDrag, w );
-   MasterFlatPath_Edit.OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::__FileDrop, w );
+   MasterFlatPath_Edit.OnEditCompleted( (Edit::edit_event_handler)&ImageCalibrationInterface::e_EditCompleted, w );
+   MasterFlatPath_Edit.OnFileDrag( (Control::file_drag_event_handler)&ImageCalibrationInterface::e_FileDrag, w );
+   MasterFlatPath_Edit.OnFileDrop( (Control::file_drop_event_handler)&ImageCalibrationInterface::e_FileDrop, w );
 
    MasterFlatPath_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/select-file.png" ) ) );
    MasterFlatPath_ToolButton.SetScaledFixedSize( 20, 20 );
    MasterFlatPath_ToolButton.SetToolTip( "<p>Select the master flat image file.</p>" );
-   MasterFlatPath_ToolButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__MasterFrame_Click, w );
+   MasterFlatPath_ToolButton.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    MasterFlatPath_Sizer.Add( MasterFlatPath_Edit, 100 );
    MasterFlatPath_Sizer.AddSpacing( 4 );
@@ -2017,15 +2005,44 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
       "at the beginning of the batch calibration process. The master flat frame is corrected for overscan, "
       "bias-subtracted, and dark-subtracted with optional optimization, when the corresponding overscan "
       "regions and master calibration frames have been defined and are enabled.</p>" );
-   CalibrateMasterFlat_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::__MasterFrame_Click, w );
+   CalibrateMasterFlat_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
    CalibrateMasterFlat_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    CalibrateMasterFlat_Sizer.Add( CalibrateMasterFlat_CheckBox );
    CalibrateMasterFlat_Sizer.AddStretch();
 
+   SeparateCFAFlatScalingFactors_CheckBox.SetText( "Separate CFA flat scaling factors" );
+   SeparateCFAFlatScalingFactors_CheckBox.SetToolTip( "<p>When this option is enabled and the master flat frame is "
+      "a single-channel image mosaiced with a Color Filter Array (CFA), such as a Bayer or X-Trans filter pattern, "
+      "three separate master flat scaling factors are computed for the red, green and blue CFA components, "
+      "respectively. When this option is disabled, a single scaling factor is computed for the whole master flat "
+      "frame, ignoring CFA components.</p>" );
+   SeparateCFAFlatScalingFactors_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
+
+   SeparateCFAFlatScalingFactors_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   SeparateCFAFlatScalingFactors_Sizer.Add( SeparateCFAFlatScalingFactors_CheckBox );
+   SeparateCFAFlatScalingFactors_Sizer.AddStretch();
+
+   FlatScaleClippingFactor_NumericControl.label.SetText( "Scale clipping factor:" );
+   FlatScaleClippingFactor_NumericControl.label.SetFixedWidth( labelWidth1 );
+   FlatScaleClippingFactor_NumericControl.slider.SetRange( 0, 250 );
+   FlatScaleClippingFactor_NumericControl.slider.SetScaledMinWidth( 250 );
+   FlatScaleClippingFactor_NumericControl.SetReal();
+   FlatScaleClippingFactor_NumericControl.SetRange( TheICFlatScaleClippingFactorParameter->MinimumValue(),
+                                                    TheICFlatScaleClippingFactorParameter->MaximumValue() );
+   FlatScaleClippingFactor_NumericControl.SetPrecision( TheICFlatScaleClippingFactorParameter->Precision() );
+   FlatScaleClippingFactor_NumericControl.edit.SetFixedWidth( editWidth2 );
+   FlatScaleClippingFactor_NumericControl.SetToolTip( "<p>Master flat frame scaling factors are computed as robust "
+      "mean pixel values for each channel or CFA component. This parameter defines the fraction of pixels that will "
+      "be rejected to compute two-sided, symmetric trimmed means. The default value is 0.05, which rejects a 5% of "
+      "pixels at both ends of the flat frame distribution.</p>" );
+   FlatScaleClippingFactor_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&ImageCalibrationInterface::e_ValueUpdated, w );
+
+   MasterFlat_Sizer.SetSpacing( 4 );
    MasterFlat_Sizer.Add( MasterFlatPath_Sizer );
-   MasterFlat_Sizer.AddSpacing( 4 );
    MasterFlat_Sizer.Add( CalibrateMasterFlat_Sizer );
+   MasterFlat_Sizer.Add( SeparateCFAFlatScalingFactors_Sizer );
+   MasterFlat_Sizer.Add( FlatScaleClippingFactor_NumericControl );
 
    MasterFlat_Control.SetSizer( MasterFlat_Sizer );
 
@@ -2035,6 +2052,8 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Global_Sizer.SetSpacing( 6 );
    Global_Sizer.Add( TargetImages_SectionBar );
    Global_Sizer.Add( TargetImages_Control );
+   Global_Sizer.Add( CFAData_Sizer );
+   Global_Sizer.Add( CFAPattern_Sizer );
    Global_Sizer.Add( FormatHints_SectionBar );
    Global_Sizer.Add( FormatHints_Control );
    Global_Sizer.Add( OutputFiles_SectionBar );
@@ -2066,4 +2085,4 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ImageCalibrationInterface.cpp - Released 2020-07-31T19:33:39Z

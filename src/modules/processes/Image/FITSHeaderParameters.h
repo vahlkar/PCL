@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderParameters.h - Released 2020-02-27T12:56:01Z
+// FITSHeaderParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -67,7 +67,8 @@ class FITSKeywordTable : public MetaTable
 public:
 
    FITSKeywordTable( MetaProcess* );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FITSKeywordTable* TheFITSKeywordTableParameter;
@@ -79,7 +80,8 @@ class FITSKeywordName : public MetaString
 public:
 
    FITSKeywordName( MetaTable* );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FITSKeywordName* TheFITSKeywordNameParameter;
@@ -91,7 +93,8 @@ class FITSKeywordValue : public MetaString
 public:
 
    FITSKeywordValue( MetaTable* );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FITSKeywordValue* TheFITSKeywordValueParameter;
@@ -103,7 +106,8 @@ class FITSKeywordComment : public MetaString
 public:
 
    FITSKeywordComment( MetaTable* );
-   virtual IsoString Id() const;
+
+   IsoString Id() const override;
 };
 
 extern FITSKeywordComment* TheFITSKeywordCommentParameter;
@@ -117,4 +121,4 @@ PCL_END_LOCAL
 #endif   // __FITSHeaderParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderParameters.h - Released 2020-02-27T12:56:01Z
+// EOF FITSHeaderParameters.h - Released 2020-07-31T19:33:39Z

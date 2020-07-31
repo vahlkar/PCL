@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// XISFFormat.h - Released 2020-02-27T12:55:48Z
+// XISFFormat.h - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -77,7 +77,7 @@ public:
    String Description() const override;
    String Implementation() const override;
 
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
 
    bool CanReadIncrementally() const override;
    bool CanWriteIncrementally() const override;
@@ -151,4 +151,4 @@ public:
 #endif   // __XISFFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.h - Released 2020-02-27T12:55:48Z
+// EOF XISFFormat.h - Released 2020-07-31T19:33:23Z

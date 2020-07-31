@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationProcess.cpp - Released 2020-02-27T12:56:01Z
+// ColorSaturationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -64,10 +64,6 @@ ColorSaturationProcess* TheColorSaturationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ColorSaturationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 ColorSaturationProcess::ColorSaturationProcess()
 {
    TheColorSaturationProcess = this;
@@ -112,9 +108,9 @@ String ColorSaturationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ColorSaturationProcess::IconImageXPM() const
+String ColorSaturationProcess::IconImageSVGFile() const
 {
-   return ColorSaturationIcon_XPM;
+   return "@module_icons_dir/ColorSaturation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -144,4 +140,4 @@ ProcessImplementation* ColorSaturationProcess::Clone( const ProcessImplementatio
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorSaturationProcess.cpp - Released 2020-07-31T19:33:39Z

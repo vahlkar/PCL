@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDICCDFrameParameters.cpp - Released 2020-02-27T12:56:01Z
+// INDICCDFrameParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -94,8 +94,8 @@ REGISTER_MODULE_PARAMETER( ICFTelescopeFocalLength );
 
 // ----------------------------------------------------------------------------
 
-ICFDeviceName::ICFDeviceName( MetaProcess* P ) :
-   MetaString( P )
+ICFDeviceName::ICFDeviceName( MetaProcess* P )
+   : MetaString( P )
 {
    TheICFDeviceNameParameter = this;
 }
@@ -107,8 +107,8 @@ IsoString ICFDeviceName::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICFUploadMode::ICFUploadMode( MetaProcess* P ) :
-   MetaEnumeration( P )
+ICFUploadMode::ICFUploadMode( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICFUploadModeParameter = this;
 }
@@ -149,8 +149,8 @@ size_type ICFUploadMode::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICFServerUploadDirectory::ICFServerUploadDirectory( MetaProcess* P ) :
-   MetaString( P )
+ICFServerUploadDirectory::ICFServerUploadDirectory( MetaProcess* P )
+   : MetaString( P )
 {
    TheICFServerUploadDirectoryParameter = this;
 }
@@ -162,8 +162,8 @@ IsoString ICFServerUploadDirectory::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICFServerFileNameTemplate::ICFServerFileNameTemplate( MetaProcess* P ) :
-   MetaString( P )
+ICFServerFileNameTemplate::ICFServerFileNameTemplate( MetaProcess* P )
+   : MetaString( P )
 {
    TheICFServerFileNameTemplateParameter = this;
 }
@@ -180,8 +180,8 @@ String ICFServerFileNameTemplate::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFFrameType::ICFFrameType( MetaProcess* P ) :
-   MetaEnumeration( P )
+ICFFrameType::ICFFrameType( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICFFrameTypeParameter = this;
 }
@@ -224,8 +224,8 @@ size_type ICFFrameType::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICFBinningX::ICFBinningX( MetaProcess* P ) :
-   MetaInt32( P )
+ICFBinningX::ICFBinningX( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICFBinningXParameter = this;
 }
@@ -252,8 +252,8 @@ double ICFBinningX::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFBinningY::ICFBinningY( MetaProcess* P ) :
-   MetaInt32( P )
+ICFBinningY::ICFBinningY( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICFBinningYParameter = this;
 }
@@ -280,8 +280,8 @@ double ICFBinningY::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFFilterSlot::ICFFilterSlot( MetaProcess* P ) :
-   MetaInt32( P )
+ICFFilterSlot::ICFFilterSlot( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICFFilterSlotParameter = this;
 }
@@ -308,8 +308,8 @@ double ICFFilterSlot::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFExposureTime::ICFExposureTime( MetaProcess* P ) :
-   MetaDouble( P )
+ICFExposureTime::ICFExposureTime( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheICFExposureTimeParameter = this;
 }
@@ -341,8 +341,8 @@ double ICFExposureTime::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFExposureDelay::ICFExposureDelay( MetaProcess* P ) :
-   MetaDouble( P )
+ICFExposureDelay::ICFExposureDelay( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheICFExposureDelayParameter = this;
 }
@@ -374,8 +374,8 @@ double ICFExposureDelay::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFExposureCount::ICFExposureCount( MetaProcess* P ) :
-   MetaInt32( P )
+ICFExposureCount::ICFExposureCount( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheICFExposureCountParameter = this;
 }
@@ -402,8 +402,8 @@ double ICFExposureCount::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFNewImageIdTemplate::ICFNewImageIdTemplate( MetaProcess* P ) :
-   MetaString( P )
+ICFNewImageIdTemplate::ICFNewImageIdTemplate( MetaProcess* P )
+   : MetaString( P )
 {
    TheICFNewImageIdTemplateParameter = this;
 }
@@ -420,8 +420,8 @@ String ICFNewImageIdTemplate::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFOpenClientImages::ICFOpenClientImages( MetaProcess* P ) :
-   MetaBoolean( P )
+ICFOpenClientImages::ICFOpenClientImages( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICFOpenClientImagesParameter = this;
 }
@@ -438,8 +438,8 @@ bool ICFOpenClientImages::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFReuseImageWindow::ICFReuseImageWindow( MetaProcess* P ) :
-   MetaBoolean( P )
+ICFReuseImageWindow::ICFReuseImageWindow( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICFReuseImageWindowParameter = this;
 }
@@ -456,8 +456,8 @@ bool ICFReuseImageWindow::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFAutoStretch::ICFAutoStretch( MetaProcess* P ) :
-   MetaBoolean( P )
+ICFAutoStretch::ICFAutoStretch( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICFAutoStretchParameter = this;
 }
@@ -474,8 +474,8 @@ bool ICFAutoStretch::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFLinkedAutoStretch::ICFLinkedAutoStretch( MetaProcess* P ) :
-   MetaBoolean( P )
+ICFLinkedAutoStretch::ICFLinkedAutoStretch( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICFLinkedAutoStretchParameter = this;
 }
@@ -492,8 +492,8 @@ bool ICFLinkedAutoStretch::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFSaveClientImages::ICFSaveClientImages( MetaProcess* P ) :
-   MetaBoolean( P )
+ICFSaveClientImages::ICFSaveClientImages( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICFSaveClientImagesParameter = this;
 }
@@ -510,8 +510,8 @@ bool ICFSaveClientImages::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFOverwriteClientImages::ICFOverwriteClientImages( MetaProcess* P ) :
-   MetaBoolean( P )
+ICFOverwriteClientImages::ICFOverwriteClientImages( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICFOverwriteClientImagesParameter = this;
 }
@@ -528,8 +528,8 @@ bool ICFOverwriteClientImages::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFClientDownloadDirectory::ICFClientDownloadDirectory( MetaProcess* P ) :
-   MetaString( P )
+ICFClientDownloadDirectory::ICFClientDownloadDirectory( MetaProcess* P )
+   : MetaString( P )
 {
    TheICFClientDownloadDirectoryParameter = this;
 }
@@ -541,8 +541,8 @@ IsoString ICFClientDownloadDirectory::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICFClientFileNameTemplate::ICFClientFileNameTemplate( MetaProcess* P ) :
-   MetaString( P )
+ICFClientFileNameTemplate::ICFClientFileNameTemplate( MetaProcess* P )
+   : MetaString( P )
 {
    TheICFClientFileNameTemplateParameter = this;
 }
@@ -559,8 +559,8 @@ String ICFClientFileNameTemplate::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFClientOutputFormatHints::ICFClientOutputFormatHints( MetaProcess* P ) :
-   MetaString( P )
+ICFClientOutputFormatHints::ICFClientOutputFormatHints( MetaProcess* P )
+   : MetaString( P )
 {
    TheICFClientOutputFormatHintsParameter = this;
 }
@@ -577,8 +577,8 @@ String ICFClientOutputFormatHints::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFObjectName::ICFObjectName( MetaProcess* P ) :
-   MetaString( P )
+ICFObjectName::ICFObjectName( MetaProcess* P )
+   : MetaString( P )
 {
    TheICFObjectNameParameter = this;
 }
@@ -595,8 +595,8 @@ String ICFObjectName::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFTelescopeSelection::ICFTelescopeSelection( MetaProcess* P ) :
-   MetaEnumeration( P )
+ICFTelescopeSelection::ICFTelescopeSelection( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheICFTelescopeSelectionParameter = this;
 }
@@ -641,8 +641,8 @@ size_type ICFTelescopeSelection::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-ICFRequireSelectedTelescope::ICFRequireSelectedTelescope( MetaProcess* P ) :
-   MetaBoolean( P )
+ICFRequireSelectedTelescope::ICFRequireSelectedTelescope( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheICFRequireSelectedTelescopeParameter = this;
 }
@@ -659,8 +659,8 @@ bool ICFRequireSelectedTelescope::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ICFTelescopeDeviceName::ICFTelescopeDeviceName( MetaProcess* P ) :
-   MetaString( P )
+ICFTelescopeDeviceName::ICFTelescopeDeviceName( MetaProcess* P )
+   : MetaString( P )
 {
    TheICFTelescopeDeviceNameParameter = this;
 }
@@ -678,8 +678,8 @@ String ICFTelescopeDeviceName::DefaultValue() const
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-ICFClientFrames::ICFClientFrames( MetaProcess* P ) :
-   MetaTable( P )
+ICFClientFrames::ICFClientFrames( MetaProcess* P )
+   : MetaTable( P )
 {
    TheICFClientFramesParameter = this;
 }
@@ -696,8 +696,8 @@ bool ICFClientFrames::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICFClientViewId::ICFClientViewId( MetaTable* T ) :
-   MetaString( T )
+ICFClientViewId::ICFClientViewId( MetaTable* T )
+   : MetaString( T )
 {
    TheICFClientViewIdParameter = this;
 }
@@ -714,8 +714,8 @@ bool ICFClientViewId::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICFClientFilePath::ICFClientFilePath( MetaTable* T ) :
-   MetaString( T )
+ICFClientFilePath::ICFClientFilePath( MetaTable* T )
+   : MetaString( T )
 {
    TheICFClientFilePathParameter = this;
 }
@@ -732,8 +732,8 @@ bool ICFClientFilePath::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICFServerFrames::ICFServerFrames( MetaProcess* P ) :
-   MetaTable( P )
+ICFServerFrames::ICFServerFrames( MetaProcess* P )
+   : MetaTable( P )
 {
    TheICFServerFramesParameter = this;
 }
@@ -750,8 +750,8 @@ bool ICFServerFrames::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-ICFServerFrame::ICFServerFrame( MetaTable* T ) :
-   MetaString( T )
+ICFServerFrame::ICFServerFrame( MetaTable* T )
+   : MetaString( T )
 {
    TheICFServerFrameParameter = this;
 }
@@ -782,4 +782,4 @@ DEFINE_INT32_PARAMETER_CLASS( ICFTelescopeFocalLength, "telescopeAperture", 0, 0
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF INDICCDFrameParameters.cpp - Released 2020-07-31T19:33:39Z

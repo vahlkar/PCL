@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorInstance.cpp - Released 2020-02-27T12:56:01Z
+// NoiseGeneratorInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -64,19 +64,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-NoiseGeneratorInstance::NoiseGeneratorInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_amount( TheNGNoiseAmountParameter->DefaultValue() ),
-   p_distribution( NGNoiseDistribution::Default ),
-   p_impulsionalNoiseProbability( TheNGImpulsionalNoiseProbabilityParameter->DefaultValue() ),
-   p_preserveBrightness( false /*NGPreserveBrightness::Default*/ ) // ### deprecated
+NoiseGeneratorInstance::NoiseGeneratorInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_amount( TheNGNoiseAmountParameter->DefaultValue() )
+   , p_distribution( NGNoiseDistribution::Default )
+   , p_impulsionalNoiseProbability( TheNGImpulsionalNoiseProbabilityParameter->DefaultValue() )
+   , p_preserveBrightness( NGPreserveBrightness::None ) // ### DEPRECATED
 {
 }
 
 // ----------------------------------------------------------------------------
 
-NoiseGeneratorInstance::NoiseGeneratorInstance( const NoiseGeneratorInstance& x ) :
-   ProcessImplementation( x )
+NoiseGeneratorInstance::NoiseGeneratorInstance( const NoiseGeneratorInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -91,7 +91,7 @@ void NoiseGeneratorInstance::Assign( const ProcessImplementation& p )
       p_amount = x->p_amount;
       p_distribution = x->p_distribution;
       p_impulsionalNoiseProbability = x->p_impulsionalNoiseProbability;
-      p_preserveBrightness = x->p_preserveBrightness; // ### deprecated
+      p_preserveBrightness = x->p_preserveBrightness; // ### DEPRECATED
    }
 }
 
@@ -213,8 +213,9 @@ void* NoiseGeneratorInstance::LockParameter( const MetaParameter* p, size_type /
       return &p_distribution;
    if ( p == TheNGImpulsionalNoiseProbabilityParameter )
       return &p_impulsionalNoiseProbability;
-   if ( p == TheNGPreserveBrightnessParameter ) // ### deprecated
+   if ( p == TheNGPreserveBrightnessParameter ) // ### DEPRECATED
       return &p_preserveBrightness;
+
    return nullptr;
 }
 
@@ -223,4 +224,4 @@ void* NoiseGeneratorInstance::LockParameter( const MetaParameter* p, size_type /
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF NoiseGeneratorInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SuperbiasParameters.cpp - Released 2020-02-27T12:56:01Z
+// SuperbiasParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -57,14 +57,14 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SBColumns*           TheSBColumnsParameter = 0;
-SBRows*              TheSBRowsParameter = 0;
-SBMedianTransform*   TheSBMedianTransformParameter = 0;
-SBExcludeLargeScale* TheSBExcludeLargeScaleParameter = 0;
-SBMultiscaleLayers*  TheSBMultiscaleLayersParameter = 0;
-SBTrimmingFactor*    TheSBTrimmingFactorParameter = 0;
-SBSuperbiasViewId*   TheSBSuperbiasViewIdParameter = 0;
-SBSuperbiasViewId1*  TheSBSuperbiasViewId1Parameter = 0;
+SBColumns*           TheSBColumnsParameter = nullptr;
+SBRows*              TheSBRowsParameter = nullptr;
+SBMedianTransform*   TheSBMedianTransformParameter = nullptr;
+SBExcludeLargeScale* TheSBExcludeLargeScaleParameter = nullptr;
+SBMultiscaleLayers*  TheSBMultiscaleLayersParameter = nullptr;
+SBTrimmingFactor*    TheSBTrimmingFactorParameter = nullptr;
+SBSuperbiasViewId*   TheSBSuperbiasViewIdParameter = nullptr;
+SBSuperbiasViewId1*  TheSBSuperbiasViewId1Parameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -232,4 +232,4 @@ bool SBSuperbiasViewId1::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF SuperbiasParameters.cpp - Released 2020-07-31T19:33:39Z

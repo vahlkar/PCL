@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionProcess.cpp - Released 2020-02-27T12:56:01Z
+// CosmeticCorrectionProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -51,21 +51,16 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "CosmeticCorrectionProcess.h"
-#include "CosmeticCorrectionParameters.h"
 #include "CosmeticCorrectionInstance.h"
 #include "CosmeticCorrectionInterface.h"
+#include "CosmeticCorrectionParameters.h"
+#include "CosmeticCorrectionProcess.h"
 
 namespace pcl
 {
-
 // ----------------------------------------------------------------------------
 
-CosmeticCorrectionProcess* TheCosmeticCorrectionProcess = 0;
-
-// ----------------------------------------------------------------------------
-
-//#include "CosmeticCorrectionIcon.xpm"
+CosmeticCorrectionProcess* TheCosmeticCorrectionProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -73,7 +68,6 @@ CosmeticCorrectionProcess::CosmeticCorrectionProcess()
 {
    TheCosmeticCorrectionProcess = this;
 
-   // Instantiate process parameters
    new CCTargetFrames( this );
    new CCTargetFrameEnabled( TheTargetFrames );
    new CCTargetFramePath( TheTargetFrames );
@@ -83,22 +77,18 @@ CosmeticCorrectionProcess::CosmeticCorrectionProcess()
    new CCPrefix( this );
    new CCPostfix( this );
    new CCOverwrite( this );
-
    new CCAmount( this );
    new CCCFA( this );
-
    new CCUseMasterDark( this );
    new CCHotDarkCheck( this );
    new CCHotLevel( this );
    new CCColdDarkCheck( this );
    new CCColdLevel( this );
-
    new CCUseAutoDetect( this );
    new CCHotAutoCheck( this );
    new CCHotAutoValue( this );
    new CCColdAutoCheck( this );
    new CCColdAutoValue( this );
-
    new CCUseDefectList( this );
    new CCDefects( this );
    new CCDefectEnabled( TheDefects );
@@ -107,23 +97,30 @@ CosmeticCorrectionProcess::CosmeticCorrectionProcess()
    new CCDefectIsRange( TheDefects );
    new CCDefectBegin( TheDefects );
    new CCDefectEnd( TheDefects );
-
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString CosmeticCorrectionProcess::Id() const
 {
    return "CosmeticCorrection";
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString CosmeticCorrectionProcess::Category() const
 {
    return "ImageCalibration,Preprocessing";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 CosmeticCorrectionProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String CosmeticCorrectionProcess::Description() const
 {
@@ -134,30 +131,38 @@ String CosmeticCorrectionProcess::Description() const
           "</html>";
 }
 
-const char** CosmeticCorrectionProcess::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String CosmeticCorrectionProcess::IconImageSVGFile() const
 {
-   return 0; //CosmeticCorrectionIcon_XPM;
+   return "@module_icons_dir/CosmeticCorrection.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* CosmeticCorrectionProcess::DefaultInterface() const
 {
    return TheCosmeticCorrectionInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* CosmeticCorrectionProcess::Create() const
 {
    return new CosmeticCorrectionInstance( this );
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* CosmeticCorrectionProcess::Clone( const ProcessImplementation& p ) const
 {
    const CosmeticCorrectionInstance* instPtr = dynamic_cast<const CosmeticCorrectionInstance*>( &p );
-   return (instPtr != 0) ? new CosmeticCorrectionInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new CosmeticCorrectionInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF CosmeticCorrectionProcess.cpp - Released 2020-07-31T19:33:39Z

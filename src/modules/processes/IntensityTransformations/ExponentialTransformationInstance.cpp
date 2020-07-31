@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// ExponentialTransformationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -67,19 +67,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ExponentialTransformationInstance::ExponentialTransformationInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   type( TheExponentialFunctionTypeParameter->ElementValue( TheExponentialFunctionTypeParameter->DefaultValueIndex() ) ),
-   order( TheExponentialFunctionOrderParameter->DefaultValue() ),
-   sigma( TheExponentialFunctionSmoothingParameter->DefaultValue() ),
-   useLightnessMask( TheExponentialFunctionMaskParameter->DefaultValue() )
+ExponentialTransformationInstance::ExponentialTransformationInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , type( TheExponentialFunctionTypeParameter->ElementValue( TheExponentialFunctionTypeParameter->DefaultValueIndex() ) )
+   , order( TheExponentialFunctionOrderParameter->DefaultValue() )
+   , sigma( TheExponentialFunctionSmoothingParameter->DefaultValue() )
+   , useLightnessMask( TheExponentialFunctionMaskParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ExponentialTransformationInstance::ExponentialTransformationInstance( const ExponentialTransformationInstance& p ) :
-   ProcessImplementation( p )
+ExponentialTransformationInstance::ExponentialTransformationInstance( const ExponentialTransformationInstance& p )
+   : ProcessImplementation( p )
 {
    Assign( p );
 }
@@ -198,8 +198,8 @@ private:
 
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( const AbstractImage& image, size_type count ) :
-      AbstractImage::ThreadData( image, count )
+      ThreadData( const AbstractImage& image, size_type count )
+         : AbstractImage::ThreadData( image, count )
       {
       }
 
@@ -215,12 +215,13 @@ private:
                          const ThreadData& data,
                          GenericImage<P>& image,
                          const Image* mask,
-                         size_type start, size_type end ) :
-         m_instance( instance ),
-         m_data( data ),
-         m_image( image ),
-         m_mask( mask ),
-         m_start( start ), m_end( end )
+                         size_type start, size_type end )
+         : m_instance( instance )
+         , m_data( data )
+         , m_image( image )
+         , m_mask( mask )
+         , m_start( start )
+         , m_end( end )
       {
       }
 
@@ -381,4 +382,4 @@ String ExponentialTransformationInstance::TypeAsString() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ExponentialTransformationInstance.cpp - Released 2020-07-31T19:33:39Z

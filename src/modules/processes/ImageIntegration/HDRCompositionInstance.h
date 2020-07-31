@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// HDRCompositionInstance.h - Released 2020-02-27T12:56:01Z
+// HDRCompositionInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -53,8 +53,8 @@
 #ifndef __HDRCompositionInstance_h
 #define __HDRCompositionInstance_h
 
-#include <pcl/ProcessImplementation.h>
 #include <pcl/Array.h>
+#include <pcl/ProcessImplementation.h>
 
 #include "HDRCompositionParameters.h"
 
@@ -140,4 +140,4 @@ private:
 #endif   // __HDRCompositionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInstance.h - Released 2020-02-27T12:56:01Z
+// EOF HDRCompositionInstance.h - Released 2020-07-31T19:33:39Z

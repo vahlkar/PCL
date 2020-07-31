@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/NetworkTransfer.h - Released 2020-02-27T12:55:23Z
+// pcl/NetworkTransfer.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -362,7 +362,7 @@ public:
     *
     * Normally, when you call one of the Download(), Upload(), POST() or SMTP()
     * member functions for the first time with a %NetworkTransfer object, the
-    * PixInsight Core application does not close the network connection
+    * PixInsight core application does not close the network connection
     * automatically after completing the operation. The connection remains
     * active for some time, ready to be reused if the same %NetworkTransfer
     * object is used again to perform additional (and compatible) data
@@ -618,4 +618,4 @@ private:
 #endif   // __PCL_NetworkTransfer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/NetworkTransfer.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/NetworkTransfer.h - Released 2020-07-31T19:33:04Z

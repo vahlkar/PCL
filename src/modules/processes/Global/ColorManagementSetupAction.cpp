@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ColorManagementSetupAction.cpp - Released 2020-02-27T12:56:01Z
+// ColorManagementSetupAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -60,15 +60,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "ColorManagementSetupActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ColorManagementSetupAction::ColorManagementSetupAction() :
-   Action( "Edit > Color Management Setup", Bitmap( ColorManagementSetupActionIcon_XPM ), "Edit" )
+ColorManagementSetupAction::ColorManagementSetupAction()
+   : Action( "Edit > Color Management Setup",
+             "@module_icons_dir/ColorManagementSetup.svg",
+             "Edit" )
 {
    SetToolTip( "Color Management Setup" );
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementSetupAction::Execute()
 {
@@ -84,4 +84,4 @@ void ColorManagementSetupAction::Execute()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorManagementSetupAction.cpp - Released 2020-07-31T19:33:39Z

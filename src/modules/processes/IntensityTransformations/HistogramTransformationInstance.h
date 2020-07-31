@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationInstance.h - Released 2020-02-27T12:56:01Z
+// HistogramTransformationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -69,15 +69,15 @@ public:
    HistogramTransformationInstance( const MetaProcess* );
    HistogramTransformationInstance( const HistogramTransformationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View& v, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual bool CanExecuteOn( const ImageVariant& image, String& whyNot ) const;
-   virtual bool ExecuteOn( ImageVariant& image, const IsoString& hints );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View& v, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   bool CanExecuteOn( const ImageVariant& image, String& whyNot ) const override;
+   bool ExecuteOn( ImageVariant& image, const IsoString& hints ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
    double MidtonesBalance( int i ) const
    {
@@ -165,4 +165,4 @@ private:
 #endif   // __HistogramTransformationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF HistogramTransformationInstance.h - Released 2020-07-31T19:33:39Z

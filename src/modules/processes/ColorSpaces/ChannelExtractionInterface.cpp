@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionInterface.cpp - Released 2020-02-27T12:56:01Z
+// ChannelExtractionInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -67,12 +67,8 @@ ChannelExtractionInterface* TheChannelExtractionInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ChannelExtractionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ChannelExtractionInterface::ChannelExtractionInterface() :
-   instance( TheChannelExtractionProcess )
+ChannelExtractionInterface::ChannelExtractionInterface()
+   : m_instance( TheChannelExtractionProcess )
 {
    TheChannelExtractionInterface = this;
 }
@@ -101,16 +97,16 @@ MetaProcess* ChannelExtractionInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ChannelExtractionInterface::IconImageXPM() const
+String ChannelExtractionInterface::IconImageSVGFile() const
 {
-   return ChannelExtractionIcon_XPM;
+   return "@module_icons_dir/ChannelExtraction.svg";
 }
 
 // ----------------------------------------------------------------------------
 
 void ChannelExtractionInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
 
 // ----------------------------------------------------------------------------
@@ -140,7 +136,7 @@ bool ChannelExtractionInterface::Launch( const MetaProcess& P, const ProcessImpl
 
 ProcessImplementation* ChannelExtractionInterface::NewProcess() const
 {
-   return new ChannelExtractionInstance( instance );
+   return new ChannelExtractionInstance( m_instance );
 }
 
 // ----------------------------------------------------------------------------
@@ -164,7 +160,7 @@ bool ChannelExtractionInterface::RequiresInstanceValidation() const
 
 bool ChannelExtractionInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
@@ -173,40 +169,40 @@ bool ChannelExtractionInterface::ImportProcess( const ProcessImplementation& p )
 
 void ChannelExtractionInterface::UpdateControls()
 {
-   GUI->RGB_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::RGB );
-   GUI->HSV_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::HSV );
-   GUI->HSI_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::HSI );
-   GUI->CIEXYZ_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::CIEXYZ );
-   GUI->CIELab_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::CIELab );
-   GUI->CIELch_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::CIELch );
+   GUI->RGB_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::RGB );
+   GUI->HSV_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::HSV );
+   GUI->HSI_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::HSI );
+   GUI->CIEXYZ_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::CIEXYZ );
+   GUI->CIELab_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::CIELab );
+   GUI->CIELch_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::CIELch );
 
    //
 
-   GUI->C0_CheckBox.SetText( ColorSpaceId::ChannelId( instance.ColorSpace(), 0 ) );
-   GUI->C0_CheckBox.SetChecked( instance.IsChannelEnabled( 0 ) );
+   GUI->C0_CheckBox.SetText( ColorSpaceId::ChannelId( m_instance.ColorSpace(), 0 ) );
+   GUI->C0_CheckBox.SetChecked( m_instance.IsChannelEnabled( 0 ) );
 
-   GUI->C0_Edit.SetText( instance.ChannelId( 0 ).IsEmpty() ? AUTO_ID : instance.ChannelId( 0 ) );
-   GUI->C0_Edit.Enable( instance.IsChannelEnabled( 0 ) );
-
-   //
-
-   GUI->C1_CheckBox.SetText( ColorSpaceId::ChannelId( instance.ColorSpace(), 1 ) );
-   GUI->C1_CheckBox.SetChecked( instance.IsChannelEnabled( 1 ) );
-
-   GUI->C1_Edit.SetText( instance.ChannelId( 1 ).IsEmpty() ? AUTO_ID : instance.ChannelId( 1 ) );
-   GUI->C1_Edit.Enable( instance.IsChannelEnabled( 1 ) );
+   GUI->C0_Edit.SetText( m_instance.ChannelId( 0 ).IsEmpty() ? AUTO_ID : m_instance.ChannelId( 0 ) );
+   GUI->C0_Edit.Enable( m_instance.IsChannelEnabled( 0 ) );
 
    //
 
-   GUI->C2_CheckBox.SetText( ColorSpaceId::ChannelId( instance.ColorSpace(), 2 ) );
-   GUI->C2_CheckBox.SetChecked( instance.IsChannelEnabled( 2 ) );
+   GUI->C1_CheckBox.SetText( ColorSpaceId::ChannelId( m_instance.ColorSpace(), 1 ) );
+   GUI->C1_CheckBox.SetChecked( m_instance.IsChannelEnabled( 1 ) );
 
-   GUI->C2_Edit.SetText( instance.ChannelId( 2 ).IsEmpty() ? AUTO_ID : instance.ChannelId( 2 ) );
-   GUI->C2_Edit.Enable( instance.IsChannelEnabled( 2 ) );
+   GUI->C1_Edit.SetText( m_instance.ChannelId( 1 ).IsEmpty() ? AUTO_ID : m_instance.ChannelId( 1 ) );
+   GUI->C1_Edit.Enable( m_instance.IsChannelEnabled( 1 ) );
 
    //
 
-   GUI->SampleFormat_ComboBox.SetCurrentItem( instance.SampleFormat() );
+   GUI->C2_CheckBox.SetText( ColorSpaceId::ChannelId( m_instance.ColorSpace(), 2 ) );
+   GUI->C2_CheckBox.SetChecked( m_instance.IsChannelEnabled( 2 ) );
+
+   GUI->C2_Edit.SetText( m_instance.ChannelId( 2 ).IsEmpty() ? AUTO_ID : m_instance.ChannelId( 2 ) );
+   GUI->C2_Edit.Enable( m_instance.IsChannelEnabled( 2 ) );
+
+   //
+
+   GUI->SampleFormat_ComboBox.SetCurrentItem( m_instance.SampleFormat() );
 }
 
 // ----------------------------------------------------------------------------
@@ -215,19 +211,19 @@ void ChannelExtractionInterface::UpdateControls()
 void ChannelExtractionInterface::__ColorSpace_Click( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->RGB_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::RGB;
+      m_instance.p_colorSpace = ColorSpaceId::RGB;
    else if ( sender == GUI->HSV_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::HSV;
+      m_instance.p_colorSpace = ColorSpaceId::HSV;
    else if ( sender == GUI->HSI_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::HSI;
+      m_instance.p_colorSpace = ColorSpaceId::HSI;
    else if ( sender == GUI->CIEXYZ_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::CIEXYZ;
+      m_instance.p_colorSpace = ColorSpaceId::CIEXYZ;
    else if ( sender == GUI->CIELab_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::CIELab;
+      m_instance.p_colorSpace = ColorSpaceId::CIELab;
    else if ( sender == GUI->CIELch_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::CIELch;
+      m_instance.p_colorSpace = ColorSpaceId::CIELch;
 
-   instance.p_channelEnabled[0] = instance.p_channelEnabled[1] = instance.p_channelEnabled[2] = true;
+   m_instance.p_channelEnabled[0] = m_instance.p_channelEnabled[1] = m_instance.p_channelEnabled[2] = true;
 
    UpdateControls();
 }
@@ -250,14 +246,14 @@ void ChannelExtractionInterface::__Channel_Click( Button& sender, bool checked )
    for ( int j = 0; j < 3; ++j )
    {
       if ( j == i )
-         instance.p_channelEnabled[i] = checked;
-      if ( instance.p_channelEnabled[j] )
+         m_instance.p_channelEnabled[i] = checked;
+      if ( m_instance.p_channelEnabled[j] )
          ++n;
    }
 
    if ( n == 0 )
       for ( int j = 0; j < 3; ++j )
-         instance.p_channelEnabled[j] = true;
+         m_instance.p_channelEnabled[j] = true;
 
    UpdateControls();
 }
@@ -294,12 +290,12 @@ void ChannelExtractionInterface::__ChannelId_EditCompleted( Edit& sender )
             if ( !id.IsValidIdentifier() )
                throw Error( "Invalid identifier: " + id );
 
-      instance.p_channelId[i] = (id != AUTO_ID) ? id : String();
-      sender.SetText( instance.p_channelId[i].IsEmpty() ? AUTO_ID : instance.p_channelId[i] );
+      m_instance.p_channelId[i] = (id != AUTO_ID) ? id : String();
+      sender.SetText( m_instance.p_channelId[i].IsEmpty() ? AUTO_ID : m_instance.p_channelId[i] );
       return;
    }
    ERROR_CLEANUP(
-      sender.SetText( instance.p_channelId[i] );
+      sender.SetText( m_instance.p_channelId[i] );
       sender.SelectAll();
       sender.Focus()
    )
@@ -309,7 +305,7 @@ void ChannelExtractionInterface::__ChannelId_EditCompleted( Edit& sender )
 
 void ChannelExtractionInterface::__SampleFormat_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
-   instance.p_sampleFormat = itemIndex;
+   m_instance.p_sampleFormat = itemIndex;
 }
 
 // ----------------------------------------------------------------------------
@@ -457,4 +453,4 @@ ChannelExtractionInterface::GUIData::GUIData( ChannelExtractionInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ChannelExtractionInterface.cpp - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/BicubicFilterInterpolation.h - Released 2020-02-27T12:55:23Z
+// pcl/BicubicFilterInterpolation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -91,7 +91,9 @@ public:
     * Constructs a new %CubicFilter object with the specified filter
     * parameters \a B and \a C.
     */
-   CubicFilter( double B, double C ) : m_B( B ), m_C( C )
+   CubicFilter( double B, double C )
+      : m_B( B )
+      , m_C( C )
    {
       m_k31 = ( 12 -  9*m_B -  6*m_C)/6;
       m_k21 = (-18 + 12*m_B +  6*m_C)/6;
@@ -192,7 +194,8 @@ public:
    /*!
     * Constructs a new %MitchellNetravaliCubicFilter object.
     */
-   MitchellNetravaliCubicFilter() : CubicFilter( 1.0/3, 1.0/3 )
+   MitchellNetravaliCubicFilter()
+      : CubicFilter( 1.0/3, 1.0/3 )
    {
    }
 
@@ -239,7 +242,8 @@ public:
    /*!
     * Constructs a new %CatmullRomSplineFilter object.
     */
-   CatmullRomSplineFilter() : CubicFilter( 0, 0.5 )
+   CatmullRomSplineFilter()
+      : CubicFilter( 0, 0.5 )
    {
    }
 
@@ -286,7 +290,8 @@ public:
    /*!
     * Constructs a new %CubicBSplineFilter object.
     */
-   CubicBSplineFilter() : CubicFilter( 1, 0 )
+   CubicBSplineFilter()
+      : CubicFilter( 1, 0 )
    {
    }
 
@@ -358,10 +363,10 @@ public:
     * \param filter  Reference to a CubicFilter instance that will be used as
     *                the interpolation filter.
     */
-   BicubicFilterInterpolation( int rx, int ry, const CubicFilter& filter ) :
-      m_rx( Max( 1, rx ) ),
-      m_ry( Max( 1, ry ) ),
-      m_filter( filter )
+   BicubicFilterInterpolation( int rx, int ry, const CubicFilter& filter )
+      : m_rx( Max( 1, rx ) )
+      , m_ry( Max( 1, ry ) )
+      , m_filter( filter )
    {
       PCL_PRECONDITION( rx >= 1 )
       PCL_PRECONDITION( ry >= 1 )
@@ -662,4 +667,4 @@ protected:
 #endif   // __PCL_BicubicFilterInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/BicubicFilterInterpolation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/BicubicFilterInterpolation.h - Released 2020-07-31T19:33:04Z

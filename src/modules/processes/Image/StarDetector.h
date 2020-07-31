@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StarDetector.h - Released 2020-02-27T12:56:01Z
+// StarDetector.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -70,7 +70,7 @@ struct StarData
 
    operator bool() const;
 
-   String StatusToString() const;
+   String StatusText() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -111,7 +111,7 @@ inline StarData::operator bool() const
 
 // ----------------------------------------------------------------------------
 
-inline String StarData::StatusToString() const
+inline String StarData::StatusText() const
 {
    switch ( status )
    {
@@ -133,4 +133,4 @@ inline String StarData::StatusToString() const
 #endif   // __StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.h - Released 2020-02-27T12:56:01Z
+// EOF StarDetector.h - Released 2020-07-31T19:33:39Z

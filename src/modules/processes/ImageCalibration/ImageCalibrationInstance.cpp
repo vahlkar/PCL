@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// ImageCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -60,7 +60,7 @@
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
 #include <pcl/MuteStatus.h>
-#include <pcl/StdStatus.h>
+#include <pcl/SpinStatus.h>
 #include <pcl/Version.h>
 
 namespace pcl
@@ -106,46 +106,45 @@ const float __5x5B3Spline_kj[] =
  */
 #define DARK_COUNT_SMALL      16
 
-/*
- * Spinning sticks.
- */
-static size_type nspin = 0;
-static const char* cspin[ 4 ] = { "&mdash;", "\\", "|", "/" };
-#define SPIN ("<end>\b" + String( cspin[nspin++%4] ) + "<flush>")
-
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   pedestal( TheICPedestalParameter->DefaultValue() ),
-   pedestalMode( ICPedestalMode::Default ),
-   calibrateBias( TheICCalibrateBiasParameter->DefaultValue() ),
-   calibrateDark( TheICCalibrateDarkParameter->DefaultValue() ),
-   calibrateFlat( TheICCalibrateFlatParameter->DefaultValue() ),
-   optimizeDarks( TheICOptimizeDarksParameter->DefaultValue() ),
-   darkOptimizationThreshold( TheICDarkOptimizationThresholdParameter->DefaultValue() ), // ### DEPRECATED
-   darkOptimizationLow( TheICDarkOptimizationLowParameter->DefaultValue() ),
-   darkOptimizationWindow( TheICDarkOptimizationWindowParameter->DefaultValue() ),
-   darkCFADetectionMode( ICDarkCFADetectionMode::Default ),
-   evaluateNoise( TheICEvaluateNoiseParameter->DefaultValue() ),
-   noiseEvaluationAlgorithm( ICNoiseEvaluationAlgorithm::Default ),
-   outputDirectory( TheICOutputDirectoryParameter->DefaultValue() ),
-   outputExtension( TheICOutputExtensionParameter->DefaultValue() ),
-   outputPrefix( TheICOutputPrefixParameter->DefaultValue() ),
-   outputPostfix( TheICOutputPostfixParameter->DefaultValue() ),
-   outputSampleFormat( ICOutputSampleFormat::Default ),
-   outputPedestal( TheICOutputPedestalParameter->DefaultValue() ),
-   overwriteExistingFiles( TheICOverwriteExistingFilesParameter->DefaultValue() ),
-   onError( ICOnError::Default ),
-   noGUIMessages( TheICNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
+ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_cfaData( TheICCFADataParameter->DefaultValue() )
+   , p_cfaPattern( ICCFAPattern::Default )
+   , p_inputHints( TheICInputHintsParameter->DefaultValue() )
+   , p_outputHints( TheICOutputHintsParameter->DefaultValue() )
+   , p_pedestal( TheICPedestalParameter->DefaultValue() )
+   , p_pedestalMode( ICPedestalMode::Default )
+   , p_calibrateBias( TheICCalibrateBiasParameter->DefaultValue() )
+   , p_calibrateDark( TheICCalibrateDarkParameter->DefaultValue() )
+   , p_calibrateFlat( TheICCalibrateFlatParameter->DefaultValue() )
+   , p_optimizeDarks( TheICOptimizeDarksParameter->DefaultValue() )
+   , p_darkOptimizationThreshold( TheICDarkOptimizationThresholdParameter->DefaultValue() ) // ### DEPRECATED
+   , p_darkOptimizationLow( TheICDarkOptimizationLowParameter->DefaultValue() )
+   , p_darkOptimizationWindow( TheICDarkOptimizationWindowParameter->DefaultValue() )
+   , p_darkCFADetectionMode( ICDarkCFADetectionMode::Default ) // ### DEPRECATED
+   , p_separateCFAFlatScalingFactors( TheICSeparateCFAFlatScalingFactorsParameter->DefaultValue() )
+   , p_flatScaleClippingFactor( TheICFlatScaleClippingFactorParameter->DefaultValue() )
+   , p_evaluateNoise( TheICEvaluateNoiseParameter->DefaultValue() )
+   , p_noiseEvaluationAlgorithm( ICNoiseEvaluationAlgorithm::Default )
+   , p_outputDirectory( TheICOutputDirectoryParameter->DefaultValue() )
+   , p_outputExtension( TheICOutputExtensionParameter->DefaultValue() )
+   , p_outputPrefix( TheICOutputPrefixParameter->DefaultValue() )
+   , p_outputPostfix( TheICOutputPostfixParameter->DefaultValue() )
+   , p_outputSampleFormat( ICOutputSampleFormat::Default )
+   , p_outputPedestal( TheICOutputPedestalParameter->DefaultValue() )
+   , p_overwriteExistingFiles( TheICOverwriteExistingFilesParameter->DefaultValue() )
+   , p_onError( ICOnError::Default )
+   , p_noGUIMessages( TheICNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ImageCalibrationInstance::ImageCalibrationInstance( const ImageCalibrationInstance& x ) :
-   ProcessImplementation( x )
+ImageCalibrationInstance::ImageCalibrationInstance( const ImageCalibrationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -157,36 +156,40 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
    const ImageCalibrationInstance* x = dynamic_cast<const ImageCalibrationInstance*>( &p );
    if ( x != nullptr )
    {
-      targetFrames              = x->targetFrames;
-      inputHints                = x->inputHints;
-      outputHints               = x->outputHints;
-      pedestal                  = x->pedestal;
-      pedestalMode              = x->pedestalMode;
-      pedestalKeyword           = x->pedestalKeyword;
-      overscan                  = x->overscan;
-      masterBias                = x->masterBias;
-      masterDark                = x->masterDark;
-      masterFlat                = x->masterFlat;
-      calibrateBias             = x->calibrateBias;
-      calibrateDark             = x->calibrateDark;
-      calibrateFlat             = x->calibrateFlat;
-      optimizeDarks             = x->optimizeDarks;
-      darkOptimizationThreshold = x->darkOptimizationThreshold;
-      darkOptimizationLow       = x->darkOptimizationLow;
-      darkOptimizationWindow    = x->darkOptimizationWindow;
-      darkCFADetectionMode      = x->darkCFADetectionMode;
-      evaluateNoise             = x->evaluateNoise;
-      noiseEvaluationAlgorithm  = x->noiseEvaluationAlgorithm;
-      outputDirectory           = x->outputDirectory;
-      outputExtension           = x->outputExtension;
-      outputPrefix              = x->outputPrefix;
-      outputPostfix             = x->outputPostfix;
-      outputSampleFormat        = x->outputSampleFormat;
-      outputPedestal            = x->outputPedestal;
-      overwriteExistingFiles    = x->overwriteExistingFiles;
-      onError                   = x->onError;
-      noGUIMessages             = x->noGUIMessages;
-      output                    = x->output;
+      p_targetFrames                  = x->p_targetFrames;
+      p_cfaData                       = x->p_cfaData;
+      p_cfaPattern                    = x->p_cfaPattern;
+      p_inputHints                    = x->p_inputHints;
+      p_outputHints                   = x->p_outputHints;
+      p_pedestal                      = x->p_pedestal;
+      p_pedestalMode                  = x->p_pedestalMode;
+      p_pedestalKeyword               = x->p_pedestalKeyword;
+      p_overscan                      = x->p_overscan;
+      p_masterBias                    = x->p_masterBias;
+      p_masterDark                    = x->p_masterDark;
+      p_masterFlat                    = x->p_masterFlat;
+      p_calibrateBias                 = x->p_calibrateBias;
+      p_calibrateDark                 = x->p_calibrateDark;
+      p_calibrateFlat                 = x->p_calibrateFlat;
+      p_optimizeDarks                 = x->p_optimizeDarks;
+      p_darkOptimizationThreshold     = x->p_darkOptimizationThreshold;
+      p_darkOptimizationLow           = x->p_darkOptimizationLow;
+      p_darkOptimizationWindow        = x->p_darkOptimizationWindow;
+      p_darkCFADetectionMode          = x->p_darkCFADetectionMode;
+      p_separateCFAFlatScalingFactors = x->p_separateCFAFlatScalingFactors;
+      p_flatScaleClippingFactor       = x->p_flatScaleClippingFactor;
+      p_evaluateNoise                 = x->p_evaluateNoise;
+      p_noiseEvaluationAlgorithm      = x->p_noiseEvaluationAlgorithm;
+      p_outputDirectory               = x->p_outputDirectory;
+      p_outputExtension               = x->p_outputExtension;
+      p_outputPrefix                  = x->p_outputPrefix;
+      p_outputPostfix                 = x->p_outputPostfix;
+      p_outputSampleFormat            = x->p_outputSampleFormat;
+      p_outputPedestal                = x->p_outputPedestal;
+      p_overwriteExistingFiles        = x->p_overwriteExistingFiles;
+      p_onError                       = x->p_onError;
+      p_noGUIMessages                 = x->p_noGUIMessages;
+      o_output                        = x->o_output;
    }
 }
 
@@ -209,37 +212,37 @@ bool ImageCalibrationInstance::IsHistoryUpdater( const View& view ) const
 
 bool ImageCalibrationInstance::CanExecuteGlobal( String& whyNot ) const
 {
-   if ( targetFrames.IsEmpty() )
+   if ( p_targetFrames.IsEmpty() )
    {
       whyNot = "No target frames have been specified.";
       return false;
    }
 
-   if ( !overscan.IsValid() )
+   if ( !p_overscan.IsValid() )
    {
       whyNot = "Invalid overscan region(s) defined.";
       return false;
    }
 
-   if ( !masterBias.IsValid() )
+   if ( !p_masterBias.IsValid() )
    {
       whyNot = "Missing or invalid master bias frame.";
       return false;
    }
 
-   if ( !masterDark.IsValid() )
+   if ( !p_masterDark.IsValid() )
    {
       whyNot = "Missing or invalid master dark frame.";
       return false;
    }
 
-   if ( !masterFlat.IsValid() )
+   if ( !p_masterFlat.IsValid() )
    {
       whyNot = "Missing or invalid master flat frame.";
       return false;
    }
 
-   if ( !overscan.enabled && !masterBias.enabled && !masterDark.enabled && !masterFlat.enabled )
+   if ( !p_overscan.enabled && !p_masterBias.enabled && !p_masterDark.enabled && !p_masterFlat.enabled )
    {
       whyNot = "No master calibration frames or overscan regions have been specified.";
       return false;
@@ -266,7 +269,7 @@ static void SubtractOverscan( Image& target, const ImageCalibrationInstance::ove
       FVector v( 0.0F, target.NumberOfChannels() );
       for ( ImageCalibrationInstance::overscan_list::const_iterator r = o->Begin(); r != o->End(); ++r )
          for ( int c = 0; c < target.NumberOfChannels(); ++c )
-            v[c] += target.Median( r->sourceRect, c, c, false/*parallel*/ );
+            v[c] += target.Median( r->sourceRect, c, c );
       v /= o->Length();
 
       target.SelectRectangle( o->Begin()->targetRect );
@@ -293,7 +296,7 @@ static void SubtractOverscan( Image& target, const ImageCalibrationInstance::ove
 #define BIAS         *b++
 #define DARK         *d++
 #define SCALED_DARK  k * *d++
-#define FLAT         s/Max( *f++, TINY )
+#define FLAT         Max( *f++, TINY )
 
 // ----------------------------------------------------------------------------
 
@@ -354,7 +357,7 @@ static void SubtractOneChannelDark( Image& target, int tCh, const Image& dark, i
 static void Calibrate( Image& target,
                        const Image* bias,
                        const Image* dark, const FVector& dScale,
-                       const Image* flat, const FVector& fScale,
+                       const Image* flat,
                        float        pedestal = 0 )
 {
    static const float TINY = 1.0e-15F; // to prevent divisions by zero flat pixels
@@ -374,7 +377,6 @@ static void Calibrate( Image& target,
       const float* d  = (dark != nullptr) ? dark->PixelData( Min( c, nd-1 ) ) : nullptr;
       const float* f  = (flat != nullptr) ? flat->PixelData( Min( c, nf-1 ) ) : nullptr;
             float  k  = (dark != nullptr) ? dScale[c] : 0;
-            float  s  = (flat != nullptr) ? fScale[c] : 0;
 
       if ( b != nullptr )
       {
@@ -383,14 +385,14 @@ static void Calibrate( Image& target,
             if ( k != 1 )
             {
                if ( f != nullptr )
-                  LOOP *t = (*t - BIAS - SCALED_DARK) * FLAT, ++t;
+                  LOOP *t = (*t - BIAS - SCALED_DARK)/FLAT, ++t;
                else
                   LOOP *t++ -= BIAS + SCALED_DARK;
             }
             else
             {
                if ( f != nullptr )
-                  LOOP *t = (*t - BIAS - DARK) * FLAT, ++t;
+                  LOOP *t = (*t - BIAS - DARK)/FLAT, ++t;
                else
                   LOOP *t++ -= BIAS + DARK;
             }
@@ -398,7 +400,7 @@ static void Calibrate( Image& target,
          else
          {
             if ( f != nullptr )
-               LOOP *t = (*t - BIAS) * FLAT, ++t;
+               LOOP *t = (*t - BIAS)/FLAT, ++t;
             else
                LOOP *t++ -= BIAS;
          }
@@ -410,14 +412,14 @@ static void Calibrate( Image& target,
             if ( k != 1 )
             {
                if ( f != nullptr )
-                  LOOP *t = (*t - SCALED_DARK) * FLAT, ++t;
+                  LOOP *t = (*t - SCALED_DARK)/FLAT, ++t;
                else
                   LOOP *t++ -= SCALED_DARK;
             }
             else
             {
                if ( f != nullptr )
-                  LOOP *t = (*t - DARK) * FLAT, ++t;
+                  LOOP *t = (*t - DARK)/FLAT, ++t;
                else
                   LOOP *t++ -= DARK;
             }
@@ -425,7 +427,7 @@ static void Calibrate( Image& target,
          else
          {
             if ( f != nullptr )
-               LOOP *t++ *= FLAT;
+               LOOP *t++ /= FLAT;
          }
       }
    } // for each channel
@@ -447,6 +449,164 @@ static void Calibrate( Image& target,
 #undef DARK
 #undef SCALED_DARK
 #undef FLAT
+
+// ----------------------------------------------------------------------------
+
+/*
+ * Fast color filter array (CFA) pixel sample selection.
+ */
+class CFAIndex
+{
+public:
+
+   CFAIndex() = default;
+   CFAIndex( const CFAIndex& ) = default;
+
+   CFAIndex( const IsoString& pattern )
+   {
+      if ( pattern.IsEmpty() )
+         throw Error( "Empty CFA pattern." );
+      m_size = int( Sqrt( pattern.Length() ) );
+      if ( m_size < 2 )
+         throw Error( "Invalid CFA pattern '" + pattern + '\'' );
+      if ( m_size*m_size != pattern.Length() )
+         throw Error( "Non-square CFA patterns are not supported: '" + pattern + '\'' );
+
+      m_index = IMatrix( m_size, m_size );
+      IsoString::const_iterator p = pattern.Begin();
+      for ( int i = 0; i < m_size; ++i )
+         for ( int j = 0; j < m_size; ++j )
+         {
+            int k;
+            switch ( *p++ )
+            {
+            case 'R': k = 0; break;
+            case 'G': k = 1; break;
+            case 'B': k = 2; break;
+            default:
+               throw Error( "Invalid character(s) in CFA pattern '" + pattern + '\'' );
+            }
+            m_index[i][j] = k;
+         }
+   }
+
+   int Size() const
+   {
+      return m_size;
+   }
+
+   int operator ()( int x, int y ) const
+   {
+      return m_index[y % m_size][x % m_size];
+   }
+
+private:
+
+   int     m_size = 0;
+   IMatrix m_index;
+};
+
+// ----------------------------------------------------------------------------
+
+static bool IsXTransCFAFromTargetProperty( const Variant& cfaSourcePatternName )
+{
+   if ( cfaSourcePatternName.IsValid() )
+      if ( cfaSourcePatternName.IsString() )
+      {
+         IsoString name = cfaSourcePatternName.ToIsoString().Trimmed().CaseFolded();
+         return name == "x-trans" || name == "xtrans";
+      }
+   return false;
+}
+
+static IsoString CFAPatternFromTargetProperty( const Variant& cfaSourcePattern, int dx = 0, int dy = 0 )
+{
+   if ( cfaSourcePattern.IsValid() )
+      if ( cfaSourcePattern.IsString() )
+      {
+         IsoString cfaPattern = cfaSourcePattern.ToIsoString().Trimmed();
+         if ( dx || dy )
+            if ( cfaPattern.Length() == 4 )
+            {
+               if ( dx % 2 )
+               {
+                  // Swap pattern columns
+                  Swap( cfaPattern[0], cfaPattern[1] );
+                  Swap( cfaPattern[2], cfaPattern[3] );
+               }
+               if ( dy % 2 )
+               {
+                  // Swap pattern rows
+                  Swap( cfaPattern[0], cfaPattern[2] );
+                  Swap( cfaPattern[1], cfaPattern[3] );
+               }
+            }
+
+         return cfaPattern;
+      }
+
+   return IsoString();
+}
+
+/*
+ * Returns an integer downsampling factor corresponding to the specified CFA
+ * pattern, to be applied for noise evaluation:
+ *
+ * 2 for 2x2 Bayer CFA patterns
+ * 3 for 6x6 X-Trans CFA patterns
+ */
+static int DownsamplingFactorForCFAPattern( const IsoString& cfaPattern )
+{
+   return (cfaPattern.Length() == 4) ? 2 : 3;
+}
+
+IsoString ImageCalibrationInstance::CFAPatternFromTarget( FileFormatInstance& file ) const
+{
+   bool xtrans = IsXTransCFAFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePatternName" ) );
+   if ( xtrans || p_cfaPattern == ICCFAPattern::Auto )
+   {
+      if ( file.HasImageProperty( "PCL:CFASourcePattern" ) )
+         return CFAPatternFromTargetProperty( file.ReadImageProperty( "PCL:CFASourcePattern" ) );
+
+      if ( !xtrans )
+         if ( file.Format().CanStoreKeywords() )
+         {
+            FITSKeywordArray keywords;
+            if ( file.ReadFITSKeywords( keywords ) )
+            {
+               IsoString bayerPattern;
+               double xOffset = 0, yOffset = 0;
+               for ( const FITSHeaderKeyword& keyword : keywords )
+               {
+                  try
+                  {
+                     if ( keyword.name == "BAYERPAT" )
+                        bayerPattern = keyword.StripValueDelimiters().Uppercase();
+                     else if ( keyword.name == "XBAYROFF" )
+                        xOffset = keyword.value.ToDouble();
+                     else if ( keyword.name == "YBAYROFF" )
+                        yOffset = keyword.value.ToDouble();
+                  }
+                  catch ( Exception& x )
+                  {
+                     Console().CriticalLn( "<end><cbr>*** Error: Parsing " + keyword.name + " FITS keyword: " + x.Message() );
+                  }
+                  catch ( ... )
+                  {
+                     throw;
+                  }
+               }
+
+               if ( !bayerPattern.IsEmpty() )
+                  return CFAPatternFromTargetProperty( bayerPattern, TruncInt( xOffset ), TruncInt( yOffset ) );
+            }
+         }
+
+      return IsoString();
+   }
+
+   return TheICCFAPatternParameter->ElementId( p_cfaPattern );
+}
 
 // ----------------------------------------------------------------------------
 
@@ -494,14 +654,13 @@ inline T SameSign( const T& x, const T& sameAs )
 
 #define TEST_DARK( x )  TestDarkOptimization( x, target, dark )
 
-static void BracketDarkOptimization( float& ax, float& bx, float& cx,
-                                     const Image& target, const Image& dark, bool useConsole )
+static void BracketDarkOptimization( float& ax, float& bx, float& cx, const Image& target, const Image& dark )
 {
-   if ( useConsole )
-   {
-      Console().Write( "<end><cbr>Bracketing...  " );
-      Console().Flush();
-   }
+   Console console;
+   SpinStatus spin;
+   StatusMonitor monitor;
+   monitor.SetCallback( &spin );
+   monitor.Initialize( "Bracketing" );
 
    static const float GOLD = 1.618034;
    static const int GLIMIT = 10;
@@ -522,14 +681,10 @@ static void BracketDarkOptimization( float& ax, float& bx, float& cx,
    float fc = TEST_DARK( cx );
    while ( fb > fc )
    {
+      ++monitor;
       Module->ProcessEvents();
-
-      if ( useConsole )
-      {
-         if ( Console().AbortRequested() )
-            throw ProcessAborted();
-         Console().Write( SPIN );
-      }
+      if ( console.AbortRequested() )
+         throw ProcessAborted();
 
       float r = (bx - ax)*(fb - fc);
       float q = (bx - cx)*(fb - fa);
@@ -543,12 +698,12 @@ static void BracketDarkOptimization( float& ax, float& bx, float& cx,
          {
             ax = bx;
             bx = u;
-            return;
+            break;
          }
          else if ( fu > fb )
          {
             cx = u;
-            return;
+            break;
          }
          u = cx + GOLD*(cx - bx);
          fu = TEST_DARK( u );
@@ -585,6 +740,8 @@ static void BracketDarkOptimization( float& ax, float& bx, float& cx,
       fb = fc;
       fc = fu;
    }
+
+   monitor.Complete();
 }
 
 // ----------------------------------------------------------------------------
@@ -606,7 +763,7 @@ static void BracketDarkOptimization( float& ax, float& bx, float& cx,
  * W.H. Press et al, Numerical Recipes in C, 2nd Edition
  * (section 10.1, pp. 397-402).
  */
-static float DarkOptimization( const Image& target, const Image& dark, int c, bool useConsole = false )
+static float DarkOptimization( const Image& target, const Image& dark, int c )
 {
    /*
     * The golden ratios
@@ -618,16 +775,16 @@ static float DarkOptimization( const Image& target, const Image& dark, int c, bo
    target.SelectChannel( c );
 
    /*
-    * Find an initial triplet ax,bx,cx that brackets the minimum.
+    * Find an initial triplet (ax,bx,cx) that brackets the minimum.
     */
    float ax, bx, cx;
-   BracketDarkOptimization( ax, bx, cx, target, dark, useConsole );
+   BracketDarkOptimization( ax, bx, cx, target, dark );
 
-   if ( useConsole ) // if we are not running into a thread
-   {
-      Console().Write( "<end>\b\nOptimizing...  " );
-      Console().Flush();
-   }
+   Console console;
+   SpinStatus spin;
+   StatusMonitor monitor;
+   monitor.SetCallback( &spin );
+   monitor.Initialize( "Optimizing" );
 
    /*
     * [x0,x3] is the total search interval.
@@ -637,7 +794,7 @@ static float DarkOptimization( const Image& target, const Image& dark, int c, bo
 
    /*
     * [x1,x2] is the inner search interval.
-    * Start by sectioning the largest segment: either ax-bx or bx-cx.
+    * Start by sectioning the largest segment: either (ax,bx) or (bx,cx).
     */
    float x1, x2;
    if ( Abs( bx - ax ) < Abs( cx - bx ) )
@@ -660,31 +817,25 @@ static float DarkOptimization( const Image& target, const Image& dark, int c, bo
    /*
     * Perform a golden section search for the minimum dark-induced noise.
     * We stop when we find a minimum to 1/1000 fractional accuracy.
-    * Actually, trying to achieve very high accuracy is useless because when we
-    * get close to the minimum, the function approximates a parabola so we are
-    * trying to minimize something similar to a horizontal straight line.
-    * Note that this is common to any minimization (or maximization) routine.
+    * Actually, trying to achieve very high accuracy is useless here, because
+    * when we get close to the minimum, the function approximates a parabola so
+    * we are trying to minimize something very similar to a horizontal straight
+    * line. Note that this limitation is common to any minimization (or
+    * maximization) routine.
+    *
     * We perhaps could achieve 1/10000 at the cost of much more iterations, but
     * that would be a marginal improvement to dark optimization that doesn't
     * justify the increase in computation time.
     */
    while ( Abs( x3 - x0 ) > 0.0005F )
    {
+      ++monitor;
       Module->ProcessEvents();
-
-      if ( useConsole )
-      {
-         if ( Console().AbortRequested() )
-            throw ProcessAborted();
-         Console().Write( SPIN );
-      }
+      if ( console.AbortRequested() )
+         throw ProcessAborted();
 
       if ( f2 < f1 )
       {
-         /*
-          * Go downhill by sectioning at the upper segment of the search
-          * interval.
-          */
          x0 = x1;
          x1 = x2;
          x2 = R*x2 + C*x3;
@@ -693,10 +844,6 @@ static float DarkOptimization( const Image& target, const Image& dark, int c, bo
       }
       else
       {
-         /*
-          * Go downhill by sectioning at the lower segment of the search
-          * interval.
-          */
          x3 = x2;
          x2 = x1;
          x1 = R*x1 + C*x0;
@@ -705,8 +852,7 @@ static float DarkOptimization( const Image& target, const Image& dark, int c, bo
       }
    }
 
-   if ( useConsole )
-      Console().WriteLn( "<end>\b" );
+   monitor.Complete();
 
    /*
     * Return the dark scaling factor that minimizes noise in the target image.
@@ -720,22 +866,19 @@ static Rect OptimizingRect( const Image& target, int windowSize )
 {
    return
    Rect( Min( windowSize, target.Width() ),
-         Min( windowSize, target.Height() ) ).MovedTo( Max( 0, (target.Width()-windowSize)>>1 ),
-                                                       Max( 0, (target.Height()-windowSize)>>1 ) );
+         Min( windowSize, target.Height() ) ).MovedTo( Max( 0, (target.Width() - windowSize) >> 1 ),
+                                                       Max( 0, (target.Height() - windowSize) >> 1 ) );
 }
 
-static FVector OptimizeDark( const Image& target, const Image& optimizingDark, bool isDarkCFA )
+static FVector OptimizeDark( const Image& target, const Image& optimizingDark, const IsoString& darkCFAPattern )
 {
-   // The console cannot be used from a thread.
-   bool useConsole = Thread::IsRootThread();
-
    FVector K( target.NumberOfChannels() );
 
    Image optimizingTarget( target );
    optimizingTarget.Status().DisableInitialization();
 
-   if ( isDarkCFA )
-      IntegerResample( -2 ) >> optimizingTarget;
+   if ( !darkCFAPattern.IsEmpty() )
+      IntegerResample( -DownsamplingFactorForCFAPattern( darkCFAPattern ) ) >> optimizingTarget;
 
    if ( optimizingTarget.Bounds() != optimizingDark.Bounds() )
    {
@@ -746,7 +889,7 @@ static FVector OptimizeDark( const Image& target, const Image& optimizingDark, b
    }
 
    for ( int c = 0; c < optimizingTarget.NumberOfChannels(); ++c )
-      K[c] = DarkOptimization( optimizingTarget, optimizingDark, c, useConsole );
+      K[c] = DarkOptimization( optimizingTarget, optimizingDark, c );
 
    return K;
 }
@@ -768,17 +911,17 @@ static FVector OptimizeDark( const Image& target, const Image& optimizingDark, b
 static void EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, StringList& noiseAlgorithms,
                            const Image& target,
                            int algorithm,
-                           int maxProcessors, bool cfaImage )
+                           const IsoString& cfaPattern = IsoString() )
 {
    MuteStatus status;
    target.SetStatusCallback( &status );
    target.Status().DisableInitialization();
 
-   if ( cfaImage )
+   if ( !cfaPattern.IsEmpty() )
    {
       Image evaluationTarget( target );
-      IntegerResample( -2 ) >> evaluationTarget;
-      EvaluateNoise( noiseEstimates, noiseFractions, noiseAlgorithms, evaluationTarget, algorithm, maxProcessors, false );
+      IntegerResample( -DownsamplingFactorForCFAPattern( cfaPattern ) ) >> evaluationTarget;
+      EvaluateNoise( noiseEstimates, noiseFractions, noiseAlgorithms, evaluationTarget, algorithm );
       return;
    }
 
@@ -797,7 +940,6 @@ static void EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, Str
       case ICNoiseEvaluationAlgorithm::KSigma:
          {
             ATrousWaveletTransform W( H, 1 );
-            W.EnableParallelProcessing( maxProcessors > 1, maxProcessors );
             W << target;
             size_type N;
             noiseEstimates[c] = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/__5x5B3Spline_kj[0];
@@ -815,7 +957,6 @@ static void EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, Str
                Module->ProcessEvents();
 
                ATrousWaveletTransform W( H, n );
-               W.EnableParallelProcessing( maxProcessors > 1, maxProcessors );
                W << target;
 
                size_type N;
@@ -889,15 +1030,47 @@ static String UniqueFilePath( const String& filePath )
 
 struct CalibrationThreadData
 {
-   ImageCalibrationInstance* instance; // the instance being executed
-   ImageCalibrationInstance::overscan_table overscan; // overscan regions grouped by target regions
-   Image*  bias;           // master bias frame, overscan corrected
-   Image*  dark;           // master dark frame, overscan+bias corrected
-   Image*  optimizingDark; // calibrated dark frame, central window for dark optimization, maybe thresholded, maybe binned 2x2
-   bool    isDarkCFA;      // if true, the master dark frame is a CFA and we must bin 2x2 prior to optimization
-   Image*  flat;           // master flat frame, overscan+bias+dark corrected
-   FVector fScale;         // flat scaling factor
-   int     maxProcessors;  // maximum number of threads allowed (for noise estimation)
+   /*
+    * The instance being executed.
+    */
+   ImageCalibrationInstance* instance;
+
+   /*
+    * Overscan regions grouped by target regions.
+    */
+   ImageCalibrationInstance::overscan_table overscan;
+
+   /*
+    * Master bias frame, overscan corrected.
+    */
+   Image*    bias;
+
+   /*
+    * Master dark frame, overscan+bias corrected.
+    */
+   Image*    dark;
+
+   /*
+    * Calibrated dark frame, central window for dark optimization, maybe
+    * thresholded, maybe binned 2x2 (Bayer) or 3x3 (X-Trans).
+    */
+   Image*    optimizingDark;
+
+   /*
+    * If nonempty, the master dark frame is a CFA and we must apply it after
+    * binning targets 2x2 (Bayer) or 3x3 (X-Trans) for optimization.
+    */
+   IsoString darkCFAPattern;
+
+   /*
+    * Master flat frame, overscan+bias+dark corrected and scaled.
+    */
+   Image*    flat;
+
+   /*
+    * Per-channel master flat scaling factors.
+    */
+   FVector   flatScalingFactors;
 };
 
 class CalibrationThread : public Thread
@@ -917,20 +1090,26 @@ public:
    StringList noiseAlgorithms;
 
    CalibrationThread( Image* target, OutputFileData* outputData, const String& targetPath, int subimageIndex,
-                      const CalibrationThreadData& data ) :
-      m_target( target ),
-      m_outputData( outputData ),
-      m_targetPath( targetPath ),
-      m_subimageIndex( subimageIndex ),
-      m_success( false ),
-      m_data( data )
+                      const CalibrationThreadData& data )
+      : m_target( target )
+      , m_outputData( outputData )
+      , m_targetPath( targetPath )
+      , m_subimageIndex( subimageIndex )
+      , m_success( false )
+      , m_data( data )
    {
    }
 
    void Run() override
    {
+      Console console;
+      String subimageText = (m_subimageIndex > 0) ? '(' + String( m_subimageIndex ) + ") " : String();
+      console.WriteLn( "<end><cbr><br>* Processing target frame: " + subimageText + "<raw>" + m_targetPath + "</raw>" );
+
       try
       {
+         Module->ProcessEvents();
+
          m_success = false;
 
          m_target->Status().DisableInitialization();
@@ -938,27 +1117,34 @@ public:
          /*
           * Overscan correction.
           */
-         if ( m_data.instance->overscan.enabled )
-            SubtractOverscan( *m_target, m_data.overscan, m_data.instance->overscan.imageRect );
+         if ( m_data.instance->p_overscan.enabled )
+         {
+            console.WriteLn( "<end><cbr>* Applying overscan correction." );
+            SubtractOverscan( *m_target, m_data.overscan, m_data.instance->p_overscan.imageRect );
+         }
 
          /*
           * Dark frame optimization.
           */
-         if ( m_data.dark != nullptr && m_data.instance->optimizeDarks && m_data.optimizingDark != nullptr )
+         if ( m_data.dark != nullptr && m_data.instance->p_optimizeDarks && m_data.optimizingDark != nullptr )
+         {
+            console.WriteLn( "<end><cbr>* Computing dark frame optimization factors." );
             K = OptimizeDark( *m_target,
                               *m_data.optimizingDark,
-                               m_data.isDarkCFA );
+                               m_data.darkCFAPattern );
+         }
          else
             K = FVector( 1.0F, m_target->NumberOfChannels() );
 
          /*
           * Target frame calibration.
           */
+         console.WriteLn( "<end><cbr>* Performing image calibration." );
          Calibrate( *m_target,
                      m_data.bias,
                      m_data.dark, K,
-                     m_data.flat, m_data.fScale,
-                     m_data.instance->outputPedestal/65535.0 );
+                     m_data.flat,
+                     m_data.instance->p_outputPedestal/65535.0 );
 
          /*
           * Noise evaluation.
@@ -967,23 +1153,32 @@ public:
           *           routine that we have CFA images (not tied to dark frame
           *           optimization).
           */
-         if ( m_data.instance->evaluateNoise )
+         if ( m_data.instance->p_evaluateNoise )
+         {
+            console.WriteLn( "<end><cbr>* Performing noise evaluation." );
             EvaluateNoise( noiseEstimates, noiseFractions, noiseAlgorithms,
                           *m_target,
-                           m_data.instance->noiseEvaluationAlgorithm,
-                           m_data.maxProcessors,
-                           m_data.instance->darkCFADetectionMode == ICDarkCFADetectionMode::ForceCFA || m_data.isDarkCFA );
+                           m_data.instance->p_noiseEvaluationAlgorithm,
+                           m_data.darkCFAPattern );
+         }
 
          m_success = true;
       }
       catch ( ... )
       {
+         if ( IsRootThread() )
+            throw;
+
+         String text = ConsoleOutputText();
          ClearConsoleOutputText();
          try
          {
             throw;
          }
          ERROR_HANDLER
+         m_errorInfo = ConsoleOutputText();
+         ClearConsoleOutputText();
+         console.Write( text );
       }
    }
 
@@ -997,7 +1192,7 @@ public:
       return m_target.Pointer();
    }
 
-   String TargetPath() const
+   String TargetFilePath() const
    {
       return m_targetPath;
    }
@@ -1012,19 +1207,24 @@ public:
       return m_subimageIndex;
    }
 
-   bool Success() const
+   bool Succeeded() const
    {
       return m_success;
    }
 
+   String ErrorInfo() const
+   {
+      return m_errorInfo;
+   }
+
 private:
 
-   AutoPointer<Image>          m_target;        // The image being calibrated. It belongs to this thread.
-   AutoPointer<OutputFileData> m_outputData;    // Target image parameters and embedded m_data. It belongs to this thread.
-   String                      m_targetPath;    // File path of this m_target image
-   int                         m_subimageIndex; // >= 0 in case of a multiple image; = 0 otherwise
-   bool                        m_success : 1;   // The thread completed execution successfully
-
+   AutoPointer<Image>           m_target;        // The image being calibrated. Owned by this thread.
+   AutoPointer<OutputFileData>  m_outputData;    // Target image parameters and embedded data. Owned by this thread.
+   String                       m_targetPath;    // File path of this target image.
+   int                          m_subimageIndex; // >= 0 in case of a multiple image; = 0 otherwise.
+   String                       m_errorInfo;     // Last error message.
+   bool                         m_success;       // True if the thread completed execution successfully.
    const CalibrationThreadData& m_data;
 };
 
@@ -1038,64 +1238,64 @@ void ImageCalibrationInstance::ValidateImageGeometry( const Image* image, bool u
 {
    if ( uncalibrated )
    {
-      if ( geometry.IsRect() )
+      if ( m_geometry.IsRect() )
       {
-         if ( image->Bounds() != geometry )
+         if ( image->Bounds() != m_geometry )
             throw Error( "Incompatible image geometry" );
       }
       else
       {
-         geometry = image->Bounds();
+         m_geometry = image->Bounds();
 
-         if ( overscan.enabled )
+         if ( p_overscan.enabled )
          {
-            if ( !geometry.Includes( overscan.imageRect ) )
+            if ( !m_geometry.Includes( p_overscan.imageRect ) )
                throw Error( "Inconsistent overscan geometry" );
 
             for ( int i = 0; i < 4; ++i )
-               if ( overscan.overscan[i].enabled )
-                  if ( !geometry.Includes( overscan.overscan[i].sourceRect ) ||
-                       !geometry.Includes( overscan.overscan[i].targetRect ) )
+               if ( p_overscan.overscan[i].enabled )
+                  if ( !m_geometry.Includes( p_overscan.overscan[i].sourceRect ) ||
+                       !m_geometry.Includes( p_overscan.overscan[i].targetRect ) )
                      throw Error( "Inconsistent overscan geometry" );
          }
          else
          {
-            if ( calibratedGeometry.IsRect() )
+            if ( m_calibratedGeometry.IsRect() )
             {
-               if ( geometry != calibratedGeometry )
+               if ( m_geometry != m_calibratedGeometry )
                   throw Error( "Incompatible image geometry" );
             }
             else
-               calibratedGeometry = geometry;
+               m_calibratedGeometry = m_geometry;
          }
       }
    }
    else
    {
-      if ( calibratedGeometry.IsRect() )
+      if ( m_calibratedGeometry.IsRect() )
       {
-         if ( image->Bounds() != calibratedGeometry )
+         if ( image->Bounds() != m_calibratedGeometry )
             throw Error( "Incompatible image geometry" );
       }
       else
       {
-         calibratedGeometry = image->Bounds();
+         m_calibratedGeometry = image->Bounds();
 
-         if ( overscan.enabled )
+         if ( p_overscan.enabled )
          {
-            if ( calibratedGeometry.Width() != overscan.imageRect.Width() ||
-                 calibratedGeometry.Height() != overscan.imageRect.Height() )
+            if ( m_calibratedGeometry.Width() != p_overscan.imageRect.Width() ||
+                 m_calibratedGeometry.Height() != p_overscan.imageRect.Height() )
                throw Error( "Inconsistent overscan geometry" );
          }
          else
          {
-            if ( geometry.IsRect() )
+            if ( m_geometry.IsRect() )
             {
-               if ( calibratedGeometry != geometry )
+               if ( m_calibratedGeometry != m_geometry )
                   throw Error( "Incompatible image geometry" );
             }
             else
-               geometry = calibratedGeometry;
+               m_geometry = m_calibratedGeometry;
          }
       }
    }
@@ -1113,7 +1313,7 @@ ImageCalibrationInstance::BuildOverscanTable() const
 
    OverscanRegions r[ 4 ];
    for ( int i = 0; i < 4; ++i )
-      r[i] = overscan.overscan[i];
+      r[i] = p_overscan.overscan[i];
 
    for ( int i = 0; i < 4; ++i )
       if ( r[i].enabled )
@@ -1140,20 +1340,20 @@ ImageCalibrationInstance::BuildOverscanTable() const
 void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstance& file )
 {
    Console console;
-   switch ( pedestalMode )
+   switch ( p_pedestalMode )
    {
    case ICPedestalMode::Literal:
-      if ( pedestal != 0 )
+      if ( p_pedestal != 0 )
       {
-         console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", pedestal ) );
-         image->Apply( pedestal/65535.0, ImageOp::Sub );
+         console.NoteLn( String().Format( "* Subtracting pedestal: %d DN", p_pedestal ) );
+         image->Apply( p_pedestal/65535.0, ImageOp::Sub );
       }
       break;
    case ICPedestalMode::Keyword:
    case ICPedestalMode::CustomKeyword:
       if ( file.Format().CanStoreKeywords() )
       {
-         IsoString keyName( (pedestalMode == ICPedestalMode::Keyword) ? "PEDESTAL" : pedestalKeyword );
+         IsoString keyName( (p_pedestalMode == ICPedestalMode::Keyword) ? "PEDESTAL" : p_pedestalKeyword );
          FITSKeywordArray keywords;
          if ( !file.ReadFITSKeywords( keywords ) )
             break;
@@ -1161,7 +1361,7 @@ void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstanc
          for ( const FITSHeaderKeyword& keyword : keywords )
             if ( !keyword.name.CompareIC( keyName ) )
                if ( keyword.IsNumeric() )
-                  if ( keyword.GetNumericValue( d ) ) // GetNumericValue() sets d=0 if keyword can't be converted
+                  if ( keyword.GetNumericValue( d ) ) // GetNumericValue() sets d=0 if keyword cannot be converted
                      break;
          if ( d != 0 )
          {
@@ -1169,7 +1369,7 @@ void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstanc
              * Silently be compatible with acquisition applications that write
              * negative PEDESTAL keyword values.
              */
-            if ( pedestalMode == ICPedestalMode::Keyword )
+            if ( p_pedestalMode == ICPedestalMode::Keyword )
                if ( d < 0 )
                   d = -d;
 
@@ -1186,12 +1386,9 @@ void ImageCalibrationInstance::SubtractPedestal( Image* image, FileFormatInstanc
 /*
  * Read a source calibration frame.
  */
-Image* ImageCalibrationInstance::LoadCalibrationFrame( const String& filePath, bool willCalibrate, bool* hasCFA )
+Image* ImageCalibrationInstance::LoadCalibrationFrame( const String& filePath, bool willCalibrate, IsoString* cfaPattern )
 {
    Console console;
-
-   console.WriteLn( "<end><cbr>Loading calibration frame image:" );
-   console.WriteLn( filePath );
 
    /*
     * Find out an installed file format that can read image files with the
@@ -1209,7 +1406,7 @@ Image* ImageCalibrationInstance::LoadCalibrationFrame( const String& filePath, b
     * Open input stream.
     */
    ImageDescriptionArray images;
-   if ( !file.Open( images, filePath, inputHints ) )
+   if ( !file.Open( images, filePath, p_inputHints ) )
       throw CaughtException();
 
    /*
@@ -1225,13 +1422,25 @@ Image* ImageCalibrationInstance::LoadCalibrationFrame( const String& filePath, b
     * bias, dark or flat frame.
     */
    if ( images.Length() > 1 )
-      console.NoteLn( String().Format( "<end><cbr>* Ignoring %u additional image(s) in master calibration frame.", images.Length()-1 ) );
+      console.WriteLn( String().Format( "<end><cbr>* Ignoring %u additional image(s) in master calibration frame.", images.Length()-1 ) );
 
    /*
-    * Optional CFA type retrieval.
+    * Optional CFA pattern retrieval.
     */
-   if ( hasCFA != nullptr )
-      *hasCFA = images[0].options.cfaType != CFAType::None;
+   if ( cfaPattern != nullptr )
+      if ( images[0].info.colorSpace == ColorSpace::Gray ) // CFA frames are monochrome
+      {
+         *cfaPattern = CFAPatternFromTarget( file );
+         if ( !cfaPattern->IsEmpty() )
+         {
+            console.Write( "<end><cbr>CFA pattern" );
+            if ( cfaPattern->Length() != 4/*X-Trans*/ || p_cfaPattern == ICCFAPattern::Auto )
+               console.Write( " (detected)" );
+            console.WriteLn( ": " + *cfaPattern );
+         }
+      }
+      else
+         cfaPattern->Clear();
 
    /*
     * Load the master calibration frame.
@@ -1267,9 +1476,7 @@ thread_list
 ImageCalibrationInstance::LoadTargetFrame( const String& filePath, const CalibrationThreadData& threadData )
 {
    Console console;
-
-   console.WriteLn( "<end><cbr>Loading target frame:" );
-   console.WriteLn( filePath );
+   console.WriteLn( "<end><cbr><br>* Loading target calibration frame(s): <raw>" + filePath + "</raw>" );
 
    /*
     * Find out an installed file format that can read image files with the
@@ -1287,7 +1494,7 @@ ImageCalibrationInstance::LoadTargetFrame( const String& filePath, const Calibra
     * Open the image file.
     */
    ImageDescriptionArray images;
-   if ( !file.Open( images, filePath, inputHints ) )
+   if ( !file.Open( images, filePath, p_inputHints ) )
       throw CaughtException();
 
    if ( images.IsEmpty() )
@@ -1340,7 +1547,7 @@ ImageCalibrationInstance::LoadTargetFrame( const String& filePath, const Calibra
                                              filePath,
                                              (images.Length() > 1) ? j+1 : 0,
                                              threadData ) );
-         // The thread owns the target image
+         // The thread owns the target image.
          target.Release();
       }
 
@@ -1368,49 +1575,49 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
    /*
     * Output directory.
     */
-   String fileDir = outputDirectory.Trimmed();
+   String fileDir = p_outputDirectory.Trimmed();
    if ( fileDir.IsEmpty() )
-      fileDir = File::ExtractDrive( t->TargetPath() ) + File::ExtractDirectory( t->TargetPath() );
+      fileDir = File::ExtractDrive( t->TargetFilePath() ) + File::ExtractDirectory( t->TargetFilePath() );
    if ( fileDir.IsEmpty() )
-      throw Error( t->TargetPath() + ": Unable to determine an output directory." );
+      throw Error( t->TargetFilePath() + ": Unable to determine an output directory." );
    if ( !fileDir.EndsWith( '/' ) )
       fileDir.Append( '/' );
 
    /*
     * Output file extension, which defines the output file format.
     */
-   String fileExtension = outputExtension.Trimmed();
+   String fileExtension = p_outputExtension.Trimmed();
    if ( fileExtension.IsEmpty() )
-      fileExtension = File::ExtractExtension( t->TargetPath() );
+      fileExtension = File::ExtractExtension( t->TargetFilePath() );
    if ( fileExtension.IsEmpty() )
-      throw Error( t->TargetPath() + ": Unable to determine an output file extension." );
+      throw Error( t->TargetFilePath() + ": Unable to determine an output file extension." );
    if ( !fileExtension.StartsWith( '.' ) )
       fileExtension.Prepend( '.' );
 
    /*
     * Output file name.
     */
-   String fileName = File::ExtractName( t->TargetPath() ).Trimmed();
+   String fileName = File::ExtractName( t->TargetFilePath() ).Trimmed();
    if ( t->SubimageIndex() > 0 )
       fileName.Append( String().Format( "_%02d", t->SubimageIndex() ) );
-   if ( !outputPrefix.IsEmpty() )
-      fileName.Prepend( outputPrefix );
-   if ( !outputPostfix.IsEmpty() )
-      fileName.Append( outputPostfix );
+   if ( !p_outputPrefix.IsEmpty() )
+      fileName.Prepend( p_outputPrefix );
+   if ( !p_outputPostfix.IsEmpty() )
+      fileName.Append( p_outputPostfix );
    if ( fileName.IsEmpty() )
-      throw Error( t->TargetPath() + ": Unable to determine an output file name." );
+      throw Error( t->TargetFilePath() + ": Unable to determine an output file name." );
 
    /*
     * Output file path.
     */
    String outputFilePath = fileDir + fileName + fileExtension;
 
-   console.WriteLn( "<end><cbr><br>Writing output file: " + outputFilePath );
+   console.WriteLn( "<end><cbr><br>* Writing output file: <raw>" + outputFilePath + "</raw>" );
 
    /*
     * Write dark optimization factors to the console.
     */
-   if ( optimizeDarks )
+   if ( p_optimizeDarks )
    {
       console.WriteLn( "Dark scaling factors:" );
       for ( int i = 0; i < t->K.Length(); ++i )
@@ -1425,7 +1632,7 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
    /*
     * Write noise evaluation information to the console.
     */
-   if ( evaluateNoise )
+   if ( p_evaluateNoise )
    {
       console.WriteLn( "Gaussian noise estimates:" );
       for ( int i = 0; i < t->noiseEstimates.Length(); ++i )
@@ -1439,7 +1646,7 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
     * on the overwriteExistingFiles parameter.
     */
    if ( File::Exists( outputFilePath ) )
-      if ( overwriteExistingFiles )
+      if ( p_overwriteExistingFiles )
          console.WarningLn( "** Warning: Overwriting already existing file." );
       else
       {
@@ -1461,7 +1668,7 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
    /*
     * ... and create a format instance (usually a disk file).
     */
-   if ( !outputFile.Create( outputFilePath, outputHints ) )
+   if ( !outputFile.Create( outputFilePath, p_outputHints ) )
       throw CaughtException();
 
    /*
@@ -1476,7 +1683,7 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
     * Determine the output sample format: bits per sample and whether integer
     * or real samples.
     */
-   switch ( outputSampleFormat )
+   switch ( p_outputSampleFormat )
    {
    case ICOutputSampleFormat::I16 : options.bitsPerSample = 16; options.ieeefpSampleFormat = false; break;
    case ICOutputSampleFormat::I32 : options.bitsPerSample = 32; options.ieeefpSampleFormat = false; break;
@@ -1552,30 +1759,30 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
                << FITSHeaderKeyword( "HISTORY", IsoString(), "Calibration with " + Module->ReadableVersion() )
                << FITSHeaderKeyword( "HISTORY", IsoString(), "Calibration with ImageCalibration process" );
 
-      if ( !inputHints.IsEmpty() )
+      if ( !p_inputHints.IsEmpty() )
          keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    "ImageCalibration.inputHints: " + IsoString( inputHints ) );
-      if ( !outputHints.IsEmpty() )
+                                    "ImageCalibration.inputHints: " + IsoString( p_inputHints ) );
+      if ( !p_outputHints.IsEmpty() )
          keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    "ImageCalibration.outputHints: " + IsoString( outputHints ) );
+                                    "ImageCalibration.outputHints: " + IsoString( p_outputHints ) );
 
       keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    "ImageCalibration.overscan.enabled: " + IsoString( bool( overscan.enabled ) ) );
-      if ( overscan.enabled )
+                                    "ImageCalibration.overscan.enabled: " + IsoString( bool( p_overscan.enabled ) ) );
+      if ( p_overscan.enabled )
       {
-         const Rect& r = overscan.imageRect;
+         const Rect& r = p_overscan.imageRect;
          keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
                                     IsoString().Format( "ImageCalibration.overscan.imageRect: {%d,%d,%d,%d}",
                                                         r.x0, r.y0, r.x1, r.y1 ) );
          for ( int i = 0; i < 4; ++i )
-            if ( overscan.overscan[i].enabled )
+            if ( p_overscan.overscan[i].enabled )
             {
-               const Rect& s = overscan.overscan[i].sourceRect;
-               const Rect& t = overscan.overscan[i].targetRect;
+               const Rect& s = p_overscan.overscan[i].sourceRect;
+               const Rect& t = p_overscan.overscan[i].targetRect;
                keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
                                     IsoString().Format( "ImageCalibration.overscan[%d].sourceRect: {%d,%d,%d,%d}",
@@ -1589,70 +1796,70 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
 
       keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    "ImageCalibration.masterBias.enabled: " + IsoString( bool( masterBias.enabled ) ) );
-      if ( masterBias.enabled )
+                                    "ImageCalibration.masterBias.enabled: " + IsoString( bool( p_masterBias.enabled ) ) );
+      if ( p_masterBias.enabled )
          keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
                                     "ImageCalibration.masterBias.fileName: " +
-                                    File::ExtractNameAndExtension( masterBias.path ).To7BitASCII() )
+                                    File::ExtractNameAndExtension( p_masterBias.path ).To7BitASCII() )
                   << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    "ImageCalibration.masterBias.calibrate: " + IsoString( bool( calibrateBias ) ) );
+                                    "ImageCalibration.masterBias.calibrate: " + IsoString( bool( p_calibrateBias ) ) );
 
       keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    "ImageCalibration.masterDark.enabled: " + IsoString( bool( masterDark.enabled ) ) );
-      if ( masterDark.enabled )
+                                    "ImageCalibration.masterDark.enabled: " + IsoString( bool( p_masterDark.enabled ) ) );
+      if ( p_masterDark.enabled )
       {
          keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
                                     "ImageCalibration.masterDark.fileName: " +
-                                    File::ExtractNameAndExtension( masterDark.path ).To7BitASCII() )
+                                    File::ExtractNameAndExtension( p_masterDark.path ).To7BitASCII() )
                   << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    "ImageCalibration.masterDark.calibrate: " + IsoString( bool( calibrateDark ) ) );
-         if ( optimizeDarks )
+                                    "ImageCalibration.masterDark.calibrate: " + IsoString( bool( p_calibrateDark ) ) );
+         if ( p_optimizeDarks )
          {
             IsoString darkScalingFactors = IsoString().Format( "ImageCalibration.masterDark.scalingFactors: %.3f", t->K[0] );
             for ( int i = 1; i < t->K.Length(); ++i )
                darkScalingFactors.AppendFormat( " %.3f", t->K[i] );
             keywords << FITSHeaderKeyword( "HISTORY", IsoString(), darkScalingFactors );
 
-            if ( darkOptimizationThreshold > 0 )
+            if ( p_darkOptimizationThreshold > 0 )
                keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    IsoString().Format( "ImageCalibration.masterDark.optimizationThreshold: %.5f", darkOptimizationThreshold ) )
+                                    IsoString().Format( "ImageCalibration.masterDark.optimizationThreshold: %.5f", p_darkOptimizationThreshold ) )
                         << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    IsoString().Format( "ImageCalibration.masterDark.optimizationLow: %.4f", darkOptimizationLow ) );
+                                    IsoString().Format( "ImageCalibration.masterDark.optimizationLow: %.4f", p_darkOptimizationLow ) );
 
-            if ( darkOptimizationWindow > 0 )
+            if ( p_darkOptimizationWindow > 0 )
                keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    IsoString().Format( "ImageCalibration.masterDark.optimizationWindow: %d px", darkOptimizationWindow ) );
+                                    IsoString().Format( "ImageCalibration.masterDark.optimizationWindow: %d px", p_darkOptimizationWindow ) );
          }
       }
 
       keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    "ImageCalibration.masterFlat.enabled: " + IsoString( bool( masterFlat.enabled ) ) );
-      if ( masterFlat.enabled )
+                                    "ImageCalibration.masterFlat.enabled: " + IsoString( bool( p_masterFlat.enabled ) ) );
+      if ( p_masterFlat.enabled )
       {
          keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
                                     "ImageCalibration.masterFlat.fileName: " +
-                                    File::ExtractNameAndExtension( masterFlat.path ).To7BitASCII() )
+                                    File::ExtractNameAndExtension( p_masterFlat.path ).To7BitASCII() )
                   << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    "ImageCalibration.masterFlat.calibrate: " + IsoString( bool( calibrateFlat ) ) );
+                                    "ImageCalibration.masterFlat.calibrate: " + IsoString( bool( p_calibrateFlat ) ) );
 
-         IsoString flatScalingFactors = IsoString().Format( "ImageCalibration.masterFlat.scalingFactors: %.6f", t->CalibrationData().fScale[0] );
-         for ( int i = 1; i < t->CalibrationData().fScale.Length(); ++i )
-            flatScalingFactors.AppendFormat( " %.6f", t->CalibrationData().fScale[i] );
+         IsoString flatScalingFactors = IsoString().Format( "ImageCalibration.masterFlat.scalingFactors: %.6f", t->CalibrationData().flatScalingFactors[0] );
+         for ( int i = 1; i < t->CalibrationData().flatScalingFactors.Length(); ++i )
+            flatScalingFactors.AppendFormat( " %.6f", t->CalibrationData().flatScalingFactors[i] );
          keywords << FITSHeaderKeyword( "HISTORY", IsoString(), flatScalingFactors );
       }
 
-      if ( evaluateNoise )
+      if ( p_evaluateNoise )
       {
          /*
           * N.B.: If we have computed noise estimates, remove any previously
@@ -1684,12 +1891,12 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
                                            IsoString().Format( "Noise evaluation algorithm, channel #%d", i ) );
       }
 
-      if ( outputPedestal != 0 )
+      if ( p_outputPedestal != 0 )
          keywords << FITSHeaderKeyword( "HISTORY",
                                     IsoString(),
-                                    IsoString().Format( "ImageCalibration.outputPedestal: %d", outputPedestal ) )
+                                    IsoString().Format( "ImageCalibration.outputPedestal: %d", p_outputPedestal ) )
                   << FITSHeaderKeyword( "PEDESTAL",
-                                    IsoString( outputPedestal ),
+                                    IsoString( p_outputPedestal ),
                                     "Value in DN added to enforce positivity" );
 
       outputFile.WriteFITSKeywords( keywords );
@@ -1720,145 +1927,18 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
     */
    OutputData o;
    o.outputFilePath = outputFilePath;
-   if ( masterDark.enabled )
-      if ( optimizeDarks )
+   if ( p_masterDark.enabled )
+      if ( p_optimizeDarks )
          for ( int i = 0; i < Min( 3, t->K.Length() ); ++i )
             o.darkScalingFactors[i] = t->K[i];
-   if ( evaluateNoise )
+   if ( p_evaluateNoise )
       for ( int i = 0; i < Min( 3, t->noiseEstimates.Length() ); ++i )
       {
          o.noiseEstimates[i] = t->noiseEstimates[i];
          o.noiseFractions[i] = t->noiseFractions[i];
          o.noiseAlgorithms[i] = String( t->noiseAlgorithms[i] );
       }
-   output.Add( o );
-}
-
-// ----------------------------------------------------------------------------
-
-/*
- * Returns true if a CFA pattern is matched on the upper left corner of an
- * image. Each element of z is 1 if the corresponding CFA element is zero.
- */
-static bool MatchCFAPattern( const Image& image, const int* z )
-{
-   for ( int c = 0; c < image.NumberOfChannels(); ++c )
-      for ( int y = 0; y < 4; ++y )
-      {
-         const float* f = image.ScanLine( y, c );
-         for ( int x = 0; x < 4; ++x, ++f, ++z )
-            if ( (*f == 0) != (*z != 0) )
-               return false;
-      }
-   return true;
-}
-
-// ----------------------------------------------------------------------------
-
-/*
- * Returns true if one of the four RGB Bayer patterns is detected in the
- * specified image.
- */
-bool IsBayerPattern( const Image& image )
-{
-   /*
-    * We detect Bayer patterns by looking at zero filter elements at each color
-    * channel in the top left corner of the image. A pattern is detected if all
-    * zeros are matched in the corresponding 4x4 array.
-    */
-                                    /*
-                                     * B G B G
-                                     * G R G R
-                                     * B G B G
-                                     * G R G R
-                                     */
-   static const int BayerZeros1[] = { 1, 1, 1, 1,
-                                      1, 0, 1, 0,
-                                      1, 1, 1, 1,
-                                      1, 0, 1, 0,
-
-                                      1, 0, 1, 0,
-                                      0, 1, 0, 1,
-                                      1, 0, 1, 0,
-                                      0, 1, 0, 1,
-
-                                      0, 1, 0, 1,
-                                      1, 1, 1, 1,
-                                      0, 1, 0, 1,
-                                      1, 1, 1, 1 };
-
-                                    /*
-                                     * G R G R
-                                     * B G B G
-                                     * G R G R
-                                     * B G B G
-                                     */
-   static const int BayerZeros2[] = { 1, 0, 1, 0,
-                                      1, 1, 1, 1,
-                                      1, 0, 1, 0,
-                                      1, 1, 1, 1,
-
-                                      0, 1, 0, 1,
-                                      1, 0, 1, 0,
-                                      0, 1, 0, 1,
-                                      1, 0, 1, 0,
-
-                                      1, 1, 1, 1,
-                                      0, 1, 0, 1,
-                                      1, 1, 1, 1,
-                                      0, 1, 0, 1 };
-
-                                    /*
-                                     * G B G B
-                                     * R G R G
-                                     * G B G B
-                                     * R G R G
-                                     */
-   static const int BayerZeros3[] = { 1, 1, 1, 1,
-                                      0, 1, 0, 1,
-                                      1, 1, 1, 1,
-                                      0, 1, 0, 1,
-
-                                      0, 1, 0, 1,
-                                      1, 0, 1, 0,
-                                      0, 1, 0, 1,
-                                      1, 0, 1, 0,
-
-                                      1, 0, 1, 0,
-                                      1, 1, 1, 1,
-                                      1, 0, 1, 0,
-                                      1, 1, 1, 1 };
-
-                                    /*
-                                     * R G R G
-                                     * G B G B
-                                     * R G R G
-                                     * G B G B
-                                     */
-   static const int BayerZeros4[] = { 0, 1, 0, 1,
-                                      1, 1, 1, 1,
-                                      0, 1, 0, 1,
-                                      1, 1, 1, 1,
-
-                                      1, 0, 1, 0,
-                                      0, 1, 0, 1,
-                                      1, 0, 1, 0,
-                                      0, 1, 0, 1,
-
-                                      1, 1, 1, 1,
-                                      1, 0, 1, 0,
-                                      1, 1, 1, 1,
-                                      1, 0, 1, 0 };
-
-   // ### TODO: Include also CMYG and X-Trans CFA zero matrices.
-
-   if ( image.NumberOfChannels() != 3 )
-      return false;
-
-   return MatchCFAPattern( image, BayerZeros1 ) ||
-          MatchCFAPattern( image, BayerZeros2 ) ||
-          MatchCFAPattern( image, BayerZeros3 ) ||
-          MatchCFAPattern( image, BayerZeros4 );
+   o_output.Add( o );
 }
 
 // ----------------------------------------------------------------------------
@@ -1873,36 +1953,15 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       if ( !CanExecuteGlobal( why ) )
          throw Error( why );
 
-      if ( !outputDirectory.IsEmpty() && !File::DirectoryExists( outputDirectory ) )
-         throw Error( "The specified output directory does not exist: " + outputDirectory );
+      if ( !p_outputDirectory.IsEmpty() )
+         if ( !File::DirectoryExists( p_outputDirectory ) )
+            throw Error( "The specified output directory does not exist: " + p_outputDirectory );
 
-      for ( image_list::const_iterator i = targetFrames.Begin(); i != targetFrames.End(); ++i )
-         if ( i->enabled && !File::Exists( i->path ) )
-            throw Error( "No such file exists on the local filesystem: " + i->path );
+      for ( auto frame : p_targetFrames )
+         if ( frame.enabled )
+            if ( !File::Exists( frame.path ) )
+               throw Error( "No such file exists on the local filesystem: " + frame.path );
    }
-
-   /*
-    * Master frames in use.
-    */
-   AutoPointer<Image> bias, dark, optimizingDark, flat;
-
-   /*
-    * Flag true if the master dark frame is mosaiced with a Color Filter Array
-    * (CFA, e.g. a Bayer pattern), either explicitly reported by the file
-    * format (RAW), detected heuristically (e.g., a CFA stored as a proprietary
-    * FITS file), or forced with darkCFADetectionMode = ForceCFA.
-    */
-   bool isDarkCFA = false;
-
-   /*
-    * Per-channel flat scaling factors.
-    */
-   FVector s;
-
-   /*
-    * Reset output data.
-    */
-   output.Clear();
 
    /*
     * Allow the user to abort the calibration process.
@@ -1911,87 +1970,90 @@ bool ImageCalibrationInstance::ExecuteGlobal()
    console.EnableAbort();
 
    /*
-    * Initialize validation geometries.
+    * Reset output data.
     */
-   geometry = calibratedGeometry = 0;
+   o_output.Clear();
+
+   /*
+    * Initialize validation frame geometries.
+    */
+   m_geometry = m_calibratedGeometry = 0;
 
    /*
     * Overscan regions grouped by target regions.
     */
    overscan_table O;
-   if ( overscan.enabled )
+   if ( p_overscan.enabled )
       O = BuildOverscanTable();
+
+   /*
+    * Master calibration frames in use.
+    */
+   AutoPointer<Image> bias, dark, optimizingDark, flat;
+
+   /*
+    * Per-channel master flat scaling factors.
+    */
+   FVector flatScalingFactors;
+
+   /*
+    * CFA patterns for the master dark and flat frames.
+    */
+   IsoString darkCFAPattern, flatCFAPattern;
 
    /*
     * Load and calibrate, as appropriate, all master calibration frames.
     */
-   if ( masterBias.enabled || masterDark.enabled || masterFlat.enabled )
+   if ( p_masterBias.enabled || p_masterDark.enabled || p_masterFlat.enabled )
    {
-      console.WriteLn( "<end><cbr><br>Loading master calibration frames:" );
-
       /*
        * Load master bias, dark and flat frames, and validate their geometries.
        */
-      if ( masterBias.enabled )
-         bias = LoadCalibrationFrame( masterBias.path, calibrateBias );
-
-      if ( masterDark.enabled )
+      if ( p_masterBias.enabled )
       {
-         dark = LoadCalibrationFrame( masterDark.path, calibrateDark, &isDarkCFA );
-
-         switch ( darkCFADetectionMode )
-         {
-         default:
-         case ICDarkCFADetectionMode::DetectCFA:
-            if ( !isDarkCFA )
-               isDarkCFA = IsBayerPattern( *dark );
-            if ( isDarkCFA )
-               console.NoteLn( "<end><cbr>* Note: CFA pattern detected." );
-            break;
-         case ICDarkCFADetectionMode::ForceCFA:
-            if ( !isDarkCFA )
-               console.WarningLn( "<end><cbr>"
-                           "** Warning: The file format reports no CFA pattern for the master dark frame, "
-                                 "but it is being forced as per process instance parameters." );
-            isDarkCFA = true;
-            break;
-         case ICDarkCFADetectionMode::IgnoreCFA:
-            if ( isDarkCFA )
-               console.WarningLn( "<end><cbr>"
-                           "** Warning: The file format reports a CFA pattern for the master dark frame, "
-                                 "but it is being ignored as per process instance parameters." );
-            isDarkCFA = false;
-            break;
-         }
+         console.NoteLn( "<end><cbr><br>* Loading master bias frame: <raw>" + p_masterBias.path + "</raw>" );
+         bias = LoadCalibrationFrame( p_masterBias.path, p_calibrateBias );
       }
 
-      if ( masterFlat.enabled )
-         flat = LoadCalibrationFrame( masterFlat.path, calibrateFlat );
+      if ( p_masterDark.enabled )
+      {
+         console.NoteLn( "<end><cbr><br>* Loading master dark frame: <raw>" + p_masterDark.path + "</raw>" );
+         dark = LoadCalibrationFrame( p_masterDark.path, p_calibrateDark, &darkCFAPattern );
+      }
+
+      if ( p_masterFlat.enabled )
+      {
+         console.NoteLn( "<end><cbr><br>* Loading master flat frame: <raw>" + p_masterFlat.path + "</raw>" );
+         flat = LoadCalibrationFrame( p_masterFlat.path, p_calibrateFlat, &flatCFAPattern );
+      }
+
+      if ( darkCFAPattern != flatCFAPattern )
+         throw Error( "Mismatched CFA patterns between the master dark and flat frames: '" + darkCFAPattern + "' != '" + flatCFAPattern + "'" );
 
       Module->ProcessEvents();
 
       /*
        * Apply overscan corrections.
        */
-      if ( overscan.enabled )
+      if ( p_overscan.enabled )
       {
-         if ( calibrateBias )
-            if ( masterBias.enabled )
+         if ( p_calibrateBias )
+            if ( p_masterBias.enabled )
             {
-               console.WriteLn( "<end><cbr><br>Applying overscan correction: master bias frame ..." );
-               SubtractOverscan( *bias, O, overscan.imageRect );
+               console.NoteLn( "<end><cbr><br>* Applying overscan correction: master bias frame." );
+               SubtractOverscan( *bias, O, p_overscan.imageRect );
             }
-         if ( calibrateDark )
-            if ( masterDark.enabled )
+         if ( p_calibrateDark )
+            if ( p_masterDark.enabled )
             {
-               console.WriteLn( "<end><cbr><br>Applying overscan correction: master dark frame ..." );
-               SubtractOverscan( *dark, O, overscan.imageRect );
+               console.NoteLn( "<end><cbr><br>* Applying overscan correction: master dark frame." );
+               SubtractOverscan( *dark, O, p_overscan.imageRect );
             }
-         if ( calibrateFlat )
-            if ( masterFlat.enabled )
+         if ( p_calibrateFlat )
+            if ( p_masterFlat.enabled )
             {
-               console.WriteLn( "<end><cbr><br>Applying overscan correction: master flat frame ..." );
-               SubtractOverscan( *flat, O, overscan.imageRect );
+               console.NoteLn( "<end><cbr><br>* Applying overscan correction: master flat frame." );
+               SubtractOverscan( *flat, O, p_overscan.imageRect );
             }
       }
 
@@ -2000,12 +2062,12 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       /*
        * Calibrate the master dark frame by subtracting the master bias frame.
        */
-      if ( masterDark.enabled )
+      if ( p_masterDark.enabled )
       {
-         if ( calibrateDark )
-            if ( masterBias.enabled )
+         if ( p_calibrateDark )
+            if ( p_masterBias.enabled )
             {
-               console.WriteLn( "<end><cbr><br>Applying bias correction: master dark frame ..." );
+               console.NoteLn( "<end><cbr><br>* Applying bias correction: master dark frame." );
                SubtractBias( *dark, *bias );
             }
 
@@ -2013,29 +2075,29 @@ bool ImageCalibrationInstance::ExecuteGlobal()
           * If necessary, create the dark optimization window image.
           * NB: This must be done after calibrating the master dark frame.
           */
-         if ( optimizeDarks )
+         if ( p_optimizeDarks )
          {
             dark->ResetSelections();
             optimizingDark = new Image( *dark );
-            if ( isDarkCFA )
-               IntegerResample( -2 ) >> *optimizingDark;
+            if ( !darkCFAPattern.IsEmpty() )
+               IntegerResample( -DownsamplingFactorForCFAPattern( darkCFAPattern ) ) >> *optimizingDark;
 
-            console.WriteLn( "<end><cbr><br>Dark frame optimization thresholds:" );
+            console.NoteLn( "<end><cbr><br>* Computing dark frame optimization thresholds." );
             for ( int c = 0; c < optimizingDark->NumberOfChannels(); ++c )
             {
                optimizingDark->SelectChannel( c );
                double location = optimizingDark->Median();
-               double scale = optimizingDark->MAD( location ) * 1.4826;
+               double scale = 1.4826*optimizingDark->MAD( location );
                double t;
-               if ( darkOptimizationThreshold > 0 ) // ### be backwards-compatible
+               if ( p_darkOptimizationThreshold > 0 ) // ### be backwards-compatible
                {
-                  t = Range( darkOptimizationThreshold, 0.0F, 1.0F );
-                  darkOptimizationLow = (t - location)/scale;
-                  darkOptimizationThreshold = 0;
+                  t = Range( p_darkOptimizationThreshold, 0.0F, 1.0F );
+                  p_darkOptimizationLow = (t - location)/scale;
+                  p_darkOptimizationThreshold = 0;
                }
                else
                {
-                  t = Range( location + darkOptimizationLow * scale, 0.0, 1.0 );
+                  t = Range( location + p_darkOptimizationLow*scale, 0.0, 1.0 );
                }
                size_type N = optimizingDark->NumberOfPixels();
                for ( Image::sample_iterator i( *optimizingDark, c ); i; ++i )
@@ -2050,7 +2112,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
                   console.WarningLn( String().Format( "** Warning: The dark frame optimization threshold is probably too high (channel %d).", c ) );
                if ( N < DARK_COUNT_SMALL )
                {
-                  console.WarningLn( String().Format( "** Warning: The dark frame optimization pixel set is too small - disabling dark frame optimization (channel %d).", c ) );
+                  console.WarningLn( String().Format( "** Warning: The selected pixel set for dark frame optimization is too small - disabling dark frame optimization for channel %d.", c ) );
                   optimizingDark.Destroy();
                }
             }
@@ -2059,13 +2121,13 @@ bool ImageCalibrationInstance::ExecuteGlobal()
             {
                optimizingDark->ResetSelections();
 
-               if ( darkOptimizationWindow > 0
-                  && (darkOptimizationWindow < dark->Width() || darkOptimizationWindow < dark->Height()) )
-               {
-                  optimizingDark->SelectRectangle( OptimizingRect( *optimizingDark, darkOptimizationWindow ) );
-                  optimizingDark->Crop();
-                  optimizingDark->ResetSelections();
-               }
+               if ( p_darkOptimizationWindow > 0 )
+                  if ( p_darkOptimizationWindow < dark->Width() || p_darkOptimizationWindow < dark->Height() )
+                  {
+                     optimizingDark->SelectRectangle( OptimizingRect( *optimizingDark, p_darkOptimizationWindow ) );
+                     optimizingDark->Crop();
+                     optimizingDark->ResetSelections();
+                  }
             }
          }
       }
@@ -2075,24 +2137,24 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       /*
        * Calibrate and scale the master flat frame.
        */
-      if ( masterFlat.enabled )
+      if ( p_masterFlat.enabled )
       {
          /*
-          * Calibrate the master flat frame by subtracting bias and dark master
-          * frames. If selected, perform a dark optimization for the master
-          * flat.
+          * Calibrate the master flat frame by subtracting the bias and dark
+          * master frames. If selected, perform a dark frame optimization for
+          * the master flat.
           */
-         if ( calibrateFlat )
-            if ( masterBias.enabled || masterDark.enabled )
+         if ( p_calibrateFlat )
+            if ( p_masterBias.enabled || p_masterDark.enabled )
             {
-               console.WriteLn( "<end><cbr><br>Calibrating master flat frame ..." );
+               console.NoteLn( "<end><cbr><br>* Calibrating master flat frame." );
 
                FVector K;
-               if ( masterDark.enabled )
-                  if ( optimizeDarks && optimizingDark )
+               if ( p_masterDark.enabled )
+                  if ( p_optimizeDarks && optimizingDark )
                   {
-                     console.WriteLn( "Optimizing master dark frame:" );
-                     K = OptimizeDark( *flat, *optimizingDark, isDarkCFA );
+                     console.NoteLn( "<end><cbr><br>* Computing dark frame optimization factors: master flat frame." );
+                     K = OptimizeDark( *flat, *optimizingDark, darkCFAPattern );
                      for ( int c = 0; c < flat->NumberOfChannels(); ++c )
                      {
                         console.WriteLn( String().Format( "<end><cbr>k%d = %.3f", c, K[c] ) );
@@ -2111,28 +2173,55 @@ bool ImageCalibrationInstance::ExecuteGlobal()
          Module->ProcessEvents();
 
          /*
-          * Compute flat scaling factors as the mean pixel value of each
-          * channel.
+          * - Compute master flat scaling factors as per-channel robust mean
+          *   pixel values.
+          * - Apply scaling factors to the master flat by pixelwise division.
           */
-         console.WriteLn( "<end><cbr>Computing master flat scaling factors ..." );
+         console.NoteLn( "<end><cbr><br>* Computing master flat scaling factors." );
 
-         s = FVector( flat->NumberOfChannels() );
-
-         flat->SetRangeClipping( 0.00002, 0.99998 );
-
-         for ( int c = 0; c < flat->NumberOfChannels(); ++c )
+         if ( flatCFAPattern.IsEmpty() || !p_separateCFAFlatScalingFactors )
          {
-            flat->SelectChannel( c );
-            s[c] = flat->Mean();
-            if ( 1 + s[c] == 1 )
-               throw Error( String().Format( "Zero or insignificant scaling factor for flat frame channel# %d. "
-                                             "(empty master flat frame image?)", c ) );
+            flatScalingFactors = FVector( flat->NumberOfChannels() );
+            for ( int c = 0; c < flat->NumberOfChannels(); ++c )
+            {
+               int t = Max( 1, TruncInt( p_flatScaleClippingFactor * flat->NumberOfPixels() ) );
+               double s = TrimmedMean( flat->PixelData( c ), flat->PixelData( c )+flat->NumberOfPixels(), t, t );
+               if ( 1 + s == 1 )
+                  throw Error( String().Format( "Zero or insignificant scaling factor for flat frame channel %d. "
+                                                "(empty or marginal master flat frame data?)", c ) );
+               flat->Apply( s, ImageOp::Div, Rect( 0 ), c/*firstChannel*/, c/*lastChannel*/ );
+               console.WriteLn( String().Format( "s%d = %.6f", c, s ) );
+               flatScalingFactors[c] = s;
+            }
          }
+         else
+         {
+            CFAIndex cfa( flatCFAPattern );
+            Array<float> F[ 3 ];
+            {
+               Image::const_sample_iterator i( *flat );
+               for ( int y = 0; y < flat->Height(); ++y )
+                  for ( int x = 0; x < flat->Width(); ++x, ++i )
+                     F[cfa( x, y )] << *i;
+            }
 
-         flat->ResetSelections();
-
-         for ( int c = 0; c < flat->NumberOfChannels(); ++c )
-            console.WriteLn( String().Format( "s%d = %.6f", c, s[c] ) );
+            flatScalingFactors = FVector( 3 );
+            for ( int c = 0; c < 3; ++c )
+            {
+               int t = Max( 1, TruncInt( p_flatScaleClippingFactor * F[c].Length() ) );
+               double s = TrimmedMean( F[c].Begin(), F[c].End(), t, t );
+               if ( 1 + s == 1 )
+                  throw Error( String().Format( "Zero or insignificant scaling factor for flat frame CFA component %d. "
+                                                "(empty or marginal master flat frame data?)", c ) );
+               Image::sample_iterator i( *flat );
+               for ( int y = 0; y < flat->Height(); ++y )
+                  for ( int x = 0; x < flat->Width(); ++x, ++i )
+                     if ( cfa( x, y ) == c )
+                        *i /= s;
+               console.WriteLn( String().Format( "s%d = %.6f", c, s ) );
+               flatScalingFactors[c] = s;
+            }
+         }
       }
    } // if bias or dark or flat
 
@@ -2141,17 +2230,28 @@ bool ImageCalibrationInstance::ExecuteGlobal()
    /*
     * Begin light frame calibration process.
     */
-
-   int succeeded = 0;
-   int failed = 0;
-   int skipped = 0;
+   console.NoteLn( String().Format( "<end><cbr><br>* Calibration of %u target frames.", p_targetFrames.Length() ) );
 
    /*
-    * Running threads list. Note that IndirectArray<> initializes all item
-    * pointers to zero.
+    * Prepare working thread data.
+    */
+   CalibrationThreadData threadData;
+   threadData.instance = this;
+   threadData.overscan = O;
+   threadData.bias = bias;
+   threadData.dark = dark;
+   threadData.optimizingDark = optimizingDark;
+   threadData.darkCFAPattern = darkCFAPattern;
+   threadData.flat = flat;
+   threadData.flatScalingFactors = flatScalingFactors;
+
+   /*
+    * Running threads list. Note that IndirectArray<> initializes all of its
+    * contained pointers to nullptr.
     */
    int numberOfThreads = Thread::NumberOfThreads( PCL_MAX_PROCESSORS, 1 );
-   thread_list runningThreads( Min( int( targetFrames.Length() ), numberOfThreads ) );
+   thread_list runningThreads( Min( int( p_targetFrames.Length() ), numberOfThreads ) );
+   console.WriteLn( String().Format( "* Using %u worker threads.", runningThreads.Length() ) );
 
    /*
     * Waiting threads list. We use this list for temporary storage of
@@ -2166,27 +2266,14 @@ bool ImageCalibrationInstance::ExecuteGlobal()
    bool waitingForFinished = false;
 
    /*
-    * Prepare working thread data.
-    */
-   CalibrationThreadData threadData;
-   threadData.instance = this;
-   threadData.overscan = O;
-   threadData.bias = bias;
-   threadData.dark = dark;
-   threadData.optimizingDark = optimizingDark;
-   threadData.isDarkCFA = isDarkCFA;
-   threadData.flat = flat;
-   threadData.fScale = s;
-   threadData.maxProcessors = 1 + (numberOfThreads - runningThreads.Length())/runningThreads.Length();
-
-   /*
     * We'll work on a temporary duplicate of the target frames list. This
     * allows us to modify the working list without altering the instance.
     */
-   image_list targets( targetFrames );
+   image_list targets( p_targetFrames );
 
-   console.WriteLn( String().Format( "<end><cbr><br>Calibration of %u target frames:", targetFrames.Length() ) );
-   console.WriteLn( String().Format( "* Using %u worker threads", runningThreads.Length() ) );
+   int succeeded = 0;
+   int failed = 0;
+   int skipped = 0;
 
    try
    {
@@ -2212,27 +2299,28 @@ bool ImageCalibrationInstance::ExecuteGlobal()
                    * This is a free thread slot. Ignore it if we don't have
                    * more pending images to feed in.
                    */
-                  if ( targets.IsEmpty() && waitingThreads.IsEmpty() )
-                  {
-                     ++unused;
-                     continue;
-                  }
+                  if ( targets.IsEmpty() )
+                     if ( waitingThreads.IsEmpty() )
+                     {
+                        ++unused;
+                        continue;
+                     }
                }
                else
                {
                   /*
                    * This is an existing thread. If this thread is still alive,
-                   * wait for 0.1 seconds and then continue watching.
+                   * wait for a while and then continue watching.
                    */
                   if ( (*j)->IsActive() )
                   {
-                     pcl::Sleep( 100 );
+                     pcl::Sleep( 150 );
                      continue;
                   }
                }
 
                /*
-                * If we have a useful free thread slot, or a thread has just
+                * If we have a useful free thread slot, or if a thread has just
                 * finished, exit the watching loop and work it out.
                 */
                i = j;
@@ -2240,7 +2328,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
             }
 
             /*
-             * Keep watching while there is no useful free thread slots or a
+             * Keep watching while there are no useful free thread slots or a
              * finished thread.
              */
             if ( i == nullptr )
@@ -2258,35 +2346,27 @@ bool ImageCalibrationInstance::ExecuteGlobal()
                /*
                 * This is a just-finished thread.
                 */
-               try
-               {
-                  if ( !(*i)->Success() )
-                     throw Error( (*i)->ConsoleOutputText() );
-
+               (*i)->FlushConsoleOutputText();
+               String errorInfo;
+               if ( (*i)->Succeeded() )
                   WriteCalibratedImage( *i );
+               else
+                  errorInfo = (*i)->ErrorInfo();
 
-                  /*
-                   * Dispose this calibration thread, since we are done with
-                   * it. NB: IndirectArray<T>::Delete() sets to zero the
-                   * pointer pointed to by the iterator, but does not remove
-                   * the array element.
-                   */
-                  runningThreads.Delete( i );
-               }
-               catch ( ... )
-               {
-                  /*
-                   * Ensure the thread is also destroyed in the event of error;
-                   * we'd enter an infinite loop otherwise!
-                   */
-                  runningThreads.Delete( i );
-                  throw;
-               }
+               /*
+                * N.B.: IndirectArray<>::Delete() sets to zero the pointer
+                * pointed to by the iterator, but does not remove the array
+                * element.
+                */
+               runningThreads.Delete( i );
+
+               if ( !errorInfo.IsEmpty() )
+                  throw Error( errorInfo );
 
                ++succeeded;
             }
 
-            // Keep the GUI responsive
+            // Keep the GUI responsive.
             Module->ProcessEvents();
             if ( console.AbortRequested() )
                throw ProcessAborted();
@@ -2294,9 +2374,9 @@ bool ImageCalibrationInstance::ExecuteGlobal()
             if ( !waitingThreads.IsEmpty() )
             {
                /*
-                * If there are threads waiting, pop the first one from the
+                * If there are waiting threads, pop the first one from the
                 * waiting threads list and put it in the free thread slot for
-                * immediate firing.
+                * immediate execution.
                 */
                *i = *waitingThreads;
                waitingThreads.Remove( waitingThreads.Begin() );
@@ -2311,7 +2391,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
                {
                   bool someRunning = false;
                   for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j )
-                     if ( *j != 0 )
+                     if ( *j != nullptr )
                      {
                         someRunning = true;
                         break;
@@ -2324,10 +2404,9 @@ bool ImageCalibrationInstance::ExecuteGlobal()
                   {
                      if ( !waitingForFinished )
                      {
-                        console.WriteLn( "<end><cbr><br>* Waiting for running tasks to terminate ..." );
+                        console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
                         waitingForFinished = true;
                      }
-
                      continue;
                   }
 
@@ -2345,12 +2424,11 @@ bool ImageCalibrationInstance::ExecuteGlobal()
                ImageItem item = *targets;
                targets.Remove( targets.Begin() );
 
-               console.WriteLn( String().Format( "<end><cbr><br>Calibrating target frame %u of %u",
-                                                   targetFrames.Length()-targets.Length(),
-                                                   targetFrames.Length() ) );
+               /*
+                * Skip disabled targets.
+                */
                if ( !item.enabled )
                {
-                  console.NoteLn( "* Skipping disabled target" );
                   ++skipped;
                   continue;
                }
@@ -2363,8 +2441,8 @@ bool ImageCalibrationInstance::ExecuteGlobal()
                thread_list threads = LoadTargetFrame( item.path, threadData );
 
                /*
-                * Put the new thread --or the first thread if this is a
-                * multiple-image file-- in the free slot.
+                * Put the new thread, or the first thread if this is a
+                * multiple-image file, in the free slot.
                 */
                *i = *threads;
                threads.Remove( threads.Begin() );
@@ -2378,13 +2456,14 @@ bool ImageCalibrationInstance::ExecuteGlobal()
             }
 
             /*
-             * If we have produced a new thread, run it immediately. Note that
-             * we support thread CPU affinity, if it has been enabled on the
-             * platform via global preferences - hence the second argument to
-             * Thread::Start() below.
+             * If we have produced a new thread, run it.
              */
             if ( *i != nullptr )
-               (*i)->Start( ThreadPriority::DefaultMax, i - runningThreads.Begin() );
+            {
+               size_type threadIndex = i - runningThreads.Begin();
+               console.NoteLn( String().Format( "<end><cbr><br>[%03u] ", threadIndex ) + (*i)->TargetFilePath() );
+               (*i)->Start( ThreadPriority::DefaultMax/*, i - runningThreads.Begin()*/ );
+            }
          } // try
          catch ( ProcessAborted& )
          {
@@ -2417,7 +2496,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
 
             console.Note( "<end><cbr><br>* Applying error policy: " );
 
-            switch ( onError )
+            switch ( p_onError )
             {
             default: // ?
             case ICOnError::Continue:
@@ -2453,7 +2532,7 @@ bool ImageCalibrationInstance::ExecuteGlobal()
    } // try
    catch ( ... )
    {
-      console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate ..." );
+      console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
       for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
          if ( *i != 0 ) (*i)->Abort();
       for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
@@ -2486,137 +2565,147 @@ bool ImageCalibrationInstance::ExecuteGlobal()
 void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type tableRow )
 {
    if ( p == TheICTargetFrameEnabledParameter )
-      return &targetFrames[tableRow].enabled;
+      return &p_targetFrames[tableRow].enabled;
    if ( p == TheICTargetFramePathParameter )
-      return targetFrames[tableRow].path.Begin();
+      return p_targetFrames[tableRow].path.Begin();
+
+   if ( p == TheICCFADataParameter )
+      return &p_cfaData;
+   if ( p == TheICCFAPatternParameter )
+      return &p_cfaPattern;
 
    if ( p == TheICInputHintsParameter )
-      return inputHints.Begin();
+      return p_inputHints.Begin();
    if ( p == TheICOutputHintsParameter )
-      return outputHints.Begin();
+      return p_outputHints.Begin();
 
    if ( p == TheICPedestalParameter )
-      return &pedestal;
+      return &p_pedestal;
    if ( p == TheICPedestalModeParameter )
-      return &pedestalMode;
+      return &p_pedestalMode;
    if ( p == TheICPedestalKeywordParameter )
-      return pedestalKeyword.Begin();
+      return p_pedestalKeyword.Begin();
 
    if ( p == TheICOverscanEnabledParameter )
-      return &overscan.enabled;
+      return &p_overscan.enabled;
 
    if ( p == TheICOverscanImageX0Parameter )
-      return &overscan.imageRect.x0;
+      return &p_overscan.imageRect.x0;
    if ( p == TheICOverscanImageY0Parameter )
-      return &overscan.imageRect.y0;
+      return &p_overscan.imageRect.y0;
    if ( p == TheICOverscanImageX1Parameter )
-      return &overscan.imageRect.x1;
+      return &p_overscan.imageRect.x1;
    if ( p == TheICOverscanImageY1Parameter )
-      return &overscan.imageRect.y1;
+      return &p_overscan.imageRect.y1;
 
    if ( p == TheICOverscanRegionEnabledParameter )
-      return &overscan.overscan[tableRow].enabled;
+      return &p_overscan.overscan[tableRow].enabled;
 
    if ( p == TheICOverscanSourceX0Parameter )
-      return &overscan.overscan[tableRow].sourceRect.x0;
+      return &p_overscan.overscan[tableRow].sourceRect.x0;
    if ( p == TheICOverscanSourceY0Parameter )
-      return &overscan.overscan[tableRow].sourceRect.y0;
+      return &p_overscan.overscan[tableRow].sourceRect.y0;
    if ( p == TheICOverscanSourceX1Parameter )
-      return &overscan.overscan[tableRow].sourceRect.x1;
+      return &p_overscan.overscan[tableRow].sourceRect.x1;
    if ( p == TheICOverscanSourceY1Parameter )
-      return &overscan.overscan[tableRow].sourceRect.y1;
+      return &p_overscan.overscan[tableRow].sourceRect.y1;
 
    if ( p == TheICOverscanTargetX0Parameter )
-      return &overscan.overscan[tableRow].targetRect.x0;
+      return &p_overscan.overscan[tableRow].targetRect.x0;
    if ( p == TheICOverscanTargetY0Parameter )
-      return &overscan.overscan[tableRow].targetRect.y0;
+      return &p_overscan.overscan[tableRow].targetRect.y0;
    if ( p == TheICOverscanTargetX1Parameter )
-      return &overscan.overscan[tableRow].targetRect.x1;
+      return &p_overscan.overscan[tableRow].targetRect.x1;
    if ( p == TheICOverscanTargetY1Parameter )
-      return &overscan.overscan[tableRow].targetRect.y1;
+      return &p_overscan.overscan[tableRow].targetRect.y1;
 
    if ( p == TheICMasterBiasEnabledParameter )
-      return &masterBias.enabled;
+      return &p_masterBias.enabled;
    if ( p == TheICMasterBiasPathParameter )
-      return masterBias.path.Begin();
+      return p_masterBias.path.Begin();
 
    if ( p == TheICMasterDarkEnabledParameter )
-      return &masterDark.enabled;
+      return &p_masterDark.enabled;
    if ( p == TheICMasterDarkPathParameter )
-      return masterDark.path.Begin();
+      return p_masterDark.path.Begin();
 
    if ( p == TheICMasterFlatEnabledParameter )
-      return &masterFlat.enabled;
+      return &p_masterFlat.enabled;
    if ( p == TheICMasterFlatPathParameter )
-      return masterFlat.path.Begin();
+      return p_masterFlat.path.Begin();
 
    if ( p == TheICCalibrateBiasParameter )
-      return &calibrateBias;
+      return &p_calibrateBias;
    if ( p == TheICCalibrateDarkParameter )
-      return &calibrateDark;
+      return &p_calibrateDark;
    if ( p == TheICCalibrateFlatParameter )
-      return &calibrateFlat;
+      return &p_calibrateFlat;
    if ( p == TheICOptimizeDarksParameter )
-      return &optimizeDarks;
+      return &p_optimizeDarks;
    if ( p == TheICDarkOptimizationThresholdParameter )
-      return &darkOptimizationThreshold;
+      return &p_darkOptimizationThreshold;
    if ( p == TheICDarkOptimizationLowParameter )
-      return &darkOptimizationLow;
+      return &p_darkOptimizationLow;
    if ( p == TheICDarkOptimizationWindowParameter )
-      return &darkOptimizationWindow;
+      return &p_darkOptimizationWindow;
    if ( p == TheICDarkCFADetectionModeParameter )
-      return &darkCFADetectionMode;
+      return &p_darkCFADetectionMode;
+
+   if ( p == TheICSeparateCFAFlatScalingFactorsParameter )
+      return &p_separateCFAFlatScalingFactors;
+   if ( p == TheICFlatScaleClippingFactorParameter )
+      return &p_flatScaleClippingFactor;
 
    if ( p == TheICEvaluateNoiseParameter )
-      return &evaluateNoise;
+      return &p_evaluateNoise;
    if ( p == TheICNoiseEvaluationAlgorithmParameter )
-      return &noiseEvaluationAlgorithm;
+      return &p_noiseEvaluationAlgorithm;
 
    if ( p == TheICOutputDirectoryParameter )
-      return outputDirectory.Begin();
+      return p_outputDirectory.Begin();
    if ( p == TheICOutputExtensionParameter )
-      return outputExtension.Begin();
+      return p_outputExtension.Begin();
    if ( p == TheICOutputPrefixParameter )
-      return outputPrefix.Begin();
+      return p_outputPrefix.Begin();
    if ( p == TheICOutputPostfixParameter )
-      return outputPostfix.Begin();
+      return p_outputPostfix.Begin();
    if ( p == TheICOutputSampleFormatParameter )
-      return &outputSampleFormat;
+      return &p_outputSampleFormat;
    if ( p == TheICOutputPedestalParameter )
-      return &outputPedestal;
+      return &p_outputPedestal;
    if ( p == TheICOverwriteExistingFilesParameter )
-      return &overwriteExistingFiles;
+      return &p_overwriteExistingFiles;
    if ( p == TheICOnErrorParameter )
-      return &onError;
+      return &p_onError;
    if ( p == TheICNoGUIMessagesParameter )
-      return &noGUIMessages;
+      return &p_noGUIMessages;
 
    if ( p == TheICOutputFilePathParameter )
-      return output[tableRow].outputFilePath.Begin();
+      return o_output[tableRow].outputFilePath.Begin();
    if ( p == TheICDarkScalingFactorRKParameter )
-      return output[tableRow].darkScalingFactors.At( 0 );
+      return o_output[tableRow].darkScalingFactors.At( 0 );
    if ( p == TheICDarkScalingFactorGParameter )
-      return output[tableRow].darkScalingFactors.At( 1 );
+      return o_output[tableRow].darkScalingFactors.At( 1 );
    if ( p == TheICDarkScalingFactorBParameter )
-      return output[tableRow].darkScalingFactors.At( 2 );
+      return o_output[tableRow].darkScalingFactors.At( 2 );
    if ( p == TheICNoiseEstimateRKParameter )
-      return output[tableRow].noiseEstimates.At( 0 );
+      return o_output[tableRow].noiseEstimates.At( 0 );
    if ( p == TheICNoiseEstimateGParameter )
-      return output[tableRow].noiseEstimates.At( 1 );
+      return o_output[tableRow].noiseEstimates.At( 1 );
    if ( p == TheICNoiseEstimateBParameter )
-      return output[tableRow].noiseEstimates.At( 2 );
+      return o_output[tableRow].noiseEstimates.At( 2 );
    if ( p == TheICNoiseFractionRKParameter )
-      return output[tableRow].noiseFractions.At( 0 );
+      return o_output[tableRow].noiseFractions.At( 0 );
    if ( p == TheICNoiseFractionGParameter )
-      return output[tableRow].noiseFractions.At( 1 );
+      return o_output[tableRow].noiseFractions.At( 1 );
    if ( p == TheICNoiseFractionBParameter )
-      return output[tableRow].noiseFractions.At( 2 );
+      return o_output[tableRow].noiseFractions.At( 2 );
    if ( p == TheICNoiseAlgorithmRKParameter )
-      return output[tableRow].noiseAlgorithms[0].Begin();
+      return o_output[tableRow].noiseAlgorithms[0].Begin();
    if ( p == TheICNoiseAlgorithmGParameter )
-      return output[tableRow].noiseAlgorithms[1].Begin();
+      return o_output[tableRow].noiseAlgorithms[1].Begin();
    if ( p == TheICNoiseAlgorithmBParameter )
-      return output[tableRow].noiseAlgorithms[2].Begin();
+      return o_output[tableRow].noiseAlgorithms[2].Begin();
 
    return nullptr;
 }
@@ -2627,33 +2716,33 @@ bool ImageCalibrationInstance::AllocateParameter( size_type sizeOrLength, const 
 {
    if ( p == TheICTargetFramesParameter )
    {
-      targetFrames.Clear();
+      p_targetFrames.Clear();
       if ( sizeOrLength > 0 )
-         targetFrames.Add( ImageItem(), sizeOrLength );
+         p_targetFrames.Add( ImageItem(), sizeOrLength );
    }
    else if ( p == TheICTargetFramePathParameter )
    {
-      targetFrames[tableRow].path.Clear();
+      p_targetFrames[tableRow].path.Clear();
       if ( sizeOrLength > 0 )
-         targetFrames[tableRow].path.SetLength( sizeOrLength );
+         p_targetFrames[tableRow].path.SetLength( sizeOrLength );
    }
    else if ( p == TheICInputHintsParameter )
    {
-      inputHints.Clear();
+      p_inputHints.Clear();
       if ( sizeOrLength > 0 )
-         inputHints.SetLength( sizeOrLength );
+         p_inputHints.SetLength( sizeOrLength );
    }
    else if ( p == TheICOutputHintsParameter )
    {
-      outputHints.Clear();
+      p_outputHints.Clear();
       if ( sizeOrLength > 0 )
-         outputHints.SetLength( sizeOrLength );
+         p_outputHints.SetLength( sizeOrLength );
    }
    else if ( p == TheICPedestalKeywordParameter )
    {
-      pedestalKeyword.Clear();
+      p_pedestalKeyword.Clear();
       if ( sizeOrLength > 0 )
-         pedestalKeyword.SetLength( sizeOrLength );
+         p_pedestalKeyword.SetLength( sizeOrLength );
    }
    else if ( p == TheICOverscanRegionsParameter )
    {
@@ -2661,75 +2750,75 @@ bool ImageCalibrationInstance::AllocateParameter( size_type sizeOrLength, const 
    }
    else if ( p == TheICMasterBiasPathParameter )
    {
-      masterBias.path.Clear();
+      p_masterBias.path.Clear();
       if ( sizeOrLength > 0 )
-         masterBias.path.SetLength( sizeOrLength );
+         p_masterBias.path.SetLength( sizeOrLength );
    }
    else if ( p == TheICMasterDarkPathParameter )
    {
-      masterDark.path.Clear();
+      p_masterDark.path.Clear();
       if ( sizeOrLength > 0 )
-         masterDark.path.SetLength( sizeOrLength );
+         p_masterDark.path.SetLength( sizeOrLength );
    }
    else if ( p == TheICMasterFlatPathParameter )
    {
-      masterFlat.path.Clear();
+      p_masterFlat.path.Clear();
       if ( sizeOrLength > 0 )
-         masterFlat.path.SetLength( sizeOrLength );
+         p_masterFlat.path.SetLength( sizeOrLength );
    }
    else if ( p == TheICOutputDirectoryParameter )
    {
-      outputDirectory.Clear();
+      p_outputDirectory.Clear();
       if ( sizeOrLength > 0 )
-         outputDirectory.SetLength( sizeOrLength );
+         p_outputDirectory.SetLength( sizeOrLength );
    }
    else if ( p == TheICOutputExtensionParameter )
    {
-      outputExtension.Clear();
+      p_outputExtension.Clear();
       if ( sizeOrLength > 0 )
-         outputExtension.SetLength( sizeOrLength );
+         p_outputExtension.SetLength( sizeOrLength );
    }
    else if ( p == TheICOutputPrefixParameter )
    {
-      outputPrefix.Clear();
+      p_outputPrefix.Clear();
       if ( sizeOrLength > 0 )
-         outputPrefix.SetLength( sizeOrLength );
+         p_outputPrefix.SetLength( sizeOrLength );
    }
    else if ( p == TheICOutputPostfixParameter )
    {
-      outputPostfix.Clear();
+      p_outputPostfix.Clear();
       if ( sizeOrLength > 0 )
-         outputPostfix.SetLength( sizeOrLength );
+         p_outputPostfix.SetLength( sizeOrLength );
    }
    else if ( p == TheICOutputDataParameter )
    {
-      output.Clear();
+      o_output.Clear();
       if ( sizeOrLength > 0 )
-         output.Add( OutputData(), sizeOrLength );
+         o_output.Add( OutputData(), sizeOrLength );
    }
    else if ( p == TheICOutputFilePathParameter )
    {
-      output[tableRow].outputFilePath.Clear();
+      o_output[tableRow].outputFilePath.Clear();
       if ( sizeOrLength > 0 )
-         output[tableRow].outputFilePath.SetLength( sizeOrLength );
+         o_output[tableRow].outputFilePath.SetLength( sizeOrLength );
    }
    else if ( p == TheICNoiseAlgorithmRKParameter )
    {
-      output[tableRow].noiseAlgorithms[0].Clear();
+      o_output[tableRow].noiseAlgorithms[0].Clear();
       if ( sizeOrLength > 0 )
-         output[tableRow].noiseAlgorithms[0].SetLength( sizeOrLength );
+         o_output[tableRow].noiseAlgorithms[0].SetLength( sizeOrLength );
    }
    else if ( p == TheICNoiseAlgorithmGParameter )
    {
-      output[tableRow].noiseAlgorithms[1].Clear();
+      o_output[tableRow].noiseAlgorithms[1].Clear();
       if ( sizeOrLength > 0 )
-         output[tableRow].noiseAlgorithms[1].SetLength( sizeOrLength );
+         o_output[tableRow].noiseAlgorithms[1].SetLength( sizeOrLength );
    }
    else if ( p == TheICNoiseAlgorithmBParameter )
    {
-      output[tableRow].noiseAlgorithms[2].Clear();
+      o_output[tableRow].noiseAlgorithms[2].Clear();
       if ( sizeOrLength > 0 )
-         output[tableRow].noiseAlgorithms[2].SetLength( sizeOrLength );
+         o_output[tableRow].noiseAlgorithms[2].SetLength( sizeOrLength );
    }
    else
       return false;
@@ -2742,41 +2831,41 @@ bool ImageCalibrationInstance::AllocateParameter( size_type sizeOrLength, const 
 size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheICTargetFramesParameter )
-      return targetFrames.Length();
+      return p_targetFrames.Length();
    if ( p == TheICTargetFramePathParameter )
-      return targetFrames[tableRow].path.Length();
+      return p_targetFrames[tableRow].path.Length();
    if ( p == TheICInputHintsParameter )
-      return inputHints.Length();
+      return p_inputHints.Length();
    if ( p == TheICOutputHintsParameter )
-      return outputHints.Length();
+      return p_outputHints.Length();
    if ( p == TheICPedestalKeywordParameter )
-      return pedestalKeyword.Length();
+      return p_pedestalKeyword.Length();
    if ( p == TheICOverscanRegionsParameter )
       return 4;
    if ( p == TheICMasterBiasPathParameter )
-      return masterBias.path.Length();
+      return p_masterBias.path.Length();
    if ( p == TheICMasterDarkPathParameter )
-      return masterDark.path.Length();
+      return p_masterDark.path.Length();
    if ( p == TheICMasterFlatPathParameter )
-      return masterFlat.path.Length();
+      return p_masterFlat.path.Length();
    if ( p == TheICOutputDirectoryParameter )
-      return outputDirectory.Length();
+      return p_outputDirectory.Length();
    if ( p == TheICOutputExtensionParameter )
-      return outputExtension.Length();
+      return p_outputExtension.Length();
    if ( p == TheICOutputPrefixParameter )
-      return outputPrefix.Length();
+      return p_outputPrefix.Length();
    if ( p == TheICOutputPostfixParameter )
-      return outputPostfix.Length();
+      return p_outputPostfix.Length();
    if ( p == TheICOutputDataParameter )
-      return output.Length();
+      return o_output.Length();
    if ( p == TheICOutputFilePathParameter )
-      return output[tableRow].outputFilePath.Length();
+      return o_output[tableRow].outputFilePath.Length();
    if ( p == TheICNoiseAlgorithmRKParameter )
-      return output[tableRow].noiseAlgorithms[0].Length();
+      return o_output[tableRow].noiseAlgorithms[0].Length();
    if ( p == TheICNoiseAlgorithmGParameter )
-      return output[tableRow].noiseAlgorithms[1].Length();
+      return o_output[tableRow].noiseAlgorithms[1].Length();
    if ( p == TheICNoiseAlgorithmBParameter )
-      return output[tableRow].noiseAlgorithms[2].Length();
+      return o_output[tableRow].noiseAlgorithms[2].Length();
    return 0;
 }
 
@@ -2785,4 +2874,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ImageCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorExpressionsInterface.h - Released 2020-02-27T12:56:01Z
+// SubframeSelectorExpressionsInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -74,15 +74,11 @@ public:
    virtual ~SubframeSelectorExpressionsInterface();
 
    IsoString Id() const override;
-
    MetaProcess* Process() const override;
-
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
-
    bool IsInstanceGenerator() const override;
    bool CanImportInstances() const override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
    using ProcessInterface::Launch;
 
@@ -119,9 +115,6 @@ private:
 
    void UpdateControls();
 
-   /*
-    * Event Handlers
-    */
    void e_TextUpdated( CodeEditor& sender );
    void e_KeyPressed( Control& sender, int key, unsigned modifiers, bool& wantsKey );
    void e_ButtonClick( Button& sender, bool checked );
@@ -143,4 +136,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorExpressionsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorExpressionsInterface.h - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorExpressionsInterface.h - Released 2020-07-31T19:33:39Z

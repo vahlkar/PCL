@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeInterface.cpp - Released 2020-02-27T12:56:01Z
+// BinarizeInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,12 +68,8 @@ BinarizeInterface* TheBinarizeInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "BinarizeIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-BinarizeInterface::BinarizeInterface() :
-   instance( TheBinarizeProcess )
+BinarizeInterface::BinarizeInterface()
+   : m_instance( TheBinarizeProcess )
 {
    TheBinarizeInterface = this;
 }
@@ -102,9 +98,9 @@ MetaProcess* BinarizeInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** BinarizeInterface::IconImageXPM() const
+String BinarizeInterface::IconImageSVGFile() const
 {
-   return BinarizeIcon_XPM;
+   return "@module_icons_dir/Binarize.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -129,7 +125,7 @@ void BinarizeInterface::RealTimePreviewUpdated( bool active )
 
 void BinarizeInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
 
 // ----------------------------------------------------------------------------
@@ -159,7 +155,7 @@ bool BinarizeInterface::Launch( const MetaProcess& P, const ProcessImplementatio
 
 ProcessImplementation* BinarizeInterface::NewProcess() const
 {
-   return new BinarizeInstance( instance );
+   return new BinarizeInstance( m_instance );
 }
 
 // ----------------------------------------------------------------------------
@@ -183,7 +179,7 @@ bool BinarizeInterface::RequiresInstanceValidation() const
 
 bool BinarizeInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
@@ -201,17 +197,17 @@ void BinarizeInterface::UpdateReadout( const View& v, const DPoint&, double R, d
 {
    if ( GUI != nullptr && IsVisible() )
    {
-      if ( instance.isGlobal )
+      if ( m_instance.p_global )
       {
          RGBColorSystem rgbws;
          v.Window().GetRGBWS( rgbws );
-         instance.level[0] = instance.level[1] = instance.level[2] = rgbws.Lightness( R, G, B );
+         m_instance.p_level[0] = m_instance.p_level[1] = m_instance.p_level[2] = rgbws.Lightness( R, G, B );
       }
       else
       {
-         instance.level[0] = R;
-         instance.level[1] = G;
-         instance.level[2] = B;
+         m_instance.p_level[0] = R;
+         m_instance.p_level[1] = G;
+         m_instance.p_level[2] = B;
       }
 
       UpdateControls();
@@ -231,8 +227,8 @@ bool BinarizeInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-BinarizeInterface::RealTimeThread::RealTimeThread() :
-   m_instance( TheBinarizeProcess )
+BinarizeInterface::RealTimeThread::RealTimeThread()
+   : m_instance( TheBinarizeProcess )
 {
 }
 
@@ -264,7 +260,7 @@ bool BinarizeInterface::GenerateRealTimePreview( UInt16Image& image, const View&
 
    for ( ;; )
    {
-      m_realTimeThread->Reset( image, instance );
+      m_realTimeThread->Reset( image, m_instance );
       m_realTimeThread->Start();
 
       while ( m_realTimeThread->IsActive() )
@@ -297,17 +293,17 @@ bool BinarizeInterface::GenerateRealTimePreview( UInt16Image& image, const View&
 
 void BinarizeInterface::UpdateControls()
 {
-   GUI->GlobalK_RadioButton.SetChecked( instance.isGlobal );
-   GUI->RGB_RadioButton.SetChecked( !instance.isGlobal );
+   GUI->GlobalK_RadioButton.SetChecked( m_instance.p_global );
+   GUI->RGB_RadioButton.SetChecked( !m_instance.p_global );
 
-   GUI->V0_NumericControl.label.SetText( instance.isGlobal ? "RGB/K:" : "R/K:" );
-   GUI->V0_NumericControl.SetValue( instance.level[0] );
+   GUI->V0_NumericControl.label.SetText( m_instance.p_global ? "RGB/K:" : "R/K:" );
+   GUI->V0_NumericControl.SetValue( m_instance.p_level[0] );
 
-   GUI->V1_NumericControl.Enable( !instance.isGlobal );
-   GUI->V1_NumericControl.SetValue( instance.level[1] );
+   GUI->V1_NumericControl.Enable( !m_instance.p_global );
+   GUI->V1_NumericControl.SetValue( m_instance.p_level[1] );
 
-   GUI->V2_NumericControl.Enable( !instance.isGlobal );
-   GUI->V2_NumericControl.SetValue( instance.level[2] );
+   GUI->V2_NumericControl.Enable( !m_instance.p_global );
+   GUI->V2_NumericControl.SetValue( m_instance.p_level[2] );
 
    GUI->ColorSample_Control.Update();
 }
@@ -329,11 +325,11 @@ void BinarizeInterface::UpdateRealTimePreview()
 void BinarizeInterface::__Mode_Click( Button& sender, bool checked )
 {
    if ( sender == GUI->RGB_RadioButton )
-      instance.isGlobal = false;
+      m_instance.p_global = false;
    else if ( sender == GUI->GlobalK_RadioButton )
    {
-      instance.isGlobal = true;
-      instance.level[1] = instance.level[2] = instance.level[0];
+      m_instance.p_global = true;
+      m_instance.p_level[1] = m_instance.p_level[2] = m_instance.p_level[0];
    }
 
    UpdateControls();
@@ -346,19 +342,19 @@ void BinarizeInterface::__LevelValues_ValueUpdated( NumericEdit& sender, double 
 {
    if ( sender == GUI->V0_NumericControl )
    {
-      instance.level[0] = value;
+      m_instance.p_level[0] = value;
 
-      if ( instance.isGlobal )
+      if ( m_instance.p_global )
       {
-         instance.level[1] = instance.level[2] = value;
+         m_instance.p_level[1] = m_instance.p_level[2] = value;
          GUI->V1_NumericControl.SetValue( value );
          GUI->V2_NumericControl.SetValue( value );
       }
    }
    else if ( sender == GUI->V1_NumericControl )
-      instance.level[1] = value;
+      m_instance.p_level[1] = value;
    else if ( sender == GUI->V2_NumericControl )
-      instance.level[2] = value;
+      m_instance.p_level[2] = value;
 
    GUI->ColorSample_Control.Update();
 
@@ -370,7 +366,7 @@ void BinarizeInterface::__LevelValues_ValueUpdated( NumericEdit& sender, double 
 void BinarizeInterface::__ColorSample_Paint( Control& sender, const Rect& /*updateRect*/ )
 {
    Graphics g( sender );
-   g.SetBrush( RGBAColor( float( instance.level[0] ), float( instance.level[1] ), float( instance.level[2] ) ) );
+   g.SetBrush( RGBAColor( float( m_instance.p_level[0] ), float( m_instance.p_level[1] ), float( m_instance.p_level[2] ) ) );
    g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
    g.DrawRect( sender.BoundsRect() );
 }
@@ -493,4 +489,4 @@ BinarizeInterface::GUIData::GUIData( BinarizeInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF BinarizeInterface.cpp - Released 2020-07-31T19:33:39Z

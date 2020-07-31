@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ReferenceArray.h - Released 2020-02-27T12:55:23Z
+// pcl/ReferenceArray.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -138,9 +138,7 @@ public:
       /*!
        * Default constructor. Constructs an uninitialized iterator object.
        */
-      iterator() : iterator_base(), it()
-      {
-      }
+      iterator() = default;
 
       /*!
        * Copy constructor.
@@ -150,7 +148,7 @@ public:
       /*!
        * Constructs a null iterator.
        */
-      iterator( std::nullptr_t ) : iterator_base(), it( nullptr )
+      iterator( std::nullptr_t ) : it( nullptr )
       {
       }
 
@@ -305,14 +303,14 @@ public:
 
    private:
 
-      indirect_iterator it;
+      indirect_iterator it = nullptr;
 
       /*!
        * Constructor from an IndirectArray iterator (a pointer to a pointer to
        * an object in the iterated container).
        */
       explicit
-      iterator( indirect_iterator i ) : iterator_base(), it( i )
+      iterator( indirect_iterator i ) : it( i )
       {
       }
 
@@ -338,21 +336,19 @@ public:
       /*!
        * Default constructor. Constructs an uninitialized iterator object.
        */
-      const_iterator() : iterator_base(), it()
-      {
-      }
+      const_iterator() = default;
 
       /*!
        * Constructor from non-const iterator.
        */
-      const_iterator( const iterator& i ) : iterator_base(), it( i.it )
+      const_iterator( const iterator& i ) : it( i.it )
       {
       }
 
       /*!
        * Constructs a null iterator.
        */
-      const_iterator( std::nullptr_t ) : iterator_base(), it( nullptr )
+      const_iterator( std::nullptr_t ) : it( nullptr )
       {
       }
 
@@ -550,14 +546,14 @@ public:
 
    private:
 
-      const_indirect_iterator it;
+      const_indirect_iterator it = nullptr;
 
       /*!
        * Constructor from an IndirectArray iterator (a pointer to a pointer to
        * an object in the iterated container).
        */
       explicit
-      const_iterator( const_indirect_iterator i ) : iterator_base(), it( i )
+      const_iterator( const_indirect_iterator i ) : it( i )
       {
       }
 
@@ -583,9 +579,7 @@ public:
    /*!
     * Constructs an empty reference array.
     */
-   ReferenceArray() : m_array()
-   {
-   }
+   ReferenceArray() = default;
 
    /*!
     * Constructs a reference array that stores \a n copies of a non-null
@@ -593,7 +587,7 @@ public:
     *
     * If \a p is \c nullptr, this function constructs an empty reference array.
     */
-   ReferenceArray( size_type n, const T* p ) : m_array()
+   ReferenceArray( size_type n, const T* p )
    {
       PCL_PRECONDITION( p != nullptr )
       if ( p != nullptr )
@@ -608,7 +602,7 @@ public:
     * not included in the constructed reference array.
     */
    template <class FI>
-   ReferenceArray( FI i, FI j ) : m_array()
+   ReferenceArray( FI i, FI j )
    {
       for ( ; i != j; ++i )
          if ( *i != nullptr )
@@ -618,16 +612,12 @@ public:
    /*!
     * Copy constructor.
     */
-   ReferenceArray( const ReferenceArray& x ) : m_array( x.m_array )
-   {
-   }
+   ReferenceArray( const ReferenceArray& ) = default;
 
    /*!
     * Move constructor.
     */
-   ReferenceArray( ReferenceArray&& x ) : m_array( std::move( x.m_array ) )
-   {
-   }
+   ReferenceArray( ReferenceArray&& ) = default;
 
    /*!
     * Destroys a %ReferenceArray object.
@@ -2097,6 +2087,20 @@ public:
    }
 
    /*!
+    * Generates a newline-separated sequence of string tokens. Returns a
+    * reference to the target string \a s.
+    *
+    * This function is equivalent to:
+    *
+    * \code ToSeparated( s, '\n' ); \endcode
+    */
+   template <class S>
+   S& ToNewLineSeparated( S& s ) const
+   {
+      return ToSeparated( s, '\n' );
+   }
+
+   /*!
     * Returns a 64-bit non-cryptographic hash value computed for this reference
     * array.
     *
@@ -2246,4 +2250,4 @@ ReferenceArray<T,A>& operator <<( ReferenceArray<T,A>&& x1, const ReferenceArray
 #endif   // __PCL_ReferenceArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReferenceArray.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ReferenceArray.h - Released 2020-07-31T19:33:04Z

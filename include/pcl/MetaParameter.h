@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MetaParameter.h - Released 2020-02-27T12:55:23Z
+// pcl/MetaParameter.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -181,7 +181,7 @@ public:
     * Returns true iff actual process parameters represented by this
     * metaparameter require <em>explicit validation</em>.
     *
-    * An explicit validation occurs when the PixInsight Core application
+    * An explicit validation occurs when the PixInsight core application
     * performs a call to ProcessImplementation::ValidateParameter(), either as
     * part of a process instance execution, or indirectly because a module has
     * requested it by calling ProcessInstance::Validate().
@@ -418,7 +418,8 @@ public:
     * Constructs a metaparameter representing a numeric parameter of the
     * specified process class \a *P.
     */
-   MetaNumeric( MetaProcess* P ) : MetaParameter( P )
+   MetaNumeric( MetaProcess* P )
+      : MetaParameter( P )
    {
    }
 
@@ -428,7 +429,8 @@ public:
     * metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaNumeric( MetaTable* T ) : MetaParameter( T )
+   MetaNumeric( MetaTable* T )
+      : MetaParameter( T )
    {
    }
 
@@ -535,7 +537,8 @@ public:
     * Constructs a metaparameter representing an integer parameter of the
     * specified process class \a *P.
     */
-   MetaInteger( MetaProcess* P ) : MetaNumeric( P )
+   MetaInteger( MetaProcess* P )
+      : MetaNumeric( P )
    {
    }
 
@@ -545,7 +548,8 @@ public:
     * metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaInteger( MetaTable* T ) : MetaNumeric( T )
+   MetaInteger( MetaTable* T )
+      : MetaNumeric( T )
    {
    }
 
@@ -596,7 +600,8 @@ public:
     * Constructs a metaparameter representing an unsigned integer parameter of
     * the specified process class \a *P.
     */
-   MetaUnsignedInteger( MetaProcess* P ) : MetaInteger( P )
+   MetaUnsignedInteger( MetaProcess* P )
+      : MetaInteger( P )
    {
    }
 
@@ -606,7 +611,8 @@ public:
     * The new metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaUnsignedInteger( MetaTable* T ) : MetaInteger( T )
+   MetaUnsignedInteger( MetaTable* T )
+      : MetaInteger( T )
    {
    }
 
@@ -651,7 +657,8 @@ public:
     * Constructs a metaparameter representing a signed integer parameter of
     * the specified process class \a *P.
     */
-   MetaSignedInteger( MetaProcess* P ) : MetaInteger( P )
+   MetaSignedInteger( MetaProcess* P )
+      : MetaInteger( P )
    {
    }
 
@@ -661,7 +668,8 @@ public:
     * The new metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaSignedInteger( MetaTable* T ) : MetaInteger( T )
+   MetaSignedInteger( MetaTable* T )
+      : MetaInteger( T )
    {
    }
 
@@ -706,7 +714,8 @@ public:
     * Constructs a metaparameter representing an 8-bit unsigned integer
     * parameter of the specified process class \a *P.
     */
-   MetaUInt8( MetaProcess* P ) : MetaUnsignedInteger( P )
+   MetaUInt8( MetaProcess* P )
+      : MetaUnsignedInteger( P )
    {
    }
 
@@ -716,7 +725,8 @@ public:
     * \a *T. The new metaparameter is appended to the list of existing columns
     * in the metatable \a *T.
     */
-   MetaUInt8( MetaTable* T ) : MetaUnsignedInteger( T )
+   MetaUInt8( MetaTable* T )
+      : MetaUnsignedInteger( T )
    {
    }
 
@@ -754,7 +764,8 @@ public:
     * Constructs a metaparameter representing a 16-bit unsigned integer
     * parameter of the specified process class \a *P.
     */
-   MetaUInt16( MetaProcess* P ) : MetaUnsignedInteger( P )
+   MetaUInt16( MetaProcess* P )
+      : MetaUnsignedInteger( P )
    {
    }
 
@@ -764,7 +775,8 @@ public:
     * \a *T. The new metaparameter is appended to the list of existing columns
     * in the metatable \a *T.
     */
-   MetaUInt16( MetaTable* T ) : MetaUnsignedInteger( T )
+   MetaUInt16( MetaTable* T )
+      : MetaUnsignedInteger( T )
    {
    }
 
@@ -802,7 +814,8 @@ public:
     * Constructs a metaparameter representing a 32-bit unsigned integer
     * parameter of the specified process class \a *P.
     */
-   MetaUInt32( MetaProcess* P ) : MetaUnsignedInteger( P )
+   MetaUInt32( MetaProcess* P )
+      : MetaUnsignedInteger( P )
    {
    }
 
@@ -812,7 +825,8 @@ public:
     * \a *T. The new metaparameter is appended to the list of existing columns
     * in the metatable \a *T.
     */
-   MetaUInt32( MetaTable* T ) : MetaUnsignedInteger( T )
+   MetaUInt32( MetaTable* T )
+      : MetaUnsignedInteger( T )
    {
    }
 
@@ -850,7 +864,8 @@ public:
     * Constructs a metaparameter representing a 64-bit unsigned integer
     * parameter of the specified process class \a *P.
     */
-   MetaUInt64( MetaProcess* P ) : MetaUnsignedInteger( P )
+   MetaUInt64( MetaProcess* P )
+      : MetaUnsignedInteger( P )
    {
    }
 
@@ -860,7 +875,8 @@ public:
     * \a *T. The new metaparameter is appended to the list of existing columns
     * in the metatable \a *T.
     */
-   MetaUInt64( MetaTable* T ) : MetaUnsignedInteger( T )
+   MetaUInt64( MetaTable* T )
+      : MetaUnsignedInteger( T )
    {
    }
 
@@ -896,7 +912,8 @@ public:
     * Constructs a metaparameter representing an 8-bit signed integer parameter
     * of the specified process class \a *P.
     */
-   MetaInt8( MetaProcess* P ) : MetaSignedInteger( P )
+   MetaInt8( MetaProcess* P )
+      : MetaSignedInteger( P )
    {
    }
 
@@ -906,7 +923,8 @@ public:
     * The new metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaInt8( MetaTable* T ) : MetaSignedInteger( T )
+   MetaInt8( MetaTable* T )
+      : MetaSignedInteger( T )
    {
    }
 
@@ -944,7 +962,8 @@ public:
     * Constructs a metaparameter representing a 16-bit signed integer parameter
     * of the specified process class \a *P.
     */
-   MetaInt16( MetaProcess* P ) : MetaSignedInteger( P )
+   MetaInt16( MetaProcess* P )
+      : MetaSignedInteger( P )
    {
    }
 
@@ -954,7 +973,8 @@ public:
     * The new metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaInt16( MetaTable* T ) : MetaSignedInteger( T )
+   MetaInt16( MetaTable* T )
+      : MetaSignedInteger( T )
    {
    }
 
@@ -992,7 +1012,8 @@ public:
     * Constructs a metaparameter representing a 32-bit signed integer parameter
     * of the specified process class \a *P.
     */
-   MetaInt32( MetaProcess* P ) : MetaSignedInteger( P )
+   MetaInt32( MetaProcess* P )
+      : MetaSignedInteger( P )
    {
    }
 
@@ -1002,7 +1023,8 @@ public:
     * The new metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaInt32( MetaTable* T ) : MetaSignedInteger( T )
+   MetaInt32( MetaTable* T )
+      : MetaSignedInteger( T )
    {
    }
 
@@ -1040,7 +1062,8 @@ public:
     * Constructs a metaparameter representing a 64-bit signed integer parameter
     * of the specified process class \a *P.
     */
-   MetaInt64( MetaProcess* p ) : MetaSignedInteger( p )
+   MetaInt64( MetaProcess* p )
+      : MetaSignedInteger( p )
    {
    }
 
@@ -1050,7 +1073,8 @@ public:
     * The new metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaInt64( MetaTable* t ) : MetaSignedInteger( t )
+   MetaInt64( MetaTable* t )
+      : MetaSignedInteger( t )
    {
    }
 
@@ -1088,7 +1112,8 @@ public:
     * Constructs a metaparameter representing a real parameter of the
     * specified process class \a *P.
     */
-   MetaReal( MetaProcess* P ) : MetaNumeric( P )
+   MetaReal( MetaProcess* P )
+      : MetaNumeric( P )
    {
    }
 
@@ -1098,7 +1123,8 @@ public:
     * metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaReal( MetaTable* T ) : MetaNumeric( T )
+   MetaReal( MetaTable* T )
+      : MetaNumeric( T )
    {
    }
 
@@ -1198,7 +1224,8 @@ public:
     * Constructs a metaparameter representing a 32-bit floating point parameter
     * of the specified process class \a *P.
     */
-   MetaFloat( MetaProcess* P ) : MetaReal( P )
+   MetaFloat( MetaProcess* P )
+      : MetaReal( P )
    {
    }
 
@@ -1208,7 +1235,8 @@ public:
     * The new metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaFloat( MetaTable* T ) : MetaReal( T )
+   MetaFloat( MetaTable* T )
+      : MetaReal( T )
    {
    }
 
@@ -1247,7 +1275,8 @@ public:
     * Constructs a metaparameter representing a 64-bit floating point parameter
     * of the specified process class \a *P.
     */
-   MetaDouble( MetaProcess* P ) : MetaReal( P )
+   MetaDouble( MetaProcess* P )
+      : MetaReal( P )
    {
    }
 
@@ -1257,7 +1286,8 @@ public:
     * The new metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaDouble( MetaTable* T ) : MetaReal( T )
+   MetaDouble( MetaTable* T )
+      : MetaReal( T )
    {
    }
 
@@ -1303,7 +1333,8 @@ public:
     * Constructs a metaparameter representing a Boolean parameter of the
     * specified process class \a *P.
     */
-   MetaBoolean( MetaProcess* P ) : MetaParameter( P )
+   MetaBoolean( MetaProcess* P )
+      : MetaParameter( P )
    {
    }
 
@@ -1313,7 +1344,8 @@ public:
     * metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaBoolean( MetaTable* T ) : MetaParameter( T )
+   MetaBoolean( MetaTable* T )
+      : MetaParameter( T )
    {
    }
 
@@ -1386,8 +1418,8 @@ public:
     * The T template argument type must have integer equality comparison
     * semantics.
     */
-   template <typename T> pcl_bool( const T& value ) :
-      m_value( value ? 1 : 0 )
+   template <typename T> pcl_bool( const T& value )
+      : m_value( value ? 1 : 0 )
    {
    }
 
@@ -1467,7 +1499,8 @@ public:
     * Constructs a metaparameter representing an enumerated parameter of the
     * specified process class \a *P.
     */
-   MetaEnumeration( MetaProcess* P ) : MetaParameter( P )
+   MetaEnumeration( MetaProcess* P )
+      : MetaParameter( P )
    {
    }
 
@@ -1477,7 +1510,8 @@ public:
     * metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaEnumeration( MetaTable* T ) : MetaParameter( T )
+   MetaEnumeration( MetaTable* T )
+      : MetaParameter( T )
    {
    }
 
@@ -1620,7 +1654,8 @@ public:
     * Constructs a metaparameter representing a variable length parameter of
     * the specified process class \a *P.
     */
-   MetaVariableLengthParameter( MetaProcess* P ) : MetaParameter( P )
+   MetaVariableLengthParameter( MetaProcess* P )
+      : MetaParameter( P )
    {
    }
 
@@ -1630,7 +1665,8 @@ public:
     * The new metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaVariableLengthParameter( MetaTable* T ) : MetaParameter( T )
+   MetaVariableLengthParameter( MetaTable* T )
+      : MetaParameter( T )
    {
    }
 
@@ -1702,7 +1738,8 @@ public:
     * Constructs a metaparameter representing a string parameter of the
     * specified process class \a *P.
     */
-   MetaString( MetaProcess* P ) : MetaVariableLengthParameter( P )
+   MetaString( MetaProcess* P )
+      : MetaVariableLengthParameter( P )
    {
    }
 
@@ -1712,7 +1749,8 @@ public:
     * metaparameter is appended to the list of existing columns in the
     * metatable \a *T.
     */
-   MetaString( MetaTable* T ) : MetaVariableLengthParameter( T )
+   MetaString( MetaTable* T )
+      : MetaVariableLengthParameter( T )
    {
    }
 
@@ -1792,7 +1830,8 @@ public:
     * Constructs a metaparameter representing a table parameter of the
     * specified process class \a *P.
     */
-   MetaTable( MetaProcess* P ) : MetaVariableLengthParameter( P )
+   MetaTable( MetaProcess* P )
+      : MetaVariableLengthParameter( P )
    {
    }
 
@@ -1854,7 +1893,8 @@ public:
     * Constructs a metaparameter representing a block parameter of the
     * specified process class \a *p.
     */
-   MetaBlock( MetaProcess* p ) : MetaVariableLengthParameter( p )
+   MetaBlock( MetaProcess* p )
+      : MetaVariableLengthParameter( p )
    {
    }
 
@@ -1864,7 +1904,8 @@ public:
     * metaparameter is appended to the list of existing columns in the
     * metatable \a *t.
     */
-   MetaBlock( MetaTable* t ) : MetaVariableLengthParameter( t )
+   MetaBlock( MetaTable* t )
+      : MetaVariableLengthParameter( t )
    {
    }
 
@@ -1955,4 +1996,4 @@ private:
 #endif   // __PCL_MetaParameter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaParameter.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/MetaParameter.h - Released 2020-07-31T19:33:04Z

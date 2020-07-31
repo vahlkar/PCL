@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SharedPixelData.h - Released 2020-02-27T12:55:23Z
+// pcl/SharedPixelData.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -70,7 +70,7 @@ namespace pcl
  *
  * \internal This is a low-level class internally used by PCL classes and
  * functions. It is not intended to be used directly by user-level modules.
- * Unless you are a PixInsight Core or PCL maintainer, you should not need or
+ * Unless you are a PixInsight core or PCL maintainer, you should not need or
  * attempt to use or instantiate this class.
  */
 class PCL_CLASS SharedPixelData
@@ -132,8 +132,8 @@ public:
     * references the same shared image. If \a x is a local image, this function
     * just copies the null handle and has no further effect.
     */
-   SharedPixelData( const SharedPixelData& x ) :
-      m_handle( x.m_handle )
+   SharedPixelData( const SharedPixelData& x )
+      : m_handle( x.m_handle )
    {
       Attach();
    }
@@ -246,4 +246,4 @@ protected:
 #endif   // __PCL_SharedPixelData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SharedPixelData.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/SharedPixelData.h - Released 2020-07-31T19:33:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/InterlacedTransformation.h - Released 2020-02-27T12:55:23Z
+// pcl/InterlacedTransformation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,8 +93,8 @@ public:
     * Constructs an %InterlacedTransformation object with the specified
     * <em>interlacing distance</em> \a n > 0 in pixels.
     */
-   InterlacedTransformation( int n = 1 ) :
-      m_distance( pcl::Max( 1, n ) )
+   InterlacedTransformation( int n = 1 )
+      : m_distance( pcl::Max( 1, n ) )
    {
       PCL_PRECONDITION( n > 0 )
    }
@@ -178,4 +178,4 @@ private:
 #endif   // __PCL_InterlacedTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/InterlacedTransformation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/InterlacedTransformation.h - Released 2020-07-31T19:33:04Z

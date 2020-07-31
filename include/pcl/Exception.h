@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Exception.h - Released 2020-02-27T12:55:23Z
+// pcl/Exception.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -252,7 +252,8 @@ public:
    /*!
     * Constructs an %Error object with the specified error \a message.
     */
-   Error( const String& message ) : m_message( message )
+   Error( const String& message )
+      : m_message( message )
    {
    }
 
@@ -303,14 +304,16 @@ public:
    /*!
     * Constructs a %FatalError object with the specified \a message.
     */
-   FatalError( const String& message ) : Error( message )
+   FatalError( const String& message )
+      : Error( message )
    {
    }
 
    /*!
     * "Promote" any exception to have "fatal consequences".
     */
-   FatalError( const pcl::Exception& x ) : Error( x.Message() )
+   FatalError( const pcl::Exception& x )
+      : Error( x.Message() )
    {
    }
 
@@ -350,8 +353,8 @@ public:
     *                         implement.
     */
    template <typename T>
-   NotImplemented( const T& object, const String& notImplemented ) :
-      Error( String( IsoString( typeid( object ).name() )
+   NotImplemented( const T& object, const String& notImplemented )
+      : Error( String( IsoString( typeid( object ).name() )
 #ifdef __PCL_WINDOWS
       .MBSToWCS()
 #else
@@ -413,8 +416,10 @@ public:
     *             in the string \a beingParsed, or < 0 if no specific position
     *             can be associated with the error.
     */
-   ParseError( const String& message, const String& beingParsed = String(), int errorPosition = -1 ) :
-      Error( message ), m_beingParsed( beingParsed ), m_errorPosition( errorPosition )
+   ParseError( const String& message, const String& beingParsed = String(), int errorPosition = -1 )
+      : Error( message )
+      , m_beingParsed( beingParsed )
+      , m_errorPosition( errorPosition )
    {
    }
 
@@ -485,10 +490,10 @@ public:
     *             is specified by default.
     */
    template <typename T1>
-   SourceCodeError( const String& message, T1 line = -1, T1 column = -1 ) :
-      Error( message ),
-      m_lineNumber( Range( int( line ), -1, int_max ) ),
-      m_columnNumber( Range( int( column ), -1, int_max ) )
+   SourceCodeError( const String& message, T1 line = -1, T1 column = -1 )
+      : Error( message )
+      , m_lineNumber( Range( int( line ), -1, int_max ) )
+      , m_columnNumber( Range( int( column ), -1, int_max ) )
    {
    }
 
@@ -663,4 +668,4 @@ PCL_DECLARE_EXCEPTION_CLASS( ProcessAborted, "Process aborted", String() );
 #endif   // __PCL_Exception_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Exception.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Exception.h - Released 2020-07-31T19:33:04Z

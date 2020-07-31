@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.h - Released 2020-02-27T12:56:01Z
+// SubframeSelectorProcess.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -70,7 +70,7 @@ public:
    IsoString Category() const override;
    uint32 Version() const override;
    String Description() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    ProcessInterface* DefaultInterface() const override;
    ProcessImplementation* Create() const override;
    ProcessImplementation* Clone( const ProcessImplementation& ) const override;
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __SubframeSelectorProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.h - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorProcess.h - Released 2020-07-31T19:33:39Z

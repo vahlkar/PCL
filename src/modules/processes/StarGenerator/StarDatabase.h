@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarDatabase.h - Released 2020-02-27T12:56:01Z
+// StarDatabase.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -120,14 +120,16 @@ public:
    }
 };
 
+// ----------------------------------------------------------------------------
+
 class StarDatabase
 {
 public:
 
    typedef Array<Star>  star_list;
 
-   StarDatabase( const String& fileName = String(), TimePoint ep = TimePoint::J2000() ) :
-      epoch( ep.JD() )
+   StarDatabase( const String& fileName = String(), TimePoint ep = TimePoint::J2000() )
+      : epoch( ep.JD() )
    {
       if ( !fileName.IsEmpty() )
          Open( fileName );
@@ -243,4 +245,4 @@ private:
 #endif   // __StarDatabase_h
 
 // ----------------------------------------------------------------------------
-// EOF StarDatabase.h - Released 2020-02-27T12:56:01Z
+// EOF StarDatabase.h - Released 2020-07-31T19:33:39Z

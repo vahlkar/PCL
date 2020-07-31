@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInstance.cpp - Released 2020-02-27T12:56:01Z
+// ConvolutionInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -72,21 +72,21 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ConvolutionInstance::ConvolutionInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   mode( ConMode::Default ),
-   sigma( TheConSigmaParameter->DefaultValue() ),
-   shape( TheConShapeParameter->DefaultValue() ),
-   aspectRatio( TheConAspectRatioParameter->DefaultValue() ),
-   rotationAngle( TheConRotationAngleParameter->DefaultValue() ),
-   rescaleHighPass( TheConRescaleHighPassParameter->DefaultValue() )
+ConvolutionInstance::ConvolutionInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , mode( ConMode::Default )
+   , sigma( TheConSigmaParameter->DefaultValue() )
+   , shape( TheConShapeParameter->DefaultValue() )
+   , aspectRatio( TheConAspectRatioParameter->DefaultValue() )
+   , rotationAngle( TheConRotationAngleParameter->DefaultValue() )
+   , rescaleHighPass( TheConRescaleHighPassParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ConvolutionInstance::ConvolutionInstance( const ConvolutionInstance& x ) :
-   ProcessImplementation( x )
+ConvolutionInstance::ConvolutionInstance( const ConvolutionInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -493,4 +493,4 @@ bool ConvolutionInstance::CreateFilterImage( Image& filter ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ConvolutionInstance.cpp - Released 2020-07-31T19:33:39Z

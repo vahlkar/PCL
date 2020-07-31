@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsInterface.cpp - Released 2020-02-27T12:56:01Z
+// CreateAlphaChannelsInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -70,15 +70,13 @@ CreateAlphaChannelsInterface* TheCreateAlphaChannelsInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "CreateAlphaChannelsIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-CreateAlphaChannelsInterface::CreateAlphaChannelsInterface() :
-   instance( TheCreateAlphaChannelsProcess )
+CreateAlphaChannelsInterface::CreateAlphaChannelsInterface()
+   : instance( TheCreateAlphaChannelsProcess )
 {
    TheCreateAlphaChannelsInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 CreateAlphaChannelsInterface::~CreateAlphaChannelsInterface()
 {
@@ -86,31 +84,43 @@ CreateAlphaChannelsInterface::~CreateAlphaChannelsInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString CreateAlphaChannelsInterface::Id() const
 {
    return "CreateAlphaChannels";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* CreateAlphaChannelsInterface::Process() const
 {
    return TheCreateAlphaChannelsProcess;
 }
 
-const char** CreateAlphaChannelsInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String CreateAlphaChannelsInterface::IconImageSVGFile() const
 {
-   return CreateAlphaChannelsIcon_XPM;
+   return "@module_icons_dir/CreateAlphaChannels.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void CreateAlphaChannelsInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
 
+// ----------------------------------------------------------------------------
+
 void CreateAlphaChannelsInterface::ResetInstance()
 {
    CreateAlphaChannelsInstance defaultInstance( TheCreateAlphaChannelsProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool CreateAlphaChannelsInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -125,10 +135,14 @@ bool CreateAlphaChannelsInterface::Launch( const MetaProcess& P, const ProcessIm
    return &P == TheCreateAlphaChannelsProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* CreateAlphaChannelsInterface::NewProcess() const
 {
    return new CreateAlphaChannelsInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool CreateAlphaChannelsInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -138,10 +152,14 @@ bool CreateAlphaChannelsInterface::ValidateProcess( const ProcessImplementation&
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool CreateAlphaChannelsInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool CreateAlphaChannelsInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -177,6 +195,8 @@ void CreateAlphaChannelsInterface::__SourceMode_Check( GroupBox& sender, bool ch
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void CreateAlphaChannelsInterface::__ImageId_GetFocus( Control& sender )
 {
    Edit* e = dynamic_cast<Edit*>( &sender );
@@ -184,6 +204,8 @@ void CreateAlphaChannelsInterface::__ImageId_GetFocus( Control& sender )
       if ( e->Text() == AUTO_ID )
          e->Clear();
 }
+
+// ----------------------------------------------------------------------------
 
 void CreateAlphaChannelsInterface::__ImageId_EditCompleted( Edit& sender )
 {
@@ -203,6 +225,8 @@ void CreateAlphaChannelsInterface::__ImageId_EditCompleted( Edit& sender )
    )
 }
 
+// ----------------------------------------------------------------------------
+
 void CreateAlphaChannelsInterface::__SelectSource_Click( Button& /*sender*/, bool /*checked*/ )
 {
    ViewSelectionDialog d( instance.imageId, false/*allowPreviews*/ );
@@ -214,6 +238,8 @@ void CreateAlphaChannelsInterface::__SelectSource_Click( Button& /*sender*/, boo
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void CreateAlphaChannelsInterface::__SourceOption_Click( Button& sender, bool checked )
 {
    if ( sender == GUI->InvertSource_CheckBox )
@@ -223,11 +249,15 @@ void CreateAlphaChannelsInterface::__SourceOption_Click( Button& sender, bool ch
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void CreateAlphaChannelsInterface::__Transparency_ValueUpdated( NumericEdit& /*sender*/, double value )
 {
    GUI->Transparency_NumericControl.SetValue( instance.transparency = value );
    GUI->ColorSample_Control.Update();
 }
+
+// ----------------------------------------------------------------------------
 
 void CreateAlphaChannelsInterface::__ColorSample_Paint( Control& sender, const Rect& updateRect )
 {
@@ -237,16 +267,22 @@ void CreateAlphaChannelsInterface::__ColorSample_Paint( Control& sender, const R
    g.DrawRect( sender.BoundsRect() );
 }
 
+// ----------------------------------------------------------------------------
+
 void CreateAlphaChannelsInterface::__Replace_Click( Button& /*sender*/, bool checked )
 {
    instance.replace = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void CreateAlphaChannelsInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->ImageId_Edit )
       wantsView = view.IsMainView();
 }
+
+// ----------------------------------------------------------------------------
 
 void CreateAlphaChannelsInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -351,4 +387,4 @@ CreateAlphaChannelsInterface::GUIData::GUIData( CreateAlphaChannelsInterface& w 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF CreateAlphaChannelsInterface.cpp - Released 2020-07-31T19:33:39Z

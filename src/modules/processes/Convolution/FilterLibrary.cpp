@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// FilterLibrary.cpp - Released 2020-02-27T12:56:01Z
+// FilterLibrary.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -72,6 +72,8 @@ void FilterLibrary::Load( const String& _filePath )
    filePath = _filePath;
 }
 
+// ----------------------------------------------------------------------------
+
 void FilterLibrary::LoadDefaultLibrary()
 {
    String path = DefaultLibraryPath();
@@ -80,12 +82,16 @@ void FilterLibrary::LoadDefaultLibrary()
    Load( path );
 }
 
+// ----------------------------------------------------------------------------
+
 void FilterLibrary::Save()
 {
    if ( filePath.IsEmpty() )
       throw Error( "Internal error: Invalid call to FilterLibrary::Save() without a valid file path" );
    SaveAs( filePath );
 }
+
+// ----------------------------------------------------------------------------
 
 void FilterLibrary::SaveAs( const String& _filePath )
 {
@@ -103,11 +109,15 @@ void FilterLibrary::SaveAs( const String& _filePath )
    filePath = _filePath;
 }
 
+// ----------------------------------------------------------------------------
+
 void FilterLibrary::New()
 {
    filters.Clear();
    filePath.Clear();
 }
+
+// ----------------------------------------------------------------------------
 
 bool FilterLibrary::IsWritable() const
 {
@@ -165,6 +175,8 @@ bool FilterLibrary::IsWritable() const
       return false;
    }
 }
+
+// ----------------------------------------------------------------------------
 
 String FilterLibrary::DefaultLibraryPath()
 {
@@ -568,4 +580,4 @@ void FilterParser::CaptureParameterValueTokens( token_list::const_iterator& i, t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FilterLibrary.cpp - Released 2020-02-27T12:56:01Z
+// EOF FilterLibrary.cpp - Released 2020-07-31T19:33:39Z

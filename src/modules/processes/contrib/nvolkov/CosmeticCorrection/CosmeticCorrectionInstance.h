@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInstance.h - Released 2020-02-27T12:56:01Z
+// CosmeticCorrectionInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,18 +54,15 @@
 #ifndef __CosmeticCorrectionInstance_h
 #define __CosmeticCorrectionInstance_h
 
-#include <pcl/ProcessImplementation.h>
 #include <pcl/Convolution.h>
 #include <pcl/FileFormatInstance.h>
 #include <pcl/MorphologicalTransformation.h>
+#include <pcl/ProcessImplementation.h>
 
 #include "CosmeticCorrectionParameters.h"
 
-//#define debug 1
-
 namespace pcl
 {
-
 
 // ----------------------------------------------------------------------------
 
@@ -77,114 +74,119 @@ typedef IndirectArray<CCThread> thread_list;
 class CosmeticCorrectionInstance : public ProcessImplementation
 {
 public:
-    CosmeticCorrectionInstance( const MetaProcess* );
-    CosmeticCorrectionInstance( const CosmeticCorrectionInstance& );
 
-    virtual void Assign( const ProcessImplementation& );
-    virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-    //virtual bool ExecuteOn( View& );
-    virtual bool IsHistoryUpdater( const View& v ) const;
-    virtual bool CanExecuteGlobal( String& whyNot ) const;
-    virtual bool ExecuteGlobal();
-    virtual void* LockParameter( const MetaParameter*, size_type /*tableRow*/ );
-    virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-    virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   CosmeticCorrectionInstance( const MetaProcess* );
+   CosmeticCorrectionInstance( const CosmeticCorrectionInstance& );
+
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool IsHistoryUpdater( const View& v ) const override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type /*tableRow*/ ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
-    struct ImageItem
-    {
-        pcl_bool enabled; // if disabled, skip (ignore) this image
-        String   path;    // absolute file path
-        ImageItem( const String& p = String() ) : enabled( true ), path( p )
-        {
-        }
 
-        ImageItem( const ImageItem& x ) : enabled( x.enabled ), path( x.path )
-        {
-        }
-        bool IsValid() const
-        {
-            return !enabled || !path.IsEmpty();
-        }
-    };
+   struct ImageItem
+   {
+      pcl_bool enabled = true; // if disabled, skip (ignore) this image
+      String path;             // absolute file path
 
-    struct DefectItem
-    {
-        pcl_bool enabled;       // if disabled, skip (ignore) this defect
-        pcl_bool isRow;         // true == Row, false == Col
-        uint16 address;         // address of selected col or row
-        pcl_bool isRange;       // true == range of selected pixels defined, false == All pixels selected as bad
-        uint16 begin;           // first bad pixel in col/row
-        uint16 end;             // last bad pixel in col/row
+      ImageItem( const String& p = String() )
+         : path( p )
+      {
+      }
 
-        DefectItem( const bool a_enabled = false, const bool a_isRow = false, const uint16 a_address = 0, const bool a_isRange = false, const uint16 a_begin = 0, const uint16 a_end = 0 ):
-        enabled( a_enabled ), isRow( a_isRow ), address( a_address ), isRange( a_isRange ), begin( a_begin ), end( a_end )
-        {
-        }
+      ImageItem( const ImageItem& ) = default;
 
-        DefectItem( const DefectItem& x ) : enabled( x.enabled ), isRow( x.isRow ), address( x.address ), isRange( x.isRange ), begin( x.begin ), end( x.end )
-        {
-        }
-    };
+      bool IsValid() const
+      {
+         return !enabled || !path.IsEmpty();
+      }
+   };
+
+   struct DefectItem
+   {
+      pcl_bool enabled; // if disabled, skip (ignore) this defect
+      pcl_bool isRow;   // true == Row, false == Col
+      uint16 address;   // address of selected col or row
+      pcl_bool isRange; // true == range of selected pixels defined, false == All pixels selected as bad
+      uint16 begin;     // first bad pixel in col/row
+      uint16 end;       // last bad pixel in col/row
+
+      DefectItem( const bool a_enabled = false, const bool a_isRow = false,
+                  const uint16 a_address = 0, const bool a_isRange = false,
+                  const uint16 a_begin = 0, const uint16 a_end = 0 )
+         : enabled( a_enabled )
+         , isRow( a_isRow )
+         , address( a_address )
+         , isRange( a_isRange )
+         , begin( a_begin )
+         , end( a_end )
+      {
+      }
+
+      DefectItem( const DefectItem& ) = default;
+   };
 
 #define MapImg UInt8Image
 #define DarkImg UInt16Image
 
-    typedef Array<ImageItem> image_list;
-    typedef Array<DefectItem> defect_list;
+   typedef Array<ImageItem> image_list;
+   typedef Array<DefectItem> defect_list;
 
-    Rect    m_geometry;
-    MapImg* m_mapDarkHot;
-    MapImg* m_mapDarkCold;
+   Rect    m_geometry;
+   MapImg* m_mapDarkHot = nullptr;
+   MapImg* m_mapDarkCold = nullptr;
 
-    // instance ---------------------------------------------------------------
-    image_list  p_targetFrames;
-    String      p_outputDir;
-    String      p_outputExtension;
-    pcl_bool    p_overwrite;
-    String      p_prefix;
-    String      p_postfix;
+   image_list  p_targetFrames;
+   String      p_outputDir;
+   String      p_outputExtension;
+   pcl_bool    p_overwrite;
+   String      p_prefix;
+   String      p_postfix;
 
-    pcl_bool    p_cfa;
-    float       p_amount;
+   pcl_bool    p_cfa;
+   float       p_amount;
 
-    pcl_bool    p_useMasterDark;
-    String      p_masterDark;
-    pcl_bool    p_hotDarkCheck;
-    float       p_hotDarkLevel;
-    pcl_bool    p_coldDarkCheck;
-    float       p_coldDarkLevel;
+   pcl_bool    p_useMasterDark;
+   String      p_masterDark;
+   pcl_bool    p_hotDarkCheck;
+   float       p_hotDarkLevel;
+   pcl_bool    p_coldDarkCheck;
+   float       p_coldDarkLevel;
 
-    pcl_bool    p_useAutoDetect;
-    pcl_bool    p_hotAutoCheck;
-    float       p_hotAutoValue;
-    pcl_bool    p_coldAutoCheck;
-    float       p_coldAutoValue;
+   pcl_bool    p_useAutoDetect;
+   pcl_bool    p_hotAutoCheck;
+   float       p_hotAutoValue;
+   pcl_bool    p_coldAutoCheck;
+   float       p_coldAutoValue;
 
-    pcl_bool    p_useDefectList;
-    defect_list p_defects;
+   pcl_bool    p_useDefectList;
+   defect_list p_defects;
 
-    // -------------------------------------------------------------------------
+   bool CanExecute( String& whyNot ) const;
+   MorphologicalTransformation* BkgMT() const;
+   MorphologicalTransformation* MedMT() const;
+   MorphologicalTransformation* AvrMT() const;
+   DarkImg GetDark( const String& );
+   void PrepareMasterDarkMaps();
 
-    bool   CanExecute( String& whyNot ) const;
-    inline MorphologicalTransformation* BkgMT() const;
-    inline MorphologicalTransformation* MedMT() const;
-    inline MorphologicalTransformation* AvrMT() const;
-    inline DarkImg GetDark( const String& );
-    void   PrepareMasterDarkMaps();
+   thread_list LoadTargetFrame( const String&, const CCThreadData& );
+   String OutputFilePath( const String&, const size_t );
+   void SaveImage( const CCThread* );
 
-    inline thread_list LoadTargetFrame( const String& , const CCThreadData& );
-    inline String OutputFilePath( const String& , const size_t );
-    inline void SaveImage( const CCThread* );
-
-    friend class CCThread;
-    friend class CosmeticCorrectionInterface;
+   friend class CCThread;
+   friend class CosmeticCorrectionInterface;
 };
 
 // ----------------------------------------------------------------------------
-} // pcl
 
-#endif   // __CosmeticCorrectionInstance_h
+} // namespace pcl
+
+#endif // __CosmeticCorrectionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInstance.h - Released 2020-02-27T12:56:01Z
+// EOF CosmeticCorrectionInstance.h - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Property.h - Released 2020-02-27T12:55:23Z
+// pcl/Property.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -114,9 +114,9 @@ public:
     * Constructs a %Property object with the specified property \a identifier
     * and property \a value.
     */
-   Property( const identifier_type& identifier, const value_type& value ) :
-      m_id( identifier ),
-      m_value( value )
+   Property( const identifier_type& identifier, const value_type& value )
+      : m_id( identifier )
+      , m_value( value )
    {
    }
 
@@ -124,8 +124,8 @@ public:
     * Constructs a %Property object with the specified property \a identifier
     * and an undefined (invalid) property value.
     */
-   Property( const identifier_type& identifier ) :
-      m_id( identifier )
+   Property( const identifier_type& identifier )
+      : m_id( identifier )
    {
    }
 
@@ -275,4 +275,4 @@ typedef Array<Property> PropertyArray;
 #endif   // __PCL_Property_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Property.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Property.h - Released 2020-07-31T19:33:04Z

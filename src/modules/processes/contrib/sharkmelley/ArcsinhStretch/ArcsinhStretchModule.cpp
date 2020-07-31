@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchModule.cpp - Released 2020-02-27T12:56:01Z
+// ArcsinhStretchModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
-// Copyright (c) 2017-2018 Mark Shelley
+// Copyright (c) 2017-2020 Mark Shelley
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -57,12 +57,12 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
+#include "ArcsinhStretchInterface.h"
 #include "ArcsinhStretchModule.h"
 #include "ArcsinhStretchProcess.h"
-#include "ArcsinhStretchInterface.h"
 
 namespace pcl
 {
@@ -116,14 +116,14 @@ String ArcsinhStretchModule::Author() const
 
 String ArcsinhStretchModule::Copyright() const
 {
-   return "Copyright (c) 2017 Mark Shelley";
+   return "Copyright (c) 2017-2020 Mark Shelley";
 }
 
 // ----------------------------------------------------------------------------
 
 String ArcsinhStretchModule::TradeMarks() const
 {
-   return String();
+   return "PixInsight";
 }
 
 // ----------------------------------------------------------------------------
@@ -157,6 +157,8 @@ void ArcsinhStretchModule::GetReleaseDate( int& year, int& month, int& day ) con
 
 } // pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::ArcsinhStretchModule;
@@ -171,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF ArcsinhStretchModule.cpp - Released 2020-07-31T19:33:39Z

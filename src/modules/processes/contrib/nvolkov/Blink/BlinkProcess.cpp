@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkProcess.cpp - Released 2020-02-27T12:56:01Z
+// BlinkProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -63,10 +63,6 @@ BlinkProcess* TheBlinkProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "BlinkIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 BlinkProcess::BlinkProcess()
 {
    TheBlinkProcess = this;
@@ -102,9 +98,9 @@ String BlinkProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** BlinkProcess::IconImageXPM() const
+String BlinkProcess::IconImageSVGFile() const
 {
-   return BlinkIcon_XPM;
+   return "@module_icons_dir/Blink.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -140,4 +136,4 @@ bool BlinkProcess::IsAssignable() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF BlinkProcess.cpp - Released 2020-07-31T19:33:39Z

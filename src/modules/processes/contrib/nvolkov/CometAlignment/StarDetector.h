@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// StarDetector.h - Released 2020-02-27T12:56:01Z
+// StarDetector.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -55,7 +55,7 @@
 #define __StarDetector_h
 
 #include <pcl/ImageVariant.h>
-#include <pcl/MetaParameter.h>   // pcl_enum, pcl_bool
+#include <pcl/MetaParameter.h>
 
 namespace pcl
 {
@@ -64,15 +64,17 @@ namespace pcl
 
 struct StarData
 {
-   pcl_enum status;  // error code (StarDetector::Status)
-   int32    channel; // channel index (0=R/K, 1=G, 2=B)
-   DRect    rect;    // selection rectangle
-   DPoint   pos;     // barycenter position
+   pcl_enum status; // error code (StarDetector::Status)
+   int32 channel;   // channel index (0=R/K, 1=G, 2=B)
+   DRect rect;      // selection rectangle
+   DPoint pos;      // barycenter position
 
+   // Defined after StarDetector declaration.
    operator bool() const;
-
-   String StatusToString() const;
+   String StatusText() const;
 };
+
+// ----------------------------------------------------------------------------
 
 class StarDetector
 {
@@ -92,8 +94,8 @@ public:
    StarData star;
 
    StarDetector( const ImageVariant& img, int channel,
-                 const DPoint& pos, int searchRadius = 8, float bkgThreshold = 1.0F,
-                 bool autoAperture = true );
+      const DPoint& pos, int searchRadius = 8, float bkgThreshold = 1.0F,
+      bool autoAperture = true );
 
    operator bool() const
    {
@@ -101,12 +103,14 @@ public:
    }
 };
 
+// ----------------------------------------------------------------------------
+
 inline StarData::operator bool() const
 {
    return status == StarDetector::DetectedOk;
 }
 
-inline String StarData::StatusToString() const
+inline String StarData::StatusText() const
 {
    switch ( status )
    {
@@ -123,9 +127,9 @@ inline String StarData::StatusToString() const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __StarDetector_h
+#endif // __StarDetector_h
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.h - Released 2020-02-27T12:56:01Z
+// EOF StarDetector.h - Released 2020-07-31T19:33:39Z

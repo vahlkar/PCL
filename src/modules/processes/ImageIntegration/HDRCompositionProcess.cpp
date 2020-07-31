@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// HDRCompositionProcess.cpp - Released 2020-02-27T12:56:01Z
+// HDRCompositionProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -50,10 +50,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "HDRCompositionParameters.h"
-#include "HDRCompositionProcess.h"
 #include "HDRCompositionInstance.h"
 #include "HDRCompositionInterface.h"
+#include "HDRCompositionParameters.h"
+#include "HDRCompositionProcess.h"
 
 namespace pcl
 {
@@ -61,10 +61,6 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 HDRCompositionProcess* TheHDRCompositionProcess = nullptr;
-
-// ----------------------------------------------------------------------------
-
-#include "HDRCompositionIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -117,16 +113,14 @@ uint32 HDRCompositionProcess::Version() const
 
 String HDRCompositionProcess::Description() const
 {
-   return
-
-   "";
+   return "";
 }
 
 // ----------------------------------------------------------------------------
 
-const char** HDRCompositionProcess::IconImageXPM() const
+String HDRCompositionProcess::IconImageSVGFile() const
 {
-   return HDRCompositionIcon_XPM;
+   return "@module_icons_dir/HDRComposition.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -156,4 +150,4 @@ ProcessImplementation* HDRCompositionProcess::Clone( const ProcessImplementation
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF HDRCompositionProcess.cpp - Released 2020-07-31T19:33:39Z

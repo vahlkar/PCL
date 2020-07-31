@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.h - Released 2020-02-27T12:56:01Z
+// SubframeSelectorMeasureData.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ namespace pcl
 static double DeviationNormalize( const double& value, const double& median,
                                   const double& deviation )
 {
-   return (value - median)/((deviation != 0.0) ? deviation : 1.0);
+   return (value - median)/((1 + deviation != 1) ? deviation : 1.0);
 }
 
 struct MeasureProperty
@@ -96,23 +96,6 @@ struct MeasureProperties
    MeasureProperty stars;
    MeasureProperty starResidual;
    MeasureProperty starResidualMeanDev;
-
-   MeasureProperties()
-   {
-      weight = MeasureProperty();
-      fwhm = MeasureProperty();
-      fwhmMeanDev = MeasureProperty();
-      eccentricity = MeasureProperty();
-      eccentricityMeanDev = MeasureProperty();
-      snrWeight = MeasureProperty();
-      median = MeasureProperty();
-      medianMeanDev = MeasureProperty();
-      noise = MeasureProperty();
-      noiseRatio = MeasureProperty();
-      stars = MeasureProperty();
-      starResidual = MeasureProperty();
-      starResidualMeanDev = MeasureProperty();
-   }
 };
 
 // ----------------------------------------------------------------------------
@@ -133,8 +116,8 @@ struct MeasureData
    double starResidual;
    double starResidualMeanDev;
 
-   MeasureData( const String& p = String() ) :
-      path( p )
+   MeasureData( const String& p = String() )
+      : path( p )
    {
       ResetCacheableData();
    }
@@ -235,24 +218,24 @@ struct MeasureItem
    float    eccentricityMeanDev;
    float    starResidualMeanDev;
 
-   MeasureItem( uint16 i, const String& p = String() ) :
-      index( i ),
-      enabled( TheSSMeasurementEnabledParameter->DefaultValue() ),
-      locked( TheSSMeasurementLockedParameter->DefaultValue() ),
-      path( p ),
-      weight( TheSSMeasurementWeightParameter->DefaultValue() ),
-      fwhm( TheSSMeasurementFWHMParameter->DefaultValue() ),
-      eccentricity( TheSSMeasurementEccentricityParameter->DefaultValue() ),
-      snrWeight( TheSSMeasurementSNRWeightParameter->DefaultValue() ),
-      median( TheSSMeasurementMedianParameter->DefaultValue() ),
-      medianMeanDev( TheSSMeasurementMedianMeanDevParameter->DefaultValue() ),
-      noise( TheSSMeasurementNoiseParameter->DefaultValue() ),
-      noiseRatio( TheSSMeasurementNoiseRatioParameter->DefaultValue() ),
-      stars( TheSSMeasurementStarsParameter->DefaultValue() ),
-      starResidual( TheSSMeasurementStarResidualParameter->DefaultValue() ),
-      fwhmMeanDev( TheSSMeasurementFWHMMeanDevParameter->DefaultValue() ),
-      eccentricityMeanDev( TheSSMeasurementEccentricityMeanDevParameter->DefaultValue() ),
-      starResidualMeanDev( TheSSMeasurementStarResidualMeanDevParameter->DefaultValue() )
+   MeasureItem( uint16 i, const String& p = String() )
+      : index( i )
+      , enabled( TheSSMeasurementEnabledParameter->DefaultValue() )
+      , locked( TheSSMeasurementLockedParameter->DefaultValue() )
+      , path( p )
+      , weight( TheSSMeasurementWeightParameter->DefaultValue() )
+      , fwhm( TheSSMeasurementFWHMParameter->DefaultValue() )
+      , eccentricity( TheSSMeasurementEccentricityParameter->DefaultValue() )
+      , snrWeight( TheSSMeasurementSNRWeightParameter->DefaultValue() )
+      , median( TheSSMeasurementMedianParameter->DefaultValue() )
+      , medianMeanDev( TheSSMeasurementMedianMeanDevParameter->DefaultValue() )
+      , noise( TheSSMeasurementNoiseParameter->DefaultValue() )
+      , noiseRatio( TheSSMeasurementNoiseRatioParameter->DefaultValue() )
+      , stars( TheSSMeasurementStarsParameter->DefaultValue() )
+      , starResidual( TheSSMeasurementStarResidualParameter->DefaultValue() )
+      , fwhmMeanDev( TheSSMeasurementFWHMMeanDevParameter->DefaultValue() )
+      , eccentricityMeanDev( TheSSMeasurementEccentricityMeanDevParameter->DefaultValue() )
+      , starResidualMeanDev( TheSSMeasurementStarResidualMeanDevParameter->DefaultValue() )
    {
    }
 
@@ -594,9 +577,9 @@ class SubframeSortingBinaryPredicate
 {
 public:
 
-   SubframeSortingBinaryPredicate( pcl_enum sortBy, int ascending ) :
-      m_sortBy( sortBy ),
-      m_ascending( ascending )
+   SubframeSortingBinaryPredicate( pcl_enum sortBy, int ascending )
+      : m_sortBy( sortBy )
+      , m_ascending( ascending )
    {
    }
 
@@ -604,8 +587,7 @@ public:
    {
       if ( m_ascending > 0 )
          return s1.SortingValue( m_sortBy ) > s2.SortingValue( m_sortBy );
-      else
-         return s1.SortingValue( m_sortBy ) < s2.SortingValue( m_sortBy );
+      return s1.SortingValue( m_sortBy ) < s2.SortingValue( m_sortBy );
    }
 
 private:
@@ -623,4 +605,4 @@ private:
 #endif   // __SubframeSelectorMeasureData_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.h - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorMeasureData.h - Released 2020-07-31T19:33:39Z

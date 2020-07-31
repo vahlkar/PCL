@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SuperbiasParameters.h - Released 2020-02-27T12:56:01Z
+// SuperbiasParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -67,8 +67,8 @@ public:
 
    SBColumns( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern SBColumns* TheSBColumnsParameter;
@@ -81,8 +81,8 @@ public:
 
    SBRows( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern SBRows* TheSBRowsParameter;
@@ -95,8 +95,8 @@ public:
 
    SBMedianTransform( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern SBMedianTransform* TheSBMedianTransformParameter;
@@ -109,8 +109,8 @@ public:
 
    SBExcludeLargeScale( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern SBExcludeLargeScale* TheSBExcludeLargeScaleParameter;
@@ -123,10 +123,10 @@ public:
 
    SBMultiscaleLayers( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern SBMultiscaleLayers* TheSBMultiscaleLayersParameter;
@@ -139,11 +139,11 @@ public:
 
    SBTrimmingFactor( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern SBTrimmingFactor* TheSBTrimmingFactorParameter;
@@ -156,8 +156,8 @@ public:
 
    SBSuperbiasViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SBSuperbiasViewId* TheSBSuperbiasViewIdParameter;
@@ -170,8 +170,8 @@ public:
 
    SBSuperbiasViewId1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern SBSuperbiasViewId1* TheSBSuperbiasViewId1Parameter;
@@ -183,4 +183,4 @@ extern SBSuperbiasViewId1* TheSBSuperbiasViewId1Parameter;
 #endif   // __SuperbiasParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasParameters.h - Released 2020-02-27T12:56:01Z
+// EOF SuperbiasParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FastRotationActions.cpp - Released 2020-02-27T12:56:01Z
+// FastRotationActions.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -59,24 +59,22 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "Rotate180ActionIcon.xpm"
-#include "Rotate90CWActionIcon.xpm"
-#include "Rotate90CCWActionIcon.xpm"
-#include "HorizontalMirrorActionIcon.xpm"
-#include "VerticalMirrorActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-Rotate180Action::Rotate180Action() :
-   Action( "Image > Geometry > Rotate 180\xb0", Bitmap( Rotate180ActionIcon_XPM ), "Geometry" )
+Rotate180Action::Rotate180Action()
+   : Action( "Image > Geometry > Rotate 180\xb0",
+             "@module_icons_dir/Rotate180Action.svg",
+             "Geometry" )
 {
    SetToolTip( "Rotate 180\xb0" );
 }
+
+// ----------------------------------------------------------------------------
 
 void Rotate180Action::Execute()
 {
    FastRotationInstance( TheFastRotationProcess, FRMode::Rotate180 ).LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 bool Rotate180Action::IsEnabled( ActionInfo info ) const
 {
@@ -84,17 +82,24 @@ bool Rotate180Action::IsEnabled( ActionInfo info ) const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-Rotate90CWAction::Rotate90CWAction() :
-   Action( "Image > Geometry > Rotate 90\xb0 Clockwise", Bitmap( Rotate90CWActionIcon_XPM ), "Geometry" )
+Rotate90CWAction::Rotate90CWAction()
+   : Action( "Image > Geometry > Rotate 90\xb0 Clockwise",
+             "@module_icons_dir/Rotate90CWAction.svg",
+             "Geometry" )
 {
    SetToolTip( "Rotate 90\xb0 Clockwise" );
 }
+
+// ----------------------------------------------------------------------------
 
 void Rotate90CWAction::Execute()
 {
    FastRotationInstance( TheFastRotationProcess, FRMode::Rotate90CW ).LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 bool Rotate90CWAction::IsEnabled( ActionInfo info ) const
 {
@@ -102,17 +107,24 @@ bool Rotate90CWAction::IsEnabled( ActionInfo info ) const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-Rotate90CCWAction::Rotate90CCWAction() :
-   Action( "Image > Geometry > Rotate 90\xb0 Counter-clockwise", Bitmap( Rotate90CCWActionIcon_XPM ), "Geometry" )
+Rotate90CCWAction::Rotate90CCWAction()
+   : Action( "Image > Geometry > Rotate 90\xb0 Counter-clockwise",
+             "@module_icons_dir/Rotate90CCWAction.svg",
+             "Geometry" )
 {
    SetToolTip( "Rotate 90\xb0 Counter-clockwise" );
 }
+
+// ----------------------------------------------------------------------------
 
 void Rotate90CCWAction::Execute()
 {
    FastRotationInstance( TheFastRotationProcess, FRMode::Rotate90CCW ).LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 bool Rotate90CCWAction::IsEnabled( ActionInfo info ) const
 {
@@ -120,17 +132,24 @@ bool Rotate90CCWAction::IsEnabled( ActionInfo info ) const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-HorizontalMirrorAction::HorizontalMirrorAction() :
-   Action( "Image > Geometry >> Horizontal Mirror", Bitmap( HorizontalMirrorActionIcon_XPM ), "Geometry" )
+HorizontalMirrorAction::HorizontalMirrorAction()
+   : Action( "Image > Geometry >> Horizontal Mirror",
+             "@module_icons_dir/HorizontalMirrorAction.svg",
+             "Geometry" )
 {
    SetToolTip( "Horizontal Mirror" );
 }
+
+// ----------------------------------------------------------------------------
 
 void HorizontalMirrorAction::Execute()
 {
    FastRotationInstance( TheFastRotationProcess, FRMode::HorizontalMirror ).LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 bool HorizontalMirrorAction::IsEnabled( ActionInfo info ) const
 {
@@ -138,17 +157,24 @@ bool HorizontalMirrorAction::IsEnabled( ActionInfo info ) const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-VerticalMirrorAction::VerticalMirrorAction() :
-   Action( "Image > Geometry > Vertical Mirror", Bitmap( VerticalMirrorActionIcon_XPM ), "Geometry" )
+VerticalMirrorAction::VerticalMirrorAction()
+   : Action( "Image > Geometry > Vertical Mirror",
+             "@module_icons_dir/VerticalMirrorAction.svg",
+             "Geometry" )
 {
    SetToolTip( "Vertical Mirror" );
 }
+
+// ----------------------------------------------------------------------------
 
 void VerticalMirrorAction::Execute()
 {
    FastRotationInstance( TheFastRotationProcess, FRMode::VerticalMirror ).LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 bool VerticalMirrorAction::IsEnabled( ActionInfo info ) const
 {
@@ -160,4 +186,4 @@ bool VerticalMirrorAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationActions.cpp - Released 2020-02-27T12:56:01Z
+// EOF FastRotationActions.cpp - Released 2020-07-31T19:33:39Z

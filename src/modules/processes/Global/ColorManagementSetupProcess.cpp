@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ColorManagementSetupProcess.cpp - Released 2020-02-27T12:56:01Z
+// ColorManagementSetupProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -64,11 +64,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ColorManagementSetupProcess* TheColorManagementSetupProcess = 0;
-
-// ----------------------------------------------------------------------------
-
-#include "ColorManagementSetupIcon.xpm"
+ColorManagementSetupProcess* TheColorManagementSetupProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -76,7 +72,6 @@ ColorManagementSetupProcess::ColorManagementSetupProcess()
 {
    TheColorManagementSetupProcess = this;
 
-   // Instantiate process parameters
    new CMSEnabled( this );
    new CMSUpdateMonitorProfile( this );
    new CMSDefaultRGBProfile( this );
@@ -125,9 +120,9 @@ String ColorManagementSetupProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ColorManagementSetupProcess::IconImageXPM() const
+String ColorManagementSetupProcess::IconImageSVGFile() const
 {
-   return ColorManagementSetupIcon_XPM;
+   return "@module_icons_dir/ColorManagementSetup.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -149,7 +144,7 @@ ProcessImplementation* ColorManagementSetupProcess::Create() const
 ProcessImplementation* ColorManagementSetupProcess::Clone( const ProcessImplementation& p ) const
 {
    const ColorManagementSetupInstance* instPtr = dynamic_cast<const ColorManagementSetupInstance*>( &p );
-   return (instPtr != 0) ? new ColorManagementSetupInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new ColorManagementSetupInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -429,4 +424,4 @@ int ColorManagementSetupProcess::ProcessCommandLine( const StringList& argv ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorManagementSetupProcess.cpp - Released 2020-07-31T19:33:39Z

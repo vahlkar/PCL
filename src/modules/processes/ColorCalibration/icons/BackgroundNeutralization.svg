@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<radialGradient id="b" cx="335.4" cy="219.03" r="185" gradientTransform="matrix(.43024 -1.7048e-8 1.6849e-8 .42521 -42.281 164.6)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#bababa" offset="1"/>
+</radialGradient>
+<linearGradient id="a" x1="-38.575" x2="-137.35" y1="121.95" y2="121.95" gradientUnits="userSpaceOnUse" xlink:href="#c"/>
+<linearGradient id="c">
+<stop stop-color="#e0e0e0" offset="0"/>
+<stop offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(0 -161.53)">
+<g transform="translate(-34.288 -28.465)">
+<rect x="43.813" y="199.52" width="116.42" height="116.42" fill="url(#b)" stroke="#000" stroke-width="6.35"/>
+<g transform="matrix(.51819 0 0 .35471 -203.6 100.73)" stroke-width="1.0108">
+<rect x="489.79" y="464.15" width="200" height="25" fill="#f00"/>
+<rect x="489.79" y="430.11" width="200" height="25" fill="#0f0"/>
+<rect x="489.79" y="396.06" width="200" height="25" fill="#00f"/>
+</g>
+<path transform="matrix(0 -.3983 .3983 0 53.449 261.94)" d="m-137.35 183.83v-61.884-61.884l107.19 61.884-53.593 30.942z" fill="url(#a)" stroke-width="0"/>
+<path transform="matrix(0 .3983 -.3983 0 150.59 253.53)" d="m-137.35 183.83v-61.884-61.884l107.19 61.884-53.593 30.942z" fill="url(#a)" stroke-width="0"/>
+</g>
+</g>
+</svg>

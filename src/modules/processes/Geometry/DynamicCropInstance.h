@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.h - Released 2020-02-27T12:56:01Z
+// DynamicCropInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -73,17 +73,13 @@ public:
    DynamicCropInstance( const MetaProcess* );
    DynamicCropInstance( const DynamicCropInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-
-   virtual bool IsMaskable( const View&, const ImageWindow& ) const;
-
-   virtual UndoFlags UndoMode( const View& ) const;
-
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool BeforeExecution( View& );
-   virtual bool ExecuteOn( View& );
-
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
+   void Assign( const ProcessImplementation& ) override;
+   bool IsMaskable( const View&, const ImageWindow& ) const override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool BeforeExecution( View& ) override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
 
 private:
 
@@ -112,4 +108,4 @@ private:
 #endif   // __DynamicCropInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.h - Released 2020-02-27T12:56:01Z
+// EOF DynamicCropInstance.h - Released 2020-07-31T19:33:39Z

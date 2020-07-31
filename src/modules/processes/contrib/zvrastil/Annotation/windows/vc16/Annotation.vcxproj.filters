@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+######################################################################
+# PixInsight Makefile Generator Script v1.118
+# Copyright (C) 2009-2020 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2020-07-31T19:36:47.237Z
+# Project id ...... Annotation
+# Project type .... Module
+# Platform ........ Windows/vc16
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional preprocessor definitions:
+# _CRT_SECURE_NO_WARNINGS
+######################################################################
+-->
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>ea3c6886-1cad-4bfb-aa05-c883013f26d5</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>098cdde1-9b23-46a6-81f7-1f4fa8a4844e</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>f4e5a405-4a2d-4763-8f79-8f073538a7cd</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\AnnotationInstance.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AnnotationInterface.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AnnotationModule.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AnnotationParameters.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AnnotationProcess.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AnnotationRenderer.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\AnnotationInstance.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AnnotationInterface.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AnnotationModule.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AnnotationParameters.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AnnotationProcess.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AnnotationRenderer.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\cursors\1.5\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\1.5\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\2.0\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\2.0\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\2.5\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\2.5\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\3.0\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\3.0\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\3.5\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\3.5\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\4.0\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\4.0\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\Annotation.svg">
+        <Filter>Image Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

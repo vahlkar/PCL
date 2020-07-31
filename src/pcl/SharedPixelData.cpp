@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SharedPixelData.cpp - Released 2020-02-27T12:55:33Z
+// pcl/SharedPixelData.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -66,8 +66,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SharedPixelData::SharedPixelData( void* handle, int bitsPerSample, bool floatSample, bool complexSample ) :
-   m_handle( handle )
+SharedPixelData::SharedPixelData( void* handle, int bitsPerSample, bool floatSample, bool complexSample )
+   : m_handle( handle )
 {
    if ( m_handle == nullptr )
       throw APIError( "SharedPixelData: Null shared image handle" );
@@ -90,9 +90,9 @@ SharedPixelData::SharedPixelData( void* handle, int bitsPerSample, bool floatSam
 // ----------------------------------------------------------------------------
 
 SharedPixelData::SharedPixelData( int width, int height, int numberOfChannels,
-                                  int bitsPerSample, bool floatSample, int colorSpace ) :
-   m_handle( (*API->SharedImage->CreateImage)( width, height, numberOfChannels,
-                                               bitsPerSample, floatSample, colorSpace, this/*owner*/ ) )
+                                  int bitsPerSample, bool floatSample, int colorSpace )
+   : m_handle( (*API->SharedImage->CreateImage)( width, height, numberOfChannels,
+                                                 bitsPerSample, floatSample, colorSpace, this/*owner*/ ) )
 {
    if ( m_handle == nullptr )
       throw APIFunctionError( "CreateImage" );
@@ -266,4 +266,4 @@ void SharedPixelData::SetSharedColor( color_space colorSpace, const RGBColorSyst
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SharedPixelData.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/SharedPixelData.cpp - Released 2020-07-31T19:33:12Z

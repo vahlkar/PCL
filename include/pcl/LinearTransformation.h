@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/LinearTransformation.h - Released 2020-02-27T12:55:23Z
+// pcl/LinearTransformation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -105,10 +105,10 @@ public:
    /*!
     * Constructs a linear transformation with the specified matrix elements.
     */
-   LinearTransformation( double a00, double a01, double a02, double a10, double a11, double a12 ) :
-      m_a00( a00 ), m_a01( a01 ), m_a02( a02 ),
-      m_a10( a10 ), m_a11( a11 ), m_a12( a12 ),
-      m_det( a00*a11 - a01*a10 )
+   LinearTransformation( double a00, double a01, double a02, double a10, double a11, double a12 )
+      : m_a00( a00 ), m_a01( a01 ), m_a02( a02 )
+      , m_a10( a10 ), m_a11( a11 ), m_a12( a12 )
+      , m_det( a00*a11 - a01*a10 )
    {
    }
 
@@ -284,4 +284,4 @@ private:
 #endif   // __PCL_LinearTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LinearTransformation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/LinearTransformation.h - Released 2020-07-31T19:33:04Z

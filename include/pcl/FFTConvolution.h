@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/FFTConvolution.h - Released 2020-02-27T12:55:23Z
+// pcl/FFTConvolution.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -136,8 +136,8 @@ public:
     *                private copy of the filter (note that KernelFilter is a
     *                reference-counted class).
     */
-   FFTConvolution( const KernelFilter& filter ) :
-      m_filter( filter.Clone() )
+   FFTConvolution( const KernelFilter& filter )
+      : m_filter( filter.Clone() )
    {
       PCL_CHECK( bool( m_filter ) )
    }
@@ -155,8 +155,8 @@ public:
     *             %FFTConvolution instance owns a private %ImageVariant that
     *             transports the response function image.
     */
-   FFTConvolution( const ImageVariant& f ) :
-      m_image( f )
+   FFTConvolution( const ImageVariant& f )
+      : m_image( f )
    {
       PCL_CHECK( bool( m_image ) )
    }
@@ -164,11 +164,11 @@ public:
    /*!
     * Copy constructor.
     */
-   FFTConvolution( const FFTConvolution& x ) :
-      ImageTransformation( x ),
-      ParallelProcess( x ),
-      m_image( x.m_image ),
-      m_outputRealCmp( x.m_outputRealCmp )
+   FFTConvolution( const FFTConvolution& x )
+      : ImageTransformation( x )
+      , ParallelProcess( x )
+      , m_image( x.m_image )
+      , m_outputRealCmp( x.m_outputRealCmp )
    {
       if ( x.m_filter )
          m_filter = x.m_filter->Clone();
@@ -408,4 +408,4 @@ private:
 #endif   // __PCL_FFTConvolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFTConvolution.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/FFTConvolution.h - Released 2020-07-31T19:33:04Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationInterface.cpp - Released 2020-02-27T12:56:01Z
+// BackgroundNeutralizationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -67,15 +67,13 @@ BackgroundNeutralizationInterface* TheBackgroundNeutralizationInterface = nullpt
 
 // ----------------------------------------------------------------------------
 
-#include "BackgroundNeutralizationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-BackgroundNeutralizationInterface::BackgroundNeutralizationInterface() :
-   instance( TheBackgroundNeutralizationProcess )
+BackgroundNeutralizationInterface::BackgroundNeutralizationInterface()
+   : instance( TheBackgroundNeutralizationProcess )
 {
    TheBackgroundNeutralizationInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 BackgroundNeutralizationInterface::~BackgroundNeutralizationInterface()
 {
@@ -83,36 +81,50 @@ BackgroundNeutralizationInterface::~BackgroundNeutralizationInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString BackgroundNeutralizationInterface::Id() const
 {
    return "BackgroundNeutralization";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* BackgroundNeutralizationInterface::Process() const
 {
    return TheBackgroundNeutralizationProcess;
 }
 
-const char** BackgroundNeutralizationInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String BackgroundNeutralizationInterface::IconImageSVGFile() const
 {
-   return BackgroundNeutralizationIcon_XPM;
+   return "@module_icons_dir/BackgroundNeutralization.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures BackgroundNeutralizationInterface::Features() const
 {
    return InterfaceFeature::Default;
 }
 
+// ----------------------------------------------------------------------------
+
 void BackgroundNeutralizationInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void BackgroundNeutralizationInterface::ResetInstance()
 {
    BackgroundNeutralizationInstance defaultInstance( TheBackgroundNeutralizationProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool BackgroundNeutralizationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -127,10 +139,14 @@ bool BackgroundNeutralizationInterface::Launch( const MetaProcess& P, const Proc
    return &P == TheBackgroundNeutralizationProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* BackgroundNeutralizationInterface::NewProcess() const
 {
    return new BackgroundNeutralizationInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool BackgroundNeutralizationInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -140,10 +156,14 @@ bool BackgroundNeutralizationInterface::ValidateProcess( const ProcessImplementa
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool BackgroundNeutralizationInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool BackgroundNeutralizationInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -188,6 +208,8 @@ void BackgroundNeutralizationInterface::__GetFocus( Control& sender )
          e->Clear();
 }
 
+// ----------------------------------------------------------------------------
+
 void BackgroundNeutralizationInterface::__EditCompleted( Edit& sender )
 {
    if ( sender == GUI->BackgroundReferenceView_Edit )
@@ -217,6 +239,8 @@ void BackgroundNeutralizationInterface::__EditCompleted( Edit& sender )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BackgroundNeutralizationInterface::__EditValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->BackgroundLow_NumericControl )
@@ -226,6 +250,8 @@ void BackgroundNeutralizationInterface::__EditValueUpdated( NumericEdit& sender,
    else if ( sender == GUI->TargetBackground_NumericControl )
       instance.targetBackground = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void BackgroundNeutralizationInterface::__Click( Button& sender, bool checked )
 {
@@ -240,6 +266,8 @@ void BackgroundNeutralizationInterface::__Click( Button& sender, bool checked )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BackgroundNeutralizationInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->Mode_ComboBox )
@@ -249,11 +277,15 @@ void BackgroundNeutralizationInterface::__ItemSelected( ComboBox& sender, int it
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BackgroundNeutralizationInterface::__ROI_Check( GroupBox& sender, bool checked )
 {
    if ( sender == GUI->ROI_GroupBox )
       instance.useROI = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void BackgroundNeutralizationInterface::__ROI_SpinValueUpdated( SpinBox& sender, int value )
 {
@@ -266,6 +298,8 @@ void BackgroundNeutralizationInterface::__ROI_SpinValueUpdated( SpinBox& sender,
    else if ( sender == GUI->ROIHeight_SpinBox )
       instance.roi.y1 = instance.roi.y0 + value;
 }
+
+// ----------------------------------------------------------------------------
 
 void BackgroundNeutralizationInterface::__ROI_Click( Button& sender, bool checked )
 {
@@ -285,6 +319,8 @@ void BackgroundNeutralizationInterface::__ROI_Click( Button& sender, bool checke
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void BackgroundNeutralizationInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->BackgroundReferenceView_Edit )
@@ -292,6 +328,8 @@ void BackgroundNeutralizationInterface::__ViewDrag( Control& sender, const Point
    else if ( sender == GUI->ROI_GroupBox || sender == GUI->ROISelectPreview_Button )
       wantsView = view.IsPreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void BackgroundNeutralizationInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -533,4 +571,4 @@ BackgroundNeutralizationInterface::GUIData::GUIData( BackgroundNeutralizationInt
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF BackgroundNeutralizationInterface.cpp - Released 2020-07-31T19:33:39Z

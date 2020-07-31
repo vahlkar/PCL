@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInterface.h - Released 2020-02-27T12:56:01Z
+// ImageCalibrationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -79,28 +79,21 @@ public:
    ImageCalibrationInterface();
    virtual ~ImageCalibrationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   InterfaceFeatures Features() const;
-
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual void SaveSettings() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   void SaveSettings() const override;
 
 private:
 
-   ImageCalibrationInstance instance;
+   ImageCalibrationInstance m_instance;
 
    struct GUIData
    {
@@ -120,6 +113,12 @@ private:
             PushButton        RemoveSelected_PushButton;
             PushButton        Clear_PushButton;
             CheckBox          FullPaths_CheckBox;
+
+      HorizontalSizer   CFAData_Sizer;
+         CheckBox          CFAData_CheckBox;
+      HorizontalSizer   CFAPattern_Sizer;
+         Label             CFAPattern_Label;
+         ComboBox          CFAPattern_ComboBox;
 
       SectionBar        FormatHints_SectionBar;
       Control           FormatHints_Control;
@@ -262,9 +261,6 @@ private:
          HorizontalSizer   DarkOptimizationWindow_Sizer;
             Label             DarkOptimizationWindow_Label;
             SpinBox           DarkOptimizationWindow_SpinBox;
-         HorizontalSizer   DarkCFADetectionMode_Sizer;
-            Label             DarkCFADetectionMode_Label;
-            ComboBox          DarkCFADetectionMode_ComboBox;
 
       SectionBar        MasterFlat_SectionBar;
       Control           MasterFlat_Control;
@@ -274,54 +270,43 @@ private:
             ToolButton        MasterFlatPath_ToolButton;
          HorizontalSizer   CalibrateMasterFlat_Sizer;
             CheckBox          CalibrateMasterFlat_CheckBox;
+         HorizontalSizer   SeparateCFAFlatScalingFactors_Sizer;
+            CheckBox          SeparateCFAFlatScalingFactors_CheckBox;
+         NumericControl    FlatScaleClippingFactor_NumericControl;
    };
 
    GUIData* GUI = nullptr;
 
-   // Interface Updates
-
+   /*
+    * Interface Updates
+    */
    void UpdateControls();
    void UpdateTargetImageItem( size_type );
    void UpdateTargetImagesList();
    void UpdateImageSelectionButtons();
+   void UpdateCFAControls();
    void UpdateFormatHintsControls();
    void UpdateOutputFilesControls();
    void UpdatePedestalControls();
    void UpdateMasterFrameControls();
    void UpdateOverscanControls();
 
-   // Event Handlers
-
-   void __TargetImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
-   void __TargetImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
-   void __TargetImages_NodeSelectionUpdated( TreeBox& sender );
-   void __TargetImages_Click( Button& sender, bool checked );
-
-   void __FormatHints_EditCompleted( Edit& sender );
-
-   void __OutputFiles_EditCompleted( Edit& sender );
-   void __OutputFiles_Click( Button& sender, bool checked );
-   void __OutputFiles_ItemSelected( ComboBox& sender, int itemIndex );
-   void __OutputFiles_SpinValueUpdated( SpinBox& sender, int value );
-
-   void __Pedestal_SpinValueUpdated( SpinBox& sender, int value );
-   void __Pedestal_ItemSelected( ComboBox& sender, int itemIndex );
-   void __Pedestal_EditCompleted( Edit& sender );
-
-   void __MasterFrame_EditCompleted( Edit& sender );
-   void __MasterFrame_Click( Button& sender, bool checked );
-   void __MasterFrame_SpinValueUpdated( SpinBox& sender, int value );
-   void __MasterFrame_ItemSelected( ComboBox& sender, int itemIndex );
-   void __MasterFrame_ValueUpdated( NumericEdit& sender, double value );
-
-   void __Overscan_ValueUpdated( NumericEdit& sender, double value );
-   void __Overscan_Click( Button& sender, bool checked );
-
-   void __CheckSection( SectionBar& sender, bool checked );
-   void __ToggleSection( SectionBar& sender, Control& section, bool start );
-
-   void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
-   void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
+   /*
+    * Event Handlers
+    */
+   void e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
+   void e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
+   void e_NodeSelectionUpdated( TreeBox& sender );
+   void e_Click( Button& sender, bool checked );
+   void e_EditCompleted( Edit& sender );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_SpinValueUpdated( SpinBox& sender, int value );
+   void e_ValueUpdated( NumericEdit& sender, double value );
+   void e_OverscanValueUpdated( NumericEdit& sender, double value );
+   void e_CheckSection( SectionBar& sender, bool checked );
+   void e_ToggleSection( SectionBar& sender, Control& section, bool start );
+   void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
 
    friend struct GUIData;
 };
@@ -339,4 +324,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF ImageCalibrationInterface.h - Released 2020-07-31T19:33:39Z

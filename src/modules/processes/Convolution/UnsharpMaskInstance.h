@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInstance.h - Released 2020-02-27T12:56:01Z
+// UnsharpMaskInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -68,11 +68,11 @@ public:
    UnsharpMaskInstance( const MetaProcess* );
    UnsharpMaskInstance( const UnsharpMaskInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type /*tableRow*/ );
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type /*tableRow*/ ) override;
 
    void Preview( UInt16Image& img ) const;
 
@@ -106,4 +106,4 @@ private:
 #endif   // __UnsharpMaskInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInstance.h - Released 2020-02-27T12:56:01Z
+// EOF UnsharpMaskInstance.h - Released 2020-07-31T19:33:39Z

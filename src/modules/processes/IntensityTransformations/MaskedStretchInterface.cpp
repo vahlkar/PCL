@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// MaskedStretchInterface.cpp - Released 2020-02-27T12:56:01Z
+// MaskedStretchInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -69,15 +69,13 @@ MaskedStretchInterface* TheMaskedStretchInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "MaskedStretchIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-MaskedStretchInterface::MaskedStretchInterface() :
-   m_instance( TheMaskedStretchProcess )
+MaskedStretchInterface::MaskedStretchInterface()
+   : m_instance( TheMaskedStretchProcess )
 {
    TheMaskedStretchInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 MaskedStretchInterface::~MaskedStretchInterface()
 {
@@ -92,26 +90,36 @@ IsoString MaskedStretchInterface::Id() const
    return "MaskedStretch";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* MaskedStretchInterface::Process() const
 {
    return TheMaskedStretchProcess;
 }
 
-const char** MaskedStretchInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String MaskedStretchInterface::IconImageSVGFile() const
 {
-   return MaskedStretchIcon_XPM;
+   return "@module_icons_dir/MaskedStretch.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void MaskedStretchInterface::ApplyInstance() const
 {
    m_instance.LaunchOnCurrentView();
 }
 
+// ----------------------------------------------------------------------------
+
 void MaskedStretchInterface::ResetInstance()
 {
    MaskedStretchInstance defaultInstance( TheMaskedStretchProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool MaskedStretchInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -126,10 +134,14 @@ bool MaskedStretchInterface::Launch( const MetaProcess& P, const ProcessImplemen
    return &P == TheMaskedStretchProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* MaskedStretchInterface::NewProcess() const
 {
    return new MaskedStretchInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool MaskedStretchInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -139,10 +151,14 @@ bool MaskedStretchInterface::ValidateProcess( const ProcessImplementation& p, St
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool MaskedStretchInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool MaskedStretchInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -189,6 +205,8 @@ void MaskedStretchInterface::__ValueUpdated( NumericEdit& sender, double value )
       m_instance.p_backgroundHigh = value;
 }
 
+// ----------------------------------------------------------------------------
+
 void MaskedStretchInterface::__SpinValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == GUI->NumberOfIterations_SpinBox )
@@ -203,11 +221,15 @@ void MaskedStretchInterface::__SpinValueUpdated( SpinBox& sender, int value )
       m_instance.p_roi.y1 = m_instance.p_roi.y0 + value;
 }
 
+// ----------------------------------------------------------------------------
+
 void MaskedStretchInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->MaskType_ComboBox )
       m_instance.p_maskType = itemIndex;
 }
+
+// ----------------------------------------------------------------------------
 
 void MaskedStretchInterface::__GetFocus( Control& sender )
 {
@@ -216,6 +238,8 @@ void MaskedStretchInterface::__GetFocus( Control& sender )
       if ( e->Text() == TARGET_IMAGE )
          e->Clear();
 }
+
+// ----------------------------------------------------------------------------
 
 void MaskedStretchInterface::__EditCompleted( Edit& sender )
 {
@@ -260,6 +284,8 @@ void MaskedStretchInterface::__EditCompleted( Edit& sender )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void MaskedStretchInterface::__Click( Button& sender, bool checked )
 {
    if ( sender == GUI->BackgroundReferenceView_ToolButton )
@@ -296,11 +322,15 @@ void MaskedStretchInterface::__Click( Button& sender, bool checked )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void MaskedStretchInterface::__SectionBarCheck( SectionBar& sender, bool checked )
 {
    if ( sender == GUI->ROI_SectionBar )
       m_instance.p_useROI = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void MaskedStretchInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
@@ -309,6 +339,8 @@ void MaskedStretchInterface::__ViewDrag( Control& sender, const Point& pos, cons
    else if ( sender == GUI->ROI_SectionBar || sender == GUI->ROI_Control || sender == GUI->ROISelectPreview_Button )
       wantsView = view.IsPreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void MaskedStretchInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -329,6 +361,7 @@ void MaskedStretchInterface::__ViewDrop( Control& sender, const Point& pos, cons
    }
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 MaskedStretchInterface::GUIData::GUIData( MaskedStretchInterface& w )
@@ -607,4 +640,4 @@ MaskedStretchInterface::GUIData::GUIData( MaskedStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF MaskedStretchInterface.cpp - Released 2020-07-31T19:33:39Z

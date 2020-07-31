@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrInterface.cpp - Released 2020-02-27T12:56:01Z
+// GradientsHdrInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,118 +29,133 @@
 // ----------------------------------------------------------------------------
 
 #include "GradientsHdrInterface.h"
-#include "GradientsHdrProcess.h"
 #include "GradientsHdrParameters.h"
+#include "GradientsHdrProcess.h"
 #include <pcl/RealTimePreview.h>
 
 namespace pcl
 {
+// ----------------------------------------------------------------------------
+
+GradientsHdrInterface* TheGradientsHdrInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-GradientsHdrInterface* TheGradientsHdrInterface = 0;
-
-// ----------------------------------------------------------------------------
-
-// FIXME
-//#include "GradientsHdrIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-GradientsHdrInterface::GradientsHdrInterface() :
-ProcessInterface(), instance( TheGradientsHdrProcess ), GUI( 0 )
+GradientsHdrInterface::GradientsHdrInterface()
+   : instance( TheGradientsHdrProcess )
 {
    TheGradientsHdrInterface = this;
 }
 
+// ----------------------------------------------------------------------------
+
 GradientsHdrInterface::~GradientsHdrInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString GradientsHdrInterface::Id() const
 {
    return "GradientHDRCompression";
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString GradientsHdrInterface::Aliases() const
 {
    return "GradientsHdrCompression";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* GradientsHdrInterface::Process() const
 {
    return TheGradientsHdrProcess;
 }
 
-const char** GradientsHdrInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String GradientsHdrInterface::IconImageSVGFile() const
 {
-   return 0; // GradientsHdrIcon_XPM; FIXME
+   return String(); //"@module_icons_dir/GradientsHdr.svg";
 }
 
-InterfaceFeatures
-GradientsHdrInterface::Features() const
+// ----------------------------------------------------------------------------
+
+InterfaceFeatures GradientsHdrInterface::Features() const
 {
    return InterfaceFeature::Default | InterfaceFeature::RealTimeButton;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsHdrInterface::RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int ) const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 void GradientsHdrInterface::RealTimePreviewUpdated( bool active )
 {
-   if ( GUI != 0 )
+   if ( GUI != nullptr )
       if ( active )
       {
-	//FIXME newRTData = true;
+         //FIXME newRTData = true;
          RealTimePreview::SetOwner( *this ); // implicitly updates the r-t preview
       }
       else
          RealTimePreview::SetOwner( ProcessInterface::Null() );
 }
 
+// ----------------------------------------------------------------------------
+
 bool GradientsHdrInterface::GenerateRealTimePreview( UInt16Image& img, const View& view, const Rect&, int zoomLevel, String& info ) const
 {
-  //std::cout<<"GradientsHdrInterface::GenerateRealTimePreview() called, zoomlevel"<<zoomLevel<<std::endl;
+   //std::cout<<"GradientsHdrInterface::GenerateRealTimePreview() called, zoomlevel"<<zoomLevel<<std::endl;
 
-  img.ResetSelections();
-  UInt16Image wrk;
-  bool ok=true;
+   img.ResetSelections();
+   UInt16Image wrk;
+   bool ok = true;
 
-  wrk.Assign( img );
-  GradientsHdrInstance wrkInstance(instance);
-  wrkInstance.ApplyClip16( wrk, zoomLevel);
-  // FIXME currently no abort implemented...
-  // FIXME could save some runtime here if I new if img was the same image as in
-  // previous runs
+   wrk.Assign( img );
+   GradientsHdrInstance wrkInstance( instance );
+   wrkInstance.ApplyClip16( wrk, zoomLevel );
+   // FIXME currently no abort implemented...
+   // FIXME could save some runtime here if I new if img was the same image as in
+   // previous runs
 
-  if ( !ok )
-    return false;
+   if ( !ok )
+      return false;
 
-  wrk.ResetSelections();
-  wrk.SelectNominalChannels();
-  img.Assign( wrk );
-  return true;
-
+   wrk.ResetSelections();
+   wrk.SelectNominalChannels();
+   img.Assign( wrk );
+   return true;
 }
 
+// ----------------------------------------------------------------------------
 
 void GradientsHdrInterface::UpdateRealTimePreview()
 {
    if ( !GUI->UpdateRealTime_Timer.IsRunning() )
    {
-     //FIXME newRTData = true;
+      //FIXME newRTData = true;
       RealTimePreview::Update();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void GradientsHdrInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void GradientsHdrInterface::ResetInstance()
 {
@@ -148,9 +163,11 @@ void GradientsHdrInterface::ResetInstance()
    ImportProcess( defaultInstance );
 }
 
+// ----------------------------------------------------------------------------
+
 bool GradientsHdrInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "GradientHDRCompression" );
@@ -161,10 +178,14 @@ bool GradientsHdrInterface::Launch( const MetaProcess& P, const ProcessImplement
    return &P == TheGradientsHdrProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* GradientsHdrInterface::NewProcess() const
 {
    return new GradientsHdrInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsHdrInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -174,10 +195,14 @@ bool GradientsHdrInterface::ValidateProcess( const ProcessImplementation& p, Str
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool GradientsHdrInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsHdrInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -194,70 +219,91 @@ void GradientsHdrInterface::UpdateControls()
    GUI->logMaxGradient_NumericControl.SetValue( instance.logMaxGradient );
    GUI->logMinGradient_NumericControl.SetValue( instance.logMinGradient );
    GUI->logMinGradient_NumericControl.SetValue( instance.logMinGradient );
-   GUI->rescale01_CheckBox.SetChecked(instance.bRescale01);
-   GUI->preserveColor_CheckBox.SetChecked(instance.bPreserveColor);
+   GUI->rescale01_CheckBox.SetChecked( instance.bRescale01 );
+   GUI->preserveColor_CheckBox.SetChecked( instance.bPreserveColor );
 }
 
 // ----------------------------------------------------------------------------
 
 void GradientsHdrInterface::__expGradientUpdated( NumericEdit& sender, double value )
 {
-  if ( sender == GUI->expGradient_NumericControl ){
-    instance.expGradient = value;
-    if ( IsRealTimePreviewActive() ){
-      GUI->UpdateRealTime_Timer.Start();
-    }
-  }
+   if ( sender == GUI->expGradient_NumericControl )
+   {
+      instance.expGradient = value;
+      if ( IsRealTimePreviewActive() )
+      {
+         GUI->UpdateRealTime_Timer.Start();
+      }
+   }
 }
+
+// ----------------------------------------------------------------------------
 
 void GradientsHdrInterface::__logMaxGradientUpdated( NumericEdit& sender, double value )
 {
-  if ( sender == GUI->logMaxGradient_NumericControl ){
-    instance.logMaxGradient = value;
-    if (instance.logMinGradient>value){
-      instance.logMinGradient = value;
-      GUI->logMinGradient_NumericControl.SetValue(value);
-    }
-    if ( IsRealTimePreviewActive() ){
-      GUI->UpdateRealTime_Timer.Start();
-    }
-  }
+   if ( sender == GUI->logMaxGradient_NumericControl )
+   {
+      instance.logMaxGradient = value;
+      if ( instance.logMinGradient > value )
+      {
+         instance.logMinGradient = value;
+         GUI->logMinGradient_NumericControl.SetValue( value );
+      }
+      if ( IsRealTimePreviewActive() )
+      {
+         GUI->UpdateRealTime_Timer.Start();
+      }
+   }
 }
+
+// ----------------------------------------------------------------------------
 
 void GradientsHdrInterface::__logMinGradientUpdated( NumericEdit& sender, double value )
 {
-  if ( sender == GUI->logMinGradient_NumericControl ){
-    instance.logMinGradient = value;
-    if (instance.logMaxGradient<value){
-      instance.logMaxGradient = value;
-      GUI->logMaxGradient_NumericControl.SetValue(value+0.1);
-    }
-    if ( IsRealTimePreviewActive() ){
-      GUI->UpdateRealTime_Timer.Start();
-    }
-  }
+   if ( sender == GUI->logMinGradient_NumericControl )
+   {
+      instance.logMinGradient = value;
+      if ( instance.logMaxGradient < value )
+      {
+         instance.logMaxGradient = value;
+         GUI->logMaxGradient_NumericControl.SetValue( value + 0.1 );
+      }
+      if ( IsRealTimePreviewActive() )
+      {
+         GUI->UpdateRealTime_Timer.Start();
+      }
+   }
 }
+
+// ----------------------------------------------------------------------------
 
 void GradientsHdrInterface::__rescale01Clicked( Button& sender, bool value )
 {
-  if ( sender == GUI->rescale01_CheckBox ){
-    instance.bRescale01 = value;
-    if ( IsRealTimePreviewActive() ){
-      GUI->UpdateRealTime_Timer.Start();
-    }
-  }
+   if ( sender == GUI->rescale01_CheckBox )
+   {
+      instance.bRescale01 = value;
+      if ( IsRealTimePreviewActive() )
+      {
+         GUI->UpdateRealTime_Timer.Start();
+      }
+   }
 }
+
+// ----------------------------------------------------------------------------
 
 void GradientsHdrInterface::__preserveColorClicked( Button& sender, bool value )
 {
-  if ( sender == GUI->preserveColor_CheckBox ){
-    instance.bPreserveColor = value;
-    if ( IsRealTimePreviewActive() ){
-      GUI->UpdateRealTime_Timer.Start();
-    }
-  }
+   if ( sender == GUI->preserveColor_CheckBox )
+   {
+      instance.bPreserveColor = value;
+      if ( IsRealTimePreviewActive() )
+      {
+         GUI->UpdateRealTime_Timer.Start();
+      }
+   }
 }
 
+// ----------------------------------------------------------------------------
 
 void GradientsHdrInterface::__UpdateRealTime_Timer( Timer& /*sender*/ )
 {
@@ -266,6 +312,7 @@ void GradientsHdrInterface::__UpdateRealTime_Timer( Timer& /*sender*/ )
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 GradientsHdrInterface::GUIData::GUIData( GradientsHdrInterface& w )
 {
@@ -273,11 +320,11 @@ GradientsHdrInterface::GUIData::GUIData( GradientsHdrInterface& w )
    int labelWidth1 = fnt.Width( String( "Max. log10(gradient):" ) ); // the longest label text
    int editWidth1 = fnt.Width( String( '0', 7 ) );
 
-   w.SetToolTip("<p>Enhances small gradients in the luminance of an image, thus sometimes revealing "
-		"surprising details otherwise hidden in large contrasts. Note: Gradients are in the range of [-1,1]. The method "
-		"works on the absolute gradient values (abs(gradient)), later restoring the sign.</p>"
-		"<p>(c) 2011 Georg Viehoever, published under LGPL 2.1. "
-		"With important contributions in terms of code and test data by Carlos Milovic, Harry Page and Vicent Peris.</p>");
+   w.SetToolTip( "<p>Enhances small gradients in the luminance of an image, thus sometimes revealing "
+                 "surprising details otherwise hidden in large contrasts. Note: Gradients are in the range of [-1,1]. The method "
+                 "works on the absolute gradient values (abs(gradient)), later restoring the sign.</p>"
+                 "<p>(c) 2011 Georg Viehoever, published under LGPL 2.1. "
+                 "With important contributions in terms of code and test data by Carlos Milovic, Harry Page and Vicent Peris.</p>" );
 
    //
 
@@ -289,7 +336,7 @@ GradientsHdrInterface::GUIData::GUIData( GradientsHdrInterface& w )
    expGradient_NumericControl.SetRange( TheGradientsHdrParameterExpGradient->MinimumValue(), TheGradientsHdrParameterExpGradient->MaximumValue() );
    expGradient_NumericControl.SetPrecision( TheGradientsHdrParameterExpGradient->Precision() );
    expGradient_NumericControl.SetToolTip( "<p>Gradients are transformed via sign(gradient)*pow(gradient,value). Lower values increase the effect,"
-					  " since the value of small abs(gradients) is moved closer to 1.0. Applied after the other two filters.</p>" );
+                                          " since the value of small abs(gradients) is moved closer to 1.0. Applied after the other two filters.</p>" );
    expGradient_NumericControl.edit.SetFixedWidth( editWidth1 );
    expGradient_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&GradientsHdrInterface::__expGradientUpdated, w );
 
@@ -323,9 +370,9 @@ GradientsHdrInterface::GUIData::GUIData( GradientsHdrInterface& w )
 
    rescale01_Label.SetText( "Rescale to [0,1]:" );
    rescale01_Label.SetMinWidth( labelWidth1 );
-   const char *pRescaleHelp="<p>If checked, rescale resulting image to range [0,1]. Otherwise rescale to range of original image.</p>";
+   const char* pRescaleHelp = "<p>If checked, rescale resulting image to range [0,1]. Otherwise rescale to range of original image.</p>";
    rescale01_Label.SetToolTip( pRescaleHelp );
-   rescale01_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   rescale01_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    rescale01_CheckBox.SetToolTip( pRescaleHelp );
    rescale01_CheckBox.OnClick( (Button::click_event_handler)&GradientsHdrInterface::__rescale01Clicked, w );
 
@@ -339,7 +386,7 @@ GradientsHdrInterface::GUIData::GUIData( GradientsHdrInterface& w )
    preserveColor_Label.SetText( "Preserve Color:" );
    preserveColor_Label.SetMinWidth( labelWidth1 );
    preserveColor_Label.SetToolTip( "<p>If checked, the relative amounts of R:G:B are preserved</p>" );
-   preserveColor_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   preserveColor_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
    preserveColor_CheckBox.SetToolTip( "<p><p>If checked, the relative amounts of R:G:B are preserved</p>" );
    preserveColor_CheckBox.OnClick( (Button::click_event_handler)&GradientsHdrInterface::__preserveColorClicked, w );
 
@@ -368,12 +415,11 @@ GradientsHdrInterface::GUIData::GUIData( GradientsHdrInterface& w )
    UpdateRealTime_Timer.SetSingleShot();
    UpdateRealTime_Timer.SetInterval( 0.040 );
    UpdateRealTime_Timer.OnTimer( (Timer::timer_event_handler)&GradientsHdrInterface::__UpdateRealTime_Timer, w );
-
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrInterface.cpp - Released 2020-07-31T19:33:39Z

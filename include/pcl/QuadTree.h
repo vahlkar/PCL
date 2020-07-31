@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/QuadTree.h - Released 2020-02-27T12:55:23Z
+// pcl/QuadTree.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -154,7 +154,8 @@ public:
       /*!
        * Default constructor. Constructs an uninitialized quadtree node.
        */
-      Node( const rectangle& r = rectangle( 0.0 ) ) : rect( r )
+      Node( const rectangle& r = rectangle( 0.0 ) )
+         : rect( r )
       {
       }
 
@@ -266,9 +267,21 @@ public:
        * Constructs a new leaf node representing the specified rectangular
        * region \a r and storing a nonempty point list \a p.
        */
-      LeafNode( const rectangle& r, const point_list& p ) : Node( r ), points( p )
+      LeafNode( const rectangle& r, const point_list& p )
+         : Node( r )
+         , points( p )
       {
          PCL_CHECK( !points.IsEmpty() )
+      }
+
+      /*!
+       * Constructs a new leaf node representing the specified rectangular
+       * region \a r and storing the specified point \a p.
+       */
+      LeafNode( const rectangle& r, const point& p )
+         : Node( r )
+      {
+         points << p;
       }
 
       /*!
@@ -342,8 +355,10 @@ public:
    /*!
     * Move constructor.
     */
-   QuadTree( QuadTree&& x ) :
-      m_root( x.m_root ), m_bucketCapacity( x.m_bucketCapacity ), m_length( x.m_length )
+   QuadTree( QuadTree&& x )
+      : m_root( x.m_root )
+      , m_bucketCapacity( x.m_bucketCapacity )
+      , m_length( x.m_length )
    {
       x.m_root = nullptr;
       x.m_length = 0;
@@ -492,11 +507,18 @@ public:
    }
 
    /*!
-    * Inserts a new point in this quadtree.
+    * Inserts a point in this quadtree.
     */
    void Insert( const point& pt )
    {
-      InsertTree( pt, m_root );
+      if ( m_root != nullptr )
+         InsertTree( pt, m_root );
+      else
+      {
+         component x = pt[0];
+         component y = pt[1];
+         m_root = new LeafNode( rectangle( x, y, x, y ), pt );
+      }
    }
 
    /*!
@@ -713,6 +735,61 @@ public:
    }
 
    /*!
+    * Returns the total number of existing nodes in the subtree rooted at the
+    * specified \a node, including structural and leaf nodes.
+    */
+   static size_type NumberOfNodes( const Node* node )
+   {
+      size_type N = 0;
+      GetNumberOfNodes( N, node );
+      return N;
+   }
+
+   /*!
+    * Returns the total number of existing nodes in this quadtree, including
+    * structural and leaf nodes.
+    */
+   size_type NumberOfNodes() const
+   {
+      return NumberOfNodes( m_root );
+   }
+
+   /*!
+    * Returns the total number of existing leaf nodes in the subtree rooted at
+    * the specified \a node.
+    */
+   static size_type NumberOfLeafNodes( const Node* node )
+   {
+      size_type N = 0;
+      GetNumberOfLeafNodes( N, node );
+      return N;
+   }
+
+   /*!
+    * Returns the total number of existing leaf nodes in this quadtree.
+    */
+   size_type NumberOfLeafNodes() const
+   {
+      return NumberOfLeafNodes( m_root );
+   }
+
+   /*!
+    * Returns the height of the subtree rooted at the specified \a node.
+    */
+   static int Height( const Node* node )
+   {
+      return TreeHeight( node, 0 );
+   }
+
+   /*!
+    * Returns the height of this quadtree.
+    */
+   int Height() const
+   {
+      return Height( m_root );
+   }
+
+   /*!
     * Exchanges two %QuadTree objects \a x1 and \a x2.
     */
    friend void Swap( QuadTree& x1, QuadTree& x2 )
@@ -908,111 +985,131 @@ private:
 
    void InsertTree( const point& pt, Node*& node )
    {
-      if ( node != nullptr )
+      PCL_CHECK( node != nullptr )
+
+      component x = pt[0];
+      component y = pt[1];
+
+      if ( x < node->rect.x0 )
+         node->rect.x0 = x;
+      else if ( x > node->rect.x1 )
+         node->rect.x1 = x;
+
+      if ( y < node->rect.y0 )
+         node->rect.y0 = y;
+      else if ( y > node->rect.y1 )
+         node->rect.y1 = y;
+
+      if ( node->IsLeaf() )
       {
-         component x = pt[0];
-         component y = pt[1];
-
-         if ( x < node->rect.x0 )
-            node->rect.x0 = x;
-         else if ( x > node->rect.x1 )
-            node->rect.x1 = x;
-
-         if ( y < node->rect.y0 )
-            node->rect.y0 = y;
-         else if ( y > node->rect.y1 )
-            node->rect.y1 = y;
-
-         if ( node->IsLeaf() )
+         LeafNode* leaf = static_cast<LeafNode*>( node );
+         if ( leaf->Length() < m_bucketCapacity )
+            leaf->points << pt;
+         else
          {
-            LeafNode* leaf = static_cast<LeafNode*>( node );
-            if ( leaf->Length() < m_bucketCapacity )
+            rectangle rect = leaf->rect;
+            double x2 = (rect.x0 + rect.x1)/2;
+            double y2 = (rect.y0 + rect.y1)/2;
+            // Prevent geometrically degenerate subtrees. For safety, we
+            // enforce minimum region dimensions larger than twice the
+            // machine epsilon for the rectangle coordinate type.
+            if ( x2 - rect.x0 < 2*std::numeric_limits<coordinate>::epsilon() ||
+                 rect.x1 - x2 < 2*std::numeric_limits<coordinate>::epsilon() ||
+                 y2 - rect.y0 < 2*std::numeric_limits<coordinate>::epsilon() ||
+                 rect.y1 - y2 < 2*std::numeric_limits<coordinate>::epsilon() )
+            {
                leaf->points << pt;
+            }
             else
             {
-               rectangle rect = leaf->rect;
-               double x2 = (rect.x0 + rect.x1)/2;
-               double y2 = (rect.y0 + rect.y1)/2;
-               // Prevent geometrically degenerate subtrees. For safety, we
-               // enforce minimum region dimensions larger than twice the
-               // machine epsilon for the rectangle coordinate type.
-               if ( x2 - rect.x0 < 2*std::numeric_limits<coordinate>::epsilon() ||
-                    rect.x1 - x2 < 2*std::numeric_limits<coordinate>::epsilon() ||
-                    y2 - rect.y0 < 2*std::numeric_limits<coordinate>::epsilon() ||
-                    rect.y1 - y2 < 2*std::numeric_limits<coordinate>::epsilon() )
+               point_list nw, ne, sw, se;
+               for ( const point& p : leaf->points )
                {
-                  leaf->points << pt;
-               }
-               else
-               {
-                  point_list nw, ne, sw, se;
-                  for ( const point& p : leaf->points )
-                  {
-                     component x = p[0];
-                     component y = p[1];
-                     if ( x <= x2 )
-                     {
-                        if ( y <= y2 )
-                           nw << p;
-                        else
-                           sw << p;
-                     }
-                     else
-                     {
-                        if ( y <= y2 )
-                           ne << p;
-                        else
-                           se << p;
-                     }
-                  }
-
+                  component x = p[0];
+                  component y = p[1];
                   if ( x <= x2 )
                   {
                      if ( y <= y2 )
-                        nw << pt;
+                        nw << p;
                      else
-                        sw << pt;
+                        sw << p;
                   }
                   else
                   {
                      if ( y <= y2 )
-                        ne << pt;
+                        ne << p;
                      else
-                        se << pt;
+                        se << p;
                   }
-
-                  delete leaf;
-
-                  node = new Node( rect );
-
-                  if ( !nw.IsEmpty() )
-                     node->nw = new LeafNode( rectangle( rect.x0, rect.y0,      x2,      y2 ), nw );
-                  if ( !ne.IsEmpty() )
-                     node->ne = new LeafNode( rectangle(      x2, rect.y0, rect.x1,      y2 ), ne );
-                  if ( !sw.IsEmpty() )
-                     node->sw = new LeafNode( rectangle( rect.x0,      y2,      x2, rect.y1 ), sw );
-                  if ( !se.IsEmpty() )
-                     node->se = new LeafNode( rectangle(      x2,      y2, rect.x1, rect.y1 ), se );
                }
-            }
 
-            ++m_length;
-         }
-         else
-         {
-            double x2 = (node->rect.x0 + node->rect.x1)/2;
-            double y2 = (node->rect.y0 + node->rect.y1)/2;
-            if ( pt[0] <= x2 )
-            {
-               if ( pt[1] <= y2 )
-                  InsertTree( pt, node->nw );
+               if ( x <= x2 )
+               {
+                  if ( y <= y2 )
+                     nw << pt;
+                  else
+                     sw << pt;
+               }
                else
-                  InsertTree( pt, node->sw );
+               {
+                  if ( y <= y2 )
+                     ne << pt;
+                  else
+                     se << pt;
+               }
+
+               delete leaf;
+
+               node = new Node( rect );
+
+               if ( !nw.IsEmpty() )
+                  node->nw = new LeafNode( rectangle( rect.x0, rect.y0, x2, y2 ), nw );
+               if ( !ne.IsEmpty() )
+                  node->ne = new LeafNode( rectangle( x2, rect.y0, rect.x1, y2 ), ne );
+               if ( !sw.IsEmpty() )
+                  node->sw = new LeafNode( rectangle( rect.x0, y2, x2, rect.y1 ), sw );
+               if ( !se.IsEmpty() )
+                  node->se = new LeafNode( rectangle( x2, y2, rect.x1, rect.y1 ), se );
+            }
+         }
+
+         ++m_length;
+      }
+      else
+      {
+         rectangle rect = node->rect;
+         double x2 = (rect.x0 + rect.x1)/2;
+         double y2 = (rect.y0 + rect.y1)/2;
+         if ( pt[0] <= x2 )
+         {
+            if ( pt[1] <= y2 )
+            {
+               if ( node->nw == nullptr )
+                  node->nw = new LeafNode( rectangle( rect.x0, rect.y0, x2, y2 ), pt );
+               else
+                  InsertTree( pt, node->nw );
             }
             else
             {
-               if ( pt[1] <= y2 )
+               if ( node->sw == nullptr )
+                  node->sw = new LeafNode( rectangle( rect.x0, y2, x2, rect.y1 ), pt );
+               else
+                  InsertTree( pt, node->sw );
+            }
+         }
+         else
+         {
+            if ( pt[1] <= y2 )
+            {
+               if ( node->ne == nullptr )
+                  node->ne = new LeafNode( rectangle( x2, rect.y0, rect.x1, y2 ), pt );
+               else
                   InsertTree( pt, node->ne );
+            }
+            else
+            {
+               if ( node->se == nullptr )
+                  node->se = new LeafNode( rectangle( x2, y2, rect.x1, rect.y1 ), pt );
                else
                   InsertTree( pt, node->se );
             }
@@ -1130,6 +1227,41 @@ private:
             delete node;
          }
    }
+
+   static void GetNumberOfNodes( size_type& N, const Node* node )
+   {
+      if ( node != nullptr )
+      {
+         ++N;
+         GetNumberOfNodes( N, node->nw );
+         GetNumberOfNodes( N, node->ne );
+         GetNumberOfNodes( N, node->sw );
+         GetNumberOfNodes( N, node->se );
+      }
+   }
+
+   static void GetNumberOfLeafNodes( size_type& N, const Node* node )
+   {
+      if ( node != nullptr )
+      {
+         if ( node->IsLeaf() )
+            ++N;
+         GetNumberOfLeafNodes( N, node->nw );
+         GetNumberOfLeafNodes( N, node->ne );
+         GetNumberOfLeafNodes( N, node->sw );
+         GetNumberOfLeafNodes( N, node->se );
+      }
+   }
+
+   static int TreeHeight( const Node* node, int h )
+   {
+      if ( node == nullptr )
+         return h;
+      return h + 1 + Max( Max( Max( TreeHeight( node->nw, h ),
+                                    TreeHeight( node->ne, h ) ),
+                                    TreeHeight( node->sw, h ) ),
+                                    TreeHeight( node->se, h ) );
+   }
 };
 
 // ----------------------------------------------------------------------------
@@ -1139,4 +1271,4 @@ private:
 #endif   // __PCL_QuadTree_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/QuadTree.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/QuadTree.h - Released 2020-07-31T19:33:04Z

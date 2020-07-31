@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// XISFPreferencesDialog.cpp - Released 2020-02-27T12:55:48Z
+// XISFPreferencesDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -57,8 +57,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-XISFPreferencesDialog::XISFPreferencesDialog( const XISFFormat::EmbeddingOverrides& e, const XISFOptions& xisfOptions ) :
-   XISFOptionsDialogBase( xisfOptions, "Maximum inline block size:" ), overrides( e )
+XISFPreferencesDialog::XISFPreferencesDialog( const XISFFormat::EmbeddingOverrides& e, const XISFOptions& xisfOptions )
+   : XISFOptionsDialogBase( xisfOptions, "Maximum inline block size:" )
+   , overrides( e )
 {
    int ui4 = LogicalPixelsToPhysical( 4 );
 
@@ -335,4 +336,4 @@ void XISFPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFPreferencesDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF XISFPreferencesDialog.cpp - Released 2020-07-31T19:33:23Z

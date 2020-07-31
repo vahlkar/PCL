@@ -1,21 +1,18 @@
-/* lmdif1.f -- translated by f2c (version 20020621).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "cminpack.h"
+#include "cminpackP.h"
 
-/* Subroutine */ int lmdif1(minpack_func_mn fcn, void *p, int m, int n, double *x,
-	double *fvec, double tol, int *iwa,
-	double *wa, int lwa)
+__cminpack_attr__
+int __cminpack_func__(lmdif1)(__cminpack_decl_fcn_mn__ void *p, int m, int n, real *x, 
+	real *fvec, real tol, int *iwa, 
+	real *wa, int lwa)
 {
     /* Initialized data */
 
-    const double factor = 100.;
+    const real factor = 100.;
 
     int mp5n, mode, nfev;
-    double ftol, gtol, xtol;
-    double epsfcn;
+    real ftol, gtol, xtol;
+    real epsfcn;
     int maxfev, nprint;
     int info;
 
@@ -118,13 +115,6 @@
 /*     burton s. garbow, kenneth e. hillstrom, jorge j. more */
 
 /*     ********** */
-    /* Parameter adjustments */
-    --fvec;
-    --iwa;
-    --x;
-    --wa;
-
-    /* Function Body */
 
 /*     check the input parameters for errors. */
 
@@ -142,10 +132,10 @@
     mode = 1;
     nprint = 0;
     mp5n = m + n * 5;
-    info = lmdif(fcn, p, m, n, &x[1], &fvec[1], ftol, xtol, gtol, maxfev,
-	    epsfcn, &wa[1], mode, factor, nprint, &nfev, &wa[mp5n +
-	    1], m, &iwa[1], &wa[n + 1], &wa[(n << 1) + 1], &wa[n * 3 + 1],
-	    &wa[(n << 2) + 1], &wa[n * 5 + 1]);
+    info = __cminpack_func__(lmdif)(__cminpack_param_fcn_mn__ p, m, n, x, fvec, ftol, xtol, gtol, maxfev,
+	    epsfcn, wa, mode, factor, nprint, &nfev, &wa[mp5n],
+            m, iwa, &wa[n], &wa[(n << 1)], &wa[n * 3], 
+	    &wa[(n << 2)], &wa[n * 5]);
     if (info == 8) {
 	info = 4;
     }

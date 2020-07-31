@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorProcess.cpp - Released 2020-02-27T12:56:01Z
+// NoiseGeneratorProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -50,10 +50,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "NoiseGeneratorProcess.h"
-#include "NoiseGeneratorParameters.h"
 #include "NoiseGeneratorInstance.h"
 #include "NoiseGeneratorInterface.h"
+#include "NoiseGeneratorParameters.h"
+#include "NoiseGeneratorProcess.h"
 
 namespace pcl
 {
@@ -64,19 +64,14 @@ NoiseGeneratorProcess* TheNoiseGeneratorProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "NoiseGeneratorIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 NoiseGeneratorProcess::NoiseGeneratorProcess()
 {
    TheNoiseGeneratorProcess = this;
 
-   // Instantiate process parameters
    new NGNoiseAmount( this );
    new NGNoiseDistribution( this );
    new NGImpulsionalNoiseProbability( this );
-   new NGPreserveBrightness( this ); // ### deprecated
+   new NGPreserveBrightness( this ); // ### DEPRECATED
 }
 
 // ----------------------------------------------------------------------------
@@ -109,9 +104,9 @@ String NoiseGeneratorProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** NoiseGeneratorProcess::IconImageXPM() const
+String NoiseGeneratorProcess::IconImageSVGFile() const
 {
-   return NoiseGeneratorIcon_XPM;
+   return "@module_icons_dir/NoiseGenerator.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -141,4 +136,4 @@ ProcessImplementation* NoiseGeneratorProcess::Clone( const ProcessImplementation
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF NoiseGeneratorProcess.cpp - Released 2020-07-31T19:33:39Z

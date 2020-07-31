@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.cpp - Released 2020-02-27T12:55:33Z
+// pcl/EphemerisFile.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,14 +93,14 @@ struct XEPHFileSignature
    uint32 reserved     = 0;  // reserved - must be zero
 
    XEPHFileSignature() = default;
-
    XEPHFileSignature( const XEPHFileSignature& ) = default;
 
-   XEPHFileSignature& operator =( const XEPHFileSignature& ) = default;
-
-   XEPHFileSignature( uint32 length ) : headerLength( length )
+   XEPHFileSignature( uint32 length )
+      : headerLength( length )
    {
    }
+
+   XEPHFileSignature& operator =( const XEPHFileSignature& ) = default;
 
    void Validate() const
    {
@@ -1137,4 +1137,4 @@ void EphemerisFile::OverrideCIP_ITRSDataFilePath( const String& filePath )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/EphemerisFile.cpp - Released 2020-07-31T19:33:12Z

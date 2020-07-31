@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// DrizzleIntegrationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -138,8 +138,11 @@ public:
    {
    public:
 
-      const_iterator( const DrizzleKernelFunction& F ) :
-         f( F ), x( F.m_xlut.Begin() ), y( F.m_ylut.Begin() ), z( F.m_zlut.Begin() )
+      const_iterator( const DrizzleKernelFunction& F )
+         : f( F )
+         , x( F.m_xlut.Begin() )
+         , y( F.m_ylut.Begin() )
+         , z( F.m_zlut.Begin() )
       {
       }
 
@@ -341,7 +344,7 @@ public:
       return m_size > 0;
    }
 
-   bool operator ()( const Point p, int c ) const
+   bool operator ()( const Point& p, int c ) const
    {
       return m_index[c][p.y % m_size][p.x % m_size];
    }
@@ -355,31 +358,32 @@ private:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-DrizzleIntegrationInstance::DrizzleIntegrationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_scale( TheDZScaleParameter->DefaultValue() ),
-   p_dropShrink( TheDZDropShrinkParameter->DefaultValue() ),
-   p_kernelFunction( DZKernelFunction::Default ),
-   p_kernelGridSize( TheDZKernelGridSizeParameter->DefaultValue() ),
-   p_origin( TheDZOriginXParameter->DefaultValue(), TheDZOriginYParameter->DefaultValue() ), // ### DEPRECATED
-   p_enableCFA( TheDZEnableCFAParameter->DefaultValue() ),
-   p_cfaPattern( TheDZCFAPatternParameter->DefaultValue() ),
-   p_enableRejection( TheDZEnableRejectionParameter->DefaultValue() ),
-   p_enableImageWeighting( TheDZEnableImageWeightingParameter->DefaultValue() ),
-   p_enableSurfaceSplines( TheDZEnableSurfaceSplinesParameter->DefaultValue() ),
-   p_enableLocalDistortion( TheDZEnableLocalDistortionParameter->DefaultValue() ),
-   p_enableLocalNormalization( TheDZEnableLocalNormalizationParameter->DefaultValue() ),
-   p_useROI( TheDZUseROIParameter->DefaultValue() ),
-   p_closePreviousImages( TheDZClosePreviousImagesParameter->DefaultValue() ),
-   p_noGUIMessages( TheDZNoGUIMessagesParameter->DefaultValue() ), // ### DEPRECATED
-   p_onError( DZOnError::Default )
+DrizzleIntegrationInstance::DrizzleIntegrationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_inputHints( TheDZInputHintsParameter->DefaultValue() )
+   , p_scale( TheDZScaleParameter->DefaultValue() )
+   , p_dropShrink( TheDZDropShrinkParameter->DefaultValue() )
+   , p_kernelFunction( DZKernelFunction::Default )
+   , p_kernelGridSize( TheDZKernelGridSizeParameter->DefaultValue() )
+   , p_origin( TheDZOriginXParameter->DefaultValue(), TheDZOriginYParameter->DefaultValue() ) // ### DEPRECATED
+   , p_enableCFA( TheDZEnableCFAParameter->DefaultValue() )
+   , p_cfaPattern( TheDZCFAPatternParameter->DefaultValue() )
+   , p_enableRejection( TheDZEnableRejectionParameter->DefaultValue() )
+   , p_enableImageWeighting( TheDZEnableImageWeightingParameter->DefaultValue() )
+   , p_enableSurfaceSplines( TheDZEnableSurfaceSplinesParameter->DefaultValue() )
+   , p_enableLocalDistortion( TheDZEnableLocalDistortionParameter->DefaultValue() )
+   , p_enableLocalNormalization( TheDZEnableLocalNormalizationParameter->DefaultValue() )
+   , p_useROI( TheDZUseROIParameter->DefaultValue() )
+   , p_closePreviousImages( TheDZClosePreviousImagesParameter->DefaultValue() )
+   , p_noGUIMessages( TheDZNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
+   , p_onError( DZOnError::Default )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-DrizzleIntegrationInstance::DrizzleIntegrationInstance( const DrizzleIntegrationInstance& x ) :
-   ProcessImplementation( x )
+DrizzleIntegrationInstance::DrizzleIntegrationInstance( const DrizzleIntegrationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -449,8 +453,8 @@ class DrizzleIntegrationEngine
 {
 public:
 
-   DrizzleIntegrationEngine( DrizzleIntegrationInstance& instance ) :
-      m_instance( instance )
+   DrizzleIntegrationEngine( DrizzleIntegrationInstance& instance )
+      : m_instance( instance )
    {
    }
 
@@ -489,11 +493,13 @@ private:
       ThreadData( const DrizzleIntegrationEngine& engine_,
                   const Image& source_, const CFAIndex& cfaIndex_,
                   Image& result_, Image& weight_,
-                  const StatusMonitor& monitor_, size_type count_ ) :
-         AbstractImage::ThreadData( monitor_, count_ ),
-         engine( engine_ ),
-         source( source_ ), cfaIndex( cfaIndex_ ),
-         result( result_ ), weight( weight_ )
+                  const StatusMonitor& monitor_, size_type count_ )
+         : AbstractImage::ThreadData( monitor_, count_ )
+         , engine( engine_ )
+         , source( source_ )
+         , cfaIndex( cfaIndex_ )
+         , result( result_ )
+         , weight( weight_ )
       {
       }
 
@@ -517,8 +523,10 @@ private:
 
       double totalDropArea = 0; // total data gathered by this thread in drop area units
 
-      DrizzleThread( const ThreadData& data, int firstRow, int endRow ) :
-         m_data( data ), m_firstRow( firstRow ), m_endRow( endRow ), m_kernel()
+      DrizzleThread( const ThreadData& data, int firstRow, int endRow )
+         : m_data( data )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -2070,4 +2078,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2020-07-31T19:33:39Z

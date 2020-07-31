@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Flags.h - Released 2020-02-27T12:55:23Z
+// pcl/Flags.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -108,7 +108,8 @@ public:
     * Constructs a %Flags instance from an enumerated flag value \a e.
     */
    constexpr
-   Flags( enum_type e ) : m_flags( int( e ) )
+   Flags( enum_type e )
+      : m_flags( int( e ) )
    {
    }
 
@@ -116,7 +117,8 @@ public:
     * Constructs a %Flags instance from a mask \a m.
     */
    constexpr
-   Flags( flag_type m ) : m_flags( int( m ) )
+   Flags( flag_type m )
+      : m_flags( int( m ) )
    {
    }
 
@@ -242,7 +244,7 @@ public:
     */
    constexpr bool IsFlagSet( enum_type e ) const
    {
-      return (m_flags & e) != 0;
+      return (m_flags & e) != flag_type( 0 );
    }
 
    /*!
@@ -270,7 +272,7 @@ public:
     */
    void Clear()
    {
-      m_flags = 0;
+      m_flags = flag_type( 0 );
    }
 
    /*!
@@ -288,7 +290,7 @@ public:
     */
    constexpr bool operator !() const
    {
-      return m_flags == 0;
+      return m_flags == flag_type( 0 );
    }
 
    /*!
@@ -382,7 +384,7 @@ public:
 
 private:
 
-   flag_type m_flags = 0;
+   flag_type m_flags = flag_type( 0 );
 
 #ifndef __PCL_NO_FLAGS_SETTINGS_IO
    friend class Settings;
@@ -404,4 +406,4 @@ private:
 #endif   // __PCL_Flags_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Flags.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Flags.h - Released 2020-07-31T19:33:04Z

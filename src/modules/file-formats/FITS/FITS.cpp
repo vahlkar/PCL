@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.6
+// Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITS.cpp - Released 2020-02-27T12:55:48Z
+// FITS.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -756,12 +756,11 @@ void FITSReader::Open( const String& filePath )
             else if ( !k.name.CompareIC( "COLORSPC" ) )
             {
                // *** PCL private keyword: Color Space
-               IsoString value = k.StripValueDelimiters();
-               if ( !value.CompareIC( "Grayscale" ) || !value.CompareIC( "Gray" ) )
+               IsoString value = k.StripValueDelimiters().CaseFolded();
+               if ( value == "grayscale" || value == "gray" )
                   hdu.colorSpace = ColorSpace::Gray;
-               else if ( !value.CompareIC( "RGB" ) || !value.CompareIC( "RGBColor" ) )
+               else if ( value == "rgb" || value == "rgbcolor" )
                   hdu.colorSpace = ColorSpace::RGB;
-               /* else if ... <-- More color spaces come here */
                else
                {
                   // Warning! We have not generated this keyword!
@@ -787,11 +786,8 @@ void FITSReader::Open( const String& filePath )
             else if ( !k.name.CompareIC( "RESOUNIT" ) )
             {
                // *** PCL private keyword: Resolution units.
-               IsoString value = k.StripValueDelimiters();
-               image.options.metricResolution =
-                  !value.CompareIC( "cm" ) ||
-                  !value.CompareIC( "centimeter" ) ||
-                  !value.CompareIC( "centimeters" );
+               IsoString value = k.StripValueDelimiters().CaseFolded();
+               image.options.metricResolution = value == "cm" || value == "centimeter" || value == "centimeters";
             }
             else if ( !k.name.CompareIC( "ICCPROFL" ) )
             {
@@ -918,6 +914,17 @@ void FITSReader::SetFITSOptions( const FITSImageOptions& newOptions )
          }
       }
    }
+
+   if ( fits.useRowOrderKeywords )
+      for ( const FITSHeaderKeyword& k : ReverseIterable( keywords[m_index] ) )
+         if ( !k.name.CompareIC( "ROWORDER" ) )
+         {
+            // Nonstandard ROWORDER keyword, trying to solve FITS vertical
+            // orientation issues. Added July 2020 as of core 1.8.8-6.
+            fits.bottomUp = k.StripValueDelimiters().CaseFolded() == "bottom-up";
+            break;
+         }
+
 }
 
 // ----------------------------------------------------------------------------
@@ -2346,6 +2353,15 @@ void FITSWriter::CreateImage( const ImageInfo& info )
                                      "PCL: File includes thumbnail image extension",
                                      &fitsStatus );
             }
+
+         /*
+          * Nonstandard ROWORDER keyword - let's hope this ugly trick will shut
+          * up most FITS orientation screams... (added July 2020)
+          */
+         ::fits_write_key_str( fits_handle, "ROWORDER",
+                               const_cast<char*>( fitsOptions.bottomUp ? "BOTTOM-UP" : "TOP-DOWN" ),
+                               "Order of pixel rows stored in the image array",
+                               &fitsStatus );
       }
 
       if ( fitsStatus != 0 )
@@ -2387,6 +2403,7 @@ void FITSWriter::CreateImage( const ImageInfo& info )
                kname          != "BZERO"     &&
                kname          != "PROGRAM"   &&
                kname          != "CREATOR"   &&
+               kname          != "SWCREATE"  &&
                kname          != "CONFIGUR"  &&
                kname          != "XTENSION"  &&
                kname          != "PCOUNT"    &&
@@ -2410,6 +2427,7 @@ void FITSWriter::CreateImage( const ImageInfo& info )
                kname          != "RESOUNIT"  &&
                kname          != "ICCPROFL"  &&
                kname          != "THUMBIMG"  &&
+               kname          != "ROWORDER"  &&
                kname          != "XMPDATA" )
          {
             /*
@@ -2419,7 +2437,7 @@ void FITSWriter::CreateImage( const ImageInfo& info )
              */
 
             // Try to find a keyword with the same name as this one.
-            char cvalue[ 81 ], ccomment[ 81 ];
+            char cvalue[ 96 ], ccomment[ 96 ];
             {
                CFITSIO_LOCK
                ::fits_read_keyword( fits_handle, kname.c_str(), cvalue, ccomment, &fitsStatus );
@@ -2708,4 +2726,4 @@ void FITSWriter::WriteExtensionHDU( const FITSExtensionData& ext )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITS.cpp - Released 2020-02-27T12:55:48Z
+// EOF FITS.cpp - Released 2020-07-31T19:33:23Z

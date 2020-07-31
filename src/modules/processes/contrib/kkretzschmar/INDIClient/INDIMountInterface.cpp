@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIMountInterface.cpp - Released 2020-02-27T12:56:01Z
+// INDIMountInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -70,11 +70,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-// km/s -> AU/day
-static const double KMS2AUY = 365.25 * 86400 / 149597870e3;
-
-// ----------------------------------------------------------------------------
-
 INDIMountInterface* TheINDIMountInterface = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -83,9 +78,9 @@ INDIMountInterface* TheINDIMountInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-CoordinateSearchDialog::CoordinateSearchDialog( INDIMountInterface& parent ) :
-   Dialog( parent ),
-   m_parent( parent )
+CoordinateSearchDialog::CoordinateSearchDialog( INDIMountInterface& parent )
+   : Dialog( parent )
+   , m_parent( parent )
 {
    const char* objectNameToolTip =
       "<p>Name or identifier of the object to search for. Examples: M31, Pleiades, NGC 253, Orion Nebula, Antares.</p>";
@@ -414,9 +409,9 @@ void CoordinateSearchDialog::e_Click( Button& sender, bool checked )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-EphemerisSearchDialog::EphemerisSearchDialog( INDIMountInterface& parent ) :
-   Dialog( parent ),
-   m_parent( parent )
+EphemerisSearchDialog::EphemerisSearchDialog( INDIMountInterface& parent )
+   : Dialog( parent )
+   , m_parent( parent )
 {
    const char* objectToolTip =
       "<p>Select one of the solar system bodies available to calculate ephemerides.</p>";
@@ -598,8 +593,8 @@ void EphemerisSearchDialog::e_Click( Button& sender, bool checked )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-PlanetSearchDialog::PlanetSearchDialog( INDIMountInterface& parent ) :
-   EphemerisSearchDialog( parent )
+PlanetSearchDialog::PlanetSearchDialog( INDIMountInterface& parent )
+   : EphemerisSearchDialog( parent )
 {
    SetWindowTitle( "Planet Coordinates" );
 }
@@ -626,8 +621,8 @@ const EphemerisFile& PlanetSearchDialog::Ephemerides() const
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-AsteroidSearchDialog::AsteroidSearchDialog( INDIMountInterface& parent ) :
-   EphemerisSearchDialog( parent )
+AsteroidSearchDialog::AsteroidSearchDialog( INDIMountInterface& parent )
+   : EphemerisSearchDialog( parent )
 {
    SetWindowTitle( "Asteroid Coordinates" );
 }
@@ -669,8 +664,8 @@ void AsteroidSearchDialog::e_ItemSelected( ComboBox& sender, int itemIndex )
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-SyncDataListDialog::SyncDataListDialog( Array<SyncDataPoint>& syncDataArray ) :
-   m_syncDataList( syncDataArray )
+SyncDataListDialog::SyncDataListDialog( Array<SyncDataPoint>& syncDataArray )
+   : m_syncDataList( syncDataArray )
 {
    SnycData_TreeBox.SetMinHeight( Font().Width( 'm' ) * 60 );
    SnycData_TreeBox.SetScaledMinWidth( Font().Height() * 50 );
@@ -809,8 +804,8 @@ void SyncDataListDialog::e_Click( Button& sender, bool checked )
 
 // ----------------------------------------------------------------------------
 
-AlignmentConfigDialog::AlignmentConfigDialog( INDIMountInterface& w ) :
-   m_interface( w )
+AlignmentConfigDialog::AlignmentConfigDialog( INDIMountInterface& w )
+   : m_interface( w )
 {
    const char* pierSideToolTipText =
       "<p>Create a model for each side of the pier. This is useful for mounts that perform a meridian "
@@ -982,9 +977,9 @@ void AlignmentConfigDialog::e_PageSelected( TabBox& sender, int tabIndex )
 
 MountConfigDialog::MountConfigDialog( const String& deviceName,
                                       double geoLat, double geoLong, double geoHeight,
-   String utcTime, double utcOffset ) :
-   ConfigDialogBase( deviceName ),
-   m_device( deviceName )
+                                      String utcTime, double utcOffset )
+   : ConfigDialogBase( deviceName )
+   , m_device( deviceName )
 {
    int emWidth = Font().Width( 'm' );
    int editWidth1 = RoundInt( 4.25 * emWidth );
@@ -2181,10 +2176,10 @@ class INDIMountInterfaceExecution : public AbstractINDIMountExecution
 {
 public:
 
-   INDIMountInterfaceExecution( INDIMountInterface* iface ) :
-      AbstractINDIMountExecution( *dynamic_cast<INDIMountInstance*>( iface->NewProcess() ) ),
-      m_iface( iface ),
-      m_instanceAuto( &m_instance )
+   INDIMountInterfaceExecution( INDIMountInterface* iface )
+      : AbstractINDIMountExecution( *dynamic_cast<INDIMountInstance*>( iface->NewProcess() ) )
+      , m_iface( iface )
+      , m_instanceAuto( &m_instance )
    {
    }
 
@@ -2811,4 +2806,4 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF INDIMountInterface.cpp - Released 2020-07-31T19:33:39Z

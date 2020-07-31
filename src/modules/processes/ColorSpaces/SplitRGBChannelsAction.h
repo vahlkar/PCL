@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// SplitRGBChannelsAction.h - Released 2020-02-27T12:56:01Z
+// SplitRGBChannelsAction.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -70,6 +70,8 @@ public:
    bool IsEnabled( ActionInfo info ) const override;
 };
 
+// ----------------------------------------------------------------------------
+
 class ExtractRedChannelAction : public Action
 {
 public:
@@ -80,6 +82,8 @@ public:
    bool IsEnabled( ActionInfo info ) const override;
 };
 
+// ----------------------------------------------------------------------------
+
 class ExtractGreenChannelAction : public Action
 {
 public:
@@ -89,6 +93,8 @@ public:
    void Execute() override;
    bool IsEnabled( ActionInfo info ) const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class ExtractBlueChannelAction : public Action
 {
@@ -107,4 +113,4 @@ public:
 #endif   // __SplitRGBChannelsAction_h
 
 // ----------------------------------------------------------------------------
-// EOF SplitRGBChannelsAction.h - Released 2020-02-27T12:56:01Z
+// EOF SplitRGBChannelsAction.h - Released 2020-07-31T19:33:39Z

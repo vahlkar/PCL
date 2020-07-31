@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Thread.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Thread.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -159,8 +159,8 @@ public:
  * reimplemented Thread::Run() can be invoked single-threaded.
  */
 
-Thread::Thread() :
-   UIObject( (API != nullptr) ? (*API->Thread->CreateThread)( ModuleHandle(), this, 0/*flags*/ ) : nullptr )
+Thread::Thread()
+   : UIObject( (API != nullptr) ? (*API->Thread->CreateThread)( ModuleHandle(), this, 0/*flags*/ ) : nullptr )
 {
    if ( API != nullptr )
    {
@@ -496,6 +496,28 @@ Array<size_type> Thread::OptimalThreadLoads( size_type N, size_type overheadLimi
 
 // ----------------------------------------------------------------------------
 
+Array<size_type> Thread::OptimalThreadLoadsAligned( size_type N, int align, size_type overheadLimit, int maxThreads )
+{
+   Array<size_type> L = OptimalThreadLoads( N, Max( size_type( align ), overheadLimit ), maxThreads );
+   for ( size_type i = 0, j = 1; j < L.Length(); ++i, ++j )
+      while ( L[i] % align )
+      {
+         if ( L[j] == 0 )
+            if ( ++j == L.Length() )
+               break;
+         --L[j];
+         ++L[i];
+      }
+
+   Array<size_type> A;
+   for ( size_type n : L )
+      if ( n > 0 )
+         A << n;
+   return A;
+}
+
+// ----------------------------------------------------------------------------
+
 void PCL_FUNC Sleep( unsigned ms )
 {
    //(*API->Thread->SleepThread)( 0, ms );
@@ -507,4 +529,4 @@ void PCL_FUNC Sleep( unsigned ms )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Thread.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Thread.cpp - Released 2020-07-31T19:33:12Z

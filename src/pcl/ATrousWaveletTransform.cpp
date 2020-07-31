@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ATrousWaveletTransform.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ATrousWaveletTransform.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -277,21 +277,28 @@ double ATrousWaveletTransform::NoiseKSigma( int j, const ImageVariant& image,
    if ( image.IsFloatSample() )
       switch ( image.BitsPerSample() )
       {
-      case 32: return NoiseKSigmaEstimate( m_transform[j], static_cast<const Image&>( *image ), low, high, k, eps, n, N );
-      case 64: return NoiseKSigmaEstimate( m_transform[j], static_cast<const DImage&>( *image ), low, high, k, eps, n, N );
+      case 32:
+         return NoiseKSigmaEstimate( m_transform[j], static_cast<const Image&>( *image ), low, high, k, eps, n, N );
+      case 64:
+         return NoiseKSigmaEstimate( m_transform[j], static_cast<const DImage&>( *image ), low, high, k, eps, n, N );
       }
    else if ( image.IsComplexSample() )
       switch ( image.BitsPerSample() )
       {
-      case 32: return NoiseKSigmaEstimate( m_transform[j], static_cast<const ComplexImage&>( *image ), low, high, k, eps, n, N );
-      case 64: return NoiseKSigmaEstimate( m_transform[j], static_cast<const DComplexImage&>( *image ), low, high, k, eps, n, N );
+      case 32:
+         return NoiseKSigmaEstimate( m_transform[j], static_cast<const ComplexImage&>( *image ), low, high, k, eps, n, N );
+      case 64:
+         return NoiseKSigmaEstimate( m_transform[j], static_cast<const DComplexImage&>( *image ), low, high, k, eps, n, N );
       }
    else
       switch ( image.BitsPerSample() )
       {
-      case  8: return NoiseKSigmaEstimate( m_transform[j], static_cast<const UInt8Image&>( *image ), low, high, k, eps, n, N );
-      case 16: return NoiseKSigmaEstimate( m_transform[j], static_cast<const UInt16Image&>( *image ), low, high, k, eps, n, N );
-      case 32: return NoiseKSigmaEstimate( m_transform[j], static_cast<const UInt32Image&>( *image ), low, high, k, eps, n, N );
+      case 8:
+         return NoiseKSigmaEstimate( m_transform[j], static_cast<const UInt8Image&>( *image ), low, high, k, eps, n, N );
+      case 16:
+         return NoiseKSigmaEstimate( m_transform[j], static_cast<const UInt16Image&>( *image ), low, high, k, eps, n, N );
+      case 32:
+         return NoiseKSigmaEstimate( m_transform[j], static_cast<const UInt32Image&>( *image ), low, high, k, eps, n, N );
       }
 
    return 0; // ??!!
@@ -403,8 +410,8 @@ private:
    {
       ThreadData( const ATrousWaveletTransform::transform& transform,
                   int numberOfLayers,
-                  const GenericImage<P>& image, float low, float high ) :
-      AbstractImage::ThreadData( image, 0 ) // unbounded monitoring
+                  const GenericImage<P>& image, float low, float high )
+         : AbstractImage::ThreadData( image, 0 ) // unbounded monitoring
       {
          J = numberOfLayers;
 
@@ -453,11 +460,14 @@ private:
    {
    public:
 
-      Array<float> S;   // noise pixels
-      size_type    n;   // number of noise pixels
+      Array<float> S;     // noise pixels
+      size_type    n = 0; // number of noise pixels
 
-      Thread( const ThreadData<P>& data, size_type start, size_type end ) :
-         S( end - start ), n( 0 ), m_data( data ), m_start( start ), m_end( end )
+      Thread( const ThreadData<P>& data, size_type start, size_type end )
+         : S( end - start )
+         , m_data( data )
+         , m_start( start )
+         , m_end( end )
       {
       }
 
@@ -505,14 +515,16 @@ double ATrousWaveletTransform::NoiseMRS( const ImageVariant& image, const float 
    {
       switch ( image.BitsPerSample() )
       {
-      case 32 : return PCL_NoiseMRSEngine::NoiseEstimate( m_transform, m_numberOfLayers, sej,
-                                                          static_cast<const Image&>( *image ), sigma, K, N, low, high,
-                                                          IsParallelProcessingEnabled(), MaxProcessors() );
-
-      case 64 : return PCL_NoiseMRSEngine::NoiseEstimate( m_transform, m_numberOfLayers, sej,
-                                                          static_cast<const DImage&>( *image ), sigma, K, N, low, high,
-                                                          IsParallelProcessingEnabled(), MaxProcessors() );
-      default : return 0; // ?!
+      case 32:
+         return PCL_NoiseMRSEngine::NoiseEstimate( m_transform, m_numberOfLayers, sej,
+                                                   static_cast<const Image&>( *image ), sigma, K, N, low, high,
+                                                   IsParallelProcessingEnabled(), MaxProcessors() );
+      case 64:
+         return PCL_NoiseMRSEngine::NoiseEstimate( m_transform, m_numberOfLayers, sej,
+                                                   static_cast<const DImage&>( *image ), sigma, K, N, low, high,
+                                                   IsParallelProcessingEnabled(), MaxProcessors() );
+      default:
+         return 0; // ?!
       }
    }
    else
@@ -537,4 +549,4 @@ void ATrousWaveletTransform::ValidateScalingFunction() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ATrousWaveletTransform.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ATrousWaveletTransform.cpp - Released 2020-07-31T19:33:12Z

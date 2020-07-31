@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDICCDFrameInterface.cpp - Released 2020-02-27T12:56:01Z
+// INDICCDFrameInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -147,8 +147,8 @@ private:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-FilterConfigDialog::FilterConfigDialog( const String& deviceName ) :
-   ConfigDialogBase( deviceName )
+FilterConfigDialog::FilterConfigDialog( const String& deviceName )
+   : ConfigDialogBase( deviceName )
 {
    FilterNames_TreeBox.SetMinHeight( 8 * Font().Height() );
    FilterNames_TreeBox.SetScaledMinWidth( 100 );
@@ -1350,11 +1350,11 @@ void INDICCDFrameInterface::e_FileDrop( Control& sender, const Point& pos, const
 class INDICCDFrameInterfaceExecution : public AbstractINDICCDFrameExecution
 {
 public:
-   INDICCDFrameInterfaceExecution( INDICCDFrameInterface* iface ) :
-      AbstractINDICCDFrameExecution( *dynamic_cast<INDICCDFrameInstance*>( iface->NewProcess() ) ),
-      m_iface( iface ),
-      m_instanceAuto( &m_instance ),
-      m_abortRequested( false )
+   INDICCDFrameInterfaceExecution( INDICCDFrameInterface* iface )
+      : AbstractINDICCDFrameExecution( *dynamic_cast<INDICCDFrameInstance*>( iface->NewProcess() ) )
+      , m_iface( iface )
+      , m_instanceAuto( &m_instance )
+      , m_abortRequested( false )
    {
    }
 
@@ -1364,6 +1364,7 @@ public:
    }
 
 private:
+
    INDICCDFrameInterface* m_iface;
    AutoPointer<INDICCDFrameInstance> m_instanceAuto;
    bool m_abortRequested;
@@ -1556,4 +1557,4 @@ void INDICCDFrameInterface::e_Click( Button& sender, bool checked )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF INDICCDFrameInterface.cpp - Released 2020-07-31T19:33:39Z

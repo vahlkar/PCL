@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationModule.cpp - Released 2020-02-27T12:56:01Z
+// GREYCstorationModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -72,12 +72,12 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
+#include "GREYCstorationInterface.h"
 #include "GREYCstorationModule.h"
 #include "GREYCstorationProcess.h"
-#include "GREYCstorationInterface.h"
 
 namespace pcl
 {
@@ -88,6 +88,8 @@ GREYCstorationModule::GREYCstorationModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* GREYCstorationModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
@@ -97,42 +99,56 @@ const char* GREYCstorationModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString GREYCstorationModule::Name() const
 {
    return "GREYCstoration";
 }
+
+// ----------------------------------------------------------------------------
 
 String GREYCstorationModule::Description() const
 {
    return "PixInsight GREYCstoration Process Module";
 }
 
+// ----------------------------------------------------------------------------
+
 String GREYCstorationModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String GREYCstorationModule::Author() const
 {
    return "CImg: David Tschumperl&eacute; / PCL module: Juan Conejero, PTeam";
 }
 
+// ----------------------------------------------------------------------------
+
 String GREYCstorationModule::Copyright() const
 {
-   return "CImg: Copyright (c) David Tschumperl&eacute; / PCL: Copyright (c) 2003-2010, Pleiades Astrophoto";
+   return "CImg: Copyright (c) David Tschumperl&eacute; / PCL: Copyright (c) 2003-2020, Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String GREYCstorationModule::TradeMarks() const
 {
    return "GREYCstoration, CImg, PixInsight";
 }
 
+// ----------------------------------------------------------------------------
+
 String GREYCstorationModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "GREYCstoration-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "GREYCstoration-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -142,6 +158,8 @@ String GREYCstorationModule::OriginalFileName() const
    return "GREYCstoration-pxm.dll";
 #endif
 }
+
+// ----------------------------------------------------------------------------
 
 void GREYCstorationModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -153,6 +171,8 @@ void GREYCstorationModule::GetReleaseDate( int& year, int& month, int& day ) con
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -168,4 +188,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF GREYCstorationModule.cpp - Released 2020-07-31T19:33:39Z

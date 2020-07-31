@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// LinearFitProcess.cpp - Released 2020-02-27T12:56:01Z
+// LinearFitProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "LinearFitIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 LinearFitProcess* TheLinearFitProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -112,10 +108,11 @@ String LinearFitProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** LinearFitProcess::IconImageXPM() const
+String LinearFitProcess::IconImageSVGFile() const
 {
-   return LinearFitIcon_XPM;
+   return "@module_icons_dir/LinearFit.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* LinearFitProcess::DefaultInterface() const
@@ -274,4 +271,4 @@ int LinearFitProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF LinearFitProcess.cpp - Released 2020-07-31T19:33:39Z

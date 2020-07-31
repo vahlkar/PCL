@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerProcess.cpp - Released 2020-02-27T12:56:01Z
+// DebayerProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "DebayerIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 DebayerProcess* TheDebayerProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -77,7 +73,6 @@ DebayerProcess::DebayerProcess()
 {
    TheDebayerProcess = this;
 
-   // Instantiate process parameters
    new DebayerBayerPatternParameter( this );
    new DebayerMethodParameter( this );
    new DebayerFBDDNoiseReduction( this );
@@ -153,22 +148,24 @@ String DebayerProcess::Description() const
 {
    return
    "<html>"
-   "<p>Demosaics a raw One Shot Color (OSC) or Digital Single-Lens Reflex (DSLR) camera image.</p>"
+   "<p>Demosaics a raw digital camera image.</p>"
    "</html>";
 }
 
 // ----------------------------------------------------------------------------
 
-const char** DebayerProcess::IconImageXPM() const
+String DebayerProcess::IconImageSVGFile() const
 {
-   return Pixmap;
+   return "@module_icons_dir/Debayer.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* DebayerProcess::DefaultInterface() const
 {
    return TheDebayerInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* DebayerProcess::Create() const
@@ -285,4 +282,4 @@ int DebayerProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF DebayerProcess.cpp - Released 2020-07-31T19:33:39Z

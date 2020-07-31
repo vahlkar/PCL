@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGInstance.cpp - Released 2020-02-27T12:55:48Z
+// JPEGInstance.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -62,8 +62,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-JPEGInstance::JPEGInstance( const JPEGFormat* f ) :
-   FileFormatImplementation( f )
+JPEGInstance::JPEGInstance( const JPEGFormat* f )
+   : FileFormatImplementation( f )
 {
 }
 
@@ -436,4 +436,4 @@ bool JPEGInstance::WasLossyWrite() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGInstance.cpp - Released 2020-02-27T12:55:48Z
+// EOF JPEGInstance.cpp - Released 2020-07-31T19:33:23Z

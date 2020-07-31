@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformInterface.cpp - Released 2020-02-27T12:56:01Z
+// InverseFourierTransformInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -65,15 +65,13 @@ InverseFourierTransformInterface* TheInverseFourierTransformInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "InverseFourierTransformIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-InverseFourierTransformInterface::InverseFourierTransformInterface() :
-   instance( TheInverseFourierTransformProcess )
+InverseFourierTransformInterface::InverseFourierTransformInterface()
+   : instance( TheInverseFourierTransformProcess )
 {
    TheInverseFourierTransformInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 InverseFourierTransformInterface::~InverseFourierTransformInterface()
 {
@@ -81,36 +79,50 @@ InverseFourierTransformInterface::~InverseFourierTransformInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString InverseFourierTransformInterface::Id() const
 {
    return "InverseFourierTransform";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* InverseFourierTransformInterface::Process() const
 {
    return TheInverseFourierTransformProcess;
 }
 
-const char** InverseFourierTransformInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String InverseFourierTransformInterface::IconImageSVGFile() const
 {
-   return InverseFourierTransformIcon_XPM;
+   return "@module_icons_dir/InverseFourierTransform.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures InverseFourierTransformInterface::Features() const
 {
    return InterfaceFeature::DefaultGlobal;
 }
 
+// ----------------------------------------------------------------------------
+
 void InverseFourierTransformInterface::ApplyInstance() const
 {
    instance.LaunchGlobal();
 }
+
+// ----------------------------------------------------------------------------
 
 void InverseFourierTransformInterface::ResetInstance()
 {
    InverseFourierTransformInstance defaultInstance( TheInverseFourierTransformProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool InverseFourierTransformInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -125,10 +137,14 @@ bool InverseFourierTransformInterface::Launch( const MetaProcess& P, const Proce
    return &P == TheInverseFourierTransformProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* InverseFourierTransformInterface::NewProcess() const
 {
    return new InverseFourierTransformInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool InverseFourierTransformInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -138,10 +154,14 @@ bool InverseFourierTransformInterface::ValidateProcess( const ProcessImplementat
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool InverseFourierTransformInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool InverseFourierTransformInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -151,7 +171,6 @@ bool InverseFourierTransformInterface::ImportProcess( const ProcessImplementatio
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
 void InverseFourierTransformInterface::UpdateControls()
 {
@@ -160,7 +179,6 @@ void InverseFourierTransformInterface::UpdateControls()
    GUI->OnOutOfRangeResult_ComboBox.SetCurrentItem( instance.onOutOfRangeResult );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void InverseFourierTransformInterface::__Click( Button& sender, bool checked )
@@ -174,6 +192,8 @@ void InverseFourierTransformInterface::__Click( Button& sender, bool checked )
 
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void InverseFourierTransformInterface::__EditCompleted( Edit& sender )
 {
@@ -193,17 +213,23 @@ void InverseFourierTransformInterface::__EditCompleted( Edit& sender )
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void InverseFourierTransformInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->OnOutOfRangeResult_ComboBox )
       instance.onOutOfRangeResult = itemIndex;
 }
 
+// ----------------------------------------------------------------------------
+
 void InverseFourierTransformInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->FirstComponent_Edit || sender == GUI->SecondComponent_Edit )
       wantsView = view.IsMainView();
 }
+
+// ----------------------------------------------------------------------------
 
 void InverseFourierTransformInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -218,6 +244,7 @@ void InverseFourierTransformInterface::__ViewDrop( Control& sender, const Point&
    }
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 InverseFourierTransformInterface::GUIData::GUIData( InverseFourierTransformInterface& w )
@@ -323,4 +350,4 @@ InverseFourierTransformInterface::GUIData::GUIData( InverseFourierTransformInter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF InverseFourierTransformInterface.cpp - Released 2020-07-31T19:33:39Z

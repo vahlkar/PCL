@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:53.141Z
+# Generated on .... 2020-07-31T19:36:25.574Z
 # Project id ...... JPEG
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -19,10 +19,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>a0d61958-e85b-4782-9641-16621f7b6081</UniqueIdentifier>
+      <UniqueIdentifier>42f5c36c-86a7-4c98-80c0-c46f15cd9816</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>0a804826-c919-4285-85f5-f3a0223a5513</UniqueIdentifier>
+      <UniqueIdentifier>d68c5adb-5af1-47eb-afee-a6ac1ddb80ff</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>17cbf279-cfe8-48b1-a7a9-cc7c331baef4</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -64,5 +67,10 @@
     <ClInclude Include="..\..\JPEGPreferencesDialog.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\JPEG.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

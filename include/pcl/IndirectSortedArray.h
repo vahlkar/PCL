@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/IndirectSortedArray.h - Released 2020-02-27T12:55:23Z
+// pcl/IndirectSortedArray.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -141,16 +141,15 @@ public:
    /*!
     * Constructs an empty indirect sorted array.
     */
-   IndirectSortedArray() : m_array()
-   {
-   }
+   IndirectSortedArray() = default;
 
    /*!
     * Constructs an indirect sorted array of length \a n. All contained
     * pointers are initialized to \c nullptr.
     */
    explicit
-   IndirectSortedArray( size_type n ) : m_array( n )
+   IndirectSortedArray( size_type n )
+      : m_array( n )
    {
    }
 
@@ -158,7 +157,8 @@ public:
     * Constructs an indirect sorted array that stores \a n copies of a pointer
     * \a p.
     */
-   IndirectSortedArray( size_type n, const T* p ) : m_array( n, p )
+   IndirectSortedArray( size_type n, const T* p )
+      : m_array( n, p )
    {
    }
 
@@ -168,7 +168,8 @@ public:
     * comparing the pointed objects.
     */
    template <class FI>
-   IndirectSortedArray( FI i, FI j ) : m_array( i, j )
+   IndirectSortedArray( FI i, FI j )
+      : m_array( i, j )
    {
       Sort();
    }
@@ -176,16 +177,12 @@ public:
    /*!
     * Copy constructor.
     */
-   IndirectSortedArray( const IndirectSortedArray& x ) : m_array( x.m_array )
-   {
-   }
+   IndirectSortedArray( const IndirectSortedArray& ) = default;
 
    /*!
     * Move constructor.
     */
-   IndirectSortedArray( IndirectSortedArray&& x ) : m_array( std::move( x.m_array ) )
-   {
-   }
+   IndirectSortedArray( IndirectSortedArray&& ) = default;
 
    /*!
     * Destroys an %IndirectSortedArray object.
@@ -1311,4 +1308,4 @@ IndirectSortedArray<T,A>& operator <<( IndirectSortedArray<T,A>&& x1, const Indi
 #endif  // __PCL_IndirectSortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectSortedArray.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/IndirectSortedArray.h - Released 2020-07-31T19:33:04Z

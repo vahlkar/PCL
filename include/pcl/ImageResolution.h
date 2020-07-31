@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ImageResolution.h - Released 2020-02-27T12:55:23Z
+// pcl/ImageResolution.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -75,28 +75,17 @@ public:
    /*!
     * Constructs a default %ImageResolution object.
     */
-   ImageResolution() : xResolution( 72 ), yResolution( 72 ), metric( false )
-   {
-   }
+   ImageResolution() = default;
 
    /*!
     * Copy constructor.
     */
-   ImageResolution( const ImageResolution& x )
-   {
-      (void)operator =( x );
-   }
+   ImageResolution( const ImageResolution& ) = default;
 
    /*!
     * Assignment operator. Returns a reference to this object.
     */
-   ImageResolution& operator =( const ImageResolution& x )
-   {
-      xResolution = x.xResolution;
-      yResolution = x.yResolution;
-      metric      = x.metric;
-      return *this;
-   }
+   ImageResolution& operator =( const ImageResolution& ) = default;
 
    /*!
     * Gets resolution values for both \a x and \a y axes in pixels per
@@ -198,14 +187,14 @@ protected:
    /*
     * Resolution in pixels per resolution unit (centimeters or inches).
     */
-   double xResolution;
-   double yResolution;
+   double xResolution = 72;
+   double yResolution = 72;
 
    /*
     * Flag true when resolution values are expressed in pixels per centimeter.
     * Pixels per inch otherwise.
     */
-   bool   metric;
+   bool   metric = false;
 };
 
 // ----------------------------------------------------------------------------
@@ -215,4 +204,4 @@ protected:
 #endif   // __PCL_ImageResolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageResolution.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ImageResolution.h - Released 2020-07-31T19:33:04Z

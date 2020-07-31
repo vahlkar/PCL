@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.115
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.118
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-11-29T09:40:26.443Z
+# Generated on .... 2020-07-31T19:36:15.110Z
 # Project id ...... cminpack
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -17,14 +17,17 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>1d903517-9604-4dc3-bf9c-744b4853afc1</UniqueIdentifier>
+      <UniqueIdentifier>4ed1abd9-05f3-4336-baa8-96c115af6768</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>5b58851d-eff4-4dd2-b0d4-012cde81f0de</UniqueIdentifier>
+      <UniqueIdentifier>df18996a-e94e-4662-97c8-2ebae1211ed0</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\chkder.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\chkder_.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\covar.c">
@@ -33,19 +36,37 @@
     <ClCompile Include="..\..\covar1.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\covar_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\dogleg.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\dogleg_.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\dpmpar.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dpmpar_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\enorm.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\enorm_.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fdjac1.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\fdjac1_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\fdjac2.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fdjac2_.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\hybrd.c">
@@ -54,10 +75,22 @@
     <ClCompile Include="..\..\hybrd1.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\hybrd1_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\hybrd_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\hybrj.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\hybrj1.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\hybrj1_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\hybrj_.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\lmder.c">
@@ -66,13 +99,28 @@
     <ClCompile Include="..\..\lmder1.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lmder1_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lmder_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\lmdif.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\lmdif1.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lmdif1_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lmdif_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\lmpar.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lmpar_.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\lmstr.c">
@@ -81,27 +129,60 @@
     <ClCompile Include="..\..\lmstr1.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lmstr1_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lmstr_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\qform.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\qform_.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\qrfac.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\qrfac_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\qrsolv.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\qrsolv_.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\r1mpyq.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\r1mpyq_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\r1updt.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\r1updt_.c">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\rwupdt.c">
         <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\rwupdt_.c">
+        <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cminpack.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\cminpackP.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\minpack.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\minpackP.h">
         <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

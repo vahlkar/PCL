@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/File.h - Released 2020-02-27T12:55:23Z
+// pcl/File.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -520,9 +520,9 @@ public:
        * Constructs a %File::Error object with the specified full file
        * \a path and error \a message.
        */
-      Error( const String& filePath, const String& message ) :
-         pcl::Error( message ),
-         m_filePath( filePath )
+      Error( const String& filePath, const String& message )
+         : pcl::Error( message )
+         , m_filePath( filePath )
       {
       }
 
@@ -726,11 +726,10 @@ public:
        * \param initialValue  Initial progress value. The default value is
        *                      zero.
        */
-      Progress( fsize_type total, const String& initialText = String(), fsize_type initialValue = 0 ) :
-         m_total( Max( fsize_type( 0 ), total ) ),
-         m_current( Range( initialValue, fsize_type( 0 ), m_total ) ),
-         m_text( initialText ),
-         m_abort( false )
+      Progress( fsize_type total, const String& initialText = String(), fsize_type initialValue = 0 )
+         : m_total( Max( fsize_type( 0 ), total ) )
+         , m_current( Range( initialValue, fsize_type( 0 ), m_total ) )
+         , m_text( initialText )
       {
       }
 
@@ -838,7 +837,7 @@ public:
       fsize_type m_total;
       fsize_type m_current;
       String     m_text;
-      bool       m_abort : 1;
+      bool       m_abort = false;
 
       /*!
        * Function called when the current progress count has been changed.
@@ -883,10 +882,10 @@ public:
    /*!
     * Move constructor.
     */
-   File( File&& x ) :
-      m_fileHandle( x.m_fileHandle ),
-      m_filePath( std::move( x.m_filePath ) ),
-      m_fileMode( x.m_fileMode )
+   File( File&& x )
+      : m_fileHandle( x.m_fileHandle )
+      , m_filePath( std::move( x.m_filePath ) )
+      , m_fileMode( x.m_fileMode )
    {
       x.m_fileHandle = s_invalidHandle;
       x.m_fileMode = FileMode::Zero;
@@ -2294,4 +2293,4 @@ protected:
 #endif   // __PCL_File_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/File.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/File.h - Released 2020-07-31T19:33:04Z

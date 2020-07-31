@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationInterface.cpp - Released 2020-02-27T12:56:01Z
+// ChannelCombinationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -69,15 +69,13 @@ ChannelCombinationInterface* TheChannelCombinationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ChannelCombinationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ChannelCombinationInterface::ChannelCombinationInterface() :
-   instance( TheChannelCombinationProcess )
+ChannelCombinationInterface::ChannelCombinationInterface()
+   : m_instance( TheChannelCombinationProcess )
 {
    TheChannelCombinationInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 ChannelCombinationInterface::~ChannelCombinationInterface()
 {
@@ -85,36 +83,50 @@ ChannelCombinationInterface::~ChannelCombinationInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ChannelCombinationInterface::Id() const
 {
    return "ChannelCombination";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* ChannelCombinationInterface::Process() const
 {
    return TheChannelCombinationProcess;
 }
 
-const char** ChannelCombinationInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String ChannelCombinationInterface::IconImageSVGFile() const
 {
-   return ChannelCombinationIcon_XPM;
+   return "@module_icons_dir/ChannelCombination.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures ChannelCombinationInterface::Features() const
 {
    return InterfaceFeature::Default | InterfaceFeature::ApplyGlobalButton;
 }
 
+// ----------------------------------------------------------------------------
+
 void ChannelCombinationInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelCombinationInterface::ResetInstance()
 {
    ChannelCombinationInstance defaultInstance( TheChannelCombinationProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ChannelCombinationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -129,10 +141,14 @@ bool ChannelCombinationInterface::Launch( const MetaProcess& P, const ProcessImp
    return &P == TheChannelCombinationProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* ChannelCombinationInterface::NewProcess() const
 {
-   return new ChannelCombinationInstance( instance );
+   return new ChannelCombinationInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ChannelCombinationInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -142,14 +158,18 @@ bool ChannelCombinationInterface::ValidateProcess( const ProcessImplementation& 
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ChannelCombinationInterface::RequiresInstanceValidation() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ChannelCombinationInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
@@ -158,45 +178,39 @@ bool ChannelCombinationInterface::ImportProcess( const ProcessImplementation& p 
 
 void ChannelCombinationInterface::UpdateControls()
 {
-   GUI->RGB_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::RGB );
-   GUI->HSV_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::HSV );
-   GUI->HSI_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::HSI );
-   GUI->CIEXYZ_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::CIEXYZ );
-   GUI->CIELab_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::CIELab );
-   GUI->CIELch_RadioButton.SetChecked( instance.ColorSpace() == ColorSpaceId::CIELch );
+   GUI->RGB_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::RGB );
+   GUI->HSV_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::HSV );
+   GUI->HSI_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::HSI );
+   GUI->CIEXYZ_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::CIEXYZ );
+   GUI->CIELab_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::CIELab );
+   GUI->CIELch_RadioButton.SetChecked( m_instance.ColorSpace() == ColorSpaceId::CIELch );
 
-   //
+   GUI->C0_Label.SetText( ColorSpaceId::ChannelId( m_instance.ColorSpace(), 0 ) );
 
-   GUI->C0_Label.SetText( ColorSpaceId::ChannelId( instance.ColorSpace(), 0 ) );
+   GUI->C0_CheckBox.SetChecked( m_instance.IsChannelEnabled( 0 ) );
 
-   GUI->C0_CheckBox.SetChecked( instance.IsChannelEnabled( 0 ) );
+   GUI->C0_Edit.SetText( m_instance.ChannelId( 0 ).IsEmpty() ? AUTO_ID : m_instance.ChannelId( 0 ) );
+   GUI->C0_Edit.Enable( m_instance.IsChannelEnabled( 0 ) );
 
-   GUI->C0_Edit.SetText( instance.ChannelId( 0 ).IsEmpty() ? AUTO_ID : instance.ChannelId( 0 ) );
-   GUI->C0_Edit.Enable( instance.IsChannelEnabled( 0 ) );
+   GUI->C0_ToolButton.Enable( m_instance.IsChannelEnabled( 0 ) );
 
-   GUI->C0_ToolButton.Enable( instance.IsChannelEnabled( 0 ) );
+   GUI->C1_Label.SetText( ColorSpaceId::ChannelId( m_instance.ColorSpace(), 1 ) );
 
-   //
+   GUI->C1_CheckBox.SetChecked( m_instance.IsChannelEnabled( 1 ) );
 
-   GUI->C1_Label.SetText( ColorSpaceId::ChannelId( instance.ColorSpace(), 1 ) );
+   GUI->C1_Edit.SetText( m_instance.ChannelId( 1 ).IsEmpty() ? AUTO_ID : m_instance.ChannelId( 1 ) );
+   GUI->C1_Edit.Enable( m_instance.IsChannelEnabled( 1 ) );
 
-   GUI->C1_CheckBox.SetChecked( instance.IsChannelEnabled( 1 ) );
+   GUI->C1_ToolButton.Enable( m_instance.IsChannelEnabled( 1 ) );
 
-   GUI->C1_Edit.SetText( instance.ChannelId( 1 ).IsEmpty() ? AUTO_ID : instance.ChannelId( 1 ) );
-   GUI->C1_Edit.Enable( instance.IsChannelEnabled( 1 ) );
+   GUI->C2_Label.SetText( ColorSpaceId::ChannelId( m_instance.ColorSpace(), 2 ) );
 
-   GUI->C1_ToolButton.Enable( instance.IsChannelEnabled( 1 ) );
+   GUI->C2_CheckBox.SetChecked( m_instance.IsChannelEnabled( 2 ) );
 
-   //
+   GUI->C2_Edit.SetText( m_instance.ChannelId( 2 ).IsEmpty() ? AUTO_ID : m_instance.ChannelId( 2 ) );
+   GUI->C2_Edit.Enable( m_instance.IsChannelEnabled( 2 ) );
 
-   GUI->C2_Label.SetText( ColorSpaceId::ChannelId( instance.ColorSpace(), 2 ) );
-
-   GUI->C2_CheckBox.SetChecked( instance.IsChannelEnabled( 2 ) );
-
-   GUI->C2_Edit.SetText( instance.ChannelId( 2 ).IsEmpty() ? AUTO_ID : instance.ChannelId( 2 ) );
-   GUI->C2_Edit.Enable( instance.IsChannelEnabled( 2 ) );
-
-   GUI->C2_ToolButton.Enable( instance.IsChannelEnabled( 2 ) );
+   GUI->C2_ToolButton.Enable( m_instance.IsChannelEnabled( 2 ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -204,22 +218,24 @@ void ChannelCombinationInterface::UpdateControls()
 void ChannelCombinationInterface::__ColorSpace_Click( Button& sender, bool checked )
 {
    if ( sender == GUI->RGB_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::RGB;
+      m_instance.p_colorSpace = ColorSpaceId::RGB;
    else if ( sender == GUI->HSV_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::HSV;
+      m_instance.p_colorSpace = ColorSpaceId::HSV;
    else if ( sender == GUI->HSI_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::HSI;
+      m_instance.p_colorSpace = ColorSpaceId::HSI;
    else if ( sender == GUI->CIEXYZ_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::CIEXYZ;
+      m_instance.p_colorSpace = ColorSpaceId::CIEXYZ;
    else if ( sender == GUI->CIELab_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::CIELab;
+      m_instance.p_colorSpace = ColorSpaceId::CIELab;
    else if ( sender == GUI->CIELch_RadioButton )
-      instance.p_colorSpace = ColorSpaceId::CIELch;
+      m_instance.p_colorSpace = ColorSpaceId::CIELch;
 
-   instance.p_channelEnabled[0] = instance.p_channelEnabled[1] = instance.p_channelEnabled[2] = true;
+   m_instance.p_channelEnabled[0] = m_instance.p_channelEnabled[1] = m_instance.p_channelEnabled[2] = true;
 
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelCombinationInterface::__Channel_Click( Button& sender, bool checked )
 {
@@ -237,17 +253,19 @@ void ChannelCombinationInterface::__Channel_Click( Button& sender, bool checked 
    for ( int j = 0; j < 3; ++j )
    {
       if ( j == i )
-         instance.p_channelEnabled[i] = checked;
-      if ( instance.p_channelEnabled[j] )
+         m_instance.p_channelEnabled[i] = checked;
+      if ( m_instance.p_channelEnabled[j] )
          ++n;
    }
 
    if ( n == 0 )
       for ( int j = 0; j < 3; ++j )
-         instance.p_channelEnabled[j] = true;
+         m_instance.p_channelEnabled[j] = true;
 
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelCombinationInterface::__ChannelId_GetFocus( Control& sender )
 {
@@ -256,6 +274,8 @@ void ChannelCombinationInterface::__ChannelId_GetFocus( Control& sender )
       if ( e->Text() == AUTO_ID )
          e->Clear();
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelCombinationInterface::__ChannelId_EditCompleted( Edit& sender )
 {
@@ -277,16 +297,18 @@ void ChannelCombinationInterface::__ChannelId_EditCompleted( Edit& sender )
             if ( !id.IsValidIdentifier() )
                throw Error( "Invalid identifier: " + id );
 
-      instance.p_channelId[i] = (id != AUTO_ID) ? id : String();
-      sender.SetText( instance.p_channelId[i].IsEmpty() ? AUTO_ID : instance.p_channelId[i] );
+      m_instance.p_channelId[i] = (id != AUTO_ID) ? id : String();
+      sender.SetText( m_instance.p_channelId[i].IsEmpty() ? AUTO_ID : m_instance.p_channelId[i] );
       return;
    }
    ERROR_CLEANUP(
-      sender.SetText( instance.p_channelId[i] );
+      sender.SetText( m_instance.p_channelId[i] );
       sender.SelectAll();
       sender.Focus()
    )
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelCombinationInterface::__Channel_SelectSource_Click( Button& sender, bool /*checked*/ )
 {
@@ -300,22 +322,26 @@ void ChannelCombinationInterface::__Channel_SelectSource_Click( Button& sender, 
    else
       return;
 
-   String suffix = String( '_' ) + ColorSpaceId::ChannelId( instance.p_colorSpace, i );
-   String description = ColorSpaceId::SpaceId( instance.p_colorSpace ) + String().Format( " Channel #%d", i );
+   String suffix = String( '_' ) + ColorSpaceId::ChannelId( m_instance.p_colorSpace, i );
+   String description = ColorSpaceId::SpaceId( m_instance.p_colorSpace ) + String().Format( " Channel #%d", i );
 
    ChannelSourceSelectionDialog dlg( suffix, description );
    if ( dlg.Execute() == StdDialogCode::Ok )
    {
-      instance.p_channelId[i] = dlg.SourceId();
+      m_instance.p_channelId[i] = dlg.SourceId();
       UpdateControls();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelCombinationInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->C0_Edit || sender == GUI->C1_Edit || sender == GUI->C2_Edit )
       wantsView = view.IsMainView() && !view.IsColor();
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelCombinationInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -332,11 +358,12 @@ void ChannelCombinationInterface::__ViewDrop( Control& sender, const Point& pos,
          else
             return;
 
-         instance.p_channelId[i] = view.Id();
+         m_instance.p_channelId[i] = view.Id();
          UpdateControls();
       }
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
@@ -499,4 +526,4 @@ ChannelCombinationInterface::GUIData::GUIData( ChannelCombinationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ChannelCombinationInterface.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformInstance.cpp - Released 2020-02-27T12:56:01Z
+// InverseFourierTransformInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -61,16 +61,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-InverseFourierTransformInstance::InverseFourierTransformInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   onOutOfRangeResult( IFTOnOutOfRangeResult::Default )
+InverseFourierTransformInstance::InverseFourierTransformInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , onOutOfRangeResult( IFTOnOutOfRangeResult::Default )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-InverseFourierTransformInstance::InverseFourierTransformInstance( const InverseFourierTransformInstance& x ) :
-   ProcessImplementation( x )
+InverseFourierTransformInstance::InverseFourierTransformInstance( const InverseFourierTransformInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -266,14 +266,14 @@ private:
                                   const GenericImage<P1>& cmp1,
                                   const GenericImage<P1>& cmp2,
                                   GenericImage<P2>& C,
-                                  size_type start, size_type end ) :
-         m_engine( engine ),
-         m_image( img ),
-         m_cmp1( cmp1 ),
-         m_cmp2( cmp2 ),
-         m_C( C ),
-         m_start( start ),
-         m_end( end )
+                                  size_type start, size_type end )
+         : m_engine( engine )
+         , m_image( img )
+         , m_cmp1( cmp1 )
+         , m_cmp2( cmp2 )
+         , m_C( C )
+         , m_start( start )
+         , m_end( end )
       {
          m_min1 = m_engine.min1; m_max1 = m_engine.max1;
          m_min2 = m_engine.min2; m_max2 = m_engine.max2;
@@ -300,8 +300,8 @@ private:
                                               const GenericImage<P1>& cmp1,
                                               const GenericImage<P1>& cmp2,
                                               GenericImage<P2>& C,
-                                              size_type start, size_type end ) :
-         DoFromComponentsThreadBase<P1, P2>( engine, image, cmp1, cmp2, C, start, end )
+                                              size_type start, size_type end )
+         : DoFromComponentsThreadBase<P1, P2>( engine, image, cmp1, cmp2, C, start, end )
       {
       }
 
@@ -335,12 +335,12 @@ private:
                                                const GenericImage<P1>& cmp1,
                                                const GenericImage<P1>& cmp2,
                                                GenericImage<P2>& C,
-                                               size_type start, size_type end ) :
-         DoFromComponentsThreadBase<P1, P2>( engine, image, cmp1, cmp2, C, start, end )
+                                               size_type start, size_type end )
+         : DoFromComponentsThreadBase<P1, P2>( engine, image, cmp1, cmp2, C, start, end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          const double delta1 = this->m_max1 - this->m_min1;
          const double delta2 = this->m_max2 - this->m_min2;
@@ -525,4 +525,4 @@ size_type InverseFourierTransformInstance::ParameterLength( const MetaParameter*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF InverseFourierTransformInstance.cpp - Released 2020-07-31T19:33:39Z

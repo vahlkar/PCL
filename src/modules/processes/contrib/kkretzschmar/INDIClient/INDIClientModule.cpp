@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIClientModule.cpp - Released 2020-02-27T12:56:01Z
+// INDIClientModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -57,12 +57,12 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
-#include "INDIClientModule.h"
 #include "INDICCDFrameInterface.h"
 #include "INDICCDFrameProcess.h"
+#include "INDIClientModule.h"
 #include "INDIDeviceControllerInterface.h"
 #include "INDIDeviceControllerProcess.h"
 #include "INDIMountInterface.h"
@@ -113,7 +113,7 @@ String INDIClientModule::Company() const
 
 String INDIClientModule::Author() const
 {
-   return "Klaus Kretzschmar, Juan Conejero (PTeam)";
+   return "Klaus Kretzschmar (PTeam), Juan Conejero (PTeam)";
 }
 
 // ----------------------------------------------------------------------------
@@ -127,7 +127,7 @@ String INDIClientModule::Copyright() const
 
 String INDIClientModule::TradeMarks() const
 {
-   return String();
+   return "PixInsight";
 }
 
 // ----------------------------------------------------------------------------
@@ -161,6 +161,8 @@ void INDIClientModule::GetReleaseDate( int& year, int& month, int& day ) const
 
 } // namespace pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::INDIClientModule;
@@ -179,4 +181,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF INDIClientModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF INDIClientModule.cpp - Released 2020-07-31T19:33:39Z

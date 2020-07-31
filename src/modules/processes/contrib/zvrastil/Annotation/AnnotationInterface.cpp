@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationInterface.cpp - Released 2020-02-27T12:56:01Z
+// AnnotationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -52,88 +52,85 @@
 // ----------------------------------------------------------------------------
 
 #include "AnnotationInterface.h"
-#include "AnnotationProcess.h"
 #include "AnnotationParameters.h"
+#include "AnnotationProcess.h"
 #include "AnnotationRenderer.h"
 
-#include <pcl/Graphics.h>
 #include <pcl/ColorDialog.h>
-#include <pcl/Settings.h>
+#include <pcl/Graphics.h>
 #include <pcl/MessageBox.h>
-
+#include <pcl/MetaModule.h>
+#include <pcl/Settings.h>
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-AnnotationInterface* TheAnnotationInterface = 0;
+AnnotationInterface* TheAnnotationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "AnnotationIcon.xpm"
-
-#include "cursors/move_all.xpm"
-
-// ----------------------------------------------------------------------------
-
-AnnotationInterface::AnnotationInterface() :
-   ProcessInterface(),
-   instance( TheAnnotationProcess ),
-   view( 0 ),
-   annotationPlaced( false ),
-   leaderPlaced( false ),
-   dragging( DraggingType::None ),
-   lastX ( -1 ),
-   lastY ( -1 ),
-   relPosX( 0 ),
-   relPosY( 0 ),
-   annotationBmp( Bitmap::Null() ),
-   screenBmp( Bitmap::Null() ),
-   GUI( 0 )
+AnnotationInterface::AnnotationInterface()
+   : ProcessInterface()
+   , instance( TheAnnotationProcess )
 {
    TheAnnotationInterface = this;
 }
 
+// ----------------------------------------------------------------------------
+
 AnnotationInterface::~AnnotationInterface()
 {
-   if ( GUI != 0 )
-      delete GUI, GUI = 0;
+   if ( GUI != nullptr )
+      delete GUI, GUI = nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString AnnotationInterface::Id() const
 {
    return "Annotation";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* AnnotationInterface::Process() const
 {
    return TheAnnotationProcess;
 }
 
-const char** AnnotationInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String AnnotationInterface::IconImageSVGFile() const
 {
-   return AnnotationIcon_XPM;
+   return "@module_icons_dir/Annotation.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures AnnotationInterface::Features() const
 {
    return InterfaceFeature::DefaultDynamic;
 }
 
+// ----------------------------------------------------------------------------
+
 bool AnnotationInterface::IsDynamicInterface() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 void AnnotationInterface::ExitDynamicMode()
 {
    // Forget current target view.
-   if ( view != 0 )
+   if ( view != nullptr )
    {
       // Repaint view to hide the dynamic annotation
       UpdateView();
-      delete view, view = 0;
+      delete view, view = nullptr;
    }
 
    ClearBitmaps();
@@ -141,14 +138,16 @@ void AnnotationInterface::ExitDynamicMode()
    leaderPlaced = false;
 }
 
+// ----------------------------------------------------------------------------
+
 void AnnotationInterface::Execute()
 {
    // can't execute if annotation is not placed in a valid view
-   if (view == 0 || !annotationPlaced)
+   if ( view == nullptr || !annotationPlaced )
    {
-      MessageBox mb("Can't execute. Use left mouse button to place annotation on the image first.",
+      MessageBox mb( "Can't execute. Use left mouse button to place annotation on the image first.",
          "Not executed",
-         StdIcon::Information);
+         StdIcon::Information );
       mb.Execute();
       return;
    }
@@ -157,13 +156,14 @@ void AnnotationInterface::Execute()
    bool disableMask = false;
    if ( view->Window().IsMaskEnabled() && !view->Window().Mask().IsNull() )
    {
-      MessageBox mb("The view has a mask enabled. Mask will probably interfere with the annotation rendering.<br/>"
-         "Do you want to temporarily disable the mask?",
+      MessageBox mb( "The view has a mask enabled. Mask will probably interfere with the annotation rendering.<br/>"
+                     "Do you want to temporarily disable the mask?",
          "Mask Enabled",
          StdIcon::Question,
-         StdButton::Yes, StdButton::No, StdButton::Cancel, 0, 2);
+         StdButton::Yes, StdButton::No, StdButton::Cancel, 0, 2 );
       MessageBox::std_button result = mb.Execute();
-      if (result == StdButton::Cancel) return;
+      if ( result == StdButton::Cancel )
+         return;
       disableMask = result == StdButton::Yes;
    }
 
@@ -173,7 +173,7 @@ void AnnotationInterface::Execute()
 
    // Reset reference to the target view in the dynamic interface. This
    // prevents inconsistent behavior during execution.
-   delete view, view = 0;
+   delete view, view = nullptr;
    ClearBitmaps();
 
    // Since active dynamic targets cannot be modified, we have to remove our
@@ -200,16 +200,21 @@ void AnnotationInterface::Execute()
    leaderPlaced = false;
 }
 
+// ----------------------------------------------------------------------------
+
 void AnnotationInterface::ResetInstance()
 {
    AnnotationInstance defaultInstance( TheAnnotationProcess );
    ImportProcess( defaultInstance );
 }
 
+// ----------------------------------------------------------------------------
+
 bool AnnotationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
    if ( GUI == nullptr )
    {
+      Module->LoadResource( "@module_rcc_dir/cursors.rcc" );
       GUI = new GUIData( *this );
       SetWindowTitle( "Annotation" );
       UpdateControls();
@@ -219,10 +224,14 @@ bool AnnotationInterface::Launch( const MetaProcess& P, const ProcessImplementat
    return &P == TheAnnotationProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* AnnotationInterface::NewProcess() const
 {
    return new AnnotationInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool AnnotationInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -232,10 +241,14 @@ bool AnnotationInterface::ValidateProcess( const ProcessImplementation& p, Strin
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool AnnotationInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool AnnotationInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -272,47 +285,40 @@ bool AnnotationInterface::ImportProcess( const ProcessImplementation& p )
 
 // ----------------------------------------------------------------------------
 
-IsoString AnnotationInterface::SettingsKey() const
-{
-   return "Annotation";
-}
-
-// ----------------------------------------------------------------------------
-
 void AnnotationInterface::LoadSettings()
 {
-   Settings::Read( SettingsKey() + "Text", instance.annotationText );
+   Settings::Read( "AnnotationText", instance.annotationText );
 
    int boolValue = instance.annotationShowLeader;
-   Settings::Read( SettingsKey() + "ShowLeader", boolValue );
+   Settings::Read( "AnnotationShowLeader", boolValue );
    instance.annotationShowLeader = boolValue != 0;
 
-   Settings::Read( SettingsKey() + "Font", instance.annotationFont );
+   Settings::Read( "AnnotationFont", instance.annotationFont );
 
    int fontSize = instance.annotationFontSize;
-   Settings::Read( SettingsKey() + "FontSize", fontSize );
+   Settings::Read( "AnnotationFontSize", fontSize );
    instance.annotationFontSize = (uint8)fontSize;
 
    boolValue = instance.annotationFontBold;
-   Settings::Read( SettingsKey() + "FontBold", boolValue );
+   Settings::Read( "AnnotationFontBold", boolValue );
    instance.annotationFontBold = boolValue != 0;
 
    boolValue = instance.annotationFontItalic;
-   Settings::Read( SettingsKey() + "FontItalic", boolValue );
+   Settings::Read( "AnnotationFontItalic", boolValue );
    instance.annotationFontItalic = boolValue != 0;
 
    boolValue = instance.annotationFontUnderline;
-   Settings::Read( SettingsKey() + "FontUnderline", boolValue );
+   Settings::Read( "AnnotationFontUnderline", boolValue );
    instance.annotationFontUnderline = boolValue != 0;
 
    boolValue = instance.annotationFontShadow;
-   Settings::Read( SettingsKey() + "FontShadow", boolValue );
+   Settings::Read( "AnnotationFontShadow", boolValue );
    instance.annotationFontShadow = boolValue;
 
-   Settings::Read( SettingsKey() + "FontColor", instance.annotationColor );
+   Settings::Read( "AnnotationFontColor", instance.annotationColor );
 
    int opacity = instance.annotationOpacity;
-   Settings::Read( SettingsKey() + "Opacity", opacity );
+   Settings::Read( "AnnotationOpacity", opacity );
    instance.annotationOpacity = (uint8)opacity;
 
    UpdateControls();
@@ -322,16 +328,16 @@ void AnnotationInterface::LoadSettings()
 
 void AnnotationInterface::SaveSettings() const
 {
-   Settings::Write( SettingsKey() + "Text", instance.annotationText );
-   Settings::Write( SettingsKey() + "ShowLeader", (int)instance.annotationShowLeader );
-   Settings::Write( SettingsKey() + "Font", instance.annotationFont );
-   Settings::Write( SettingsKey() + "FontSize", (int)instance.annotationFontSize );
-   Settings::Write( SettingsKey() + "FontBold", (int)instance.annotationFontBold );
-   Settings::Write( SettingsKey() + "FontItalic", (int)instance.annotationFontItalic );
-   Settings::Write( SettingsKey() + "FontUnderline", (int)instance.annotationFontUnderline );
-   Settings::Write( SettingsKey() + "FontShadow", (int)instance.annotationFontShadow );
-   Settings::Write( SettingsKey() + "FontColor", instance.annotationColor );
-   Settings::Write( SettingsKey() + "Opacity", instance.annotationOpacity );
+   Settings::Write( "AnnotationText", instance.annotationText );
+   Settings::Write( "AnnotationShowLeader", (int)instance.annotationShowLeader );
+   Settings::Write( "AnnotationFont", instance.annotationFont );
+   Settings::Write( "AnnotationFontSize", (int)instance.annotationFontSize );
+   Settings::Write( "AnnotationFontBold", (int)instance.annotationFontBold );
+   Settings::Write( "AnnotationFontItalic", (int)instance.annotationFontItalic );
+   Settings::Write( "AnnotationFontUnderline", (int)instance.annotationFontUnderline );
+   Settings::Write( "AnnotationFontShadow", (int)instance.annotationFontShadow );
+   Settings::Write( "AnnotationFontColor", instance.annotationColor );
+   Settings::Write( "AnnotationOpacity", instance.annotationOpacity );
 }
 
 // ----------------------------------------------------------------------------
@@ -342,7 +348,7 @@ void AnnotationInterface::DynamicMousePress( View& v, const DPoint& p, int butto
    if ( button != MouseButton::Left )
       return;
 
-   if (view == 0)
+   if ( view == nullptr )
    {
       // can not run on previews
       if ( !v.IsMainView() )
@@ -352,18 +358,18 @@ void AnnotationInterface::DynamicMousePress( View& v, const DPoint& p, int butto
    }
 
    // only handle events in our active view
-   if (v != *view)
+   if ( v != *view )
       return;
 
    // get view image window
    ImageWindow w = view->Window();
 
    // and image coordinates of the click point
-   int imageX = RoundI(p.x);
-   int imageY = RoundI(p.y);
+   int imageX = RoundI( p.x );
+   int imageY = RoundI( p.y );
 
    // if annotation is not yet placed, place it now
-   if (!annotationPlaced)
+   if ( !annotationPlaced )
    {
       // set annotation position
       instance.annotationPositionX = imageX;
@@ -371,7 +377,7 @@ void AnnotationInterface::DynamicMousePress( View& v, const DPoint& p, int butto
       annotationPlaced = true;
 
       // place leader if needed
-      if (instance.annotationShowLeader)
+      if ( instance.annotationShowLeader )
       {
          PlaceLeaderDefault();
       }
@@ -384,17 +390,17 @@ void AnnotationInterface::DynamicMousePress( View& v, const DPoint& p, int butto
 
       // start dragging mode until user release the mouse
       dragging = DraggingType::Text;
-      w.SetDynamicCursor(move_all_XPM, 10, 10);
+      w.SetDynamicCursor( ScaledResource( ":/@module_root/move_all.png" ), ScaledCursorHotSpot( 10, 10 ) );
    }
    // if the annotation is already placed
    else
    {
       // if mouse is pressed on annotation text rectangle
       // let's start dragging
-      if (textRect.Includes(imageX, imageY))
+      if ( textRect.Includes( imageX, imageY ) )
       {
          // with Ctrl, both text and leader are dragged simulaneously
-         if (modifiers & KeyModifier::Control)
+         if ( modifiers & KeyModifier::Control )
          {
             dragging = DraggingType::Both;
          }
@@ -406,10 +412,10 @@ void AnnotationInterface::DynamicMousePress( View& v, const DPoint& p, int butto
       }
       // if mouse is pressed on annotation leader rectangle and leader is visible
       // let's start dragging
-      else if (instance.annotationShowLeader && leaderRect.Includes(imageX, imageY))
+      else if ( instance.annotationShowLeader && leaderRect.Includes( imageX, imageY ) )
       {
          // with Ctrl, both text and leader are dragged simulaneously
-         if (modifiers & KeyModifier::Control)
+         if ( modifiers & KeyModifier::Control )
          {
             dragging = DraggingType::Both;
          }
@@ -422,31 +428,33 @@ void AnnotationInterface::DynamicMousePress( View& v, const DPoint& p, int butto
    }
 
    // if any dragging is started, remember current point
-   if (dragging != DraggingType::None)
+   if ( dragging != DraggingType::None )
    {
       lastX = imageX;
       lastY = imageY;
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void AnnotationInterface::DynamicMouseMove( View& v, const DPoint& p, unsigned buttons, unsigned modifiers )
 {
    // mouse move is processed only on active view
-   if (view == 0 || v != *view)
+   if ( view == nullptr || v != *view )
       return;
 
    // get view image window
    ImageWindow w = view->Window();
 
    // and image coordinates of the mouse position
-   int imageX = RoundI(p.x);
-   int imageY = RoundI(p.y);
+   int imageX = RoundI( p.x );
+   int imageY = RoundI( p.y );
 
    // set cursor to dragging cursor if mouse is inside one of the grip rectangles
-   if (annotationPlaced && textRect.Includes(imageX, imageY))
-      w.SetDynamicCursor(move_all_XPM, 10, 10);
-   else if (leaderPlaced && instance.annotationShowLeader && leaderRect.Includes(imageX, imageY))
-      w.SetDynamicCursor(move_all_XPM, 10, 10);
+   if ( annotationPlaced && textRect.Includes( imageX, imageY ) )
+      w.SetDynamicCursor( ScaledResource( ":/@module_root/move_all.png" ), ScaledCursorHotSpot( 10, 10 ) );
+   else if ( leaderPlaced && instance.annotationShowLeader && leaderRect.Includes( imageX, imageY ) )
+      w.SetDynamicCursor( ScaledResource( ":/@module_root/move_all.png" ), ScaledCursorHotSpot( 10, 10 ) );
    else // otherwise, reset cursor
       w.ResetDynamicCursor();
 
@@ -454,18 +462,18 @@ void AnnotationInterface::DynamicMouseMove( View& v, const DPoint& p, unsigned b
    if ( dragging != DraggingType::None )
    {
       // compute delta
-      int deltaX = imageX-lastX;
-      int deltaY = imageY-lastY;
+      int deltaX = imageX - lastX;
+      int deltaY = imageY - lastY;
 
       // update text position if needed
-      if (dragging == DraggingType::Text || dragging == DraggingType::Both)
+      if ( dragging == DraggingType::Text || dragging == DraggingType::Both )
       {
          instance.annotationPositionX += deltaX;
          instance.annotationPositionY += deltaY;
       }
 
       // update leader endpoint position if needed
-      if (dragging == DraggingType::Leader || dragging == DraggingType::Both)
+      if ( dragging == DraggingType::Leader || dragging == DraggingType::Both )
       {
          instance.annotationLeaderPositionX += deltaX;
          instance.annotationLeaderPositionY += deltaY;
@@ -483,33 +491,39 @@ void AnnotationInterface::DynamicMouseMove( View& v, const DPoint& p, unsigned b
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void AnnotationInterface::DynamicMouseRelease( View& v, const DPoint&, int button, unsigned buttons, unsigned modifiers )
 {
    // mouse release is processed only on active view
-   if (view == 0 || v != *view)
+   if ( view == nullptr || v != *view )
       return;
 
    // stop any dragging
-   if (dragging != DraggingType::None)
+   if ( dragging != DraggingType::None )
    {
       dragging = DraggingType::None;
       lastX = lastY = -1;
    }
 }
 
+// ----------------------------------------------------------------------------
+
 bool AnnotationInterface::RequiresDynamicUpdate( const View& v, const DRect& r ) const
 {
    // updates are required only in active view, if the annotation is already placed
-   if ( view == 0 || v != *view || !annotationPlaced )
+   if ( view == nullptr || v != *view || !annotationPlaced )
       return false;
    // and only if update rectangle intersects with annotation rectangle
    return totalRect.Intersects( r );
 }
 
+// ----------------------------------------------------------------------------
+
 void AnnotationInterface::DynamicPaint( const View& v, VectorGraphics& g, const DRect& r ) const
 {
    // we need valid view and annotation must be placed
-   if ( view == 0 || v != *view || !annotationPlaced )
+   if ( view == nullptr || v != *view || !annotationPlaced )
       return;
 
    // are we painting to rect with annotation?
@@ -535,10 +549,10 @@ void AnnotationInterface::DynamicPaint( const View& v, VectorGraphics& g, const 
 
    // compute zoom factor
    int zoomFactor = w.ZoomFactor();
-   double z = (zoomFactor < 0) ? -1.0/zoomFactor : double( zoomFactor );
+   double z = ( zoomFactor < 0 ) ? -1.0 / zoomFactor : double( zoomFactor );
 
    // draw bitmap, scaled according to zoom factor
-   Rect zr( RoundI( annotationBmp.Width()*z ), RoundI( annotationBmp.Height()*z ) );
+   Rect zr( RoundI( annotationBmp.Width() * z ), RoundI( annotationBmp.Height() * z ) );
    if ( screenBmp.IsNull() || zr != screenBmp.Bounds() )
       if ( zoomFactor < 0 )
          screenBmp = annotationBmp.Scaled( z );
@@ -555,7 +569,6 @@ void AnnotationInterface::DynamicPaint( const View& v, VectorGraphics& g, const 
 
 void AnnotationInterface::UpdateControls()
 {
-   // synchronize controls with current instance
    GUI->AnnotationText_Edit.SetText( instance.annotationText );
    GUI->AnnotationShowLeader_CheckBox.SetChecked( instance.annotationShowLeader );
    GUI->AnnotationFont_ComboBox.SetCurrentFont( instance.annotationFont );
@@ -577,10 +590,12 @@ void AnnotationInterface::ClearBitmaps()
    screenBmp = Bitmap::Null();
 }
 
+// ----------------------------------------------------------------------------
+
 void AnnotationInterface::UpdateView()
 {
    // update current invalidate rect of the view
-   if ( view != 0 && annotationPlaced )
+   if ( view != nullptr && annotationPlaced )
    {
       annotationBmp = Bitmap::Null();
       ImageWindow w = view->Window();
@@ -590,11 +605,11 @@ void AnnotationInterface::UpdateView()
 
 // ----------------------------------------------------------------------------
 
-void AnnotationInterface::UpdateAnnotationRect(bool reset)
+void AnnotationInterface::UpdateAnnotationRect( bool reset )
 {
    // compute current image rectangle for annotation text and leader
    // also compute its union and rectangle for invalidation (union of old and new rectangles)
-   if (view != 0)
+   if ( view != nullptr )
    {
       // flag whether leader is to be shown
       bool showLeader = leaderPlaced && instance.annotationShowLeader;
@@ -621,8 +636,8 @@ void AnnotationInterface::UpdateAnnotationRect(bool reset)
 
       // compute total rectangle (text and leader) using annotation renderer
       int relPosX, relPosY, dummy3, dummy4;
-      totalRect = AnnotationRenderer::GetBoundingRectangle(instance, relPosX, relPosY, dummy3, dummy4);
-      totalRect.MoveBy(instance.annotationPositionX-relPosX, instance.annotationPositionY-relPosY);
+      totalRect = AnnotationRenderer::GetBoundingRectangle( instance, relPosX, relPosY, dummy3, dummy4 );
+      totalRect.MoveBy( instance.annotationPositionX - relPosX, instance.annotationPositionY - relPosY );
 
       // if oldRect is not valid, don't take it into account when computing invalidate rectangle
       if ( reset )
@@ -651,19 +666,19 @@ void AnnotationInterface::PlaceLeaderDefault()
    int textHeight = f.Height();
 
    // place leader X position to the left of the text
-   instance.annotationLeaderPositionX = instance.annotationPositionX - 5*textHeight;
+   instance.annotationLeaderPositionX = instance.annotationPositionX - 5 * textHeight;
 
    // if outside of image, place it to the right
-   if (instance.annotationLeaderPositionX < 0)
+   if ( instance.annotationLeaderPositionX < 0 )
    {
-      instance.annotationLeaderPositionX = instance.annotationPositionX + textWidth + 5*textHeight;
+      instance.annotationLeaderPositionX = instance.annotationPositionX + textWidth + 5 * textHeight;
    }
 
    // place leader Y position to the top of the text
-   instance.annotationLeaderPositionY = instance.annotationPositionY - 3*textHeight;
-   if (instance.annotationLeaderPositionY < 0)
+   instance.annotationLeaderPositionY = instance.annotationPositionY - 3 * textHeight;
+   if ( instance.annotationLeaderPositionY < 0 )
    {
-      instance.annotationLeaderPositionY = instance.annotationPositionY + 3*textHeight;
+      instance.annotationLeaderPositionY = instance.annotationPositionY + 3 * textHeight;
    }
 
    leaderPlaced = true;
@@ -671,7 +686,7 @@ void AnnotationInterface::PlaceLeaderDefault()
 
 // ----------------------------------------------------------------------------
 
-void AnnotationInterface::__EditTextUpdated( Edit& sender, const String &text )
+void AnnotationInterface::__EditTextUpdated( Edit& sender, const String& text )
 {
    if ( sender == GUI->AnnotationText_Edit )
    {
@@ -683,7 +698,7 @@ void AnnotationInterface::__EditTextUpdated( Edit& sender, const String &text )
 
 // ----------------------------------------------------------------------------
 
-void AnnotationInterface::__FontComboBoxFontSelected( FontComboBox &sender, const String &font )
+void AnnotationInterface::__FontComboBoxFontSelected( FontComboBox& sender, const String& font )
 {
    if ( sender == GUI->AnnotationFont_ComboBox )
    {
@@ -695,9 +710,9 @@ void AnnotationInterface::__FontComboBoxFontSelected( FontComboBox &sender, cons
 
 // ----------------------------------------------------------------------------
 
-void AnnotationInterface::__FontSizeSpinBoxValueUpdated( SpinBox &sender, int value )
+void AnnotationInterface::__FontSizeSpinBoxValueUpdated( SpinBox& sender, int value )
 {
-   if (sender == GUI->AnnotationFontSize_SpinBox )
+   if ( sender == GUI->AnnotationFontSize_SpinBox )
    {
       instance.annotationFontSize = (uint8)value;
       UpdateAnnotationRect();
@@ -707,7 +722,7 @@ void AnnotationInterface::__FontSizeSpinBoxValueUpdated( SpinBox &sender, int va
 
 // ----------------------------------------------------------------------------
 
-void AnnotationInterface::__FontOptionCheckBoxChecked( Button &sender, Button::check_state state )
+void AnnotationInterface::__FontOptionCheckBoxChecked( Button& sender, Button::check_state state )
 {
    if ( sender == GUI->AnnotationFontBold_CheckBox )
    {
@@ -737,8 +752,7 @@ void AnnotationInterface::__FontOptionCheckBoxChecked( Button &sender, Button::c
       instance.annotationShowLeader = state == CheckState::Checked ? 1 : 0;
 
       // if not yet placed, place it to default position
-      if (instance.annotationShowLeader &&
-         annotationPlaced && !leaderPlaced)
+      if ( instance.annotationShowLeader && annotationPlaced && !leaderPlaced )
       {
          PlaceLeaderDefault();
       }
@@ -753,7 +767,7 @@ void AnnotationInterface::__FontOptionCheckBoxChecked( Button &sender, Button::c
 
 // ----------------------------------------------------------------------------
 
-void AnnotationInterface::__ColorComboBoxColorSelected( ColorComboBox &sender, RGBA color )
+void AnnotationInterface::__ColorComboBoxColorSelected( ColorComboBox& sender, RGBA color )
 {
    if ( sender == GUI->AnnotationColor_ComboBox )
    {
@@ -801,6 +815,7 @@ void AnnotationInterface::__OpacityUpdated( NumericEdit& sender, double value )
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
 {
@@ -813,13 +828,13 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
    AnnotationText_Label.SetText( "Text:" );
    AnnotationText_Label.SetMinWidth( labelWidth1 );
    AnnotationText_Label.SetToolTip( "<p>The annotation text.</p>" );
-   AnnotationText_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   AnnotationText_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    AnnotationText_Edit.SetMinWidth( editWidth1 );
    AnnotationText_Edit.SetToolTip( "<p>The annotation text.</p>" );
    AnnotationText_Edit.OnTextUpdated( (Edit::text_event_handler)&AnnotationInterface::__EditTextUpdated, w );
 
-   AnnotationShowLeader_CheckBox.SetText("Show Leader");
+   AnnotationShowLeader_CheckBox.SetText( "Show Leader" );
    AnnotationShowLeader_CheckBox.SetToolTip( "<p>Shows annotation leader - line leading from annotation to object on image.</p>" );
    AnnotationShowLeader_CheckBox.OnCheck( (Button::check_event_handler)&AnnotationInterface::__FontOptionCheckBoxChecked, w );
 
@@ -834,23 +849,23 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
 
    // AnnotationFont
 
-   AnnotationFont_Label.SetText("Font:");
+   AnnotationFont_Label.SetText( "Font:" );
    AnnotationFont_Label.SetMinWidth( labelWidth1 );
    AnnotationFont_Label.SetToolTip( "<p>The annotation font.</p>" );
-   AnnotationFont_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   AnnotationFont_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    AnnotationFont_ComboBox.SetMinWidth( editWidth1 );
    AnnotationFont_ComboBox.SetToolTip( "<p>The annotation font.</p>" );
    AnnotationFont_ComboBox.OnFontSelected( (FontComboBox::font_event_handler)&AnnotationInterface::__FontComboBoxFontSelected, w );
 
-   AnnotationFontSize_Label.SetText("Size (pt):");
-   AnnotationFontSize_Label.SetToolTip("<p>The annotation font size.</p>");
-   AnnotationFontSize_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   AnnotationFontSize_Label.SetText( "Size (pt):" );
+   AnnotationFontSize_Label.SetToolTip( "<p>The annotation font size.</p>" );
+   AnnotationFontSize_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
-   AnnotationFontSize_SpinBox.SetMinWidth(fnt.Width( String( "255XX" ) ));
-   AnnotationFontSize_SpinBox.SetMinValue(1);
-   AnnotationFontSize_SpinBox.SetMaxValue(255);
-   AnnotationFontSize_SpinBox.SetToolTip("<p>The annotation font size.</p>");
+   AnnotationFontSize_SpinBox.SetMinWidth( fnt.Width( String( "255XX" ) ) );
+   AnnotationFontSize_SpinBox.SetMinValue( 1 );
+   AnnotationFontSize_SpinBox.SetMaxValue( 255 );
+   AnnotationFontSize_SpinBox.SetToolTip( "<p>The annotation font size.</p>" );
    AnnotationFontSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&AnnotationInterface::__FontSizeSpinBoxValueUpdated, w );
 
    AnnotationFont_Sizer.SetSpacing( 4 );
@@ -862,16 +877,16 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
    // AnnotationFontOptions
 
    AnnotationFontBold_CheckBox.SetText( "Bold" );
-   AnnotationFontBold_CheckBox.SetToolTip("<p>Bold text</p>");
+   AnnotationFontBold_CheckBox.SetToolTip( "<p>Bold text</p>" );
    AnnotationFontBold_CheckBox.OnCheck( (Button::check_event_handler)&AnnotationInterface::__FontOptionCheckBoxChecked, w );
    AnnotationFontItalic_CheckBox.SetText( "Italic" );
-   AnnotationFontItalic_CheckBox.SetToolTip("<p>Italic text</p>");
+   AnnotationFontItalic_CheckBox.SetToolTip( "<p>Italic text</p>" );
    AnnotationFontItalic_CheckBox.OnCheck( (Button::check_event_handler)&AnnotationInterface::__FontOptionCheckBoxChecked, w );
    AnnotationFontUnderline_CheckBox.SetText( "Underline" );
-   AnnotationFontUnderline_CheckBox.SetToolTip("<p>Underlined text</p>");
+   AnnotationFontUnderline_CheckBox.SetToolTip( "<p>Underlined text</p>" );
    AnnotationFontUnderline_CheckBox.OnCheck( (Button::check_event_handler)&AnnotationInterface::__FontOptionCheckBoxChecked, w );
    AnnotationFontShadow_CheckBox.SetText( "Shadow" );
-   AnnotationFontShadow_CheckBox.SetToolTip("<p>Text drops 1px-wide black shadow.</p>");
+   AnnotationFontShadow_CheckBox.SetToolTip( "<p>Text drops 1px-wide black shadow.</p>" );
    AnnotationFontShadow_CheckBox.OnCheck( (Button::check_event_handler)&AnnotationInterface::__FontOptionCheckBoxChecked, w );
 
    AnnotationFontOptions_Sizer.SetSpacing( 4 );
@@ -884,10 +899,10 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
 
    // AnnotationColor
 
-   AnnotationColor_Label.SetText("Color:");
+   AnnotationColor_Label.SetText( "Color:" );
    AnnotationColor_Label.SetMinWidth( labelWidth1 );
    AnnotationColor_Label.SetToolTip( "<p>The annotation color.</p>" );
-   AnnotationColor_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   AnnotationColor_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    AnnotationColor_ComboBox.SetMinWidth( editWidth1 );
    AnnotationColor_ComboBox.SetToolTip( "<p>The annotation color.</p>" );
@@ -904,12 +919,12 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
    AnnotationColor_Sizer.Add( AnnotationColor_ComboBox, 100 );
    AnnotationColor_Sizer.Add( AnnotationColor_CustomColorSample );
 
-   AnnotationOpacity_NumericControl.label.SetText("Opacity:");
+   AnnotationOpacity_NumericControl.label.SetText( "Opacity:" );
    AnnotationOpacity_NumericControl.label.SetMinWidth( labelWidth1 );
    AnnotationOpacity_NumericControl.slider.SetRange( 0, 255 );
    AnnotationOpacity_NumericControl.SetInteger();
    AnnotationOpacity_NumericControl.SetRange( 0, 255 );
-   AnnotationOpacity_NumericControl.SetToolTip("<p>Sets opacity of the annotation text and leader. Lower values mean more transparency.</p>");
+   AnnotationOpacity_NumericControl.SetToolTip( "<p>Sets opacity of the annotation text and leader. Lower values mean more transparency.</p>" );
    AnnotationOpacity_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&AnnotationInterface::__OpacityUpdated, w );
 
    Font_Sizer.SetSpacing( 6 );
@@ -936,7 +951,7 @@ AnnotationInterface::GUIData::GUIData( AnnotationInterface& w )
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF AnnotationInterface.cpp - Released 2020-07-31T19:33:39Z

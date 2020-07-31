@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// STFAutoStretchAction.cpp - Released 2020-02-27T12:56:01Z
+// STFAutoStretchAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -64,11 +64,14 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-STFAutoStretchActionBase::STFAutoStretchActionBase( bool boost, const String& menuItem, const Bitmap& icon ) :
-   Action( menuItem, icon ),
-   m_boost( boost )
+STFAutoStretchActionBase::STFAutoStretchActionBase( bool boost, const String& menuItem, const char* icon )
+   : Action( menuItem )
+   , m_boost( boost )
 {
+   SetIcon( Control::Null().ScaledResource( icon ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void STFAutoStretchActionBase::Execute()
 {
@@ -94,37 +97,47 @@ void STFAutoStretchActionBase::Execute()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 bool STFAutoStretchActionBase::IsEnabled( ActionInfo info ) const
 {
    return info.isImage; // every view can be screen stretched
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-STFAutoStretchAction::STFAutoStretchAction() :
-   STFAutoStretchActionBase( false,
-                             "Image > STF AutoStretch",
-                             Bitmap( Control::Null().ScaledResource( ":/toolbar/image-stf-auto.png" ) ) )
+STFAutoStretchAction::STFAutoStretchAction()
+   : STFAutoStretchActionBase( false/*boosted*/,
+                               "Image > STF AutoStretch",
+                               ":/toolbar/image-stf-auto.png" )
 {
-   SetAccelerator( KeyModifier::Control, KeyCode::A );
    SetToolTip( "STF AutoStretch" );
+   SetAccelerator( KeyModifier::Control, KeyCode::A );
 }
 
-STFAutoStretchBoostAction::STFAutoStretchBoostAction() :
-   STFAutoStretchActionBase( true,
-                             "Image > STF AutoStretch (boosted)",
-                             Bitmap( Control::Null().ScaledResource( ":/toolbar/image-stf-auto-boost.png" ) ) )
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+STFAutoStretchBoostAction::STFAutoStretchBoostAction()
+   : STFAutoStretchActionBase( true/*boosted*/,
+                               "Image > STF AutoStretch (boosted)",
+                               ":/toolbar/image-stf-auto-boost.png" )
 {
    SetToolTip( "STF AutoStretch (Boosted)" );
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-STFAutoStretchToolBarActionBase::STFAutoStretchToolBarActionBase( bool boost, const Bitmap& icon, const String& toolBar ) :
-   Action( String(), icon, toolBar ),
-   m_boost( boost )
+STFAutoStretchToolBarActionBase::STFAutoStretchToolBarActionBase( bool boost, const char* icon, const String& toolBar )
+   : Action( String(), String(), toolBar )
+   , m_boost( boost )
 {
+   SetIcon( Control::Null().ScaledResource( icon ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void STFAutoStretchToolBarActionBase::Execute()
 {
@@ -163,10 +176,14 @@ void STFAutoStretchToolBarActionBase::Execute()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 bool STFAutoStretchToolBarActionBase::IsEnabled( ActionInfo info ) const
 {
    return info.isImage; // every view can be screen stretched
 }
+
+// ----------------------------------------------------------------------------
 
 String STFAutoStretchToolBarActionBase::AdditionalInformation()
 {
@@ -182,19 +199,22 @@ String STFAutoStretchToolBarActionBase::AdditionalInformation()
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-STFAutoStretchToolBarAction::STFAutoStretchToolBarAction() :
-   STFAutoStretchToolBarActionBase( false,
-                                    Bitmap( Control::Null().ScaledResource( ":/toolbar/image-stf-auto.png" ) ),
-                                    "> Screen Transfer Functions" ) // > = add separator
+STFAutoStretchToolBarAction::STFAutoStretchToolBarAction()
+   : STFAutoStretchToolBarActionBase( false,
+                                      ":/toolbar/image-stf-auto.png",
+                                      "> Screen Transfer Functions" ) // > = add separator
 {
    SetToolTip( "<p>STF AutoStretch</p>" + AdditionalInformation() );
 }
 
-STFAutoStretchToolBarBoostAction::STFAutoStretchToolBarBoostAction() :
-   STFAutoStretchToolBarActionBase( true,
-                                    Bitmap( Control::Null().ScaledResource( ":/toolbar/image-stf-auto-boost.png" ) ),
-                                    "Screen Transfer Functions" )
+// ----------------------------------------------------------------------------
+
+STFAutoStretchToolBarBoostAction::STFAutoStretchToolBarBoostAction()
+   : STFAutoStretchToolBarActionBase( true,
+                                      ":/toolbar/image-stf-auto-boost.png",
+                                      "Screen Transfer Functions" )
 {
    SetToolTip( "<p>STF AutoStretch (Boosted)</p>" + AdditionalInformation() );
 }
@@ -204,4 +224,4 @@ STFAutoStretchToolBarBoostAction::STFAutoStretchToolBarBoostAction() :
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF STFAutoStretchAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF STFAutoStretchAction.cpp - Released 2020-07-31T19:33:39Z

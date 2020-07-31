@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/FileFormatInstance.cpp - Released 2020-02-27T12:55:33Z
+// pcl/FileFormatInstance.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -66,7 +66,7 @@ namespace pcl
 
 static void APIHackingAttempt( const String& routineId )
 {
-   throw Error( "* Warning * Hacking attempt detected in low-level API call: FileFormat->" + routineId );
+   throw Error( "Possible hacking attempt detected in low-level API call: " + String( "FileFormat->" ) + routineId );
 }
 
 // ----------------------------------------------------------------------------
@@ -129,8 +129,8 @@ public:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-FileFormatInstance::FileFormatInstance( const FileFormat& fmt ) :
-   UIObject( (*API->FileFormat->CreateFileFormatInstance)( ModuleHandle(), fmt.Handle() ) )
+FileFormatInstance::FileFormatInstance( const FileFormat& fmt )
+   : UIObject( (*API->FileFormat->CreateFileFormatInstance)( ModuleHandle(), fmt.Handle() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateFileFormatInstance" );
@@ -1193,4 +1193,4 @@ void* FileFormatInstance::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormatInstance.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/FileFormatInstance.cpp - Released 2020-07-31T19:33:12Z

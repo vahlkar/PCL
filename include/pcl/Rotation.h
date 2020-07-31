@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Rotation.h - Released 2020-02-27T12:55:23Z
+// pcl/Rotation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -84,9 +84,10 @@ public:
     * The specified pixel interpolation object \a p must remain valid while
     * this object exists.
     */
-   Rotation( PixelInterpolation& p, float angle = 0, double cx = 0, double cy = 0 ) :
-      InterpolatingGeometricTransformation( p ),
-      m_angle( angle ), m_center( cx, cy )
+   Rotation( PixelInterpolation& p, float angle = 0, double cx = 0, double cy = 0 )
+      : InterpolatingGeometricTransformation( p )
+      , m_angle( angle )
+      , m_center( cx, cy )
    {
    }
 
@@ -97,9 +98,10 @@ public:
     * The specified pixel interpolation object \a p must remain valid while
     * this object exists.
     */
-   Rotation( PixelInterpolation& p, float angle, const DPoint& center ) :
-      InterpolatingGeometricTransformation( p ),
-      m_angle( angle ), m_center( center )
+   Rotation( PixelInterpolation& p, float angle, const DPoint& center )
+      : InterpolatingGeometricTransformation( p )
+      , m_angle( angle )
+      , m_center( center )
    {
    }
 
@@ -217,4 +219,4 @@ protected:
 #endif   // __PCL_Rotation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rotation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Rotation.h - Released 2020-07-31T19:33:04Z

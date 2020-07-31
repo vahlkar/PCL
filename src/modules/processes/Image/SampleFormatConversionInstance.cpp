@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// SampleFormatConversionInstance.cpp - Released 2020-02-27T12:56:01Z
+// SampleFormatConversionInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -63,18 +63,18 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SampleFormatConversionInstance::SampleFormatConversionInstance( const MetaProcess* P, int t ) :
-   ProcessImplementation( P ),
-   sampleFormat( t )
+SampleFormatConversionInstance::SampleFormatConversionInstance( const MetaProcess* P, int t )
+   : ProcessImplementation( P )
+   , sampleFormat( t )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-SampleFormatConversionInstance::SampleFormatConversionInstance( const SampleFormatConversionInstance& x ) :
-   ProcessImplementation( x ),
-   sampleFormat( x.sampleFormat )
+SampleFormatConversionInstance::SampleFormatConversionInstance( const SampleFormatConversionInstance& x )
+   : ProcessImplementation( x )
 {
+   Assign( x );
 }
 
 // -------------------------------------------------------------------------
@@ -162,4 +162,4 @@ void* SampleFormatConversionInstance::LockParameter( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF SampleFormatConversionInstance.cpp - Released 2020-07-31T19:33:39Z

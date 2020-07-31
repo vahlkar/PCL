@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionParameters.h - Released 2020-02-27T12:56:01Z
+// CosmeticCorrectionParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -66,287 +66,314 @@ PCL_BEGIN_LOCAL
 class CCTargetFrames : public MetaTable
 {
 public:
+
    CCTargetFrames( MetaProcess* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCTargetFrameEnabled : public MetaBoolean
 {
 public:
+
    CCTargetFrameEnabled( MetaTable* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 class CCTargetFramePath : public MetaString
 {
 public:
-   CCTargetFramePath( MetaTable* );
-   virtual IsoString Id() const;
-};
 
+   CCTargetFramePath( MetaTable* );
+   IsoString Id() const override;
+};
 
 class CCOutputDir : public MetaString
 {
 public:
+
    CCOutputDir( MetaProcess* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCOutputExtension : public MetaString
 {
 public:
+
    CCOutputExtension( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 class CCPrefix : public MetaString
 {
 public:
+
    CCPrefix( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 class CCPostfix : public MetaString
 {
 public:
+
    CCPostfix( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 class CCOverwrite : public MetaBoolean
 {
 public:
+
    CCOverwrite( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
-extern CCOverwrite*         TheOverwrite;
+extern CCOverwrite* TheOverwrite;
 
 class CCCFA : public MetaBoolean
 {
 public:
+
    CCCFA( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 class CCAmount : public MetaFloat
 {
 public:
+
    CCAmount( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 // Via Master Dark -----------------------------
 class CCUseMasterDark : public MetaBoolean
 {
 public:
+
    CCUseMasterDark( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 class CCMasterDarkPath : public MetaString
 {
 public:
+
    CCMasterDarkPath( MetaProcess* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCHotDarkCheck : public MetaBoolean
 {
 public:
+
    CCHotDarkCheck( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 class CCHotLevel : public MetaFloat
 {
 public:
+
    CCHotLevel( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 class CCColdDarkCheck : public MetaBoolean
 {
 public:
+
    CCColdDarkCheck( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 class CCColdLevel : public MetaFloat
 {
 public:
+
    CCColdLevel( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 // Via Auto Detect -----------------------------
 class CCUseAutoDetect : public MetaBoolean
 {
 public:
+
    CCUseAutoDetect( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 class CCHotAutoValue : public MetaFloat
 {
 public:
+
    CCHotAutoValue( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 class CCHotAutoCheck : public MetaBoolean
 {
 public:
+
    CCHotAutoCheck( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 class CCColdAutoValue : public MetaFloat
 {
 public:
+
    CCColdAutoValue( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 class CCColdAutoCheck : public MetaBoolean
 {
 public:
+
    CCColdAutoCheck( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 // Via Defect List -----------------------------
 class CCUseDefectList : public MetaBoolean
 {
 public:
+
    CCUseDefectList( MetaProcess* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCDefects : public MetaTable
 {
 public:
+
    CCDefects( MetaProcess* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCDefectEnabled : public MetaBoolean
 {
 public:
+
    CCDefectEnabled( MetaTable* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCDefectIsRow : public MetaBoolean
 {
 public:
+
    CCDefectIsRow( MetaTable* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCDefectAddress : public MetaUInt16
 {
 public:
+
    CCDefectAddress( MetaTable* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCDefectIsRange : public MetaBoolean
 {
 public:
+
    CCDefectIsRange( MetaTable* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCDefectBegin : public MetaUInt16
 {
 public:
+
    CCDefectBegin( MetaTable* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 class CCDefectEnd : public MetaUInt16
 {
 public:
-   CCDefectEnd( MetaTable* );
-   virtual IsoString Id() const;
-};
 
+   CCDefectEnd( MetaTable* );
+   IsoString Id() const override;
+};
 
 // ----------------------------------------------------------------------------
 
-extern CCTargetFrames*        TheTargetFrames;
-extern CCTargetFrameEnabled*  TheTargetFrameEnabled;
-extern CCTargetFramePath*     TheTargetFramePath;
+extern CCTargetFrames* TheTargetFrames;
+extern CCTargetFrameEnabled* TheTargetFrameEnabled;
+extern CCTargetFramePath* TheTargetFramePath;
 
-extern CCOutputDir*           TheOutputDir;
-extern CCOutputExtension*     TheOutputExtension;
-extern CCPrefix*              ThePrefix;
-extern CCPostfix*             ThePostfix;
+extern CCOutputDir* TheOutputDir;
+extern CCOutputExtension* TheOutputExtension;
+extern CCPrefix* ThePrefix;
+extern CCPostfix* ThePostfix;
 
-extern CCCFA*                 TheCFA;
-extern CCAmount*              TheAmount;
+extern CCCFA* TheCFA;
+extern CCAmount* TheAmount;
 
-extern CCUseMasterDark*       TheUseMasterDark;
-extern CCMasterDarkPath*      TheMasterPath;
-extern CCHotDarkCheck*        TheHotDarkCheck;
-extern CCHotLevel*            TheHotLevel;
-extern CCColdDarkCheck*       TheColdDarkCheck;
-extern CCColdLevel*           TheColdLevel;
+extern CCUseMasterDark* TheUseMasterDark;
+extern CCMasterDarkPath* TheMasterPath;
+extern CCHotDarkCheck* TheHotDarkCheck;
+extern CCHotLevel* TheHotLevel;
+extern CCColdDarkCheck* TheColdDarkCheck;
+extern CCColdLevel* TheColdLevel;
 
-extern CCUseAutoDetect*       TheUseAutoDetect;
-extern CCHotAutoCheck*        TheHotAutoCheck;
-extern CCHotAutoValue*        TheHotAutoValue;
-extern CCColdAutoCheck*       TheColdAutoCheck;
-extern CCColdAutoValue*       TheColdAutoValue;
+extern CCUseAutoDetect* TheUseAutoDetect;
+extern CCHotAutoCheck* TheHotAutoCheck;
+extern CCHotAutoValue* TheHotAutoValue;
+extern CCColdAutoCheck* TheColdAutoCheck;
+extern CCColdAutoValue* TheColdAutoValue;
 
-extern CCUseDefectList*       TheUseDefectList;
-extern CCDefects*             TheDefects;
-extern CCDefectEnabled*       TheDefectEnabled;
-extern CCDefectIsRow*         TheDefectIsRow;
-extern CCDefectAddress*       TheDefectAddress;
-extern CCDefectIsRange*       TheDefectIsRange;
-extern CCDefectBegin*         TheDefectBegin;
-extern CCDefectEnd*           TheDefectEnd;
+extern CCUseDefectList* TheUseDefectList;
+extern CCDefects* TheDefects;
+extern CCDefectEnabled* TheDefectEnabled;
+extern CCDefectIsRow* TheDefectIsRow;
+extern CCDefectAddress* TheDefectAddress;
+extern CCDefectIsRange* TheDefectIsRange;
+extern CCDefectBegin* TheDefectBegin;
+extern CCDefectEnd* TheDefectEnd;
 
 // ----------------------------------------------------------------------------
 
 PCL_END_LOCAL
 
-} // pcl
+} // namespace pcl
 
-#endif   // __CosmeticCorrectionParameters_h
+#endif // __CosmeticCorrectionParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionParameters.h - Released 2020-02-27T12:56:01Z
+// EOF CosmeticCorrectionParameters.h - Released 2020-07-31T19:33:39Z

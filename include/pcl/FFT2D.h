@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/FFT2D.h - Released 2020-02-27T12:55:23Z
+// pcl/FFT2D.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -169,8 +169,9 @@ public:
     * Constructs an %AbstractFFT2D object of the specified dimensions
     * \a rows and \a cols.
     */
-   AbstractFFT2D( int rows, int cols ) :
-      m_rows( rows ), m_cols( cols )
+   AbstractFFT2D( int rows, int cols )
+      : m_rows( rows )
+      , m_cols( cols )
    {
    }
 
@@ -181,8 +182,10 @@ public:
     * On each transform performed with this object, the status monitor will be
     * incremented by the sum of transform dimensions: \a rows + \a cols.
     */
-   AbstractFFT2D( int rows, int cols, StatusMonitor& monitor ) :
-      m_rows( rows ), m_cols( cols ), m_monitor( &monitor )
+   AbstractFFT2D( int rows, int cols, StatusMonitor& monitor )
+      : m_rows( rows )
+      , m_cols( cols )
+      , m_monitor( &monitor )
    {
    }
 
@@ -363,8 +366,8 @@ public:
     * smallest optimal dimensions for your data, then place them on a matrix of
     * the obtained dimensions, padded with zeros.
     */
-   GenericFFT2D( int rows, int cols ) :
-      base( rows, cols )
+   GenericFFT2D( int rows, int cols )
+      : base( rows, cols )
    {
    }
 
@@ -377,8 +380,8 @@ public:
     *
     * See the GenericFFT2D( int, int ) constructor for more information.
     */
-   GenericFFT2D( int rows, int cols, StatusMonitor& status ) :
-      base( rows, cols, status )
+   GenericFFT2D( int rows, int cols, StatusMonitor& status )
+      : base( rows, cols, status )
    {
    }
 
@@ -600,8 +603,8 @@ public:
     * \note We stress the fact that the specified dimensions \a rows and
     * \a cols must be \e even integer numbers.
     */
-   GenericRealFFT2D( int rows, int cols ) :
-      base( rows, cols )
+   GenericRealFFT2D( int rows, int cols )
+      : base( rows, cols )
    {
    }
 
@@ -614,8 +617,8 @@ public:
     *
     * See the GenericRealFFT2D( int, int ) constructor for more information.
     */
-   GenericRealFFT2D( int rows, int cols, StatusMonitor& status ) :
-      base( rows, cols, status )
+   GenericRealFFT2D( int rows, int cols, StatusMonitor& status )
+      : base( rows, cols, status )
    {
    }
 
@@ -863,4 +866,4 @@ typedef FRealFFT2D                  RealFFT2D;
 #endif   // __PCL_FFT2D_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT2D.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/FFT2D.h - Released 2020-07-31T19:33:04Z

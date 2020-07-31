@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:09.244Z
+# Generated on .... 2020-07-31T19:36:46.633Z
 # Project id ...... Debayer
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,10 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>ece4d294-06ff-40d0-9101-a29087f115ef</UniqueIdentifier>
+      <UniqueIdentifier>69a2c8c4-d9d2-4153-aaf7-cf9028eeb70a</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>4ce36ee4-c0be-4ab9-bea9-2a0a828e1fdd</UniqueIdentifier>
+      <UniqueIdentifier>1191f535-8b34-48c0-a955-c0f6e1200a09</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>7650e698-f016-4159-8714-31fab370aac9</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,5 +58,10 @@
     <ClInclude Include="..\..\DebayerProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\Debayer.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

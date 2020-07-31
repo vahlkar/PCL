@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/FFT1D.h - Released 2020-02-27T12:55:23Z
+// pcl/FFT1D.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -194,7 +194,8 @@ public:
    /*!
     * Constructs an %AbstractFFT object of the specified \a length.
     */
-   AbstractFFT( int length ) : m_length( length )
+   AbstractFFT( int length )
+      : m_length( length )
    {
    }
 
@@ -376,7 +377,8 @@ public:
     * smallest optimal length for your data, then place them on an array of the
     * obtained length, padded with zeros.
     */
-   GenericFFT( int n ) : base( n )
+   GenericFFT( int n )
+      : base( n )
    {
    }
 
@@ -593,7 +595,8 @@ public:
     * \note We stress the fact that the specified \a length  must be an \e even
     * integer.
    */
-   GenericRealFFT( int length ) : AbstractFFT<T>( length )
+   GenericRealFFT( int length )
+      : base( length )
    {
       PCL_PRECONDITION( (length & 1) == 0 )
    }
@@ -832,4 +835,4 @@ typedef FRealFFT                    RealFFT;
 #endif   // __PCL_FFT1D_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT1D.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/FFT1D.h - Released 2020-07-31T19:33:04Z

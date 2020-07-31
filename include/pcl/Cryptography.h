@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Cryptography.h - Released 2020-02-27T12:55:23Z
+// pcl/Cryptography.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -237,9 +237,7 @@ public:
    /*!
     * Constructs an %MD5 hash generator.
     */
-   MD5() : m_context( nullptr )
-   {
-   }
+   MD5() = default;
 
    /*!
     * Destroys an %MD5 hash generator.
@@ -276,7 +274,7 @@ public:
 
 private:
 
-   void* m_context;
+   void* m_context = nullptr;
 
    /*!
     */
@@ -671,8 +669,7 @@ public:
     * If an invalid or unsupported algorithm name is specified, this
     * constructor throws an Error exception.
     */
-   CryptographicHashFactory( const IsoString& algorithmName ) :
-      CryptographicHash(), m_hash()
+   CryptographicHashFactory( const IsoString& algorithmName )
    {
       switch ( algorithmName.Trimmed().CaseFolded().Hash32() )
       {
@@ -687,8 +684,8 @@ public:
       }
    }
 
-   CryptographicHashFactory( const IsoString::ustring_base& algorithmName ) :
-      CryptographicHashFactory( IsoString( algorithmName ) )
+   CryptographicHashFactory( const IsoString::ustring_base& algorithmName )
+      : CryptographicHashFactory( IsoString( algorithmName ) )
    {
    }
 
@@ -1103,4 +1100,4 @@ private:
 #endif   // __PCL_Cryptography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Cryptography.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Cryptography.h - Released 2020-07-31T19:33:04Z

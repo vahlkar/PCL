@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// MaskedStretchParameters.cpp - Released 2020-02-27T12:56:01Z
+// MaskedStretchParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -57,18 +57,18 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-MSTargetBackground*          TheMSTargetBackgroundParameter = 0;
-MSNumberOfIterations*        TheMSNumberOfIterationsParameter = 0;
-MSClippingFraction*          TheMSClippingFractionParameter = 0;
-MSBackgroundReferenceViewId* TheMSBackgroundReferenceViewIdParameter = 0;
-MSBackgroundLow*             TheMSBackgroundLowParameter = 0;
-MSBackgroundHigh*            TheMSBackgroundHighParameter = 0;
-MSUseROI*                    TheMSUseROIParameter = 0;
-MSROIX0*                     TheMSROIX0Parameter = 0;
-MSROIY0*                     TheMSROIY0Parameter = 0;
-MSROIX1*                     TheMSROIX1Parameter = 0;
-MSROIY1*                     TheMSROIY1Parameter = 0;
-MSMaskType*                  TheMSMaskTypeParameter = 0;
+MSTargetBackground*          TheMSTargetBackgroundParameter = nullptr;
+MSNumberOfIterations*        TheMSNumberOfIterationsParameter = nullptr;
+MSClippingFraction*          TheMSClippingFractionParameter = nullptr;
+MSBackgroundReferenceViewId* TheMSBackgroundReferenceViewIdParameter = nullptr;
+MSBackgroundLow*             TheMSBackgroundLowParameter = nullptr;
+MSBackgroundHigh*            TheMSBackgroundHighParameter = nullptr;
+MSUseROI*                    TheMSUseROIParameter = nullptr;
+MSROIX0*                     TheMSROIX0Parameter = nullptr;
+MSROIY0*                     TheMSROIY0Parameter = nullptr;
+MSROIX1*                     TheMSROIX1Parameter = nullptr;
+MSROIY1*                     TheMSROIY1Parameter = nullptr;
+MSMaskType*                  TheMSMaskTypeParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -404,4 +404,4 @@ size_type MSMaskType::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF MaskedStretchParameters.cpp - Released 2020-07-31T19:33:39Z

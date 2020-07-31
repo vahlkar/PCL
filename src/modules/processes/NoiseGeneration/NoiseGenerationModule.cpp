@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGenerationModule.cpp - Released 2020-02-27T12:56:01Z
+// NoiseGenerationModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -57,14 +57,14 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "NoiseGenerationModule.h"
-#include "NoiseGeneratorProcess.h"
 #include "NoiseGeneratorInterface.h"
-#include "SimplexNoiseProcess.h"
+#include "NoiseGeneratorProcess.h"
 #include "SimplexNoiseInterface.h"
+#include "SimplexNoiseProcess.h"
 
 namespace pcl
 {
@@ -75,6 +75,8 @@ NoiseGenerationModule::NoiseGenerationModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* NoiseGenerationModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
@@ -84,42 +86,56 @@ const char* NoiseGenerationModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString NoiseGenerationModule::Name() const
 {
    return "NoiseGeneration";
 }
+
+// ----------------------------------------------------------------------------
 
 String NoiseGenerationModule::Description() const
 {
    return "PixInsight Standard NoiseGeneration Process Module";
 }
 
+// ----------------------------------------------------------------------------
+
 String NoiseGenerationModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String NoiseGenerationModule::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// ----------------------------------------------------------------------------
+
 String NoiseGenerationModule::Copyright() const
 {
-   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String NoiseGenerationModule::TradeMarks() const
 {
    return "PixInsight";
 }
 
+// ----------------------------------------------------------------------------
+
 String NoiseGenerationModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "NoiseGeneration-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "NoiseGeneration-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -129,6 +145,8 @@ String NoiseGenerationModule::OriginalFileName() const
    return "NoiseGeneration-pxm.dll";
 #endif
 }
+
+// ----------------------------------------------------------------------------
 
 void NoiseGenerationModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -140,6 +158,8 @@ void NoiseGenerationModule::GetReleaseDate( int& year, int& month, int& day ) co
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -157,4 +177,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGenerationModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF NoiseGenerationModule.cpp - Released 2020-07-31T19:33:39Z

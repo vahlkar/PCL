@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="e" x1="31.761" x2="89.475" y1="90.671" y2="33.124" gradientTransform="matrix(1.9982 0 0 1.9982 -60.365 -64.898)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#240081" offset="0"/>
+<stop stop-color="#a07bfd" offset="1"/>
+</linearGradient>
+<linearGradient id="d" x1="31.761" x2="89.475" y1="90.671" y2="33.124" gradientTransform="matrix(2.0952 0 0 2.0952 -66.236 -67.794)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#240081" offset="0"/>
+<stop stop-color="#a07bfd" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="37.798" x2="86.746" y1="58.686" y2="35.724" gradientTransform="matrix(2 0 0 1.8182 97.745 -61.725)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#3746ff" offset="0"/>
+<stop stop-color="#e6bbad" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="34.396" x2="62.65" y1="88.168" y2="65.301" gradientTransform="matrix(1.75 0 0 1.8182 -37.51 -135.42)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1116ff" offset="0"/>
+<stop stop-color="#5166fe" offset="1"/>
+</linearGradient>
+<linearGradient id="a" x1="66.24" x2="85.139" y1="85.239" y2="67.946" gradientTransform="matrix(2.1 0 0 1.8182 -59.603 -135.42)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ca5d50" offset="0"/>
+<stop stop-color="#d88e80" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-28.726 41.818)">
+<g transform="translate(-122.24 -30.163)">
+<g transform="translate(145.74 81.604)">
+<rect x="72.953" y="-22.88" width="55.562" height="52.917" fill="url(#a)" style="paint-order:normal"/>
+<rect x="17.391" y="-22.88" width="55.562" height="52.917" fill="url(#b)" style="paint-order:normal"/>
+</g>
+<rect x="163.13" y=".30668" width="111.12" height="52.917" fill="url(#c)" style="paint-order:normal"/>
+<g transform="translate(158.22 -5.8208)" fill="none" stroke-linecap="square" stroke-width="6.35">
+<rect x="2.2679" y="3.6905" width="116.42" height="116.42" stroke="url(#d)" style="paint-order:normal"/>
+<path d="m2.532 61.899h115.89" stroke="url(#e)"/>
+</g>
+</g>
+</g>
+</svg>

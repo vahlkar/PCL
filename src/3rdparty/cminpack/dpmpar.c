@@ -1,30 +1,13 @@
-/* dpmpar.f -- translated by f2c (version 20020621).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "cminpack.h"
+#include <float.h>
+#include "cminpackP.h"
 
-double dpmpar(int i)
+#define DPMPAR(type,X) _DPMPAR(type,X)
+#define _DPMPAR(type,X) type ## _ ## X
+
+__cminpack_attr__
+real __cminpack_func__(dpmpar)(int i)
 {
-    /* Initialized data */
-
-    static struct {
-	double e_1[3];
-	double fill_2[1];
-	} equiv_2 = { { 2.22044604926e-16, 2.22507385852e-308,
-                        1.79769313485e308 }, { 0. } };
-
-
-    /* System generated locals */
-    double ret_val;
-
-    /* Local variables */
-#define dmach ((double *)&equiv_2)
-#define minmag ((int *)&equiv_2 + 2)
-#define maxmag ((int *)&equiv_2 + 4)
-#define mcheps ((int *)&equiv_2)
-
 /*     ********** */
 
 /*     Function dpmpar */
@@ -183,9 +166,18 @@ double dpmpar(int i)
 
 /*     Machine constants for IEEE machines. */
 
+/*    data dmach(1) /2.22044604926d-16/ */
+/*    data dmach(2) /2.22507385852d-308/ */
+/*    data dmach(3) /1.79769313485d+308/ */
 
-    ret_val = dmach[(0 + (0 + ((i - 1) << 3))) / 8];
-    return ret_val;
+    switch(i) {
+        case 1:
+            return DPMPAR(realm,EPSILON); /* 2.2204460492503131e-16 | 1.19209290e-07F */
+        case 2:
+            return DPMPAR(realm,MIN);    /* 2.2250738585072014e-308 | 1.17549435e-38F */
+        default:
+            return DPMPAR(realm,MAX);    /* 1.7976931348623157e+308 | 3.40282347e+38F */
+    }
 
 /*     Last card of function dpmpar. */
 

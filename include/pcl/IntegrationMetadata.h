@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/IntegrationMetadata.h - Released 2020-02-27T12:55:23Z
+// pcl/IntegrationMetadata.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -95,8 +95,9 @@ public:
     * The value instance will be default-constructed implicitly, which means
     * that the type T must provide valid default construction semantics.
     */
-   ConsistentlyDefined() : m_value() // N.B: this initialization prevents warnings like
-   {                                 // 'ConsistentlyDefined<>::m_value may be used uninitialized...'
+   ConsistentlyDefined()
+      : m_value() // N.B: this initialization prevents warnings such as
+   {              // 'ConsistentlyDefined<>::m_value may be used uninitialized...'
    }
 
    /*!
@@ -117,9 +118,9 @@ public:
     * Constructs a defined, consistent %ConsistentlyDefined object with the
     * specified \a value.
     */
-   ConsistentlyDefined( const T& value ) :
-      m_value( value ),
-      m_defined( true )
+   ConsistentlyDefined( const T& value )
+      : m_value( value )
+      , m_defined( true )
    {
    }
 
@@ -342,6 +343,8 @@ private:
 
 // ----------------------------------------------------------------------------
 
+#define __PCL_INTEGRATION_METADATA_VERSION   "1.2"
+
 /*
  * Optional, consistently defined metadata of an integrable image.
  *
@@ -351,36 +354,40 @@ class IntegrationMetadata
 {
 public:
 
-   String                         version = "1.1";
+   String                         version = __PCL_INTEGRATION_METADATA_VERSION;
    ConsistentlyDefined<String>    author;
    ConsistentlyDefined<String>    observer;
    ConsistentlyDefined<String>    instrumentName;
    ConsistentlyDefined<String>    frameType;
    ConsistentlyDefined<String>    filterName;
-   ConsistentlyDefined<double>    pedestal;
-   ConsistentlyDefined<double>    expTime;
-   ConsistentlyDefined<double>    sensorTemp;
-   ConsistentlyDefined<double>    xPixSize;
-   ConsistentlyDefined<double>    yPixSize;
+   ConsistentlyDefined<IsoString> cfaPatternName;
+   ConsistentlyDefined<IsoString> cfaPattern;
+   ConsistentlyDefined<int>       cfaXOffset;    // px
+   ConsistentlyDefined<int>       cfaYOffset;    // px
+   ConsistentlyDefined<double>    pedestal;      // DN
+   ConsistentlyDefined<double>    expTime;       // s
+   ConsistentlyDefined<double>    sensorTemp;    // C
+   ConsistentlyDefined<double>    xPixSize;      // um
+   ConsistentlyDefined<double>    yPixSize;      // um
    ConsistentlyDefined<double>    cameraGain;
    ConsistentlyDefined<unsigned>  cameraISO;
    ConsistentlyDefined<unsigned>  xBinning;
    ConsistentlyDefined<unsigned>  yBinning;
-   ConsistentlyDefined<unsigned>  xOrigin;
-   ConsistentlyDefined<unsigned>  yOrigin;
+   ConsistentlyDefined<unsigned>  xOrigin;       // px
+   ConsistentlyDefined<unsigned>  yOrigin;       // px
    ConsistentlyDefined<String>    telescopeName;
    ConsistentlyDefined<double>    focalLength;   // mm
    ConsistentlyDefined<double>    aperture;      // mm
    ConsistentlyDefined<double>    apertureArea;  // mm^2
    ConsistentlyDefined<String>    objectName;
-   ConsistentlyDefined<TimePoint> startTime;
-   ConsistentlyDefined<TimePoint> endTime;
+   ConsistentlyDefined<TimePoint> startTime;     // UTC
+   ConsistentlyDefined<TimePoint> endTime;       // UTC
    ConsistentlyDefined<double>    ra;            // deg (-180,+180]
    ConsistentlyDefined<double>    dec;           // deg [-90,+90]
-   ConsistentlyDefined<double>    equinox;
+   ConsistentlyDefined<double>    equinox;       // yr
    ConsistentlyDefined<double>    longObs;       // deg (-180,+180]
    ConsistentlyDefined<double>    latObs;        // deg [-90,+90]
-   ConsistentlyDefined<double>    altObs;
+   ConsistentlyDefined<double>    altObs;        // m
 
    IntegrationMetadata() = default;
    IntegrationMetadata( const IntegrationMetadata& ) = default;
@@ -415,4 +422,4 @@ private:
 #endif   // __PCL_IntegrationMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegrationMetadata.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/IntegrationMetadata.h - Released 2020-07-31T19:33:04Z

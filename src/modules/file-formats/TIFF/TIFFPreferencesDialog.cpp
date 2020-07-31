@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFPreferencesDialog.cpp - Released 2020-02-27T12:55:48Z
+// TIFFPreferencesDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -60,10 +60,10 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 TIFFPreferencesDialog::TIFFPreferencesDialog( const TIFFFormat::OutOfRangePolicyOptions& r,
-                                              const TIFFFormat::EmbeddingOverrides& o, const TIFFImageOptions& f ) :
-   outOfRange( r ),
-   overrides( o ),
-   tiffOptions( f )
+                                              const TIFFFormat::EmbeddingOverrides& o, const TIFFImageOptions& f )
+   : outOfRange( r )
+   , overrides( o )
+   , tiffOptions( f )
 {
    pcl::Font fnt = Font();
    int labelWidth = fnt.Width( String( "64-bit IEEE 754 floating point" ) + 'M' );
@@ -386,4 +386,4 @@ void TIFFPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFPreferencesDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF TIFFPreferencesDialog.cpp - Released 2020-07-31T19:33:23Z

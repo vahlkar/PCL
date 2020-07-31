@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionParameters.h - Released 2020-02-27T12:56:01Z
+// ConvolutionParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -74,13 +74,12 @@ public:
 
    ConMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
-   virtual IsoString ElementAliases() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+   IsoString ElementAliases() const override;
 };
 
 extern ConMode* TheConModeParameter;
@@ -93,13 +92,11 @@ public:
 
    ConSigma( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern ConSigma* TheConSigmaParameter;
@@ -112,13 +109,11 @@ public:
 
    ConShape( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern ConShape* TheConShapeParameter;
@@ -131,13 +126,11 @@ public:
 
    ConAspectRatio( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern ConAspectRatio* TheConAspectRatioParameter;
@@ -150,13 +143,11 @@ public:
 
    ConRotationAngle( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern ConRotationAngle* TheConRotationAngleParameter;
@@ -169,7 +160,7 @@ public:
 
    ConSourceCode( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ConSourceCode* TheConSourceCodeParameter;
@@ -182,9 +173,8 @@ public:
 
    ConRescaleHighPass( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ConRescaleHighPass* TheConRescaleHighPassParameter;
@@ -197,7 +187,7 @@ public:
 
    ConViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ConViewId* TheConViewIdParameter;
@@ -211,4 +201,4 @@ PCL_END_LOCAL
 #endif   // __ConvolutionParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ConvolutionParameters.h - Released 2020-07-31T19:33:39Z

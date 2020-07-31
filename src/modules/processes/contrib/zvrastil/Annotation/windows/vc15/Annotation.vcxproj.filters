@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:09.589Z
+# Generated on .... 2020-07-31T19:36:47.140Z
 # Project id ...... Annotation
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>8af37e89-c259-4b49-850e-b43e74e0caec</UniqueIdentifier>
+      <UniqueIdentifier>e7a7980e-6bd7-413a-924e-fe1ee7a83596</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>f05cbd2b-68de-4085-9628-ec68243b29f4</UniqueIdentifier>
+      <UniqueIdentifier>5ad0b420-77cf-4ed0-8f32-88ff65ee9cce</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>768e150c-e3d7-4883-92dc-c5694b956913</UniqueIdentifier>
+      <UniqueIdentifier>7856cf07-2aef-490a-8e95-377703aaad46</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -66,10 +66,49 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\AnnotationIcon.png">
+    <None Include="..\..\cursors\1.5\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\1.5\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\2.0\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\2.0\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\2.5\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\2.5\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\3.0\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\3.0\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\3.5\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\3.5\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\4.0\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\4.0\move_all_active.png">
         <Filter>Image Files</Filter>
     </None>
     <None Include="..\..\cursors\move_all.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\cursors\move_all_active.png">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\Annotation.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

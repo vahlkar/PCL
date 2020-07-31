@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="f" x1="43.486" x2="69.479" y1="92.144" y2="118.14" gradientTransform="matrix(1.9333 0 0 1.9333 21.047 -186.95)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f00" offset="0"/>
+<stop stop-color="#f00" stop-opacity=".42032" offset="1"/>
+</linearGradient>
+<linearGradient id="e" x1="-37.21" x2="26.29" y1="113.76" y2="177.26" gradientTransform="matrix(1.7722 0 0 1.7722 147.79 -233.16)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00f" offset="0"/>
+<stop stop-color="#b8e9fd" offset="1"/>
+</linearGradient>
+<linearGradient id="d" x1="-21.335" x2="5.1236" y1="134.92" y2="161.38" gradientTransform="matrix(1.9333 0 0 1.9333 161.46 -254.41)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0f0" offset="0"/>
+<stop stop-color="#0f0" stop-opacity=".5127" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="-9.4285" x2="17.03" y1="146.83" y2="173.29" gradientTransform="matrix(1.9333 0 0 1.9333 153.78 -261.72)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00f" offset="0"/>
+<stop stop-color="#00f" stop-opacity=".28406" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="66.92" x2="46.422" y1="115.2" y2="94.514" gradientTransform="matrix(1.9333 0 0 1.9333 4.7137 -201.67)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" stop-opacity=".231" offset="0"/>
+<stop stop-color="#838383" offset="1"/>
+</linearGradient>
+<linearGradient id="a" x1="43.486" x2="69.479" y1="92.144" y2="118.14" gradientTransform="matrix(1.9333 0 0 1.9333 4.3128 -201.67)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#838383" offset="0"/>
+<stop stop-color="#8b8b8b" offset=".135"/>
+<stop stop-color="#8e8e8e" offset=".49902"/>
+<stop stop-color="#919191" offset=".67086"/>
+<stop stop-color="#98634c" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(83.911 66.008)">
+<text x="-91.362" y="-23.800106" fill="#000000" font-family="Pristina" font-size="5.9531px" letter-spacing="0px" stroke-width=".26458px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><tspan x="-91.362" y="-18.532986" stroke-width=".26458px"/></text>
+<flowRoot transform="matrix(.26458 0 0 .26458 -116.42 -45.934)" fill="#000000" font-family="Pristina" font-size="22.5px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="104.59" y="65.282" width="120.14" height="48.056"/></flowRegion><flowPara/></flowRoot>
+<flowRoot transform="matrix(.26458 0 0 .26458 -116.42 -45.934)" fill="#000000" font-family="Pristina" font-size="22.5px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="104.59" y="42.667" width="127.21" height="33.922"/></flowRegion><flowPara/></flowRoot>
+<flowRoot transform="translate(-116.42 -45.934)" fill="#000000" font-family="Pristina" font-size="22.5px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="29.682" y="68.109" width="199.29" height="38.162"/></flowRegion><flowPara/></flowRoot>
+<g transform="matrix(1.0909 0 0 1.0909 -166.85 -25.227)" stroke-width=".91667">
+<rect x="81.844" y="-31.562" width="112.54" height="112.54" fill="url(#e)"/>
+<rect x="88.386" y="-23.524" width="51.153" height="51.153" fill="url(#a)" stroke="#7f7f7f" stroke-width="2.4253"/>
+<g transform="translate(.36536 -.1827)" stroke-width="3.8806">
+<rect x="135.55" y="22.148" width="51.153" height="51.153" fill="url(#c)" opacity=".81" stroke="#00f"/>
+<rect x="120.21" y="6.4371" width="51.153" height="51.153" fill="url(#d)" stroke="#0f0"/>
+<rect x="105.12" y="-8.8" width="51.153" height="51.153" fill="url(#f)" stroke="#f00"/>
+<rect x="88.787" y="-23.524" width="51.153" height="51.153" fill="url(#b)" stroke="#7f7f7f"/>
+</g>
+</g>
+</g>
+</svg>

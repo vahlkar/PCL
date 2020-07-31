@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2020-02-27T12:56:01Z
+// PreferencesParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -80,8 +80,8 @@ class METAPARAMETER_CLASS_ID( prefix, param ) : public MetaBoolean              
 {                                                                                         \
 public:                                                                                   \
    METAPARAMETER_CLASS_ID( prefix, param )( MetaProcess* );                               \
-   virtual IsoString Id() const { return METAPARAMETER_ID_STR( prefix, param ); }         \
-   virtual bool DefaultValue() const { return defaultValue; }                             \
+   IsoString Id() const override { return METAPARAMETER_ID_STR( prefix, param ); }        \
+   bool DefaultValue() const override { return defaultValue; }                            \
 };                                                                                        \
 DECLARE_METAPARAMETER_INSTANCE( prefix, param )
 
@@ -97,10 +97,10 @@ class METAPARAMETER_CLASS_ID( prefix, param ) : public MetaInt32                
 {                                                                                         \
 public:                                                                                   \
    METAPARAMETER_CLASS_ID( prefix, param )( MetaProcess* );                               \
-   virtual IsoString Id() const { return METAPARAMETER_ID_STR( prefix, param ); }         \
-   virtual double DefaultValue() const { return defaultValue; }                           \
-   virtual double MinimumValue() const { return minValue; }                               \
-   virtual double MaximumValue() const { return maxValue; }                               \
+   IsoString Id() const override { return METAPARAMETER_ID_STR( prefix, param ); }        \
+   double DefaultValue() const override { return defaultValue; }                          \
+   double MinimumValue() const override { return minValue; }                              \
+   double MaximumValue() const override { return maxValue; }                              \
 };                                                                                        \
 DECLARE_METAPARAMETER_INSTANCE( prefix, param )
 
@@ -116,10 +116,10 @@ class METAPARAMETER_CLASS_ID( prefix, param ) : public MetaUInt32               
 {                                                                                         \
 public:                                                                                   \
    METAPARAMETER_CLASS_ID( prefix, param )( MetaProcess* );                               \
-   virtual IsoString Id() const { return METAPARAMETER_ID_STR( prefix, param ); }         \
-   virtual double DefaultValue() const { return defaultValue; }                           \
-   virtual double MinimumValue() const { return minValue; }                               \
-   virtual double MaximumValue() const { return maxValue; }                               \
+   IsoString Id() const override { return METAPARAMETER_ID_STR( prefix, param ); }        \
+   double DefaultValue() const override { return defaultValue; }                          \
+   double MinimumValue() const override { return minValue; }                              \
+   double MaximumValue() const override { return maxValue; }                              \
 };                                                                                        \
 DECLARE_METAPARAMETER_INSTANCE( prefix, param )
 
@@ -135,8 +135,8 @@ class METAPARAMETER_CLASS_ID( prefix, param ) : public MetaUInt32               
 {                                                                                         \
 public:                                                                                   \
    METAPARAMETER_CLASS_ID( prefix, param )( MetaProcess* );                               \
-   virtual IsoString Id() const { return METAPARAMETER_ID_STR( prefix, param ); }         \
-   virtual double DefaultValue() const { return defaultValue; }                           \
+   IsoString Id() const override { return METAPARAMETER_ID_STR( prefix, param ); }        \
+   double DefaultValue() const override { return defaultValue; }                          \
 };                                                                                        \
 DECLARE_METAPARAMETER_INSTANCE( prefix, param )
 
@@ -150,10 +150,10 @@ class METAPARAMETER_CLASS_ID( prefix, param ) : public MetaDouble               
 {                                                                                         \
 public:                                                                                   \
    METAPARAMETER_CLASS_ID( prefix, param )( MetaProcess* );                               \
-   virtual IsoString Id() const { return METAPARAMETER_ID_STR( prefix, param ); }         \
-   virtual double DefaultValue() const { return defaultValue; }                           \
-   virtual double MinimumValue() const { return minValue; }                               \
-   virtual double MaximumValue() const { return maxValue; }                               \
+   IsoString Id() const override { return METAPARAMETER_ID_STR( prefix, param ); }        \
+   double DefaultValue() const override { return defaultValue; }                          \
+   double MinimumValue() const override { return minValue; }                              \
+   double MaximumValue() const override { return maxValue; }                              \
 };                                                                                        \
 DECLARE_METAPARAMETER_INSTANCE( prefix, param )
 
@@ -169,8 +169,8 @@ class METAPARAMETER_CLASS_ID( prefix, param ) : public MetaString               
 {                                                                                         \
 public:                                                                                   \
    METAPARAMETER_CLASS_ID( prefix, param )( MetaProcess* );                               \
-   virtual IsoString Id() const { return METAPARAMETER_ID_STR( prefix, param ); }         \
-   virtual String DefaultValue() const { return defaultValue; }                           \
+   IsoString Id() const override { return METAPARAMETER_ID_STR( prefix, param ); }        \
+   String DefaultValue() const override { return defaultValue; }                          \
 };                                                                                        \
 DECLARE_METAPARAMETER_INSTANCE( prefix, param )
 
@@ -186,7 +186,7 @@ class METAPARAMETER_CLASS_ID( prefix, param ) : public MetaTable                
 {                                                                                         \
 public:                                                                                   \
    METAPARAMETER_CLASS_ID( prefix, param )( MetaProcess* );                               \
-   virtual IsoString Id() const { return METAPARAMETER_ID_STR( prefix, param ); }         \
+   IsoString Id() const override { return METAPARAMETER_ID_STR( prefix, param ); }        \
 };                                                                                        \
 DECLARE_METAPARAMETER_INSTANCE( prefix, param )
 
@@ -202,8 +202,8 @@ class METAPARAMETER_CLASS_ID( prefix, param ) : public MetaString               
 {                                                                                         \
 public:                                                                                   \
    METAPARAMETER_CLASS_ID( prefix, param )( MetaTable* );                                 \
-   virtual IsoString Id() const { return METAPARAMETER_ID_STR( prefix, param ); }         \
-   virtual String DefaultValue() const { return defaultValue; }                           \
+   IsoString Id() const override { return METAPARAMETER_ID_STR( prefix, param ); }        \
+   String DefaultValue() const override { return defaultValue; }                          \
 };                                                                                        \
 DECLARE_METAPARAMETER_INSTANCE( prefix, param )
 
@@ -297,6 +297,7 @@ DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  expandFavoritesAtStartup,          
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  openURLsWithInternalBrowser,         true )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  openResourcesOnNewWebBrowserWindows, true )
 DECLARE_BOOLEAN_METAPARAMETER ( MainWindow,  privateWebBrowsingMode,              false )
+DECLARE_INT32_METAPARAMETER   ( MainWindow,  iconGridSpacing,                     8, 0, 64 )
 DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile01,                     "ripley-default-01.svg" )
 DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile02,                     "ripley-default-02.svg" )
 DECLARE_STRING_METAPARAMETER  ( MainWindow,  wallpaperFile03,                     "ripley-default-03.svg" )
@@ -401,4 +402,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2020-02-27T12:56:01Z
+// EOF PreferencesParameters.h - Released 2020-07-31T19:33:39Z

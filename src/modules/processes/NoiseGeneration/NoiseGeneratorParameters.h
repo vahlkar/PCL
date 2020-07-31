@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorParameters.h - Released 2020-02-27T12:56:01Z
+// NoiseGeneratorParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -68,9 +68,9 @@ public:
 
    NGNoiseAmount( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
 };
 
 extern NGNoiseAmount* TheNGNoiseAmountParameter;
@@ -91,12 +91,11 @@ public:
 
    NGNoiseDistribution( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern NGNoiseDistribution* TheNGNoiseDistributionParameter;
@@ -109,19 +108,16 @@ public:
 
    NGImpulsionalNoiseProbability( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
 };
 
 extern NGImpulsionalNoiseProbability* TheNGImpulsionalNoiseProbabilityParameter;
 
 // ----------------------------------------------------------------------------
 
-/*
- * ### Deprecated
- */
-
+// ### DEPRECATED
 class NGPreserveBrightness : public MetaEnumeration
 {
 public:
@@ -135,12 +131,11 @@ public:
 
    NGPreserveBrightness( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern NGPreserveBrightness* TheNGPreserveBrightnessParameter;
@@ -154,4 +149,4 @@ PCL_END_LOCAL
 #endif   // __NoiseGeneratorParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorParameters.h - Released 2020-02-27T12:56:01Z
+// EOF NoiseGeneratorParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.h - Released 2020-02-27T12:55:23Z
+// pcl/TimePoint.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -113,8 +113,9 @@ public:
     * Constructs a %TimePoint object for a given instant represented as a
     * Julian date.
     */
-   TimePoint( double jd ) :
-      m_jdi( TruncInt( jd ) ), m_jdf( Frac( jd ) )
+   TimePoint( double jd )
+      : m_jdi( TruncInt( jd ) )
+      , m_jdf( Frac( jd ) )
    {
    }
 
@@ -129,9 +130,9 @@ public:
     * and fractional components of a JD. This guarantees a numerical resolution
     * better than one nanosecond.
     */
-   TimePoint( double jd1, double jd2 ) :
-      m_jdi( TruncInt( jd1 ) + TruncInt( jd2 ) ),
-      m_jdf( Frac( jd1 ) + Frac( jd2 ) )
+   TimePoint( double jd1, double jd2 )
+      : m_jdi( TruncInt( jd1 ) + TruncInt( jd2 ) )
+      , m_jdf( Frac( jd1 ) + Frac( jd2 ) )
    {
       Normalize();
    }
@@ -1206,4 +1207,4 @@ inline TimePoint operator -( const TimePoint& t, double d )
 #endif   // __PCL_TimePoint_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/TimePoint.h - Released 2020-07-31T19:33:04Z

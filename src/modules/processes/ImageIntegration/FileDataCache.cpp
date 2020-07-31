@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// FileDataCache.cpp - Released 2020-02-27T12:56:01Z
+// FileDataCache.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -62,6 +62,21 @@
 
 namespace pcl
 {
+
+// ----------------------------------------------------------------------------
+
+FileDataCache::FileDataCache( const IsoString& key, int days )
+   : m_keyPrefix( key.Trimmed() )
+   , m_durationDays( Max( 0, days ) )
+{
+   PCL_PRECONDITION( !m_keyPrefix.IsEmpty() )
+   if ( m_keyPrefix.IsEmpty() )
+      throw Error( "FileDataCache: Invalid key" );
+   if ( !m_keyPrefix.StartsWith( '/' ) )
+      m_keyPrefix.Prepend( '/' );
+   if ( !m_keyPrefix.EndsWith( '/' ) )
+      m_keyPrefix.Append( '/' );
+}
 
 // ----------------------------------------------------------------------------
 
@@ -161,29 +176,33 @@ void FileDataCache::Load()
    m_enabled = true;
    Settings::Read( m_keyPrefix + "Enabled", m_enabled );
 
-   if ( IsEnabled() )
-   {
-      try
-      {
-         AutoPointer<FileDataCacheItem> item;
-         for ( int i = 0; ; ++i )
+   int version = 0;
+   Settings::Read( m_keyPrefix + "Version", version );
+   if ( version >= MinSupportedVersion() )
+      if ( version <= Version() )
+         if ( IsEnabled() )
          {
-            item = NewItem();
-            if ( !item->Load( m_keyPrefix, i ) )
-               break;
+            try
+            {
+               AutoPointer<FileDataCacheItem> item;
+               for ( int i = 0; ; ++i )
+               {
+                  item = NewItem();
+                  if ( !item->Load( m_keyPrefix, i ) )
+                     break;
 
-            if ( m_durationDays > 0 && item->DaysSinceLastUsed() > unsigned( m_durationDays ) )
-               item.Destroy();
-            else
-               m_cache << item.Release();
+                  if ( m_durationDays > 0 && item->DaysSinceLastUsed() > unsigned( m_durationDays ) )
+                     item.Destroy();
+                  else
+                     m_cache << item.Release();
+               }
+            }
+            catch ( ... )
+            {
+               m_cache.Destroy();
+               throw Error( "FileDataCache::Load(): Corrupted cache data" );
+            }
          }
-      }
-      catch ( ... )
-      {
-         m_cache.Destroy();
-         throw Error( "FileDataCache::Load(): Corrupted cache data" );
-      }
-   }
 }
 
 // ----------------------------------------------------------------------------
@@ -199,6 +218,7 @@ void FileDataCache::Save() const
    }
 
    // Make sure this is done _after_ Purge()
+   Settings::Write( m_keyPrefix + "Version", Version() );
    Settings::Write( m_keyPrefix + "Duration", Duration() );
    Settings::Write( m_keyPrefix + "Enabled", IsEnabled() );
 }
@@ -245,6 +265,36 @@ bool FileDataCacheItem::GetVector( DVector& v, StringList::const_iterator& i, co
    v = DVector( n );
    for ( int j = 0; j < n; ++j, ++i )
       v[j] = i->ToDouble();
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+String FileDataCacheItem::MultiVectorAsString( const DMultiVector& m )
+{
+   String s = String().Format( "\n%u", m.Length() );
+   for ( const DVector& v : m )
+      s.Append( VectorAsString( v ) );
+   return s;
+}
+
+// ----------------------------------------------------------------------------
+
+bool FileDataCacheItem::GetMultiVector( DMultiVector& m, StringList::const_iterator& i, const StringList& s )
+{
+   if ( i == s.End() )
+      return false;
+   int n = i->ToInt();
+   if ( n < 0 || s.End() - i <= n )
+      return false;
+   ++i;
+   for ( int j = 0; j < n; ++j )
+   {
+      DVector v;
+      if ( !GetVector( v, i, s ) )
+         return false;
+      m << v;
+   }
    return true;
 }
 
@@ -348,4 +398,4 @@ void FileDataCacheItem::Save( const IsoString& keyPrefix, int index ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCache.cpp - Released 2020-02-27T12:56:01Z
+// EOF FileDataCache.cpp - Released 2020-07-31T19:33:39Z

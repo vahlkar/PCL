@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationParameters.cpp - Released 2020-02-27T12:56:01Z
+// BackgroundNeutralizationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -57,16 +57,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-BNBackgroundReferenceViewId* TheBNBackgroundReferenceViewIdParameter = 0;
-BNBackgroundLow*             TheBNBackgroundLowParameter = 0;
-BNBackgroundHigh*            TheBNBackgroundHighParameter = 0;
-BNUseROI*                    TheBNUseROIParameter = 0;
-BNROIX0*                     TheBNROIX0Parameter = 0;
-BNROIY0*                     TheBNROIY0Parameter = 0;
-BNROIX1*                     TheBNROIX1Parameter = 0;
-BNROIY1*                     TheBNROIY1Parameter = 0;
-BNMode*                      TheBNModeParameter = 0;
-BNTargetBackground*          TheBNTargetBackgroundParameter = 0;
+BNBackgroundReferenceViewId* TheBNBackgroundReferenceViewIdParameter = nullptr;
+BNBackgroundLow*             TheBNBackgroundLowParameter = nullptr;
+BNBackgroundHigh*            TheBNBackgroundHighParameter = nullptr;
+BNUseROI*                    TheBNUseROIParameter = nullptr;
+BNROIX0*                     TheBNROIX0Parameter = nullptr;
+BNROIY0*                     TheBNROIY0Parameter = nullptr;
+BNROIX1*                     TheBNROIX1Parameter = nullptr;
+BNROIY1*                     TheBNROIY1Parameter = nullptr;
+BNMode*                      TheBNModeParameter = nullptr;
+BNTargetBackground*          TheBNTargetBackgroundParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -345,4 +345,4 @@ double BNTargetBackground::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF BackgroundNeutralizationParameters.cpp - Released 2020-07-31T19:33:39Z

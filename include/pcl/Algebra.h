@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Algebra.h - Released 2020-02-27T12:55:23Z
+// pcl/Algebra.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -171,8 +171,8 @@ public:
     * This constructor replaces the Ai member of this object with the inverse
     * matrix of \a A, and the X member with the set of solution vectors.
     */
-   GaussJordan( const Matrix& A, const Matrix& B ) :
-      algorithm_implementation( A, B )
+   GaussJordan( const Matrix& A, const Matrix& B )
+      : algorithm_implementation( A, B )
    {
    }
 };
@@ -211,8 +211,8 @@ public:
     * This constructor replaces the Ai member of this object with the inverse
     * matrix of \a A, and the X member with the set of solution vectors.
     */
-   FGaussJordan( const FMatrix& A, const FMatrix& B ) :
-      algorithm_implementation( A, B )
+   FGaussJordan( const FMatrix& A, const FMatrix& B )
+      : algorithm_implementation( A, B )
    {
    }
 };
@@ -277,8 +277,9 @@ public:
     * is an in-place decomposition). W and V are stored in the corresponding
     * members of this object.
     */
-   GenericInPlaceSVD( matrix& A ) :
-      W( A.Columns() ), V( A.Columns(), A.Columns() )
+   GenericInPlaceSVD( matrix& A )
+      : W( A.Columns() )
+      , V( A.Columns(), A.Columns() )
    {
       InPlaceSVDImplementation( A, W, V );
    }
@@ -368,8 +369,8 @@ public:
     * is an in-place decomposition). W and V are stored in the corresponding
     * members of this object.
     */
-   InPlaceSVD( matrix& A ) :
-      algorithm_implementation( A )
+   InPlaceSVD( matrix& A )
+      : algorithm_implementation( A )
    {
    }
 };
@@ -425,8 +426,8 @@ public:
     * is an in-place decomposition). W and V are stored in the corresponding
     * members of this object.
     */
-   FInPlaceSVD( matrix& A ) :
-      algorithm_implementation( A )
+   FInPlaceSVD( matrix& A )
+      : algorithm_implementation( A )
    {
    }
 };
@@ -587,8 +588,8 @@ public:
     * On output, this constructor stores U, W and V in the corresponding
     * members of this object.
     */
-   SVD( const matrix& A ) :
-      algorithm_implementation( A )
+   SVD( const matrix& A )
+      : algorithm_implementation( A )
    {
    }
 };
@@ -642,8 +643,8 @@ public:
     * On output, this constructor stores U, W and V in the corresponding
     * members of this object.
     */
-   FSVD( const matrix& A ) :
-      algorithm_implementation( A )
+   FSVD( const matrix& A )
+      : algorithm_implementation( A )
    {
    }
 };
@@ -655,4 +656,4 @@ public:
 #endif   // __PCL_Algebra_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Algebra.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Algebra.h - Released 2020-07-31T19:33:04Z

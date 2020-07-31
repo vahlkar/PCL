@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorStarDetector.cpp - Released 2020-02-27T12:56:01Z
+// SubframeSelectorStarDetector.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -80,9 +80,9 @@ namespace pcl
  * vectors) for performance reasons.
  */
 // Separable filter coefficients
-const float __5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
+const float s_5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
 // Gaussian noise scaling factors
-const float __5x5B3Spline_kj[] =
+const float s_5x5B3Spline_kj[] =
         { 0.8907F, 0.2007F, 0.0856F, 0.0413F, 0.0205F, 0.0103F, 0.0052F, 0.0026F, 0.0013F, 0.0007F };
 
 // ----------------------------------------------------------------------------
@@ -370,32 +370,32 @@ void pcl::SubframeSelectorStarDetector::StructureMap( ImageVariant& image )
 
    // Adaptive binarization based on noise evaluation
    double median = image.Median();
-   if ( 1 + median == 1)
+   if ( 1 + median == 1 )
    {
       // Black background - probably a synthetic star field
 
-      bool wasRangeClipping    = image.IsRangeClippingEnabled();
-      double origRangeClipLow  = image.RangeClipLow();
+      bool wasRangeClipLow  = image.IsLowRangeClippingEnabled();
+      bool wasRangeClipHigh = image.IsHighRangeClippingEnabled();
+      double origRangeClipLow = image.RangeClipLow();
       double origRangeClipHigh = image.RangeClipHigh();
 
-      image.EnableRangeClipping();
-      image.SetRangeClipping( 0, 1 );
+      image.SetRangeClipping( 0, 1 ); // implicitly enables range clipping
 
-      if ( !wasRangeClipping || origRangeClipLow != 0 || origRangeClipHigh != 0 )
+      if ( !wasRangeClipLow || !wasRangeClipHigh || origRangeClipLow != 0 || origRangeClipHigh != 1 )
          median = image.Median();
 
       image.Binarize( median + image.MAD( median ) );
 
-      image.EnableRangeClipping( wasRangeClipping );
       image.SetRangeClipping( origRangeClipLow, origRangeClipHigh );
+      image.EnableRangeClipping( wasRangeClipLow, wasRangeClipHigh );
    }
    else
    {
       // A "natural" image
-      SeparableFilter filter( __5x5B3Spline_hv, __5x5B3Spline_hv, 5 );
+      SeparableFilter filter( s_5x5B3Spline_hv, s_5x5B3Spline_hv, 5 );
       ATrousWaveletTransform atw( filter, 3 );
       atw << image;
-      double noiseEstimate = atw.NoiseKSigma( 1 )/__5x5B3Spline_kj[1];
+      double noiseEstimate = atw.NoiseKSigma( 1 )/s_5x5B3Spline_kj[1];
       image.Binarize( median + 3*noiseEstimate );
    }
 }
@@ -404,7 +404,7 @@ void pcl::SubframeSelectorStarDetector::StructureMap( ImageVariant& image )
 
 Star pcl::SubframeSelectorStarDetector::GetStarParameters( ImageVariant& image, const Rect& rect, const Array<Point>& stars )
 {
-   Star star( Point( 0, 0 ) );
+   Star star( Point( 0 ) );
 
    // Calculate the mean local background as the median of background pixels
    Array<double> samples;
@@ -433,7 +433,6 @@ Star pcl::SubframeSelectorStarDetector::GetStarParameters( ImageVariant& image, 
    double sz = 0;
 
    for ( int y = rect.y0, i = 0; i < matrix.Rows(); ++y, ++i )
-   {
       for ( int x = rect.x0, j = 0; j < matrix.Cols(); ++x, ++j )
       {
          double z = matrix[i][j];
@@ -444,7 +443,6 @@ Star pcl::SubframeSelectorStarDetector::GetStarParameters( ImageVariant& image, 
             sz += z;
          }
       }
-   }
 
    star.position.x = pcl::RoundInt( sx/sz + 0.5 );
    star.position.y = pcl::RoundInt( sy/sz + 0.5 );
@@ -471,4 +469,4 @@ Star pcl::SubframeSelectorStarDetector::GetStarParameters( ImageVariant& image, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorStarDetector.cpp - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorStarDetector.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramParameters.h - Released 2020-02-27T12:56:01Z
+// AutoHistogramParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,9 +68,9 @@ public:
 
    AHClip( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   bool DefaultValue() const override;
 };
 
 extern AHClip* TheAHClipParameter;
@@ -83,9 +83,9 @@ public:
 
    AHClipTogether( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   bool DefaultValue() const override;
 };
 
 extern AHClipTogether* TheAHClipTogetherParameter;
@@ -98,11 +98,11 @@ public:
 
    AHClipLowR( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern AHClipLowR* TheAHClipLowRParameter;
@@ -115,11 +115,11 @@ public:
 
    AHClipLowG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern AHClipLowG* TheAHClipLowGParameter;
@@ -132,11 +132,11 @@ public:
 
    AHClipLowB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern AHClipLowB* TheAHClipLowBParameter;
@@ -149,11 +149,11 @@ public:
 
    AHClipHighR( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -166,11 +166,11 @@ public:
 
    AHClipHighG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern AHClipHighG* TheAHClipHighGParameter;
@@ -183,11 +183,11 @@ public:
 
    AHClipHighB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern AHClipHighB* TheAHClipHighBParameter;
@@ -199,9 +199,9 @@ class AHStretch : public MetaBoolean
 public:
 
    AHStretch( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   bool DefaultValue() const override;
 };
 
 extern AHStretch* TheAHStretchParameter;
@@ -213,9 +213,9 @@ class AHStretchTogether : public MetaBoolean
 public:
 
    AHStretchTogether( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   bool DefaultValue() const override;
 };
 
 extern AHStretchTogether* TheAHStretchTogetherParameter;
@@ -234,11 +234,11 @@ public:
 
    AHStretchMethod( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern AHStretchMethod* TheAHStretchMethodParameter;
@@ -251,12 +251,12 @@ public:
 
    AHTargetMedianR( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern AHTargetMedianR* TheAHTargetMedianRParameter;
@@ -269,12 +269,12 @@ public:
 
    AHTargetMedianG( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern AHTargetMedianG* TheAHTargetMedianGParameter;
@@ -287,12 +287,12 @@ public:
 
    AHTargetMedianB( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern AHTargetMedianB* TheAHTargetMedianBParameter;
@@ -306,4 +306,4 @@ PCL_END_LOCAL
 #endif   // __AutoHistogramParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramParameters.h - Released 2020-02-27T12:56:01Z
+// EOF AutoHistogramParameters.h - Released 2020-07-31T19:33:39Z

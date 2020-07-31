@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/PixelTraits.h - Released 2020-02-27T12:55:23Z
+// pcl/PixelTraits.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -362,6 +362,13 @@ public:
     * Represents a pixel sample value.
     */
    typedef traits_type::sample         sample;
+
+   /*!
+    * Represents a component of a complex pixel sample, or a pixel sample value
+    * for real pixel sample types. For %FloatPixelTraits, this is equivalent to
+    * \c float.
+    */
+   typedef sample                      component;
 
    /*!
     * Returns true iff this pixel traits class corresponds to a floating point
@@ -929,6 +936,13 @@ public:
    typedef traits_type::sample         sample;
 
    /*!
+    * Represents a component of a complex pixel sample, or a pixel sample value
+    * for real pixel sample types. For %DoublePixelTraits, this is equivalent
+    * to \c double.
+    */
+   typedef sample                      component;
+
+   /*!
     * Returns true iff this pixel traits class corresponds to a floating point
     * pixel sample type.
     */
@@ -1494,7 +1508,8 @@ public:
    typedef traits_type::sample                  sample;
 
    /*!
-    * Represents a component of a complex pixel sample.
+    * Represents a component of a complex pixel sample. For
+    * %ComplexPixelTraits, this is equivalent to \c float.
     */
    typedef sample::component                    component;
 
@@ -2224,7 +2239,8 @@ public:
    typedef traits_type::sample                  sample;
 
    /*!
-    * Represents a component of a complex pixel sample.
+    * Represents a component of a complex pixel sample. For
+    * %DComplexPixelTraits, this is equivalent to \c double.
     */
    typedef sample::component                    component;
 
@@ -2267,7 +2283,7 @@ public:
    /*!
     * Returns the maximum valid pixel sample value.
     *
-    * For %DComplexPixelTraits, this member function returns {1.0, 0.0F}.
+    * For %DComplexPixelTraits, this member function returns {1.0, 0.0}.
     */
    static sample MaxSampleValue()
    {
@@ -2959,6 +2975,13 @@ public:
     * Represents a pixel sample value.
     */
    typedef traits_type::sample         sample;
+
+   /*!
+    * Represents a component of a complex pixel sample, or a pixel sample value
+    * for real pixel sample types. For %UInt8PixelTraits, this is equivalent to
+    * \c uint8.
+    */
+   typedef sample                      component;
 
    /*!
     * Returns true iff this pixel traits class corresponds to a floating point
@@ -3798,6 +3821,13 @@ public:
    typedef traits_type::sample         sample;
 
    /*!
+    * Represents a component of a complex pixel sample, or a pixel sample value
+    * for real pixel sample types. For %UInt16PixelTraits, this is equivalent
+    * to \c uint16.
+    */
+   typedef sample                      component;
+
+   /*!
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
@@ -4635,6 +4665,13 @@ public:
    typedef traits_type::sample         sample;
 
    /*!
+    * Represents a component of a complex pixel sample, or a pixel sample value
+    * for real pixel sample types. For %UInt32PixelTraits, this is equivalent
+    * to \c uint32.
+    */
+   typedef sample                      component;
+
+   /*!
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
@@ -5463,6 +5500,13 @@ public:
    typedef traits_type::sample         sample;
 
    /*!
+    * Represents a component of a complex pixel sample, or a pixel sample value
+    * for real pixel sample types. For %UInt20PixelTraits, this is equivalent
+    * to \c uint32.
+    */
+   typedef sample                      component;
+
+   /*!
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
@@ -5761,6 +5805,13 @@ public:
    typedef traits_type::sample         sample;
 
    /*!
+    * Represents a component of a complex pixel sample, or a pixel sample value
+    * for real pixel sample types. For %UInt24PixelTraits, this is equivalent
+    * to \c uint32.
+    */
+   typedef sample                      component;
+
+   /*!
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
@@ -6036,4 +6087,4 @@ public:
 #endif   // __PCL_PixelTraits_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelTraits.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/PixelTraits.h - Released 2020-07-31T19:33:04Z

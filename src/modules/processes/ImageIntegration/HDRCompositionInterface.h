@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// HDRCompositionInterface.h - Released 2020-02-27T12:56:01Z
+// HDRCompositionInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -53,17 +53,16 @@
 #ifndef __HDRCompositionInterface_h
 #define __HDRCompositionInterface_h
 
-#include <pcl/ProcessInterface.h>
-
-#include <pcl/Sizer.h>
-#include <pcl/SectionBar.h>
-#include <pcl/ToolButton.h>
-#include <pcl/PushButton.h>
-#include <pcl/NumericControl.h>
-#include <pcl/TreeBox.h>
-#include <pcl/SpinBox.h>
-#include <pcl/ComboBox.h>
 #include <pcl/CheckBox.h>
+#include <pcl/ComboBox.h>
+#include <pcl/NumericControl.h>
+#include <pcl/ProcessInterface.h>
+#include <pcl/PushButton.h>
+#include <pcl/SectionBar.h>
+#include <pcl/Sizer.h>
+#include <pcl/SpinBox.h>
+#include <pcl/ToolButton.h>
+#include <pcl/TreeBox.h>
 
 #include "HDRCompositionInstance.h"
 
@@ -81,7 +80,7 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
    void ResetInstance() override;
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags ) override;
@@ -93,7 +92,7 @@ public:
 
 private:
 
-   HDRCompositionInstance instance;
+   HDRCompositionInstance m_instance;
 
    struct GUIData
    {
@@ -175,22 +174,22 @@ private:
    void UpdateHDRCompositionControls();
    void UpdateFittingRegionControls();
 
-   void __InputImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
-   void __InputImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
-   void __InputImages_NodeSelectionUpdated( TreeBox& sender );
-   void __InputImages_Click( Button& sender, bool checked );
-   void __FormatHints_EditCompleted( Edit& sender );
-   void __HDRComposition_EditValueUpdated( NumericEdit& sender, double value );
-   void __HDRComposition_SpinValueUpdated( SpinBox& sender, int value );
-   void __HDRComposition_Click( Button& sender, bool checked );
-   void __FittingRegion_Check( SectionBar& sender, bool checked );
-   void __FittingRegion_SpinValueUpdated( SpinBox& sender, int value );
-   void __FittingRegion_Click( Button& sender, bool checked );
-   void __ToggleSection( SectionBar& sender, Control& section, bool start );
-   void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
-   void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
-   void __ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
-   void __ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
+   void e_InputImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
+   void e_InputImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
+   void e_InputImages_NodeSelectionUpdated( TreeBox& sender );
+   void e_InputImages_Click( Button& sender, bool checked );
+   void e_FormatHints_EditCompleted( Edit& sender );
+   void e_HDRComposition_EditValueUpdated( NumericEdit& sender, double value );
+   void e_HDRComposition_SpinValueUpdated( SpinBox& sender, int value );
+   void e_HDRComposition_Click( Button& sender, bool checked );
+   void e_FittingRegion_Check( SectionBar& sender, bool checked );
+   void e_FittingRegion_SpinValueUpdated( SpinBox& sender, int value );
+   void e_FittingRegion_Click( Button& sender, bool checked );
+   void e_ToggleSection( SectionBar& sender, Control& section, bool start );
+   void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
+   void e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
+   void e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
 
    friend struct GUIData;
 };
@@ -208,4 +207,4 @@ PCL_END_LOCAL
 #endif   // __HDRCompositionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInterface.h - Released 2020-02-27T12:56:01Z
+// EOF HDRCompositionInterface.h - Released 2020-07-31T19:33:39Z

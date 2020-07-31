@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// AssignICCProfileProcess.cpp - Released 2020-02-27T12:56:01Z
+// AssignICCProfileProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -65,11 +65,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-AssignICCProfileProcess* TheAssignICCProfileProcess = 0;
-
-// ----------------------------------------------------------------------------
-
-#include "AssignICCProfileIcon.xpm"
+AssignICCProfileProcess* TheAssignICCProfileProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -77,9 +73,8 @@ AssignICCProfileProcess::AssignICCProfileProcess()
 {
    TheAssignICCProfileProcess = this;
 
-   // Instantiate process parameters
-   new TargetProfile( this );
-   new AssignMode( this );
+   new ICCATargetProfile( this );
+   new ICCAMode( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -112,9 +107,9 @@ String AssignICCProfileProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** AssignICCProfileProcess::IconImageXPM() const
+String AssignICCProfileProcess::IconImageSVGFile() const
 {
-   return AssignICCProfileIcon_XPM;
+   return "@module_icons_dir/AssignICCProfile.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -136,7 +131,7 @@ ProcessImplementation* AssignICCProfileProcess::Create() const
 ProcessImplementation* AssignICCProfileProcess::Clone( const ProcessImplementation& p ) const
 {
    const AssignICCProfileInstance* instPtr = dynamic_cast<const AssignICCProfileInstance*>( &p );
-   return (instPtr != 0) ? new AssignICCProfileInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new AssignICCProfileInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -211,9 +206,9 @@ int AssignICCProfileProcess::ProcessCommandLine( const StringList& argv ) const
       {
          if ( arg.Id() == "profile" )
          {
-            instance.targetProfile = arg.StringValue();
-            instance.targetProfile.Trim();
-            if ( instance.targetProfile.IsEmpty() )
+            instance.p_targetProfile = arg.StringValue();
+            instance.p_targetProfile.Trim();
+            if ( instance.p_targetProfile.IsEmpty() )
                throw Error( "Empty profile identifier: " + arg.Token() );
          }
          else if ( arg.Id() == "filename" )
@@ -223,7 +218,7 @@ int AssignICCProfileProcess::ProcessCommandLine( const StringList& argv ) const
             if ( filename.IsEmpty() )
                throw Error( "Empty file name: " + arg.Token() );
 
-            instance.targetProfile.Clear();
+            instance.p_targetProfile.Clear();
 
             StringList dirs = ICCProfile::ProfileDirectories();
             for ( StringList::const_iterator i = dirs.Begin(); i != dirs.End(); ++i )
@@ -234,13 +229,13 @@ int AssignICCProfileProcess::ProcessCommandLine( const StringList& argv ) const
                   ICCProfile icc( path );
                   if ( icc.IsProfile() )
                   {
-                     instance.targetProfile = icc.Description();
+                     instance.p_targetProfile = icc.Description();
                      break;
                   }
                }
             }
 
-            if ( instance.targetProfile.IsEmpty() )
+            if ( instance.p_targetProfile.IsEmpty() )
                throw Error( "The specified file name does not correspond to a valid ICC profile: " + filename );
          }
          else
@@ -249,18 +244,18 @@ int AssignICCProfileProcess::ProcessCommandLine( const StringList& argv ) const
       else if ( arg.IsSwitch() )
       {
          if ( arg.Id() == "default" )
-            instance.mode = arg.SwitchState() ? AssignMode::AssignDefaultProfile : AssignMode::AssignNewProfile;
+            instance.p_mode = arg.SwitchState() ? ICCAMode::AssignDefaultProfile : ICCAMode::AssignNewProfile;
          else if ( arg.Id() == "untag" )
-            instance.mode = arg.SwitchState() ? AssignMode::LeaveUntagged : AssignMode::AssignNewProfile;
+            instance.p_mode = arg.SwitchState() ? ICCAMode::LeaveUntagged : ICCAMode::AssignNewProfile;
          else
             throw Error( "Unknown switch argument: " + arg.Token() );
       }
       else if ( arg.IsLiteral() )
       {
          if ( arg.Id() == "default" )
-            instance.mode = AssignMode::AssignDefaultProfile;
+            instance.p_mode = ICCAMode::AssignDefaultProfile;
          else if ( arg.Id() == "untag" )
-            instance.mode = AssignMode::LeaveUntagged;
+            instance.p_mode = ICCAMode::LeaveUntagged;
          else if ( arg.Id() == "-interface" )
             launchInterface = true;
          else if ( arg.Id() == "-help" )
@@ -308,4 +303,4 @@ int AssignICCProfileProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssignICCProfileProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF AssignICCProfileProcess.cpp - Released 2020-07-31T19:33:39Z

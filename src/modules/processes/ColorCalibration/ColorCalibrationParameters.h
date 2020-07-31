@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ColorCalibrationParameters.h - Released 2020-02-27T12:56:01Z
+// ColorCalibrationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -68,7 +68,7 @@ public:
 
    CCWhiteReferenceViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CCWhiteReferenceViewId* TheCCWhiteReferenceViewIdParameter;
@@ -81,13 +81,11 @@ public:
 
    CCWhiteLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern CCWhiteLow* TheCCWhiteLowParameter;
@@ -100,13 +98,11 @@ public:
 
    CCWhiteHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern CCWhiteHigh* TheCCWhiteHighParameter;
@@ -119,8 +115,8 @@ public:
 
    CCWhiteUseROI( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CCWhiteUseROI* TheCCWhiteUseROIParameter;
@@ -133,10 +129,10 @@ public:
 
    CCWhiteROIX0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCWhiteROIX0* TheCCWhiteROIX0Parameter;
@@ -150,10 +146,10 @@ public:
 
    CCWhiteROIY0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCWhiteROIY0* TheCCWhiteROIY0Parameter;
@@ -166,10 +162,10 @@ public:
 
    CCWhiteROIX1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCWhiteROIX1* TheCCWhiteROIX1Parameter;
@@ -182,10 +178,10 @@ public:
 
    CCWhiteROIY1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCWhiteROIY1* TheCCWhiteROIY1Parameter;
@@ -198,9 +194,8 @@ public:
 
    CCStructureDetection( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CCStructureDetection* TheCCStructureDetectionParameter;
@@ -213,11 +208,10 @@ public:
 
    CCStructureLayers( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCStructureLayers* TheCCStructureLayersParameter;
@@ -230,11 +224,10 @@ public:
 
    CCNoiseLayers( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCNoiseLayers* TheCCNoiseLayersParameter;
@@ -247,9 +240,8 @@ public:
 
    CCManualWhiteBalance( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CCManualWhiteBalance* TheCCManualWhiteBalanceParameter;
@@ -262,13 +254,11 @@ public:
 
    CCManualRedFactor( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern CCManualRedFactor* TheCCManualRedFactorParameter;
@@ -281,13 +271,11 @@ public:
 
    CCManualGreenFactor( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern CCManualGreenFactor* TheCCManualGreenFactorParameter;
@@ -300,13 +288,11 @@ public:
 
    CCManualBlueFactor( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern CCManualBlueFactor* TheCCManualBlueFactorParameter;
@@ -319,7 +305,7 @@ public:
 
    CCBackgroundReferenceViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CCBackgroundReferenceViewId* TheCCBackgroundReferenceViewIdParameter;
@@ -332,13 +318,11 @@ public:
 
    CCBackgroundLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern CCBackgroundLow* TheCCBackgroundLowParameter;
@@ -351,13 +335,11 @@ public:
 
    CCBackgroundHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern CCBackgroundHigh* TheCCBackgroundHighParameter;
@@ -370,8 +352,8 @@ public:
 
    CCBackgroundUseROI( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CCBackgroundUseROI* TheCCBackgroundUseROIParameter;
@@ -384,10 +366,10 @@ public:
 
    CCBackgroundROIX0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCBackgroundROIX0* TheCCBackgroundROIX0Parameter;
@@ -401,10 +383,10 @@ public:
 
    CCBackgroundROIY0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCBackgroundROIY0* TheCCBackgroundROIY0Parameter;
@@ -417,10 +399,10 @@ public:
 
    CCBackgroundROIX1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCBackgroundROIX1* TheCCBackgroundROIX1Parameter;
@@ -433,10 +415,10 @@ public:
 
    CCBackgroundROIY1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CCBackgroundROIY1* TheCCBackgroundROIY1Parameter;
@@ -449,9 +431,8 @@ public:
 
    CCOutputWhiteReferenceMask( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CCOutputWhiteReferenceMask* TheCCOutputWhiteReferenceMaskParameter;
@@ -464,9 +445,8 @@ public:
 
    CCOutputBackgroundReferenceMask( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CCOutputBackgroundReferenceMask* TheCCOutputBackgroundReferenceMaskParameter;
@@ -480,4 +460,4 @@ PCL_END_LOCAL
 #endif   // __ColorCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ColorCalibrationParameters.h - Released 2020-07-31T19:33:39Z

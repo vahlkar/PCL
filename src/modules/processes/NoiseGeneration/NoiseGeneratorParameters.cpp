@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorParameters.cpp - Released 2020-02-27T12:56:01Z
+// NoiseGeneratorParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -57,10 +57,10 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-NGNoiseAmount*                 TheNGNoiseAmountParameter = 0;
-NGNoiseDistribution*           TheNGNoiseDistributionParameter = 0;
-NGImpulsionalNoiseProbability* TheNGImpulsionalNoiseProbabilityParameter = 0;
-NGPreserveBrightness*          TheNGPreserveBrightnessParameter = 0; // ### deprecated
+NGNoiseAmount*                 TheNGNoiseAmountParameter = nullptr;
+NGNoiseDistribution*           TheNGNoiseDistributionParameter = nullptr;
+NGImpulsionalNoiseProbability* TheNGImpulsionalNoiseProbabilityParameter = nullptr;
+NGPreserveBrightness*          TheNGPreserveBrightnessParameter = nullptr; // ### DEPRECATED
 
 // ----------------------------------------------------------------------------
 
@@ -147,10 +147,7 @@ double NGImpulsionalNoiseProbability::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-/*
- * ### Deprecated
- */
-
+// ### DEPRECATED
 NGPreserveBrightness::NGPreserveBrightness( MetaProcess* p ) : MetaEnumeration( p )
 {
    TheNGPreserveBrightnessParameter = this;
@@ -192,4 +189,4 @@ size_type NGPreserveBrightness::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF NoiseGeneratorParameters.cpp - Released 2020-07-31T19:33:39Z

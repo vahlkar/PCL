@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.5.3
+// Standard RAW File Format Module Version 1.5.4
 // ----------------------------------------------------------------------------
-// RawInstance.cpp - Released 2020-02-27T12:55:48Z
+// RawInstance.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -292,8 +292,8 @@ class RawProgress
 {
 public:
 
-   RawProgress( RawInstance& instance ) :
-      m_instance( instance )
+   RawProgress( RawInstance& instance )
+      : m_instance( instance )
    {
       m_instance.m_raw->set_progress_handler( Callback, this );
    }
@@ -1459,4 +1459,4 @@ UInt8Image RawInstance::ReadThumbnail()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.cpp - Released 2020-02-27T12:55:48Z
+// EOF RawInstance.cpp - Released 2020-07-31T19:33:23Z

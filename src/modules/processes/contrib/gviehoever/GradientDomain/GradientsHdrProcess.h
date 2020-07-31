@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrProcess.h - Released 2020-02-27T12:56:01Z
+// GradientsHdrProcess.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -36,29 +36,25 @@
 namespace pcl
 {
 
+// ----------------------------------------------------------------------------
+
 class GradientsHdrProcess : public MetaProcess
 {
 public:
 
    GradientsHdrProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-   virtual IsoString Category() const;
-
-   virtual uint32 Version() const;
-
-   virtual String Description() const;
-
-   virtual const char** IconImageXPM() const;
-
-   virtual ProcessInterface* DefaultInterface() const;
-
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
-
-   virtual bool CanProcessCommandLines() const;
-   virtual int ProcessCommandLine( const StringList& ) const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   IsoString Category() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String IconImageSVGFile() const override;
+   ProcessInterface* DefaultInterface() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
+   bool CanProcessCommandLines() const override;
+   int ProcessCommandLine( const StringList& ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -69,9 +65,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __GradientsHdrProcess_h
+#endif // __GradientsHdrProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrProcess.h - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrProcess.h - Released 2020-07-31T19:33:39Z

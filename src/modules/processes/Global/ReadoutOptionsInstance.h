@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ReadoutOptionsInstance.h - Released 2020-02-27T12:56:01Z
+// ReadoutOptionsInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -70,12 +70,12 @@ public:
    ReadoutOptionsInstance( const MetaProcess* );
    ReadoutOptionsInstance( const ReadoutOptionsInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool CanExecuteGlobal( pcl::String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-   virtual void* LockParameter( const MetaParameter*, size_type /*tableRow*/ );
-   virtual bool ValidateParameter( void* value, const MetaParameter*, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool CanExecuteGlobal( pcl::String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type /*tableRow*/ ) override;
+   bool ValidateParameter( void* value, const MetaParameter*, size_type tableRow ) const override;
 
    pcl::ReadoutOptions Options() const
    {
@@ -154,4 +154,4 @@ private:
 #endif   // __ReadoutOptionsInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ReadoutOptionsInstance.h - Released 2020-07-31T19:33:39Z

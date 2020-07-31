@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ATrousWaveletTransform.h - Released 2020-02-27T12:55:23Z
+// pcl/ATrousWaveletTransform.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -203,9 +203,9 @@ public:
       /*!
        * Move constructor.
        */
-      WaveletScalingFunction( WaveletScalingFunction&& s ) :
-         kernelFilter( s.kernelFilter ),
-         separableFilter( s.separableFilter )
+      WaveletScalingFunction( WaveletScalingFunction&& s )
+         : kernelFilter( s.kernelFilter )
+         , separableFilter( s.separableFilter )
       {
       }
 
@@ -348,8 +348,9 @@ public:
     * The default values for \a n and \a d are 4 and 0, respectively (four
     * wavelet layers and the dyadic scaling sequence).
     */
-   ATrousWaveletTransform( const WaveletScalingFunction& f, int n = 4, int d = 0 ) :
-      RedundantMultiscaleTransform( n, d ), m_scalingFunction( f )
+   ATrousWaveletTransform( const WaveletScalingFunction& f, int n = 4, int d = 0 )
+      : RedundantMultiscaleTransform( n, d )
+      , m_scalingFunction( f )
    {
       PCL_CHECK( m_scalingFunction.IsValid() )
    }
@@ -372,8 +373,9 @@ public:
     * The default values for \a n and \a d are 4 and 0, respectively (four
     * wavelet layers and the dyadic scaling sequence).
     */
-   ATrousWaveletTransform( const KernelFilter& f, int n = 4, int d = 0 ) :
-      RedundantMultiscaleTransform( n, d ), m_scalingFunction( f )
+   ATrousWaveletTransform( const KernelFilter& f, int n = 4, int d = 0 )
+      : RedundantMultiscaleTransform( n, d )
+      , m_scalingFunction( f )
    {
       PCL_CHECK( m_scalingFunction.IsValid() )
    }
@@ -395,8 +397,9 @@ public:
     * The default values for \a n and \a d are 4 and 0, respectively (four
     * wavelet layers and the dyadic scaling sequence).
     */
-   ATrousWaveletTransform( const SeparableFilter& f, int n = 4, int d = 0 ) :
-      RedundantMultiscaleTransform( n, d ), m_scalingFunction( f )
+   ATrousWaveletTransform( const SeparableFilter& f, int n = 4, int d = 0 )
+      : RedundantMultiscaleTransform( n, d )
+      , m_scalingFunction( f )
    {
       PCL_CHECK( m_scalingFunction.IsValid() )
    }
@@ -675,4 +678,4 @@ typedef ATrousWaveletTransform   StarletTransform;
 #endif   // __PCL_ATrousWaveletTransform_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ATrousWaveletTransform.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ATrousWaveletTransform.h - Released 2020-07-31T19:33:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ProcessInterface.h - Released 2020-02-27T12:55:23Z
+// pcl/ProcessInterface.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -321,10 +321,81 @@ public:
     *
     * \deprecated This function has been deprecated and should not be used.
     * Interfaces must be described by the process(es) that use them. The value
-    * returned by this member function is always ignored by the PixInsight Core
+    * returned by this member function is always ignored by the PixInsight core
     * application.
     */
    virtual String Description() const
+   {
+      return String();
+   }
+
+   /*!
+    * Returns the icon image of this process interface as a document in SVG
+    * format.
+    *
+    * The specified image will be used as an icon appearing on the interface
+    * window's title bar. To facilitate the visual identification of processes
+    * and their interfaces, most reimplementations of this function should
+    * normally return the same SVG document returned by its interfaced process'
+    * reimplementation of MetaProcess::IconImageSVG().
+    *
+    * The returned string must be the source code of a valid SVG document
+    * representing the icon image, encoded in UTF-8.
+    *
+    * Since core version 1.8.8-6, all process, interface and file format icons
+    * should be specified in SVG format. Raster formats, such as XPM and PNG,
+    * have been deprecated for this purpose.
+    *
+    * If both this function and IconImageSVGFile() return an empty string, or
+    * if the specified SVG document does not exist or is not valid, a default
+    * icon will be assigned to this process interface automatically by the
+    * PixInsight core application.
+    *
+    * \note The default implementation of this function returns an empty
+    * string.
+    *
+    * \sa IconImageSVGFile()
+    */
+   virtual IsoString IconImageSVG() const
+   {
+      return IsoString();
+   }
+
+   /*!
+    * Returns the icon image of this process interface as a document in SVG
+    * format, stored as an external file.
+    *
+    * The specified image will be used as an icon appearing on the interface
+    * window's title bar. To facilitate the visual identification of processes
+    * and their interfaces, most reimplementations of this function should
+    * normally return the same SVG document returned by its interfaced process'
+    * reimplementation of MetaProcess::IconImageSVGFile().
+    *
+    * The returned string must be a path to an existing file in the local
+    * file system (remote resources are not supported in current PCL versions),
+    * which must store a valid SVG document representing the icon image. The
+    * SVG source code must be encoded in UTF-8.
+    *
+    * Since core version 1.8.8-6, all process, interface and file format icons
+    * should be specified in SVG format. Raster formats, such as XPM and PNG,
+    * have been deprecated for this purpose.
+    *
+    * If both this function and IconImageSVG() return an empty string, or if
+    * the specified SVG document does not exist or is not valid, a default icon
+    * will be assigned to this process interface automatically by the
+    * PixInsight core application.
+    *
+    * <b>Automatic Resource Location</b>
+    *
+    * See MetaProcess::IconImageSVGFile() for important information that is
+    * equally applicable to this member function.
+    *
+    * \note The default implementation of this function returns an empty
+    * string.
+    *
+    * \sa IconImageSVG()
+    */
+   virtual String IconImageSVGFile() const
    {
       return String();
    }
@@ -335,15 +406,24 @@ public:
     *
     * The specified image will be used as an icon appearing on the interface
     * window's title bar. To facilitate the visual identification of processes
-    * and their interfaces (and to save hard icon design work :), it is a good
-    * idea that this function returns the same image returned by its interfaced
-    * process' MetaProcess::IconImageXPM().
+    * and their interfaces, most reimplementations of this function should
+    * normally return the same SVG document returned by its interfaced process'
+    * reimplementation of MetaProcess::IconImageXPM().
     *
     * 32-bit RGBA color images (including an alpha channel) are fully
     * supported.
     *
     * If this function returns nullptr, a default icon will be assigned to this
     * interface automatically.
+    *
+    * \note The default implementation of this function returns nullptr.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define process interface icons in SVG format. Existing modules should
+    * also be refactored in the same way to support scalable icons.
     *
     * \sa IconImageFile()
     */
@@ -361,11 +441,15 @@ public:
     * For details on interface icon images, see the documentation for
     * IconImageXPM().
     *
-    * \deprecated Using this function is \e discouraged, since it produces an
-    * unnecessary dependency on an external file, which complicates the module
-    * installation procedure. The recommended method is to reimplement the
-    * IconImageXPM() member function in a derived class, to provide the address
-    * of a static image in the XPM format.
+    * \note The default implementation of this function returns an empty
+    * string.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define process interface icons in SVG format. Existing modules should
+    * also be refactored in the same way to support scalable icons.
     *
     * \sa IconImageXPM()
     */
@@ -391,6 +475,15 @@ public:
     * application usually does a fine work resampling large icons to generate
     * reduced versions.
     *
+    * \note The default implementation of this function returns nullptr.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define process interface icons in SVG format. Existing modules should
+    * also be refactored in the same way to support scalable icons.
+    *
     * \sa SmallIconImageFile()
     */
    virtual const char** SmallIconImageXPM() const
@@ -407,8 +500,15 @@ public:
     * For details on small interface icon images, see the documentation for
     * SmallIconImageXPM().
     *
-    * \deprecated Using this function is discouraged for the same reasons
-    * explained in the documentation entry for IconImageFile().
+    * \note The default implementation of this function returns an empty
+    * string.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define process interface icons in SVG format. Existing modules should
+    * also be refactored in the same way to support scalable icons.
     *
     * \sa SmallIconImageXPM()
     */
@@ -1112,7 +1212,7 @@ public:
     *
     * The core application can make such a request at its own discretion---and
     * your interface should be ready to honor it during a real-time generation
-    * task---, but currently (as of PixInsight Core version 1.8.0) this only
+    * task---, but currently (as of PixInsight core version 1.8.0) this only
     * happens if the real-time progress dialog has been made visible and the
     * user has closed it prematurely (e.g., by clicking its Cancel button).
     *
@@ -2515,4 +2615,4 @@ private:
 #endif   // __PCL_ProcessInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInterface.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ProcessInterface.h - Released 2020-07-31T19:33:04Z

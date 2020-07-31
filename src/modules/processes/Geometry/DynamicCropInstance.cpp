@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.cpp - Released 2020-02-27T12:56:01Z
+// DynamicCropInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -67,33 +67,33 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-DynamicCropInstance::DynamicCropInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   p_center( TheDCCenterXParameter->DefaultValue(), TheDCCenterYParameter->DefaultValue() ),
-   p_width( TheDCWidthParameter->DefaultValue() ),
-   p_height( TheDCHeightParameter->DefaultValue() ),
-   p_angle( TheDCRotationAngleParameter->DefaultValue() ),
-   p_scaleX( TheDCScaleXParameter->DefaultValue() ),
-   p_scaleY( TheDCScaleYParameter->DefaultValue() ),
-   p_optimizeFast( TheDCOptimizeFastRotationsParameter->DefaultValue() ),
-   p_interpolation( TheDCInterpolationAlgorithmParameter->Default ),
-   p_clampingThreshold( TheDCClampingThresholdParameter->DefaultValue() ),
-   p_smoothness( TheDCSmoothnessParameter->DefaultValue() ),
-   p_resolution( TheDCXResolutionParameter->DefaultValue(), TheDCYResolutionParameter->DefaultValue() ),
-   p_metric( TheDCMetricResolutionParameter->DefaultValue() ),
-   p_forceResolution( TheDCForceResolutionParameter->DefaultValue() ),
-   p_fillColor( TheDCFillRedParameter->DefaultValue(),
-                TheDCFillGreenParameter->DefaultValue(),
-                TheDCFillBlueParameter->DefaultValue(),
-                TheDCFillAlphaParameter->DefaultValue() ),
-   p_noGUIMessages( TheDCNoGUIMessagesParameter->DefaultValue() )
+DynamicCropInstance::DynamicCropInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , p_center( TheDCCenterXParameter->DefaultValue(), TheDCCenterYParameter->DefaultValue() )
+   , p_width( TheDCWidthParameter->DefaultValue() )
+   , p_height( TheDCHeightParameter->DefaultValue() )
+   , p_angle( TheDCRotationAngleParameter->DefaultValue() )
+   , p_scaleX( TheDCScaleXParameter->DefaultValue() )
+   , p_scaleY( TheDCScaleYParameter->DefaultValue() )
+   , p_optimizeFast( TheDCOptimizeFastRotationsParameter->DefaultValue() )
+   , p_interpolation( TheDCInterpolationAlgorithmParameter->Default )
+   , p_clampingThreshold( TheDCClampingThresholdParameter->DefaultValue() )
+   , p_smoothness( TheDCSmoothnessParameter->DefaultValue() )
+   , p_resolution( TheDCXResolutionParameter->DefaultValue(), TheDCYResolutionParameter->DefaultValue() )
+   , p_metric( TheDCMetricResolutionParameter->DefaultValue() )
+   , p_forceResolution( TheDCForceResolutionParameter->DefaultValue() )
+   , p_fillColor( TheDCFillRedParameter->DefaultValue(),
+                  TheDCFillGreenParameter->DefaultValue(),
+                  TheDCFillBlueParameter->DefaultValue(),
+                  TheDCFillAlphaParameter->DefaultValue() )
+   , p_noGUIMessages( TheDCNoGUIMessagesParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-DynamicCropInstance::DynamicCropInstance( const DynamicCropInstance& x ) :
-   ProcessImplementation( x )
+DynamicCropInstance::DynamicCropInstance( const DynamicCropInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -393,10 +393,12 @@ private:
 
       Thread( AbstractImage::ThreadData& data,
               const DynamicCropData<P>& cropData,
-              PixelInterpolation::Interpolator<P>* interpolator, int startRow, int endRow ) :
-         m_data( data ),
-         m_cropData( cropData ),
-         m_interpolator( interpolator ), m_startRow( startRow ), m_endRow( endRow )
+              PixelInterpolation::Interpolator<P>* interpolator, int startRow, int endRow )
+         : m_data( data )
+         , m_cropData( cropData )
+         , m_interpolator( interpolator )
+         , m_startRow( startRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -569,4 +571,4 @@ void* DynamicCropInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF DynamicCropInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionProcess.cpp - Released 2020-02-27T12:56:01Z
+// ConvolutionProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -65,11 +65,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "ConvolutionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ConvolutionProcess* TheConvolutionProcess = 0;
+ConvolutionProcess* TheConvolutionProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -77,7 +73,6 @@ ConvolutionProcess::ConvolutionProcess()
 {
    TheConvolutionProcess = this;
 
-   // Instantiate process parameters
    new ConMode( this );
    new ConSigma( this );
    new ConShape( this );
@@ -106,30 +101,30 @@ IsoString ConvolutionProcess::Category() const
 
 uint32 ConvolutionProcess::Version() const
 {
-   return 0x100; // required
+   return 0x100;
 }
 
 // ----------------------------------------------------------------------------
 
 String ConvolutionProcess::Description() const
 {
-   // ### TODO
-   return
-   "";
+   return "";
 }
 
 // ----------------------------------------------------------------------------
 
-const char** ConvolutionProcess::IconImageXPM() const
+String ConvolutionProcess::IconImageSVGFile() const
 {
-   return ConvolutionIcon_XPM;
+   return "@module_icons_dir/Convolution.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* ConvolutionProcess::DefaultInterface() const
 {
    return TheConvolutionInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* ConvolutionProcess::Create() const
@@ -142,7 +137,7 @@ ProcessImplementation* ConvolutionProcess::Create() const
 ProcessImplementation* ConvolutionProcess::Clone( const ProcessImplementation& p ) const
 {
    const ConvolutionInstance* instPtr = dynamic_cast<const ConvolutionInstance*>( &p );
-   return (instPtr != 0) ? new ConvolutionInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new ConvolutionInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -174,8 +169,7 @@ static void ShowHelp()
 
 int ConvolutionProcess::ProcessCommandLine( const StringList& argv ) const
 {
-   ArgumentList arguments =
-      ExtractArguments( argv, ArgumentItemMode::AsViews, ArgumentOption::AllowWildcards );
+   ArgumentList arguments = ExtractArguments( argv, ArgumentItemMode::AsViews, ArgumentOption::AllowWildcards );
 
    ConvolutionInstance instance( this );
 
@@ -248,4 +242,4 @@ int ConvolutionProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ConvolutionProcess.cpp - Released 2020-07-31T19:33:39Z

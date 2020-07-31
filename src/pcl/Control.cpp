@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Control.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Control.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -61,8 +61,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-Control::Control( Control& parent, uint32 flags ) :
-   UIObject( (*API->Control->CreateControl)( ModuleHandle(), this, parent.handle, flags ) )
+Control::Control( Control& parent, uint32 flags )
+   : UIObject( (*API->Control->CreateControl)( ModuleHandle(), this, parent.handle, flags ) )
 {
    if ( handle == 0 )
       throw APIFunctionError( "CreateControl" );
@@ -1472,4 +1472,4 @@ void Control::OnViewDrop( view_drop_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Control.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Control.cpp - Released 2020-07-31T19:33:12Z

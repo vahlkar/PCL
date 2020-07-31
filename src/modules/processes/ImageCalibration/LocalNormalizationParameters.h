@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.h - Released 2020-02-27T12:56:01Z
+// LocalNormalizationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -68,11 +68,10 @@ public:
 
    LNScale( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern LNScale* TheLNScaleParameter;
@@ -85,8 +84,8 @@ public:
 
    LNNoScale( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNNoScale* TheLNNoScaleParameter;
@@ -99,8 +98,8 @@ public:
 
    LNRejection( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNRejection* TheLNRejectionParameter;
@@ -113,11 +112,11 @@ public:
 
    LNBackgroundRejectionLimit( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNBackgroundRejectionLimit* TheLNBackgroundRejectionLimitParameter;
@@ -130,11 +129,11 @@ public:
 
    LNReferenceRejectionThreshold( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNReferenceRejectionThreshold* TheLNReferenceRejectionThresholdParameter;
@@ -147,11 +146,11 @@ public:
 
    LNTargetRejectionThreshold( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNTargetRejectionThreshold* TheLNTargetRejectionThresholdParameter;
@@ -164,10 +163,10 @@ public:
 
    LNHotPixelFilterRadius( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNHotPixelFilterRadius* TheLNHotPixelFilterRadiusParameter;
@@ -180,10 +179,10 @@ public:
 
    LNNoiseReductionFilterRadius( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNNoiseReductionFilterRadius* TheLNNoiseReductionFilterRadiusParameter;
@@ -196,7 +195,7 @@ public:
 
    LNReferencePathOrViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern LNReferencePathOrViewId* TheLNReferencePathOrViewIdParameter;
@@ -209,8 +208,8 @@ public:
 
    LNReferenceIsView( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNReferenceIsView* TheLNReferenceIsViewParameter;
@@ -223,7 +222,7 @@ public:
 
    LNTargetItems( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern LNTargetItems* TheLNTargetItemsParameter;
@@ -236,8 +235,8 @@ public:
 
    LNTargetEnabled( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNTargetEnabled* TheLNTargetEnabledParameter;
@@ -250,7 +249,7 @@ public:
 
    LNTargetImage( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern LNTargetImage* TheLNTargetImageParameter;
@@ -263,7 +262,7 @@ public:
 
    LNInputHints( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern LNInputHints* TheLNInputHintsParameter;
@@ -276,7 +275,7 @@ public:
 
    LNOutputHints( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern LNOutputHints* TheLNOutputHintsParameter;
@@ -296,11 +295,11 @@ public:
 
    LNGenerateNormalizedImages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern LNGenerateNormalizedImages* TheLNGenerateNormalizedImagesParameter;
@@ -313,8 +312,8 @@ public:
 
    LNGenerateNormalizationData( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNGenerateNormalizationData* TheLNGenerateNormalizationDataParameter;
@@ -327,8 +326,8 @@ public:
 
    LNShowBackgroundModels( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNShowBackgroundModels* TheLNShowBackgroundModelsParameter;
@@ -341,8 +340,8 @@ public:
 
    LNShowRejectionMaps( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNShowRejectionMaps* TheLNShowRejectionMapsParameter;
@@ -362,11 +361,11 @@ public:
 
    LNPlotNormalizationFunctions( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern LNPlotNormalizationFunctions* TheLNPlotNormalizationFunctionsParameter;
@@ -379,8 +378,8 @@ public:
 
    LNNoGUIMessages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNNoGUIMessages* TheLNNoGUIMessagesParameter;
@@ -393,7 +392,7 @@ public:
 
    LNOutputDirectory( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern LNOutputDirectory* TheLNOutputDirectoryParameter;
@@ -406,8 +405,8 @@ public:
 
    LNOutputExtension( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern LNOutputExtension* TheLNOutputExtensionParameter;
@@ -420,8 +419,8 @@ public:
 
    LNOutputPrefix( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern LNOutputPrefix* TheLNOutputPrefixParameter;
@@ -434,8 +433,8 @@ public:
 
    LNOutputPostfix( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern LNOutputPostfix* TheLNOutputPostfixParameter;
@@ -448,8 +447,8 @@ public:
 
    LNOverwriteExistingFiles( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNOverwriteExistingFiles* TheLNOverwriteExistingFilesParameter;
@@ -468,11 +467,11 @@ public:
 
    LNOnError( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern LNOnError* TheLNOnErrorParameter;
@@ -485,8 +484,8 @@ public:
 
    LNUseFileThreads( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNUseFileThreads* TheLNUseFileThreadsParameter;
@@ -499,11 +498,11 @@ public:
 
    LNFileThreadOverload( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNFileThreadOverload* TheLNFileThreadOverloadParameter;
@@ -516,10 +515,10 @@ public:
 
    LNMaxFileReadThreads( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNMaxFileReadThreads* TheLNMaxFileReadThreadsParameter;
@@ -532,10 +531,10 @@ public:
 
    LNMaxFileWriteThreads( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNMaxFileWriteThreads* TheLNMaxFileWriteThreadsParameter;
@@ -548,10 +547,10 @@ public:
 
    LNGraphSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNGraphSize* TheLNGraphSizeParameter;
@@ -564,10 +563,10 @@ public:
 
    LNGraphTextSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNGraphTextSize* TheLNGraphTextSizeParameter;
@@ -580,10 +579,10 @@ public:
 
    LNGraphTitleSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LNGraphTitleSize* TheLNGraphTitleSizeParameter;
@@ -596,8 +595,8 @@ public:
 
    LNGraphTransparent( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LNGraphTransparent* TheLNGraphTransparentParameter;
@@ -610,8 +609,8 @@ public:
 
    LNGraphOutputDirectory( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern LNGraphOutputDirectory* TheLNGraphOutputDirectoryParameter;
@@ -625,4 +624,4 @@ PCL_END_LOCAL
 #endif   // __LocalNormalizationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF LocalNormalizationParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionInterface.h - Released 2020-02-27T12:56:01Z
+// ScreenTransferFunctionInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -83,24 +83,16 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
-
    void ApplyInstance() const override;
    void TrackViewUpdated( bool active ) override;
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
-
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
-
    bool WantsImageNotifications() const override;
    void ImageFocused( const View& ) override;
    void ImageUpdated( const View& ) override;
@@ -109,7 +101,6 @@ public:
    void ImageSTFUpdated( const View& ) override;
    void ImageRenamed( const View& ) override;
    void ImageDeleted( const View& ) override;
-
    bool WantsReadoutNotifications() const override;
    void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A ) override;
 
@@ -130,9 +121,9 @@ public:
 private:
 
    ScreenTransferFunctionInstance m_instance;
-   working_mode                   m_mode;
-   readout_mode                   m_readoutMode;
-   bool                           m_rgbLinked : 1;
+   working_mode                   m_mode             = EditMode;
+   readout_mode                   m_readoutMode      = NoReadout;
+   bool                           m_rgbLinked        = true;
    STFAutoStretchDialog*          m_autoAdjustDialog = nullptr;
 
    PCL_CLASS_REENTRANCY_GUARD
@@ -200,4 +191,4 @@ PCL_END_LOCAL
 #endif   // __ScreenTransferFunctionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionInterface.h - Released 2020-02-27T12:56:01Z
+// EOF ScreenTransferFunctionInterface.h - Released 2020-07-31T19:33:39Z

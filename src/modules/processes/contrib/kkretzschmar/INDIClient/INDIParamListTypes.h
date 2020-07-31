@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIParamListTypes.h - Released 2020-02-27T12:56:01Z
+// INDIParamListTypes.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -122,9 +122,9 @@ struct ElementValue
    String Value;
 
    template <typename T>
-   ElementValue( const String& element, const T& value ) :
-      Element( element ),
-      Value( String( value ) )
+   ElementValue( const String& element, const T& value )
+      : Element( element )
+      , Value( String( value ) )
    {
    }
 
@@ -151,19 +151,19 @@ struct INDINewPropertyItem
 
    INDINewPropertyItem() = default;
 
-   INDINewPropertyItem( const String& device, const String& property, const String& type ) :
-      Device( device ),
-      Property( property ),
-      PropertyType( type )
+   INDINewPropertyItem( const String& device, const String& property, const String& type )
+      : Device( device )
+      , Property( property )
+      , PropertyType( type )
    {
    }
 
    template <typename T>
    INDINewPropertyItem( const String& device, const String& property, const String& type,
-                        const String& element, const T& value ) :
-      Device( device ),
-      Property( property ),
-      PropertyType( type )
+                        const String& element, const T& value )
+      : Device( device )
+      , Property( property )
+      , PropertyType( type )
    {
       ElementValues << ElementValue( element, value );
    }
@@ -171,10 +171,10 @@ struct INDINewPropertyItem
    template <typename T1, typename T2>
    INDINewPropertyItem( const String& device, const String& property, const String& type,
                         const String& element1, const T1& value1,
-                        const String& element2, const T2& value2 ) :
-      Device( device ),
-      Property( property ),
-      PropertyType( type )
+                        const String& element2, const T2& value2 )
+      : Device( device )
+      , Property( property )
+      , PropertyType( type )
    {
       ElementValues << ElementValue( element1, value1 )
                     << ElementValue( element2, value2 );
@@ -215,4 +215,4 @@ typedef Array<INDINewPropertyListItem> INDINewPropertyListItemArray;
 #endif // __INDIParamListTypes_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIParamListTypes.h - Released 2020-02-27T12:56:01Z
+// EOF INDIParamListTypes.h - Released 2020-07-31T19:33:39Z

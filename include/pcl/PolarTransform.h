@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/PolarTransform.h - Released 2020-02-27T12:55:23Z
+// pcl/PolarTransform.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,8 +93,8 @@ public:
     * interpolation. The referenced interpolation object \a p must remain valid
     * while this %PolarTransformBase object exists.
     */
-   PolarTransformBase( PixelInterpolation& p ) :
-      InterpolatingGeometricTransformation( p )
+   PolarTransformBase( PixelInterpolation& p )
+      : InterpolatingGeometricTransformation( p )
    {
    }
 
@@ -209,7 +209,8 @@ public:
     * interpolation \a p. The referenced interpolation object \a p must remain
     * valid while this %PolarTransform object exists.
     */
-   PolarTransform( PixelInterpolation& p ) : PolarTransformBase( p )
+   PolarTransform( PixelInterpolation& p )
+      : PolarTransformBase( p )
    {
    }
 
@@ -260,7 +261,8 @@ public:
     * interpolation \a p. The referenced interpolation object \a p must remain
     * valid while this %LogPolarTransform object exists.
     */
-   LogPolarTransform( PixelInterpolation& p ) : PolarTransformBase( p )
+   LogPolarTransform( PixelInterpolation& p )
+      : PolarTransformBase( p )
    {
    }
 
@@ -294,4 +296,4 @@ protected:
 #endif   // __PCL_PolarTransform_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PolarTransform.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/PolarTransform.h - Released 2020-07-31T19:33:04Z

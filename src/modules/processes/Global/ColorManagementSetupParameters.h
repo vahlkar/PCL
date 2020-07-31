@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ColorManagementSetupParameters.h - Released 2020-02-27T12:56:01Z
+// ColorManagementSetupParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -79,9 +79,9 @@ public:
 
    virtual IsoString Id() const = 0;
 
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -92,9 +92,9 @@ public:
 
    CMSEnabled( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual bool DefaultValue() const;
+   bool DefaultValue() const override;
 };
 
 extern CMSEnabled* TheCMSEnabledParameter;
@@ -107,7 +107,7 @@ public:
 
    CMSUpdateMonitorProfile( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CMSUpdateMonitorProfile* TheCMSUpdateMonitorProfileParameter;
@@ -120,7 +120,7 @@ public:
 
    CMSDefaultRGBProfile( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CMSDefaultRGBProfile* TheCMSDefaultRGBProfileParameter;
@@ -133,7 +133,7 @@ public:
 
    CMSDefaultGrayProfile( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CMSDefaultGrayProfile* TheCMSDefaultGrayProfileParameter;
@@ -146,9 +146,9 @@ public:
 
    CMSDefaultRenderingIntent( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual size_type DefaultValueIndex() const;
+   size_type DefaultValueIndex() const override;
 };
 
 extern CMSDefaultRenderingIntent* TheCMSDefaultRenderingIntentParameter;
@@ -169,12 +169,12 @@ public:
 
    CMSOnProfileMismatch( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern CMSOnProfileMismatch* TheCMSOnProfileMismatchParameter;
@@ -194,12 +194,12 @@ public:
 
    CMSOnMissingProfile( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern CMSOnMissingProfile* TheCMSOnMissingProfileParameter;
@@ -212,9 +212,9 @@ public:
 
    CMSDefaultEmbedProfilesInRGBImages( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual bool DefaultValue() const;
+   bool DefaultValue() const override;
 };
 
 extern CMSDefaultEmbedProfilesInRGBImages* TheCMSDefaultEmbedProfilesInRGBImagesParameter;
@@ -227,9 +227,9 @@ public:
 
    CMSDefaultEmbedProfilesInGrayscaleImages( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual bool DefaultValue() const;
+   bool DefaultValue() const override;
 };
 
 extern CMSDefaultEmbedProfilesInGrayscaleImages* TheCMSDefaultEmbedProfilesInGrayscaleImagesParameter;
@@ -242,9 +242,9 @@ public:
 
    CMSUseLowResolutionCLUTs( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual bool DefaultValue() const;
+   bool DefaultValue() const override;
 };
 
 extern CMSUseLowResolutionCLUTs* TheCMSUseLowResolutionCLUTsParameter;
@@ -257,7 +257,7 @@ public:
 
    CMSProofingProfile( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern CMSProofingProfile* TheCMSProofingProfileParameter;
@@ -270,9 +270,9 @@ public:
 
    CMSProofingIntent( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual size_type DefaultValueIndex() const;
+   size_type DefaultValueIndex() const override;
 };
 
 extern CMSProofingIntent* TheCMSProofingIntentParameter;
@@ -285,9 +285,9 @@ public:
 
    CMSUseProofingBPC( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual bool DefaultValue() const;
+   bool DefaultValue() const override;
 };
 
 extern CMSUseProofingBPC* TheCMSUseProofingBPCParameter;
@@ -300,9 +300,9 @@ public:
 
    CMSDefaultProofingEnabled( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual bool DefaultValue() const;
+   bool DefaultValue() const override;
 };
 
 extern CMSDefaultProofingEnabled* TheCMSDefaultProofingEnabledParameter;
@@ -315,9 +315,9 @@ public:
 
    CMSDefaultGamutCheckEnabled( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual bool DefaultValue() const;
+   bool DefaultValue() const override;
 };
 
 extern CMSDefaultGamutCheckEnabled* TheCMSDefaultGamutCheckEnabledParameter;
@@ -330,9 +330,9 @@ public:
 
    CMSGamutWarningColor( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 
-   virtual double DefaultValue() const;
+   double DefaultValue() const override;
 };
 
 extern CMSGamutWarningColor* TheCMSGamutWarningColorParameter;
@@ -346,4 +346,4 @@ PCL_END_LOCAL
 #endif   // __ColorManagementSetupParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ColorManagementSetupParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInterface.cpp - Released 2020-02-27T12:56:01Z
+// B3EInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -67,8 +67,8 @@
 
 #define TARGET_IMAGE             String( "<target image>" )
 #define REFERENCE_ID( x )        (x.IsEmpty() ? TARGET_IMAGE : x)
-#define BACKGROUND_REFERENCE_ID1  REFERENCE_ID( instance.p_inputView[0].backgroundReferenceViewId )
-#define BACKGROUND_REFERENCE_ID2  REFERENCE_ID( instance.p_inputView[1].backgroundReferenceViewId )
+#define BACKGROUND_REFERENCE_ID1  REFERENCE_ID( m_instance.p_inputView[0].backgroundReferenceViewId )
+#define BACKGROUND_REFERENCE_ID2  REFERENCE_ID( m_instance.p_inputView[1].backgroundReferenceViewId )
 
 namespace pcl
 {
@@ -79,12 +79,8 @@ B3EInterface* TheB3EInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "B3EIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-B3EInterface::B3EInterface() :
-   instance( TheB3EProcess )
+B3EInterface::B3EInterface()
+   : m_instance( TheB3EProcess )
 {
    TheB3EInterface = this;
 }
@@ -113,9 +109,9 @@ MetaProcess* B3EInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** B3EInterface::IconImageXPM() const
+String B3EInterface::IconImageSVGFile() const
 {
-   return B3EIcon_XPM;
+   return "@module_icons_dir/B3E.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -129,7 +125,7 @@ InterfaceFeatures B3EInterface::Features() const
 
 void B3EInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
 
 // ----------------------------------------------------------------------------
@@ -165,7 +161,7 @@ bool B3EInterface::Launch( const MetaProcess& P, const ProcessImplementation*, b
 
 ProcessImplementation* B3EInterface::NewProcess() const
 {
-   return new B3EInstance( instance );
+   return new B3EInstance( m_instance );
 }
 
 // ----------------------------------------------------------------------------
@@ -189,7 +185,7 @@ bool B3EInterface::RequiresInstanceValidation() const
 
 bool B3EInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
@@ -198,56 +194,56 @@ bool B3EInterface::ImportProcess( const ProcessImplementation& p )
 
 void B3EInterface::UpdateControls()
 {
-   GUI->InputImage1_Edit.SetText( instance.p_inputView[0].id );
-   GUI->InputImage2_Edit.SetText( instance.p_inputView[1].id );
-   GUI->BackgroundReferenceView1_Edit.SetText(instance.p_inputView[0].backgroundReferenceViewId);
-   GUI->BackgroundReferenceView2_Edit.SetText(instance.p_inputView[1].backgroundReferenceViewId);
+   GUI->InputImage1_Edit.SetText( m_instance.p_inputView[0].id );
+   GUI->InputImage2_Edit.SetText( m_instance.p_inputView[1].id );
+   GUI->BackgroundReferenceView1_Edit.SetText(m_instance.p_inputView[0].backgroundReferenceViewId);
+   GUI->BackgroundReferenceView2_Edit.SetText(m_instance.p_inputView[1].backgroundReferenceViewId);
 
-   bool isFrequency = instance.p_intensityUnits == 0 || instance.p_intensityUnits == 1;
+   bool isFrequency = m_instance.p_intensityUnits == 0 || m_instance.p_intensityUnits == 1;
 
    GUI->CenterInput1_NumericEdit.label.SetText( String( "Input " ) + (isFrequency ? "frequency 1 (THz):" : "wavelength 1 (nm):") );
-   GUI->CenterInput1_NumericEdit.SetValue( instance.p_inputView[0].center );
+   GUI->CenterInput1_NumericEdit.SetValue( m_instance.p_inputView[0].center );
 
    GUI->CenterInput2_NumericEdit.label.SetText( String( "Input " ) + (isFrequency ? "frequency 2 (THz):" : "wavelength 2 (nm):") );
-   GUI->CenterInput2_NumericEdit.SetValue( instance.p_inputView[1].center );
+   GUI->CenterInput2_NumericEdit.SetValue( m_instance.p_inputView[1].center );
 
    GUI->CenterOutput_NumericEdit.label.SetText( String( "Output " ) + (isFrequency ? "frequency (THz):" : "wavelength (nm):") );
-   GUI->CenterOutput_NumericEdit.SetValue( instance.p_outputCenter );
-   GUI->CenterOutput_NumericEdit.Enable( instance.p_syntheticImage );
+   GUI->CenterOutput_NumericEdit.SetValue( m_instance.p_outputCenter );
+   GUI->CenterOutput_NumericEdit.Enable( m_instance.p_syntheticImage );
 
-   GUI->IntensityUnits_ComboBox.SetCurrentItem( instance.p_intensityUnits );
+   GUI->IntensityUnits_ComboBox.SetCurrentItem( m_instance.p_intensityUnits );
 
-   if ( instance.p_syntheticImage && !instance.p_thermalMap )
+   if ( m_instance.p_syntheticImage && !m_instance.p_thermalMap )
       GUI->OutputImages_ComboBox.SetCurrentItem( SYNTHETIC_IMAGE );
-   else if ( !instance.p_syntheticImage && instance.p_thermalMap )
+   else if ( !m_instance.p_syntheticImage && m_instance.p_thermalMap )
       GUI->OutputImages_ComboBox.SetCurrentItem( THERMAL_MAP );
    else
       GUI->OutputImages_ComboBox.SetCurrentItem( SYNTHETIC_AND_THERMAL );
 
-   GUI->OutOfRangeMask_CheckBox.SetChecked( instance.p_outOfRangeMask );
-   GUI->OutOfRangeMask_CheckBox.Enable( instance.p_syntheticImage );
+   GUI->OutOfRangeMask_CheckBox.SetChecked( m_instance.p_outOfRangeMask );
+   GUI->OutOfRangeMask_CheckBox.Enable( m_instance.p_syntheticImage );
 
    // Brackground Calibration 1
    GUI->BackgroundReferenceView1_Edit.SetText( BACKGROUND_REFERENCE_ID1 );
-   GUI->BackgroundLow1_NumericControl.SetValue( instance.p_inputView[0].backgroundLow );
-   GUI->BackgroundHigh1_NumericControl.SetValue( instance.p_inputView[0].backgroundHigh );
-   GUI->BackgroundROI1_GroupBox.SetChecked( instance.p_inputView[0].backgroundUseROI );
-   GUI->BackgroundROIX01_SpinBox.SetValue( instance.p_inputView[0].backgroundROI.x0 );
-   GUI->BackgroundROIY01_SpinBox.SetValue( instance.p_inputView[0].backgroundROI.y0 );
-   GUI->BackgroundROIWidth1_SpinBox.SetValue( instance.p_inputView[0].backgroundROI.Width() );
-   GUI->BackgroundROIHeight1_SpinBox.SetValue( instance.p_inputView[0].backgroundROI.Height() );
-   GUI->OutputBackgroundReferenceMask1_CheckBox.SetChecked( instance.p_inputView[0].outputBackgroundReferenceMask );
+   GUI->BackgroundLow1_NumericControl.SetValue( m_instance.p_inputView[0].backgroundLow );
+   GUI->BackgroundHigh1_NumericControl.SetValue( m_instance.p_inputView[0].backgroundHigh );
+   GUI->BackgroundROI1_GroupBox.SetChecked( m_instance.p_inputView[0].backgroundUseROI );
+   GUI->BackgroundROIX01_SpinBox.SetValue( m_instance.p_inputView[0].backgroundROI.x0 );
+   GUI->BackgroundROIY01_SpinBox.SetValue( m_instance.p_inputView[0].backgroundROI.y0 );
+   GUI->BackgroundROIWidth1_SpinBox.SetValue( m_instance.p_inputView[0].backgroundROI.Width() );
+   GUI->BackgroundROIHeight1_SpinBox.SetValue( m_instance.p_inputView[0].backgroundROI.Height() );
+   GUI->OutputBackgroundReferenceMask1_CheckBox.SetChecked( m_instance.p_inputView[0].outputBackgroundReferenceMask );
 
    // Brackground Calibration 2
    GUI->BackgroundReferenceView2_Edit.SetText( BACKGROUND_REFERENCE_ID2 );
-   GUI->BackgroundLow2_NumericControl.SetValue( instance.p_inputView[1].backgroundLow );
-   GUI->BackgroundHigh2_NumericControl.SetValue( instance.p_inputView[1].backgroundHigh );
-   GUI->BackgroundROI2_GroupBox.SetChecked( instance.p_inputView[1].backgroundUseROI );
-   GUI->BackgroundROIX02_SpinBox.SetValue( instance.p_inputView[1].backgroundROI.x0 );
-   GUI->BackgroundROIY02_SpinBox.SetValue( instance.p_inputView[1].backgroundROI.y0 );
-   GUI->BackgroundROIWidth2_SpinBox.SetValue( instance.p_inputView[1].backgroundROI.Width() );
-   GUI->BackgroundROIHeight2_SpinBox.SetValue( instance.p_inputView[1].backgroundROI.Height() );
-   GUI->OutputBackgroundReferenceMask2_CheckBox.SetChecked( instance.p_inputView[1].outputBackgroundReferenceMask );
+   GUI->BackgroundLow2_NumericControl.SetValue( m_instance.p_inputView[1].backgroundLow );
+   GUI->BackgroundHigh2_NumericControl.SetValue( m_instance.p_inputView[1].backgroundHigh );
+   GUI->BackgroundROI2_GroupBox.SetChecked( m_instance.p_inputView[1].backgroundUseROI );
+   GUI->BackgroundROIX02_SpinBox.SetValue( m_instance.p_inputView[1].backgroundROI.x0 );
+   GUI->BackgroundROIY02_SpinBox.SetValue( m_instance.p_inputView[1].backgroundROI.y0 );
+   GUI->BackgroundROIWidth2_SpinBox.SetValue( m_instance.p_inputView[1].backgroundROI.Width() );
+   GUI->BackgroundROIHeight2_SpinBox.SetValue( m_instance.p_inputView[1].backgroundROI.Height() );
+   GUI->OutputBackgroundReferenceMask2_CheckBox.SetChecked( m_instance.p_inputView[1].outputBackgroundReferenceMask );
 }
 
 // ----------------------------------------------------------------------------
@@ -272,9 +268,9 @@ void B3EInterface::__EditCompleted( Edit& sender )
             throw Error( "Invalid view identifier: " + id );
 
       if ( sender == GUI->InputImage1_Edit )
-         instance.p_inputView[0].id = id;
+         m_instance.p_inputView[0].id = id;
       else if ( sender == GUI->InputImage2_Edit )
-         instance.p_inputView[1].id = id;
+         m_instance.p_inputView[1].id = id;
 
       sender.SetText( id );
    }
@@ -308,12 +304,12 @@ void B3EInterface::__EditCompleted_bkg( Edit& sender )
 
       if ( sender == GUI->BackgroundReferenceView1_Edit )
       {
-         instance.p_inputView[0].backgroundReferenceViewId = id;
+         m_instance.p_inputView[0].backgroundReferenceViewId = id;
          sender.SetText( BACKGROUND_REFERENCE_ID1 );
       }
       else if ( sender == GUI->BackgroundReferenceView2_Edit )
       {
-         instance.p_inputView[1].backgroundReferenceViewId = id;
+         m_instance.p_inputView[1].backgroundReferenceViewId = id;
          sender.SetText( BACKGROUND_REFERENCE_ID2 );
       }
    }
@@ -341,36 +337,36 @@ void B3EInterface::__Clicked( Button& sender, bool checked )
 {
    if ( sender == GUI->InputImage1_ToolButton )
    {
-      ViewSelectionDialog d( instance.p_inputView[0].id );
+      ViewSelectionDialog d( m_instance.p_inputView[0].id );
       d.SetWindowTitle( "Select First Input Image" );
       if ( d.Execute() )
-         instance.p_inputView[0].id = d.Id();
-      GUI->InputImage1_Edit.SetText( instance.p_inputView[0].id );
+         m_instance.p_inputView[0].id = d.Id();
+      GUI->InputImage1_Edit.SetText( m_instance.p_inputView[0].id );
    }
    else if ( sender == GUI->InputImage2_ToolButton )
    {
-      ViewSelectionDialog d( instance.p_inputView[1].id );
+      ViewSelectionDialog d( m_instance.p_inputView[1].id );
       d.SetWindowTitle( "Select Second Input Image" );
       if ( d.Execute() )
-         instance.p_inputView[1].id = d.Id();
-      GUI->InputImage2_Edit.SetText( instance.p_inputView[1].id );
+         m_instance.p_inputView[1].id = d.Id();
+      GUI->InputImage2_Edit.SetText( m_instance.p_inputView[1].id );
    }
    else if ( sender == GUI->OutOfRangeMask_CheckBox )
    {
-      instance.p_outOfRangeMask = checked;
+      m_instance.p_outOfRangeMask = checked;
    }
    else if ( sender == GUI->BackgroundReferenceView1_ToolButton )
    {
-      ViewSelectionDialog d( instance.p_inputView[0].backgroundReferenceViewId );
+      ViewSelectionDialog d( m_instance.p_inputView[0].backgroundReferenceViewId );
       d.SetWindowTitle( "Select First Background Reference Image" );
       if ( d.Execute() == StdDialogCode::Ok )
       {
-         instance.p_inputView[0].backgroundReferenceViewId = d.Id();
+         m_instance.p_inputView[0].backgroundReferenceViewId = d.Id();
          GUI->BackgroundReferenceView1_Edit.SetText( BACKGROUND_REFERENCE_ID1 );
       }
    }
    else if ( sender == GUI->OutputBackgroundReferenceMask1_CheckBox )
-      instance.p_inputView[0].outputBackgroundReferenceMask = checked;
+      m_instance.p_inputView[0].outputBackgroundReferenceMask = checked;
    else if ( sender == GUI->BackgroundROISelectPreview1_Button )
    {
       PreviewSelectionDialog d;
@@ -380,21 +376,21 @@ void B3EInterface::__Clicked( Button& sender, bool checked )
          {
             View view = View::ViewById( d.Id() );
             if ( !view.IsNull() )
-               instance.p_inputView[0].backgroundROI = view.Window().PreviewRect( view.Id() );
+               m_instance.p_inputView[0].backgroundROI = view.Window().PreviewRect( view.Id() );
          }
    }
    else if ( sender == GUI->BackgroundReferenceView2_ToolButton )
    {
-      ViewSelectionDialog d( instance.p_inputView[1].backgroundReferenceViewId );
+      ViewSelectionDialog d( m_instance.p_inputView[1].backgroundReferenceViewId );
       d.SetWindowTitle( "Select Second Background Reference Image" );
       if ( d.Execute() == StdDialogCode::Ok )
       {
-         instance.p_inputView[1].backgroundReferenceViewId = d.Id();
+         m_instance.p_inputView[1].backgroundReferenceViewId = d.Id();
          GUI->BackgroundReferenceView2_Edit.SetText( BACKGROUND_REFERENCE_ID2 );
       }
    }
    else if ( sender == GUI->OutputBackgroundReferenceMask2_CheckBox )
-      instance.p_inputView[1].outputBackgroundReferenceMask = checked;
+      m_instance.p_inputView[1].outputBackgroundReferenceMask = checked;
    else if ( sender == GUI->BackgroundROISelectPreview2_Button )
    {
       PreviewSelectionDialog d;
@@ -404,7 +400,7 @@ void B3EInterface::__Clicked( Button& sender, bool checked )
          {
             View view = View::ViewById( d.Id() );
             if ( !view.IsNull() )
-               instance.p_inputView[1].backgroundROI = view.Window().PreviewRect( view.Id() );
+               m_instance.p_inputView[1].backgroundROI = view.Window().PreviewRect( view.Id() );
          }
    }
 
@@ -417,37 +413,37 @@ void B3EInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->IntensityUnits_ComboBox )
    {
-      if ( ( instance.p_intensityUnits == 0 || instance.p_intensityUnits == 1 ) && (itemIndex == 2 || itemIndex == 3))
+      if ( ( m_instance.p_intensityUnits == 0 || m_instance.p_intensityUnits == 1 ) && (itemIndex == 2 || itemIndex == 3))
       {
-         instance.p_inputView[0].center = CLIGHT/instance.p_inputView[0].center;
-         instance.p_inputView[1].center = CLIGHT/instance.p_inputView[1].center;
-         instance.p_outputCenter = CLIGHT/instance.p_outputCenter;
+         m_instance.p_inputView[0].center = CLIGHT/m_instance.p_inputView[0].center;
+         m_instance.p_inputView[1].center = CLIGHT/m_instance.p_inputView[1].center;
+         m_instance.p_outputCenter = CLIGHT/m_instance.p_outputCenter;
       }
 
-      if ( ( instance.p_intensityUnits == 2 || instance.p_intensityUnits == 3 ) && (itemIndex == 0 || itemIndex == 1))
+      if ( ( m_instance.p_intensityUnits == 2 || m_instance.p_intensityUnits == 3 ) && (itemIndex == 0 || itemIndex == 1))
       {
-         instance.p_inputView[0].center = CLIGHT/instance.p_inputView[0].center;
-         instance.p_inputView[1].center = CLIGHT/instance.p_inputView[1].center;
-         instance.p_outputCenter = CLIGHT/instance.p_outputCenter;
+         m_instance.p_inputView[0].center = CLIGHT/m_instance.p_inputView[0].center;
+         m_instance.p_inputView[1].center = CLIGHT/m_instance.p_inputView[1].center;
+         m_instance.p_outputCenter = CLIGHT/m_instance.p_outputCenter;
       }
 
-      instance.p_intensityUnits = itemIndex;
+      m_instance.p_intensityUnits = itemIndex;
    }
    else if ( sender == GUI->OutputImages_ComboBox )
    {
       switch ( itemIndex )
       {
       case SYNTHETIC_IMAGE:
-         instance.p_syntheticImage = true;
-         instance.p_thermalMap = false;
+         m_instance.p_syntheticImage = true;
+         m_instance.p_thermalMap = false;
          break;
       case THERMAL_MAP:
-         instance.p_syntheticImage = false;
-         instance.p_thermalMap = true;
+         m_instance.p_syntheticImage = false;
+         m_instance.p_thermalMap = true;
          break;
       case SYNTHETIC_AND_THERMAL:
-         instance.p_syntheticImage = true;
-         instance.p_thermalMap = true;
+         m_instance.p_syntheticImage = true;
+         m_instance.p_thermalMap = true;
          break;
       default: // ?!
          throw Error( "B3EInterface: Internal error" );
@@ -463,21 +459,21 @@ void B3EInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 void B3EInterface::__ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->CenterInput1_NumericEdit )
-      instance.p_inputView[0].center = value;
+      m_instance.p_inputView[0].center = value;
    else if ( sender == GUI->BackgroundLow1_NumericControl )
-      instance.p_inputView[0].backgroundLow = value;
+      m_instance.p_inputView[0].backgroundLow = value;
    else if ( sender == GUI->BackgroundHigh1_NumericControl )
-      instance.p_inputView[0].backgroundHigh = value;
+      m_instance.p_inputView[0].backgroundHigh = value;
 
    else if ( sender == GUI->CenterInput2_NumericEdit )
-      instance.p_inputView[1].center = value;
+      m_instance.p_inputView[1].center = value;
    else if ( sender == GUI->BackgroundLow2_NumericControl )
-      instance.p_inputView[1].backgroundLow = value;
+      m_instance.p_inputView[1].backgroundLow = value;
    else if ( sender == GUI->BackgroundHigh2_NumericControl )
-      instance.p_inputView[1].backgroundHigh = value;
+      m_instance.p_inputView[1].backgroundHigh = value;
 
    else if ( sender == GUI->CenterOutput_NumericEdit )
-      instance.p_outputCenter = value;
+      m_instance.p_outputCenter = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -485,22 +481,22 @@ void B3EInterface::__ValueUpdated( NumericEdit& sender, double value )
 void B3EInterface::__SpinValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == GUI->BackgroundROIX01_SpinBox )
-      instance.p_inputView[0].backgroundROI.x0 = value;
+      m_instance.p_inputView[0].backgroundROI.x0 = value;
    else if ( sender == GUI->BackgroundROIY01_SpinBox )
-      instance.p_inputView[0].backgroundROI.y0 = value;
+      m_instance.p_inputView[0].backgroundROI.y0 = value;
    else if ( sender == GUI->BackgroundROIWidth1_SpinBox )
-      instance.p_inputView[0].backgroundROI.x1 = instance.p_inputView[0].backgroundROI.x0 + value;
+      m_instance.p_inputView[0].backgroundROI.x1 = m_instance.p_inputView[0].backgroundROI.x0 + value;
    else if ( sender == GUI->BackgroundROIHeight1_SpinBox )
-      instance.p_inputView[0].backgroundROI.y1 = instance.p_inputView[0].backgroundROI.y0 + value;
+      m_instance.p_inputView[0].backgroundROI.y1 = m_instance.p_inputView[0].backgroundROI.y0 + value;
 
    else if ( sender == GUI->BackgroundROIX02_SpinBox )
-      instance.p_inputView[1].backgroundROI.x0 = value;
+      m_instance.p_inputView[1].backgroundROI.x0 = value;
    else if ( sender == GUI->BackgroundROIY02_SpinBox )
-      instance.p_inputView[1].backgroundROI.y0 = value;
+      m_instance.p_inputView[1].backgroundROI.y0 = value;
    else if ( sender == GUI->BackgroundROIWidth2_SpinBox )
-      instance.p_inputView[1].backgroundROI.x1 = instance.p_inputView[1].backgroundROI.x0 + value;
+      m_instance.p_inputView[1].backgroundROI.x1 = m_instance.p_inputView[1].backgroundROI.x0 + value;
    else if ( sender == GUI->BackgroundROIHeight2_SpinBox )
-      instance.p_inputView[1].backgroundROI.y1 = instance.p_inputView[1].backgroundROI.y0 + value;
+      m_instance.p_inputView[1].backgroundROI.y1 = m_instance.p_inputView[1].backgroundROI.y0 + value;
 }
 
 // ----------------------------------------------------------------------------
@@ -508,9 +504,9 @@ void B3EInterface::__SpinValueUpdated( SpinBox& sender, int value )
 void B3EInterface::__GroupBoxCheck( GroupBox& sender, bool checked )
 {
    if ( sender == GUI->BackgroundROI1_GroupBox )
-      instance.p_inputView[0].backgroundUseROI = checked;
+      m_instance.p_inputView[0].backgroundUseROI = checked;
    else if ( sender == GUI->BackgroundROI2_GroupBox )
-      instance.p_inputView[1].backgroundUseROI = checked;
+      m_instance.p_inputView[1].backgroundUseROI = checked;
 }
 
 // ----------------------------------------------------------------------------
@@ -518,9 +514,9 @@ void B3EInterface::__GroupBoxCheck( GroupBox& sender, bool checked )
 void B3EInterface::__BackgroundReference_Check( SectionBar& sender, bool checked )
 {
    if ( sender == GUI->BackgroundReference1_SectionBar )
-      instance.p_inputView[0].subtractBackground = checked;
+      m_instance.p_inputView[0].subtractBackground = checked;
    else if ( sender == GUI->BackgroundReference2_SectionBar )
-      instance.p_inputView[1].subtractBackground = checked;
+      m_instance.p_inputView[1].subtractBackground = checked;
 }
 
 // ----------------------------------------------------------------------------
@@ -546,38 +542,38 @@ void B3EInterface::__ViewDrop( Control& sender, const Point& pos, const View& vi
 {
    if ( sender == GUI->InputImage1_Edit )
    {
-      GUI->InputImage1_Edit.SetText( instance.p_inputView[0].id = view.FullId() );
+      GUI->InputImage1_Edit.SetText( m_instance.p_inputView[0].id = view.FullId() );
    }
    else if ( sender == GUI->InputImage2_Edit )
    {
-      GUI->InputImage2_Edit.SetText( instance.p_inputView[1].id = view.FullId() );
+      GUI->InputImage2_Edit.SetText( m_instance.p_inputView[1].id = view.FullId() );
    }
    else if ( sender == GUI->BackgroundReference1_SectionBar )
    {
-      GUI->BackgroundReferenceView1_Edit.SetText( instance.p_inputView[0].backgroundReferenceViewId = view.FullId() );
-      GUI->BackgroundReference1_SectionBar.SetChecked( instance.p_inputView[0].subtractBackground = true );
+      GUI->BackgroundReferenceView1_Edit.SetText( m_instance.p_inputView[0].backgroundReferenceViewId = view.FullId() );
+      GUI->BackgroundReference1_SectionBar.SetChecked( m_instance.p_inputView[0].subtractBackground = true );
       GUI->BackgroundReference1_SectionBar.ShowSection();
    }
    else if ( sender == GUI->BackgroundReferenceView1_Edit )
    {
-      GUI->BackgroundReferenceView1_Edit.SetText( instance.p_inputView[0].backgroundReferenceViewId = view.FullId() );
+      GUI->BackgroundReferenceView1_Edit.SetText( m_instance.p_inputView[0].backgroundReferenceViewId = view.FullId() );
    }
    else if ( sender == GUI->BackgroundReference2_SectionBar )
    {
-      GUI->BackgroundReferenceView2_Edit.SetText( instance.p_inputView[1].backgroundReferenceViewId = view.FullId() );
-      GUI->BackgroundReference2_SectionBar.SetChecked( instance.p_inputView[1].subtractBackground = true );
+      GUI->BackgroundReferenceView2_Edit.SetText( m_instance.p_inputView[1].backgroundReferenceViewId = view.FullId() );
+      GUI->BackgroundReference2_SectionBar.SetChecked( m_instance.p_inputView[1].subtractBackground = true );
       GUI->BackgroundReference2_SectionBar.ShowSection();
    }
    else if ( sender == GUI->BackgroundReferenceView2_Edit )
    {
-      GUI->BackgroundReferenceView2_Edit.SetText( instance.p_inputView[1].backgroundReferenceViewId = view.FullId() );
+      GUI->BackgroundReferenceView2_Edit.SetText( m_instance.p_inputView[1].backgroundReferenceViewId = view.FullId() );
    }
    else if ( sender == GUI->BackgroundROI1_GroupBox || sender == GUI->BackgroundROISelectPreview1_Button )
    {
       if ( view.IsPreview() )
       {
-         instance.p_inputView[0].backgroundUseROI = true;
-         instance.p_inputView[0].backgroundROI = view.Window().PreviewRect( view.Id() );
+         m_instance.p_inputView[0].backgroundUseROI = true;
+         m_instance.p_inputView[0].backgroundROI = view.Window().PreviewRect( view.Id() );
          UpdateControls();
       }
    }
@@ -585,8 +581,8 @@ void B3EInterface::__ViewDrop( Control& sender, const Point& pos, const View& vi
    {
       if ( view.IsPreview() )
       {
-         instance.p_inputView[1].backgroundUseROI = true;
-         instance.p_inputView[1].backgroundROI = view.Window().PreviewRect( view.Id() );
+         m_instance.p_inputView[1].backgroundUseROI = true;
+         m_instance.p_inputView[1].backgroundROI = view.Window().PreviewRect( view.Id() );
          UpdateControls();
       }
    }
@@ -1093,4 +1089,4 @@ B3EInterface::GUIData::GUIData( B3EInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF B3EInterface.cpp - Released 2020-07-31T19:33:39Z

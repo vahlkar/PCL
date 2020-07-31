@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// GeometryModule.cpp - Released 2020-02-27T12:56:01Z
+// GeometryModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include <pcl/AstrometricMetadata.h>
 #include <pcl/Console.h>
@@ -135,7 +135,7 @@ String GeometryModule::Author() const
 
 String GeometryModule::Copyright() const
 {
-   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -149,10 +149,10 @@ String GeometryModule::TradeMarks() const
 
 String GeometryModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "Geometry-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "Geometry-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -253,6 +253,8 @@ void DeleteAstrometryMetadataAndPreviews( ImageWindow& window )
 
 } // pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::GeometryModule;
@@ -279,4 +281,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GeometryModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF GeometryModule.cpp - Released 2020-07-31T19:33:39Z

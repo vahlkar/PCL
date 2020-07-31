@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ProgressBarStatus.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ProgressBarStatus.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -58,8 +58,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ProgressBarStatus::ProgressBarStatus( const String& title ) :
-   m_progressDialog( new ProgressDialog )
+ProgressBarStatus::ProgressBarStatus( const String& title )
+   : m_progressDialog( new ProgressDialog )
 {
    m_progressDialog->SetTitle( title );
 }
@@ -122,4 +122,4 @@ void ProgressBarStatus::InfoUpdated( const StatusMonitor& monitor ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProgressBarStatus.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ProgressBarStatus.cpp - Released 2020-07-31T19:33:12Z

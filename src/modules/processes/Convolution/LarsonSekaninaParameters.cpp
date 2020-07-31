@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaParameters.cpp - Released 2020-02-27T12:56:01Z
+// LarsonSekaninaParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -57,19 +57,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LSInterpolation*     TheLSInterpolationParameter = 0;
-LSRadiusDiff*        TheLSRadiusDiffParameter = 0;
-LSAngleDiff*         TheLSAngleDiffParameter = 0;
-LSCenterX*           TheLSCenterXParameter = 0;
-LSCenterY*           TheLSCenterYParameter = 0;
-LSAmount*            TheLSAmountParameter = 0;
-LSThreshold*         TheLSThresholdParameter = 0;
-LSDeringing*         TheLSDeringingParameter = 0;
-LSRangeLow*          TheLSRangeLowParameter = 0;
-LSRangeHigh*         TheLSRangeHighParameter = 0;
-LSUseLuminance*      TheLSUseLuminanceParameter = 0;
-LSHighPass*          TheLSHighPassParameter = 0;
-LSDisableExtension*  TheLSDisableExtensionParameter = 0;
+LSInterpolation*    TheLSInterpolationParameter = nullptr;
+LSRadiusDiff*       TheLSRadiusDiffParameter = nullptr;
+LSAngleDiff*        TheLSAngleDiffParameter = nullptr;
+LSCenterX*          TheLSCenterXParameter = nullptr;
+LSCenterY*          TheLSCenterYParameter = nullptr;
+LSAmount*           TheLSAmountParameter = nullptr;
+LSThreshold*        TheLSThresholdParameter = nullptr;
+LSDeringing*        TheLSDeringingParameter = nullptr;
+LSRangeLow*         TheLSRangeLowParameter = nullptr;
+LSRangeHigh*        TheLSRangeHighParameter = nullptr;
+LSUseLuminance*     TheLSUseLuminanceParameter = nullptr;
+LSHighPass*         TheLSHighPassParameter = nullptr;
+LSDisableExtension* TheLSDisableExtensionParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -454,4 +454,4 @@ bool LSDisableExtension::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF LarsonSekaninaParameters.cpp - Released 2020-07-31T19:33:39Z

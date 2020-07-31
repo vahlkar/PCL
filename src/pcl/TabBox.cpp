@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/TabBox.cpp - Released 2020-02-27T12:55:33Z
+// pcl/TabBox.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -59,8 +59,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-TabBox::TabBox( Control& parent ) :
-   Control( (*API->TabBox->CreateTabBox)( ModuleHandle(), this, parent.handle, 0/*flags*/ ) )
+TabBox::TabBox( Control& parent )
+   : Control( (*API->TabBox->CreateTabBox)( ModuleHandle(), this, parent.handle, 0/*flags*/ ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateTabBox" );
@@ -277,4 +277,4 @@ void TabBox::OnPageSelected( page_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TabBox.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/TabBox.cpp - Released 2020-07-31T19:33:12Z

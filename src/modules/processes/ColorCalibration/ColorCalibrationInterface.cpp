@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ColorCalibrationInterface.cpp - Released 2020-02-27T12:56:01Z
+// ColorCalibrationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -67,15 +67,13 @@ ColorCalibrationInterface* TheColorCalibrationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ColorCalibrationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ColorCalibrationInterface::ColorCalibrationInterface() :
-   instance( TheColorCalibrationProcess )
+ColorCalibrationInterface::ColorCalibrationInterface()
+   : instance( TheColorCalibrationProcess )
 {
    TheColorCalibrationInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 ColorCalibrationInterface::~ColorCalibrationInterface()
 {
@@ -83,36 +81,50 @@ ColorCalibrationInterface::~ColorCalibrationInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ColorCalibrationInterface::Id() const
 {
    return "ColorCalibration";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* ColorCalibrationInterface::Process() const
 {
    return TheColorCalibrationProcess;
 }
 
-const char** ColorCalibrationInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String ColorCalibrationInterface::IconImageSVGFile() const
 {
-   return ColorCalibrationIcon_XPM;
+   return "@module_icons_dir/ColorCalibration.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures ColorCalibrationInterface::Features() const
 {
    return InterfaceFeature::Default /*| InterfaceFeature::RealTimeButton*/;
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorCalibrationInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorCalibrationInterface::ResetInstance()
 {
    ColorCalibrationInstance defaultInstance( TheColorCalibrationProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ColorCalibrationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -127,10 +139,14 @@ bool ColorCalibrationInterface::Launch( const MetaProcess& P, const ProcessImple
    return &P == TheColorCalibrationProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* ColorCalibrationInterface::NewProcess() const
 {
    return new ColorCalibrationInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ColorCalibrationInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -140,10 +156,14 @@ bool ColorCalibrationInterface::ValidateProcess( const ProcessImplementation& p,
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ColorCalibrationInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool ColorCalibrationInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -247,6 +267,8 @@ void ColorCalibrationInterface::__GetFocus( Control& sender )
          e->Clear();
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorCalibrationInterface::__EditCompleted( Edit& sender )
 {
    try
@@ -297,6 +319,8 @@ void ColorCalibrationInterface::__EditCompleted( Edit& sender )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorCalibrationInterface::__EditValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->WhiteLow_NumericControl )
@@ -314,6 +338,8 @@ void ColorCalibrationInterface::__EditValueUpdated( NumericEdit& sender, double 
    else if ( sender == GUI->BackgroundHigh_NumericControl )
       instance.backgroundHigh = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorCalibrationInterface::__SpinValueUpdated( SpinBox& sender, int value )
 {
@@ -340,6 +366,8 @@ void ColorCalibrationInterface::__SpinValueUpdated( SpinBox& sender, int value )
    else if ( sender == GUI->BackgroundROIHeight_SpinBox )
       instance.backgroundROI.y1 = instance.backgroundROI.y0 + value;
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorCalibrationInterface::__Click( Button& sender, bool checked )
 {
@@ -395,6 +423,8 @@ void ColorCalibrationInterface::__Click( Button& sender, bool checked )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 /*
 void ColorCalibrationInterface::__UpdateRealTime_Timer( Timer& sender )
 {
@@ -402,6 +432,8 @@ void ColorCalibrationInterface::__UpdateRealTime_Timer( Timer& sender )
       UpdateRealTimePreview();
 }
 */
+
+// ----------------------------------------------------------------------------
 
 void ColorCalibrationInterface::__GroupBoxCheck( GroupBox& sender, bool checked )
 {
@@ -421,6 +453,8 @@ void ColorCalibrationInterface::__GroupBoxCheck( GroupBox& sender, bool checked 
       instance.backgroundUseROI = checked;
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorCalibrationInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->WhiteReferenceView_Edit || sender == GUI->BackgroundReferenceView_Edit )
@@ -429,6 +463,8 @@ void ColorCalibrationInterface::__ViewDrag( Control& sender, const Point& pos, c
              sender == GUI->BackgroundROI_GroupBox || sender == GUI->BackgroundROISelectPreview_Button )
       wantsView = view.IsPreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorCalibrationInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -941,4 +977,4 @@ ColorCalibrationInterface::GUIData::GUIData( ColorCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorCalibrationInterface.cpp - Released 2020-07-31T19:33:39Z

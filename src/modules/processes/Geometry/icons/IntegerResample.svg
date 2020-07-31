@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="a">
+<stop stop-color="#a7d3fd" offset="0"/>
+<stop stop-color="#080afe" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="143.28" x2="170.35" y1="70.403" y2="98.693" gradientTransform="matrix(1.1385 0 0 1.1385 -80.867 22.364)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<linearGradient id="f" x1="143.28" x2="170.35" y1="70.403" y2="98.693" gradientTransform="matrix(1.1385 0 0 1.1385 -80.867 80.957)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<linearGradient id="e" x1="143.28" x2="170.35" y1="70.403" y2="98.693" gradientTransform="matrix(1.1385 0 0 1.1385 -139.46 80.957)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<linearGradient id="d" x1="143.28" x2="170.35" y1="70.403" y2="98.693" gradientTransform="matrix(1.1385 0 0 1.1385 -139.46 22.364)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#92fb92" offset="0"/>
+<stop stop-color="#1c811c" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="49.704" x2="92.982" y1="182.47" y2="225.94" gradientTransform="matrix(2.1091 0 0 2.1091 -67.16 -268.27)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f26c2b" offset="0"/>
+<stop stop-color="#fac7af" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-69.084 35.144)">
+<g transform="translate(-10.06 -34.975)">
+<rect transform="matrix(0,1,1,0,0,0)" x="6.1807" y="85.494" width="122.77" height="122.77" fill="url(#b)"/>
+<rect transform="matrix(0,1,1,0,0,0)" x="75.774" y="155.09" width="42.173" height="42.173" fill="url(#f)" stroke="#00f" stroke-linecap="square" stroke-width="6.35"/>
+<rect transform="matrix(0,1,1,0,0,0)" x="17.181" y="155.09" width="42.173" height="42.173" fill="url(#e)" stroke="#00f" stroke-linecap="square" stroke-width="6.35"/>
+<rect transform="matrix(0,1,1,0,0,0)" x="17.181" y="96.495" width="42.173" height="42.173" fill="url(#d)" stroke="#26801c" stroke-linecap="square" stroke-width="6.35"/>
+<rect transform="matrix(0,1,1,0,0,0)" x="75.774" y="96.495" width="42.173" height="42.173" fill="url(#c)" stroke="#00f" stroke-linecap="square" stroke-width="6.35"/>
+</g>
+</g>
+</svg>

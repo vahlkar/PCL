@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchParameters.cpp - Released 2020-02-27T12:56:01Z
+// AdaptiveStretchParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -57,15 +57,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ASNoiseThreshold* TheASNoiseThresholdParameter = 0;
-ASProtection*     TheASProtectionParameter = 0;
-ASUseProtection*  TheASUseProtectionParameter = 0;
-ASMaxCurvePoints* TheASMaxCurvePointsParameter = 0;
-ASUseROI*         TheASUseROIParameter = 0;
-ASROIX0*          TheASROIX0Parameter = 0;
-ASROIY0*          TheASROIY0Parameter = 0;
-ASROIX1*          TheASROIX1Parameter = 0;
-ASROIY1*          TheASROIY1Parameter = 0;
+ASNoiseThreshold* TheASNoiseThresholdParameter = nullptr;
+ASProtection*     TheASProtectionParameter = nullptr;
+ASUseProtection*  TheASUseProtectionParameter = nullptr;
+ASMaxCurvePoints* TheASMaxCurvePointsParameter = nullptr;
+ASUseROI*         TheASUseROIParameter = nullptr;
+ASROIX0*          TheASROIX0Parameter = nullptr;
+ASROIY0*          TheASROIY0Parameter = nullptr;
+ASROIX1*          TheASROIX1Parameter = nullptr;
+ASROIY1*          TheASROIY1Parameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -305,4 +305,4 @@ double ASROIY1::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF AdaptiveStretchParameters.cpp - Released 2020-07-31T19:33:39Z

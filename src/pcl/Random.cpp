@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Random.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Random.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -406,9 +406,9 @@ private:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-RandomNumberGenerator::RandomNumberGenerator( double ymax, uint32 seed ) :
-   m_ymax( ymax ),
-   m_normal( false )
+RandomNumberGenerator::RandomNumberGenerator( double ymax, uint32 seed )
+   : m_ymax( ymax )
+   , m_normal( false )
 {
    m_generator = new FastMersenneTwister( seed ? seed : RandomSeed32() );
    if ( m_ymax < 0 || 1 + m_ymax == 1 )
@@ -538,4 +538,4 @@ int RandomNumberGenerator::Poisson( double lambda )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Random.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Random.cpp - Released 2020-07-31T19:33:12Z

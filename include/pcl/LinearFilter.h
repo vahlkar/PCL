@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/LinearFilter.h - Released 2020-02-27T12:55:23Z
+// pcl/LinearFilter.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -95,8 +95,8 @@ public:
     * central value \a v0, and outer value \a v1. Assigns an optional \a name
     * to the new filter object.
     */
-   LinearFilter( int n, float v0 = 1.0F, float v1 = 0.01F, const String& name = String() ) :
-      KernelFilter( n, name )
+   LinearFilter( int n, float v0 = 1.0F, float v1 = 0.01F, const String& name = String() )
+      : KernelFilter( n, name )
    {
       Initialize( v0, v1 );
    }
@@ -200,4 +200,4 @@ private:
 #endif   // __PCL_LinearFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LinearFilter.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/LinearFilter.h - Released 2020-07-31T19:33:04Z

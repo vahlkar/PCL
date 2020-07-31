@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Compression.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Compression.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -70,8 +70,8 @@ class PCL_CompressionEngine
 {
 public:
 
-   PCL_CompressionEngine( const Compression& compression ) :
-      m_compression( compression )
+   PCL_CompressionEngine( const Compression& compression )
+      : m_compression( compression )
    {
    }
 
@@ -179,10 +179,10 @@ private:
 
       Compression::subblock_list subblocks;
 
-      CompressionThread( const PCL_CompressionEngine& engine, size_type beginSubblock, size_type endSubblock ) :
-         E( engine ),
-         m_beginSubblock( beginSubblock ),
-         m_endSubblock( endSubblock )
+      CompressionThread( const PCL_CompressionEngine& engine, size_type beginSubblock, size_type endSubblock )
+         : E( engine )
+         , m_beginSubblock( beginSubblock )
+         , m_endSubblock( endSubblock )
       {
       }
 
@@ -264,8 +264,8 @@ class PCL_DecompressionEngine
 {
 public:
 
-   PCL_DecompressionEngine( const Compression& compression ) :
-      m_compression( compression )
+   PCL_DecompressionEngine( const Compression& compression )
+      : m_compression( compression )
    {
    }
 
@@ -363,11 +363,11 @@ private:
       DecompressionThread( const PCL_DecompressionEngine& engine,
                            size_type offset,
                            Compression::subblock_list::const_iterator begin,
-                           Compression::subblock_list::const_iterator end ) :
-         E( engine ),
-         m_offset( offset ),
-         m_begin( begin ),
-         m_end( end )
+                           Compression::subblock_list::const_iterator end )
+         : E( engine )
+         , m_offset( offset )
+         , m_begin( begin )
+         , m_end( end )
       {
       }
 
@@ -744,4 +744,4 @@ size_type LZ4HCCompression::UncompressBlock( void* outputData, size_type maxOutp
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Compression.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Compression.cpp - Released 2020-07-31T19:33:12Z

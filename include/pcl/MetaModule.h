@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MetaModule.h - Released 2020-02-27T12:55:23Z
+// pcl/MetaModule.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -79,7 +79,7 @@ namespace pcl
  * Every PixInsight module must define a \e unique subclass of %MetaModule.
  * That subclass, besides describing the module, will be the primary interface
  * between all module components (processes, file formats and interfaces) and
- * the PixInsight Core application.
+ * the PixInsight core application.
  *
  * In any PixInsight module, there exists a \e unique instance of a derived
  * class of %MetaModule, accessible as a global pointer variable declared in
@@ -244,7 +244,7 @@ public:
     *
     * The returned string must be a valid C identifier. The identifier must be
     * unique among the identifiers of all installed modules in the calling
-    * instance of the PixInsight Core application.
+    * instance of the PixInsight core application.
     *
     * This function is not intended to provide a descriptive name, but just a
     * reference identifier for this module. For example, some identifiers of
@@ -364,6 +364,71 @@ public:
    }
 
    /*!
+    * Acquires current physical memory statistics.
+    *
+    * \param[out] totalBytes  On output, an estimate of the total amount of
+    *                         existing physical memory in bytes.
+    *
+    * \param[out] availableBytes    On output, an estimate of the amount of
+    *                         memory in bytes that can be allocated by the
+    *                         caller without pushing the system into swap,
+    *                         taking into account memory being used for file
+    *                         caches that can be reclaimed.
+    *
+    * The current platform-dependent implementation provides accurate values on
+    * supported versions of FreeBSD, Linux, macOS, and Windows.
+    *
+    * Returns true if the required system calls and external processes were
+    * executed correctly and provided valid values. Returns false in the event
+    * of error, in which case the passed variables could be modified, possibly
+    * with meaningless values.
+    *
+    * \sa AvailablePhysicalMemory(), PhysicalMemoryLoad()
+    */
+   bool GetPhysicalMemoryStatus( size_type& totalBytes, size_type& availableBytes ) const;
+
+   /*!
+    * Returns an estimate of how much free memory is currently available.
+    *
+    * This function returns the amount of memory in bytes that can be allocated
+    * by the caller without pushing the system into swap, taking into account
+    * memory being used for file caches that can be reclaimed. The current
+    * platform-dependent implementation returns accurate values on supported
+    * versions of FreeBSD, Linux, macOS, and Windows.
+    *
+    * The returned value is zero in the event of error. In theory this can only
+    * happen on Linux if /proc/meminfo cannot be accessed, which should never
+    * happen on a healthy system under normal working conditions.
+    */
+   size_type AvailablePhysicalMemory() const
+   {
+      size_type dum, availableBytes;
+      if ( GetPhysicalMemoryStatus( dum, availableBytes ) )
+         return availableBytes;
+      return 0;
+   }
+
+   /*!
+    * Returns an estimate of the fraction of physical memory currently in use.
+    *
+    * This function acquires estimates of the total amount of existing physical
+    * memory and the amount of memory that can be currently allocated by the
+    * caller without causing the system to swap. See AvailablePhysicalMemory()
+    * for more information.
+    *
+    * The returned value is zero in the event of error, or in the range (0,1)
+    * if valid, representing the fraction of physical memory that is currently
+    * allocated, excluding memory used for reclaimable file caches.
+    */
+   float PhysicalMemoryLoad() const
+   {
+      size_type totalBytes, availableBytes;
+      if ( GetPhysicalMemoryStatus( totalBytes, availableBytes ) )
+         return float( 1 - double( availableBytes )/totalBytes );
+      return 0;
+   }
+
+   /*!
     * Module allocation routine. Allocates a contiguous block of \a sz bytes,
     * and returns its starting address.
     *
@@ -419,7 +484,7 @@ public:
 
    /*!
     * Routine invoked just before this module is unloaded in response to an
-    * uninstall request, or just before the PixInsight Core application is
+    * uninstall request, or just before the PixInsight core application is
     * about to terminate execution.
     *
     * This function can be reimplemented to perform module-specific
@@ -491,14 +556,14 @@ public:
     * <b>Automatic Resource Location</b>
     *
     * Resource files can be loaded from arbitrary locations. However, modules
-    * typically install their resources on the /rsc/rcc/modules directory under
+    * typically install their resources on the /rsc/rcc/module directory under
     * the local PixInsight installation. A module can specify the
-    * "@module_resource_dir/" prefix in resource file paths to let the
+    * "@module_rcc_dir/" prefix in resource file paths to let the
     * PixInsight core application load the resources from the appropriate
     * standard distribution directory automatically. For example, if a module
     * whose name is "Foo" makes the following call:
     *
-    * \code LoadResource( "@module_resource_dir/MyResources.rcc" ); \endcode
+    * \code LoadResource( "@module_rcc_dir/MyResources.rcc" ); \endcode
     *
     * the core application will attempt to load the following resource file:
     *
@@ -510,11 +575,11 @@ public:
     * <b>Resource Root Paths</b>
     *
     * All the resources loaded by a call to this function will be rooted at the
-    * specified \a rootPath under a standard ":/module/<module-name>/"
+    * specified \a rootPath under a standard ":/module/&lt;module-name&gt;/"
     * root path prefix set by the PixInsight core application automatically.
     * For example, if the Foo module calls this function as follows:
     *
-    * \code LoadResource( "@module_resource_dir/MyResources.rcc" ); \endcode
+    * \code LoadResource( "@module_rcc_dir/MyResources.rcc" ); \endcode
     *
     * and the MyResources.rcc file contains a resource named "foo-icon.png", it
     * will be available at the following resource path:
@@ -955,4 +1020,4 @@ namespace InstallMode
 #endif   // __PCL_MetaModule_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaModule.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/MetaModule.h - Released 2020-07-31T19:33:04Z

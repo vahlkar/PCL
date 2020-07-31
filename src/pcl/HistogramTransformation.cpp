@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/HistogramTransformation.cpp - Released 2020-02-27T12:55:33Z
+// pcl/HistogramTransformation.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -225,8 +225,11 @@ class LUT2408Thread : public Thread
 {
 public:
 
-   LUT2408Thread( uint8* lut, const HistogramTransformation& transform, int start, int end ) :
-      m_lut( lut ), m_T( transform ), m_start( start ), m_end( end )
+   LUT2408Thread( uint8* lut, const HistogramTransformation& transform, int start, int end )
+      : m_lut( lut )
+      , m_T( transform )
+      , m_start( start )
+      , m_end( end )
    {
    }
 
@@ -290,8 +293,11 @@ class LUT2416Thread : public Thread
 {
 public:
 
-   LUT2416Thread( uint16* lut, const HistogramTransformation& transform, int start, int end ) :
-      m_lut( lut ), m_T( transform ), m_start( start ), m_end( end )
+   LUT2416Thread( uint16* lut, const HistogramTransformation& transform, int start, int end )
+      : m_lut( lut )
+      , m_T( transform )
+      , m_start( start )
+      , m_end( end )
    {
    }
 
@@ -410,10 +416,10 @@ private:
    template <class P>
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( GenericImage<P>& a_image, const HistogramTransformation& a_transformation, size_type a_count ) :
-         AbstractImage::ThreadData( a_image, a_count ),
-         image( a_image ),
-         transformation( a_transformation )
+      ThreadData( GenericImage<P>& a_image, const HistogramTransformation& a_transformation, size_type a_count )
+         : AbstractImage::ThreadData( a_image, a_count )
+         , image( a_image )
+         , transformation( a_transformation )
       {
       }
 
@@ -426,9 +432,10 @@ private:
    {
    public:
 
-      Thread( ThreadData<P>& d, int startRow, int endRow ) :
-         m_data( d ),
-         m_firstRow( startRow ), m_endRow( endRow ) // m_firstRow, m_endRow are relative to the current image selection
+      Thread( ThreadData<P>& d, int startRow, int endRow )
+         : m_data( d )
+         , m_firstRow( startRow )
+         , m_endRow( endRow ) // N.B. m_firstRow, m_endRow are relative to the current image selection
       {
       }
 
@@ -496,4 +503,4 @@ void HistogramTransformation::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/HistogramTransformation.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/HistogramTransformation.cpp - Released 2020-07-31T19:33:12Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationProcess.cpp - Released 2020-02-27T12:56:01Z
+// LRGBCombinationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -64,15 +64,10 @@ LRGBCombinationProcess* TheLRGBCombinationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "LRGBCombinationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 LRGBCombinationProcess::LRGBCombinationProcess()
 {
    TheLRGBCombinationProcess = this;
 
-   // Instantiate process parameters
    new LRGBChannelTable( this );
    new LRGBChannelEnabled( TheLRGBChannelTableParameter );
    new LRGBChannelId( TheLRGBChannelTableParameter );
@@ -108,9 +103,9 @@ String LRGBCombinationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** LRGBCombinationProcess::IconImageXPM() const
+String LRGBCombinationProcess::IconImageSVGFile() const
 {
-   return LRGBCombinationIcon_XPM;
+   return "@module_icons_dir/LRGBCombination.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -147,4 +142,4 @@ bool LRGBCombinationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF LRGBCombinationProcess.cpp - Released 2020-07-31T19:33:39Z

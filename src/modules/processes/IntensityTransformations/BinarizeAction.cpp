@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeAction.cpp - Released 2020-02-27T12:56:01Z
+// BinarizeAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -62,20 +62,22 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "BinarizeActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-BinarizeAction::BinarizeAction() :
-   Action( "Image > Binarize", Bitmap( BinarizeActionIcon_XPM ), "Intensity Transformations" )
+BinarizeAction::BinarizeAction()
+   : Action( "Image > Binarize",
+             "@module_icons_dir/Binarize.svg",
+             "Intensity Transformations" )
 {
    SetToolTip( "Binarize" );
 }
+
+// ----------------------------------------------------------------------------
 
 void BinarizeAction::Execute()
 {
    BinarizeInstance( TheBinarizeProcess ).LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 bool BinarizeAction::IsEnabled( ActionInfo info ) const
 {
@@ -87,4 +89,4 @@ bool BinarizeAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF BinarizeAction.cpp - Released 2020-07-31T19:33:39Z

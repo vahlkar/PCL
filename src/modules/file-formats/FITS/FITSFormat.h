@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.6
+// Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITSFormat.h - Released 2020-02-27T12:55:48Z
+// FITSFormat.h - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -66,7 +66,7 @@ class FITSFormat : public MetaFileFormat
 {
 public:
 
-   FITSFormat();
+   FITSFormat() = default;
 
    IsoString Name() const override;
    StringList FileExtensions() const override;
@@ -75,7 +75,7 @@ public:
    String Description() const override;
    String Implementation() const override;
    String Status() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanReadIncrementally() const override;
    bool CanWriteIncrementally() const override;
    bool CanStore32Bit() const override;
@@ -163,4 +163,4 @@ public:
 #endif   // __FITSFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.h - Released 2020-02-27T12:55:48Z
+// EOF FITSFormat.h - Released 2020-07-31T19:33:23Z

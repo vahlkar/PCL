@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2020-02-27T12:56:01Z
+// LocalNormalizationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -86,48 +86,48 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LocalNormalizationInstance::LocalNormalizationInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   p_scale( TheLNScaleParameter->DefaultValue() ),
-   p_noScale( TheLNNoScaleParameter->DefaultValue() ),
-   p_rejection( TheLNRejectionParameter->DefaultValue() ),
-   p_backgroundRejectionLimit( TheLNBackgroundRejectionLimitParameter->DefaultValue() ),
-   p_referenceRejectionThreshold( TheLNReferenceRejectionThresholdParameter->DefaultValue() ),
-   p_targetRejectionThreshold( TheLNTargetRejectionThresholdParameter->DefaultValue() ),
-   p_hotPixelFilterRadius( TheLNHotPixelFilterRadiusParameter->DefaultValue() ),
-   p_noiseReductionFilterRadius( TheLNNoiseReductionFilterRadiusParameter->DefaultValue() ),
-   p_referencePathOrViewId( TheLNReferencePathOrViewIdParameter->DefaultValue() ),
-   p_referenceIsView( TheLNReferenceIsViewParameter->DefaultValue() ),
-   p_inputHints( TheLNInputHintsParameter->DefaultValue() ),
-   p_outputHints( TheLNOutputHintsParameter->DefaultValue() ),
-   p_generateNormalizedImages( LNGenerateNormalizedImages::Default ),
-   p_generateNormalizationData( TheLNGenerateNormalizationDataParameter->DefaultValue() ),
-   p_showBackgroundModels( TheLNShowBackgroundModelsParameter->DefaultValue() ),
-   p_showRejectionMaps( TheLNShowRejectionMapsParameter->DefaultValue() ),
-   p_plotNormalizationFunctions( LNPlotNormalizationFunctions::Default ),
-   p_noGUIMessages( TheLNNoGUIMessagesParameter->DefaultValue() ), // ### DEPRECATED
-   p_outputDirectory( TheLNOutputDirectoryParameter->DefaultValue() ),
-   p_outputExtension( TheLNOutputExtensionParameter->DefaultValue() ),
-   p_outputPrefix( TheLNOutputPrefixParameter->DefaultValue() ),
-   p_outputPostfix( TheLNOutputPostfixParameter->DefaultValue() ),
-   p_overwriteExistingFiles( TheLNOverwriteExistingFilesParameter->DefaultValue() ),
-   p_onError( LNOnError::Default ),
-   p_useFileThreads( TheLNUseFileThreadsParameter->DefaultValue() ),
-   p_fileThreadOverload( TheLNFileThreadOverloadParameter->DefaultValue() ),
-   p_maxFileReadThreads( TheLNMaxFileReadThreadsParameter->DefaultValue() ),
-   p_maxFileWriteThreads( TheLNMaxFileWriteThreadsParameter->DefaultValue() ),
-   p_graphSize( TheLNGraphSizeParameter->DefaultValue() ),
-   p_graphTextSize( TheLNGraphTextSizeParameter->DefaultValue() ),
-   p_graphTitleSize( TheLNGraphTitleSizeParameter->DefaultValue() ),
-   p_graphTransparent( TheLNGraphTransparentParameter->DefaultValue() ),
-   p_graphOutputDirectory( TheLNGraphOutputDirectoryParameter->DefaultValue() )
+LocalNormalizationInstance::LocalNormalizationInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , p_scale( TheLNScaleParameter->DefaultValue() )
+   , p_noScale( TheLNNoScaleParameter->DefaultValue() )
+   , p_rejection( TheLNRejectionParameter->DefaultValue() )
+   , p_backgroundRejectionLimit( TheLNBackgroundRejectionLimitParameter->DefaultValue() )
+   , p_referenceRejectionThreshold( TheLNReferenceRejectionThresholdParameter->DefaultValue() )
+   , p_targetRejectionThreshold( TheLNTargetRejectionThresholdParameter->DefaultValue() )
+   , p_hotPixelFilterRadius( TheLNHotPixelFilterRadiusParameter->DefaultValue() )
+   , p_noiseReductionFilterRadius( TheLNNoiseReductionFilterRadiusParameter->DefaultValue() )
+   , p_referencePathOrViewId( TheLNReferencePathOrViewIdParameter->DefaultValue() )
+   , p_referenceIsView( TheLNReferenceIsViewParameter->DefaultValue() )
+   , p_inputHints( TheLNInputHintsParameter->DefaultValue() )
+   , p_outputHints( TheLNOutputHintsParameter->DefaultValue() )
+   , p_generateNormalizedImages( LNGenerateNormalizedImages::Default )
+   , p_generateNormalizationData( TheLNGenerateNormalizationDataParameter->DefaultValue() )
+   , p_showBackgroundModels( TheLNShowBackgroundModelsParameter->DefaultValue() )
+   , p_showRejectionMaps( TheLNShowRejectionMapsParameter->DefaultValue() )
+   , p_plotNormalizationFunctions( LNPlotNormalizationFunctions::Default )
+   , p_noGUIMessages( TheLNNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
+   , p_outputDirectory( TheLNOutputDirectoryParameter->DefaultValue() )
+   , p_outputExtension( TheLNOutputExtensionParameter->DefaultValue() )
+   , p_outputPrefix( TheLNOutputPrefixParameter->DefaultValue() )
+   , p_outputPostfix( TheLNOutputPostfixParameter->DefaultValue() )
+   , p_overwriteExistingFiles( TheLNOverwriteExistingFilesParameter->DefaultValue() )
+   , p_onError( LNOnError::Default )
+   , p_useFileThreads( TheLNUseFileThreadsParameter->DefaultValue() )
+   , p_fileThreadOverload( TheLNFileThreadOverloadParameter->DefaultValue() )
+   , p_maxFileReadThreads( TheLNMaxFileReadThreadsParameter->DefaultValue() )
+   , p_maxFileWriteThreads( TheLNMaxFileWriteThreadsParameter->DefaultValue() )
+   , p_graphSize( TheLNGraphSizeParameter->DefaultValue() )
+   , p_graphTextSize( TheLNGraphTextSizeParameter->DefaultValue() )
+   , p_graphTitleSize( TheLNGraphTitleSizeParameter->DefaultValue() )
+   , p_graphTransparent( TheLNGraphTransparentParameter->DefaultValue() )
+   , p_graphOutputDirectory( TheLNGraphOutputDirectoryParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-LocalNormalizationInstance::LocalNormalizationInstance( const LocalNormalizationInstance& x ) :
-   ProcessImplementation( x )
+LocalNormalizationInstance::LocalNormalizationInstance( const LocalNormalizationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -246,10 +246,10 @@ public:
 
    LocalNormalizationThread( const LocalNormalizationInstance& instance,
                              const ImageVariant& referenceImage,
-                             const String& targetFilePath ) :
-      m_instance( instance ),
-      m_referenceImage( referenceImage ),
-      m_targetFilePath( targetFilePath )
+                             const String& targetFilePath )
+      : m_instance( instance )
+      , m_referenceImage( referenceImage )
+      , m_targetFilePath( targetFilePath )
    {
       if ( m_instance.p_referenceIsView )
          m_referenceFilePath = View::ViewById( m_instance.p_referencePathOrViewId ).Window().FilePath();
@@ -259,10 +259,10 @@ public:
 
    LocalNormalizationThread( const LocalNormalizationInstance& instance,
                              const ImageVariant& referenceImage,
-                             ImageVariant& targetImage ) :
-      m_instance( instance ),
-      m_referenceImage( referenceImage ),
-      m_targetImage( targetImage )
+                             ImageVariant& targetImage )
+      : m_instance( instance )
+      , m_referenceImage( referenceImage )
+      , m_targetImage( targetImage )
    {
       m_targetImage.SetOwnership( false );
    }
@@ -370,12 +370,10 @@ private:
    {
    public:
 
-      FixZeroThread( Image& image, const background_model& G, int channel, int startRow, int endRow ) :
-         m_image( image ),
-         m_G( G ),
-         m_channel( channel ),
-         m_startRow( startRow ),
-         m_endRow( endRow )
+      FixZeroThread( Image& image, const background_model& G, int channel, int startRow, int endRow )
+         : m_image( image )
+         , m_G( G )
+         , m_channel( channel ) , m_startRow( startRow ) , m_endRow( endRow )
       {
       }
 
@@ -427,7 +425,7 @@ private:
                   }
                }
 
-         double m = NondestructiveMedian( Z0.Begin(), Z0.End() );
+         double m = Median( Z0.Begin(), Z0.End() );
          double s = 3*1.5*MAD( Z0.Begin(), Z0.End(), m );
          Array<double> X, Y, Z;
          for ( size_type i = 0; i < Z0.Length(); ++i )
@@ -483,18 +481,13 @@ private:
                     UInt8Image& Rr, UInt8Image& Tr,
                     const Image& R, const Image& T,
                     const background_model& Rz, const background_model& Tz,
-                    int channel, int startRow, int endRow ) :
-         m_data( data ),
-         m_instance( instance ),
-         m_Rr( Rr ),
-         m_Tr( Tr ),
-         m_R( R ),
-         m_T( T ),
-         m_Rz( Rz ),
-         m_Tz( Tz ),
-         m_channel( channel ),
-         m_startRow( startRow ),
-         m_endRow( endRow )
+                    int channel, int startRow, int endRow )
+         : m_data( data )
+         , m_instance( instance )
+         , m_Rr( Rr ), m_Tr( Tr )
+         , m_R( R ), m_T( T )
+         , m_Rz( Rz ), m_Tz( Tz )
+         , m_channel( channel ), m_startRow( startRow ), m_endRow( endRow )
       {
       }
 
@@ -830,11 +823,11 @@ private:
 
       BuildThread( AbstractImage::ThreadData& data,
                    const Image& R, const Image& T, const Image& RB, const Image& TB,
-                   DImage& A0, DImage& A1, bool noScale, distance_type start, distance_type end ) :
-         m_data( data ),
-         m_R( R ), m_T( T ), m_RB( RB ), m_TB( TB ),
-         m_A0( A0 ), m_A1( A1 ), m_noScale( noScale ),
-         m_start( start ), m_end( end )
+                   DImage& A0, DImage& A1, bool noScale, distance_type start, distance_type end )
+         : m_data( data )
+         , m_R( R ), m_T( T ), m_RB( RB ), m_TB( TB )
+         , m_A0( A0 ), m_A1( A1 ), m_noScale( noScale )
+         , m_start( start ), m_end( end )
       {
       }
 
@@ -984,13 +977,11 @@ private:
 
       ApplyThread( AbstractImage::ThreadData& data,
                    GenericImage<P>& target, const DImage& A0, const DImage& A1,
-                   int startRow, int endRow ) :
-         m_data( data ),
-         m_target( target ),
-         m_A0( A0 ),
-         m_A1( A1 ),
-         m_startRow( startRow ),
-         m_endRow( endRow )
+                   int startRow, int endRow )
+         : m_data( data )
+         , m_target( target )
+         , m_A0( A0 ), m_A1( A1 )
+         , m_startRow( startRow ) , m_endRow( endRow )
       {
       }
 
@@ -1883,4 +1874,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF LocalNormalizationInstance.cpp - Released 2020-07-31T19:33:39Z

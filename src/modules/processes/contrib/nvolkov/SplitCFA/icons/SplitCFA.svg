@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="e" x1="133.43" x2="94.285" y1="44.134" y2="83.273" gradientTransform="matrix(2.1091,0,0,2.1091,-83.612,-113.79)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#06b421" offset="0"/>
+<stop stop-color="#fff" offset="1"/>
+</linearGradient>
+<linearGradient id="f" x1="133.43" x2="94.285" y1="102.34" y2="63.202" gradientTransform="matrix(2.1091,0,0,2.1091,-83.612,-113.79)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1417f6" offset="0"/>
+<stop stop-color="#fff" offset="1"/>
+</linearGradient>
+<linearGradient id="g" x1="75.217" x2="114.36" y1="102.34" y2="63.202" gradientTransform="matrix(2.1091,0,0,2.1091,-83.612,-113.79)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0fba28" offset="0"/>
+<stop stop-color="#fff" offset="1"/>
+</linearGradient>
+<linearGradient id="h" x1="75.217" x2="114.36" y1="44.134" y2="83.273" gradientTransform="matrix(2.1091,0,0,2.1091,-83.612,-113.79)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f00" offset="0"/>
+<stop stop-color="#fff" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-72.571 30.479)">
+<g transform="translate(3.8932,-3.4207)">
+<rect x="75.028" y="-20.708" width="122.77" height="122.77" fill="none" style="paint-order:stroke markers fill"/>
+<rect x="136.41" y="-20.708" width="61.383" height="61.383" fill="url(#e)" style="paint-order:stroke markers fill"/>
+<rect x="75.028" y="-20.708" width="61.383" height="61.383" fill="url(#h)" style="paint-order:stroke markers fill"/>
+<rect x="136.41" y="40.675" width="61.383" height="61.383" fill="url(#f)" style="paint-order:stroke markers fill"/>
+<rect x="75.028" y="40.675" width="61.383" height="61.383" fill="url(#g)" style="paint-order:stroke markers fill"/>
+</g>
+<g transform="matrix(-1 0 0 1 280.08 .52917)" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="6.35">
+<rect x="97.971" y="-5.0786" width="42.333" height="42.333" fill="#f00"/>
+<rect x="118.61" y="15.559" width="42.333" height="42.333" fill="#00d000"/>
+<rect x="139.25" y="36.196" width="42.333" height="42.333" fill="#00f"/>
+</g>
+</g>
+</svg>

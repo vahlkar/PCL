@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MorphologicalOperator.h - Released 2020-02-27T12:55:23Z
+// pcl/MorphologicalOperator.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1276,8 +1276,8 @@ public:
    /*!
     * Constructs a %SelectionFilter with selection point \a p.
     */
-   SelectionFilter( float p ) :
-      k( pcl::Range( p, float( 0 ), float( 1 ) ) )
+   SelectionFilter( float p )
+      : k( pcl::Range( p, float( 0 ), float( 1 ) ) )
    {
       PCL_PRECONDITION( 0 <= p && p <= 1 )
       PCL_CHECK( 0 <= k && k <= 1 )
@@ -1491,8 +1491,8 @@ public:
     * Constructs a %AlphaTrimmedMeanFilter object with the specified trimming
     * factor \a t in the [0,1] range.
     */
-   AlphaTrimmedMeanFilter( float t ) :
-      d( pcl::Range( t, float( 0 ), float( 1 ) ) )
+   AlphaTrimmedMeanFilter( float t )
+      : d( pcl::Range( t, float( 0 ), float( 1 ) ) )
    {
       PCL_PRECONDITION( 0 <= t && t <= 1 )
       PCL_CHECK( 0 <= d && d <= 1 )
@@ -1603,4 +1603,4 @@ private:
 #endif   // __PCL_MorphologicalOperator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MorphologicalOperator.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/MorphologicalOperator.h - Released 2020-07-31T19:33:04Z

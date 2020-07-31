@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/AutoPointer.h - Released 2020-02-27T12:55:23Z
+// pcl/AutoPointer.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -280,9 +280,9 @@ public:
     * specified, this object will use a default-constructed instance of the
     * deleter template argument class.
     */
-   AutoPointer( bool autoDelete = true, const deleter& d = deleter() ) :
-      m_deleter( d ),
-      m_autoDelete( autoDelete )
+   AutoPointer( bool autoDelete = true, const deleter& d = deleter() )
+      : m_deleter( d )
+      , m_autoDelete( autoDelete )
    {
    }
 
@@ -303,9 +303,9 @@ public:
     * specified, this object will use a default-constructed instance of the
     * deleter template argument class.
     */
-   AutoPointer( pointer p, bool autoDelete = true, const deleter& d = deleter() ) :
-      m_deleter( d ),
-      m_autoDelete( autoDelete )
+   AutoPointer( pointer p, bool autoDelete = true, const deleter& d = deleter() )
+      : m_deleter( d )
+      , m_autoDelete( autoDelete )
    {
       m_pointer = p;
    }
@@ -324,9 +324,9 @@ public:
     * no two %AutoPointer instances can share the same pointer accidentally,
     * and hence multiple deletions are not possible.
     */
-   AutoPointer( AutoPointer& x ) :
-      m_deleter( x.m_deleter ),
-      m_autoDelete( x.m_autoDelete )
+   AutoPointer( AutoPointer& x )
+      : m_deleter( x.m_deleter )
+      , m_autoDelete( x.m_autoDelete )
    {
       m_pointer = x.Release();
    }
@@ -334,9 +334,9 @@ public:
    /*!
     * Move constructor.
     */
-   AutoPointer( AutoPointer&& x ) :
-      m_deleter( std::move( x.m_deleter ) ),
-      m_autoDelete( x.m_autoDelete )
+   AutoPointer( AutoPointer&& x )
+      : m_deleter( std::move( x.m_deleter ) )
+      , m_autoDelete( x.m_autoDelete )
    {
       m_pointer = x.Release();
    }
@@ -737,8 +737,8 @@ public:
     * specified, this object will use a default-constructed instance of the
     * deleter template argument class.
     */
-   AutoPointerCloner( bool autoDelete = true, const deleter& d = deleter() ) :
-      base_type( autoDelete, d )
+   AutoPointerCloner( bool autoDelete = true, const deleter& d = deleter() )
+      : base_type( autoDelete, d )
    {
       ASSERT_COPIABLE_T();
    }
@@ -760,8 +760,8 @@ public:
     * specified, this object will use a default-constructed instance of the
     * deleter template argument class.
     */
-   AutoPointerCloner( pointer p, bool autoDelete = true, const deleter& d = deleter() ) :
-      base_type( p, autoDelete, d )
+   AutoPointerCloner( pointer p, bool autoDelete = true, const deleter& d = deleter() )
+      : base_type( p, autoDelete, d )
    {
       ASSERT_COPIABLE_T();
    }
@@ -778,7 +778,8 @@ public:
     * Contrarily to the copy constructor of AutoPointer, the source smart
     * pointer \a x will not be modified in any way by this constructor.
     */
-   AutoPointerCloner( const base_type& x ) : base_type( nullptr )
+   AutoPointerCloner( const base_type& x )
+      : base_type( nullptr )
    {
       ASSERT_COPIABLE_T();
       this->m_pointer = x ? new value_type( *x ) : nullptr;
@@ -798,7 +799,8 @@ public:
     * Contrarily to the copy constructor of AutoPointer, the source smart
     * pointer \a x will not be modified in any way by this constructor.
     */
-   AutoPointerCloner( const AutoPointerCloner& x ) : base_type( nullptr )
+   AutoPointerCloner( const AutoPointerCloner& x )
+      : base_type( nullptr )
    {
       ASSERT_COPIABLE_T();
       this->m_pointer = x ? new value_type( *x ) : nullptr;
@@ -809,7 +811,8 @@ public:
    /*!
     * Move constructor.
     */
-   AutoPointerCloner( base_type&& x ) : base_type( std::move( x ) )
+   AutoPointerCloner( base_type&& x )
+      : base_type( std::move( x ) )
    {
    }
 
@@ -906,4 +909,4 @@ public:
 #endif  // __PCL_AutoPointer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AutoPointer.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/AutoPointer.h - Released 2020-07-31T19:33:04Z

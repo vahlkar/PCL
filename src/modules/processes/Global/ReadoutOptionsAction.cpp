@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ReadoutOptionsAction.cpp - Released 2020-02-27T12:56:01Z
+// ReadoutOptionsAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -60,15 +60,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "ReadoutOptionsActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ReadoutOptionsAction::ReadoutOptionsAction() :
-   Action( "Edit > Readout Options", Bitmap( ReadoutOptionsActionIcon_XPM ), "Edit" )
+ReadoutOptionsAction::ReadoutOptionsAction()
+   : Action( "Edit > Readout Options",
+             "@module_icons_dir/ReadoutOptions.svg",
+             "Edit" )
 {
    SetToolTip( "Readout Options" );
 }
+
+// ----------------------------------------------------------------------------
 
 void ReadoutOptionsAction::Execute()
 {
@@ -84,4 +84,4 @@ void ReadoutOptionsAction::Execute()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF ReadoutOptionsAction.cpp - Released 2020-07-31T19:33:39Z

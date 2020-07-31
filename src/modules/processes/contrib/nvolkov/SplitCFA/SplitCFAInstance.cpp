@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAInstance.cpp - Released 2020-02-27T12:56:01Z
+// SplitCFAInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -57,7 +57,7 @@
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileFormat.h>
 #include <pcl/ICCProfile.h>
-#include <pcl/MetaModule.h> // for ProcessEvents()
+#include <pcl/MetaModule.h>
 #include <pcl/StdStatus.h>
 #include <pcl/Version.h>
 
@@ -66,38 +66,43 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SplitCFAInstance::SplitCFAInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_targetFrames(),
-   p_outputTree( TheOutputTreeParameter->DefaultValue() ),
-   p_outputSubDirCFA( TheOutputSubDirCFAParameter->DefaultValue() ),
-   p_outputDir( TheOutputDirParameter->DefaultValue() ),
-   p_overwrite( TheOverwriteParameter->DefaultValue() ),
-   p_prefix( ThePrefixParameter->DefaultValue() ),
-   p_postfix( ThePostfixParameter->DefaultValue() )
+SplitCFAInstance::SplitCFAInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_outputTree( TheOutputTreeParameter->DefaultValue() )
+   , p_outputSubDirCFA( TheOutputSubDirCFAParameter->DefaultValue() )
+   , p_outputDir( TheOutputDirParameter->DefaultValue() )
+   , p_overwrite( TheOverwriteParameter->DefaultValue() )
+   , p_prefix( ThePrefixParameter->DefaultValue() )
+   , p_postfix( ThePostfixParameter->DefaultValue() )
 {
 }
 
-SplitCFAInstance::SplitCFAInstance( const SplitCFAInstance& x ) :
-   ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+SplitCFAInstance::SplitCFAInstance( const SplitCFAInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitCFAInstance::Assign( const ProcessImplementation& p )
 {
    const SplitCFAInstance* x = dynamic_cast<const SplitCFAInstance*>( &p );
    if ( x != nullptr )
    {
-      p_targetFrames    = x->p_targetFrames;
-      p_outputTree      = x->p_outputTree;
+      p_targetFrames = x->p_targetFrames;
+      p_outputTree = x->p_outputTree;
       p_outputSubDirCFA = x->p_outputSubDirCFA;
-      p_outputDir       = x->p_outputDir;
-      p_overwrite       = x->p_overwrite;
-      p_prefix          = x->p_prefix;
-      p_postfix         = x->p_postfix;
+      p_outputDir = x->p_outputDir;
+      p_overwrite = x->p_overwrite;
+      p_prefix = x->p_prefix;
+      p_postfix = x->p_postfix;
    }
 }
+
+// ----------------------------------------------------------------------------
 
 bool SplitCFAInstance::CanExecuteOn( const View& view, String& whyNot ) const
 {
@@ -106,7 +111,7 @@ bool SplitCFAInstance::CanExecuteOn( const View& view, String& whyNot ) const
       whyNot = "SplitCFA cannot be executed on complex images.";
       return false;
    }
-   if ( view.Image().Width()&1 | view.Image().Height()&1 ) // is odd?
+   if ( view.Image().Width() & 1 | view.Image().Height() & 1 ) // is odd?
    {
       whyNot = String().Format( "Invalid odd image dimension(s): %dx%d", view.Width(), view.Height() );
       return false;
@@ -114,10 +119,14 @@ bool SplitCFAInstance::CanExecuteOn( const View& view, String& whyNot ) const
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool SplitCFAInstance::IsHistoryUpdater( const View& view ) const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 static void CopySTF( View& target, const View& source )
 {
@@ -127,15 +136,17 @@ static void CopySTF( View& target, const View& source )
    target.EnableScreenTransferFunctions();
 }
 
+// ----------------------------------------------------------------------------
+
 template <class P>
 void SplitCFAInstance::SplitCFAViewImage( const GenericImage<P>& inputImage, const View& inputView )
 {
    for ( int cfaIndex = 0; cfaIndex < 4; ++cfaIndex )
    {
-      ImageWindow outputWindow( inputImage.Width()/2, inputImage.Height()/2,
-                                inputImage.NumberOfChannels(), P::BitsPerSample(), P::IsFloatSample(),
-                                inputImage.NumberOfChannels() > 1 ? true : false, // RGB : Mono
-                                true, inputView.Id() + p_postfix + String( cfaIndex ) );
+      ImageWindow outputWindow( inputImage.Width() / 2, inputImage.Height() / 2,
+         inputImage.NumberOfChannels(), P::BitsPerSample(), P::IsFloatSample(),
+         inputImage.NumberOfChannels() > 1 ? true : false, // RGB : Mono
+         true, inputView.Id() + p_postfix + String( cfaIndex ) );
 
       View outputView = outputWindow.MainView();
       ImageVariant outputImageVariant = outputView.GetImage();
@@ -146,15 +157,23 @@ void SplitCFAInstance::SplitCFAViewImage( const GenericImage<P>& inputImage, con
          {
             for ( int sX = 0, tX = 0; sX < inputImage.Width(); sX += 2, ++tX )
             {
-               switch( cfaIndex )
+               switch ( cfaIndex )
                {
-               case 0: outputImage( tX, tY, c ) = inputImage( sX,   sY,   c ); break;
-               case 1: outputImage( tX, tY, c ) = inputImage( sX,   sY+1, c ); break;
-               case 2: outputImage( tX, tY, c ) = inputImage( sX+1, sY,   c ); break;
-               case 3: outputImage( tX, tY, c ) = inputImage( sX+1, sY+1, c ); break;
+               case 0:
+                  outputImage( tX, tY, c ) = inputImage( sX, sY, c );
+                  break;
+               case 1:
+                  outputImage( tX, tY, c ) = inputImage( sX, sY + 1, c );
+                  break;
+               case 2:
+                  outputImage( tX, tY, c ) = inputImage( sX + 1, sY, c );
+                  break;
+               case 3:
+                  outputImage( tX, tY, c ) = inputImage( sX + 1, sY + 1, c );
+                  break;
                }
             }
-            inputImage.Status() += inputImage.Width()/2;
+            inputImage.Status() += inputImage.Width() / 2;
          }
 
       o_outputViewId[cfaIndex] = outputView.Id();
@@ -163,6 +182,8 @@ void SplitCFAInstance::SplitCFAViewImage( const GenericImage<P>& inputImage, con
       outputWindow.Show();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 bool SplitCFAInstance::ExecuteOn( View& view )
 {
@@ -183,15 +204,25 @@ bool SplitCFAInstance::ExecuteOn( View& view )
       if ( image.IsFloatSample() )
          switch ( image.BitsPerSample() )
          {
-         case 32: SplitCFAViewImage( static_cast<const Image&>( *image ), view ); break;
-         case 64: SplitCFAViewImage( static_cast<const DImage&>( *image ), view ); break;
+         case 32:
+            SplitCFAViewImage( static_cast<const Image&>( *image ), view );
+            break;
+         case 64:
+            SplitCFAViewImage( static_cast<const DImage&>( *image ), view );
+            break;
          }
       else
-         switch (image.BitsPerSample())
+         switch ( image.BitsPerSample() )
          {
-         case  8: SplitCFAViewImage( static_cast<const UInt8Image&>( *image ), view ); break;
-         case 16: SplitCFAViewImage( static_cast<const UInt16Image&>( *image ), view ); break;
-         case 32: SplitCFAViewImage( static_cast<const UInt32Image&>( *image ), view ); break;
+         case 8:
+            SplitCFAViewImage( static_cast<const UInt8Image&>( *image ), view );
+            break;
+         case 16:
+            SplitCFAViewImage( static_cast<const UInt16Image&>( *image ), view );
+            break;
+         case 32:
+            SplitCFAViewImage( static_cast<const UInt32Image&>( *image ), view );
+            break;
          }
 
    return true;
@@ -227,15 +258,16 @@ bool SplitCFAInstance::CanExecuteGlobal( String& whyNot ) const
 
 struct FileData
 {
-   FileFormat*      format = nullptr;  // the file format of retrieved data
-   const void*      fsData = nullptr;  // format-specific data
-   ImageOptions     options;           // currently used for resolution only
-   FITSKeywordArray keywords;          // FITS keywords
-   ICCProfile       profile;           // ICC profile
+   FileFormat* format = nullptr; // the file format of retrieved data
+   const void* fsData = nullptr; // format-specific data
+   ImageOptions options;         // currently used for resolution only
+   FITSKeywordArray keywords;    // FITS keywords
+   ICCProfile profile;           // ICC profile
 
    FileData() = default;
 
-   FileData( FileFormatInstance& file, const ImageOptions& o ) : options( o )
+   FileData( FileFormatInstance& file, const ImageOptions& o )
+      : options( o )
    {
       format = new FileFormat( file.Format() );
       if ( format->UsesFormatSpecificData() )
@@ -257,17 +289,19 @@ struct FileData
    }
 };
 
+// ----------------------------------------------------------------------------
+
 class SplitCFAThread : public Thread
 {
 public:
 
-   SplitCFAThread( ImageVariant* s, FileData* fd, const String& tp, const String& tf, int i ) :
-      targetImages(),
-      sourceImage( s ),
-      targetData( fd ),
-      targetPath( tp ),
-      targetFolder( tf ),
-      subimageIndex( i )
+   SplitCFAThread( ImageVariant* s, FileData* fd, const String& tp, const String& tf, int i )
+      : targetImages()
+      , sourceImage( s )
+      , targetData( fd )
+      , targetPath( tp )
+      , targetFolder( tf )
+      , subimageIndex( i )
    {
    }
 
@@ -282,15 +316,15 @@ public:
          delete sourceImage, sourceImage = nullptr;
    }
 
-   virtual void Run()
+   void Run() override
    {
       try
       {
-         for( int i = 0; i < 4; ++i ) // CFA patern index
+         for ( int i = 0; i < 4; ++i ) // CFA patern index
          {
             ImageVariant* image = new ImageVariant();
             image->CreateImageAs( *sourceImage );
-            image->AllocateData( sourceImage->Width()/2, sourceImage->Height()/2, sourceImage->NumberOfChannels(), sourceImage->ColorSpace() );
+            image->AllocateData( sourceImage->Width() / 2, sourceImage->Height() / 2, sourceImage->NumberOfChannels(), sourceImage->ColorSpace() );
             Perform( *image, *sourceImage, i );
             targetImages << image;
          }
@@ -332,25 +366,33 @@ public:
 
 private:
 
-   IndirectArray<ImageVariant> targetImages;  // Target planes
-   ImageVariant*               sourceImage;
-   FileData*                   targetData;    // Target image parameters and embedded data. It belongs to this thread.
-   String                      targetPath;    // File path of this target image
-   String                      targetFolder;  // File sub-folder in output dir for this target image
-   int                         subimageIndex; // > 0 in case of a multiple image; = 0 otherwise
+   IndirectArray<ImageVariant> targetImages; // Target planes
+   ImageVariant* sourceImage = nullptr;
+   FileData* targetData = nullptr; // Target image parameters and embedded data. It belongs to this thread.
+   String targetPath;     // File path of this target image
+   String targetFolder;   // File sub-folder in output dir for this target image
+   int subimageIndex = 0; // > 0 in case of a multiple image; = 0 otherwise
 
    template <class P1>
    static void Perform( GenericImage<P1>& targetImage, const GenericImage<P1>& sourceImage, int cfaIndex )
    {
       for ( int c = 0; c < sourceImage.NumberOfChannels(); ++c )
-         for ( int sY = 0, tY = 0; sY < sourceImage.Height(); sY+=2, ++tY )
-            for ( int sX = 0, tX = 0; sX < sourceImage.Width(); sX+=2, ++tX )
+         for ( int sY = 0, tY = 0; sY < sourceImage.Height(); sY += 2, ++tY )
+            for ( int sX = 0, tX = 0; sX < sourceImage.Width(); sX += 2, ++tX )
                switch ( cfaIndex )
                {
-               case 0: targetImage( tX, tY, c ) = sourceImage( sX,   sY,   c); break;
-               case 1: targetImage( tX, tY, c ) = sourceImage( sX,   sY+1, c); break;
-               case 2: targetImage( tX, tY, c ) = sourceImage( sX+1, sY,   c); break;
-               case 3: targetImage( tX, tY, c ) = sourceImage( sX+1, sY+1, c); break;
+               case 0:
+                  targetImage( tX, tY, c ) = sourceImage( sX, sY, c );
+                  break;
+               case 1:
+                  targetImage( tX, tY, c ) = sourceImage( sX, sY + 1, c );
+                  break;
+               case 2:
+                  targetImage( tX, tY, c ) = sourceImage( sX + 1, sY, c );
+                  break;
+               case 3:
+                  targetImage( tX, tY, c ) = sourceImage( sX + 1, sY + 1, c );
+                  break;
                }
    }
 
@@ -359,15 +401,25 @@ private:
       if ( sourceImage.IsFloatSample() )
          switch ( sourceImage.BitsPerSample() )
          {
-         case 32: Perform( static_cast<Image&>( *targetImage ), static_cast<const Image&>( *sourceImage ), cfaIndex ); break;
-         case 64: Perform( static_cast<DImage&>( *targetImage ), static_cast<const DImage&>( *sourceImage ), cfaIndex ); break;
+         case 32:
+            Perform( static_cast<Image&>( *targetImage ), static_cast<const Image&>( *sourceImage ), cfaIndex );
+            break;
+         case 64:
+            Perform( static_cast<DImage&>( *targetImage ), static_cast<const DImage&>( *sourceImage ), cfaIndex );
+            break;
          }
       else
          switch ( sourceImage.BitsPerSample() )
          {
-         case  8: Perform( static_cast<UInt8Image&>( *targetImage ), static_cast<const UInt8Image&>( *sourceImage ), cfaIndex ); break;
-         case 16: Perform( static_cast<UInt16Image&>( *targetImage ), static_cast<const UInt16Image&>( *sourceImage ), cfaIndex ); break;
-         case 32: Perform( static_cast<UInt32Image&>( *targetImage ), static_cast<const UInt32Image&>( *sourceImage ), cfaIndex ); break;
+         case 8:
+            Perform( static_cast<UInt8Image&>( *targetImage ), static_cast<const UInt8Image&>( *sourceImage ), cfaIndex );
+            break;
+         case 16:
+            Perform( static_cast<UInt16Image&>( *targetImage ), static_cast<const UInt16Image&>( *sourceImage ), cfaIndex );
+            break;
+         case 32:
+            Perform( static_cast<UInt32Image&>( *targetImage ), static_cast<const UInt32Image&>( *sourceImage ), cfaIndex );
+            break;
          }
    }
 };
@@ -390,15 +442,25 @@ static void LoadImageFile( ImageVariant& image, FileFormatInstance& file, const 
    if ( image.IsFloatSample() )
       switch ( image.BitsPerSample() )
       {
-      case 32: LoadImageFile( static_cast<Image&>( *image ), file ); break;
-      case 64: LoadImageFile( static_cast<DImage&>( *image ), file ); break;
+      case 32:
+         LoadImageFile( static_cast<Image&>( *image ), file );
+         break;
+      case 64:
+         LoadImageFile( static_cast<DImage&>( *image ), file );
+         break;
       }
    else
       switch ( image.BitsPerSample() )
       {
-      case  8: LoadImageFile( static_cast<UInt8Image&>( *image ), file ); break;
-      case 16: LoadImageFile( static_cast<UInt16Image&>( *image ), file ); break;
-      case 32: LoadImageFile( static_cast<UInt32Image&>( *image ), file ); break;
+      case 8:
+         LoadImageFile( static_cast<UInt8Image&>( *image ), file );
+         break;
+      case 16:
+         LoadImageFile( static_cast<UInt16Image&>( *image ), file );
+         break;
+      case 32:
+         LoadImageFile( static_cast<UInt32Image&>( *image ), file );
+         break;
       }
 }
 
@@ -410,7 +472,7 @@ thread_list SplitCFAInstance::LoadTargetFrame( const size_type fileIndex )
 
    console.WriteLn( "Open " + filePath );
 
-   FileFormat format( File::ExtractExtension( filePath ), true/*read*/, false/*write*/ );
+   FileFormat format( File::ExtractExtension( filePath ), true /*read*/, false /*write*/ );
    FileFormatInstance file( format );
 
    ImageDescriptionArray images;
@@ -427,14 +489,14 @@ thread_list SplitCFAInstance::LoadTargetFrame( const size_type fileIndex )
       {
          Module->ProcessEvents();
 
-         if ( images[index].info.height&1 | images[index].info.width&1 ) // height is odd
+         if ( images[index].info.height & 1 | images[index].info.width & 1 ) // height is odd
          {
             console.WriteLn( String().Format( "Invalid odd image dimension(s): %dx%d", images[index].info.width, images[index].info.height ) );
             continue;
          }
 
          if ( images.Length() > 1 )
-            console.WriteLn( String().Format( "* Subimage %u of %u", index+1, images.Length() ) );
+            console.WriteLn( String().Format( "* Subimage %u of %u", index + 1, images.Length() ) );
          if ( !file.SelectImage( index ) )
             throw CaughtException();
 
@@ -469,21 +531,31 @@ static void SaveImageFile( const ImageVariant& image, FileFormatInstance& file )
    if ( image.IsFloatSample() )
       switch ( image.BitsPerSample() )
       {
-      case 32: SaveImageFile( static_cast<const Image&>( *image ), file ); break;
-      case 64: SaveImageFile( static_cast<const DImage&>( *image ), file ); break;
+      case 32:
+         SaveImageFile( static_cast<const Image&>( *image ), file );
+         break;
+      case 64:
+         SaveImageFile( static_cast<const DImage&>( *image ), file );
+         break;
       }
    else
       switch ( image.BitsPerSample() )
       {
-      case  8: SaveImageFile( static_cast<const UInt8Image&>( *image ), file ); break;
-      case 16: SaveImageFile( static_cast<const UInt16Image&>( *image ), file ); break;
-      case 32: SaveImageFile( static_cast<const UInt32Image&>( *image ), file ); break;
+      case 8:
+         SaveImageFile( static_cast<const UInt8Image&>( *image ), file );
+         break;
+      case 16:
+         SaveImageFile( static_cast<const UInt16Image&>( *image ), file );
+         break;
+      case 32:
+         SaveImageFile( static_cast<const UInt32Image&>( *image ), file );
+         break;
       }
 }
 
-inline String UniqueFilePath( const String& filePath )
+static String UniqueFilePath( const String& filePath )
 {
-   for ( unsigned u = 1; ; ++u )
+   for ( unsigned u = 1;; ++u )
    {
       String tryFilePath = File::AppendToName( filePath, '_' + String( u ) );
       if ( !File::Exists( tryFilePath ) )
@@ -491,7 +563,7 @@ inline String UniqueFilePath( const String& filePath )
    }
 }
 
-inline String SplitCFAInstance::OutputFilePath( const String& filePath, const String& fileFolder, const size_type index, const int cfaIndex )
+String SplitCFAInstance::OutputFilePath( const String& filePath, const String& fileFolder, const size_type index, const int cfaIndex )
 {
    String dir = p_outputDir.Trimmed();
    if ( dir.IsEmpty() ) //save to same source location
@@ -501,10 +573,6 @@ inline String SplitCFAInstance::OutputFilePath( const String& filePath, const St
       if ( p_outputTree )
       {
          //check or create folder and sub-folder if not exist
-#if debug
-         Console().WriteLn( "dir:" + dir );
-         Console().WriteLn( "sub-folder:" + fileFolder );
-#endif
          dir.Append( fileFolder );
       }
    }
@@ -519,7 +587,7 @@ inline String SplitCFAInstance::OutputFilePath( const String& filePath, const St
       dir.Append( String( cfaIndex ) );
    }
    if ( !File::DirectoryExists( dir ) )
-      File::CreateDirectory( dir, true/*createTree*/ );
+      File::CreateDirectory( dir, true /*createTree*/ );
 
    if ( !dir.EndsWith( '/' ) )
       dir.Append( '/' );
@@ -528,7 +596,7 @@ inline String SplitCFAInstance::OutputFilePath( const String& filePath, const St
    if ( !p_prefix.IsEmpty() )
       fileName.Prepend( p_prefix );
    if ( index > 0 )
-      fileName.Append( String().Format( "_%02d", index+1 ) );
+      fileName.Append( String().Format( "_%02d", index + 1 ) );
    if ( !p_postfix.IsEmpty() )
       fileName.Append( p_postfix );
    if ( fileName.IsEmpty() )
@@ -553,12 +621,12 @@ inline String SplitCFAInstance::OutputFilePath( const String& filePath, const St
 void SplitCFAInstance::SaveImage( const SplitCFAThread* t )
 {
    Console console;
-   for( int i = 0; i < 4; ++i )
+   for ( int i = 0; i < 4; ++i )
    {
       String outputFilePath = OutputFilePath( t->TargetPath(), t->TargetFolder(), t->SubimageIndex(), i );
       console.WriteLn( "Create " + outputFilePath );
 
-      FileFormat outputFormat( outputExtension, false/*read*/, true/*write*/ );
+      FileFormat outputFormat( outputExtension, false /*read*/, true /*write*/ );
       FileFormatInstance outputFile( outputFormat );
       if ( !outputFile.Create( outputFilePath ) )
          throw CaughtException();
@@ -586,19 +654,23 @@ void SplitCFAInstance::SaveImage( const SplitCFAThread* t )
          outputFile.WriteFITSKeywords( keywords );
       }
       else if ( !data.keywords.IsEmpty() )
-            console.WarningLn( "** Warning: The output format cannot store FITS keywords - original keywords not embedded." );
+         console.WarningLn( "** Warning: The output format cannot store FITS keywords - original keywords not embedded." );
 
       if ( data.profile.IsProfile() )
-         if ( outputFormat.CanStoreICCProfiles() ) outputFile.WriteICCProfile( data.profile );
-         else console.WarningLn( "** Warning: The output format cannot store ICC profiles - original profile not embedded." );
+         if ( outputFormat.CanStoreICCProfiles() )
+            outputFile.WriteICCProfile( data.profile );
+         else
+            console.WarningLn( "** Warning: The output format cannot store ICC profiles - original profile not embedded." );
 
-      SaveImageFile( *t->TargetImage(i), outputFile );
+      SaveImageFile( *t->TargetImage( i ), outputFile );
 
       console.WriteLn( "Close file." );
       if ( !outputFile.Close() )
          throw CaughtException();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 bool SplitCFAInstance::ExecuteGlobal()
 {
@@ -624,18 +696,18 @@ bool SplitCFAInstance::ExecuteGlobal()
          t << i;
 
       const int n = Min( Thread::NumberOfThreads( 1024, 1 ), total );
-      thread_list runningThreads( n );                                     // n = how many threads will run simultaneously
+      thread_list runningThreads( n ); // n = how many threads will run simultaneously
       console.WriteLn( String().Format( "Using %u worker threads", runningThreads.Length() ) );
 
-      thread_list waitingThreads;                                          // container for hold images from next image. One or more if file is multi image
+      thread_list waitingThreads; // container for hold images from next image. One or more if file is multi image
 
       //Translation::DisableParallelProcessing();
       try //try 2
       {
-         int running = 0;                                                   // running = Qty sub-images processing now = Qty CPU isActiv now.
+         int running = 0; // running = Qty sub-images processing now = Qty CPU isActiv now.
          do
          {
-            Module->ProcessEvents();                                       // Keep the GUI responsive
+            Module->ProcessEvents(); // Keep the GUI responsive
             if ( console.AbortRequested() )
                throw ProcessAborted();
 
@@ -644,12 +716,12 @@ bool SplitCFAInstance::ExecuteGlobal()
              */
             if ( !t.IsEmpty() && waitingThreads.IsEmpty() )
             {
-               size_type fileIndex = *t;                                      // take first index from begining of the list
-               t.Remove( t.Begin() );                                      // remove the index from the list
+               size_type fileIndex = *t; // take first index from begining of the list
+               t.Remove( t.Begin() );    // remove the index from the list
 
                console.WriteLn( String().Format( "<br>File %u of %u", total - t.Length(), total ) );
                if ( p_targetFrames[fileIndex].enabled )
-                  waitingThreads = LoadTargetFrame( fileIndex );           // put all sub-images from file to waitingThreads
+                  waitingThreads = LoadTargetFrame( fileIndex ); // put all sub-images from file to waitingThreads
                else
                {
                   ++skipped;
@@ -663,25 +735,25 @@ bool SplitCFAInstance::ExecuteGlobal()
             thread_list::iterator i = nullptr;
             for ( thread_list::iterator j = runningThreads.Begin(); j != runningThreads.End(); ++j ) //Cycle in CPU units
             {
-               if ( *j == nullptr )                                        // the CPU is free and empty.
+               if ( *j == nullptr ) // the CPU is free and empty.
                {
-                  if ( !waitingThreads.IsEmpty() )                         // there are not processed images
+                  if ( !waitingThreads.IsEmpty() ) // there are not processed images
                   {
                      i = j;
-                     break;                                                // i pointed to CPU which is free now.
+                     break; // i pointed to CPU which is free now.
                   }
                }
-               else                                                        // *j != 0 the CPU is non free and maybe idle or active
+               else // *j != 0 the CPU is non free and maybe idle or active
                {
-                  if ( !(*j)->IsActive() )                                 // the CPU is idle = the CPU has finished processing
+                  if ( !( *j )->IsActive() ) // the CPU is idle = the CPU has finished processing
                   {
                      i = j;
-                     break;                                                // i pointed to CPU thread which ready to save.
+                     break; // i pointed to CPU thread which ready to save.
                   }
                }
             }
 
-            if ( i == nullptr )                                            // all CPU IsActive or no new images
+            if ( i == nullptr ) // all CPU IsActive or no new images
             {
                pcl::Sleep( 100 );
                continue;
@@ -690,14 +762,14 @@ bool SplitCFAInstance::ExecuteGlobal()
             /*
              * Write File
              */
-            if ( *i != nullptr )                                           // the CPU is idle
+            if ( *i != nullptr ) // the CPU is idle
             {
                --running;
                try
                {
                   console.WriteLn( String().Format( "<br>CPU#%u has finished processing. Saving file:", i - runningThreads.Begin() ) );
                   SaveImage( *i );
-                  runningThreads.Delete( i );                              // prepare thread for next image. now (*i == nullptr) the CPU is free
+                  runningThreads.Delete( i ); // prepare thread for next image. now (*i == nullptr) the CPU is free
                }
                catch ( ... )
                {
@@ -705,21 +777,20 @@ bool SplitCFAInstance::ExecuteGlobal()
                   throw;
                }
                ++succeeded;
-            }                                                              // now (*i == nullptr) the CPU is free
+            } // now (*i == nullptr) the CPU is free
 
             /*
              * Put image to empty runningThreads slot and Run()
              */
             if ( !waitingThreads.IsEmpty() )
             {
-               *i = *waitingThreads;                                       // put one sub-image to runningThreads. so, now (*i != 0)
-               waitingThreads.Remove( waitingThreads.Begin() );            // remove one sub-image from waitingThreads
-               console.WriteLn( String().Format( "<br>CPU#%u processing file " , i - runningThreads.Begin() ) + (*i)->TargetPath() );
-               (*i)->Start( ThreadPriority::DefaultMax, i - runningThreads.Begin() );
+               *i = *waitingThreads;                            // put one sub-image to runningThreads. so, now (*i != 0)
+               waitingThreads.Remove( waitingThreads.Begin() ); // remove one sub-image from waitingThreads
+               console.WriteLn( String().Format( "<br>CPU#%u processing file ", i - runningThreads.Begin() ) + ( *i )->TargetPath() );
+               ( *i )->Start( ThreadPriority::DefaultMax, i - runningThreads.Begin() );
                ++running;
             }
-         }
-         while ( running > 0 || !t.IsEmpty() );
+         } while ( running > 0 || !t.IsEmpty() );
       } // try 2
       catch ( ... )
       {
@@ -740,7 +811,7 @@ bool SplitCFAInstance::ExecuteGlobal()
                }
                console.Note( String().Format( ":%u ", i - runningThreads.Begin() ) );
                console.Flush();
-               (*i)->Wait();
+               ( *i )->Wait();
             }
          console.NoteLn( "<br>* All running tasks are terminated." );
          runningThreads.Destroy();
@@ -748,7 +819,7 @@ bool SplitCFAInstance::ExecuteGlobal()
       }
 
       console.NoteLn( String().Format( "<br>===== SplitCFA: %u succeeded, %u skipped, %u canceled =====",
-                                       succeeded, skipped, total - succeeded ) );
+         succeeded, skipped, total - succeeded ) );
       return true;
    }
    catch ( ... )
@@ -884,12 +955,13 @@ size_type SplitCFAInstance::ParameterLength( const MetaParameter* p, size_type t
       return o_outputViewId[2].Length();
    if ( p == TheSplitCFAOutputViewId3Parameter )
       return o_outputViewId[3].Length();
+
    return 0;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF SplitCFAInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -3,13 +3,14 @@
 	-lf2c -lm   (in that order)
 */
 
-#include <math.h>
 #include "cminpack.h"
-#define abs(x) ((x) >= 0 ? (x) : -(x))
+#include <math.h>
+#include "cminpackP.h"
 
-/* Subroutine */ void rwupdt(int n, double *r, int ldr, 
-	const double *w, double *b, double *alpha, double *cos, 
-	double *sin)
+__cminpack_attr__
+void __cminpack_func__(rwupdt)(int n, real *r, int ldr, 
+	const real *w, real *b, real *alpha, real *cos, 
+	real *sin)
 {
     /* Initialized data */
 
@@ -21,7 +22,7 @@
 
     /* Local variables */
     int i, j, jm1;
-    double tan, temp, rowj, cotan;
+    real tan, temp, rowj, cotan;
 
 /*     ********** */
 

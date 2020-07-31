@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationModule.cpp - Released 2020-02-27T12:56:01Z
+// LocalHistogramEqualizationModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
-// Copyright (c) 2011-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -55,15 +55,15 @@
 #define MODULE_VERSION_MINOR     0
 #define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
-#define MODULE_VERSION_LANGUAGE  eng
+#define MODULE_VERSION_LANGUAGE eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
+#include "LocalHistogramEqualizationInterface.h"
 #include "LocalHistogramEqualizationModule.h"
 #include "LocalHistogramEqualizationProcess.h"
-#include "LocalHistogramEqualizationInterface.h"
 
 namespace pcl
 {
@@ -74,6 +74,8 @@ LocalHistogramEqualizationModule::LocalHistogramEqualizationModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* LocalHistogramEqualizationModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
@@ -83,35 +85,49 @@ const char* LocalHistogramEqualizationModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString LocalHistogramEqualizationModule::Name() const
 {
    return "LocalHistogramEqualization";
 }
+
+// ----------------------------------------------------------------------------
 
 String LocalHistogramEqualizationModule::Description() const
 {
    return "PixInsight LocalHistogramEqualization Process Module";
 }
 
+// ----------------------------------------------------------------------------
+
 String LocalHistogramEqualizationModule::Company() const
 {
-   return "";
+   return String();
 }
+
+// ----------------------------------------------------------------------------
 
 String LocalHistogramEqualizationModule::Author() const
 {
-   return "Zbynek Vrastil";
+   return "Zbynek Vrastil (PTeam)";
 }
+
+// ----------------------------------------------------------------------------
 
 String LocalHistogramEqualizationModule::Copyright() const
 {
-   return "Copyright (c) 2011-2018, Zbynek Vrastil";
+   return "Copyright (c) 2011-2020, Zbynek Vrastil";
 }
+
+// ----------------------------------------------------------------------------
 
 String LocalHistogramEqualizationModule::TradeMarks() const
 {
-   return "";
+   return "PixInsight";
 }
+
+// ----------------------------------------------------------------------------
 
 String LocalHistogramEqualizationModule::OriginalFileName() const
 {
@@ -129,16 +145,20 @@ String LocalHistogramEqualizationModule::OriginalFileName() const
 #endif
 }
 
+// ----------------------------------------------------------------------------
+
 void LocalHistogramEqualizationModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
-   year  = MODULE_RELEASE_YEAR;
+   year = MODULE_RELEASE_YEAR;
    month = MODULE_RELEASE_MONTH;
-   day   = MODULE_RELEASE_DAY;
+   day = MODULE_RELEASE_DAY;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -154,4 +174,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF LocalHistogramEqualizationModule.cpp - Released 2020-07-31T19:33:39Z

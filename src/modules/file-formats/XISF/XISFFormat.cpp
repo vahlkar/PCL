@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// XISFFormat.cpp - Released 2020-02-27T12:55:48Z
+// XISFFormat.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -122,7 +122,7 @@ String XISFFormat::Implementation() const
    "<p>PixInsight Standard File Format Support Modules.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -223,9 +223,9 @@ String XISFFormat::Implementation() const
 
 // ----------------------------------------------------------------------------
 
-String XISFFormat::IconImageFile() const
+String XISFFormat::IconImageSVGFile() const
 {
-   return ":/file-format/xisf-format-icon.png";
+   return "@module_icons_dir/XISF.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -527,11 +527,13 @@ XISFFormat::EmbeddingOverrides XISFFormat::DefaultEmbeddingOverrides()
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 #define XISF_SIGNATURE  0x58495346u // 'XISF'
 
-XISFFormat::FormatOptions::FormatOptions() :
-   options( XISFFormat::DefaultOptions() ), signature( XISF_SIGNATURE )
+XISFFormat::FormatOptions::FormatOptions()
+   : options( XISFFormat::DefaultOptions() )
+   , signature( XISF_SIGNATURE )
 {
 }
 
@@ -550,4 +552,4 @@ XISFFormat::FormatOptions* XISFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.cpp - Released 2020-02-27T12:55:48Z
+// EOF XISFFormat.cpp - Released 2020-07-31T19:33:23Z

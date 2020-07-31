@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// LambertConformalConicProjection.h - Released 2020-02-27T12:56:01Z
+// LambertConformalConicProjection.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -64,8 +64,10 @@ class LambertConformalConicProjection : public ProjectionSystem
 {
 public:
 
-   LambertConformalConicProjection( double lon, double lat, double lat1, double lat2 ) :
-   ProjectionSystem( lon, lat ), sp1( lat1 ), sp2( lat2 )
+   LambertConformalConicProjection( double lon, double lat, double lat1, double lat2 )
+      : ProjectionSystem( lon, lat )
+      , sp1( lat1 )
+      , sp2( lat2 )
    {
       if ( 1 + (sp1 + sp2) == 1 )
          throw Error( "LambertConformalConicProjection: standard parallels cannot define a cylinder." );
@@ -83,26 +85,22 @@ public:
       rho0 = F * Pow( t0, -n );
    }
 
-   virtual ~LambertConformalConicProjection()
-   {
-   }
-
-   virtual bool IsConicProjection() const
+   bool IsConicProjection() const override
    {
       return true;
    }
 
-   virtual bool IsConformalProjection() const
+   bool IsConformalProjection() const override
    {
       return true;
    }
 
-   virtual String Name() const
+   String Name() const override
    {
       return "Lambert Conformal Conic Projection";
    }
 
-   virtual void SphericalToRectangular( double& x, double& y, double lon, double lat ) const
+   void SphericalToRectangular( double& x, double& y, double lon, double lat ) const override
    {
       double ndl = n * InPiRange( lon - lon0 );
       double rho = F * Pow( TL2( lat ), -n );
@@ -110,7 +108,7 @@ public:
       y = rho0 - rho*Cos( ndl );
    }
 
-   virtual void RectangularToSpherical( double& lon, double& lat, double x, double y ) const
+   void RectangularToSpherical( double& lon, double& lat, double x, double y ) const override
    {
       double ry = rho0 - y;
       double rho = sn * Sqrt( x*x + ry*ry );
@@ -149,4 +147,4 @@ private:
 #endif   // __LambertConformalConicProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF LambertConformalConicProjection.h - Released 2020-02-27T12:56:01Z
+// EOF LambertConformalConicProjection.h - Released 2020-07-31T19:33:39Z

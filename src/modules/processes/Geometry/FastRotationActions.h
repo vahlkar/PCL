@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FastRotationActions.h - Released 2020-02-27T12:56:01Z
+// FastRotationActions.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -65,8 +65,9 @@ class Rotate180Action : public Action
 public:
 
    Rotate180Action();
-   virtual void Execute();
-   virtual bool IsEnabled( ActionInfo ) const;
+
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -76,8 +77,9 @@ class Rotate90CWAction : public Action
 public:
 
    Rotate90CWAction();
-   virtual void Execute();
-   virtual bool IsEnabled( ActionInfo ) const;
+
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -87,8 +89,9 @@ class Rotate90CCWAction : public Action
 public:
 
    Rotate90CCWAction();
-   virtual void Execute();
-   virtual bool IsEnabled( ActionInfo ) const;
+
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -98,8 +101,9 @@ class HorizontalMirrorAction : public Action
 public:
 
    HorizontalMirrorAction();
-   virtual void Execute();
-   virtual bool IsEnabled( ActionInfo ) const;
+
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -109,8 +113,9 @@ class VerticalMirrorAction : public Action
 public:
 
    VerticalMirrorAction();
-   virtual void Execute();
-   virtual bool IsEnabled( ActionInfo ) const;
+
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -120,4 +125,4 @@ public:
 #endif   // __FastRotationActions_h
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationActions.h - Released 2020-02-27T12:56:01Z
+// EOF FastRotationActions.h - Released 2020-07-31T19:33:39Z

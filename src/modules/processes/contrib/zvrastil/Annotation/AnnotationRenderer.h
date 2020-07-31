@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationRenderer.h - Released 2020-02-27T12:56:01Z
+// AnnotationRenderer.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -56,14 +56,12 @@
 
 #include "AnnotationInstance.h"
 
-#include "pcl/Graphics.h"
 #include "pcl/Font.h"
+#include "pcl/Graphics.h"
 
 namespace pcl
 {
 
-// ----------------------------------------------------------------------------
-// AnnotationProcess
 // ----------------------------------------------------------------------------
 
 // Auxiliary static class, providing annotation rendering for dynamic interface
@@ -81,22 +79,22 @@ public:
    // computes the rectangle, which contains both text and leader
    // also computes relative positions of the text and leader endpoint in this rectangle
    static Rect GetBoundingRectangle( const AnnotationInstance& instance,
-      int &relPosX, int &relPosY, int &relLeaderPosX, int &relLeaderPosY );
+      int& relPosX, int& relPosY, int& relLeaderPosX, int& relLeaderPosY );
 
    // Renders the given annotation to a given graphics object.
    // Coordinates should be given relative to actual drawing context
    static void RenderAnnotation( const AnnotationInstance& instance, Graphics& g,
-      int posX, int posY, int leaderPosX, int leaderPosY);
+      int posX, int posY, int leaderPosX, int leaderPosY );
 
    // Renders the given annotation to a given graphics object.
    // Coordinates should be given relative to actual drawing context
    static void RenderGrips( const AnnotationInstance& instance, Graphics& g,
-      int posX, int posY, int leaderPosX, int leaderPosY);
+      int posX, int posY, int leaderPosX, int leaderPosY );
 
    // Creates bitmap and renders annotation with leader into the bitmap
    // returns the bitmap and relative position of the text in the bitmap
    static Bitmap CreateAnnotationBitmap( const AnnotationInstance& instance,
-      int &relPosX, int &relPosY,
+      int& relPosX, int& relPosY,
       bool renderGrips );
 
 private:
@@ -106,12 +104,11 @@ private:
       const Rect& textRect, int leaderPosX, int leaderPosY, int offsetX, int offsetY );
 };
 
-
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __AnnotationRenderer_h
+#endif // __AnnotationRenderer_h
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationRenderer.h - Released 2020-02-27T12:56:01Z
+// EOF AnnotationRenderer.h - Released 2020-07-31T19:33:39Z

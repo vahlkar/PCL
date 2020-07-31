@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Format.cpp - Released 2020-02-27T12:55:48Z
+// JPEG2000Format.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -60,34 +60,40 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-JPCFormat::JPCFormat()
-{
-}
-
 IsoString JPCFormat::Name() const
 {
    return "JPC";
 }
+
+// ----------------------------------------------------------------------------
 
 StringList JPCFormat::FileExtensions() const
 {
    return StringList() << ".jpc" << ".j2c";
 }
 
+// ----------------------------------------------------------------------------
+
 IsoStringList JPCFormat::MimeTypes() const
 {
    return IsoStringList();
 }
+
+// ----------------------------------------------------------------------------
 
 uint32 JPCFormat::Version() const
 {
    return 0x102;
 }
 
+// ----------------------------------------------------------------------------
+
 String JPCFormat::Description() const
 {
    return "JPEG-2000 Code Stream File Format.";
 }
+
+// ----------------------------------------------------------------------------
 
 String JPCFormat::Implementation() const
 {
@@ -105,7 +111,7 @@ String JPCFormat::Implementation() const
    "Copyright (c) 2001-2007 Michael David Adams</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -153,25 +159,35 @@ String JPCFormat::Implementation() const
    "</html>";
 }
 
-String JPCFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String JPCFormat::IconImageSVGFile() const
 {
-   return ":/file-format/jpc-format-icon.png";
+   return "@module_icons_dir/JPC.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool JPCFormat::CanEditPreferences() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool JPCFormat::UsesFormatSpecificData() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool JPCFormat::ValidateFormatSpecificData( const void* data ) const
 {
    return JPEG2000FormatOptions::FromGenericDataBlock( data ) != nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 void JPCFormat::DisposeFormatSpecificData( void* data ) const
 {
@@ -180,10 +196,14 @@ void JPCFormat::DisposeFormatSpecificData( void* data ) const
       delete o;
 }
 
+// ----------------------------------------------------------------------------
+
 FileFormatImplementation* JPCFormat::Create() const
 {
    return new JPCInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 bool JPCFormat::EditPreferences() const
 {
@@ -212,6 +232,8 @@ bool JPCFormat::EditPreferences() const
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 JPEG2000ImageOptions JPCFormat::DefaultOptions()
 {
    JPEG2000ImageOptions options;
@@ -232,19 +254,19 @@ JPEG2000ImageOptions JPCFormat::DefaultOptions()
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-JP2Format::JP2Format() : JPCFormat()
-{
-}
-
 IsoString JP2Format::Name() const
 {
    return "JP2";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList JP2Format::FileExtensions() const
 {
    return StringList() << ".jp2" << ".jpx" << ".jpk" << ".j2k";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList JP2Format::MimeTypes() const
 {
@@ -252,30 +274,42 @@ IsoStringList JP2Format::MimeTypes() const
    return IsoStringList() << "image/jp2" << "image/jpeg2000" << "image/jpeg2000-image" << "image/x-jpeg2000-image";
 }
 
+// ----------------------------------------------------------------------------
+
 String JP2Format::Description() const
 {
    return "JPEG-2000 JP2 File Format.";
 }
 
-String JP2Format::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String JP2Format::IconImageSVGFile() const
 {
-   return ":/file-format/jp2-format-icon.png";
+   return "@module_icons_dir/JP2.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool JP2Format::CanStoreICCProfiles() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool JP2Format::CanStoreResolution() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 FileFormatImplementation* JP2Format::Create() const
 {
    return new JP2Instance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 bool JP2Format::EditPreferences() const
 {
@@ -308,6 +342,8 @@ bool JP2Format::EditPreferences() const
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 JPEG2000ImageOptions JP2Format::DefaultOptions()
 {
    JPEG2000ImageOptions options;
@@ -325,6 +361,8 @@ JPEG2000ImageOptions JP2Format::DefaultOptions()
    return options;
 }
 
+// ----------------------------------------------------------------------------
+
 JP2Format::EmbeddingOverrides JP2Format::DefaultEmbeddingOverrides()
 {
    JP2Format::EmbeddingOverrides overrides;
@@ -336,17 +374,19 @@ JP2Format::EmbeddingOverrides JP2Format::DefaultEmbeddingOverrides()
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 #define JP2K_SIGNATURE  0x4A50324Bu  // JP2K
 
-JPEG2000FormatOptions::JPEG2000FormatOptions( bool isCodeStream ) :
-   signature( JP2K_SIGNATURE ),
-   options( isCodeStream ? JPCFormat::DefaultOptions() : JP2Format::DefaultOptions() )
+JPEG2000FormatOptions::JPEG2000FormatOptions( bool isCodeStream )
+   : signature( JP2K_SIGNATURE )
+   , options( isCodeStream ? JPCFormat::DefaultOptions() : JP2Format::DefaultOptions() )
 {
 }
 
-JPEG2000FormatOptions::JPEG2000FormatOptions( const JPEG2000FormatOptions& x ) :
-   signature( JP2K_SIGNATURE ), options( x.options )
+JPEG2000FormatOptions::JPEG2000FormatOptions( const JPEG2000FormatOptions& x )
+   : signature( JP2K_SIGNATURE )
+   , options( x.options )
 {
 }
 
@@ -365,4 +405,4 @@ JPEG2000FormatOptions* JPEG2000FormatOptions::FromGenericDataBlock( const void* 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Format.cpp - Released 2020-02-27T12:55:48Z
+// EOF JPEG2000Format.cpp - Released 2020-07-31T19:33:23Z

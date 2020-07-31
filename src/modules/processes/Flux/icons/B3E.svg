@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="b">
+<stop offset="0"/>
+<stop stop-color="#9b9b9b" offset="1"/>
+</linearGradient>
+<linearGradient id="a">
+<stop offset="0"/>
+<stop stop-opacity="0" offset="1"/>
+</linearGradient>
+<linearGradient id="i" x1="43.041" x2="453.84" y1="251.31" y2="251.31" gradientTransform="matrix(1 0 0 1.1195 19.502 -3.8895)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<linearGradient id="h" x1="43.041" x2="453.84" y1="251.31" y2="251.31" gradientTransform="matrix(1 0 0 1.1195 147.54 69.032)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<linearGradient id="g" x1="43.041" x2="453.84" y1="251.31" y2="251.31" gradientTransform="matrix(1 0 0 1.1195 -66.986 59.705)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<linearGradient id="f" x1="43.041" x2="453.84" y1="251.31" y2="251.31" gradientTransform="matrix(1 0 0 1.1195 61.05 132.63)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<linearGradient id="e" x1="447.2" x2="286.2" y1="321.85" y2="236.41" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+<linearGradient id="d" x1="48.42" x2="287.51" y1="350.5" y2="237.88" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+<linearGradient id="c" x1="233.98" x2="285.56" y1="11.865" y2="236.46" gradientUnits="userSpaceOnUse" xlink:href="#b"/>
+</defs>
+<g transform="matrix(.99202 0 0 .95705 9.8552 16.737)" stroke="#555" stroke-linejoin="round">
+<path d="m288.75 237.5 157.5-157.5-213.75-67.5s-183.75 107.5-182.5 107.5 238.75 121.25 238.75 117.5z" fill="none" stroke-width="9.8222"/>
+<path d="m290 487.5-2.5-248.75-237.5-116.25v230z" fill="none" stroke-width="9.8222"/>
+<path d="m287.5 240c0-1.25 158.75-158.75 158.75-158.75v240s-153.75 166.25-155 166.25-3.75-245-3.75-247.5z" fill="none" stroke-width="9.8222"/>
+<path d="m48.332 120.56c0.8479 0 239.96 117.71 239.96 117.71l160.26-159.48-216.22-65.5z" fill="url(#c)" fill-rule="evenodd" stroke-width="5.1315"/>
+<path d="m49.18 121.51c0 0.94936 1.6958 230.67 0.8479 229.72l239.96 137.64-3.392-251.56z" fill="url(#d)" fill-rule="evenodd" stroke-width="5.1315"/>
+<path d="m289.99 489.82-2.544-251.56 161.11-159.48-2.544 243.01z" fill="url(#e)" fill-rule="evenodd" stroke-width="5.1315"/>
+</g>
+</svg>

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// LocalNormalizationProcess.cpp - Released 2020-02-27T12:56:01Z
+// LocalNormalizationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -57,10 +57,6 @@
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-#include "LocalNormalizationIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -140,10 +136,11 @@ String LocalNormalizationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** LocalNormalizationProcess::IconImageXPM() const
+String LocalNormalizationProcess::IconImageSVGFile() const
 {
-   return LocalNormalizationIcon_XPM;
+   return "@module_icons_dir/LocalNormalization.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* LocalNormalizationProcess::DefaultInterface() const
@@ -170,4 +167,4 @@ ProcessImplementation* LocalNormalizationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF LocalNormalizationProcess.cpp - Released 2020-07-31T19:33:39Z

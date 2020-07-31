@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterProcess.cpp - Released 2020-02-27T12:56:01Z
+// RestorationFilterProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -64,15 +64,10 @@ RestorationFilterProcess* TheRestorationFilterProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "RestorationFilterIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 RestorationFilterProcess::RestorationFilterProcess()
 {
    TheRestorationFilterProcess = this;
 
-   // Instantiate process parameters
    new RFWienerK( this );
    new RFLeastSquaresGamma( this );
    new RFAlgorithm( this );
@@ -132,9 +127,9 @@ String RestorationFilterProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** RestorationFilterProcess::IconImageXPM() const
+String RestorationFilterProcess::IconImageSVGFile() const
 {
-   return RestorationFilterIcon_XPM;
+   return "@module_icons_dir/RestorationFilter.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -164,4 +159,4 @@ ProcessImplementation* RestorationFilterProcess::Clone( const ProcessImplementat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF RestorationFilterProcess.cpp - Released 2020-07-31T19:33:39Z

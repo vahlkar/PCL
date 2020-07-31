@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaicParameters.cpp - Released 2020-02-27T12:56:01Z
+// GradientsMergeMosaicParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -34,20 +34,21 @@
 
 namespace pcl
 {
+// ----------------------------------------------------------------------------
+
+GradientsMergeMosaicTargetFrames*       TheGradientsMergeMosaicTargetFramesParameter = nullptr;
+GradientsMergeMosaicTargetFrameEnabled* TheGradientsMergeMosaicTargetFrameEnabledParameter = nullptr;
+GradientsMergeMosaicTargetFramePath*    TheGradientsMergeMosaicTargetFramePathParameter = nullptr;
+GradientsMergeMosaicType*               TheGradientsMergeMosaicTypeParameter = nullptr;
+GradientsMergeMosaicShrinkCount*        TheGradientsMergeMosaicShrinkCountParameter = nullptr;
+GradientsMergeMosaicFeatherRadius*      TheGradientsMergeMosaicFeatherRadiusParameter = nullptr;
+GradientsMergeMosaicBlackPoint*         TheGradientsMergeMosaicBlackPointParameter = nullptr;
+GradientsMergeMosaicGenerateMask*       TheGradientsMergeMosaicGenerateMaskParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
-GradientsMergeMosaicTargetFrames*           TheGradientsMergeMosaicTargetFramesParameter = 0;
-GradientsMergeMosaicTargetFrameEnabled*     TheGradientsMergeMosaicTargetFrameEnabledParameter = 0;
-GradientsMergeMosaicTargetFramePath*        TheGradientsMergeMosaicTargetFramePathParameter = 0;
-GradientsMergeMosaicType*                   TheGradientsMergeMosaicTypeParameter = 0;
-GradientsMergeMosaicShrinkCount*            TheGradientsMergeMosaicShrinkCountParameter = 0;
-GradientsMergeMosaicFeatherRadius*          TheGradientsMergeMosaicFeatherRadiusParameter = 0;
-GradientsMergeMosaicBlackPoint*             TheGradientsMergeMosaicBlackPointParameter = 0;
-GradientsMergeMosaicGenerateMask*           TheGradientsMergeMosaicGenerateMaskParameter = 0;
-// ----------------------------------------------------------------------------
-
-GradientsMergeMosaicTargetFrames::GradientsMergeMosaicTargetFrames( MetaProcess* P ) : MetaTable( P )
+GradientsMergeMosaicTargetFrames::GradientsMergeMosaicTargetFrames( MetaProcess* P )
+   : MetaTable( P )
 {
    TheGradientsMergeMosaicTargetFramesParameter = this;
 }
@@ -59,7 +60,8 @@ IsoString GradientsMergeMosaicTargetFrames::Id() const
 
 // ----------------------------------------------------------------------------
 
-GradientsMergeMosaicTargetFrameEnabled::GradientsMergeMosaicTargetFrameEnabled( MetaTable* T ) : MetaBoolean( T )
+GradientsMergeMosaicTargetFrameEnabled::GradientsMergeMosaicTargetFrameEnabled( MetaTable* T )
+   : MetaBoolean( T )
 {
    TheGradientsMergeMosaicTargetFrameEnabledParameter = this;
 }
@@ -76,7 +78,8 @@ bool GradientsMergeMosaicTargetFrameEnabled::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-GradientsMergeMosaicTargetFramePath::GradientsMergeMosaicTargetFramePath( MetaTable* T ) : MetaString( T )
+GradientsMergeMosaicTargetFramePath::GradientsMergeMosaicTargetFramePath( MetaTable* T )
+   : MetaString( T )
 {
    TheGradientsMergeMosaicTargetFramePathParameter = this;
 }
@@ -88,8 +91,8 @@ IsoString GradientsMergeMosaicTargetFramePath::Id() const
 
 // ----------------------------------------------------------------------------
 
-
-GradientsMergeMosaicType::GradientsMergeMosaicType( MetaProcess* P ) : MetaEnumeration( P )
+GradientsMergeMosaicType::GradientsMergeMosaicType( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheGradientsMergeMosaicTypeParameter = this;
 }
@@ -108,9 +111,12 @@ IsoString GradientsMergeMosaicType::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   default: Assert(false);
-   case Overlay:  return "Overlay";
-   case Average: return "Average";
+   default:
+      Assert( false );
+   case Overlay:
+      return "Overlay";
+   case Average:
+      return "Average";
    }
 }
 
@@ -124,10 +130,10 @@ size_type GradientsMergeMosaicType::DefaultValueIndex() const
    return Default;
 }
 
-
 // ----------------------------------------------------------------------------
 
-GradientsMergeMosaicShrinkCount::GradientsMergeMosaicShrinkCount( MetaProcess* P ) : MetaInt32( P )
+GradientsMergeMosaicShrinkCount::GradientsMergeMosaicShrinkCount( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheGradientsMergeMosaicShrinkCountParameter = this;
 }
@@ -154,7 +160,8 @@ double GradientsMergeMosaicShrinkCount::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-GradientsMergeMosaicFeatherRadius::GradientsMergeMosaicFeatherRadius( MetaProcess* P ) : MetaInt32( P )
+GradientsMergeMosaicFeatherRadius::GradientsMergeMosaicFeatherRadius( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheGradientsMergeMosaicFeatherRadiusParameter = this;
 }
@@ -179,10 +186,10 @@ double GradientsMergeMosaicFeatherRadius::MaximumValue() const
    return 250;
 }
 
-
 // ----------------------------------------------------------------------------
 
-GradientsMergeMosaicBlackPoint::GradientsMergeMosaicBlackPoint( MetaProcess* P ) : MetaDouble( P )
+GradientsMergeMosaicBlackPoint::GradientsMergeMosaicBlackPoint( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheGradientsMergeMosaicBlackPointParameter = this;
 }
@@ -214,7 +221,8 @@ double GradientsMergeMosaicBlackPoint::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-GradientsMergeMosaicGenerateMask::GradientsMergeMosaicGenerateMask( MetaProcess* P ) : MetaBoolean( P )
+GradientsMergeMosaicGenerateMask::GradientsMergeMosaicGenerateMask( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheGradientsMergeMosaicGenerateMaskParameter = this;
 }
@@ -231,7 +239,7 @@ bool GradientsMergeMosaicGenerateMask::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaicParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF GradientsMergeMosaicParameters.cpp - Released 2020-07-31T19:33:39Z

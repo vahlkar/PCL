@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierInstance.cpp - Released 2020-02-27T12:56:01Z
+// ImageIdentifierInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -61,16 +61,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ImageIdentifierInstance::ImageIdentifierInstance( const MetaProcess* m ) :
-   ProcessImplementation( m )
+ImageIdentifierInstance::ImageIdentifierInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ImageIdentifierInstance::ImageIdentifierInstance( const ImageIdentifierInstance& x ) :
-   ProcessImplementation( x ),
-   id( x.id )
+ImageIdentifierInstance::ImageIdentifierInstance( const ImageIdentifierInstance& x )
+   : ProcessImplementation( x )
+   , id( x.id )
 {
 }
 
@@ -88,11 +88,12 @@ bool ImageIdentifierInstance::Validate( pcl::String& info )
     * We only have to check validity of our identifier here. Uniqueness in any
     * particular naming context is enforced by the core application.
     */
-   if ( !id.IsEmpty() && !id.IsValidIdentifier() ) // String::IsValidIdentifier() does the job
-   {
-      info = '\'' + id + "' is not a valid identifier.";
-      return false;
-   }
+   if ( !id.IsEmpty() )
+      if ( !id.IsValidIdentifier() ) // String::IsValidIdentifier() does the job
+      {
+         info = '\'' + id + "' is not a valid identifier.";
+         return false;
+      }
 
    info.Clear();
    return true;
@@ -180,4 +181,4 @@ size_type ImageIdentifierInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ImageIdentifierInstance.cpp - Released 2020-07-31T19:33:39Z

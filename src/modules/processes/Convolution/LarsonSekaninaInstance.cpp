@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaInstance.cpp - Released 2020-02-27T12:56:01Z
+// LarsonSekaninaInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -65,27 +65,34 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LarsonSekaninaInstance::LarsonSekaninaInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   interpolation( LSInterpolation::Default ),
-   radiusDiff( TheLSRadiusDiffParameter->DefaultValue() ),
-   angleDiff( TheLSAngleDiffParameter->DefaultValue() ),
-   center( TheLSCenterXParameter->DefaultValue(), TheLSCenterYParameter->DefaultValue() ),
-   amount( TheLSAmountParameter->DefaultValue() ),
-   threshold( TheLSThresholdParameter->DefaultValue() ),
-   deringing( TheLSDeringingParameter->DefaultValue() ),
-   useLuminance( TheLSUseLuminanceParameter->DefaultValue() ),
-   highPass( TheLSHighPassParameter->DefaultValue() ),
-   rangeLow( TheLSRangeLowParameter->DefaultValue() ),
-   rangeHigh( TheLSRangeHighParameter->DefaultValue() ),
-   disableExtension( TheLSDisableExtensionParameter->DefaultValue() )
+/*
+   ### TODO
+   This implementation is outdated. Requires a complete code refactoring.
+ */
+
+// ----------------------------------------------------------------------------
+
+LarsonSekaninaInstance::LarsonSekaninaInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , interpolation( LSInterpolation::Default )
+   , radiusDiff( TheLSRadiusDiffParameter->DefaultValue() )
+   , angleDiff( TheLSAngleDiffParameter->DefaultValue() )
+   , center( TheLSCenterXParameter->DefaultValue(), TheLSCenterYParameter->DefaultValue() )
+   , amount( TheLSAmountParameter->DefaultValue() )
+   , threshold( TheLSThresholdParameter->DefaultValue() )
+   , deringing( TheLSDeringingParameter->DefaultValue() )
+   , useLuminance( TheLSUseLuminanceParameter->DefaultValue() )
+   , highPass( TheLSHighPassParameter->DefaultValue() )
+   , rangeLow( TheLSRangeLowParameter->DefaultValue() )
+   , rangeHigh( TheLSRangeHighParameter->DefaultValue() )
+   , disableExtension( TheLSDisableExtensionParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-LarsonSekaninaInstance::LarsonSekaninaInstance( const LarsonSekaninaInstance& x ) :
-   ProcessImplementation( x )
+LarsonSekaninaInstance::LarsonSekaninaInstance( const LarsonSekaninaInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -446,4 +453,4 @@ void* LarsonSekaninaInstance::LockParameter( const MetaParameter* p, size_type /
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF LarsonSekaninaInstance.cpp - Released 2020-07-31T19:33:39Z

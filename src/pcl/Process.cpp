@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Process.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Process.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -63,15 +63,16 @@ class ProcessPrivate
 {
 public:
 
-   meta_process_handle    handle;
+   meta_process_handle    handle = nullptr;
    api_process_properties properties;
 
-   ProcessPrivate() : handle( nullptr )
+   ProcessPrivate()
    {
       GetProperties();
    }
 
-   ProcessPrivate( meta_process_handle h ) : handle( h )
+   ProcessPrivate( meta_process_handle h )
+      : handle( h )
    {
       GetProperties();
    }
@@ -101,8 +102,7 @@ private:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-Process::Process( const IsoString& id ) :
-   ProcessBase()
+Process::Process( const IsoString& id )
 {
    m_data = new ProcessPrivate( (*API->Process->GetProcessByName)( ModuleHandle(), id.c_str() ) );
    if ( m_data->handle == nullptr )
@@ -116,14 +116,12 @@ Process::Process( const IsoString& id ) :
    }
 }
 
-Process::Process( const Process& p ) :
-   ProcessBase()
+Process::Process( const Process& p )
 {
    m_data = new ProcessPrivate( p.m_data->handle );
 }
 
-Process::Process( const void* handle ) :
-   ProcessBase()
+Process::Process( const void* handle )
 {
    m_data = new ProcessPrivate( handle );
    if ( m_data->handle == nullptr )
@@ -426,7 +424,8 @@ struct ProcessesByCategoryEnumerationData
    IsoString      category;
    Array<Process> processes;
 
-   ProcessesByCategoryEnumerationData( const IsoString& id ) : category( id )
+   ProcessesByCategoryEnumerationData( const IsoString& id )
+      : category( id )
    {
    }
 };
@@ -454,4 +453,4 @@ Array<Process> Process::ProcessesByCategory( const IsoString& category )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Process.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Process.cpp - Released 2020-07-31T19:33:12Z

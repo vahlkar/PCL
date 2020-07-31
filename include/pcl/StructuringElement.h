@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/StructuringElement.h - Released 2020-02-27T12:55:23Z
+// pcl/StructuringElement.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -132,10 +132,10 @@ public:
     * Constructs a default \e box %StructuringElement object of the specified
     * \a size in pixels and number of ways \a n.
     */
-   StructuringElement( int size = 3, int n = 1 ) :
-      m_size( Max( 3, size|1 ) ),
-      m_mask( Max( 1, n ) ),
-      m_count( 0, Max( 1, n ) )
+   StructuringElement( int size = 3, int n = 1 )
+      : m_size( Max( 3, size|1 ) )
+      , m_mask( Max( 1, n ) )
+      , m_count( 0, Max( 1, n ) )
    {
       PCL_PRECONDITION( size >= 3 )
       PCL_PRECONDITION( (size & 1) != 0 )
@@ -147,10 +147,10 @@ public:
    /*!
     * Copy constructor.
     */
-   StructuringElement( const StructuringElement& x ) :
-      m_size( x.m_size ),
-      m_mask( x.NumberOfWays() ),
-      m_count( 0, x.NumberOfWays() )
+   StructuringElement( const StructuringElement& x )
+      : m_size( x.m_size )
+      , m_mask( x.NumberOfWays() )
+      , m_count( 0, x.NumberOfWays() )
    {
       for ( int k = 0; k < NumberOfWays(); ++k )
          m_mask[k] = existence_mask( existence_mask_element( 0 ), NumberOfElements() );
@@ -425,7 +425,8 @@ public:
    /*!
     * Constructs a standard block structure of the specified \a size.
     */
-   BoxStructure( int size ) : StructuringElement( size, 1 )
+   BoxStructure( int size )
+      : StructuringElement( size, 1 )
    {
    }
 
@@ -488,7 +489,8 @@ public:
    /*!
     * Constructs a standard circular structure of the specified \a diameter.
     */
-   CircularStructure( int diameter ) : StructuringElement( diameter, 1 )
+   CircularStructure( int diameter )
+      : StructuringElement( diameter, 1 )
    {
    }
 
@@ -559,7 +561,8 @@ public:
    /*!
     * Constructs an orthogonal structure of the specified \a size.
     */
-   OrthogonalStructure( int size ) : StructuringElement( size, 1 )
+   OrthogonalStructure( int size )
+      : StructuringElement( size, 1 )
    {
    }
 
@@ -628,7 +631,8 @@ public:
    /*!
     * Constructs a diagonal structure of the specified \a size.
     */
-   DiagonalStructure( int size ) : StructuringElement( size, 1 )
+   DiagonalStructure( int size )
+      : StructuringElement( size, 1 )
    {
    }
 
@@ -699,7 +703,8 @@ public:
    /*!
     * Constructs a star structure of the specified \a size.
     */
-   StarStructure( int size ) : StructuringElement( size, 1 )
+   StarStructure( int size )
+      : StructuringElement( size, 1 )
    {
    }
 
@@ -784,7 +789,8 @@ public:
    /*!
     * Constructs a standard three-way structure of the specified \a size.
     */
-   ThreeWayStructure( int size ) : StructuringElement( size, 3 )
+   ThreeWayStructure( int size )
+      : StructuringElement( size, 3 )
    {
    }
 
@@ -904,8 +910,8 @@ public:
     *
     * \param n          Number of ways in this structure. Must be >= 1.
     */
-   BitmapStructure( const char** bitmaps, int size, int n = 1 ) :
-      StructuringElement( size, n )
+   BitmapStructure( const char** bitmaps, int size, int n = 1 )
+      : StructuringElement( size, n )
    {
       PCL_PRECONDITION( bitmaps != nullptr )
       PCL_PRECONDITION( *bitmaps != '\0' )
@@ -947,4 +953,4 @@ protected:
 #endif   // __PCL_StructuringElement_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StructuringElement.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/StructuringElement.h - Released 2020-07-31T19:33:04Z

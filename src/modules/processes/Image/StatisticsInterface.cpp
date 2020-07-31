@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StatisticsInterface.cpp - Released 2020-02-27T12:56:01Z
+// StatisticsInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -64,10 +64,6 @@
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-#include "StatisticsIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -627,9 +623,9 @@ MetaProcess* StatisticsInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** StatisticsInterface::IconImageXPM() const
+String StatisticsInterface::IconImageSVGFile() const
 {
-   return StatisticsIcon_XPM;
+   return "@module_icons_dir/Statistics.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -1269,7 +1265,6 @@ String StatisticsInterface::ToText() const
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
 void StatisticsInterface::__ViewList_ViewSelected( ViewList& sender, View& view )
 {
@@ -1418,4 +1413,4 @@ StatisticsInterface::GUIData::GUIData( StatisticsInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StatisticsInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF StatisticsInterface.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageInstance.h - Released 2020-02-27T12:56:01Z
+// NewImageInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -69,28 +69,28 @@ public:
    NewImageInstance( const MetaProcess* );
    NewImageInstance( const NewImageInstance& );
 
-   virtual bool Validate( String& info );
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool CanExecuteGlobal( pcl::String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool ValidateParameter( void* value, const MetaParameter*, size_type tableRow ) const;
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter*, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   bool Validate( String& info ) override;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool ValidateParameter( void* value, const MetaParameter*, size_type tableRow ) const override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter*, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
-   pcl::String id;               // Image identifier
-   int32       width;            // Width in pixels
-   int32       height;           // Height in pixels
-   int32       numberOfChannels; // Number of channels
-   pcl_enum    colorSpace;       // RGB or grayscale
-   pcl_enum    sampleFormat;     // integer/real, bit count
-   double      v0;               // Red/Gray
-   double      v1;               // Green
-   double      v2;               // Blue
-   double      va;               // Alpha
+   String   id;               // Image identifier
+   int32    width;            // Width in pixels
+   int32    height;           // Height in pixels
+   int32    numberOfChannels; // Number of channels
+   pcl_enum colorSpace;       // RGB or grayscale
+   pcl_enum sampleFormat;     // integer/real, bit count
+   double   v0;               // Red/Gray
+   double   v1;               // Green
+   double   v2;               // Blue
+   double   va;               // Alpha
 
    friend class NewImageProcess;
    friend class NewImageInterface;
@@ -103,4 +103,4 @@ private:
 #endif   // __NewImageInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInstance.h - Released 2020-02-27T12:56:01Z
+// EOF NewImageInstance.h - Released 2020-07-31T19:33:39Z

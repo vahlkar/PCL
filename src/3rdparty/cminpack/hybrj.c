@@ -3,19 +3,17 @@
 	-lf2c -lm   (in that order)
 */
 
-#include <math.h>
 #include "cminpack.h"
-#define min(a,b) ((a) <= (b) ? (a) : (b))
-#define max(a,b) ((a) >= (b) ? (a) : (b))
-#define TRUE_ (1)
-#define FALSE_ (0)
+#include <math.h>
+#include "cminpackP.h"
 
-/* Subroutine */ int hybrj(minpack_funcder_nn fcn, void *p, int n, double *x, double *
-	fvec, double *fjac, int ldfjac, double xtol, int
-	maxfev, double *diag, int mode, double factor, int
-	nprint, int *nfev, int *njev, double *r, 
-	int lr, double *qtf, double *wa1, double *wa2, 
-	double *wa3, double *wa4)
+__cminpack_attr__
+int __cminpack_func__(hybrj)(__cminpack_decl_fcnder_nn__ void *p, int n, real *x, real *
+	fvec, real *fjac, int ldfjac, real xtol, int
+	maxfev, real *diag, int mode, real factor, int
+	nprint, int *nfev, int *njev, real *r, 
+	int lr, real *qtf, real *wa1, real *wa2, 
+	real *wa3, real *wa4)
 {
     /* Initialized data */
 
@@ -26,24 +24,24 @@
 
     /* System generated locals */
     int fjac_dim1, fjac_offset;
-    double d1, d2;
+    real d1, d2;
 
     /* Local variables */
     int i, j, l, jm1, iwa[1];
-    double sum;
+    real sum;
     int sing;
     int iter;
-    double temp;
+    real temp;
     int iflag;
-    double delta;
+    real delta = 0.;
     int jeval;
     int ncsuc;
-    double ratio;
-    double fnorm;
-    double pnorm, xnorm, fnorm1;
+    real ratio;
+    real fnorm;
+    real pnorm, xnorm = 0., fnorm1;
     int nslow1, nslow2;
     int ncfail;
-    double actred, epsmch, prered;
+    real actred, epsmch, prered;
     int info;
 
 /*     ********** */
@@ -207,7 +205,7 @@
 
 /*     epsmch is the machine precision. */
 
-    epsmch = dpmpar(1);
+    epsmch = __cminpack_func__(dpmpar)(1);
 
     info = 0;
     iflag = 0;
@@ -231,12 +229,12 @@
 /*     evaluate the function at the starting point */
 /*     and calculate its norm. */
 
-    iflag = (*fcn)(p, n, &x[1], &fvec[1], &fjac[fjac_offset], ldfjac, 1);
+    iflag = fcnder_nn(p, n, &x[1], &fvec[1], &fjac[fjac_offset], ldfjac, 1);
     *nfev = 1;
     if (iflag < 0) {
 	goto TERMINATE;
     }
-    fnorm = enorm(n, &fvec[1]);
+    fnorm = __cminpack_enorm__(n, &fvec[1]);
 
 /*     initialize iteration counter and monitors. */
 
@@ -253,7 +251,7 @@
 
 /*        calculate the jacobian matrix. */
 
-        iflag = (*fcn)(p, n, &x[1], &fvec[1], &fjac[fjac_offset], ldfjac, 2);
+        iflag = fcnder_nn(p, n, &x[1], &fvec[1], &fjac[fjac_offset], ldfjac, 2);
         ++(*njev);
         if (iflag < 0) {
             goto TERMINATE;
@@ -261,7 +259,7 @@
 
 /*        compute the qr factorization of the jacobian. */
 
-        qrfac(n, n, &fjac[fjac_offset], ldfjac, FALSE_, iwa, 1,
+        __cminpack_func__(qrfac)(n, n, &fjac[fjac_offset], ldfjac, FALSE_, iwa, 1,
               &wa1[1], &wa2[1], &wa3[1]);
 
 /*        on the first iteration and if mode is 1, scale according */
@@ -283,7 +281,7 @@
             for (j = 1; j <= n; ++j) {
                 wa3[j] = diag[j] * x[j];
             }
-            xnorm = enorm(n, &wa3[1]);
+            xnorm = __cminpack_enorm__(n, &wa3[1]);
             delta = factor * xnorm;
             if (delta == 0.) {
                 delta = factor;
@@ -328,7 +326,7 @@
 
 /*        accumulate the orthogonal factor in fjac. */
 
-        qform(n, n, &fjac[fjac_offset], ldfjac, &wa1[1]);
+        __cminpack_func__(qform)(n, n, &fjac[fjac_offset], ldfjac, &wa1[1]);
 
 /*        rescale if necessary. */
 
@@ -349,7 +347,7 @@
             if (nprint > 0) {
                 iflag = 0;
                 if ((iter - 1) % nprint == 0) {
-                    iflag = (*fcn)(p, n, &x[1], &fvec[1], &fjac[fjac_offset], ldfjac, 0);
+                    iflag = fcnder_nn(p, n, &x[1], &fvec[1], &fjac[fjac_offset], ldfjac, 0);
                 }
                 if (iflag < 0) {
                     goto TERMINATE;
@@ -358,7 +356,7 @@
 
 /*           determine the direction p. */
 
-            dogleg(n, &r[1], lr, &diag[1], &qtf[1], delta, &wa1[1], &wa2[1], &wa3[1]);
+            __cminpack_func__(dogleg)(n, &r[1], lr, &diag[1], &qtf[1], delta, &wa1[1], &wa2[1], &wa3[1]);
 
 /*           store the direction p and x + p. calculate the norm of p. */
 
@@ -367,7 +365,7 @@
                 wa2[j] = x[j] + wa1[j];
                 wa3[j] = diag[j] * wa1[j];
             }
-            pnorm = enorm(n, &wa3[1]);
+            pnorm = __cminpack_enorm__(n, &wa3[1]);
 
 /*           on the first iteration, adjust the initial step bound. */
 
@@ -377,12 +375,12 @@
 
 /*           evaluate the function at x + p and calculate its norm. */
 
-            iflag = (*fcn)(p, n, &wa2[1], &wa4[1], &fjac[fjac_offset], ldfjac, 1);
+            iflag = fcnder_nn(p, n, &wa2[1], &wa4[1], &fjac[fjac_offset], ldfjac, 1);
             ++(*nfev);
             if (iflag < 0) {
                 goto TERMINATE;
             }
-            fnorm1 = enorm(n, &wa4[1]);
+            fnorm1 = __cminpack_enorm__(n, &wa4[1]);
 
 /*           compute the scaled actual reduction. */
 
@@ -404,7 +402,7 @@
                 }
                 wa3[i] = qtf[i] + sum;
             }
-            temp = enorm(n, &wa3[1]);
+            temp = __cminpack_enorm__(n, &wa3[1]);
             prered = 0.;
             if (temp < fnorm) {
                 /* Computing 2nd power */
@@ -450,7 +448,7 @@
                     wa2[j] = diag[j] * x[j];
                     fvec[j] = wa4[j];
                 }
-                xnorm = enorm(n, &wa2[1]);
+                xnorm = __cminpack_enorm__(n, &wa2[1]);
                 fnorm = fnorm1;
                 ++iter;
             }
@@ -520,9 +518,9 @@
 
 /*           compute the qr factorization of the updated jacobian. */
 
-            r1updt(n, n, &r[1], lr, &wa1[1], &wa2[1], &wa3[1], &sing);
-            r1mpyq(n, n, &fjac[fjac_offset], ldfjac, &wa2[1], &wa3[1]);
-            r1mpyq(1, n, &qtf[1], 1, &wa2[1], &wa3[1]);
+            __cminpack_func__(r1updt)(n, n, &r[1], lr, &wa1[1], &wa2[1], &wa3[1], &sing);
+            __cminpack_func__(r1mpyq)(n, n, &fjac[fjac_offset], ldfjac, &wa2[1], &wa3[1]);
+            __cminpack_func__(r1mpyq)(1, n, &qtf[1], 1, &wa2[1], &wa3[1]);
 
 /*           end of the inner loop. */
 
@@ -541,7 +539,7 @@ TERMINATE:
 	info = iflag;
     }
     if (nprint > 0) {
-	(*fcn)(p, n, &x[1], &fvec[1], &fjac[fjac_offset], ldfjac, 0);
+	fcnder_nn(p, n, &x[1], &fvec[1], &fjac[fjac_offset], ldfjac, 0);
     }
     return info;
 

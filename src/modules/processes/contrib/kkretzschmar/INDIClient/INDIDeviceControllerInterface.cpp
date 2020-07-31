@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInterface.cpp - Released 2020-02-27T12:56:01Z
+// INDIDeviceControllerInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -239,8 +239,8 @@ class PropertyEditDialog : public Dialog
 {
 public:
 
-   PropertyEditDialog( const INDIPropertyListItem& item ) :
-      m_item( item )
+   PropertyEditDialog( const INDIPropertyListItem& item )
+      : m_item( item )
    {
       Key_Label.SetText( item.PropertyKey );
 
@@ -360,8 +360,8 @@ class TextPropertyEditDialog : public PropertyEditDialog
 {
 public:
 
-   TextPropertyEditDialog( const INDIPropertyListItem& item ) :
-      PropertyEditDialog( item )
+   TextPropertyEditDialog( const INDIPropertyListItem& item )
+      : PropertyEditDialog( item )
    {
       Text_Edit.SetMinWidth( 32 * Font().Width( 'm' ) );
       Text_Sizer.Add( Text_Edit, 100 );
@@ -383,8 +383,8 @@ class NumberPropertyEditDialog : public TextPropertyEditDialog
 {
 public:
 
-   NumberPropertyEditDialog( const INDIPropertyListItem& item ) :
-      TextPropertyEditDialog( item )
+   NumberPropertyEditDialog( const INDIPropertyListItem& item )
+      : TextPropertyEditDialog( item )
    {
    }
 
@@ -400,8 +400,8 @@ class SwitchPropertyEditDialog : public PropertyEditDialog
 {
 public:
 
-   SwitchPropertyEditDialog( const INDIPropertyListItem& item ) :
-      PropertyEditDialog( item )
+   SwitchPropertyEditDialog( const INDIPropertyListItem& item )
+      : PropertyEditDialog( item )
    {
       On_RadioButton.SetText( "ON" );
       Off_RadioButton.SetText( "OFF" );
@@ -432,8 +432,8 @@ class CoordinatesPropertyEditDialog : public PropertyEditDialog
 {
 public:
 
-   CoordinatesPropertyEditDialog( const INDIPropertyListItem& item ) :
-      PropertyEditDialog( item )
+   CoordinatesPropertyEditDialog( const INDIPropertyListItem& item )
+      : PropertyEditDialog( item )
    {
       Hours_Edit.SetFixedWidth( 8 * Font().Width( '0' ) );
       Colon1_Label.SetText( ':' );
@@ -1127,4 +1127,4 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF INDIDeviceControllerInterface.cpp - Released 2020-07-31T19:33:39Z

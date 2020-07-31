@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// RotationInstance.cpp - Released 2020-02-27T12:56:01Z
+// RotationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -67,25 +67,25 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-RotationInstance::RotationInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   p_angle( TheRTRotationAngleParameter->DefaultValue() ),
-   p_optimizeFast( TheRTOptimizeFastRotationsParameter->DefaultValue() ),
-   p_interpolation( TheRTInterpolationAlgorithmParameter->Default ),
-   p_clampingThreshold( TheRTClampingThresholdParameter->DefaultValue() ),
-   p_smoothness( TheRTSmoothnessParameter->DefaultValue() ),
-   p_fillColor( TheRTFillRedParameter->DefaultValue(),
-                TheRTFillGreenParameter->DefaultValue(),
-                TheRTFillBlueParameter->DefaultValue(),
-                TheRTFillAlphaParameter->DefaultValue() ),
-   p_noGUIMessages( TheRTNoGUIMessagesParameter->DefaultValue() )
+RotationInstance::RotationInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , p_angle( TheRTRotationAngleParameter->DefaultValue() )
+   , p_optimizeFast( TheRTOptimizeFastRotationsParameter->DefaultValue() )
+   , p_interpolation( TheRTInterpolationAlgorithmParameter->Default )
+   , p_clampingThreshold( TheRTClampingThresholdParameter->DefaultValue() )
+   , p_smoothness( TheRTSmoothnessParameter->DefaultValue() )
+   , p_fillColor( TheRTFillRedParameter->DefaultValue(),
+                  TheRTFillGreenParameter->DefaultValue(),
+                  TheRTFillBlueParameter->DefaultValue(),
+                  TheRTFillAlphaParameter->DefaultValue() )
+   , p_noGUIMessages( TheRTNoGUIMessagesParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-RotationInstance::RotationInstance( const RotationInstance& x ) :
-   ProcessImplementation( x )
+RotationInstance::RotationInstance( const RotationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -255,4 +255,4 @@ void* RotationInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF RotationInstance.cpp - Released 2020-07-31T19:33:39Z

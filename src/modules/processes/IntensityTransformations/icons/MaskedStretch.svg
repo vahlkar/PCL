@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="a" x1="12.027" x2="70.235" y1="86.124" y2="27.916" gradientTransform="matrix(2.1091 0 0 2.1091 -19.016 -52.527)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0405ff" offset="0"/>
+<stop stop-color="#9fc9ff" offset="1"/>
+</linearGradient>
+</defs>
+<rect x="6.35" y="6.35" width="122.77" height="122.77" fill="url(#a)"/>
+<g transform="matrix(.98473 0 0 .98475 1.1147 .95166)">
+<path d="m36.81 11.93v111.61" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+<path d="m58.9 11.93v111.61" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+<path d="m80.99 11.93v111.61" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+<path d="m103.08 11.93v111.61" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+<path d="m123.54 32.316-111.61 0.0704" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+<path d="m123.54 54.476h-111.61" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+<path d="m123.54 76.566h-111.61" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+<path d="m123.54 120.75h-111.61" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+<path d="m123.54 98.656h-111.61" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+<g transform="translate(-159.6 -32.306)" stroke-width="1.0155">
+<rect x="227.33" y="44.356" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="241.28" y="44.356" width="13.951" height="13.951" fill="#fff" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="255.23" y="44.356" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="269.19" y="44.356" width="13.951" height="13.951" fill="#fff" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="227.33" y="58.307" width="13.951" height="13.951" fill="#fff" style="paint-order:fill markers stroke"/>
+<rect x="241.28" y="58.307" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="255.23" y="58.307" width="13.951" height="13.951" fill="#fff" style="paint-order:fill markers stroke"/>
+<rect x="269.19" y="58.307" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="227.33" y="72.258" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="241.28" y="72.258" width="13.951" height="13.951" fill="#fff" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="255.23" y="72.258" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="269.19" y="72.258" width="13.951" height="13.951" fill="#fff" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="227.33" y="86.209" width="13.951" height="13.951" fill="#fff" style="paint-order:fill markers stroke"/>
+<rect x="241.28" y="86.209" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="255.23" y="86.209" width="13.951" height="13.951" fill="#fff" style="paint-order:fill markers stroke"/>
+<rect x="269.19" y="86.209" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="227.33" y="100.16" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="241.28" y="100.16" width="13.951" height="13.951" fill="#fff" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="255.23" y="100.16" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="269.19" y="100.16" width="13.951" height="13.951" fill="#fff" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="227.33" y="114.11" width="13.951" height="13.951" fill="#fff" style="paint-order:fill markers stroke"/>
+<rect x="241.28" y="114.11" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="255.23" y="114.11" width="13.951" height="13.951" fill="#fff" style="paint-order:fill markers stroke"/>
+<rect x="269.19" y="114.11" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="227.33" y="128.06" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="241.28" y="128.06" width="13.951" height="13.951" fill="#fff" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="255.23" y="128.06" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="269.19" y="128.06" width="13.951" height="13.951" fill="#fff" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="227.33" y="142.01" width="13.951" height="13.951" fill="#fff" style="paint-order:fill markers stroke"/>
+<rect x="241.28" y="142.01" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+<rect x="255.23" y="142.01" width="13.951" height="13.951" fill="#fff" style="paint-order:fill markers stroke"/>
+<rect x="269.19" y="142.01" width="13.951" height="13.951" stroke-width="0" style="paint-order:fill markers stroke"/>
+</g>
+<path d="m20.255 118.17c7.0031-94.138 62.616-100.18 103.28-100.2" fill="none" stroke="#fd7003" stroke-linejoin="bevel" stroke-width="6.4401" style="paint-order:normal"/>
+<path d="m14.72 11.93v111.61" fill="none" stroke="#acacac" stroke-linejoin="bevel" stroke-width="5.911" style="paint-order:normal"/>
+</g>
+</svg>

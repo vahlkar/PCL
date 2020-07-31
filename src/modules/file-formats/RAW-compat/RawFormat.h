@@ -64,7 +64,7 @@ class RawFormat : public MetaFileFormat
 {
 public:
 
-   RawFormat();
+   RawFormat() = default;
 
    IsoString Name() const override;
 
@@ -75,7 +75,7 @@ public:
    String Description() const override;
    String Implementation() const override;
 
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
 
    bool CanWrite() const override;
    bool CanStore8Bit() const override;

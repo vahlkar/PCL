@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2020-02-27T12:55:23Z
+// pcl/APIDefs.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -730,12 +730,17 @@ typedef api_bool              (api_func* process_pre_reading_routine)           
 typedef void                  (api_func* process_post_reading_routine)                ( process_handle );
 typedef api_bool              (api_func* process_pre_writing_routine)                 ( const_process_handle );
 typedef void                  (api_func* process_post_writing_routine)                ( const_process_handle );
-
 typedef void*                 (api_func* parameter_lock_routine)                      ( process_handle, meta_parameter_handle, size_type );
 typedef void                  (api_func* parameter_unlock_routine)                    ( process_handle, meta_parameter_handle, size_type );
 typedef api_bool              (api_func* parameter_validation_routine)                ( void*, const_process_handle, meta_parameter_handle, size_type );
 typedef api_bool              (api_func* parameter_allocation_routine)                ( size_type, process_handle, meta_parameter_handle, size_type );
 typedef size_type             (api_func* parameter_length_query_routine)              ( const_process_handle, meta_parameter_handle, size_type );
+
+/*
+ * Process IPC notifications
+ */
+typedef void                  (api_func* process_ipc_notification_routine)            ( meta_process_handle, int32, const char*, const char16_type* );
+typedef int32                 (api_func* process_ipc_status_routine)                  ( meta_process_handle, int32, const char* );
 
 /*
  * Interface definition context
@@ -942,4 +947,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/APIDefs.h - Released 2020-07-31T19:33:04Z

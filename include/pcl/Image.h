@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Image.h - Released 2020-02-27T12:55:23Z
+// pcl/Image.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -227,7 +227,8 @@ namespace ImageOp
 #define m_rectangle        m_selected.rectangle
 #define m_clipLow          m_selected.clipLow
 #define m_clipHigh         m_selected.clipHigh
-#define m_clipped          m_selected.clipped
+#define m_clippedLow       m_selected.clippedLow
+#define m_clippedHigh      m_selected.clippedHigh
 
 // ----------------------------------------------------------------------------
 
@@ -371,10 +372,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      sample_iterator() :
-         m_image( nullptr ), m_iterator( nullptr ), m_end( nullptr )
-      {
-      }
+      sample_iterator() = default;
 
       /*!
        * Constructs a mutable pixel sample iterator for one channel of an
@@ -389,8 +387,8 @@ public:
        *                then the resulting iterator will also be invalid, with
        *                an empty iteration range. The default value is -1.
        */
-      sample_iterator( image_type& image, int channel = -1 ) :
-         m_image( &image ), m_iterator( nullptr ), m_end( nullptr )
+      sample_iterator( image_type& image, int channel = -1 )
+         : m_image( &image )
       {
          m_image->EnsureUnique();
          if ( m_image->ParseChannel( channel ) )
@@ -416,8 +414,10 @@ public:
        * \note Both iteration limits \a i and \a j must be pointers to pixel
        * samples in the \e same channel of the specified \a image.
        */
-      sample_iterator( image_type& image, sample* i, sample* j ) :
-         m_image( &image ), m_iterator( i ), m_end( j )
+      sample_iterator( image_type& image, sample* i, sample* j )
+         : m_image( &image )
+         , m_iterator( i )
+         , m_end( j )
       {
       }
 
@@ -666,9 +666,9 @@ public:
 
    protected:
 
-            image_type* m_image;
-            sample*     m_iterator;
-      const sample*     m_end;
+            image_type* m_image = nullptr;
+            sample*     m_iterator = nullptr;
+      const sample*     m_end = nullptr;
 
       friend class const_sample_iterator;
    };
@@ -706,10 +706,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      const_sample_iterator() :
-         m_image( nullptr ), m_iterator( nullptr ), m_end( nullptr )
-      {
-      }
+      const_sample_iterator() = default;
 
       /*!
        * Constructs an immutable pixel sample iterator for one channel of an
@@ -724,8 +721,8 @@ public:
        *                then the resulting iterator will also be invalid, with
        *                an empty iteration range. The default value is -1.
        */
-      const_sample_iterator( const image_type& image, int channel = -1 ) :
-         m_image( &image ), m_iterator( nullptr ), m_end( nullptr )
+      const_sample_iterator( const image_type& image, int channel = -1 )
+         : m_image( &image )
       {
          if ( m_image->ParseChannel( channel ) )
          {
@@ -750,8 +747,10 @@ public:
        * \note Both iteration limits \a i and \a j must be pointers to constant
        * pixel samples in the \e same channel of the specified \a image.
        */
-      const_sample_iterator( const image_type& image, const sample* i, const sample* j ) :
-         m_image( &image ), m_iterator( i ), m_end( j )
+      const_sample_iterator( const image_type& image, const sample* i, const sample* j )
+         : m_image( &image )
+         , m_iterator( i )
+         , m_end( j )
       {
       }
 
@@ -762,8 +761,10 @@ public:
        * const_sample_iterator class. Note that the argument to this function
        * is a reference to an object of a different class.
        */
-      const_sample_iterator( const sample_iterator& i ) :
-         m_image( i.m_image ), m_iterator( i.m_iterator ), m_end( i.m_end )
+      const_sample_iterator( const sample_iterator& i )
+         : m_image( i.m_image )
+         , m_iterator( i.m_iterator )
+         , m_end( i.m_end )
       {
       }
 
@@ -1026,9 +1027,9 @@ public:
 
    protected:
 
-      const image_type* m_image;
-      const sample*     m_iterator;
-      const sample*     m_end;
+      const image_type* m_image = nullptr;
+      const sample*     m_iterator = nullptr;
+      const sample*     m_end = nullptr;
    };
 
    // -------------------------------------------------------------------------
@@ -1038,19 +1039,16 @@ public:
    {
    protected:
 
-      image_type*    m_image;
-      sample_pointer m_iterator;
-      sample_pointer m_rowBegin;
-      sample_pointer m_rowEnd;
-      sample_pointer m_end;
+      image_type*    m_image = nullptr;
+      sample_pointer m_iterator = nullptr;
+      sample_pointer m_rowBegin = nullptr;
+      sample_pointer m_rowEnd = nullptr;
+      sample_pointer m_end = nullptr;
 
-      roi_sample_iterator_base() :
-         m_image( nullptr ), m_iterator( nullptr ), m_rowBegin( nullptr ), m_rowEnd( nullptr ), m_end( nullptr )
-      {
-      }
+      roi_sample_iterator_base() = default;
 
-      roi_sample_iterator_base( image_type& image, const Rect& rect, int channel ) :
-         m_image( &image ), m_iterator( nullptr ), m_rowBegin( nullptr ), m_rowEnd( nullptr ), m_end( nullptr )
+      roi_sample_iterator_base( image_type& image, const Rect& rect, int channel )
+         : m_image( &image )
       {
          Rect r = rect;
          if ( m_image->ParseRect( r ) )
@@ -1064,8 +1062,8 @@ public:
          }
       }
 
-      roi_sample_iterator_base( image_type& image, sample_pointer i, sample_pointer j ) :
-         m_image( &image ), m_iterator( nullptr ), m_rowBegin( nullptr ), m_rowEnd( nullptr ), m_end( nullptr )
+      roi_sample_iterator_base( image_type& image, sample_pointer i, sample_pointer j )
+         : m_image( &image )
       {
          if ( j < i )
             pcl::Swap( i, j );
@@ -1155,10 +1153,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      roi_sample_iterator() :
-         iterator_base()
-      {
-      }
+      roi_sample_iterator() = default;
 
       /*!
        * Constructs a mutable, region-of-interest (ROI) pixel sample iterator
@@ -1182,8 +1177,8 @@ public:
        *                then the resulting iterator will also be invalid, with
        *                an empty iteration range. The default value is -1.
        */
-      roi_sample_iterator( image_type& image, const Rect& rect = Rect( 0 ), int channel = -1 ) :
-         iterator_base( image.EnsureUnique(), rect, channel )
+      roi_sample_iterator( image_type& image, const Rect& rect = Rect( 0 ), int channel = -1 )
+         : iterator_base( image.EnsureUnique(), rect, channel )
       {
       }
 
@@ -1203,8 +1198,8 @@ public:
        * \note Both iteration limits \a i and \a j must be pointers to pixel
        * samples in the \e same channel of the specified \a image.
        */
-      roi_sample_iterator( image_type& image, sample* i, sample* j ) :
-         iterator_base( image, i, j )
+      roi_sample_iterator( image_type& image, sample* i, sample* j )
+         : iterator_base( image, i, j )
       {
       }
 
@@ -1480,10 +1475,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      const_roi_sample_iterator() :
-         iterator_base()
-      {
-      }
+      const_roi_sample_iterator() = default;
 
       /*!
        * Constructs an immutable, region-of-interest (ROI) pixel sample
@@ -1507,8 +1499,8 @@ public:
        *                then the resulting iterator will also be invalid, with
        *                an empty iteration range. The default value is -1.
        */
-      const_roi_sample_iterator( const image_type& image, const Rect& rect = Rect( 0 ), int channel = -1 ) :
-         iterator_base( image, rect, channel )
+      const_roi_sample_iterator( const image_type& image, const Rect& rect = Rect( 0 ), int channel = -1 )
+         : iterator_base( image, rect, channel )
       {
       }
 
@@ -1528,8 +1520,8 @@ public:
        * \note Both iteration limits \a i and \a j must be pointers to constant
        * pixel samples in the \e same channel of the specified \a image.
        */
-      const_roi_sample_iterator( const image_type& image, const sample* i, const sample* j ) :
-         iterator_base( image, i, j )
+      const_roi_sample_iterator( const image_type& image, const sample* i, const sample* j )
+         : iterator_base( image, i, j )
       {
       }
 
@@ -1541,8 +1533,8 @@ public:
        * const_roi_sample_iterator class. Note that the argument to this
        * function is a reference to an object of a different class.
        */
-      const_roi_sample_iterator( const roi_sample_iterator& i ) :
-         iterator_base( i.m_image, i.m_rowBegin, i.m_end )
+      const_roi_sample_iterator( const roi_sample_iterator& i )
+         : iterator_base( i.m_image, i.m_rowBegin, i.m_end )
       {
       }
 
@@ -1803,27 +1795,30 @@ public:
    protected:
 
       filter_type    m_filter;
-      sample_pointer m_begin;
+      sample_pointer m_begin = nullptr;
 
-      filter_sample_iterator_base() :
-         iterator_base(), m_filter(), m_begin( nullptr )
-      {
-      }
+      filter_sample_iterator_base() = default;
 
-      filter_sample_iterator_base( image_type& image, const filter_type& filter, int channel ) :
-         iterator_base( image, channel ), m_filter( filter ), m_begin( iterator_base::m_iterator )
-      {
-         JumpToNextValidSample();
-      }
-
-      filter_sample_iterator_base( image_type& image, const filter_type& filter, sample_pointer i, sample_pointer j ) :
-         iterator_base( image, i, j ), m_filter( filter ), m_begin( iterator_base::m_iterator )
+      filter_sample_iterator_base( image_type& image, const filter_type& filter, int channel )
+         : iterator_base( image, channel )
+         , m_filter( filter )
+         , m_begin( iterator_base::m_iterator )
       {
          JumpToNextValidSample();
       }
 
-      filter_sample_iterator_base( const iterator_base& i, const filter_type& filter ) :
-         iterator_base( i ), m_filter( filter ), m_begin( iterator_base::m_iterator )
+      filter_sample_iterator_base( image_type& image, const filter_type& filter, sample_pointer i, sample_pointer j )
+         : iterator_base( image, i, j )
+         , m_filter( filter )
+         , m_begin( iterator_base::m_iterator )
+      {
+         JumpToNextValidSample();
+      }
+
+      filter_sample_iterator_base( const iterator_base& i, const filter_type& filter )
+         : iterator_base( i )
+         , m_filter( filter )
+         , m_begin( iterator_base::m_iterator )
       {
          JumpToNextValidSample();
       }
@@ -1920,10 +1915,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      filter_sample_iterator() :
-         iterator_base()
-      {
-      }
+      filter_sample_iterator() = default;
 
       /*!
        * Constructs a mutable filter pixel sample iterator for one channel of
@@ -1941,8 +1933,8 @@ public:
        *                then the resulting iterator will also be invalid, with
        *                an empty iteration range. The default value is -1.
        */
-      filter_sample_iterator( image_type& image, const F& filter, int channel = -1 ) :
-         iterator_base( image.EnsureUnique(), filter, channel )
+      filter_sample_iterator( image_type& image, const F& filter, int channel = -1 )
+         : iterator_base( image.EnsureUnique(), filter, channel )
       {
       }
 
@@ -1964,8 +1956,8 @@ public:
        * \note Both iteration limits \a i and \a j must be pointers to pixel
        * samples in the \e same channel of the specified \a image.
        */
-      filter_sample_iterator( image_type& image, const F& filter, sample* i, sample* j ) :
-         iterator_base( image, filter, i, j )
+      filter_sample_iterator( image_type& image, const F& filter, sample* i, sample* j )
+         : iterator_base( image, filter, i, j )
       {
       }
 
@@ -1973,8 +1965,8 @@ public:
        * Constructs a mutable filter pixel sample iterator from a sample
        * iterator and the specified \a filter.
        */
-      filter_sample_iterator( const sample_iterator& i, const F& filter ) :
-         iterator_base( i, filter )
+      filter_sample_iterator( const sample_iterator& i, const F& filter )
+         : iterator_base( i, filter )
       {
       }
 
@@ -2313,10 +2305,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      const_filter_sample_iterator() :
-         iterator_base()
-      {
-      }
+      const_filter_sample_iterator() = default;
 
       /*!
        * Constructs an immutable filter pixel sample iterator for one channel
@@ -2334,8 +2323,8 @@ public:
        *                then the resulting iterator will also be invalid, with
        *                an empty iteration range. The default value is -1.
        */
-      const_filter_sample_iterator( const image_type& image, const F& filter, int channel = -1 ) :
-         iterator_base( image, filter, channel )
+      const_filter_sample_iterator( const image_type& image, const F& filter, int channel = -1 )
+         : iterator_base( image, filter, channel )
       {
       }
 
@@ -2357,8 +2346,8 @@ public:
        * \note Both iteration limits \a i and \a j must be pointers to constant
        * pixel samples in the \e same channel of the specified \a image.
        */
-      const_filter_sample_iterator( const image_type& image, const F& filter, const sample* i, const sample* j ) :
-         iterator_base( image, filter, i, j )
+      const_filter_sample_iterator( const image_type& image, const F& filter, const sample* i, const sample* j )
+         : iterator_base( image, filter, i, j )
       {
       }
 
@@ -2366,8 +2355,8 @@ public:
        * Constructs an immutable filter pixel sample iterator from a mutable
        * sample iterator and the specified \a filter.
        */
-      const_filter_sample_iterator( const sample_iterator& i, const F& filter ) :
-         iterator_base( i.m_image, filter, i.m_iterator, i.m_end )
+      const_filter_sample_iterator( const sample_iterator& i, const F& filter )
+         : iterator_base( i.m_image, filter, i.m_iterator, i.m_end )
       {
       }
 
@@ -2375,8 +2364,8 @@ public:
        * Constructs an immutable filter pixel sample iterator from an immutable
        * sample iterator and the specified \a filter.
        */
-      const_filter_sample_iterator( const const_sample_iterator& i, const F& filter ) :
-         iterator_base( i, filter )
+      const_filter_sample_iterator( const const_sample_iterator& i, const F& filter )
+         : iterator_base( i, filter )
       {
       }
 
@@ -2384,8 +2373,8 @@ public:
        * Constructs an immutable filter pixel sample iterator from a mutable
        * filter pixel sample iterator.
        */
-      const_filter_sample_iterator( const filter_sample_iterator<F>& i ) :
-         iterator_base( i )
+      const_filter_sample_iterator( const filter_sample_iterator<F>& i )
+         : iterator_base( i )
       {
       }
 
@@ -2680,27 +2669,30 @@ public:
                                                 roi_iterator_base;
 
       filter_type    m_filter;
-      sample_pointer m_begin;
+      sample_pointer m_begin = nullptr;
 
-      roi_filter_sample_iterator_base() :
-         roi_iterator_base(), m_filter(), m_begin( nullptr )
-      {
-      }
+      roi_filter_sample_iterator_base() = default;
 
-      roi_filter_sample_iterator_base( image_type& image, const filter_type& filter, const Rect& rect, int channel ) :
-         roi_iterator_base( image, rect, channel ), m_filter( filter ), m_begin( roi_iterator_base::m_iterator )
-      {
-         JumpToNextValidSample();
-      }
-
-      roi_filter_sample_iterator_base( image_type& image, const filter_type& filter, sample_pointer i, sample_pointer j ) :
-         roi_iterator_base( image, i, j ), m_filter( filter ), m_begin( roi_iterator_base::m_iterator )
+      roi_filter_sample_iterator_base( image_type& image, const filter_type& filter, const Rect& rect, int channel )
+         : roi_iterator_base( image, rect, channel )
+         , m_filter( filter )
+         , m_begin( roi_iterator_base::m_iterator )
       {
          JumpToNextValidSample();
       }
 
-      roi_filter_sample_iterator_base( const roi_iterator_base& i, const filter_type& filter ) :
-         roi_iterator_base( i ), m_filter( filter ), m_begin( roi_iterator_base::m_iterator )
+      roi_filter_sample_iterator_base( image_type& image, const filter_type& filter, sample_pointer i, sample_pointer j )
+         : roi_iterator_base( image, i, j )
+         , m_filter( filter )
+         , m_begin( roi_iterator_base::m_iterator )
+      {
+         JumpToNextValidSample();
+      }
+
+      roi_filter_sample_iterator_base( const roi_iterator_base& i, const filter_type& filter )
+         : roi_iterator_base( i )
+         , m_filter( filter )
+         , m_begin( roi_iterator_base::m_iterator )
       {
          JumpToNextValidSample();
       }
@@ -2773,10 +2765,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      roi_filter_sample_iterator() :
-         iterator_base()
-      {
-      }
+      roi_filter_sample_iterator() = default;
 
       /*!
        * Constructs a mutable, region-of-interest (ROI), filter pixel sample
@@ -2803,8 +2792,8 @@ public:
        *                then the resulting iterator will also be invalid, with
        *                an empty iteration range. The default value is -1.
        */
-      roi_filter_sample_iterator( image_type& image, const F& filter, const Rect& rect = Rect( 0 ), int channel = -1 ) :
-         iterator_base( image.EnsureUnique(), filter, rect, channel )
+      roi_filter_sample_iterator( image_type& image, const F& filter, const Rect& rect = Rect( 0 ), int channel = -1 )
+         : iterator_base( image.EnsureUnique(), filter, rect, channel )
       {
       }
 
@@ -2826,8 +2815,8 @@ public:
        * \note Both iteration limits \a i and \a j must be pointers to pixel
        * samples in the \e same channel of the specified \a image.
        */
-      roi_filter_sample_iterator( image_type& image, const F& filter, sample* i, sample* j ) :
-         iterator_base( image, filter, i, j )
+      roi_filter_sample_iterator( image_type& image, const F& filter, sample* i, sample* j )
+         : iterator_base( image, filter, i, j )
       {
       }
 
@@ -2835,8 +2824,8 @@ public:
        * Constructs a mutable, region-of-interest (ROI), filter pixel sample
        * iterator from the specified ROI iterator \a i and \a filter.
        */
-      roi_filter_sample_iterator( const roi_sample_iterator& i, const F& filter ) :
-         iterator_base( i, filter )
+      roi_filter_sample_iterator( const roi_sample_iterator& i, const F& filter )
+         : iterator_base( i, filter )
       {
       }
 
@@ -3152,10 +3141,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      const_roi_filter_sample_iterator() :
-         iterator_base()
-      {
-      }
+      const_roi_filter_sample_iterator() = default;
 
       /*!
        * Constructs an immutable, region-of-interest (ROI), filter pixel sample
@@ -3182,8 +3168,8 @@ public:
        *                then the resulting iterator will also be invalid, with
        *                an empty iteration range. The default value is -1.
        */
-      const_roi_filter_sample_iterator( const image_type& image, const F& filter, const Rect& rect = Rect( 0 ), int channel = -1 ) :
-         iterator_base( image, filter, rect, channel )
+      const_roi_filter_sample_iterator( const image_type& image, const F& filter, const Rect& rect = Rect( 0 ), int channel = -1 )
+         : iterator_base( image, filter, rect, channel )
       {
       }
 
@@ -3205,8 +3191,8 @@ public:
        * \note Both iteration limits \a i and \a j must be pointers to pixel
        * samples in the \e same channel of the specified \a image.
        */
-      const_roi_filter_sample_iterator( const image_type& image, const F& filter, const sample* i, const sample* j ) :
-         iterator_base( image, filter, i, j )
+      const_roi_filter_sample_iterator( const image_type& image, const F& filter, const sample* i, const sample* j )
+         : iterator_base( image, filter, i, j )
       {
       }
 
@@ -3214,8 +3200,8 @@ public:
        * Constructs an immutable, region-of-interest (ROI), filter pixel sample
        * iterator from the specified immutable ROI iterator \a i and \a filter.
        */
-      const_roi_filter_sample_iterator( const const_roi_sample_iterator& i, const F& filter ) :
-         iterator_base( i, filter )
+      const_roi_filter_sample_iterator( const const_roi_sample_iterator& i, const F& filter )
+         : iterator_base( i, filter )
       {
       }
 
@@ -3524,16 +3510,13 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      pixel_iterator() :
-         m_image( nullptr ), m_iterator(), m_end( nullptr )
-      {
-      }
+      pixel_iterator() = default;
 
       /*!
        * Constructs a mutable pixel iterator for the specified \a image.
        */
-      pixel_iterator( image_type& image ) :
-         m_image( &image ), m_iterator(), m_end( nullptr )
+      pixel_iterator( image_type& image )
+         : m_image( &image )
       {
          m_image->EnsureUnique();
          if ( !m_image->IsEmpty() )
@@ -3750,9 +3733,9 @@ public:
 
    protected:
 
-            image_type*   m_image;
+            image_type*   m_image = nullptr;
             iterator_type m_iterator;
-      const sample*       m_end;
+      const sample*       m_end = nullptr;
    };
 
    // -------------------------------------------------------------------------
@@ -3790,16 +3773,13 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      const_pixel_iterator() :
-         m_image( nullptr ), m_iterator(), m_end( nullptr )
-      {
-      }
+      const_pixel_iterator() = default;
 
       /*!
        * Constructs an immutable pixel iterator for the specified \a image.
        */
-      const_pixel_iterator( const image_type& image ) :
-         m_image( &image ), m_iterator(), m_end( nullptr )
+      const_pixel_iterator( const image_type& image )
+         : m_image( &image )
       {
          if ( !m_image->IsEmpty() )
          {
@@ -4016,9 +3996,9 @@ public:
 
    protected:
 
-      const image_type*   m_image;
+      const image_type*   m_image = nullptr;
             iterator_type m_iterator;
-      const sample*       m_end;
+      const sample*       m_end = nullptr;
    };
 
    // -------------------------------------------------------------------------
@@ -4030,19 +4010,16 @@ public:
 
       typedef GenericVector<sample_pointer>     iterator_type;
 
-      image_type*    m_image;
+      image_type*    m_image = nullptr;
       iterator_type  m_iterator;
-      sample_pointer m_rowBegin;
-      sample_pointer m_rowEnd;
-      sample_pointer m_end;
+      sample_pointer m_rowBegin = nullptr;
+      sample_pointer m_rowEnd = nullptr;
+      sample_pointer m_end = nullptr;
 
-      roi_pixel_iterator_base() :
-         m_image( nullptr ), m_iterator(), m_rowBegin( nullptr ), m_rowEnd( nullptr ), m_end( nullptr )
-      {
-      }
+      roi_pixel_iterator_base() = default;
 
-      roi_pixel_iterator_base( image_type& image, const Rect& rect ) :
-         m_image( &image ), m_iterator(), m_rowBegin( nullptr ), m_rowEnd( nullptr ), m_end( nullptr )
+      roi_pixel_iterator_base( image_type& image, const Rect& rect )
+         : m_image( &image )
       {
          Rect r = rect;
          if ( m_image->ParseRect( r ) )
@@ -4147,10 +4124,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      roi_pixel_iterator() :
-         iterator_base()
-      {
-      }
+      roi_pixel_iterator() = default;
 
       /*!
        * Constructs a mutable, region-of-interest (ROI) pixel iterator.
@@ -4166,8 +4140,8 @@ public:
        *                with an empty iteration range. The default value is an
        *                empty rectangle.
        */
-      roi_pixel_iterator( image_type& image, const Rect& rect = Rect( 0 ) ) :
-         iterator_base( image.EnsureUnique(), rect )
+      roi_pixel_iterator( image_type& image, const Rect& rect = Rect( 0 ) )
+         : iterator_base( image.EnsureUnique(), rect )
       {
       }
 
@@ -4407,10 +4381,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      const_roi_pixel_iterator() :
-         iterator_base()
-      {
-      }
+      const_roi_pixel_iterator() = default;
 
       /*!
        * Constructs an immutable, region-of-interest (ROI) pixel iterator.
@@ -4426,8 +4397,8 @@ public:
        *                with an empty iteration range. The default value is an
        *                empty rectangle.
        */
-      const_roi_pixel_iterator( const image_type& image, const Rect& rect = Rect( 0 ) ) :
-         iterator_base( image, rect )
+      const_roi_pixel_iterator( const image_type& image, const Rect& rect = Rect( 0 ) )
+         : iterator_base( image, rect )
       {
       }
 
@@ -4640,21 +4611,22 @@ public:
    protected:
 
       filter_type    m_filter;
-      sample_pointer m_begin;
+      sample_pointer m_begin = nullptr;
 
-      filter_pixel_iterator_base() :
-         iterator_base(), m_filter(), m_begin( nullptr )
-      {
-      }
+      filter_pixel_iterator_base() = default;
 
-      filter_pixel_iterator_base( image_type& image, const filter_type& filter ) :
-         iterator_base( image ), m_filter( filter ), m_begin( iterator_base::m_iterator )
+      filter_pixel_iterator_base( image_type& image, const filter_type& filter )
+         : iterator_base( image )
+         , m_filter( filter )
+         , m_begin( iterator_base::m_iterator )
       {
          JumpToNextValidSample();
       }
 
-      filter_pixel_iterator_base( const iterator_base& i, const filter_type& filter ) :
-         iterator_base( i ), m_filter( filter ), m_begin( iterator_base::m_iterator )
+      filter_pixel_iterator_base( const iterator_base& i, const filter_type& filter )
+         : iterator_base( i )
+         , m_filter( filter )
+         , m_begin( iterator_base::m_iterator )
       {
          JumpToNextValidSample();
       }
@@ -4754,10 +4726,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      filter_pixel_iterator() :
-         iterator_base()
-      {
-      }
+      filter_pixel_iterator() = default;
 
       /*!
        * Constructs a mutable filter pixel iterator.
@@ -4767,8 +4736,8 @@ public:
        * \param filter  Reference to a predicate object that will be used to
        *                filter pixels.
        */
-      filter_pixel_iterator( image_type& image, const F& filter ) :
-         iterator_base( image.EnsureUnique(), filter )
+      filter_pixel_iterator( image_type& image, const F& filter )
+         : iterator_base( image.EnsureUnique(), filter )
       {
       }
 
@@ -4776,8 +4745,8 @@ public:
        * Constructs a mutable filter pixel iterator from a mutable pixel
        * iterator and the specified \a filter.
        */
-      filter_pixel_iterator( const pixel_iterator& i, const F& filter ) :
-         iterator_base( i, filter )
+      filter_pixel_iterator( const pixel_iterator& i, const F& filter )
+         : iterator_base( i, filter )
       {
       }
 
@@ -5089,10 +5058,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      const_filter_pixel_iterator() :
-         iterator_base()
-      {
-      }
+      const_filter_pixel_iterator() = default;
 
       /*!
        * Constructs an immutable filter pixel iterator.
@@ -5102,8 +5068,8 @@ public:
        * \param filter  Reference to a predicate object that will be used to
        *                filter pixels.
        */
-      const_filter_pixel_iterator( const image_type& image, const F& filter ) :
-         iterator_base( image, filter )
+      const_filter_pixel_iterator( const image_type& image, const F& filter )
+         : iterator_base( image, filter )
       {
       }
 
@@ -5111,8 +5077,8 @@ public:
        * Constructs an immutable filter pixel iterator from an immutable pixel
        * iterator and the specified \a filter.
        */
-      const_filter_pixel_iterator( const const_pixel_iterator& i, const F& filter ) :
-         iterator_base( i, filter )
+      const_filter_pixel_iterator( const const_pixel_iterator& i, const F& filter )
+         : iterator_base( i, filter )
       {
       }
 
@@ -5366,21 +5332,22 @@ public:
                                                 roi_iterator_base;
 
       filter_type    m_filter;
-      sample_pointer m_begin;
+      sample_pointer m_begin = nullptr;
 
-      roi_filter_pixel_iterator_base() :
-         roi_iterator_base(), m_filter(), m_begin( nullptr )
-      {
-      }
+      roi_filter_pixel_iterator_base() = default;
 
-      roi_filter_pixel_iterator_base( image_type& image, const filter_type& filter, const Rect& rect ) :
-         roi_iterator_base( image, rect ), m_filter( filter ), m_begin( roi_iterator_base::m_iterator )
+      roi_filter_pixel_iterator_base( image_type& image, const filter_type& filter, const Rect& rect )
+         : roi_iterator_base( image, rect )
+         , m_filter( filter )
+         , m_begin( roi_iterator_base::m_iterator )
       {
          JumpToNextValidSample();
       }
 
-      roi_filter_pixel_iterator_base( const roi_iterator_base& i, const filter_type& filter ) :
-         roi_iterator_base( i ), m_filter( filter ), m_begin( roi_iterator_base::m_iterator )
+      roi_filter_pixel_iterator_base( const roi_iterator_base& i, const filter_type& filter )
+         : roi_iterator_base( i )
+         , m_filter( filter )
+         , m_begin( roi_iterator_base::m_iterator )
       {
          JumpToNextValidSample();
       }
@@ -5453,10 +5420,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      roi_filter_pixel_iterator() :
-         iterator_base()
-      {
-      }
+      roi_filter_pixel_iterator() = default;
 
       /*!
        * Constructs a mutable, region-of-interest (ROI), filter pixel iterator.
@@ -5475,8 +5439,8 @@ public:
        *                with an empty iteration range. The default value is an
        *                empty rectangle.
        */
-      roi_filter_pixel_iterator( image_type& image, const F& filter, const Rect& rect = Rect( 0 ) ) :
-         iterator_base( image.EnsureUnique(), filter, rect )
+      roi_filter_pixel_iterator( image_type& image, const F& filter, const Rect& rect = Rect( 0 ) )
+         : iterator_base( image.EnsureUnique(), filter, rect )
       {
       }
 
@@ -5484,8 +5448,8 @@ public:
        * Constructs a mutable, region-of-interest (ROI), filter pixel iterator
        * from the specified ROI pixel iterator \a i and \a filter.
        */
-      roi_filter_pixel_iterator( const roi_pixel_iterator& i, const F& filter ) :
-         iterator_base( i, filter )
+      roi_filter_pixel_iterator( const roi_pixel_iterator& i, const F& filter )
+         : iterator_base( i, filter )
       {
       }
 
@@ -5767,10 +5731,7 @@ public:
       /*!
        * Default constructor. Initializes an invalid iterator.
        */
-      const_roi_filter_pixel_iterator() :
-         iterator_base()
-      {
-      }
+      const_roi_filter_pixel_iterator() = default;
 
       /*!
        * Constructs an immutable, region-of-interest (ROI), filter pixel
@@ -5790,8 +5751,8 @@ public:
        *                with an empty iteration range. The default value is an
        *                empty rectangle.
        */
-      const_roi_filter_pixel_iterator( const image_type& image, const F& filter, const Rect& rect = Rect( 0 ) ) :
-         iterator_base( image, filter, rect )
+      const_roi_filter_pixel_iterator( const image_type& image, const F& filter, const Rect& rect = Rect( 0 ) )
+         : iterator_base( image, filter, rect )
       {
       }
 
@@ -5799,8 +5760,8 @@ public:
        * Constructs an immutable, region-of-interest (ROI), filter pixel
        * iterator from the specified ROI pixel iterator \a i and \a filter.
        */
-      const_roi_filter_pixel_iterator( const const_roi_pixel_iterator& i, const F& filter ) :
-         iterator_base( i, filter )
+      const_roi_filter_pixel_iterator( const const_roi_pixel_iterator& i, const F& filter )
+         : iterator_base( i, filter )
       {
       }
 
@@ -6162,8 +6123,9 @@ public:
    /*!
     * Move constructor.
     */
-   GenericImage( GenericImage&& image ) :
-      AbstractImage( image ), m_data( image.m_data )
+   GenericImage( GenericImage&& image )
+      : AbstractImage( image )
+      , m_data( image.m_data )
    {
       image.m_data = nullptr;
    }
@@ -8145,7 +8107,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() );
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Inverting samples", N*(1 + lastChannel - firstChannel) );
+         m_status.Initialize( "Inverting pixel samples", N*(1 + lastChannel - firstChannel) );
 
       sample v = P::ToSample( scalar );
 
@@ -8304,7 +8266,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() );
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Truncating samples", N*(1 + lastChannel - firstChannel) );
+         m_status.Initialize( "Truncating pixel samples", N*(1 + lastChannel - firstChannel) );
 
       sample b0 = P::ToSample( lowerBound );
       sample b1 = P::ToSample( upperBound );
@@ -8439,7 +8401,7 @@ public:
       size_type N = size_type( r.Width() )*size_type( r.Height() );
       size_type Ns = N*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Rescaling samples", Ns );
+         m_status.Initialize( "Rescaling pixel samples", Ns );
 
       sample b0 = P::ToSample( lowerBound );
       sample b1 = P::ToSample( upperBound );
@@ -8620,7 +8582,7 @@ public:
       size_type N = size_type( r.Width() )*size_type( r.Height() );
       size_type Ns = N*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Normalizing samples", Ns );
+         m_status.Initialize( "Normalizing pixel samples", Ns );
 
       sample b0 = P::ToSample( lowerBound );
       sample b1 = P::ToSample( upperBound );
@@ -8797,7 +8759,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() );
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Binarizing samples", N*(1 + lastChannel - firstChannel) );
+         m_status.Initialize( "Binarizing pixel samples", N*(1 + lastChannel - firstChannel) );
 
       sample t = P::ToSample( threshold );
 
@@ -9560,7 +9522,7 @@ public:
       if ( IsColor() )
       {
          if ( m_status.IsInitializationEnabled() )
-            m_status.Initialize( "Blending bitmap", size_type( w )*size_type( h ) );
+            m_status.Initialize( "Blending RGBA bitmap", size_type( w )*size_type( h ) );
 
          sample* fR = 0, * fG = 0, * fB = 0, * fA = 0;
 
@@ -10771,7 +10733,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Computing minimum sample value", N );
+         m_status.Initialize( "Computing minimum pixel sample value", N );
 
       Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
@@ -10790,19 +10752,16 @@ public:
          threads[0].Run();
 
       sample min = P::MinSampleValue();
-      bool initialized = false;
-      for ( const MinThread& thread : threads )
-         if ( thread.initialized )
-            if ( initialized )
-            {
-               if ( thread.min < min )
-                  min = thread.min;
-            }
-            else
-            {
-               min = thread.min;
-               initialized = true;
-            }
+      for ( size_type i = 0; i < threads.Length(); ++i )
+         if ( threads[i].count > 0 )
+         {
+            min = threads[i].min;
+            while ( ++i < threads.Length() )
+               if ( threads[i].count > 0 )
+                  if ( threads[i].min < min )
+                     min = threads[i].min;
+            break;
+         }
 
       threads.Destroy();
       m_status += N;
@@ -10848,7 +10807,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Computing maximum sample value", N );
+         m_status.Initialize( "Computing maximum pixel sample value", N );
 
       Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
@@ -10867,19 +10826,16 @@ public:
          threads[0].Run();
 
       sample max = P::MinSampleValue();
-      bool initialized = false;
-      for ( const MaxThread& thread : threads )
-         if ( thread.initialized )
-            if ( initialized )
-            {
-               if ( max < thread.max )
-                  max = thread.max;
-            }
-            else
-            {
-               max = thread.max;
-               initialized = true;
-            }
+      for ( size_type i = 0; i < threads.Length(); ++i )
+         if ( threads[i].count > 0 )
+         {
+            max = threads[i].max;
+            while ( ++i < threads.Length() )
+               if ( threads[i].count > 0 )
+                  if ( max < threads[i].max )
+                     max = threads[i].max;
+            break;
+         }
 
       threads.Destroy();
       m_status += N;
@@ -10939,7 +10895,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Computing extreme sample values", N );
+         m_status.Initialize( "Computing extreme pixel sample values", N );
 
       Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
@@ -10959,22 +10915,21 @@ public:
 
       sample vmin = P::MinSampleValue();
       sample vmax = P::MinSampleValue();
-      bool initialized = false;
-      for ( const MinMaxThread& thread : threads )
-         if ( thread.initialized )
-            if ( initialized )
-            {
-               if ( thread.min < vmin )
-                  vmin = thread.min;
-               if ( vmax < thread.max )
-                  vmax = thread.max;
-            }
-            else
-            {
-               vmin = thread.min;
-               vmax = thread.max;
-               initialized = true;
-            }
+      for ( size_type i = 0; i < threads.Length(); ++i )
+         if ( threads[i].count > 0 )
+         {
+            vmin = threads[i].min;
+            vmax = threads[i].max;
+            while ( ++i < threads.Length() )
+               if ( threads[i].count > 0 )
+               {
+                  if ( threads[i].min < vmin )
+                     vmin = threads[i].min;
+                  if ( vmax < threads[i].max )
+                     vmax = threads[i].max;
+               }
+            break;
+         }
 
       threads.Destroy();
       m_status += N;
@@ -11034,7 +10989,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Locating minimum sample value", N );
+         m_status.Initialize( "Locating minimum pixel sample value", N );
 
       Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
@@ -11052,34 +11007,27 @@ public:
       else
          threads[0].Run();
 
+      xmin = ymin = -1;
       sample min = P::MinSampleValue();
-      bool initialized = false;
-      for ( const MinPosThread& thread : threads )
-         if ( thread.initialized )
-            if ( initialized )
-            {
-               if ( thread.min < min )
-               {
-                  min = thread.min;
-                  xmin = thread.pmin.x;
-                  ymin = thread.pmin.y;
-               }
-            }
-            else
-            {
-               min = thread.min;
-               xmin = thread.pmin.x;
-               ymin = thread.pmin.y;
-               initialized = true;
-            }
+      for ( size_type i = 0; i < threads.Length(); ++i )
+         if ( threads[i].count > 0 )
+         {
+            min = threads[i].min;
+            xmin = threads[i].pmin.x;
+            ymin = threads[i].pmin.y;
+            while ( ++i < threads.Length() )
+               if ( threads[i].count > 0 )
+                  if ( threads[i].min < min )
+                  {
+                     min = threads[i].min;
+                     xmin = threads[i].pmin.x;
+                     ymin = threads[i].pmin.y;
+                  }
+            break;
+         }
 
       threads.Destroy();
-
-      if ( !initialized )
-         xmin = ymin = -1;
-
       m_status += N;
-
       return min;
    }
 
@@ -11176,7 +11124,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Locating maximum sample value", N );
+         m_status.Initialize( "Locating maximum pixel sample value", N );
 
       Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
@@ -11194,34 +11142,27 @@ public:
       else
          threads[0].Run();
 
+      xmax = ymax = -1;
       sample max = P::MinSampleValue();
-      bool initialized = false;
-      for ( const MaxPosThread& thread : threads )
-         if ( thread.initialized )
-            if ( initialized )
-            {
-               if ( max < thread.max )
-               {
-                  max = thread.max;
-                  xmax = thread.pmax.x;
-                  ymax = thread.pmax.y;
-               }
-            }
-            else
-            {
-               max = thread.max;
-               xmax = thread.pmax.x;
-               ymax = thread.pmax.y;
-               initialized = true;
-            }
+      for ( size_type i = 0; i < threads.Length(); ++i )
+         if ( threads[i].count > 0 )
+         {
+            max = threads[i].max;
+            xmax = threads[i].pmax.x;
+            ymax = threads[i].pmax.y;
+            while ( ++i < threads.Length() )
+               if ( threads[i].count > 0 )
+                  if ( max < threads[i].max )
+                  {
+                     max = threads[i].max;
+                     xmax = threads[i].pmax.x;
+                     ymax = threads[i].pmax.y;
+                  }
+            break;
+         }
 
       threads.Destroy();
-
-      if ( !initialized )
-         xmax = ymax = -1;
-
       m_status += N;
-
       return max;
    }
 
@@ -11332,7 +11273,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Locating extreme sample values", N );
+         m_status.Initialize( "Locating extreme pixel sample values", N );
 
       Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
@@ -11350,47 +11291,41 @@ public:
       else
          threads[0].Run();
 
+      xmin = ymin = xmax = ymax = -1;
       sample vmin = P::MinSampleValue();
       sample vmax = P::MinSampleValue();
-      bool initialized = false;
-      for ( const MinMaxPosThread& thread : threads )
-         if ( thread.initialized )
-            if ( initialized )
-            {
-               if ( thread.min < vmin )
+      for ( size_type i = 0; i < threads.Length(); ++i )
+         if ( threads[i].count > 0 )
+         {
+            vmin = threads[i].min;
+            xmin = threads[i].pmin.x;
+            ymin = threads[i].pmin.y;
+            vmax = threads[i].max;
+            xmax = threads[i].pmax.x;
+            ymax = threads[i].pmax.y;
+            while ( ++i < threads.Length() )
+               if ( threads[i].count > 0 )
                {
-                  vmin = thread.min;
-                  xmin = thread.pmin.x;
-                  ymin = thread.pmin.y;
+                  if ( threads[i].min < vmin )
+                  {
+                     vmin = threads[i].min;
+                     xmin = threads[i].pmin.x;
+                     ymin = threads[i].pmin.y;
+                  }
+                  if ( vmax < threads[i].max )
+                  {
+                     vmax = threads[i].max;
+                     xmax = threads[i].pmax.x;
+                     ymax = threads[i].pmax.y;
+                  }
                }
-
-               if ( vmax < thread.max )
-               {
-                  vmax = thread.max;
-                  xmax = thread.pmax.x;
-                  ymax = thread.pmax.y;
-               }
-            }
-            else
-            {
-               vmin = thread.min;
-               xmin = thread.pmin.x;
-               ymin = thread.pmin.y;
-               vmax = thread.max;
-               xmax = thread.pmax.x;
-               ymax = thread.pmax.y;
-               initialized = true;
-            }
+            break;
+         }
 
       threads.Destroy();
-
       m_status += N;
-
       P::FromSample( min, vmin );
       P::FromSample( max, vmax );
-
-      if ( !initialized )
-         xmin = ymin = xmax = ymax = -1;
    }
 
    /*!
@@ -11456,8 +11391,8 @@ public:
     * \note Increments the status monitoring object by the number of selected
     * pixel samples.
     */
-   uint64 Count( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
-                 int maxProcessors = 0 ) const
+   size_type Count( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                    int maxProcessors = 0 ) const
    {
       Rect r = rect;
       if ( !ParseSelection( r, firstChannel, lastChannel ) )
@@ -11465,12 +11400,12 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Counting samples", N );
+         m_status.Initialize( "Counting pixel samples", N );
 
       if ( !this->IsRangeClippingEnabled() )
       {
          m_status += N;
-         return uint64( r.Width() ) * uint64( r.Height() ) * uint64( 1 + lastChannel - firstChannel );
+         return size_type( r.Width() ) * size_type( r.Height() ) * size_type( 1 + lastChannel - firstChannel );
       }
 
       Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
@@ -11489,7 +11424,7 @@ public:
       else
          threads[0].Run();
 
-      uint64 count = 0;
+      size_type count = 0;
       for ( const CountThread& thread : threads )
          count += thread.count;
 
@@ -11535,7 +11470,7 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Computing mean sample value", N );
+         m_status.Initialize( "Computing mean pixel sample value", N );
 
       Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
       bool useAffinity = m_parallel && Thread::IsRootThread();
@@ -11596,14 +11531,6 @@ public:
     * the current clipping range will be taken into account for calculation of
     * the median.
     *
-    * For sets of pixel samples of even length less than 2^16=65536, this
-    * routine returns the mean of the two central values. For the sake of
-    * performance, for larger sets of even length this function returns the
-    * high median, which is the order statistic of rank ceil(n/2). Note that
-    * for large sets, the difference between a high median and the mean of the
-    * high and low medians is statistically irrelevant (modulo special cases
-    * that are irrelevant for practical matters).
-    *
     * \note Increments the status monitoring object by the number of selected
     * pixel samples.
     */
@@ -11616,52 +11543,152 @@ public:
 
       size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
-         m_status.Initialize( "Computing median sample value", N );
+         m_status.Initialize( "Computing median pixel sample value", N );
 
-      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
-      bool useAffinity = m_parallel && Thread::IsRootThread();
-      ReferenceArray<SmpThread> threads;
-      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
-         threads.Add( new SmpThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
-      if ( threads.Length() > 1 )
+      if ( N <= 2560000 )
       {
-         int n = 0;
-         for ( SmpThread& thread : threads )
-            thread.Start( ThreadPriority::DefaultMax, useAffinity ? n++ : -1 );
-         for ( SmpThread& thread : threads )
-            thread.Wait();
+         SmpThread S( *this, r, firstChannel, lastChannel, 0, r.Height() );
+         S.Run();
+         if ( S.n == 0 )
+         {
+            m_status += N;
+            return 0;
+         }
+         double m = double( *pcl::Select( S.samples.Begin(), S.samples.At( S.n ), S.n >> 1 ) )/double( P::MaxSampleValue() );
+         if ( S.n & 1 )
+         {
+            m_status += N;
+            return m;
+         }
+         m = (m + double( *pcl::Select( S.samples.Begin(), S.samples.At( S.n ), (S.n >> 1)-1 ) )/double( P::MaxSampleValue() ))/2;
+         m_status += N;
+         return m;
       }
-      else
-         threads[0].Run();
 
-      Array<sample> samples;
-      for ( SmpThread& thread : threads )
-         if ( !thread.samples.IsEmpty() )
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, 160*1024/*overheadLimitPx*/ );
+      bool useAffinity = m_parallel && Thread::IsRootThread();
+
+      double low, high;
+      size_type count = 0;
+      {
+         ReferenceArray<MinMaxThread> threads;
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads << new MinMaxThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) );
+
+         if ( threads.Length() > 1 )
          {
-            samples.Add( thread.samples.Begin(), thread.samples.At( thread.n ) );
-            thread.samples.Clear();
+            int i = 0;
+            for ( MinMaxThread& thread : threads )
+               thread.Start( ThreadPriority::DefaultMax, useAffinity ? i++ : -1 );
+            for ( MinMaxThread& thread : threads )
+               thread.Wait();
          }
+         else
+            threads[0].Run();
 
-      threads.Destroy();
+         sample slow = 0, shigh = 0;
+         for ( size_type i = 0; i < threads.Length(); ++i )
+            if ( threads[i].count > 0 )
+            {
+               slow = threads[i].min;
+               shigh = threads[i].max;
+               count = threads[i].count;
+               while ( ++i < threads.Length() )
+                  if ( threads[i].count > 0 )
+                  {
+                     if ( threads[i].min < slow )
+                        slow = threads[i].min;
+                     if ( shigh < threads[i].max )
+                        shigh = threads[i].max;
+                     count += threads[i].count;
+                  }
+               break;
+            }
 
-      size_type n = samples.Length();
-      if ( n < 2 )
+         threads.Destroy();
+
+         low = double( slow );
+         high = double( shigh );
+      }
+
+      const double eps = P::IsComplexSample() ? 2*std::numeric_limits<double>::epsilon() :
+                           (P::IsFloatSample() ?
+                              2*std::numeric_limits<typename P::component>::epsilon() : 0.5/Pow2( P::BitsPerSample() ));
+      if ( count == 0 )
+      {
+         m_status += N;
          return 0;
+      }
+      if ( high - low < eps )
+      {
+         m_status += N;
+         return low/double( P::MaxSampleValue() );
+      }
 
-      size_type n2 = n >> 1;
-      double m;
-      P::FromSample( m, *pcl::Select( samples.Begin(), samples.End(), n2 ) );
-      if ( n < 0x10000 )
-         if ( (n & 1) == 0 )
+      ReferenceArray<HistogramThread> threads;
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads << new HistogramThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ), low, high );
+
+      double mh = 0, l0 = low, h0 = high;
+      SzVector H0;
+
+      for ( size_type n = 0, n2 = count >> 1, step = 0, it = 0;; ++it )
+      {
+         SzVector H;
+         if ( it == 0 && step )
+            H = H0;
+         else
          {
-            double m1;
-            P::FromSample( m1, *pcl::Select( samples.Begin(), samples.End(), n2-1 ) );
-            m = (m + m1)/2;
+            if ( threads.Length() > 1 )
+            {
+               int i = 0;
+               for ( HistogramThread& thread : threads )
+                  thread.Start( ThreadPriority::DefaultMax, useAffinity ? i++ : -1 );
+               for ( HistogramThread& thread : threads )
+                  thread.Wait();
+            }
+            else
+               threads[0].Run();
+
+            H = threads[0].H;
+            for ( size_type i = 1; i < threads.Length(); ++i )
+               H += threads[i].H;
+            if ( it == 0 )
+               if ( (count & 1) == 0 )
+                  H0 = H;
          }
 
-      m_status += N;
-
-      return m;
+         for ( int i = 0; ; n += H[i++] )
+            if ( n + H[i] > n2 )
+            {
+               double range = high - low;
+               high = (range * (i + 1))/(__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) + low;
+               low = (range * i)/(__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) + low;
+               if ( high - low < eps )
+               {
+                  if ( count & 1 )
+                  {
+                     threads.Destroy();
+                     m_status += N;
+                     return low/double( P::MaxSampleValue() );
+                  }
+                  if ( step )
+                  {
+                     threads.Destroy();
+                     m_status += N;
+                     return (low + mh)/2/double( P::MaxSampleValue() );
+                  }
+                  mh = low;
+                  low = l0;
+                  high = h0;
+                  n = 0;
+                  --n2;
+                  ++step;
+                  it = 0;
+               }
+               break;
+            }
+      }
    }
 
    /*!
@@ -11843,7 +11870,8 @@ public:
     * \note Increments the status monitoring object by the number of selected
     * pixel samples.
     */
-   double AvgDev( double center, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+   double AvgDev( double center,
+                  const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
                   int maxProcessors = 0 ) const
    {
       Rect r = rect;
@@ -11892,6 +11920,79 @@ public:
    }
 
    /*!
+    * Returns the two-sided mean absolute deviation of a subset of pixel
+    * samples with respect to the specified \a center value.
+    *
+    * \param center  Reference central value for computation of the mean
+    *                absolute deviation in the normalized range [0,1].
+    *                Typically, the value of this parameter is the median of
+    *                the set of pixel samples used for calculation.
+    *
+    * \param maxProcessors    If a value greater than zero is specified, it is
+    *          the maximum number of concurrent threads that this function can
+    *          execute. If zero or a negative value is specified, the current
+    *          thread limit for this image will be used instead (see
+    *          AbstractImage::SetMaxProcessors()). The default value is zero.
+    *
+    * See AvgDev() for complete information and references.
+    *
+    * \note Increments the status monitoring object by the number of selected
+    * pixel samples.
+    */
+   TwoSidedEstimate TwoSidedAvgDev( double center,
+                                    const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                                    int maxProcessors = 0 ) const
+   {
+      Rect r = rect;
+      if ( !ParseSelection( r, firstChannel, lastChannel ) )
+         return 0;
+
+      size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
+      if ( m_status.IsInitializationEnabled() )
+         m_status.Initialize( "Computing two-sided average absolute deviation", N );
+
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
+      bool useAffinity = m_parallel && Thread::IsRootThread();
+      ReferenceArray<TwoSidedSumAbsDevThread> threads;
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new TwoSidedSumAbsDevThread( *this, center, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
+      {
+         int n = 0;
+         for ( TwoSidedSumAbsDevThread& thread : threads )
+            thread.Start( ThreadPriority::DefaultMax, useAffinity ? n++ : -1 );
+         for ( TwoSidedSumAbsDevThread& thread : threads )
+            thread.Wait();
+      }
+      else
+         threads[0].Run();
+
+      double s0 = 0, s1 = 0;
+      double e0 = 0, e1 = 0;
+      size_type n0 = 0, n1 = 0;
+      for ( const TwoSidedSumAbsDevThread& thread : threads )
+      {
+         double y = thread.s0 - e0;
+         double t = s0 + y;
+         e0 = (t - s0) - y;
+         s0 = t;
+         n0 += thread.n0;
+         y = thread.s1 - e1;
+         t = s1 + y;
+         e1 = (t - s1) - y;
+         s1 = t;
+         n1 += thread.n1;
+      }
+
+      threads.Destroy();
+
+      m_status += N;
+
+      return { (n0 > 0) ? s0/n0 : 0.0,
+               (n1 > 0) ? s1/n1 : 0.0 };
+   }
+
+   /*!
     * Returns the median absolute deviation (MAD) of a subset of pixel samples
     * with respect to the specified \a center value.
     *
@@ -11919,20 +12020,14 @@ public:
     * the current clipping range will be taken into account for calculation of
     * the median absolute deviation.
     *
-    * For sets of pixel samples of even length less than 2^16=65536, this
-    * routine returns the mean of the two central values. For larger sets of
-    * even length, this function returns the high median, which is the order
-    * statistic of rank ceil(n/2). Note that for large lists, the difference
-    * between a high median and the mean of the high and low medians is
-    * statistically irrelevant.
-    *
     * \note To make the MAD estimator consistent with the standard deviation of
     * a normal distribution, it must be multiplied by the constant 1.4826.
     *
     * \note Increments the status monitoring object by the number of selected
     * pixel samples.
     */
-   double MAD( double center, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+   double MAD( double center,
+               const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
                int maxProcessors = 0 ) const
    {
       Rect r = rect;
@@ -11943,43 +12038,323 @@ public:
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing median absolute deviation", N );
 
-      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
-      bool useAffinity = m_parallel && Thread::IsRootThread();
-      ReferenceArray<SmpAbsDevThread> threads;
-      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
-         threads.Add( new SmpAbsDevThread( *this, center, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
-      if ( threads.Length() > 1 )
+      if ( N <= 2560000 )
       {
-         int n = 0;
-         for ( SmpAbsDevThread& thread : threads )
-            thread.Start( ThreadPriority::DefaultMax, useAffinity ? ++n : -1 );
-         for ( SmpAbsDevThread& thread : threads )
-            thread.Wait();
-      }
-      else
-         threads[0].Run();
-
-      Array<double> devs;
-      for ( SmpAbsDevThread& thread : threads )
-         if ( !thread.devs.IsEmpty() )
+         AbsDevSmpThread S( *this, center, r, firstChannel, lastChannel, 0, r.Height() );
+         S.Run();
+         if ( S.n == 0 )
          {
-            devs.Add( thread.devs.Begin(), thread.devs.At( thread.n ) );
-            thread.devs.Clear();
+            m_status += N;
+            return 0;
+         }
+         double m = *pcl::Select( S.values.Begin(), S.values.At( S.n ), S.n >> 1 );
+         if ( S.n & 1 )
+         {
+            m_status += N;
+            return m;
+         }
+         m = (m + *pcl::Select( S.values.Begin(), S.values.At( S.n ), (S.n >> 1)-1 ))/2;
+         m_status += N;
+         return m;
+      }
+
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, 160*1024/*overheadLimitPx*/ );
+      bool useAffinity = m_parallel && Thread::IsRootThread();
+
+      double low, high;
+      size_type count = 0;
+      {
+         ReferenceArray<ExtremeAbsDevThread> threads;
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads << new ExtremeAbsDevThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ), center );
+
+         if ( threads.Length() > 1 )
+         {
+            int n = 0;
+            for ( ExtremeAbsDevThread& thread : threads )
+               thread.Start( ThreadPriority::DefaultMax, useAffinity ? n++ : -1 );
+            for ( ExtremeAbsDevThread& thread : threads )
+               thread.Wait();
+         }
+         else
+            threads[0].Run();
+
+         for ( size_type i = 0; i < threads.Length(); ++i )
+            if ( threads[i].count > 0 )
+            {
+               low = threads[i].minAbsDev;
+               high = threads[i].maxAbsDev;
+               count += threads[i].count;
+               while ( ++i < threads.Length() )
+                  if ( threads[i].count > 0 )
+                  {
+                     if ( threads[i].minAbsDev < low )
+                        low = threads[i].minAbsDev;
+                     if ( threads[i].maxAbsDev > high )
+                        high = threads[i].maxAbsDev;
+                     count += threads[i].count;
+                  }
+               break;
+            }
+
+         threads.Destroy();
+      }
+
+      const double eps = 2*std::numeric_limits<double>::epsilon();
+      if ( count == 0 || high - low < eps )
+      {
+         m_status += N;
+         return 0;
+      }
+
+      ReferenceArray<AbsDevHistogramThread> threads;
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads << new AbsDevHistogramThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ), center, low, high );
+
+      double mh = 0, l0 = low, h0 = high;
+      SzVector H0;
+
+      for ( size_type n = 0, n2 = count >> 1, step = 0, it = 0;; ++it )
+      {
+         SzVector H;
+         if ( it == 0 && step )
+            H = H0;
+         else
+         {
+            if ( threads.Length() > 1 )
+            {
+               int i = 0;
+               for ( AbsDevHistogramThread& thread : threads )
+                  thread.Start( ThreadPriority::DefaultMax, useAffinity ? i++ : -1 );
+               for ( AbsDevHistogramThread& thread : threads )
+                  thread.Wait();
+            }
+            else
+               threads[0].Run();
+
+            H = threads[0].H;
+            for ( size_type i = 1; i < threads.Length(); ++i )
+               H += threads[i].H;
+            if ( it == 0 )
+               if ( (count & 1) == 0 )
+                  H0 = H;
          }
 
-      threads.Destroy();
+         for ( int i = 0; ; n += H[i++] )
+            if ( n + H[i] > n2 )
+            {
+               double range = high - low;
+               high = (range * (i + 1))/(__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) + low;
+               low  = (range * i)/(__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) + low;
+               if ( high - low < eps )
+               {
+                  if ( count & 1 )
+                  {
+                     threads.Destroy();
+                     m_status += N;
+                     return low;
+                  }
+                  if ( step )
+                  {
+                     threads.Destroy();
+                     m_status += N;
+                     return (low + mh)/2;
+                  }
+                  mh = low;
+                  low = l0;
+                  high = h0;
+                  n = 0;
+                  --n2;
+                  ++step;
+                  it = 0;
+               }
+               break;
+            }
+      }
+   }
 
-      m_status += N;
-
-      size_type n = devs.Length();
-      if ( n < 2 )
+   /*!
+    * Returns the two-sided median absolute deviation (MAD) of a subset of
+    * pixel samples with respect to the specified \a center value.
+    *
+    * \param center  Reference central value for computation of MAD in the
+    *                normalized range [0,1]. Normally, this value should be the
+    *                median of the selected pixel samples, or the median of the
+    *                whole image.
+    *
+    * \param maxProcessors    If a value greater than zero is specified, it is
+    *          the maximum number of concurrent threads that this function can
+    *          execute. If zero or a negative value is specified, the current
+    *          thread limit for this image will be used instead (see
+    *          AbstractImage::SetMaxProcessors()). The default value is zero.
+    *
+    * See MAD() for more information and references.
+    *
+    * \note Increments the status monitoring object by the number of selected
+    * pixel samples.
+    */
+   TwoSidedEstimate TwoSidedMAD( double center,
+                                 const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                                 int maxProcessors = 0 ) const
+   {
+      Rect r = rect;
+      if ( !ParseSelection( r, firstChannel, lastChannel ) )
          return 0;
 
-      size_type n2 = n >> 1;
-      if ( n & 1 || n > 0xffff )
-         return *pcl::Select( devs.Begin(), devs.End(), n2 );
-      return (*pcl::Select( devs.Begin(), devs.End(), n2 )
-            + *pcl::Select( devs.Begin(), devs.End(), n2-1 ))/2;
+      size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
+      if ( m_status.IsInitializationEnabled() )
+         m_status.Initialize( "Computing two-sided median absolute deviation", N );
+
+      if ( N <= 2560000 )
+      {
+         TwoSidedAbsDevSmpThread S( *this, center, r, firstChannel, lastChannel, 0, r.Height() );
+         S.Run();
+         m_status += N;
+         return { pcl::Median( S.values.Begin(), S.p ),
+                  pcl::Median( S.q, S.values.End() ) };
+      }
+
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, 160*1024/*overheadLimitPx*/ );
+      bool useAffinity = m_parallel && Thread::IsRootThread();
+
+      double low = 0, high = 0;
+      size_type nLow = 0, nHigh = 0;
+      {
+         ReferenceArray<TwoSidedExtremeAbsDevThread> threads;
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads << new TwoSidedExtremeAbsDevThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ), center );
+
+         if ( threads.Length() > 1 )
+         {
+            int n = 0;
+            for ( TwoSidedExtremeAbsDevThread& thread : threads )
+               thread.Start( ThreadPriority::DefaultMax, useAffinity ? n++ : -1 );
+            for ( TwoSidedExtremeAbsDevThread& thread : threads )
+               thread.Wait();
+         }
+         else
+            threads[0].Run();
+
+         for ( size_type i = 0; i < threads.Length(); ++i )
+            if ( threads[i].count > 0 )
+            {
+               low = threads[i].minAbsDev;
+               high = threads[i].maxAbsDev;
+               nLow += threads[i].nLow;
+               nHigh += threads[i].nHigh;
+               while ( ++i < threads.Length() )
+                  if ( threads[i].count > 0 )
+                  {
+                     if ( threads[i].minAbsDev < low )
+                        low = threads[i].minAbsDev;
+                     if ( threads[i].maxAbsDev > high )
+                        high = threads[i].maxAbsDev;
+                     nLow += threads[i].nLow;
+                     nHigh += threads[i].nHigh;
+                  }
+               break;
+            }
+
+         threads.Destroy();
+      }
+
+      const double eps = 2*std::numeric_limits<double>::epsilon();
+      if ( nLow == 0 && nHigh == 0 || high - low < eps )
+      {
+         m_status += N;
+         return 0;
+      }
+
+      int side;
+      double sideLow, sideHigh;
+      ReferenceArray<TwoSidedAbsDevHistogramThread> threads;
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads << new TwoSidedAbsDevHistogramThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ), center, side, sideLow, sideHigh );
+
+      double mad[ 2 ];
+      for ( side = 0; side < 2; ++side )
+      {
+         size_type n = side ? nHigh : nLow;
+         if ( n < 2 )
+         {
+            mad[side] = 0;
+            continue;
+         }
+
+         sideLow = 0;
+         sideHigh = side ? high - center : center - low;
+         if ( sideHigh < eps )
+         {
+            mad[side] = 0;
+            continue;
+         }
+
+         double mh = 0, h0 = sideHigh;
+         SzVector H0;
+
+         for ( size_type count = 0, n2 = n >> 1, step = 0, it = 0;; ++it )
+         {
+            SzVector H;
+            if ( it == 0 && step )
+               H = H0;
+            else
+            {
+               if ( threads.Length() > 1 )
+               {
+                  int i = 0;
+                  for ( TwoSidedAbsDevHistogramThread& thread : threads )
+                     thread.Start( ThreadPriority::DefaultMax, useAffinity ? i++ : -1 );
+                  for ( TwoSidedAbsDevHistogramThread& thread : threads )
+                     thread.Wait();
+               }
+               else
+                  threads[0].Run();
+
+               H = threads[0].H;
+               for ( size_type i = 1; i < threads.Length(); ++i )
+                  H += threads[i].H;
+               if ( it == 0 )
+                  if ( (n & 1) == 0 )
+                     H0 = H;
+            }
+
+            for ( int i = 0; ; count += H[i++] )
+               if ( count + H[i] > n2 )
+               {
+                  double range = sideHigh - sideLow;
+                  sideHigh = (range * (i + 1))/(__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) + sideLow;
+                  sideLow  = (range * i)/(__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) + sideLow;
+                  if ( sideHigh - sideLow < eps )
+                  {
+                     if ( n & 1 )
+                     {
+                        mad[side] = sideLow;
+                        goto __madNextSide;
+                     }
+                     if ( step )
+                     {
+                        mad[side] = (sideLow + mh)/2;
+                        goto __madNextSide;
+                     }
+                     mh = sideLow;
+                     sideLow = 0;
+                     sideHigh = h0;
+                     count = 0;
+                     --n2;
+                     ++step;
+                     it = 0;
+                  }
+                  break;
+               }
+         }
+
+__madNextSide:
+         ;
+      }
+
+      threads.Destroy();
+      m_status += N;
+      return { mad[0], mad[1] };
    }
 
    /*!
@@ -12026,7 +12401,7 @@ public:
     * \note Increments the status monitoring object by the number of selected
     * pixel samples.
     */
-   double BiweightMidvariance( double center, double sigma, int k = 9,
+   double BiweightMidvariance( double center, double sigma, int k = 9, bool reducedLength = false,
                                const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
                                int maxProcessors = 0 ) const
    {
@@ -12034,11 +12409,14 @@ public:
       if ( !ParseSelection( r, firstChannel, lastChannel ) )
          return 0;
 
+      size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       double kd = k * sigma;
       if ( kd < 0 || 1 + kd == 1 )
+      {
+         m_status += N;
          return 0;
+      }
 
-      size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
       if ( m_status.IsInitializationEnabled() )
          m_status.Initialize( "Computing biweight midvariance", N );
 
@@ -12059,26 +12437,108 @@ public:
          threads[0].Run();
 
       double num = 0, den = 0;
-      size_type n = 0;
+      size_type n = 0, nr = 0;
       for ( const BWMVThread& thread : threads )
       {
          num += thread.num;
          den += thread.den;
          n += thread.n;
+         nr += thread.nr;
+      }
+
+      threads.Destroy();
+
+      m_status += N;
+      den *= den;
+      return (n >= 2 && 1 + den != 1) ? (reducedLength ? nr : n)*num/den : 0.0;
+   }
+
+   /*!
+    * Returns a two-sided biweight midvariance (BWMV) for a subset of pixel
+    * samples.
+    *
+    * \param center  Reference center value in the [0,1] range. Normally, the
+    *          median of the selected pixel samples should be used.
+    *
+    * \param sigma   Reference estimates of dispersion in the [0,1] range,
+    *          respectively for samples below and above the reference \a center
+    *          value (low and high members of the TwoSidedEstimate structure,
+    *          respectively). Normally, a two-sided median absolute deviation
+    *          from the median (two-sided MAD) for the selected pixel samples
+    *          should be specified.
+    *
+    * \param k       Rejection limit in sigma units. The default value is k=9.
+    *
+    * \param maxProcessors    If a value greater than zero is specified, it is
+    *          the maximum number of concurrent threads that this function can
+    *          execute. If zero or a negative value is specified, the current
+    *          thread limit for this image will be used instead (see
+    *          AbstractImage::SetMaxProcessors()). The default value is zero.
+    *
+    * See the BiweightMidvariance() member function for more information and
+    * references.
+    *
+    * \note Increments the status monitoring object by the number of selected
+    * pixel samples.
+    */
+   TwoSidedEstimate TwoSidedBiweightMidvariance( double center, const TwoSidedEstimate& sigma, int k = 9, bool reducedLength = false,
+                                                 const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                                                 int maxProcessors = 0 ) const
+   {
+      Rect r = rect;
+      if ( !ParseSelection( r, firstChannel, lastChannel ) )
+         return 0;
+
+      size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
+      double kd0 = k * sigma.low;
+      double kd1 = k * sigma.high;
+      if ( kd0 < 0 || 1 + kd0 == 1 || kd1 < 0 || 1 + kd1 == 1 )
+      {
+         m_status += N;
+         return 0;
+      }
+
+      if ( m_status.IsInitializationEnabled() )
+         m_status.Initialize( "Computing two-sided biweight midvariance", N );
+
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors );
+      bool useAffinity = m_parallel && Thread::IsRootThread();
+      ReferenceArray<TwoSidedBWMVThread> threads;
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads.Add( new TwoSidedBWMVThread( *this, center, kd0, kd1, r, firstChannel, lastChannel, n, n + int( L[i] ) ) );
+      if ( threads.Length() > 1 )
+      {
+         int n = 0;
+         for ( TwoSidedBWMVThread& thread : threads )
+            thread.Start( ThreadPriority::DefaultMax, useAffinity ? n++ : -1 );
+         for ( TwoSidedBWMVThread& thread : threads )
+            thread.Wait();
+      }
+      else
+         threads[0].Run();
+
+      double num0 = 0, den0 = 0, num1 = 0, den1 = 0;
+      size_type n0 = 0, n1 = 0, nr0 = 0, nr1 = 0;
+      for ( const TwoSidedBWMVThread& thread : threads )
+      {
+         num0 += thread.num0;
+         den0 += thread.den0;
+         num1 += thread.num1;
+         den1 += thread.den1;
+         n0 += thread.n0;
+         n1 += thread.n1;
+         nr0 += thread.nr0;
+         nr1 += thread.nr1;
       }
 
       threads.Destroy();
 
       m_status += N;
 
-      if ( n < 2 )
-         return 0;
-
-      den *= den;
-      if ( 1 + den == 1 )
-         return 0;
-
-      return n*num/den;
+      den0 *= den0;
+      den1 *= den1;
+      return { (n0 >= 2 && 1 + den0 != 1) ? (reducedLength ? nr0 : n0)*num0/den0 : 0.0,
+               (n1 >= 2 && 1 + den1 != 1) ? (reducedLength ? nr1 : n1)*num1/den1 : 0.0 };
    }
 
    /*!
@@ -12681,7 +13141,8 @@ public:
    // -------------------------------------------------------------------------
 
    /*!
-    * Writes a subset of pixel samples to a raw-storage output stream.
+    * Writes a subset of pixel samples to a raw-storage output stream. Returns
+    * a reference to this image.
     *
     * \param file    Output stream to write to.
     *
@@ -12696,11 +13157,11 @@ public:
     * and handling capabilities. For more powerful and sophisticated ways to
     * serialize image data, see the ImageVariant class.
     */
-   void Write( File& file, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   GenericImage& Write( File& file, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       Rect r = rect;
       if ( !ParseSelection( r, firstChannel, lastChannel ) )
-         return;
+         return const_cast<GenericImage&>( *this );
 
       size_type N = size_type( r.Width() )*size_type( r.Height() );
       int numberOfChannels = 1 + lastChannel - firstChannel;
@@ -12728,11 +13189,12 @@ public:
          }
       }
 
-      return;
+      return const_cast<GenericImage&>( *this );
    }
 
    /*!
-    * Writes a subset of pixel samples to a raw-storage file.
+    * Writes a subset of pixel samples to a raw-storage file. Returns a
+    * reference to this image.
     *
     * \param filePath   File path where a new file will be created with pixel
     *                   data from this image.
@@ -12740,13 +13202,11 @@ public:
     * This member function is just a wrapper to the more general version:
     * Write( File&, const Rect&, int, int ).
     */
-   void Write( const String& filePath,
-               const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   GenericImage& Write( const String& filePath,
+                        const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
-      File file;
-      file.CreateForWriting( filePath );
-      (void)Write( file, rect, firstChannel, lastChannel );
-      file.Close();
+      File file = File::CreateFileForWriting( filePath );
+      return Write( file, rect, firstChannel, lastChannel );
    }
 
    /*!
@@ -12822,11 +13282,8 @@ public:
     */
    GenericImage& Read( const String& filePath )
    {
-      File file;
-      file.OpenForReading( filePath );
-      (void)Read( file );
-      file.Close();
-      return *this;
+      File file = File::OpenFileForReading( filePath );
+      return Read( file );
    }
 
    // -------------------------------------------------------------------------
@@ -14292,7 +14749,8 @@ private:
       /*!
        * Constructs an aliased shared image.
        */
-      Data( GenericImage* image, void* handle ) : allocator( handle )
+      Data( GenericImage* image, void* handle )
+         : allocator( handle )
       {
          SynchronizeWithSharedImage();
          LinkWithClientImage( image );
@@ -14301,8 +14759,8 @@ private:
       /*!
        * Constructs a newly created shared image.
        */
-      Data( GenericImage* image, int width, int height, int numberOfChannels, int colorSpace ) :
-         allocator( width, height, numberOfChannels, colorSpace )
+      Data( GenericImage* image, int width, int height, int numberOfChannels, int colorSpace )
+         : allocator( width, height, numberOfChannels, colorSpace )
       {
          SynchronizeWithSharedImage();
          LinkWithClientImage( image );
@@ -14559,11 +15017,7 @@ private:
 
    private:
 
-      Data() :
-         ReferenceCounter(),
-         data( nullptr ), allocator(), geometry(), color()
-      {
-      }
+      Data() = default;
 
       void LinkWithClientImage( GenericImage* image )
       {
@@ -14597,8 +15051,13 @@ private:
    {
    public:
 
-      RectThreadBase( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         m_image( image ), m_rect( rect ), m_ch1( ch1 ), m_ch2( ch2 ), m_firstRow( firstRow ), m_endRow( endRow )
+      RectThreadBase( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : m_image( image )
+         , m_rect( rect )
+         , m_ch1( ch1 )
+         , m_ch2( ch2 )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -14607,17 +15066,43 @@ private:
          int w = m_rect.Width();
          int dw = m_image.Width() - w;
 
-         if ( m_image.IsRangeClippingEnabled() )
+         if ( m_image.IsLowRangeClippingEnabled() )
          {
             sample clipLow = P::ToSample( m_image.RangeClipLow() );
+            if ( m_image.IsHighRangeClippingEnabled() )
+            {
+               sample clipHigh = P::ToSample( m_image.RangeClipHigh() );
+               for ( int i = m_ch1; i <= m_ch2; ++i )
+               {
+                  const sample* f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
+                  for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
+                     for ( const sample* f1 = f+w; f < f1; ++f )
+                        if ( clipLow < *f )
+                           if ( *f < clipHigh )
+                              Perform( f );
+               }
+            }
+            else
+            {
+               for ( int i = m_ch1; i <= m_ch2; ++i )
+               {
+                  const sample* f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
+                  for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
+                     for ( const sample* f1 = f+w; f < f1; ++f )
+                        if ( clipLow < *f )
+                           Perform( f );
+               }
+            }
+         }
+         else if ( m_image.IsHighRangeClippingEnabled() )
+         {
             sample clipHigh = P::ToSample( m_image.RangeClipHigh() );
-
             for ( int i = m_ch1; i <= m_ch2; ++i )
             {
                const sample* f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
                for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
                   for ( const sample* f1 = f+w; f < f1; ++f )
-                     if ( *f > clipLow && *f < clipHigh )
+                     if ( *f < clipHigh )
                         Perform( f );
             }
          }
@@ -14652,29 +15137,63 @@ private:
    {
    public:
 
-      uint64 count;
+      size_type count = 0;
 
-      CountThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow ), count( 0 )
+      CountThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
       void Run() override
       {
-         // These threads are only used when range clipping is enabled.
+         /*
+          * N.B. These threads are only used when range clipping is enabled.
+          */
          int w = this->m_rect.Width();
          int dw = this->m_image.Width() - w;
-         sample clipLow = P::ToSample( this->m_image.RangeClipLow() );
-         sample clipHigh = P::ToSample( this->m_image.RangeClipHigh() );
 
-         for ( int i = this->m_ch1; i <= this->m_ch2; ++i )
+         if ( this->m_image.IsLowRangeClippingEnabled() )
          {
-            const sample* f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
-            for ( int j = this->m_firstRow; j < this->m_endRow; ++j, f += dw )
-               for ( const sample* f1 = f+w; f < f1; ++f )
-                  if ( *f > clipLow && *f < clipHigh )
-                     ++count;
+            sample clipLow = P::ToSample( this->m_image.RangeClipLow() );
+            if ( this->m_image.IsHighRangeClippingEnabled() )
+            {
+               sample clipHigh = P::ToSample( this->m_image.RangeClipHigh() );
+               for ( int i = this->m_ch1; i <= this->m_ch2; ++i )
+               {
+                  const sample* f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
+                  for ( int j = this->m_firstRow; j < this->m_endRow; ++j, f += dw )
+                     for ( const sample* f1 = f+w; f < f1; ++f )
+                        if ( clipLow < *f )
+                           if ( *f < clipHigh )
+                              ++count;
+               }
+            }
+            else
+            {
+               for ( int i = this->m_ch1; i <= this->m_ch2; ++i )
+               {
+                  const sample* f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
+                  for ( int j = this->m_firstRow; j < this->m_endRow; ++j, f += dw )
+                     for ( const sample* f1 = f+w; f < f1; ++f )
+                        if ( clipLow < *f )
+                           ++count;
+               }
+            }
          }
+         else if ( this->m_image.IsHighRangeClippingEnabled() )
+         {
+            sample clipHigh = P::ToSample( this->m_image.RangeClipHigh() );
+            for ( int i = this->m_ch1; i <= this->m_ch2; ++i )
+            {
+               const sample* f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
+               for ( int j = this->m_firstRow; j < this->m_endRow; ++j, f += dw )
+                  for ( const sample* f1 = f+w; f < f1; ++f )
+                     if ( *f < clipHigh )
+                        ++count;
+            }
+         }
+         else // ?! this should not happen
+            count = size_type( 1 + this->m_ch2 - this->m_ch1 ) * size_type( w ) * size_type( this->m_rect.Height() );
       }
    };
 
@@ -14685,10 +15204,10 @@ private:
    public:
 
       sample min;
-      bool initialized = false;
+      size_type count = 0;
 
-      MinThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+      MinThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
@@ -14696,16 +15215,13 @@ private:
 
       void Perform( const sample* f ) override
       {
-         if ( initialized )
+         if ( count++ > 0 )
          {
             if ( *f < min )
                min = *f;
          }
          else
-         {
             min = *f;
-            initialized = true;
-         }
       }
    };
 
@@ -14716,10 +15232,10 @@ private:
    public:
 
       sample max;
-      bool initialized = false;
+      size_type count = 0;
 
-      MaxThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+      MaxThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
@@ -14727,16 +15243,13 @@ private:
 
       void Perform( const sample* f ) override
       {
-         if ( initialized )
+         if ( count++ > 0 )
          {
             if ( max < *f )
                max = *f;
          }
          else
-         {
             max = *f;
-            initialized = true;
-         }
       }
    };
 
@@ -14748,10 +15261,10 @@ private:
 
       sample min;
       sample max;
-      bool initialized = false;
+      size_type count = 0;
 
-      MinMaxThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+      MinMaxThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
@@ -14759,18 +15272,15 @@ private:
 
       void Perform( const sample* f ) override
       {
-         if ( initialized )
+         if ( count++ > 0 )
          {
             if ( *f < min )
                min = *f;
-            else if ( max < *f )
+            else if ( *f > max )
                max = *f;
          }
          else
-         {
             min = max = *f;
-            initialized = true;
-         }
       }
    };
 
@@ -14782,10 +15292,10 @@ private:
 
       int cmin, cmax;
       Point pmin, pmax;
-      bool initialized = false;
+      size_type count = 0;
 
-      ExtremePosThreadBase( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+      ExtremePosThreadBase( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
@@ -14796,7 +15306,7 @@ private:
 
       void PostProcess() override
       {
-         if ( initialized )
+         if ( count > 0 )
          {
             if ( m_amin != 0 )
                for ( int i = this->m_ch1; i <= this->m_ch2; ++i )
@@ -14828,8 +15338,8 @@ private:
 
       sample min;
 
-      MinPosThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         ExtremePosThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+      MinPosThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : ExtremePosThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
@@ -14837,16 +15347,13 @@ private:
 
       void Perform( const sample* f ) override
       {
-         if ( this->initialized )
+         if ( this->count++ > 0 )
          {
             if ( *f < min )
                min = *(this->m_amin = f);
          }
          else
-         {
             min = *(this->m_amin = f);
-            this->initialized = true;
-         }
       }
    };
 
@@ -14858,8 +15365,8 @@ private:
 
       sample max;
 
-      MaxPosThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         ExtremePosThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+      MaxPosThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : ExtremePosThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
@@ -14867,16 +15374,13 @@ private:
 
       void Perform( const sample* f ) override
       {
-         if ( this->initialized )
+         if ( this->count++ > 0 )
          {
             if ( max < *f )
                max = *(this->m_amax = f);
          }
          else
-         {
             max = *(this->m_amax = f);
-            this->initialized = true;
-         }
       }
    };
 
@@ -14888,8 +15392,8 @@ private:
 
       sample min, max;
 
-      MinMaxPosThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         ExtremePosThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+      MinMaxPosThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : ExtremePosThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
@@ -14897,7 +15401,7 @@ private:
 
       void Perform( const sample* f ) override
       {
-         if ( this->initialized )
+         if ( this->count++ > 0 )
          {
             if ( *f < min )
                min = *(this->m_amin = f);
@@ -14905,10 +15409,7 @@ private:
                max = *(this->m_amax = f);
          }
          else
-         {
             min = max = *(this->m_amin = this->m_amax = f);
-            this->initialized = true;
-         }
       }
    };
 
@@ -14918,17 +15419,17 @@ private:
    {
    public:
 
-      double s;
-      size_type n;
+      double s = 0;
+      size_type n = 0;
 
-      SumThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow ), s( 0 ), n( 0 ), e( 0 )
+      SumThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
    protected:
 
-      double e;
+      double e = 0;
 
       void SumStep( double x )
       {
@@ -14952,8 +15453,8 @@ private:
    {
    public:
 
-      SumSqrThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         SumThread( image, rect, ch1, ch2, firstRow, endRow )
+      SumSqrThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : SumThread( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
@@ -14972,8 +15473,8 @@ private:
    {
    public:
 
-      SumAbsThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         SumThread( image, rect, ch1, ch2, firstRow, endRow )
+      SumAbsThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : SumThread( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
@@ -14988,27 +15489,222 @@ private:
 
    // -------------------------------------------------------------------------
 
-   class SmpThread : public RectThreadBase
+   class HistogramThread : public RectThreadBase
    {
    public:
 
-      Array<sample> samples;
-      size_type n;
+      SzVector H;
 
-      SmpThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow ), samples(), n( 0 )
+      HistogramThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow,
+                       const double& low, const double& high )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , H( __PCL_MEDIAN_HISTOGRAM_LENGTH )
+         , m_low( low )
+         , m_high( high )
       {
-         size_type N = size_type(  this->m_rect.Width() )
-                     * size_type( this->m_endRow - this->m_firstRow )
-                     * (1 + this->m_ch2 - this->m_ch1);
-         samples = Array<sample>( N );
+      }
+
+      void Run() override
+      {
+         H = size_type( 0 );
+         m_range = m_high - m_low;
+         RectThreadBase::Run();
       }
 
    private:
 
+      const double& m_low;
+      const double& m_high;
+      double        m_range;
+
       void Perform( const sample* f ) override
       {
-         samples[n++] = *f;
+         if ( *f >= m_low )
+            if ( *f <= m_high )
+               ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (double( *f ) - m_low)/m_range )];
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
+   class ExtremeAbsDevThread : public RectThreadBase
+   {
+   public:
+
+      double minAbsDev, maxAbsDev;
+      size_type count = 0;
+
+      ExtremeAbsDevThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow, double center )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , m_center( center )
+      {
+      }
+
+   private:
+
+      double m_center;
+
+      void Perform( const sample* f ) override
+      {
+         double d; P::FromSample( d, *f );
+         d = pcl::Abs( d - m_center );
+         if ( count++ > 0 )
+         {
+            if ( d < minAbsDev )
+               minAbsDev = d;
+            else if ( d > maxAbsDev )
+               maxAbsDev = d;
+         }
+         else
+            minAbsDev = maxAbsDev = d;
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
+   class TwoSidedExtremeAbsDevThread : public RectThreadBase
+   {
+   public:
+
+      double minAbsDev, maxAbsDev;
+      size_type count = 0, nLow, nHigh;
+
+      TwoSidedExtremeAbsDevThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow, double center )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , m_center( center )
+      {
+      }
+
+   private:
+
+      double m_center;
+
+      void Perform( const sample* f ) override
+      {
+         double x; P::FromSample( x, *f );
+         if ( count++ > 0 )
+         {
+            double d;
+            if ( x <= m_center )
+            {
+               ++nLow;
+               d = m_center - x;
+            }
+            else
+            {
+               ++nHigh;
+               d = x - m_center;
+            }
+
+            if ( d < minAbsDev )
+               minAbsDev = d;
+            else if ( d > maxAbsDev )
+               maxAbsDev = d;
+         }
+         else
+         {
+            if ( x <= m_center )
+            {
+               nLow = 1;
+               nHigh = 0;
+               minAbsDev = maxAbsDev = m_center - x;
+            }
+            else
+            {
+               nLow = 0;
+               nHigh = 1;
+               minAbsDev = maxAbsDev = x - m_center;
+            }
+         }
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
+   class AbsDevHistogramThread : public RectThreadBase
+   {
+   public:
+
+      SzVector H;
+
+      AbsDevHistogramThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow,
+                             double center, const double& low, const double& high )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , H( __PCL_MEDIAN_HISTOGRAM_LENGTH )
+         , m_center( center )
+         , m_low( low )
+         , m_high( high )
+      {
+      }
+
+      void Run() override
+      {
+         H = size_type( 0 );
+         m_range = m_high - m_low;
+         RectThreadBase::Run();
+      }
+
+   private:
+
+      double        m_center;
+      const double& m_low;
+      const double& m_high;
+      double        m_range;
+
+      void Perform( const sample* f ) override
+      {
+         double d; P::FromSample( d, *f );
+         d = pcl::Abs( d - m_center );
+         if ( d >= m_low )
+            if ( d <= m_high )
+               ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (d - m_low)/m_range )];
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
+   class TwoSidedAbsDevHistogramThread : public RectThreadBase
+   {
+   public:
+
+      SzVector H;
+
+      TwoSidedAbsDevHistogramThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow,
+                                     double center, const int& side, const double& low, const double& high )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , H( __PCL_MEDIAN_HISTOGRAM_LENGTH )
+         , m_center( center )
+         , m_side( side )
+         , m_low( low )
+         , m_high( high )
+      {
+      }
+
+      void Run() override
+      {
+         H = size_type( 0 );
+         m_range = m_high - m_low;
+         RectThreadBase::Run();
+      }
+
+   private:
+
+      double        m_center;
+      const int&    m_side;
+      const double& m_low;
+      const double& m_high;
+      double        m_range;
+
+      void Perform( const sample* f ) override
+      {
+         double x; P::FromSample( x, *f );
+         if ( m_side > 0 == x > m_center )
+         {
+            double d = m_side ? x - m_center : m_center - x;
+            if ( d >= m_low )
+               if ( d <= m_high )
+                  ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (d - m_low)/m_range )];
+         }
       }
    };
 
@@ -15018,11 +15714,11 @@ private:
    {
    public:
 
-      double var;
-      double eps;
+      double var = 0, eps = 0;
 
-      VarThread( const GenericImage& image, double mean, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow ), var( 0 ), eps( 0 ), m_mean( mean )
+      VarThread( const GenericImage& image, double mean, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , m_mean( mean )
       {
       }
 
@@ -15041,41 +15737,13 @@ private:
 
    // -------------------------------------------------------------------------
 
-   class SmpAbsDevThread : public RectThreadBase
-   {
-   public:
-
-      Array<double> devs;
-      size_type n;
-
-      SmpAbsDevThread( const GenericImage& image, double center, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow ), devs(), n( 0 ), m_center( center )
-      {
-         size_type N = size_type(  this->m_rect.Width() )
-                     * size_type( this->m_endRow - this->m_firstRow )
-                     * (1 + this->m_ch2 - this->m_ch1);
-         devs = Array<double>( N );
-      }
-
-   private:
-
-      double m_center;
-
-      void Perform( const sample* f ) override
-      {
-         double v; P::FromSample( v, *f );
-         devs[n++] = pcl::Abs( v - m_center );
-      }
-   };
-
-   // -------------------------------------------------------------------------
-
    class SumAbsDevThread : public SumThread
    {
    public:
 
-      SumAbsDevThread( const GenericImage& image, double center, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         SumThread( image, rect, ch1, ch2, firstRow, endRow ), m_center( center )
+      SumAbsDevThread( const GenericImage& image, double center, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : SumThread( image, rect, ch1, ch2, firstRow, endRow )
+         , m_center( center )
       {
       }
 
@@ -15092,17 +15760,54 @@ private:
 
    // -------------------------------------------------------------------------
 
+   class TwoSidedSumAbsDevThread : public RectThreadBase
+   {
+   public:
+
+      double s0 = 0, s1 = 0;
+      size_type n0 = 0, n1 = 0;
+
+      TwoSidedSumAbsDevThread( const GenericImage& image, double center,
+                               const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , m_center( center )
+      {
+      }
+
+   private:
+
+      double m_center;
+
+      void Perform( const sample* f ) override
+      {
+         double v; P::FromSample( v, *f );
+         if ( v <= m_center )
+         {
+            s0 += m_center - v;
+            ++n0;
+         }
+         else
+         {
+            s1 += v - m_center;
+            ++n1;
+         }
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
    class BWMVThread : public RectThreadBase
    {
    public:
 
-      double num;
-      double den;
-      size_type n;
+      double num = 0, den = 0;
+      size_type n = 0, nr = 0;
 
       BWMVThread( const GenericImage& image, double center, double kd,
-                  const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow ), num( 0 ), den( 0 ), n( 0 ), m_center( center ), m_kd( kd )
+                  const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , m_center( center )
+         , m_kd( kd )
       {
       }
 
@@ -15122,7 +15827,91 @@ private:
             double y21 = 1 - y2;
             num += xc*xc * y21*y21*y21*y21;
             den += y21 * (1 - 5*y2);
+            ++nr;
          }
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
+   class TwoSidedBWMVThread : public RectThreadBase
+   {
+   public:
+
+      double num0 = 0, den0 = 0;
+      double num1 = 0, den1 = 0;
+      size_type n0 = 0, n1 = 0, nr0 = 0, nr1 = 0;
+
+      TwoSidedBWMVThread( const GenericImage& image, double center, double kd0, double kd1,
+                          const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+         , m_center( center )
+         , m_kd0( kd0 )
+         , m_kd1( kd1 )
+      {
+      }
+
+   private:
+
+      double m_center;
+      double m_kd0;
+      double m_kd1;
+
+      void Perform( const sample* f ) override
+      {
+         double xc; P::FromSample( xc, *f ); xc -= m_center;
+         bool low = xc <= 0;
+         if ( low )
+            ++n0;
+         else
+            ++n1;
+
+         double y = xc/(low ? m_kd0 : m_kd1);
+         if ( pcl::Abs( y ) < 1 )
+         {
+            double y2 = y*y;
+            double y21 = 1 - y2;
+            double num = xc*xc * y21*y21*y21*y21;
+            double den = y21 * (1 - 5*y2);
+            if ( low )
+            {
+               num0 += num;
+               den0 += den;
+               ++nr0;
+            }
+            else
+            {
+               num1 += num;
+               den1 += den;
+               ++nr1;
+            }
+         }
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
+   class SmpThread : public RectThreadBase
+   {
+   public:
+
+      Array<sample> samples;
+      size_type n = 0;
+
+      SmpThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
+      {
+         size_type N = size_type( this->m_rect.Width() )
+                     * size_type( this->m_endRow - this->m_firstRow )
+                     * (1 + this->m_ch2 - this->m_ch1);
+         samples = Array<sample>( N );
+      }
+
+   private:
+
+      void Perform( const sample* f ) override
+      {
+         samples[n++] = *f;
       }
    };
 
@@ -15133,12 +15922,12 @@ private:
    public:
 
       Array<double> values;
-      size_type n;
+      size_type n = 0;
 
-      DSmpThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow ) :
-         RectThreadBase( image, rect, ch1, ch2, firstRow, endRow ), values(), n( 0 )
+      DSmpThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
-         size_type N = size_type(  this->m_rect.Width() )
+         size_type N = size_type( this->m_rect.Width() )
                      * size_type( this->m_endRow - this->m_firstRow )
                      * (1 + this->m_ch2 - this->m_ch1);
          values = Array<double>( N );
@@ -15154,13 +15943,71 @@ private:
 
    // -------------------------------------------------------------------------
 
+   class AbsDevSmpThread : public DSmpThread
+   {
+   public:
+
+      AbsDevSmpThread( const GenericImage& image, double center, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : DSmpThread( image, rect, ch1, ch2, firstRow, endRow )
+         , m_center( center )
+      {
+      }
+
+   private:
+
+      double m_center;
+
+      void Perform( const sample* f ) override
+      {
+         double d; P::FromSample( d, *f );
+         this->values[this->n++] = pcl::Abs( d - m_center );
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
+   class TwoSidedAbsDevSmpThread : public DSmpThread
+   {
+   public:
+
+      Array<double>::iterator p, q;
+
+      TwoSidedAbsDevSmpThread( const GenericImage& image, double center, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
+         : DSmpThread( image, rect, ch1, ch2, firstRow, endRow )
+         , m_center( center )
+      {
+         p = this->values.Begin();
+         q = this->values.End();
+      }
+
+   private:
+
+      double m_center;
+
+      void Perform( const sample* f ) override
+      {
+         double x; P::FromSample( x, *f );
+         if ( x <= m_center )
+            *p++ = m_center - x;
+         else
+            *--q = x - m_center;
+         ++this->n;
+      }
+   };
+
+   // -------------------------------------------------------------------------
+
    class ColorSpaceConversionThread : public Thread
    {
    public:
 
       ColorSpaceConversionThread( GenericImage& image, ThreadData& data,
-                                  color_space toColorSpace, size_type begin, size_type end ) :
-         m_image( image ), m_data( data ), m_toColorSpace( toColorSpace ), m_begin( begin ), m_end( end )
+                                  color_space toColorSpace, size_type begin, size_type end )
+         : m_image( image )
+         , m_data( data )
+         , m_toColorSpace( toColorSpace )
+         , m_begin( begin )
+         , m_end( end )
       {
       }
 
@@ -15377,9 +16224,13 @@ private:
    public:
 
       GetLuminanceThread( GenericImage<P1>& luminance, const GenericImage& image, ThreadData& data,
-                          const Rect& rect, int firstRow, int endRow ) :
-         m_luminance( luminance ), m_image( image ), m_data( data ),
-         m_rect( rect ), m_firstRow( firstRow ), m_endRow( endRow )
+                          const Rect& rect, int firstRow, int endRow )
+         : m_luminance( luminance )
+         , m_image( image )
+         , m_data( data )
+         , m_rect( rect )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -15463,9 +16314,13 @@ private:
    public:
 
       GetLightnessThread( GenericImage<P1>& lightness, const GenericImage& image, ThreadData& data,
-                          const Rect& rect, int firstRow, int endRow ) :
-         m_lightness( lightness ), m_image( image ), m_data( data ),
-         m_rect( rect ), m_firstRow( firstRow ), m_endRow( endRow )
+                          const Rect& rect, int firstRow, int endRow )
+         : m_lightness( lightness )
+         , m_image( image )
+         , m_data( data )
+         , m_rect( rect )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -15546,9 +16401,13 @@ private:
    public:
 
       GetIntensityThread( GenericImage<P1>& luminance, const GenericImage& image, ThreadData& data,
-                          const Rect& rect, int firstRow, int endRow ) :
-         m_intensity( luminance ), m_image( image ), m_data( data ),
-         m_rect( rect ), m_firstRow( firstRow ), m_endRow( endRow )
+                          const Rect& rect, int firstRow, int endRow )
+         : m_intensity( luminance )
+         , m_image( image )
+         , m_data( data )
+         , m_rect( rect )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -15621,9 +16480,14 @@ private:
    public:
 
       SetLuminanceThread( GenericImage& image, const GenericImage<P1>& luminance, ThreadData& data,
-                          const Point& target, const Rect& rect, int firstRow, int endRow ) :
-         m_image( image ), m_luminance( luminance ), m_data( data ),
-         m_target( target ), m_rect( rect ), m_firstRow( firstRow ), m_endRow( endRow )
+                          const Point& target, const Rect& rect, int firstRow, int endRow )
+         : m_image( image )
+         , m_luminance( luminance )
+         , m_data( data )
+         , m_target( target )
+         , m_rect( rect )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -15858,9 +16722,14 @@ private:
    public:
 
       SetLightnessThread( GenericImage& image, const GenericImage<P1>& lightness, ThreadData& data,
-                          const Point& target, const Rect& rect, int firstRow, int endRow ) :
-         m_image( image ), m_lightness( lightness ), m_data( data ),
-         m_target( target ), m_rect( rect ), m_firstRow( firstRow ), m_endRow( endRow )
+                          const Point& target, const Rect& rect, int firstRow, int endRow )
+         : m_image( image )
+         , m_lightness( lightness )
+         , m_data( data )
+         , m_target( target )
+         , m_rect( rect )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -16101,7 +16970,8 @@ private:
 #undef m_rectangle
 #undef m_clipLow
 #undef m_clipHigh
-#undef m_clipped
+#undef m_clippedLow
+#undef m_clippedHigh
 
 // ----------------------------------------------------------------------------
 
@@ -16428,4 +17298,4 @@ typedef FComplexImage                     ComplexImage;
 #endif   // __PCL_Image_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Image.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Image.h - Released 2020-07-31T19:33:04Z

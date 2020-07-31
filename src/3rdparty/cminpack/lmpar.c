@@ -3,16 +3,15 @@
 	-lf2c -lm   (in that order)
 */
 
-#include <math.h>
 #include "cminpack.h"
-#define min(a,b) ((a) <= (b) ? (a) : (b))
-#define max(a,b) ((a) >= (b) ? (a) : (b))
+#include <math.h>
+#include "cminpackP.h"
 
-
-/* Subroutine */ void lmpar(int n, double *r, int ldr, 
-	const int *ipvt, const double *diag, const double *qtb, double delta, 
-	double *par, double *x, double *sdiag, double *wa1, 
-	double *wa2)
+__cminpack_attr__
+void __cminpack_func__(lmpar)(int n, real *r, int ldr, 
+	const int *ipvt, const real *diag, const real *qtb, real delta, 
+	real *par, real *x, real *sdiag, real *wa1, 
+	real *wa2)
 {
     /* Initialized data */
 
@@ -20,19 +19,17 @@
 #define p001 .001
 
     /* System generated locals */
-    int r_dim1, r_offset;
-    double d1, d2;
+    real d1, d2;
 
     /* Local variables */
-    int i, j, k, l;
-    double fp;
-    int jm1, jp1;
-    double sum, parc, parl;
+    int j, l;
+    real fp;
+    real parc, parl;
     int iter;
-    double temp, paru, dwarf;
+    real temp, paru, dwarf;
     int nsing;
-    double gnorm;
-    double dxnorm;
+    real gnorm;
+    real dxnorm;
 
 /*     ********** */
 
@@ -128,53 +125,44 @@
 /*     burton s. garbow, kenneth e. hillstrom, jorge j. more */
 
 /*     ********** */
-    /* Parameter adjustments */
-    --wa2;
-    --wa1;
-    --sdiag;
-    --x;
-    --qtb;
-    --diag;
-    --ipvt;
-    r_dim1 = ldr;
-    r_offset = 1 + r_dim1 * 1;
-    r -= r_offset;
-
-    /* Function Body */
 
 /*     dwarf is the smallest positive magnitude. */
 
-    dwarf = dpmpar(2);
+    dwarf = __cminpack_func__(dpmpar)(2);
 
 /*     compute and store in x the gauss-newton direction. if the */
 /*     jacobian is rank-deficient, obtain a least squares solution. */
 
     nsing = n;
-    for (j = 1; j <= n; ++j) {
+    for (j = 0; j < n; ++j) {
 	wa1[j] = qtb[j];
-	if (r[j + j * r_dim1] == 0. && nsing == n) {
-	    nsing = j - 1;
+	if (r[j + j * ldr] == 0. && nsing == n) {
+	    nsing = j;
 	}
 	if (nsing < n) {
 	    wa1[j] = 0.;
 	}
-/* L10: */
     }
+# ifdef USE_CBLAS
+    cblas_dtrsv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit, nsing, r, ldr, wa1, 1);
+# else
     if (nsing >= 1) {
+        int k;
         for (k = 1; k <= nsing; ++k) {
-            j = nsing - k + 1;
-            wa1[j] /= r[j + j * r_dim1];
+            j = nsing - k;
+            wa1[j] /= r[j + j * ldr];
             temp = wa1[j];
-            jm1 = j - 1;
-            if (jm1 >= 1) {
-                for (i = 1; i <= jm1; ++i) {
-                    wa1[i] -= r[i + j * r_dim1] * temp;
+            if (j >= 1) {
+                int i;
+                for (i = 0; i < j; ++i) {
+                    wa1[i] -= r[i + j * ldr] * temp;
                 }
             }
         }
     }
-    for (j = 1; j <= n; ++j) {
-	l = ipvt[j];
+# endif
+    for (j = 0; j < n; ++j) {
+	l = ipvt[j]-1;
 	x[l] = wa1[j];
     }
 
@@ -183,10 +171,10 @@
 /*     for acceptance of the gauss-newton direction. */
 
     iter = 0;
-    for (j = 1; j <= n; ++j) {
+    for (j = 0; j < n; ++j) {
 	wa2[j] = diag[j] * x[j];
     }
-    dxnorm = enorm(n, &wa2[1]);
+    dxnorm = __cminpack_enorm__(n, wa2);
     fp = dxnorm - delta;
     if (fp <= p1 * delta) {
 	goto TERMINATE;
@@ -198,38 +186,48 @@
 
     parl = 0.;
     if (nsing >= n) {
-        for (j = 1; j <= n; ++j) {
-            l = ipvt[j];
+        for (j = 0; j < n; ++j) {
+            l = ipvt[j]-1;
             wa1[j] = diag[l] * (wa2[l] / dxnorm);
         }
-        for (j = 1; j <= n; ++j) {
-            sum = 0.;
-            jm1 = j - 1;
-            if (jm1 >= 1) {
-                for (i = 1; i <= jm1; ++i) {
-                    sum += r[i + j * r_dim1] * wa1[i];
+#     ifdef USE_CBLAS
+        cblas_dtrsv(CblasColMajor, CblasUpper, CblasTrans, CblasNonUnit, n, r, ldr, wa1, 1);
+#     else
+        for (j = 0; j < n; ++j) {
+            real sum = 0.;
+            if (j >= 1) {
+                int i;
+                for (i = 0; i < j; ++i) {
+                    sum += r[i + j * ldr] * wa1[i];
                 }
             }
-            wa1[j] = (wa1[j] - sum) / r[j + j * r_dim1];
+            wa1[j] = (wa1[j] - sum) / r[j + j * ldr];
         }
-        temp = enorm(n, &wa1[1]);
+#     endif
+        temp = __cminpack_enorm__(n, wa1);
         parl = fp / delta / temp / temp;
     }
 
 /*     calculate an upper bound, paru, for the zero of the function. */
 
-    for (j = 1; j <= n; ++j) {
-	sum = 0.;
-	for (i = 1; i <= j; ++i) {
-	    sum += r[i + j * r_dim1] * qtb[i];
-	}
-	l = ipvt[j];
-	wa1[j] = sum / diag[l];
+    for (j = 0; j < n; ++j) {
+        real sum;
+#     ifdef USE_CBLAS
+        sum = cblas_ddot(j+1, &r[j*ldr], 1, qtb, 1);
+#     else
+        int i;
+        sum = 0.;
+        for (i = 0; i <= j; ++i) {
+            sum += r[i + j * ldr] * qtb[i];
+        }
+#     endif
+        l = ipvt[j]-1;
+        wa1[j] = sum / diag[l];
     }
-    gnorm = enorm(n, &wa1[1]);
+    gnorm = __cminpack_enorm__(n, wa1);
     paru = gnorm / delta;
     if (paru == 0.) {
-	paru = dwarf / min(delta,p1);
+        paru = dwarf / min(delta,(real)p1) /* / p001 ??? */;
     }
 
 /*     if the input par lies outside of the interval (parl,paru), */
@@ -238,7 +236,7 @@
     *par = max(*par,parl);
     *par = min(*par,paru);
     if (*par == 0.) {
-	*par = gnorm / dxnorm;
+        *par = gnorm / dxnorm;
     }
 
 /*     beginning of an iteration. */
@@ -254,14 +252,14 @@
             *par = max(d1,d2);
         }
         temp = sqrt(*par);
-        for (j = 1; j <= n; ++j) {
+        for (j = 0; j < n; ++j) {
             wa1[j] = temp * diag[j];
         }
-        qrsolv(n, &r[r_offset], ldr, &ipvt[1], &wa1[1], &qtb[1], &x[1], &sdiag[1], &wa2[1]);
-        for (j = 1; j <= n; ++j) {
+        __cminpack_func__(qrsolv)(n, r, ldr, ipvt, wa1, qtb, x, sdiag, wa2);
+        for (j = 0; j < n; ++j) {
             wa2[j] = diag[j] * x[j];
         }
-        dxnorm = enorm(n, &wa2[1]);
+        dxnorm = __cminpack_enorm__(n, wa2);
         temp = fp;
         fp = dxnorm - delta;
 
@@ -275,21 +273,37 @@
 
 /*        compute the newton correction. */
 
-        for (j = 1; j <= n; ++j) {
-            l = ipvt[j];
+#     ifdef USE_CBLAS
+        for (j = 0; j < nsing; ++j) {
+            l = ipvt[j]-1;
             wa1[j] = diag[l] * (wa2[l] / dxnorm);
         }
-        for (j = 1; j <= n; ++j) {
+        for (j = nsing; j < n; ++j) {
+            wa1[j] = 0.;
+        }
+        /* exchange the diagonal of r with sdiag */
+        cblas_dswap(n, r, ldr+1, sdiag, 1);
+        /* solve lower(r).x = wa1, result id put in wa1 */
+        cblas_dtrsv(CblasColMajor, CblasLower, CblasNoTrans, CblasNonUnit, nsing, r, ldr, wa1, 1);
+        /* exchange the diagonal of r with sdiag */
+        cblas_dswap( n, r, ldr+1, sdiag, 1);
+#     else /* !USE_CBLAS */
+        for (j = 0; j < n; ++j) {
+            l = ipvt[j]-1;
+            wa1[j] = diag[l] * (wa2[l] / dxnorm);
+        }
+        for (j = 0; j < n; ++j) {
             wa1[j] /= sdiag[j];
             temp = wa1[j];
-            jp1 = j + 1;
-            if (n >= jp1) {
-                for (i = jp1; i <= n; ++i) {
-                    wa1[i] -= r[i + j * r_dim1] * temp;
+            if (n > j+1) {
+                int i;
+                for (i = j+1; i < n; ++i) {
+                    wa1[i] -= r[i + j * ldr] * temp;
                 }
             }
         }
-        temp = enorm(n, &wa1[1]);
+#     endif /* !USE_CBLAS */
+        temp = __cminpack_enorm__(n, wa1);
         parc = fp / delta / temp / temp;
 
 /*        depending on the sign of the function, update parl or paru. */

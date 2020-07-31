@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFParameters.h - Released 2020-02-27T12:56:01Z
+// DynamicPSFParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -285,17 +285,18 @@ class DPPSFFunction : public MetaEnumeration
 public:
 
    /*
-    * NB: Must be compatible with PSFFit::Function
+    * ### N.B. Must be compatible with PSFData::psf_function
     */
-   enum { Gaussian,   // Elliptic Gaussian function
-          Moffat,     // Elliptic Moffat function, variable beta
-          MoffatA,    // Elliptic Moffat function, beta=10
-          Moffat8,    // Elliptic Moffat function, beta=8
-          Moffat6,    // Elliptic Moffat function, beta=6
-          Moffat4,    // Elliptic Moffat function, beta=4
-          Moffat25,   // Elliptic Moffat function, beta=2.5
-          Moffat15,   // Elliptic Moffat function, beta=1.5
-          Lorentzian, // Elliptic Lorentzian function (beta=1)
+   enum { Gaussian,      // Gaussian function
+          Moffat,        // Moffat function, variable beta
+          MoffatA,       // Moffat function, beta=10
+          Moffat8,       // Moffat function, beta=8
+          Moffat6,       // Moffat function, beta=6
+          Moffat4,       // Moffat function, beta=4
+          Moffat25,      // Moffat function, beta=2.5
+          Moffat15,      // Moffat function, beta=1.5
+          Lorentzian,    // Lorentzian function (beta=1)
+          VariableShape, // Variable shape function, beta > 0
           NumberOfItems,
           Default = Gaussian };
 
@@ -306,6 +307,7 @@ public:
    IsoString ElementId( size_type ) const override;
    int ElementValue( size_type ) const override;
    size_type DefaultValueIndex() const override;
+   bool NeedsUnlocking() const override;
 };
 
 extern DPPSFFunction* TheDPPSFFunctionParameter;
@@ -320,6 +322,7 @@ public:
 
    IsoString Id() const override;
    bool DefaultValue() const override;
+   bool NeedsUnlocking() const override;
 };
 
 extern DPPSFCircular* TheDPPSFCircularParameter;
@@ -331,7 +334,7 @@ class DPPSFStatus : public MetaEnumeration
 public:
 
    /*
-    * NB: Must be compatible with PSFFit::Status
+    * ### N.B. Must be compatible with PSFData::psf_fit_status
     */
    enum { NotFitted,
           FittedOk,
@@ -350,9 +353,25 @@ public:
    IsoString ElementId( size_type ) const override;
    int ElementValue( size_type ) const override;
    size_type DefaultValueIndex() const override;
+   bool NeedsUnlocking() const override;
 };
 
 extern DPPSFStatus* TheDPPSFStatusParameter;
+
+// ----------------------------------------------------------------------------
+
+class DPPSFCelestial : public MetaBoolean
+{
+public:
+
+   DPPSFCelestial( MetaTable* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+   bool NeedsUnlocking() const override;
+};
+
+extern DPPSFCelestial* TheDPPSFCelestialParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -478,6 +497,38 @@ extern DPPSFBeta* TheDPPSFBetaParameter;
 
 // ----------------------------------------------------------------------------
 
+class DPPSFFlux : public MetaDouble
+{
+public:
+
+   DPPSFFlux( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+};
+
+extern DPPSFFlux* TheDPPSFFluxParameter;
+
+// ----------------------------------------------------------------------------
+
+class DPPSFMeanSignal : public MetaDouble
+{
+public:
+
+   DPPSFMeanSignal( MetaTable* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   double DefaultValue() const override;
+};
+
+extern DPPSFMeanSignal* TheDPPSFMeanSignalParameter;
+
+// ----------------------------------------------------------------------------
+
 class DPPSFMAD : public MetaDouble
 {
 public:
@@ -491,20 +542,6 @@ public:
 };
 
 extern DPPSFMAD* TheDPPSFMADParameter;
-
-// ----------------------------------------------------------------------------
-
-class DPPSFCelestial : public MetaBoolean
-{
-public:
-
-   DPPSFCelestial( MetaTable* );
-
-   IsoString Id() const override;
-   bool DefaultValue() const override;
-};
-
-extern DPPSFCelestial* TheDPPSFCelestialParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -693,6 +730,68 @@ extern DPLorentzianPSF* TheDPLorentzianPSFParameter;
 
 // ----------------------------------------------------------------------------
 
+class DPVariableShapePSF : public MetaBoolean
+{
+public:
+
+   DPVariableShapePSF( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DPVariableShapePSF* TheDPVariableShapePSFParameter;
+
+// ----------------------------------------------------------------------------
+
+class DPAutoVariableShapePSF : public MetaBoolean
+{
+public:
+
+   DPAutoVariableShapePSF( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DPAutoVariableShapePSF* TheDPAutoVariableShapePSFParameter;
+
+// ----------------------------------------------------------------------------
+
+class DPBetaMin : public MetaFloat
+{
+public:
+
+   DPBetaMin( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DPBetaMin* TheDPBetaMinParameter;
+
+// ----------------------------------------------------------------------------
+
+class DPBetaMax : public MetaFloat
+{
+public:
+
+   DPBetaMax( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern DPBetaMax* TheDPBetaMaxParameter;
+
+// ----------------------------------------------------------------------------
+
 class DPSignedAngles : public MetaBoolean
 {
 public:
@@ -787,7 +886,7 @@ class DPScaleMode : public MetaEnumeration
 public:
 
    enum { Pixels,
-          StandardKeywords,
+          StandardMetadata,
           LiteralValue,
           CustomKeyword,
           NumberOfItems,
@@ -800,6 +899,7 @@ public:
    IsoString ElementId( size_type ) const override;
    int ElementValue( size_type ) const override;
    size_type DefaultValueIndex() const override;
+   IsoString ElementAliases() const override;
 };
 
 extern DPScaleMode* TheDPScaleModeParameter;
@@ -913,4 +1013,4 @@ PCL_END_LOCAL
 #endif   // __DynamicPSFParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFParameters.h - Released 2020-02-27T12:56:01Z
+// EOF DynamicPSFParameters.h - Released 2020-07-31T19:33:39Z

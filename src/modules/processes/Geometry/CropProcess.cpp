@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// CropProcess.cpp - Released 2020-02-27T12:56:01Z
+// CropProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -64,10 +64,6 @@ CropProcess* TheCropProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "CropIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 CropProcess::CropProcess()
 {
    TheCropProcess = this;
@@ -118,9 +114,9 @@ String CropProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** CropProcess::IconImageXPM() const
+String CropProcess::IconImageSVGFile() const
 {
-   return CropIcon_XPM;
+   return "@module_icons_dir/Crop.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -150,4 +146,4 @@ ProcessImplementation* CropProcess::Clone( const ProcessImplementation& p ) cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF CropProcess.cpp - Released 2020-07-31T19:33:39Z

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:56.188Z
+# Generated on .... 2020-07-31T19:36:29.392Z
 # Project id ...... ColorManagement
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>d4d40dad-0078-47fd-a6db-81acd1ac20b3</UniqueIdentifier>
+      <UniqueIdentifier>c6fae2f1-71a0-4b55-9089-80dcec7a5735</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>70720969-97c5-42f6-abb3-a0194c4930aa</UniqueIdentifier>
+      <UniqueIdentifier>d9277335-808b-4141-bc53-0e800c877e47</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>7ea8f93b-7c9d-4eb1-8343-1c14439a8a04</UniqueIdentifier>
+      <UniqueIdentifier>0c0192b0-7353-43fc-b32c-0ced7beab421</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -84,10 +84,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\AssignICCProfileIcon.png">
+    <None Include="..\..\icons\AssignICCProfile.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ICCProfileTransformationIcon.png">
+    <None Include="..\..\icons\ICCProfileTransformation.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

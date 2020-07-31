@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------------
 //
 //  Little Color Management System
-//  Copyright (c) 1998-2017 Marti Maria Saguer
+//  Copyright (c) 1998-2020 Marti Maria Saguer
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -1096,9 +1096,10 @@ cmsHPROFILE CMSEXPORT cmsTransform2DeviceLink(cmsHTRANSFORM hTransform, cmsFloat
             goto Error;
     }
 
-    // On the output side too
+    // On the output side too. Note that due to V2/V4 PCS encoding on lab we cannot fix white misalignments
     if ((xform ->ExitColorSpace) == cmsSigLabData && (Version < 4.0)) {
 
+        dwFlags |= cmsFLAGS_NOWHITEONWHITEFIXUP;
         if (!cmsPipelineInsertStage(LUT, cmsAT_END, _cmsStageAllocLabV4ToV2(ContextID)))
             goto Error;
     }

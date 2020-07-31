@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// ExponentialTransformationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -70,12 +70,11 @@ public:
 
    ExponentialFunctionType( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ExponentialFunctionType*   TheExponentialFunctionTypeParameter;
@@ -88,13 +87,11 @@ public:
 
    ExponentialFunctionOrder( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ExponentialFunctionOrder* TheExponentialFunctionOrderParameter;
@@ -107,13 +104,11 @@ public:
 
    ExponentialFunctionSmoothing( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ExponentialFunctionSmoothing* TheExponentialFunctionSmoothingParameter;
@@ -126,10 +121,9 @@ public:
 
    ExponentialFunctionMask( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual IsoString Aliases() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   bool DefaultValue() const override;
 };
 
 extern ExponentialFunctionMask* TheExponentialFunctionMaskParameter;
@@ -143,4 +137,4 @@ PCL_END_LOCAL
 #endif   // __ExponentialTransformationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ExponentialTransformationParameters.h - Released 2020-07-31T19:33:39Z

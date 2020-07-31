@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="c" overflow="visible" orient="auto">
+<path transform="matrix(-.4 0 0 -.4 -4 0)" d="m0 0 5-5-17.5 5 17.5 5z" fill-rule="evenodd" stroke="#000" stroke-width="1pt"/>
+</marker>
+<radialGradient id="a" cx="439.79" cy="411.11" r="59.916" gradientTransform="matrix(1.4274 -.025849 .026123 1.4426 -204.54 -184.67)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#e6e6e6" offset="0"/>
+<stop stop-color="#2d2d2d" offset="1"/>
+</radialGradient>
+<linearGradient id="b" x1="172.05" x2="572.05" y1="526.18" y2="526.18" gradientTransform="matrix(1.16 0 0 1.16 -27.528 -116.19)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#e00d11" offset="0"/>
+<stop stop-color="#fff" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(0 -540.36)">
+<path d="m-307.13 283.42h123.08 1.1292" fill="none" marker-end="url(#c)" stroke-width="0"/>
+<g transform="matrix(.98522 0 0 .98522 -142.08 309.48)">
+<rect x="180.75" y="270.88" width="446.6" height="446.6" fill="url(#b)" stroke="#000" stroke-width="24.36"/>
+<g transform="matrix(1.16 0 0 1.16 -27.528 -115.84)" fill="url(#a)" stroke-width="1.015">
+<circle transform="translate(-56.394 -2.2234)" cx="452.34" cy="415.24" r="59.916"/>
+<circle transform="translate(-56.394 223.5)" cx="452.34" cy="415.24" r="59.916"/>
+</g>
+<g transform="matrix(1.16 0 0 1.16 -26.368 -126.26)" stroke-width="25.375">
+<g transform="translate(6.2523 5)">
+<path d="m175.37 377.28s132.75 92.132 191.3 107.45 143.7 0 143.7 0" fill="none" stroke="#000" stroke-width="25.375"/>
+</g>
+<g transform="translate(-213 -20.484)" stroke="#000">
+<path d="m397.72 555.35h325.27" fill="none" stroke-linecap="square" stroke-width="25.375"/>
+<path d="m703.13 467.85v174.99l56.259-86.162z" stroke-width="12.059"/>
+</g>
+<g transform="matrix(1 0 0 -1 6.2523 1064.7)">
+<path d="m175.37 377.28s132.75 92.132 191.3 107.45 143.7 0 143.7 0" fill="none" stroke="#000" stroke-width="25.375"/>
+</g>
+</g>
+</g>
+</g>
+</svg>

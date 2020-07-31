@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// CropInstance.cpp - Released 2020-02-27T12:56:01Z
+// CropInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -64,25 +64,25 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-CropInstance::CropInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   p_margins( 0.0 ),
-   p_mode( CRMode::Default ),
-   p_resolution( TheCRXResolutionParameter->DefaultValue(), TheCRYResolutionParameter->DefaultValue() ),
-   p_metric( TheCRMetricResolutionParameter->DefaultValue() ),
-   p_forceResolution( TheCRForceResolutionParameter->DefaultValue() ),
-   p_fillColor( TheCRFillRedParameter->DefaultValue(),
-                TheCRFillGreenParameter->DefaultValue(),
-                TheCRFillBlueParameter->DefaultValue(),
-                TheCRFillAlphaParameter->DefaultValue() ),
-   p_noGUIMessages( TheCRNoGUIMessagesParameter->DefaultValue() )
+CropInstance::CropInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , p_margins( 0.0 )
+   , p_mode( CRMode::Default )
+   , p_resolution( TheCRXResolutionParameter->DefaultValue(), TheCRYResolutionParameter->DefaultValue() )
+   , p_metric( TheCRMetricResolutionParameter->DefaultValue() )
+   , p_forceResolution( TheCRForceResolutionParameter->DefaultValue() )
+   , p_fillColor( TheCRFillRedParameter->DefaultValue(),
+                  TheCRFillGreenParameter->DefaultValue(),
+                  TheCRFillBlueParameter->DefaultValue(),
+                  TheCRFillAlphaParameter->DefaultValue() )
+   , p_noGUIMessages( TheCRNoGUIMessagesParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-CropInstance::CropInstance( const CropInstance& x ) :
-   ProcessImplementation( x )
+CropInstance::CropInstance( const CropInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -130,7 +130,6 @@ bool CropInstance::CanExecuteOn( const View& v, String& whyNot ) const
       whyNot = "Crop cannot be executed on previews.";
       return false;
    }
-
    return true;
 }
 
@@ -260,4 +259,4 @@ void* CropInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF CropInstance.cpp - Released 2020-07-31T19:33:39Z

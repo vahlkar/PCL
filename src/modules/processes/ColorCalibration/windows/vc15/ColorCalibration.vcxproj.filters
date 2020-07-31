@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:55.840Z
+# Generated on .... 2020-07-31T19:36:28.968Z
 # Project id ...... ColorCalibration
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>779b6a3b-b5e8-4f33-998d-dadb5ec6666e</UniqueIdentifier>
+      <UniqueIdentifier>e4f39171-008c-40d0-9cc5-9b5bf37d8994</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>797e5d9b-d861-4e72-8940-bbb26cea071b</UniqueIdentifier>
+      <UniqueIdentifier>839c0dc4-622c-4bd8-952f-d369fb9a165b</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>c23c390c-71f2-4bf5-8a44-389069ab6ce8</UniqueIdentifier>
+      <UniqueIdentifier>da285e1a-c7d3-411f-a8f3-a753bdfe2ccf</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -138,16 +138,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\BackgroundNeutralizationIcon.png">
+    <None Include="..\..\icons\BackgroundNeutralization.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ColorCalibrationIcon.png">
+    <None Include="..\..\icons\ColorCalibration.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\LinearFitIcon.png">
+    <None Include="..\..\icons\LinearFit.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\PhotometricColorCalibrationIcon.png">
+    <None Include="..\..\icons\PhotometricColorCalibration.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

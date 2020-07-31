@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MessageBox.cpp - Released 2020-02-27T12:55:33Z
+// pcl/MessageBox.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -75,13 +75,16 @@ class MessageBoxPrivate
                       MessageBox::std_button  aButton1,
                       MessageBox::std_button  aButton2,
                       int                     aDefaultButton,
-                      int                     aEscapeButton ) :
-      text( aText ),
-      caption( aCaption ),
-      icon( aIcon ),
-      button0( aButton0 ), button1( aButton1 ), button2( aButton2 ),
-      defaultButton( aDefaultButton ), escapeButton( aEscapeButton ),
-      result( StdButton::NoButton )
+                      int                     aEscapeButton )
+      : text( aText )
+      , caption( aCaption )
+      , icon( aIcon )
+      , button0( aButton0 )
+      , button1( aButton1 )
+      , button2( aButton2 )
+      , defaultButton( aDefaultButton )
+      , escapeButton( aEscapeButton )
+      , result( StdButton::NoButton )
    {
    }
 
@@ -249,4 +252,4 @@ void MessageBox::SetEscapeButtonIndex( int index )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MessageBox.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/MessageBox.cpp - Released 2020-07-31T19:33:12Z

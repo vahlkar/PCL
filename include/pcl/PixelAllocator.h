@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/PixelAllocator.h - Released 2020-02-27T12:55:23Z
+// pcl/PixelAllocator.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -205,23 +205,20 @@ public:
 
 private:
 
-   PixelAllocator() :
-      SharedPixelData()
+   PixelAllocator() = default;
+
+   PixelAllocator( void* handle )
+      : SharedPixelData( handle, P::BitsPerSample(), P::IsFloatSample(), P::IsComplexSample() )
    {
    }
 
-   PixelAllocator( void* handle ) :
-      SharedPixelData( handle, P::BitsPerSample(), P::IsFloatSample(), P::IsComplexSample() )
+   PixelAllocator( const PixelAllocator<P>& x )
+      : SharedPixelData( x )
    {
    }
 
-   PixelAllocator( const PixelAllocator<P>& x ) :
-      SharedPixelData( x )
-   {
-   }
-
-   PixelAllocator( int width, int height, int numberOfChannels, int colorSpace ) :
-      SharedPixelData( width, height, numberOfChannels, P::BitsPerSample(), P::IsFloatSample(), colorSpace )
+   PixelAllocator( int width, int height, int numberOfChannels, int colorSpace )
+      : SharedPixelData( width, height, numberOfChannels, P::BitsPerSample(), P::IsFloatSample(), colorSpace )
    {
    }
 
@@ -251,4 +248,4 @@ private:
 #endif   // __PCL_PixelAllocator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelAllocator.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/PixelAllocator.h - Released 2020-07-31T19:33:04Z

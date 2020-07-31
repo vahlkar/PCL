@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// HDRCompositionParameters.cpp - Released 2020-02-27T12:56:01Z
+// HDRCompositionParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -457,4 +457,4 @@ bool HCClosePreviousImages::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF HDRCompositionParameters.cpp - Released 2020-07-31T19:33:39Z

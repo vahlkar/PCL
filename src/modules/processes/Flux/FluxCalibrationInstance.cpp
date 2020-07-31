@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// FluxCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -67,33 +67,33 @@ const double inv_ch = 1/1.986e-9;
 
 // ----------------------------------------------------------------------------
 
-FluxCalibrationInstance::FluxCalibrationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_wavelength(            TheFCWavelengthValueParameter->DefaultValue(),
+FluxCalibrationInstance::FluxCalibrationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_wavelength(            TheFCWavelengthValueParameter->DefaultValue(),
                             FCParameterMode::Literal,
-                            "FLTWAVE" ),
-   p_transmissivity(        TheFCTransmissivityValueParameter->DefaultValue(),
+                            "FLTWAVE" )
+   , p_transmissivity(        TheFCTransmissivityValueParameter->DefaultValue(),
                             FCParameterMode::Literal,
-                            "FLTTRANS" ),
-   p_filterWidth(           TheFCFilterWidthValueParameter->DefaultValue(),
+                            "FLTTRANS" )
+   , p_filterWidth(           TheFCFilterWidthValueParameter->DefaultValue(),
                             FCParameterMode::Literal,
-                            "FLTWIDTH" ),
-   p_aperture(              TheFCApertureValueParameter->DefaultValue(),
+                            "FLTWIDTH" )
+   , p_aperture(              TheFCApertureValueParameter->DefaultValue(),
                             FCParameterMode::StandardKeyword,
-                            "APTDIA" ),
-   p_centralObstruction(    TheFCCentralObstructionValueParameter->DefaultValue(),
+                            "APTDIA" )
+   , p_centralObstruction(    TheFCCentralObstructionValueParameter->DefaultValue(),
                             FCParameterMode::StandardKeyword,
-                            "OBSTDIA" ),
-   p_exposureTime(          TheFCExposureTimeValueParameter->DefaultValue(),
+                            "OBSTDIA" )
+   , p_exposureTime(          TheFCExposureTimeValueParameter->DefaultValue(),
                             FCParameterMode::StandardKeyword,
-                            "EXPTIME" ),
-   p_atmosphericExtinction( TheFCAtmosphericExtinctionValueParameter->DefaultValue(),
+                            "EXPTIME" )
+   , p_atmosphericExtinction( TheFCAtmosphericExtinctionValueParameter->DefaultValue(),
                             FCParameterMode::Literal,
-                            "ATMEXTIN" ),
-   p_sensorGain(            TheFCSensorGainValueParameter->DefaultValue(),
+                            "ATMEXTIN" )
+   , p_sensorGain(            TheFCSensorGainValueParameter->DefaultValue(),
                             FCParameterMode::Literal,
-                            "CCDSENS" ),
-   p_quantumEfficiency(     TheFCQuantumEfficiencyValueParameter->DefaultValue(),
+                            "CCDSENS" )
+   , p_quantumEfficiency(     TheFCQuantumEfficiencyValueParameter->DefaultValue(),
                             FCParameterMode::Literal,
                             "CCDQE" )
 {
@@ -101,8 +101,8 @@ FluxCalibrationInstance::FluxCalibrationInstance( const MetaProcess* m ) :
 
 // ----------------------------------------------------------------------------
 
-FluxCalibrationInstance::FluxCalibrationInstance( const FluxCalibrationInstance& x ) :
-   ProcessImplementation( x )
+FluxCalibrationInstance::FluxCalibrationInstance( const FluxCalibrationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -500,4 +500,4 @@ size_type FluxCalibrationInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF FluxCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:00.796Z
+# Generated on .... 2020-07-31T19:36:34.791Z
 # Project id ...... ImageIntegration
 # Project type .... Module
 # Platform ........ MacOSX/g++
@@ -19,6 +19,7 @@ all: $(OBJ_DIR)/ImageIntegration-pxm.dylib
 #
 
 SRC_FILES= \
+../../AdaptiveNormalizationData.cpp \
 ../../DrizzleIntegrationInstance.cpp \
 ../../DrizzleIntegrationInterface.cpp \
 ../../DrizzleIntegrationParameters.cpp \
@@ -35,13 +36,21 @@ SRC_FILES= \
 ../../ImageIntegrationParameters.cpp \
 ../../ImageIntegrationProcess.cpp \
 ../../IntegrationCache.cpp \
-../../SystemMemory.cpp
+../../IntegrationDataLoaderEngine.cpp \
+../../IntegrationDescription.cpp \
+../../IntegrationEngine.cpp \
+../../IntegrationFile.cpp \
+../../IntegrationRejectionEngine.cpp \
+../../LargeScaleRejectionMapGenerationEngine.cpp \
+../../MapIntegrationEngine.cpp \
+../../RejectionMapGenerationEngine.cpp
 
 #
 # Object files
 #
 
 OBJ_FILES= \
+./x64/Release/AdaptiveNormalizationData.o \
 ./x64/Release/DrizzleIntegrationInstance.o \
 ./x64/Release/DrizzleIntegrationInterface.o \
 ./x64/Release/DrizzleIntegrationParameters.o \
@@ -58,13 +67,21 @@ OBJ_FILES= \
 ./x64/Release/ImageIntegrationParameters.o \
 ./x64/Release/ImageIntegrationProcess.o \
 ./x64/Release/IntegrationCache.o \
-./x64/Release/SystemMemory.o
+./x64/Release/IntegrationDataLoaderEngine.o \
+./x64/Release/IntegrationDescription.o \
+./x64/Release/IntegrationEngine.o \
+./x64/Release/IntegrationFile.o \
+./x64/Release/IntegrationRejectionEngine.o \
+./x64/Release/LargeScaleRejectionMapGenerationEngine.o \
+./x64/Release/MapIntegrationEngine.o \
+./x64/Release/RejectionMapGenerationEngine.o
 
 #
 # Dependency files
 #
 
 DEP_FILES= \
+./x64/Release/AdaptiveNormalizationData.d \
 ./x64/Release/DrizzleIntegrationInstance.d \
 ./x64/Release/DrizzleIntegrationInterface.d \
 ./x64/Release/DrizzleIntegrationParameters.d \
@@ -81,7 +98,14 @@ DEP_FILES= \
 ./x64/Release/ImageIntegrationParameters.d \
 ./x64/Release/ImageIntegrationProcess.d \
 ./x64/Release/IntegrationCache.d \
-./x64/Release/SystemMemory.d
+./x64/Release/IntegrationDataLoaderEngine.d \
+./x64/Release/IntegrationDescription.d \
+./x64/Release/IntegrationEngine.d \
+./x64/Release/IntegrationFile.d \
+./x64/Release/IntegrationRejectionEngine.d \
+./x64/Release/LargeScaleRejectionMapGenerationEngine.d \
+./x64/Release/MapIntegrationEngine.d \
+./x64/Release/RejectionMapGenerationEngine.d
 
 #
 # Rules
@@ -90,7 +114,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/ImageIntegration-pxm.dylib: $(OBJ_FILES)
-	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.12 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/ImageIntegration-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/ImageIntegration-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.13 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/ImageIntegration-pxm.dylib -L"$(PCLLIBDIR64)" -o $(OBJ_DIR)/ImageIntegration-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -100,9 +124,9 @@ clean:
 .PHONY: post-build
 post-build:
 	cp $(OBJ_DIR)/ImageIntegration-pxm.dylib $(PCLBINDIR64)
-	codesign --deep -s pleiades -f -v --timestamp $(PCLBINDIR64)/ImageIntegration-pxm.dylib
+	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64)/ImageIntegration-pxm.dylib
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.12 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=skylake -msse4.2 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// LinearFitParameters.h - Released 2020-02-27T12:56:01Z
+// LinearFitParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -68,7 +68,7 @@ public:
 
    LFReferenceViewId( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern LFReferenceViewId* TheLFReferenceViewIdParameter;
@@ -81,13 +81,11 @@ public:
 
    LFRejectLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern LFRejectLow* TheLFRejectLowParameter;
@@ -100,13 +98,11 @@ public:
 
    LFRejectHigh( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern LFRejectHigh* TheLFRejectHighParameter;
@@ -120,4 +116,4 @@ PCL_END_LOCAL
 #endif   // __LinearFitParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitParameters.h - Released 2020-02-27T12:56:01Z
+// EOF LinearFitParameters.h - Released 2020-07-31T19:33:39Z

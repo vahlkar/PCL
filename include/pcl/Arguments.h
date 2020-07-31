@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Arguments.h - Released 2020-02-27T12:55:23Z
+// pcl/Arguments.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -490,7 +490,7 @@ typedef Flags<ArgumentOption::mask_type>  ArgumentOptions;
 
 // ----------------------------------------------------------------------------
 
-// The implementation of ExtractArguments() is slightly different in Core.
+// The implementation of ExtractArguments() is slightly different in core.
 #ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
 } // pcl
 using namespace pcl;
@@ -678,4 +678,4 @@ String PCL_FUNC ReplaceEnvironmentVariables( const String& s );
 #endif   // __PCL_Arguments_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Arguments.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Arguments.h - Released 2020-07-31T19:33:04Z

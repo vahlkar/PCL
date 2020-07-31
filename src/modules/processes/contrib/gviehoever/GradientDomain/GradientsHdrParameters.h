@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrParameters.h - Released 2020-02-27T12:56:01Z
+// GradientsHdrParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -46,13 +46,11 @@ public:
 
    GradientsHdrParameterLogMaxGradient( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GradientsHdrParameterLogMaxGradient* TheGradientsHdrParameterLogMaxGradient;
@@ -65,13 +63,11 @@ public:
 
    GradientsHdrParameterLogMinGradient( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GradientsHdrParameterLogMinGradient* TheGradientsHdrParameterLogMinGradient;
@@ -84,19 +80,16 @@ public:
 
    GradientsHdrParameterExpGradient( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern GradientsHdrParameterExpGradient* TheGradientsHdrParameterExpGradient;
 
 // ----------------------------------------------------------------------------
-
 
 class GradientsHdrParameterRescale01 : public MetaBoolean
 {
@@ -104,15 +97,13 @@ public:
 
    GradientsHdrParameterRescale01( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern GradientsHdrParameterRescale01* TheGradientsHdrParameterRescale01;
 
 // ----------------------------------------------------------------------------
-
 
 class GradientsHdrParameterPreserveColor : public MetaBoolean
 {
@@ -120,18 +111,19 @@ public:
 
    GradientsHdrParameterPreserveColor( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern GradientsHdrParameterPreserveColor* TheGradientsHdrParameterPreserveColor;
 
+// ----------------------------------------------------------------------------
+
 PCL_END_LOCAL
 
-} // pcl
+} // namespace pcl
 
-#endif   // __GradientsHdrParameters_h
+#endif // __GradientsHdrParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrParameters.h - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2020-02-27T12:56:01Z
+// PhotometricColorCalibrationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -121,12 +121,8 @@ PhotometricColorCalibrationInterface* ThePhotometricColorCalibrationInterface = 
 
 // ----------------------------------------------------------------------------
 
-#include "PhotometricColorCalibrationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-PhotometricColorCalibrationInterface::PhotometricColorCalibrationInterface() :
-   m_instance( ThePhotometricColorCalibrationProcess )
+PhotometricColorCalibrationInterface::PhotometricColorCalibrationInterface()
+   : m_instance( ThePhotometricColorCalibrationProcess )
 {
    ThePhotometricColorCalibrationInterface = this;
 }
@@ -155,9 +151,9 @@ MetaProcess* PhotometricColorCalibrationInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** PhotometricColorCalibrationInterface::IconImageXPM() const
+String PhotometricColorCalibrationInterface::IconImageSVGFile() const
 {
-   return PhotometricColorCalibrationIcon_XPM;
+   return "@module_icons_dir/PhotometricColorCalibration.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -510,7 +506,6 @@ String PhotometricColorCalibrationInterface::EpochToString( double jd ) const
 
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void PhotometricColorCalibrationInterface::e_GetFocus( Control& sender )
@@ -2055,4 +2050,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-07-31T19:33:39Z

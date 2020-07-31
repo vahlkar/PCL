@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationProcess.cpp - Released 2020-02-27T12:56:01Z
+// BackgroundNeutralizationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "BackgroundNeutralizationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 BackgroundNeutralizationProcess* TheBackgroundNeutralizationProcess = 0;
 
 // ----------------------------------------------------------------------------
@@ -77,7 +73,6 @@ BackgroundNeutralizationProcess::BackgroundNeutralizationProcess()
 {
    TheBackgroundNeutralizationProcess = this;
 
-   // Instantiate process parameters
    new BNBackgroundReferenceViewId( this );
    new BNBackgroundLow( this );
    new BNBackgroundHigh( this );
@@ -120,10 +115,11 @@ String BackgroundNeutralizationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** BackgroundNeutralizationProcess::IconImageXPM() const
+String BackgroundNeutralizationProcess::IconImageSVGFile() const
 {
-   return BackgroundNeutralizationIcon_XPM;
+   return "@module_icons_dir/BackgroundNeutralization.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* BackgroundNeutralizationProcess::DefaultInterface() const
@@ -254,4 +250,4 @@ int BackgroundNeutralizationProcess::ProcessCommandLine( const StringList& argv 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF BackgroundNeutralizationProcess.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Format.h - Released 2020-02-27T12:55:48Z
+// JPEG2000Format.h - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -69,7 +69,7 @@ class JPCFormat : public MetaFileFormat
 {
 public:
 
-   JPCFormat();
+   JPCFormat() = default;
 
    IsoString Name() const override;
 
@@ -81,7 +81,7 @@ public:
    String Description() const override;
    String Implementation() const override;
 
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
 
    bool CanEditPreferences() const override;
    bool UsesFormatSpecificData() const override;
@@ -96,6 +96,8 @@ public:
    static JPEG2000ImageOptions DefaultOptions();
 };
 
+// ----------------------------------------------------------------------------
+
 /*
  * JPEG-2000 JP2 Format
  */
@@ -103,7 +105,7 @@ class JP2Format : public JPCFormat
 {
 public:
 
-   JP2Format();
+   JP2Format() = default;
 
    IsoString Name() const override;
 
@@ -112,7 +114,7 @@ public:
 
    String Description() const override;
 
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
 
    bool CanStoreICCProfiles() const override;
    bool CanStoreResolution() const override;
@@ -131,6 +133,8 @@ public:
 
    static EmbeddingOverrides DefaultEmbeddingOverrides();
 };
+
+// ----------------------------------------------------------------------------
 
 /*
  * JPEG-2000 code stream format-specific data
@@ -153,4 +157,4 @@ struct JPEG2000FormatOptions
 #endif   // __JPEG2000Format_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Format.h - Released 2020-02-27T12:55:48Z
+// EOF JPEG2000Format.h - Released 2020-07-31T19:33:23Z

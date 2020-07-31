@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="a">
+<stop stop-color="#d9d9d9" offset="0"/>
+<stop stop-color="#3f4152" offset="1"/>
+</linearGradient>
+<linearGradient id="d" x1="12.027" x2="70.235" y1="86.124" y2="27.916" gradientTransform="matrix(2.1091 0 0 2.1091 104.33 -71.572)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0405ff" offset="0"/>
+<stop stop-color="#9fc9ff" offset="1"/>
+</linearGradient>
+<radialGradient id="c" cx="45.489" cy="90.348" r="7.9375" gradientTransform="matrix(2.7849 2.6158 -1.5643 1.6654 163.46 -223.01)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+<radialGradient id="b" cx="45.489" cy="90.348" r="7.9375" gradientTransform="matrix(2.7849 2.6158 -1.5643 1.6654 229.95 -245.03)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+</defs>
+<g transform="translate(-33.409 12.459)">
+<g transform="translate(-89.934 6.5857)">
+<rect x="129.69" y="-12.695" width="122.77" height="122.77" fill="url(#d)" stroke-width="0"/>
+<path d="m138.06-7.1145v111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<path d="m160.15-7.1145v111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<path d="m182.24-7.1145v111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<path d="m204.33-7.1145v111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<path d="m226.42-7.1145v111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<path d="m246.88 13.341h-111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<path d="m246.88 35.431h-111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<path d="m246.88 57.521h-111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<path d="m246.88 79.611h-111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<path d="m246.88 101.7h-111.61" fill="none" stroke="#acacac" stroke-width="5.8208"/>
+<circle cx="160.12" cy="57.437" r="18.136" fill="url(#c)"/>
+<circle cx="226.6" cy="35.415" r="18.136" fill="url(#b)"/>
+<path d="m140.87 96.098c73.505-1.6137 33.713-103.21 105.86-100.39" fill="none" stroke="#f2914c" stroke-width="6.35"/>
+</g>
+</g>
+</svg>

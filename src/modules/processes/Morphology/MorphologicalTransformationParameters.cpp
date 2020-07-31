@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationParameters.cpp - Released 2020-02-27T12:56:01Z
+// MorphologicalTransformationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -57,306 +57,306 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-MorphologicalOp*     TheMorphologicalOpParameter = 0;
-InterlacingDistance* TheInterlacingDistanceParameter = 0;
-LowThreshold*        TheLowThresholdParameter = 0;
-HighThreshold*       TheHighThresholdParameter = 0;
-NumberOfIterations*  TheNumberOfIterationsParameter = 0;
-Amount*              TheAmountParameter = 0;
-SelectionPoint*      TheSelectionPointParameter = 0;
-StructureName*       TheStructureNameParameter = 0;
-StructureSize*       TheStructureSizeParameter = 0;
-StructureWayTable*   TheStructureWayTableParameter = 0;
-StructureWayMask*    TheStructureWayMaskParameter = 0;
+MTOperator*            TheMTOperatorParameter = nullptr;
+MTInterlacingDistance* TheMTInterlacingDistanceParameter = nullptr;
+MTLowThreshold*        TheMTLowThresholdParameter = nullptr;
+MTHighThreshold*       TheMTHighThresholdParameter = nullptr;
+MTNumberOfIterations*  TheMTNumberOfIterationsParameter = nullptr;
+MTAmount*              TheMTAmountParameter = nullptr;
+MTSelectionPoint*      TheMTSelectionPointParameter = nullptr;
+MTStructureName*       TheMTStructureNameParameter = nullptr;
+MTStructureSize*       TheMTStructureSizeParameter = nullptr;
+MTStructureWayTable*   TheMTStructureWayTableParameter = nullptr;
+MTStructureWayMask*    TheMTStructureWayMaskParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
-MorphologicalOp::MorphologicalOp( MetaProcess* P ) : MetaEnumeration( P )
+MTOperator::MTOperator( MetaProcess* P ) : MetaEnumeration( P )
 {
-   TheMorphologicalOpParameter = this;
+   TheMTOperatorParameter = this;
 }
 
-IsoString MorphologicalOp::Id() const
+IsoString MTOperator::Id() const
 {
    return "operator";
 }
 
-size_type MorphologicalOp::NumberOfElements() const
+size_type MTOperator::NumberOfElements() const
 {
    return NumberOfMorphologicalOps;
 }
 
-IsoString MorphologicalOp::ElementId( size_type i ) const
+IsoString MTOperator::ElementId( size_type i ) const
 {
    switch ( i )
    {
    default:
-   case Erosion:     return "Erosion";
-   case Dilation:    return "Dilation";
-   case Opening:     return "Opening";
-   case Closing:     return "Closing";
-   case Median:      return "Median";
-   case Selection:   return "Selection";
-   case Midpoint:    return "Midpoint";
+   case Erosion:   return "Erosion";
+   case Dilation:  return "Dilation";
+   case Opening:   return "Opening";
+   case Closing:   return "Closing";
+   case Median:    return "Median";
+   case Selection: return "Selection";
+   case Midpoint:  return "Midpoint";
    }
 }
 
-int MorphologicalOp::ElementValue( size_type i ) const
+int MTOperator::ElementValue( size_type i ) const
 {
    return int( i );
 }
 
-size_type MorphologicalOp::DefaultValueIndex() const
+size_type MTOperator::DefaultValueIndex() const
 {
    return Default;
 }
 
 // ----------------------------------------------------------------------------
 
-InterlacingDistance::InterlacingDistance( MetaProcess* P ) : MetaUInt32( P )
+MTInterlacingDistance::MTInterlacingDistance( MetaProcess* P ) : MetaUInt32( P )
 {
-   TheInterlacingDistanceParameter = this;
+   TheMTInterlacingDistanceParameter = this;
 }
 
-IsoString InterlacingDistance::Id() const
+IsoString MTInterlacingDistance::Id() const
 {
    return "interlacingDistance";
 }
 
-double InterlacingDistance::DefaultValue() const
+double MTInterlacingDistance::DefaultValue() const
 {
    return 1;
 }
 
-double InterlacingDistance::MinimumValue() const
+double MTInterlacingDistance::MinimumValue() const
 {
    return 1;
 }
 
-double InterlacingDistance::MaximumValue() const
+double MTInterlacingDistance::MaximumValue() const
 {
    return 4096;
 }
 
 // ----------------------------------------------------------------------------
 
-LowThreshold::LowThreshold( MetaProcess* P ) : MetaDouble( P )
+MTLowThreshold::MTLowThreshold( MetaProcess* P ) : MetaDouble( P )
 {
-   TheLowThresholdParameter = this;
+   TheMTLowThresholdParameter = this;
 }
 
-IsoString LowThreshold::Id() const
+IsoString MTLowThreshold::Id() const
 {
    return "lowThreshold";
 }
 
-int LowThreshold::Precision() const
+int MTLowThreshold::Precision() const
 {
    return 6;
 }
 
-double LowThreshold::DefaultValue() const
+double MTLowThreshold::DefaultValue() const
 {
    return 0;
 }
 
-double LowThreshold::MinimumValue() const
+double MTLowThreshold::MinimumValue() const
 {
    return 0;
 }
 
-double LowThreshold::MaximumValue() const
+double MTLowThreshold::MaximumValue() const
 {
    return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-HighThreshold::HighThreshold( MetaProcess* P ) : MetaDouble( P )
+MTHighThreshold::MTHighThreshold( MetaProcess* P ) : MetaDouble( P )
 {
-   TheHighThresholdParameter = this;
+   TheMTHighThresholdParameter = this;
 }
 
-IsoString HighThreshold::Id() const
+IsoString MTHighThreshold::Id() const
 {
    return "highThreshold";
 }
 
-int HighThreshold::Precision() const
+int MTHighThreshold::Precision() const
 {
    return 6;
 }
 
-double HighThreshold::DefaultValue() const
+double MTHighThreshold::DefaultValue() const
 {
    return 0;
 }
 
-double HighThreshold::MinimumValue() const
+double MTHighThreshold::MinimumValue() const
 {
    return 0;
 }
 
-double HighThreshold::MaximumValue() const
+double MTHighThreshold::MaximumValue() const
 {
    return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-NumberOfIterations::NumberOfIterations( MetaProcess* P ) : MetaUInt32( P )
+MTNumberOfIterations::MTNumberOfIterations( MetaProcess* P ) : MetaUInt32( P )
 {
-   TheNumberOfIterationsParameter = this;
+   TheMTNumberOfIterationsParameter = this;
 }
 
-IsoString NumberOfIterations::Id() const
+IsoString MTNumberOfIterations::Id() const
 {
    return "numberOfIterations";
 }
 
-double NumberOfIterations::DefaultValue() const
+double MTNumberOfIterations::DefaultValue() const
 {
    return 1;
 }
 
-double NumberOfIterations::MinimumValue() const
+double MTNumberOfIterations::MinimumValue() const
 {
    return 1;
 }
 
-double NumberOfIterations::MaximumValue() const
+double MTNumberOfIterations::MaximumValue() const
 {
    return 10;
 }
 
 // ----------------------------------------------------------------------------
 
-Amount::Amount( MetaProcess* P ) : MetaFloat( P )
+MTAmount::MTAmount( MetaProcess* P ) : MetaFloat( P )
 {
-   TheAmountParameter = this;
+   TheMTAmountParameter = this;
 }
 
-IsoString Amount::Id() const
+IsoString MTAmount::Id() const
 {
    return "amount";
 }
 
-int Amount::Precision() const
+int MTAmount::Precision() const
 {
    return 2;
 }
 
-double Amount::DefaultValue() const
+double MTAmount::DefaultValue() const
 {
    return 1;
 }
 
-double Amount::MinimumValue() const
+double MTAmount::MinimumValue() const
 {
    return 0;
 }
 
-double Amount::MaximumValue() const
+double MTAmount::MaximumValue() const
 {
    return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-SelectionPoint::SelectionPoint( MetaProcess* P ) : MetaFloat( P )
+MTSelectionPoint::MTSelectionPoint( MetaProcess* P ) : MetaFloat( P )
 {
-   TheSelectionPointParameter = this;
+   TheMTSelectionPointParameter = this;
 }
 
-IsoString SelectionPoint::Id() const
+IsoString MTSelectionPoint::Id() const
 {
    return "selectionPoint";
 }
 
-int SelectionPoint::Precision() const
+int MTSelectionPoint::Precision() const
 {
    return 2;
 }
 
-double SelectionPoint::DefaultValue() const
+double MTSelectionPoint::DefaultValue() const
 {
    return 0.5;
 }
 
-double SelectionPoint::MinimumValue() const
+double MTSelectionPoint::MinimumValue() const
 {
    return 0;
 }
 
-double SelectionPoint::MaximumValue() const
+double MTSelectionPoint::MaximumValue() const
 {
    return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-StructureName::StructureName( MetaProcess* P ) : MetaString( P )
+MTStructureName::MTStructureName( MetaProcess* P ) : MetaString( P )
 {
-   TheStructureNameParameter = this;
+   TheMTStructureNameParameter = this;
 }
 
-IsoString StructureName::Id() const
+IsoString MTStructureName::Id() const
 {
    return "structureName";
 }
 
 // ----------------------------------------------------------------------------
 
-StructureSize::StructureSize( MetaProcess* P ) : MetaUInt32( P )
+MTStructureSize::MTStructureSize( MetaProcess* P ) : MetaUInt32( P )
 {
-   TheStructureSizeParameter = this;
+   TheMTStructureSizeParameter = this;
 }
 
-IsoString StructureSize::Id() const
+IsoString MTStructureSize::Id() const
 {
    return "structureSize";
 }
 
-double StructureSize::DefaultValue() const
+double MTStructureSize::DefaultValue() const
 {
    return 3;
 }
 
-double StructureSize::MinimumValue() const
+double MTStructureSize::MinimumValue() const
 {
    return 3;
 }
 
-double StructureSize::MaximumValue() const
+double MTStructureSize::MaximumValue() const
 {
    return 25;
 }
 
 // ----------------------------------------------------------------------------
 
-StructureWayTable::StructureWayTable( MetaProcess* P ) : MetaTable( P )
+MTStructureWayTable::MTStructureWayTable( MetaProcess* P ) : MetaTable( P )
 {
-   TheStructureWayTableParameter = this;
+   TheMTStructureWayTableParameter = this;
 }
 
-IsoString StructureWayTable::Id() const
+IsoString MTStructureWayTable::Id() const
 {
    return "structureWayTable";
 }
 
-size_type StructureWayTable::MinLength() const
+size_type MTStructureWayTable::MinLength() const
 {
    return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-StructureWayMask::StructureWayMask( MetaTable* T ) : MetaBlock( T )
+MTStructureWayMask::MTStructureWayMask( MetaTable* T ) : MetaBlock( T )
 {
-   TheStructureWayMaskParameter = this;
+   TheMTStructureWayMaskParameter = this;
 }
 
-IsoString StructureWayMask::Id() const
+IsoString MTStructureWayMask::Id() const
 {
    return "mask";
 }
@@ -366,4 +366,4 @@ IsoString StructureWayMask::Id() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF MorphologicalTransformationParameters.cpp - Released 2020-07-31T19:33:39Z

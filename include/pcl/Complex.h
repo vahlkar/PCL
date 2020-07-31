@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Complex.h - Released 2020-02-27T12:55:23Z
+// pcl/Complex.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -356,6 +356,17 @@ public:
          m = (q ? i : r) * pcl::Sqrt( 1 + m*m );
       }
       return m;
+   }
+
+   /*!
+    * Explicit conversion operator to double.
+    *
+    * Returns the complex magnitude or modulus of this complex number, so this
+    * operator is equivalent to Mag() const.
+    */
+   explicit operator double() const
+   {
+      return double( Mag() );
    }
 
    /*!
@@ -1096,4 +1107,4 @@ typedef dcomplex              complex;
 #endif   // __PCL_Complex_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Complex.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Complex.h - Released 2020-07-31T19:33:04Z

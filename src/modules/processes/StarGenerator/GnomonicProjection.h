@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GnomonicProjection.h - Released 2020-02-27T12:56:01Z
+// GnomonicProjection.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -64,21 +64,18 @@ class GnomonicProjection : public ProjectionSystem
 {
 public:
 
-   GnomonicProjection( double lon, double lat ) : ProjectionSystem( lon, lat )
+   GnomonicProjection( double lon, double lat )
+      : ProjectionSystem( lon, lat )
    {
       SinCos( lat0, s0, c0 );
    }
 
-   virtual ~GnomonicProjection()
-   {
-   }
-
-   virtual String Name() const
+   String Name() const override
    {
       return "Gnomonic Projection";
    }
 
-   virtual void SphericalToRectangular( double& x, double& y, double lon, double lat ) const
+   void SphericalToRectangular( double& x, double& y, double lon, double lat ) const override
    {
       double sdl, cdl; SinCos( InPiRange( lon - lon0 ), sdl, cdl );
       double s1, c1; SinCos( lat, s1, c1 );
@@ -87,7 +84,7 @@ public:
       y = (c0*s1 - s0*c1*cdl)/cc;
    }
 
-   virtual void RectangularToSpherical( double& lon, double& lat, double x, double y ) const
+   void RectangularToSpherical( double& lon, double& lat, double x, double y ) const override
    {
       double rho = Sqrt( x*x + y*y );
       if ( rho == 0 )
@@ -115,4 +112,4 @@ private:
 #endif   // __GnomonicProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF GnomonicProjection.h - Released 2020-02-27T12:56:01Z
+// EOF GnomonicProjection.h - Released 2020-07-31T19:33:39Z

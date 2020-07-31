@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseInstance.cpp - Released 2020-02-27T12:56:01Z
+// SimplexNoiseInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -63,20 +63,20 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SimplexNoiseInstance::SimplexNoiseInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_amount( TheSNAmountParameter->DefaultValue() ),
-   p_scale( uint32( TheSNScaleParameter->DefaultValue() ) ),
-   p_offsetX( int32( TheSNOffsetXParameter->DefaultValue() ) ),
-   p_offsetY( int32( TheSNOffsetYParameter->DefaultValue() ) ),
-   p_operator( SNOperator::Default )
+SimplexNoiseInstance::SimplexNoiseInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_amount( TheSNAmountParameter->DefaultValue() )
+   , p_scale( uint32( TheSNScaleParameter->DefaultValue() ) )
+   , p_offsetX( int32( TheSNOffsetXParameter->DefaultValue() ) )
+   , p_offsetY( int32( TheSNOffsetYParameter->DefaultValue() ) )
+   , p_operator( SNOperator::Default )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-SimplexNoiseInstance::SimplexNoiseInstance( const SimplexNoiseInstance& x ) :
-   ProcessImplementation( x )
+SimplexNoiseInstance::SimplexNoiseInstance( const SimplexNoiseInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -381,6 +381,7 @@ void* SimplexNoiseInstance::LockParameter( const MetaParameter* p, size_type /*t
       return &p_offsetY;
    if ( p == TheSNOperatorParameter )
       return &p_operator;
+
    return nullptr;
 }
 
@@ -389,4 +390,4 @@ void* SimplexNoiseInstance::LockParameter( const MetaParameter* p, size_type /*t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF SimplexNoiseInstance.cpp - Released 2020-07-31T19:33:39Z

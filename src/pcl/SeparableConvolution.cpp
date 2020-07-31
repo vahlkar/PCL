@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SeparableConvolution.cpp - Released 2020-02-27T12:55:33Z
+// pcl/SeparableConvolution.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -183,10 +183,10 @@ private:
    template <class P>
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( GenericImage<P>& a_image, const SeparableConvolution& a_convolution, size_type a_count ) :
-         AbstractImage::ThreadData( a_image, a_count ),
-         image( a_image ),
-         convolution( a_convolution )
+      ThreadData( GenericImage<P>& a_image, const SeparableConvolution& a_convolution, size_type a_count )
+         : AbstractImage::ThreadData( a_image, a_count )
+         , image( a_image )
+         , convolution( a_convolution )
       {
       }
 
@@ -226,8 +226,10 @@ private:
    {
    public:
 
-      RowThread( ThreadData<P>& data, int firstRow, int endRow ) :
-         m_data( data ), m_firstRow( firstRow ), m_endRow( endRow )
+      RowThread( ThreadData<P>& data, int firstRow, int endRow )
+         : m_data( data )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -273,8 +275,10 @@ private:
    {
    public:
 
-      ColThread( ThreadData<P>& data, int firstCol, int endCol ) :
-         m_data( data ), m_firstCol( firstCol ), m_endCol( endCol )
+      ColThread( ThreadData<P>& data, int firstCol, int endCol )
+         : m_data( data )
+         , m_firstCol( firstCol )
+         , m_endCol( endCol )
       {
       }
 
@@ -376,4 +380,4 @@ void SeparableConvolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableConvolution.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/SeparableConvolution.cpp - Released 2020-07-31T19:33:12Z

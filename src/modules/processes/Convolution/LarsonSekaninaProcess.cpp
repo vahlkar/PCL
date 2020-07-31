@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaProcess.cpp - Released 2020-02-27T12:56:01Z
+// LarsonSekaninaProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -50,26 +50,22 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "LarsonSekaninaProcess.h"
-#include "LarsonSekaninaParameters.h"
 #include "LarsonSekaninaInstance.h"
 #include "LarsonSekaninaInterface.h"
+#include "LarsonSekaninaParameters.h"
+#include "LarsonSekaninaProcess.h"
 
-#include <pcl/Console.h>
 #include <pcl/Arguments.h>
-#include <pcl/View.h>
+#include <pcl/Console.h>
 #include <pcl/Exception.h>
+#include <pcl/View.h>
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-#include "LarsonSekaninaIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-LarsonSekaninaProcess* TheLarsonSekaninaProcess = 0;
+LarsonSekaninaProcess* TheLarsonSekaninaProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -77,7 +73,6 @@ LarsonSekaninaProcess::LarsonSekaninaProcess()
 {
    TheLarsonSekaninaProcess = this;
 
-   // Instantiate process parameters
    new LSInterpolation( this );
    new LSRadiusDiff( this );
    new LSAngleDiff( this );
@@ -129,16 +124,18 @@ String LarsonSekaninaProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** LarsonSekaninaProcess::IconImageXPM() const
+String LarsonSekaninaProcess::IconImageSVGFile() const
 {
-   return LarsonSekaninaIcon_XPM;
+   return "@module_icons_dir/LarsonSekanina.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* LarsonSekaninaProcess::DefaultInterface() const
 {
    return TheLarsonSekaninaInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* LarsonSekaninaProcess::Create() const
@@ -151,7 +148,7 @@ ProcessImplementation* LarsonSekaninaProcess::Create() const
 ProcessImplementation* LarsonSekaninaProcess::Clone( const ProcessImplementation& p ) const
 {
    const LarsonSekaninaInstance* instPtr = dynamic_cast<const LarsonSekaninaInstance*>( &p );
-   return (instPtr != 0) ? new LarsonSekaninaInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new LarsonSekaninaInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -394,4 +391,4 @@ int LarsonSekaninaProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF LarsonSekaninaProcess.cpp - Released 2020-07-31T19:33:39Z

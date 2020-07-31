@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// IntegrationCache.h - Released 2020-02-27T12:56:01Z
+// IntegrationCache.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -54,6 +54,7 @@
 #define __IntegrationCache_h
 
 #include "FileDataCache.h"
+#include "IntegrationFile.h"
 
 namespace pcl
 {
@@ -64,22 +65,23 @@ class IntegrationCacheItem : public FileDataCacheItem
 {
 public:
 
-   DVector mean;
-   DVector median;
-   DVector stdDev;
-   DVector avgDev;
-   DVector mad;
-   DVector bwmv;
-   DVector pbmv;
-   DVector sn;
-   DVector qn;
-   DVector ikss;
-   DVector iksl;
-   DVector noise;
-   String  metadata;
+   typedef IntegrationFile::scale_estimates  scale_estimates;
 
-   IntegrationCacheItem( const String& path = String() ) :
-      FileDataCacheItem( path )
+   DVector         mean;     // mean pixel values
+   DVector         median;   // location estimates
+   scale_estimates avgDev;   // two-sided AvgDev scale estimates
+   scale_estimates mad;      // two-sided MAD scale estimates
+   scale_estimates bwmv;     // two-sided BWMV scale estimates
+   DVector         noise;    // noise stdDev estimates
+   DVector         ax;       // adaptive normalization: sample X-coordinates
+   DVector         ay;       // adaptive normalization: sample Y-coordinates
+   DMultiVector    am;       // adaptive normalization: location estimates
+   DMultiVector    as0;      // adaptive normalization: low scale estimates
+   DMultiVector    as1;      // adaptive normalization: high scale estimates
+   String          metadata; // image metadata
+
+   IntegrationCacheItem( const String& path = String() )
+      : FileDataCacheItem( path )
    {
    }
 
@@ -125,4 +127,4 @@ extern IntegrationCache* TheIntegrationCache;
 #endif   // __IntegrationCache_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.h - Released 2020-02-27T12:56:01Z
+// EOF IntegrationCache.h - Released 2020-07-31T19:33:39Z

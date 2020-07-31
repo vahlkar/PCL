@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// SampleFormatConversionProcess.h - Released 2020-02-27T12:56:01Z
+// SampleFormatConversionProcess.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -66,16 +66,16 @@ public:
 
    SampleFormatConversionProcess();
 
-   virtual IsoString Id() const;
-   virtual IsoString Category() const;
-   virtual uint32 Version() const;
-   virtual String Description() const;
-   virtual const char** IconImageXPM() const;
-   virtual ProcessInterface* DefaultInterface() const;
-   virtual ProcessImplementation* Create() const;
-   virtual ProcessImplementation* Clone( const ProcessImplementation& ) const;
-   virtual bool CanProcessCommandLines() const;
-   virtual int ProcessCommandLine( const StringList& argv ) const;
+   IsoString Id() const override;
+   IsoString Category() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String IconImageSVGFile() const override;
+   ProcessInterface* DefaultInterface() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
+   bool CanProcessCommandLines() const override;
+   int ProcessCommandLine( const StringList& argv ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __SampleFormatConversionProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionProcess.h - Released 2020-02-27T12:56:01Z
+// EOF SampleFormatConversionProcess.h - Released 2020-07-31T19:33:39Z

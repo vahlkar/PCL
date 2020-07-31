@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:00.103Z
+# Generated on .... 2020-07-31T19:36:33.918Z
 # Project id ...... Image
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -17,13 +17,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>79f3dfc7-a9ed-4d27-9cc7-cda59846506e</UniqueIdentifier>
+      <UniqueIdentifier>a1f50978-1723-4c34-99bd-edceb14134c8</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>b90b9034-8ba7-4c74-a4cd-6f6f8e496375</UniqueIdentifier>
+      <UniqueIdentifier>aae36831-daea-423e-ab22-2ea75cd71c7f</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>8ef5e481-ed05-4bb1-872a-ee5d78cc070f</UniqueIdentifier>
+      <UniqueIdentifier>53b113e1-4b89-4956-9a49-b0cbbe3ca061</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -106,9 +106,6 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\NewImageProcess.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\PSF.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SampleFormatConversionInstance.cpp">
@@ -215,9 +212,6 @@
     <ClInclude Include="..\..\NewImageProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\PSF.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\SampleFormatConversionInstance.h">
         <Filter>Header Files</Filter>
     </ClInclude>
@@ -241,52 +235,28 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\CreateAlphaChannelsIcon.png">
+    <None Include="..\..\icons\CreateAlphaChannels.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\DynamicPSFIcon.png">
+    <None Include="..\..\icons\DynamicPSF.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ExtractAlphaChannelsIcon.png">
+    <None Include="..\..\icons\ExtractAlphaChannels.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\FITSHeaderIcon.png">
+    <None Include="..\..\icons\FITSHeader.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ImageIdentifierIcon.png">
+    <None Include="..\..\icons\ImageIdentifier.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\NewImageIcon.png">
+    <None Include="..\..\icons\NewImage.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\SampleFormatConversionIcon.png">
+    <None Include="..\..\icons\SampleFormatConversion.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\StatisticsIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\icons\delete.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\icons\first.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\icons\goto.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\icons\last.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\icons\next.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\icons\prev.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\icons\reset.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\icons\track.png">
+    <None Include="..\..\icons\Statistics.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

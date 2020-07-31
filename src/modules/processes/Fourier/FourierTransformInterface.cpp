@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformInterface.cpp - Released 2020-02-27T12:56:01Z
+// FourierTransformInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -62,15 +62,13 @@ FourierTransformInterface* TheFourierTransformInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "FourierTransformIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-FourierTransformInterface::FourierTransformInterface() :
-   instance( TheFourierTransformProcess )
+FourierTransformInterface::FourierTransformInterface()
+   : instance( TheFourierTransformProcess )
 {
    TheFourierTransformInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 FourierTransformInterface::~FourierTransformInterface()
 {
@@ -78,31 +76,43 @@ FourierTransformInterface::~FourierTransformInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString FourierTransformInterface::Id() const
 {
    return "FourierTransform";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* FourierTransformInterface::Process() const
 {
    return TheFourierTransformProcess;
 }
 
-const char** FourierTransformInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String FourierTransformInterface::IconImageSVGFile() const
 {
-   return FourierTransformIcon_XPM;
+   return "@module_icons_dir/FourierTransform.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void FourierTransformInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
 
+// ----------------------------------------------------------------------------
+
 void FourierTransformInterface::ResetInstance()
 {
    FourierTransformInstance defaultInstance( TheFourierTransformProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool FourierTransformInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -117,10 +127,14 @@ bool FourierTransformInterface::Launch( const MetaProcess& P, const ProcessImple
    return &P == TheFourierTransformProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* FourierTransformInterface::NewProcess() const
 {
    return new FourierTransformInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool FourierTransformInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -130,10 +144,14 @@ bool FourierTransformInterface::ValidateProcess( const ProcessImplementation& p,
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FourierTransformInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool FourierTransformInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -143,7 +161,6 @@ bool FourierTransformInterface::ImportProcess( const ProcessImplementation& p )
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
 void FourierTransformInterface::UpdateControls()
 {
@@ -151,7 +168,6 @@ void FourierTransformInterface::UpdateControls()
    GUI->Radial_CheckBox.SetChecked( instance.radialCoordinates );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void FourierTransformInterface::__Click( Button& sender, bool checked )
@@ -163,6 +179,7 @@ void FourierTransformInterface::__Click( Button& sender, bool checked )
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 FourierTransformInterface::GUIData::GUIData( FourierTransformInterface& w )
@@ -198,4 +215,4 @@ FourierTransformInterface::GUIData::GUIData( FourierTransformInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF FourierTransformInterface.cpp - Released 2020-07-31T19:33:39Z

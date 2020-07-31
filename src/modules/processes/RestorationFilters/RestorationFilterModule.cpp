@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterModule.cpp - Released 2020-02-27T12:56:01Z
+// RestorationFilterModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "RestorationFilterModule.h"
 #include "RestorationFilterProcess.h"
@@ -88,14 +88,14 @@ const char* RestorationFilterModule::Version() const
 
 IsoString RestorationFilterModule::Name() const
 {
-   return "RestorationFilter";
+   return "RestorationFilters";
 }
 
 // ----------------------------------------------------------------------------
 
 String RestorationFilterModule::Description() const
 {
-   return "PixInsight Standard RestorationFilter Process Module";
+   return "PixInsight Standard RestorationFilters Process Module";
 }
 
 // ----------------------------------------------------------------------------
@@ -116,7 +116,7 @@ String RestorationFilterModule::Author() const
 
 String RestorationFilterModule::Copyright() const
 {
-   return "Copyright (c) 2007-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2007-2020 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -131,16 +131,16 @@ String RestorationFilterModule::TradeMarks() const
 String RestorationFilterModule::OriginalFileName() const
 {
 #ifdef __PCL_FREEBSD
-   return "RestorationFilter-pxm.so";
+   return "RestorationFilters-pxm.so";
 #endif
 #ifdef __PCL_LINUX
-   return "RestorationFilter-pxm.so";
+   return "RestorationFilters-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
-   return "RestorationFilter-pxm.dylib";
+   return "RestorationFilters-pxm.dylib";
 #endif
 #ifdef __PCL_WINDOWS
-   return "RestorationFilter-pxm.dll";
+   return "RestorationFilters-pxm.dll";
 #endif
 }
 
@@ -157,6 +157,8 @@ void RestorationFilterModule::GetReleaseDate( int& year, int& month, int& day ) 
 
 } // pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::RestorationFilterModule;
@@ -171,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF RestorationFilterModule.cpp - Released 2020-07-31T19:33:39Z

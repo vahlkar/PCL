@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Translation.h - Released 2020-02-27T12:55:23Z
+// pcl/Translation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -83,9 +83,9 @@ public:
     * The specified pixel interpolation object \a p must remain valid while
     * this object exists.
     */
-   Translation( PixelInterpolation& p, double dx = 0, double dy = 0 ) :
-      InterpolatingGeometricTransformation( p ),
-      m_delta( dx, dy )
+   Translation( PixelInterpolation& p, double dx = 0, double dy = 0 )
+      : InterpolatingGeometricTransformation( p )
+      , m_delta( dx, dy )
    {
    }
 
@@ -97,9 +97,9 @@ public:
     * The specified pixel interpolation object \a p must remain valid while
     * this object exists.
     */
-   Translation( PixelInterpolation& p, const DPoint& d ) :
-      InterpolatingGeometricTransformation( p ),
-      m_delta( d )
+   Translation( PixelInterpolation& p, const DPoint& d )
+      : InterpolatingGeometricTransformation( p )
+      , m_delta( d )
    {
    }
 
@@ -207,4 +207,4 @@ protected:
 #endif   // __PCL_Translation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Translation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Translation.h - Released 2020-07-31T19:33:04Z

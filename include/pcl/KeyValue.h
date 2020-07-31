@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/KeyValue.h - Released 2020-02-27T12:55:23Z
+// pcl/KeyValue.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -78,14 +78,18 @@ public:
    /*!
     * Constructs a key-value association with default key and value members.
     */
-   KeyValue() : key(), value()
+   KeyValue()
+      : key()
+      , value()
    {
    }
 
    /*!
     * Constructs a key-value association with the specified key and value.
     */
-   KeyValue( const T1& k, const T2& v ) : key( k ), value( v )
+   KeyValue( const T1& k, const T2& v )
+      : key( k )
+      , value( v )
    {
    }
 
@@ -93,43 +97,31 @@ public:
     * Constructs a key-value association with the specified key and a
     * default-constructed value.
     */
-   KeyValue( const T1& k ) : key( k ), value()
+   KeyValue( const T1& k )
+      : key( k )
+      , value()
    {
    }
 
    /*!
     * Copy constructor.
     */
-   KeyValue( const KeyValue& x ) : key( x.key ), value( x.value )
-   {
-   }
+   KeyValue( const KeyValue& ) = default;
 
    /*!
     * Move constructor.
     */
-   KeyValue( KeyValue&& x ) : key( std::move( x.key ) ), value( std::move( x.value ) )
-   {
-   }
+   KeyValue( KeyValue&& ) = default;
 
    /*!
     * Copy assignment operator. Returns a reference to this object.
     */
-   KeyValue& operator =( const KeyValue& x )
-   {
-      key = x.key;
-      value = x.value;
-      return *this;
-   }
+   KeyValue& operator =( const KeyValue& ) = default;
 
    /*!
     * Move assignment operator. Returns a reference to this object.
     */
-   KeyValue& operator =( KeyValue&& x )
-   {
-      key = std::move( x.key );
-      value = std::move( x.value );
-      return *this;
-   }
+   KeyValue& operator =( KeyValue&& ) = default;
 
    /*!
     * Returns true iff this key-value association is equal to another object
@@ -189,4 +181,4 @@ typedef KeyValue<IsoString, IsoString> IsoStringKeyValue;
 #endif  // __PCL_KeyValue_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/KeyValue.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/KeyValue.h - Released 2020-07-31T19:33:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ReferenceSortedArray.h - Released 2020-02-27T12:55:23Z
+// pcl/ReferenceSortedArray.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -150,9 +150,7 @@ public:
    /*!
     * Constructs an empty reference sorted array.
     */
-   ReferenceSortedArray() : m_array()
-   {
-   }
+   ReferenceSortedArray() = default;
 
    /*!
     * Constructs a reference sorted array that stores \a n copies of a non-null
@@ -160,7 +158,7 @@ public:
     *
     * If \a p is \c nullptr, this function constructs an empty reference array.
     */
-   ReferenceSortedArray( size_type n, const T* p ) : m_array()
+   ReferenceSortedArray( size_type n, const T* p )
    {
       PCL_PRECONDITION( p != nullptr )
       if ( p != nullptr )
@@ -177,7 +175,8 @@ public:
     * not included in the constructed reference array.
     */
    template <class FI>
-   ReferenceSortedArray( FI i, FI j ) : m_array( i, j )
+   ReferenceSortedArray( FI i, FI j )
+      : m_array( i, j )
    {
       Sort();
    }
@@ -185,16 +184,12 @@ public:
    /*!
     * Copy constructor.
     */
-   ReferenceSortedArray( const ReferenceSortedArray& x ) : m_array( x.m_array )
-   {
-   }
+   ReferenceSortedArray( const ReferenceSortedArray& ) = default;
 
    /*!
     * Move constructor.
     */
-   ReferenceSortedArray( ReferenceSortedArray&& x ) : m_array( std::move( x.m_array ) )
-   {
-   }
+   ReferenceSortedArray( ReferenceSortedArray&& ) = default;
 
    /*!
     * Destroys a %ReferenceSortedArray object.
@@ -1412,6 +1407,20 @@ public:
    }
 
    /*!
+    * Generates a newline-separated sequence of string tokens. Returns a
+    * reference to the target string \a s.
+    *
+    * This function is equivalent to:
+    *
+    * \code ToSeparated( s, '\n' ); \endcode
+    */
+   template <class S>
+   S& ToNewLineSeparated( S& s ) const
+   {
+      return m_array.ToNewLineSeparated( s );
+   }
+
+   /*!
     * Returns a 64-bit non-cryptographic hash value computed for this reference
     * array.
     *
@@ -1540,4 +1549,4 @@ ReferenceSortedArray<T,A>& operator <<( ReferenceSortedArray<T,A>&& x1, const Re
 #endif   // __PCL_ReferenceSortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReferenceSortedArray.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ReferenceSortedArray.h - Released 2020-07-31T19:33:04Z

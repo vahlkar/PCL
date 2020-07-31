@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Rectangle.h - Released 2020-02-27T12:55:23Z
+// pcl/Rectangle.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -269,7 +269,7 @@ void OrderRect( T& x0, T& y0, T& x1, T& y1 )
 
 /*
  * ### NB: Template class GenericRectangle cannot have virtual member
- *         functions. This is because internal PCL and Core routines rely on
+ *         functions. This is because internal PCL and core routines rely on
  *         GenericRectangle<int>, GenericRectangle<float> and
  *         GenericRectangle<double> to be directly castable to int*, float* and
  *         double*, respectively. See also the PCL_ASSERT_RECT_SIZE() macro.
@@ -354,9 +354,11 @@ public:
     * type with numeric conversion semantics.
     */
    template <typename T1>
-   constexpr GenericRectangle( T1 left, T1 top, T1 right, T1 bottom ) :
-      x0( component( left ) ), y0( component( top ) ),
-      x1( component( right ) ), y1( component( bottom ) )
+   constexpr GenericRectangle( T1 left, T1 top, T1 right, T1 bottom )
+      : x0( component( left ) )
+      , y0( component( top ) )
+      , x1( component( right ) )
+      , y1( component( bottom ) )
    {
       PCL_ASSERT_RECT_SIZE();
    }
@@ -420,9 +422,9 @@ public:
     * type with numeric conversion semantics.
     */
    template <typename T1>
-   GenericRectangle( const pcl::GenericPoint<T1>& leftTop, const pcl::GenericPoint<T1>& rightBottom ) :
-      GenericRectangle( component( leftTop.x ), component( leftTop.y ),
-                        component( rightBottom.x ), component( rightBottom.y ) )
+   GenericRectangle( const pcl::GenericPoint<T1>& leftTop, const pcl::GenericPoint<T1>& rightBottom )
+      : GenericRectangle( component( leftTop.x ), component( leftTop.y ),
+                          component( rightBottom.x ), component( rightBottom.y ) )
    {
       PCL_ASSERT_RECT_SIZE();
    }
@@ -435,8 +437,8 @@ public:
     * x1 = width \n
     * y1 = height
     */
-   constexpr GenericRectangle( component width, component height ) :
-      GenericRectangle( component( 0 ), component( 0 ), width, height )
+   constexpr GenericRectangle( component width, component height )
+      : GenericRectangle( component( 0 ), component( 0 ), width, height )
    {
       PCL_ASSERT_RECT_SIZE();
    }
@@ -448,8 +450,8 @@ public:
     * The constructed rectangle will have all of its coordinates equal to the
     * scalar \a d.
     */
-   constexpr GenericRectangle( component d ) :
-      GenericRectangle( d, d, d, d )
+   constexpr GenericRectangle( component d )
+      : GenericRectangle( d, d, d, d )
    {
       PCL_ASSERT_RECT_SIZE();
    }
@@ -459,24 +461,24 @@ public:
     * copy of the specified rectangle \a r.
     */
    template <typename T1>
-   GenericRectangle( const GenericRectangle<T1>& r ) :
-      GenericRectangle( component( r.x0 ), component( r.y0 ),
-                        component( r.x1 ), component( r.y1 ) )
+   GenericRectangle( const GenericRectangle<T1>& r )
+      : GenericRectangle( component( r.x0 ), component( r.y0 ),
+                          component( r.x1 ), component( r.y1 ) )
    {
       PCL_ASSERT_RECT_SIZE();
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericRectangle( const QRect& r ) :
-      GenericRectangle( component( r.left() ), component( r.top() ),
-                        component( r.right()+1 ), component( r.bottom()+1 ) )
+   GenericRectangle( const QRect& r )
+      : GenericRectangle( component( r.left() ), component( r.top() ),
+                          component( r.right()+1 ), component( r.bottom()+1 ) )
    {
       PCL_ASSERT_RECT_SIZE();
    }
 
-   GenericRectangle( const QPoint& p0, const QPoint& p1 ) :
-      GenericRectangle( component( p0.x() ), component( p0.y() ),
-                        component( p1.x() ), component( p1.y() ) )
+   GenericRectangle( const QPoint& p0, const QPoint& p1 )
+      : GenericRectangle( component( p0.x() ), component( p0.y() ),
+                          component( p1.x() ), component( p1.y() ) )
    {
       PCL_ASSERT_RECT_SIZE();
    }
@@ -3019,4 +3021,4 @@ typedef F64Rect                     DRect;
 #endif  // __PCL_Rectangle_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rectangle.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Rectangle.h - Released 2020-07-31T19:33:04Z

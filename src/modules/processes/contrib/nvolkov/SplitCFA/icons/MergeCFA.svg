@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="d" x1="133.43" x2="84.412" y1="44.134" y2="92.521" gradientTransform="matrix(2 0 0 2 -242.99 -197.85)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#06b421" offset="0"/>
+<stop stop-color="#fafffb" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="133.43" x2="84.412" y1="102.34" y2="52.834" gradientTransform="matrix(2 0 0 2 -242.99 -191.5)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1417f6" offset="0"/>
+<stop stop-color="#fff" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="75.217" x2="124.1" y1="102.34" y2="52.834" gradientTransform="matrix(2 0 0 2 -249.34 -191.5)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0fba28" offset="0"/>
+<stop stop-color="#fff" offset="1"/>
+</linearGradient>
+<linearGradient id="a" x1="75.217" x2="124.1" y1="44.134" y2="92.521" gradientTransform="matrix(2 0 0 2 -249.34 -197.85)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f00" offset="0"/>
+<stop stop-color="#fff" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-72.571 30.479)">
+<rect x="78.921" y="-24.129" width="122.77" height="122.77" fill="none" style="paint-order:stroke markers fill"/>
+<g transform="translate(177.82 85.452)">
+<rect x="-34.343" y="-109.58" width="58.208" height="58.208" fill="url(#d)" style="paint-order:stroke markers fill"/>
+<rect x="-98.901" y="-109.58" width="58.208" height="58.208" fill="url(#a)" style="paint-order:stroke markers fill"/>
+<rect x="-34.343" y="-45.022" width="58.208" height="58.208" fill="url(#c)" style="paint-order:stroke markers fill"/>
+<rect x="-98.901" y="-45.022" width="58.208" height="58.208" fill="url(#b)" style="paint-order:stroke markers fill"/>
+</g>
+<g transform="translate(-130.24 21.401)">
+<g transform="translate(136.06 -27.222)">
+<rect transform="scale(-1,1)" x="-134.48" y="6.5631" width="36.512" height="36.513" fill="#f00"/>
+<rect transform="scale(-1,1)" x="-171" y="6.5631" width="36.512" height="36.513" fill="#17c02f"/>
+<rect transform="scale(-1,1)" x="-171" y="43.076" width="36.512" height="36.513" fill="#00f"/>
+<rect transform="scale(-1,1)" x="-134.48" y="43.076" width="36.512" height="36.513" fill="#17c02f"/>
+</g>
+<path d="m234.03-20.659h73.025v73.025h-73.025z" fill="none" stroke="#fff" stroke-width="6.35"/>
+</g>
+</g>
+</svg>

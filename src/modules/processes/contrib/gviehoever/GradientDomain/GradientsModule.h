@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsModule.h - Released 2020-02-27T12:56:01Z
+// GradientsModule.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -37,32 +37,29 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// GradientsModule
-// ----------------------------------------------------------------------------
 
-//// module definition for the gradients module
 class GradientsModule : public MetaModule
 {
 public:
 
    GradientsModule();
 
-   virtual const char* Version() const;
-   virtual IsoString Name() const;
-   virtual String Description() const;
-   virtual String Company() const;
-   virtual String Author() const;
-   virtual String Copyright() const;
-   virtual String TradeMarks() const;
-   virtual String OriginalFileName() const;
-   virtual void GetReleaseDate( int& year, int& month, int& day ) const;
+   const char* Version() const override;
+   IsoString Name() const override;
+   String Description() const override;
+   String Company() const override;
+   String Author() const override;
+   String Copyright() const override;
+   String TradeMarks() const override;
+   String OriginalFileName() const override;
+   void GetReleaseDate( int& year, int& month, int& day ) const override;
 };
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __GradientsModule_h
+#endif // __GradientsModule_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsModule.h - Released 2020-02-27T12:56:01Z
+// EOF GradientsModule.h - Released 2020-07-31T19:33:39Z

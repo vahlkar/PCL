@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2020-02-27T12:56:01Z
+// PreferencesInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -498,6 +498,7 @@ public:
    GlobalFlagControl          WindowButtonsOnTheLeft_Flag;
    GlobalFlagControl          AcceptDroppedFiles_Flag;
    GlobalFlagControl          DoubleClickLaunchesOpenDialog_Flag;
+   GlobalIntegerControl       IconGridSpacing_Integer;
    GlobalIntegerControl       MaxRecentFiles_Integer;
    GlobalFlagControl          ShowRecentlyUsed_Flag;
    GlobalFlagControl          ShowMostUsed_Flag;
@@ -506,9 +507,6 @@ public:
    GlobalFlagControl          ExpandRecentlyUsedAtStartup_Flag;
    GlobalFlagControl          ExpandMostUsedAtStartup_Flag;
    GlobalFlagControl          ExpandFavoritesAtStartup_Flag;
-   GlobalFlagControl          OpenURLsWithInternalBrowser_Flag;
-   GlobalFlagControl          OpenResourcesOnNewWebBrowserWindows_Flag;
-   GlobalFlagControl          PrivateWebBrowsingMode_Flag;
 };
 
 DEFINE_PREFERENCES_CATEGORY( MainWindow, "Main Window / Startup" )
@@ -648,6 +646,9 @@ public:
    GlobalStringControl        ProxyURL_String;
    GlobalFlagControl          FollowDownloadLocations_Flag;
    GlobalFlagControl          VerboseNetworkOperations_Flag;
+   GlobalFlagControl          OpenURLsWithInternalBrowser_Flag;
+   GlobalFlagControl          OpenResourcesOnNewWebBrowserWindows_Flag;
+   GlobalFlagControl          PrivateWebBrowsingMode_Flag;
 };
 
 DEFINE_PREFERENCES_CATEGORY( DirectoriesAndNetwork, "Directories and Network" )
@@ -847,30 +848,25 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
-
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
    bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
-   PreferencesInstance instance;
+   PreferencesInstance m_instance;
 
    class CategoryNode : public TreeBox::Node
    {
    public:
 
-      CategoryNode( TreeBox& parentTree, int pageIndex ) :
-         TreeBox::Node( parentTree ), m_pageIndex( pageIndex )
+      CategoryNode( TreeBox& parentTree, int pageIndex )
+         : TreeBox::Node( parentTree ), m_pageIndex( pageIndex )
       {
       }
 
@@ -916,7 +912,7 @@ private:
 
    private:
 
-      PreferencesInterface& window;
+      PreferencesInterface& m_window;
 
       typedef ReferenceArray<PreferencesCategory>  category_list;
       category_list categories;
@@ -948,4 +944,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2020-02-27T12:56:01Z
+// EOF PreferencesInterface.h - Released 2020-07-31T19:33:39Z

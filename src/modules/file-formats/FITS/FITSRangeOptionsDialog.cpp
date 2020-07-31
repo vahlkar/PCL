@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.6
+// Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITSRangeOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// FITSRangeOptionsDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -61,8 +61,8 @@ namespace pcl
 
 FITSRangeOptionsDialog::FITSRangeOptionsDialog( const FITSFormat::OutOfRangePolicyOptions& options,
                                                 int bitsPerSample,
-                                                double minSampleValue, double maxSampleValue ) :
-   outOfRange( options )
+                                                double minSampleValue, double maxSampleValue )
+   : outOfRange( options )
 {
    if ( maxSampleValue < minSampleValue )
       Swap( minSampleValue, maxSampleValue );
@@ -192,4 +192,4 @@ void FITSRangeOptionsDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSRangeOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF FITSRangeOptionsDialog.cpp - Released 2020-07-31T19:33:23Z

@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrCompositionProcess.cpp - Released 2020-02-27T12:56:01Z
+// GradientsHdrCompositionProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,21 +29,15 @@
 // ----------------------------------------------------------------------------
 
 #include "GradientsHdrCompositionProcess.h"
-#include "GradientsHdrCompositionParameters.h"
 #include "GradientsHdrCompositionInstance.h"
 #include "GradientsHdrCompositionInterface.h"
+#include "GradientsHdrCompositionParameters.h"
 
 namespace pcl
 {
-
 // ----------------------------------------------------------------------------
 
-GradientsHdrCompositionProcess* TheGradientsHdrCompositionProcess = 0;
-
-// ----------------------------------------------------------------------------
-
-// FIXME
-// #include "GradientsHdrCompositionIcon.xpm"
+GradientsHdrCompositionProcess* TheGradientsHdrCompositionProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -51,14 +45,13 @@ GradientsHdrCompositionProcess::GradientsHdrCompositionProcess()
 {
    TheGradientsHdrCompositionProcess = this;
 
-   // Instantiate process parameters
    new GradientsHdrCompositionTargetFrames( this );
    new GradientsHdrCompositionTargetFrameEnabled( TheGradientsHdrCompositionTargetFramesParameter );
    new GradientsHdrCompositionTargetFramePath( TheGradientsHdrCompositionTargetFramesParameter );
-   new GradientsHdrCompositionLogBias(this);
-   new GradientsHdrCompositionKeepLog(this);
-   new GradientsHdrCompositionNegativeBias(this);
-   new GradientsHdrCompositionGenerateMask(this);
+   new GradientsHdrCompositionLogBias( this );
+   new GradientsHdrCompositionKeepLog( this );
+   new GradientsHdrCompositionNegativeBias( this );
+   new GradientsHdrCompositionGenerateMask( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -67,6 +60,8 @@ IsoString GradientsHdrCompositionProcess::Id() const
 {
    return "GradientHDRComposition";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString GradientsHdrCompositionProcess::Aliases() const
 {
@@ -91,21 +86,18 @@ uint32 GradientsHdrCompositionProcess::Version() const
 
 String GradientsHdrCompositionProcess::Description() const
 {
-   return
-      "<html>"
-      "<p>Combines a set of aligned images with different exposures into an HDR type image. "
-      "All images need to have the same geometry and the same number of channels. The need to be linear with black close to 0. "
-      "Values of exactly 0 will be considered background.</p>"
-      "</html>";
+   return "<html>"
+          "<p>Combines a set of aligned images with different exposures into an HDR type image. "
+          "All images need to have the same geometry and the same number of channels. The need to be linear with black close to 0. "
+          "Values of exactly 0 will be considered background.</p>"
+          "</html>";
 }
 
 // ----------------------------------------------------------------------------
 
-const char** GradientsHdrCompositionProcess::IconImageXPM() const
+String GradientsHdrCompositionProcess::IconImageSVGFile() const
 {
-  return 0;
-  // FIXME
-  // return GradientsHdrCompositionIcon_XPM;
+   return String(); //"@module_icons_dir/GradientsHdrComposition.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -127,12 +119,12 @@ ProcessImplementation* GradientsHdrCompositionProcess::Create() const
 ProcessImplementation* GradientsHdrCompositionProcess::Clone( const ProcessImplementation& p ) const
 {
    const GradientsHdrCompositionInstance* instPtr = dynamic_cast<const GradientsHdrCompositionInstance*>( &p );
-   return (instPtr != 0) ? new GradientsHdrCompositionInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new GradientsHdrCompositionInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrCompositionProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrCompositionProcess.cpp - Released 2020-07-31T19:33:39Z

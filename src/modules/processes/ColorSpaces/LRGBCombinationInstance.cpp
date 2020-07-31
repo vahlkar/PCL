@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationInstance.cpp - Released 2020-02-27T12:56:01Z
+// LRGBCombinationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -66,8 +66,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LRGBCombinationInstance::LRGBCombinationInstance( const MetaProcess* P ) :
-   ProcessImplementation( P )
+LRGBCombinationInstance::LRGBCombinationInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
 {
    for ( int i = 0; i < 4; ++i )
    {
@@ -84,8 +84,10 @@ LRGBCombinationInstance::LRGBCombinationInstance( const MetaProcess* P ) :
    numberOfProtectedWaveletLayers = (uint32)TheLRGBLayersProtectedParameter->DefaultValue();
 }
 
-LRGBCombinationInstance::LRGBCombinationInstance( const LRGBCombinationInstance& x ) :
-   ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+LRGBCombinationInstance::LRGBCombinationInstance( const LRGBCombinationInstance& x )
+   : ProcessImplementation( x )
 {
    for ( int i = 0; i < 4; ++i )
    {
@@ -1164,4 +1166,4 @@ size_type LRGBCombinationInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF LRGBCombinationInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramProcess.cpp - Released 2020-02-27T12:56:01Z
+// AutoHistogramProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "AutoHistogramIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 AutoHistogramProcess* TheAutoHistogramProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -117,9 +113,9 @@ uint32 AutoHistogramProcess::Version() const
 
 // ----------------------------------------------------------------------------
 
-const char** AutoHistogramProcess::IconImageXPM() const
+String AutoHistogramProcess::IconImageSVGFile() const
 {
-   return AutoHistogramIcon_XPM;
+   return "@module_icons_dir/AutoHistogram.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -327,4 +323,4 @@ int AutoHistogramProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF AutoHistogramProcess.cpp - Released 2020-07-31T19:33:39Z

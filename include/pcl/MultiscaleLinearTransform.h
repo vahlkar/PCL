@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MultiscaleLinearTransform.h - Released 2020-02-27T12:55:23Z
+// pcl/MultiscaleLinearTransform.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -145,9 +145,9 @@ public:
     * - If \a d > 0, then \a d is the constant increment in pixels between two
     *   successive scales (linear scaling sequence): s = d*j for 1 <= j < n.
     */
-   MultiscaleLinearTransform( int n = 4, int d = 0, bool useMeanFilters = false ) :
-      RedundantMultiscaleTransform( n, d ),
-      m_useMeanFilters( useMeanFilters )
+   MultiscaleLinearTransform( int n = 4, int d = 0, bool useMeanFilters = false )
+      : RedundantMultiscaleTransform( n, d )
+      , m_useMeanFilters( useMeanFilters )
    {
    }
 
@@ -225,4 +225,4 @@ protected:
 #endif   // __PCL_MultiscaleLinearTransform_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MultiscaleLinearTransform.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/MultiscaleLinearTransform.h - Released 2020-07-31T19:33:04Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// CurvesTransformationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -98,13 +98,15 @@ CurveBase::interpolator* CurveBase::InitInterpolator() const
 
 // ----------------------------------------------------------------------------
 
-CurvesTransformationInstance::CurvesTransformationInstance( const MetaProcess* P ) :
-   ProcessImplementation( P )
+CurvesTransformationInstance::CurvesTransformationInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
 {
 }
 
-CurvesTransformationInstance::CurvesTransformationInstance( const CurvesTransformationInstance& x ) :
-   ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+CurvesTransformationInstance::CurvesTransformationInstance( const CurvesTransformationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -408,8 +410,8 @@ private:
 
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( const AbstractImage& image, size_type count ) :
-         AbstractImage::ThreadData( image, count )
+      ThreadData( const AbstractImage& image, size_type count )
+         : AbstractImage::ThreadData( image, count )
       {
       }
 
@@ -422,8 +424,12 @@ private:
    public:
 
       CurvesThread( const CurvesTransformationInstance& instance, const ThreadData& data,
-                    GenericImage<P>& image, size_type start, size_type end ) :
-         m_instance( instance ), m_data( data ), m_image( image ), m_start( start ), m_end( end )
+                    GenericImage<P>& image, size_type start, size_type end )
+         : m_instance( instance )
+         , m_data( data )
+         , m_image( image )
+         , m_start( start )
+         , m_end( end )
       {
       }
 
@@ -878,21 +884,21 @@ bool CurvesTransformationInstance::ExecuteOn( View& view )
 void* CurvesTransformationInstance::LockParameter( const MetaParameter* p, size_type tableRow )
 {
    const TableIndexer* i = dynamic_cast<const TableIndexer*>( p );
-   if ( i == 0 )
-      return 0;
+   if ( i == nullptr )
+      return nullptr;
 
    Curve& c = C[i->CurveTableIndex()];
 
    const CurvePointValue* v = dynamic_cast<const CurvePointValue*>( p );
-   if ( v != 0 )
+   if ( v != nullptr )
       if ( v->IsX() )
          return static_cast<void*>( const_cast<Curve::input_list::iterator>( c.x.At( tableRow ) ) );
       else
          return static_cast<void*>( c.y.At( tableRow ) );
 
    const CurveType* t = dynamic_cast<const CurveType*>( p );
-   if ( t == 0 )
-      return 0;
+   if ( t == nullptr )
+      return nullptr;
 
    return &c.type;
 }
@@ -900,7 +906,7 @@ void* CurvesTransformationInstance::LockParameter( const MetaParameter* p, size_
 bool CurvesTransformationInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type /*tableRow*/ )
 {
    const CurveTable* t = dynamic_cast<const CurveTable*>( p );
-   if ( t == 0 )
+   if ( t == nullptr )
       return false;
 
    int i = t->CurveTableIndex();
@@ -917,7 +923,7 @@ bool CurvesTransformationInstance::AllocateParameter( size_type sizeOrLength, co
 size_type CurvesTransformationInstance::ParameterLength( const MetaParameter* p, size_type /*tableRow*/ ) const
 {
    const CurveTable* t = dynamic_cast<const CurveTable*>( p );
-   if ( t == 0 )
+   if ( t == nullptr )
       return 0;
 
    return C[t->CurveTableIndex()].Length();
@@ -928,4 +934,4 @@ size_type CurvesTransformationInstance::ParameterLength( const MetaParameter* p,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF CurvesTransformationInstance.cpp - Released 2020-07-31T19:33:39Z

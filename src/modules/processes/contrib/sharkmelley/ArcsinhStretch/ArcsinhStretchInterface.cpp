@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchInterface.cpp - Released 2020-02-27T12:56:01Z
+// ArcsinhStretchInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
-// Copyright (c) 2017-2018 Mark Shelley
+// Copyright (c) 2017-2020 Mark Shelley
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -67,12 +67,8 @@ ArcsinhStretchInterface* TheArcsinhStretchInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-//#include "ArcsinhStretchIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ArcsinhStretchInterface::ArcsinhStretchInterface() :
-   instance( TheArcsinhStretchProcess )
+ArcsinhStretchInterface::ArcsinhStretchInterface()
+   : instance( TheArcsinhStretchProcess )
 {
    TheArcsinhStretchInterface = this;
 }
@@ -108,9 +104,9 @@ MetaProcess* ArcsinhStretchInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ArcsinhStretchInterface::IconImageXPM() const
+String ArcsinhStretchInterface::IconImageSVGFile() const
 {
-   return nullptr; // ArcsinhStretchIcon_XPM; ---> put a nice icon here
+   return "@module_icons_dir/ArcsinhStretch.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -222,8 +218,8 @@ bool ArcsinhStretchInterface::RequiresRealTimePreviewUpdate( const UInt16Image&,
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-ArcsinhStretchInterface::RealTimeThread::RealTimeThread() :
-   m_instance( TheArcsinhStretchProcess )
+ArcsinhStretchInterface::RealTimeThread::RealTimeThread()
+   : m_instance( TheArcsinhStretchProcess )
 {
 }
 
@@ -325,7 +321,6 @@ void ArcsinhStretchInterface::UpdateRealTimePreview()
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
 void ArcsinhStretchInterface::__RealValueUpdated( NumericEdit& sender, double value )
 {
@@ -426,6 +421,7 @@ void ArcsinhStretchInterface::__UpdateRealTimePreview_Timer( Timer& sender )
       RealTimePreview::Update();
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 ArcsinhStretchInterface::GUIData::GUIData( ArcsinhStretchInterface& w )
@@ -557,4 +553,4 @@ ArcsinhStretchInterface::GUIData::GUIData( ArcsinhStretchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ArcsinhStretchInterface.cpp - Released 2020-07-31T19:33:39Z

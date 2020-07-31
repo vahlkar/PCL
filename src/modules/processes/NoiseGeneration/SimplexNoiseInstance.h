@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseInstance.h - Released 2020-02-27T12:56:01Z
+// SimplexNoiseInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -69,11 +69,11 @@ public:
    SimplexNoiseInstance( const MetaProcess* );
    SimplexNoiseInstance( const SimplexNoiseInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type /*tableRow*/ );
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
 
 private:
 
@@ -94,4 +94,4 @@ private:
 #endif   // __SimplexNoiseInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseInstance.h - Released 2020-02-27T12:56:01Z
+// EOF SimplexNoiseInstance.h - Released 2020-07-31T19:33:39Z

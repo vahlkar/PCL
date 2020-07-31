@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StructureManagerDialog.h - Released 2020-02-27T12:56:01Z
+// StructureManagerDialog.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -75,7 +75,7 @@ public:
 
 private:
 
-   MorphologicalTransformationInterface& iface;
+   MorphologicalTransformationInterface& m_interface;
 
    VerticalSizer  Global_Sizer;
 
@@ -121,4 +121,4 @@ private:
 #endif   // __StructureManagerDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF StructureManagerDialog.h - Released 2020-02-27T12:56:01Z
+// EOF StructureManagerDialog.h - Released 2020-07-31T19:33:39Z

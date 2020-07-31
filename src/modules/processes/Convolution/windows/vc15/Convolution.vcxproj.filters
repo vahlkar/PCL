@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:57.276Z
+# Generated on .... 2020-07-31T19:36:30.714Z
 # Project id ...... Convolution
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>0c81fad8-829c-47e1-b018-13c2fbb4fbad</UniqueIdentifier>
+      <UniqueIdentifier>f8860d24-07ce-4799-981c-7e56fd232554</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>2527cc68-7c05-4f4b-9112-c6da109fc336</UniqueIdentifier>
+      <UniqueIdentifier>63d63f83-3599-4927-975a-a64cb30b68c0</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>7fbcacc7-e3ab-4db2-b042-59358173e525</UniqueIdentifier>
+      <UniqueIdentifier>c033ea7b-0b60-40c7-8bd4-3af8cd6076f1</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -120,13 +120,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\ConvolutionIcon.png">
+    <None Include="..\..\icons\Convolution.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\LarsonSekaninaIcon.png">
+    <None Include="..\..\icons\LarsonSekanina.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\UnsharpMaskIcon.png">
+    <None Include="..\..\icons\UnsharpMask.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

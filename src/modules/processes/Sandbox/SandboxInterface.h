@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxInterface.h - Released 2020-02-27T12:56:01Z
+// SandboxInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -78,7 +78,7 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    void ApplyInstance() const override;
    void ResetInstance() override;
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
@@ -90,12 +90,12 @@ public:
 private:
 
    /*
-    * The instance being defined.
+    * The instance being defined
     */
-   SandboxInstance instance;
+   SandboxInstance m_instance;
 
    /*
-    * Child controls.
+    * Child controls
     */
    struct GUIData
    {
@@ -119,12 +119,12 @@ private:
    GUIData* GUI = nullptr;
 
    /*
-    * GUI updates.
+    * Control updates
     */
    void UpdateControls();
 
    /*
-    * Event handlers.
+    * Event handlers
     */
    void e_RealValueUpdated( NumericEdit& sender, double value );
    void e_IntegerValueUpdated( SpinBox& sender, int value );
@@ -149,4 +149,4 @@ PCL_END_LOCAL
 #endif   // __SandboxInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SandboxInterface.h - Released 2020-02-27T12:56:01Z
+// EOF SandboxInterface.h - Released 2020-07-31T19:33:39Z

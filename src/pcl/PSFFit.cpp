@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2020-02-27T12:55:33Z
+// pcl/PSFFit.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,7 +49,9 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include <pcl/CubicSplineInterpolation.h>
 #include <pcl/PSFFit.h>
+#include <pcl/Thread.h>
 
 #include <cminpack/cminpack.h>
 
@@ -68,9 +70,9 @@ class PSFFitEngine
 {
 public:
 
-   /*
-    * ***** Elliptical PSF Functions *****
-    */
+   // -------------------------------------------------------------------------
+   // Elliptical PSF Functions
+   // -------------------------------------------------------------------------
 
 #define F      reinterpret_cast<const PSFFit*>( p )
 #define B      a[0]
@@ -88,7 +90,7 @@ public:
    static int FitGaussian( void* p, int m, int n, const double* a, double* fvec, int iflag )
    {
       /*
-       * f(x,y) : B + A*Exp(-(a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2))
+       * f(x,y) = B + A*Exp(-(a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2))
        */
       if ( B < 0 || A < 0 )
       {
@@ -120,7 +122,7 @@ public:
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
-            *fvec++ = Abs( *s++ - B - A*Exp( -(p1*dx*dx + twop2dy*dx + p3dy2) ) );
+            *fvec++ = *s++ - B - A*Exp( -(p1*dx*dx + twop2dy*dx + p3dy2) );
          }
       }
       return 0;
@@ -132,16 +134,16 @@ public:
    static int FitMoffat( void* p, int m, int n, const double* a, double* fvec, int iflag )
    {
       /*
-       * f(x,y) : B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
+       * f(x,y) = B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
        */
-      if ( B < 0 || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->beta0 )/F->beta0 > 0.05 )
+      if ( B < 0 || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
          return 0;
       }
 
-      F->beta0 = beta;
+      F->m_beta = beta;
 
       double st, ct;
       SinCos( theta, st, ct );
@@ -166,7 +168,7 @@ public:
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
-            *fvec++ = Abs( *s++ - B - A/Pow( 1 + p1*dx*dx + twop2dy*dx + p3dy2, beta ) );
+            *fvec++ = *s++ - B - A/Pow( 1 + p1*dx*dx + twop2dy*dx + p3dy2, beta );
          }
       }
       return 0;
@@ -174,13 +176,14 @@ public:
 
 #undef beta
 #define beta   F->P[7]
+
    /*
     * Elliptical Moffat PSF, prescribed beta exponent.
     */
    static int FitMoffatWithFixedBeta( void* p, int m, int n, const double* a, double* fvec, int iflag )
    {
       /*
-       * f(x,y) : B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
+       * f(x,y) = B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
        */
       if ( B < 0 || A < 0 )
       {
@@ -212,7 +215,47 @@ public:
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
-            *fvec++ = Abs( *s++ - B - A/Pow( 1 + p1*dx*dx + twop2dy*dx + p3dy2, beta ) );
+            *fvec++ = *s++ - B - A/Pow( 1 + p1*dx*dx + twop2dy*dx + p3dy2, beta );
+         }
+      }
+      return 0;
+   }
+
+   /*
+    * Elliptical variable shape PSF.
+    */
+   static int FitVShape( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   {
+      /*
+       * f(x,y) = B + A*Exp( -((dx^k)/(k*sx^k) + (dy^k)/(k*sy^k)) )
+       */
+      if ( B < 0 || A < 0 )
+      {
+         for ( int i = 0; i < m; ++i )
+            *fvec++ = std::numeric_limits<double>::max();
+         return 0;
+      }
+
+      double st, ct;
+      SinCos( theta, st, ct );
+      double ksxk = beta*Pow( Abs( sx ), beta );
+      double ksyk = beta*Pow( Abs( sy ), beta );
+      int h = F->S.Rows();
+      int w = F->S.Cols();
+      double w2x0 = (w >> 1) + x0;
+      double h2y0 = (h >> 1) + y0;
+      const double* s = F->S.Begin();
+      for ( int y = 0; y < h; ++y )
+      {
+         double dy = y - h2y0;
+         double dyst = dy*st;
+         double dyct = dy*ct;
+         for ( int x = 0; x < w; ++x )
+         {
+            double dx = x - w2x0;
+            double dy = dx*st + dyct;
+            dx = dx*ct - dyst;
+            *fvec++ = *s++ - B - A*Exp( -(Pow( Abs( dx ), beta )/ksxk + Pow( Abs( dy ), beta )/ksyk) );
          }
       }
       return 0;
@@ -228,9 +271,9 @@ public:
 #undef theta
 #undef beta
 
-   /*
-    * ***** Circular PSF Functions *****
-    */
+   // -------------------------------------------------------------------------
+   // Circular PSF Functions
+   // -------------------------------------------------------------------------
 
 #define F      reinterpret_cast<const PSFFit*>( p )
 #define B      a[0]
@@ -246,7 +289,7 @@ public:
    static int FitCircularGaussian( void* p, int m, int n, const double* a, double* fvec, int iflag )
    {
       /*
-       * f(x,y) : B + A*Exp( -((x - x0)^2 + (y - y0)^2)/(2*sigma^2) )
+       * f(x,y) = B + A*Exp( -((x - x0)^2 + (y - y0)^2)/(2*sigma^2) )
        */
       if ( B < 0 || A < 0 )
       {
@@ -268,43 +311,7 @@ public:
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
-            *fvec++ = Abs( *s++ - B - A*Exp( -(dx*dx + dy2)/twosx2 ) );
-         }
-      }
-      return 0;
-   }
-
-   /*
-    * Circular variable shape PSF.
-    */
-   static int FitCircularVShape( void* p, int m, int n, const double* a, double* fvec, int iflag )
-   {
-      /*
-       * f(x,y) = B + A*Exp( -((x - x0)^k + (y - y0)^k)/(k*sigma^k) )
-       */
-      if ( B < 0 || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->beta0 )/F->beta0 > 0.05 )
-      {
-         for ( int i = 0; i < m; ++i )
-            *fvec++ = std::numeric_limits<double>::max();
-         return 0;
-      }
-
-      F->beta0 = beta;
-
-      double ksxk = beta*Pow( sx, beta );
-      int h = F->S.Rows();
-      int w = F->S.Cols();
-      double w2x0 = (w >> 1) + x0;
-      double h2y0 = (h >> 1) + y0;
-      const double* s = F->S.Begin();
-      for ( int y = 0; y < h; ++y )
-      {
-         double dy = y - h2y0;
-         double dyk = Pow( dy, beta );
-         for ( int x = 0; x < w; ++x )
-         {
-            double dx = x - w2x0;
-            *fvec++ = Abs( *s++ - B - A*Exp( -(Pow( dx, beta ) + dyk)/ksxk ) );
+            *fvec++ = *s++ - B - A*Exp( -(dx*dx + dy2)/twosx2 );
          }
       }
       return 0;
@@ -316,16 +323,16 @@ public:
    static int FitCircularMoffat( void* p, int m, int n, const double* a, double* fvec, int iflag )
    {
       /*
-       * f(x,y) : B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
+       * f(x,y) = B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
        */
-      if ( B < 0 || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->beta0 )/F->beta0 > 0.05 )
+      if ( B < 0 || A < 0 || beta < 0 || beta > 10 || Abs( beta - F->m_beta )/F->m_beta > 0.05 )
       {
          for ( int i = 0; i < m; ++i )
             *fvec++ = std::numeric_limits<double>::max();
          return 0;
       }
 
-      F->beta0 = beta;
+      F->m_beta = beta;
 
       double sx2 = sx*sx;
       int h = F->S.Rows();
@@ -340,7 +347,7 @@ public:
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
-            *fvec++ = Abs( *s++ - B - A/Pow( 1 + (dx*dx + dy2)/sx2, beta ) );
+            *fvec++ = *s++ - B - A/Pow( 1 + (dx*dx + dy2)/sx2, beta );
          }
       }
       return 0;
@@ -348,13 +355,14 @@ public:
 
 #undef beta
 #define beta   F->P[5]
+
    /*
     * Circular Moffat PSF, prescribed beta exponent.
     */
    static int FitCircularMoffatWithFixedBeta( void* p, int m, int n, const double* a, double* fvec, int iflag )
    {
       /*
-       * f(x,y) : B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
+       * f(x,y) = B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
        */
       if ( B < 0 || A < 0 )
       {
@@ -376,8 +384,38 @@ public:
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
-            *fvec++ = Abs( *s++ - B - A/Pow( 1 + (dx*dx + dy2)/sx2, beta ) );
+            *fvec++ = *s++ - B - A/Pow( 1 + (dx*dx + dy2)/sx2, beta );
          }
+      }
+      return 0;
+   }
+
+   /*
+    * Circular variable shape PSF.
+    */
+   static int FitCircularVShape( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   {
+      /*
+       * f(x,y) = B + A*Exp( -((x - x0)^k + (y - y0)^k)/(k*sigma^k) )
+       */
+      if ( B < 0 || A < 0 )
+      {
+         for ( int i = 0; i < m; ++i )
+            *fvec++ = std::numeric_limits<double>::max();
+         return 0;
+      }
+
+      double ksxk = beta*Pow( Abs( sx ), beta );
+      int h = F->S.Rows();
+      int w = F->S.Cols();
+      double w2x0 = (w >> 1) + x0;
+      double h2y0 = (h >> 1) + y0;
+      const double* s = F->S.Begin();
+      for ( int y = 0; y < h; ++y )
+      {
+         double dyk = Pow( Abs( y - h2y0 ), beta );
+         for ( int x = 0; x < w; ++x )
+            *fvec++ = *s++ - B - A*Exp( -(Pow( Abs( x - w2x0 ), beta ) + dyk)/ksxk );
       }
       return 0;
    }
@@ -400,13 +438,187 @@ void PSFData::ToImage( Image& image ) const
 
 // ----------------------------------------------------------------------------
 
+class PCL_VSFitThread : public pcl::Thread
+{
+public:
+
+   Array<PSFFit> fits;
+
+   PCL_VSFitThread( const ImageVariant& image, const DPoint& pos, const DRect& rect, bool circular,
+                    double betaFirst, double betaLast, double betaStep )
+      : m_image( image )
+      , m_pos( pos )
+      , m_rect( rect )
+      , m_circular( circular )
+      , m_betaFirst( betaFirst )
+      , m_betaLast( betaLast )
+      , m_betaStep( betaStep )
+   {
+   }
+
+   PCL_HOT_FUNCTION void Run() override
+   {
+      for ( double beta = m_betaFirst; beta <= m_betaLast; beta += m_betaStep )
+      {
+         PSFFit F( m_image, m_pos, m_rect, PSFunction::VariableShape, m_circular, beta, beta );
+         if ( F )
+            fits << F;
+      }
+   }
+
+private:
+
+   const ImageVariant& m_image;
+         DPoint        m_pos;
+         DRect         m_rect;
+         bool          m_circular;
+         double        m_betaFirst, m_betaLast, m_betaStep;
+};
+
 typedef int (*cminpack_callback)( void*, int, int, const double*, double*, int );
 
 PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
-                psf_function function, bool circular )
+                psf_function function, bool circular, double betaMin, double betaMax )
 {
    if ( !image )
       return;
+
+   if ( function == PSFunction::VariableShape )
+   {
+      betaMin = Range( betaMin, 0.5, 6.0 );
+      betaMax = Range( betaMax, betaMin, 6.0 );
+
+      if ( betaMin < betaMax )
+      {
+         /*
+          * Fit for beta discretely in [betaMin, betaMin+delta, ..., betaMax]
+          */
+         Array<size_type> L = Thread::OptimalThreadLoads( 10, 1/*overheadLimit*/ );
+         ReferenceArray<PCL_VSFitThread> threads;
+         double betaStep = (betaMax - betaMin)/10;
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         {
+            double betaFirst = betaMin + n*betaStep;
+            double betaLast = betaMin + (n + int( L[i] ) - 1)*betaStep;
+            threads << new PCL_VSFitThread( image, pos, rect, circular, betaFirst, betaLast, betaStep );
+         }
+         if ( threads.Length() > 1 )
+         {
+            for ( int i = 0; i < int( threads.Length() ); ++i )
+               threads[i].Start( ThreadPriority::DefaultMax, i );
+            for ( auto& thread : threads )
+               thread.Wait();
+         }
+         else
+            threads[0].Run();
+
+         Array<PSFFit> fits;
+         for ( auto& thread : threads )
+            fits << thread.fits;
+         threads.Destroy();
+
+         /*
+          * Find an optimal beta parameter value by interpolation using a
+          * golden section search scheme. We search for the value of beta that
+          * minimizes mean absolute deviation in the difference between the
+          * computed PSF and the sampled image data.
+          */
+         if ( !fits.IsEmpty() )
+         {
+            int n = int( fits.Length() );
+            if ( n == 1 ) // need n >= 2 for interpolation
+            {
+               psf = fits[0].psf;
+               return;
+            }
+
+            Vector B( n ), M( n );
+            double mmin = fits[0].psf.mad;
+            int imin = 0;
+            for ( int i = 0; i < n; ++i )
+            {
+               B[i] = fits[i].psf.beta;
+               M[i] = fits[i].psf.mad;
+               if ( M[i] < mmin )
+               {
+                  mmin = M[i];
+                  imin = i;
+               }
+            }
+            CubicSplineInterpolation S;
+            S.Initialize( B, M );
+
+            // The golden ratios.
+            const double R = 1.61803398875;
+            const double C = 1 - R;
+
+            // Form an initial triplet (ax,bx,cx) that brackets the minimum.
+            double ax = Max( betaMin, B[imin] - betaStep );
+            double cx = Min( betaMax, B[imin] + betaStep );
+            double bx = (ax + cx)/2;
+
+            // [x0,x3] is the total search interval.
+            double x0 = ax;
+            double x3 = cx;
+
+            // [x1,x2] is the inner search interval.
+            // Start by sectioning the largest segment: (ax,bx) or (bx,cx).
+            double x1, x2;
+            if ( Abs( bx - ax ) < Abs( cx - bx ) )
+            {
+               x1 = bx;
+               x2 = bx + C*(cx - bx);
+            }
+            else
+            {
+               x1 = bx - C*(bx - ax);
+               x2 = bx;
+            }
+
+            // Start with MAD estimates at the inner interval boundaries.
+            double f1 = S( x1 );
+            double f2 = S( x2 );
+
+            // Perform a golden section search for the beta parameter value
+            // that minimizes mean absolute deviation.
+            while ( Abs( x3 - x0 ) > 0.005 )
+            {
+               if ( f2 < f1 )
+               {
+                  x0 = x1;
+                  x1 = x2;
+                  x2 = R*x2 + C*x3;
+                  f1 = f2;
+                  f2 = S( x2 );
+               }
+               else
+               {
+                  x3 = x2;
+                  x2 = x1;
+                  x1 = R*x1 + C*x0;
+                  f2 = f1;
+                  f1 = S( x1 );
+               }
+
+               // Interpolation can try to go beyond the supported range in
+               // search for a (theoretical) global minimum - that would keep
+               // us iterating forever.
+               if ( x0 < betaMin || x3 > betaMax )
+                  break;
+            }
+
+            /*
+             * Fit this PSF using the estimated optimal beta parameter value.
+             */
+            double beta = Range( (f1 < f2) ? x1 : x2, betaMin, betaMax );
+            PSFFit F( image, pos, rect, PSFunction::VariableShape, circular, beta, beta );
+            if ( F )
+               psf = F.psf;
+         }
+
+         return;
+      }
+   }
 
    /*
     * Form the source sample matrix.
@@ -451,7 +663,7 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
    int m = int( S.NumberOfElements() );
 
    // Number of fitted parameters
-   int n = (function == PSFunction::Moffat || function == PSFunction::VariableShape && circular) ? 6 : 5;
+   int n = (function == PSFunction::Moffat) ? 6 : 5;
    if ( !circular )
       n += 2; // sy, theta
 
@@ -463,9 +675,6 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
       default:
       case PSFunction::Gaussian:
          fitFunc = PSFFitEngine::FitCircularGaussian;
-         break;
-      case PSFunction::VariableShape:
-         fitFunc = PSFFitEngine::FitCircularVShape;
          break;
       case PSFunction::Moffat:
          fitFunc = PSFFitEngine::FitCircularMoffat;
@@ -479,6 +688,9 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
       case PSFunction::Lorentzian:
          fitFunc = PSFFitEngine::FitCircularMoffatWithFixedBeta;
          break;
+      case PSFunction::VariableShape:
+         fitFunc = PSFFitEngine::FitCircularVShape;
+         break;
       }
    else
       switch ( function )
@@ -487,9 +699,6 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
       case PSFunction::Gaussian:
          fitFunc = PSFFitEngine::FitGaussian;
          break;
-//       case PSFunction::VariableShape:
-//          fitFunc = PSFFitEngine::FitVShape;
-//          break;
       case PSFunction::Moffat:
          fitFunc = PSFFitEngine::FitMoffat;
          break;
@@ -502,6 +711,9 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
       case PSFunction::Lorentzian:
          fitFunc = PSFFitEngine::FitMoffatWithFixedBeta;
          break;
+      case PSFunction::VariableShape:
+         fitFunc = PSFFitEngine::FitVShape;
+         break;
       }
 
    int ibeta = circular ? 5 : 7;
@@ -510,11 +722,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
    default:
    case PSFunction::Gaussian:
       break;
-   case PSFunction::VariableShape:
-      beta0 = P[ibeta] = 2;
-      break;
    case PSFunction::Moffat:
-      beta0 = P[ibeta] = 3;
+      m_beta = P[ibeta] = 3;
       break;
    case PSFunction::MoffatA:
       P[ibeta] = 10;
@@ -537,57 +746,61 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
    case PSFunction::Lorentzian:
       P[ibeta] = 1;
       break;
+   case PSFunction::VariableShape:
+      P[ibeta] = betaMin;
+      break;
    }
 
    /*
     * CMINPACK - Levenberg-Marquadt / finite differences.
     */
-   Vector fvec( m );
-   IVector iwa( n );
-   Vector wa( m*n + 5*n + m );
-   int info = lmdif1( fitFunc,
-                      this,
-                      m,
-                      n,
-                      P.Begin(),
-                      fvec.Begin(),
-                      1.0e-08/*tol*/,
-                      iwa.Begin(),
-                      wa.Begin(),
-                      wa.Length() );
-
-   /*
-    * Translate CMINPACK information codes into PSF fit status codes.
-    */
-   switch ( info )
    {
-   case 0:  // improper input parameters
-      psf.status = PSFFitStatus::BadParameters;
-      break;
-   case 1:  // The relative error in the sum of squares is at most tol
-   case 2:  // The relative error between x and the solution is at most tol
-   case 3:  // Conditions 1 and 2 both hold
-      psf.status = PSFFitStatus::FittedOk;
-      break;
-   case 4:  // Function vector (fvec) is orthogonal to the columns of the Jacobian to machine precision
-      psf.status = PSFFitStatus::NoSolution;
-      break;
-   case 5:  // Number of calls to fcn with iflag = 1 has reached 100*(n+1)
-      psf.status = PSFFitStatus::NoConvergence;
-      break;
-   case 6:  // tol is too small. No further reduction in the sum of squares is possible
-   case 7:  // tol is too small. No further improvement in the approximate solution x is possible
-      psf.status = PSFFitStatus::InaccurateSolution;
-      break;
-   default:
-      psf.status = PSFFitStatus::UnknownError;
-      break;
+      Vector fvec( m );
+      IVector iwa( n );
+      Vector wa( m*n + 5*n + m );
+      int info = lmdif1( fitFunc,
+                         this,
+                         m,
+                         n,
+                         P.Begin(),
+                         fvec.Begin(),
+                         1.0e-08/*tol*/,
+                         iwa.Begin(),
+                         wa.Begin(),
+                         wa.Length() );
+      /*
+       * Translate CMINPACK information codes into PSF fit status codes.
+       */
+      switch ( info )
+      {
+      case 0:  // improper input parameters
+         psf.status = PSFFitStatus::BadParameters;
+         break;
+      case 1:  // The relative error in the sum of squares is at most tol
+      case 2:  // The relative error between x and the solution is at most tol
+      case 3:  // Conditions 1 and 2 both hold
+         psf.status = PSFFitStatus::FittedOk;
+         break;
+      case 4:  // Function vector (fvec) is orthogonal to the columns of the Jacobian to machine precision
+         psf.status = PSFFitStatus::NoSolution;
+         break;
+      case 5:  // Number of calls to fcn with iflag = 1 has reached 100*(n+1)
+         psf.status = PSFFitStatus::NoConvergence;
+         break;
+      case 6:  // tol is too small. No further reduction in the sum of squares is possible
+      case 7:  // tol is too small. No further improvement in the approximate solution x is possible
+         psf.status = PSFFitStatus::InaccurateSolution;
+         break;
+      default:
+         psf.status = PSFFitStatus::UnknownError;
+         break;
+      }
    }
 
    /*
-    * For Moffat functions with a variable beta parameter, a bad fit can go
-    * wildly unstable on this parameter, so we have to impose a reasonable
-    * maximum value.
+    * For Moffat functions with a variable beta parameter and variable shape
+    * functions, a bad fit can go wildly unstable on this parameter, so we have
+    * to impose a reasonable maximum value.
     */
    if ( psf )
       if ( function == PSFunction::Moffat || function == PSFunction::VariableShape )
@@ -638,7 +851,10 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
           */
          psf.sx = psf.sy = P[4];
          psf.theta = 0;
-         psf.mad = GoodnessOfFit( function, true/*circular*/ )[0];
+         Vector r = GoodnessOfFit( function, true/*circular*/ );
+         psf.flux = r[2];
+         psf.meanSignal = r[3];
+         psf.mad = r[0];
       }
       else
       {
@@ -651,7 +867,10 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
              * Circular PSF (incidental, to centipixel accuracy)
              */
             psf.theta = 0;
-            psf.mad = GoodnessOfFit( function, false/*circular*/ )[0];
+            Vector r = GoodnessOfFit( function, false/*circular*/ );
+            psf.flux = r[2];
+            psf.meanSignal = r[3];
+            psf.mad = r[0];
          }
          else
          {
@@ -696,23 +915,20 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
 
             // Select the orientation angle that minimizes absolute deviation.
             psf.theta = Deg( a[imin] );
+            psf.flux = r0[2];
+            psf.meanSignal = r0[3];
             psf.mad = r0[0];
          }
       }
 
-      // Moffat beta parameter / VariableShape shape parameter
-      psf.beta = (function == PSFunction::Gaussian) ? 0.0 : P[ibeta];
+      // Moffat/VariableShape beta parameter.
+      psf.beta = (function == PSFunction::Gaussian) ? 2.0 : P[ibeta];
 
       /*
-       * Normalize mean absolute deviation with respect to flux.
-       *
-       * TODO: The normalization factor used here should be the volume of the
-       * PSF function over the XY plane, which we can approximate with a double
-       * integral. Normalizing by the function's amplitude is a rough
-       * approximation, although it works reasonably well for measurement
-       * classification purposes.
+       * Normalize mean absolute deviation with respect to the estimated mean
+       * signal value.
        */
-      psf.mad /= psf.A;
+      psf.mad /= psf.meanSignal;
    }
    else
       psf = PSFData();
@@ -721,8 +937,8 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
 // ----------------------------------------------------------------------------
 
 /*
- * Robust estimate of the difference between sampled pixel data and
- * the fitted PSF model.
+ * Robust estimates of mean absolute difference and total flux, measured from
+ * sampled pixel data and the fitted PSF model.
  */
 Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
 {
@@ -734,11 +950,13 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
 
    int w = S.Cols();
    int h = S.Rows();
-   double w2x0 = 0.5*w + x0;
-   double h2y0 = 0.5*h + y0;
+   double w2x0 = (w >> 1) + x0;
+   double h2y0 = (h >> 1) + y0;
    const double* s = S.Begin();
 
    Vector adev( w*h );
+   double flux = 0;
+   double zsum = 0;
 
    if ( circular )
    {
@@ -756,23 +974,13 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
                   double dx = x - w2x0;
-                  adev[i] = Abs( *s - B - A*Exp( -(dx*dx + dy2)/twosx2 ) );
-               }
-            }
-         }
-         break;
-
-      case PSFunction::VariableShape:
-         {
-            double ksxk = Pow( sx, beta );
-            for ( int y = 0, i = 0; y < h; ++y )
-            {
-               double dy = y - h2y0;
-               double dyk = Pow( dy, beta );
-               for ( int x = 0; x < w; ++x, ++i, ++s )
-               {
-                  double dx = x - w2x0;
-                  adev[i] = Abs( *s - B - A*Exp( -(Pow( dx, beta ) + dyk)/ksxk ) );
+                  double z = Exp( -(dx*dx + dy2)/twosx2 );
+                  adev[i] = Abs( *s - B - A*z );
+                  if ( *s > B )
+                  {
+                     flux += (*s - B)*z;
+                     zsum += z;
+                  }
                }
             }
          }
@@ -795,7 +1003,33 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
                   double dx = x - w2x0;
-                  adev[i] = Abs( *s - B - A/Pow( 1 + (dx*dx + dy2)/sx2, beta ) );
+                  double z = 1/Pow( 1 + (dx*dx + dy2)/sx2, beta );
+                  adev[i] = Abs( *s - B - A*z );
+                  if ( *s > B )
+                  {
+                     flux += (*s - B)*z;
+                     zsum += z;
+                  }
+               }
+            }
+         }
+         break;
+
+      case PSFunction::VariableShape:
+         {
+            double ksxk = beta*Pow( Abs( sx ), beta );
+            for ( int y = 0, i = 0; y < h; ++y )
+            {
+               double dyk = Pow( Abs( y - h2y0 ), beta );
+               for ( int x = 0; x < w; ++x, ++i, ++s )
+               {
+                  double z = Exp( -(Pow( Abs( x - w2x0 ), beta ) + dyk)/ksxk );
+                  adev[i] = Abs( *s - B - A*z );
+                  if ( *s > B )
+                  {
+                     flux += (*s - B)*z;
+                     zsum += z;
+                  }
                }
             }
          }
@@ -831,7 +1065,13 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
                   double dx = x - w2x0;
-                  adev[i] = Abs( *s - B - A*Exp( -(p1*dx*dx + twop2dy*dx + p3dy2) ) );
+                  double z = Exp( -(p1*dx*dx + twop2dy*dx + p3dy2) );
+                  adev[i] = Abs( *s - B - A*z );
+                  if ( *s > B )
+                  {
+                     flux += (*s - B)*z;
+                     zsum += z;
+                  }
                }
             }
          }
@@ -864,7 +1104,41 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
                   double dx = x - w2x0;
-                  adev[i] = Abs( *s - B - A/Pow( 1 + p1*dx*dx + twop2dy*dx + p3dy2, beta ) );
+                  double z = 1/Pow( 1 + p1*dx*dx + twop2dy*dx + p3dy2, beta );
+                  adev[i] = Abs( *s - B - A*z );
+                  if ( *s > B )
+                  {
+                     flux += (*s - B)*z;
+                     zsum += z;
+                  }
+               }
+            }
+         }
+         break;
+
+      case PSFunction::VariableShape:
+         {
+            double st, ct;
+            SinCos( theta, st, ct );
+            double ksxk = beta*Pow( Abs( sx ), beta );
+            double ksyk = beta*Pow( Abs( sy ), beta );
+            for ( int y = 0, i = 0; y < h; ++y )
+            {
+               double dy = y - h2y0;
+               double dyst = dy*st;
+               double dyct = dy*ct;
+               for ( int x = 0; x < w; ++x, ++i, ++s )
+               {
+                  double dx = x - w2x0;
+                  double dy = dx*st + dyct;
+                  dx = dx*ct - dyst;
+                  double z = Exp( -(Pow( Abs( dx ), beta )/ksxk + Pow( Abs( dy ), beta )/ksyk) );
+                  adev[i] = Abs( *s - B - A*z );
+                  if ( *s > B )
+                  {
+                     flux += (*s - B)*z;
+                     zsum += z;
+                  }
                }
             }
          }
@@ -875,13 +1149,26 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
 #undef beta
    }
 
-#undef B
 #undef A
 #undef x0
 #undef y0
 #undef sx
 
-   Vector R( 2 );
+   Vector R( 4 );
+
+   /*
+    * The fourth component of the returned vector is the estimated mean signal
+    * value.
+    */
+   R[3] = flux / zsum;
+
+   /*
+    * The third component of the returned vector is the total flux above the
+    * local background level, measured from source pixel data.
+    */
+   R[2] = flux;
+
+#undef B
 
    /*
     * The second component of the returned vector is the average absolute
@@ -894,11 +1181,11 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
     * The first returned component is a robust estimate of fitting quality.
     * Here we need an estimator of location with a good balance between
     * robustness and efficiency/sufficiency for the vector of absolute
-    * differences. We use a mean with median replacement for a 20% of the
-    * sample ends.
+    * differences. We use a mean with median replacement for a 10% of the
+    * sample tails.
     */
    int n = adev.Length();
-   int i0 = TruncInt( 0.2*n );
+   int i0 = TruncInt( 0.1*n );
    int i1 = n - i0;
    adev.Sort();
    double m = adev[n >> 1];
@@ -913,7 +1200,42 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
 
 // ----------------------------------------------------------------------------
 
+String PSFData::FunctionName() const
+{
+   switch ( function )
+   {
+   case PSFunction::Gaussian:      return "Gaussian";
+   case PSFunction::Moffat:        return "Moffat";
+   case PSFunction::MoffatA:       return "Moffat10";
+   case PSFunction::Moffat8:       return "Moffat8";
+   case PSFunction::Moffat6:       return "Moffat6";
+   case PSFunction::Moffat4:       return "Moffat4";
+   case PSFunction::Moffat25:      return "Moffat25";
+   case PSFunction::Moffat15:      return "Moffat15";
+   case PSFunction::Lorentzian:    return "Lorentzian";
+   case PSFunction::VariableShape: return "VarShape";
+   default:                        return "Unknown"; // ?!
+   }
+}
+
+String PSFData::StatusText() const
+{
+   switch ( status )
+   {
+   case PSFFitStatus::NotFitted:          return "Not fitted";
+   case PSFFitStatus::FittedOk:           return "Fitted Ok";
+   case PSFFitStatus::BadParameters:      return "Bad parameters";
+   case PSFFitStatus::NoSolution:         return "No solution";
+   case PSFFitStatus::NoConvergence:      return "No convergence";
+   case PSFFitStatus::InaccurateSolution: return "Inaccurate solution";
+   default: // ?!
+   case PSFFitStatus::UnknownError:       return "Unknown error";
+   }
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/PSFFit.cpp - Released 2020-07-31T19:33:12Z

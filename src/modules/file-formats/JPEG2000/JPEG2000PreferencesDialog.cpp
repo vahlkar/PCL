@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000PreferencesDialog.cpp - Released 2020-02-27T12:55:48Z
+// JPEG2000PreferencesDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -60,8 +60,9 @@ namespace pcl
 static ImageOptions options;
 
 JPEG2000PreferencesDialog::JPEG2000PreferencesDialog( const JP2Format::EmbeddingOverrides& e,
-                                                      const JPEG2000ImageOptions& o, bool isJPC ) :
-   JPEG2000OptionsDialog( options, o, isJPC ), overrides( e )
+                                                      const JPEG2000ImageOptions& o, bool isJPC )
+   : JPEG2000OptionsDialog( options, o, isJPC )
+   , overrides( e )
 {
    if ( isJPC )
    {
@@ -106,4 +107,4 @@ void JPEG2000PreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000PreferencesDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF JPEG2000PreferencesDialog.cpp - Released 2020-07-31T19:33:23Z

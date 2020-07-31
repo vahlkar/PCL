@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:06.254Z
+# Generated on .... 2020-07-31T19:36:42.435Z
 # Project id ...... SubframeSelector
 # Project type .... Module
 # Platform ........ Linux/g++
@@ -21,7 +21,6 @@ all: $(OBJ_DIR)/SubframeSelector-pxm.so
 SRC_FILES= \
 ../../FileDataCache.cpp \
 ../../GraphWebView.cpp \
-../../PSF.cpp \
 ../../SubframeSelectorCache.cpp \
 ../../SubframeSelectorExpressionsInterface.cpp \
 ../../SubframeSelectorInstance.cpp \
@@ -39,7 +38,6 @@ SRC_FILES= \
 OBJ_FILES= \
 ./x64/Release/FileDataCache.o \
 ./x64/Release/GraphWebView.o \
-./x64/Release/PSF.o \
 ./x64/Release/SubframeSelectorCache.o \
 ./x64/Release/SubframeSelectorExpressionsInterface.o \
 ./x64/Release/SubframeSelectorInstance.o \
@@ -57,7 +55,6 @@ OBJ_FILES= \
 DEP_FILES= \
 ./x64/Release/FileDataCache.d \
 ./x64/Release/GraphWebView.d \
-./x64/Release/PSF.d \
 ./x64/Release/SubframeSelectorCache.d \
 ./x64/Release/SubframeSelectorExpressionsInterface.d \
 ./x64/Release/SubframeSelectorInstance.d \

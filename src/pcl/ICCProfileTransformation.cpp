@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ICCProfileTransformation.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ICCProfileTransformation.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -263,9 +263,11 @@ private:
    {
       ThreadData( GenericImage<P>& a_image,
                   const ICCProfileTransformation& instance,
-                  ICCProfileTransformation::transformation_handle t, size_type a_count ) :
-         AbstractImage::ThreadData( a_image, a_count ),
-         image( a_image ), T( instance ), transformation( t )
+                  ICCProfileTransformation::transformation_handle t, size_type a_count )
+         : AbstractImage::ThreadData( a_image, a_count )
+         , image( a_image )
+         , T( instance )
+         , transformation( t )
       {
       }
 
@@ -277,8 +279,10 @@ private:
    template <class P, class S>
    struct Thread : public pcl::Thread
    {
-      Thread( ThreadData<P>& data, int firstRow, int endRow ) :
-         m_data( data ), m_firstRow( firstRow ), m_endRow( endRow )
+      Thread( ThreadData<P>& data, int firstRow, int endRow )
+         : m_data( data )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -488,4 +492,4 @@ void ICCProofingTransformation::SetGamutWarningColor( RGBA color )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ICCProfileTransformation.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ICCProfileTransformation.cpp - Released 2020-07-31T19:33:12Z

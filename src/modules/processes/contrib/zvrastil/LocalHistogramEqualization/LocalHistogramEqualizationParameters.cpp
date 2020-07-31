@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationParameters.cpp - Released 2020-02-27T12:56:01Z
+// LocalHistogramEqualizationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
-// Copyright (c) 2011-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -58,15 +58,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LHERadius*         TheLHERadiusParameter = 0;
-LHEHistogramBins*  TheLHEHistogramBinsParameter = 0;
-LHESlopeLimit*     TheLHESlopeLimitParameter = 0;
-LHEAmount*         TheLHEAmountParameter = 0;
-LHECircularKernel* TheLHECircularKernelParameter = 0;
+LHERadius*         TheLHERadiusParameter = nullptr;
+LHEHistogramBins*  TheLHEHistogramBinsParameter = nullptr;
+LHESlopeLimit*     TheLHESlopeLimitParameter = nullptr;
+LHEAmount*         TheLHEAmountParameter = nullptr;
+LHECircularKernel* TheLHECircularKernelParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
-LHERadius::LHERadius( MetaProcess* P ) : MetaInt32( P )
+LHERadius::LHERadius( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheLHERadiusParameter = this;
 }
@@ -93,7 +94,8 @@ double LHERadius::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-LHEHistogramBins::LHEHistogramBins( MetaProcess* P ) : MetaEnumeration( P )
+LHEHistogramBins::LHEHistogramBins( MetaProcess* P )
+   : MetaEnumeration( P )
 {
    TheLHEHistogramBinsParameter = this;
 }
@@ -113,11 +115,14 @@ IsoString LHEHistogramBins::ElementId( size_type i ) const
    switch ( i )
    {
    default:
-   case Bit8:  return "Bit8";
-   case Bit10: return "Bit10";
-   case Bit12: return "Bit12";
-   //case Bit14: return "Bit14";
-   //case Bit16: return "Bit16";
+   case Bit8:
+      return "Bit8";
+   case Bit10:
+      return "Bit10";
+   case Bit12:
+      return "Bit12";
+      //case Bit14: return "Bit14";
+      //case Bit16: return "Bit16";
    }
 }
 
@@ -133,7 +138,8 @@ size_type LHEHistogramBins::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-LHESlopeLimit::LHESlopeLimit( MetaProcess* P ) : MetaDouble( P )
+LHESlopeLimit::LHESlopeLimit( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheLHESlopeLimitParameter = this;
 }
@@ -165,7 +171,8 @@ int LHESlopeLimit::Precision() const
 
 // ----------------------------------------------------------------------------
 
-LHEAmount::LHEAmount( MetaProcess* P ) : MetaDouble( P )
+LHEAmount::LHEAmount( MetaProcess* P )
+   : MetaDouble( P )
 {
    TheLHEAmountParameter = this;
 }
@@ -197,7 +204,8 @@ int LHEAmount::Precision() const
 
 // ----------------------------------------------------------------------------
 
-LHECircularKernel::LHECircularKernel( MetaProcess* P ) : MetaBoolean( P )
+LHECircularKernel::LHECircularKernel( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheLHECircularKernelParameter = this;
 }
@@ -214,7 +222,7 @@ bool LHECircularKernel::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF LocalHistogramEqualizationParameters.cpp - Released 2020-07-31T19:33:39Z

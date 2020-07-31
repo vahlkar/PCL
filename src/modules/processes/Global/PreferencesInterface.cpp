@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2020-02-27T12:56:01Z
+// PreferencesInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -868,15 +868,15 @@ void GlobalFileSetControl::__FileDrop( Control& sender, const Point& pos, const 
 
 PreferencesInterface* ThePreferencesInterface = nullptr;
 
-#include "PreferencesIcon.xpm"
-
 // ----------------------------------------------------------------------------
 
-PreferencesInterface::PreferencesInterface() :
-   instance( ThePreferencesProcess )
+PreferencesInterface::PreferencesInterface()
+   : m_instance( ThePreferencesProcess )
 {
    ThePreferencesInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 PreferencesInterface::~PreferencesInterface()
 {
@@ -885,31 +885,43 @@ PreferencesInterface::~PreferencesInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString PreferencesInterface::Id() const
 {
    return "Preferences";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* PreferencesInterface::Process() const
 {
    return ThePreferencesProcess;
 }
 
-const char** PreferencesInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String PreferencesInterface::IconImageSVGFile() const
 {
-   return PreferencesIcon_XPM;
+   return "@module_icons_dir/Preferences.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures PreferencesInterface::Features() const
 {
    return InterfaceFeature::DefaultGlobal;
 }
 
+// ----------------------------------------------------------------------------
+
 void PreferencesInterface::ResetInstance()
 {
    PreferencesInstance defaultInstance( ThePreferencesProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool PreferencesInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -924,10 +936,14 @@ bool PreferencesInterface::Launch( const MetaProcess& P, const ProcessImplementa
    return &P == ThePreferencesProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* PreferencesInterface::NewProcess() const
 {
-   return new PreferencesInstance( instance );
+   return new PreferencesInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool PreferencesInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -937,19 +953,22 @@ bool PreferencesInterface::ValidateProcess( const ProcessImplementation& p, pcl:
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PreferencesInterface::RequiresInstanceValidation() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PreferencesInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void PreferencesInterface::UpdateControls()
@@ -972,6 +991,8 @@ void PreferencesInterface::UpdateControls()
 
    SelectPageByTreeNode( node );
 }
+
+// ----------------------------------------------------------------------------
 
 void PreferencesInterface::SelectPageByTreeNode( TreeBox::Node* node )
 {
@@ -1007,11 +1028,13 @@ void PreferencesInterface::__Category_CurrentNodeUpdated( TreeBox& sender, TreeB
    SelectPageByTreeNode( node );
 }
 
+// ----------------------------------------------------------------------------
+
 void PreferencesInterface::__LoadSettings_ButtonClick( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->LoadCurrentSettings_PushButton )
    {
-      instance.LoadCurrentSettings();
+      m_instance.LoadCurrentSettings();
    }
    else if ( sender == GUI->LoadCurrentPageSettings_PushButton ||
              sender == GUI->LoadDefaultPageSettings_PushButton )
@@ -1028,7 +1051,7 @@ void PreferencesInterface::__LoadSettings_ButtonClick( Button& sender, bool /*ch
                PreferencesInstance defaultInstance( ThePreferencesProcess ); // yeah, it loads defaults by default :)
                if ( sender == GUI->LoadCurrentPageSettings_PushButton )
                   defaultInstance.LoadCurrentSettings();
-               page->TransferSettings( instance, defaultInstance );
+               page->TransferSettings( m_instance, defaultInstance );
             }
          }
       }
@@ -1106,6 +1129,13 @@ MainWindowPreferencesPage::MainWindowPreferencesPage( PreferencesInstance& insta
    DoubleClickLaunchesOpenDialog_Flag.SetToolTip(
       "<p>Enable this option to launch the File Open dialog box by double-clicking on the workspace.</p>" );
 
+   IconGridSpacing_Integer.label.SetText( "Icon grid spacing" );
+   IconGridSpacing_Integer.item = &instance.mainWindow.iconGridSpacing;
+   IconGridSpacing_Integer.spinBox.SetRange( 0, 64 );
+   IconGridSpacing_Integer.SetToolTip(
+      "<p>Grid spacing for automatic alignment of icons on workspaces during icon drag operations. Set to zero "
+      "to disable icon alignment. Specified in logical pixels.</p>" );
+
    MaxRecentFiles_Integer.label.SetText( "Maximum length of recent file lists" );
    MaxRecentFiles_Integer.item = &instance.mainWindow.maxRecentFiles;
    MaxRecentFiles_Integer.spinBox.SetRange( 2, 128 );
@@ -1152,27 +1182,6 @@ MainWindowPreferencesPage::MainWindowPreferencesPage( PreferencesInstance& insta
    ExpandFavoritesAtStartup_Flag.SetToolTip(
       "<p>Show the Favorites tree item expanded on Process Explorer upon application startup.</p>" );
 
-   OpenURLsWithInternalBrowser_Flag.checkBox.SetText( "Open URLs with the internal browser" );
-   OpenURLsWithInternalBrowser_Flag.item = &instance.mainWindow.openURLsWithInternalBrowser;
-   OpenURLsWithInternalBrowser_Flag.SetToolTip(
-      "<p>Use the web browser integrated with the PixInsight core application to open URLs (for example, from the "
-      "Resources main menu), instead of the default browser application. Enabled by default since core version 1.8.5.</p>" );
-
-   OpenResourcesOnNewWebBrowserWindows_Flag.checkBox.SetText( "Open Resource URLs on new web browser windows" );
-   OpenResourcesOnNewWebBrowserWindows_Flag.item = &instance.mainWindow.openResourcesOnNewWebBrowserWindows;
-   OpenResourcesOnNewWebBrowserWindows_Flag.SetToolTip(
-      "<p>Open URLs from the Resources main menu on newly created, independent web browser windows. If this option "
-      "is disabled, resources will be loaded by the browser component integrated with the Process Explorer window.</p>" );
-
-   PrivateWebBrowsingMode_Flag.checkBox.SetText( "Private web browsing mode" );
-   PrivateWebBrowsingMode_Flag.item = &instance.mainWindow.privateWebBrowsingMode;
-   PrivateWebBrowsingMode_Flag.SetToolTip(
-      "<p>Keep normally persistent data in volatile memory when using the integrated web browser component, "
-      "leaving no trace on disk. This includes cookies, the HTTP cache (documents, images, etc), and the browsing history.</p>"
-      "<p>Changes to this option will be applied to subsequently created web browser windows. Existing WebView controls "
-      "and the browsers integrated with the Process Explorer and Object Explorer windows will require an application restart "
-      "for changes to take effect.</p>" );
-
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( MaximizeAtStartup_Flag );
    Page_Sizer.Add( FullScreenAtStartup_Flag );
@@ -1184,6 +1193,7 @@ MainWindowPreferencesPage::MainWindowPreferencesPage( PreferencesInstance& insta
    Page_Sizer.Add( WindowButtonsOnTheLeft_Flag );
    Page_Sizer.Add( AcceptDroppedFiles_Flag );
    Page_Sizer.Add( DoubleClickLaunchesOpenDialog_Flag );
+   Page_Sizer.Add( IconGridSpacing_Integer );
    Page_Sizer.Add( MaxRecentFiles_Integer );
    Page_Sizer.Add( ShowRecentlyUsed_Flag );
    Page_Sizer.Add( ShowMostUsed_Flag );
@@ -1192,10 +1202,6 @@ MainWindowPreferencesPage::MainWindowPreferencesPage( PreferencesInstance& insta
    Page_Sizer.Add( ExpandRecentlyUsedAtStartup_Flag );
    Page_Sizer.Add( ExpandMostUsedAtStartup_Flag );
    Page_Sizer.Add( ExpandFavoritesAtStartup_Flag );
-   Page_Sizer.Add( OpenURLsWithInternalBrowser_Flag );
-   Page_Sizer.Add( OpenResourcesOnNewWebBrowserWindows_Flag );
-   Page_Sizer.Add( PrivateWebBrowsingMode_Flag );
-
    Page_Sizer.AddStretch();
 
    SetSizer( Page_Sizer );
@@ -1221,9 +1227,7 @@ void MainWindowPreferencesPage::TransferSettings( PreferencesInstance& to, const
    to.mainWindow.expandRecentlyUsedAtStartup         = from.mainWindow.expandRecentlyUsedAtStartup;
    to.mainWindow.expandMostUsedAtStartup             = from.mainWindow.expandMostUsedAtStartup;
    to.mainWindow.expandFavoritesAtStartup            = from.mainWindow.expandFavoritesAtStartup;
-   to.mainWindow.openURLsWithInternalBrowser         = from.mainWindow.openURLsWithInternalBrowser;
-   to.mainWindow.openResourcesOnNewWebBrowserWindows = from.mainWindow.openResourcesOnNewWebBrowserWindows;
-   to.mainWindow.privateWebBrowsingMode              = from.mainWindow.privateWebBrowsingMode;
+   to.mainWindow.iconGridSpacing                     = from.mainWindow.iconGridSpacing;
 }
 
 // ----------------------------------------------------------------------------
@@ -1898,6 +1902,27 @@ DirectoriesAndNetworkPreferencesPage::DirectoriesAndNetworkPreferencesPage( Pref
       "<p><b>* Warning * Be aware that sensitive information, including user passwords and IP addresses, "
       "can be written to stdout as part of the generated reports.</b></p>" );
 
+   OpenURLsWithInternalBrowser_Flag.checkBox.SetText( "Open URLs with the internal browser" );
+   OpenURLsWithInternalBrowser_Flag.item = &instance.mainWindow.openURLsWithInternalBrowser;
+   OpenURLsWithInternalBrowser_Flag.SetToolTip(
+      "<p>Use the web browser integrated with the PixInsight core application to open URLs (for example, from the "
+      "Resources main menu), instead of the default browser application. Enabled by default since core version 1.8.5.</p>" );
+
+   OpenResourcesOnNewWebBrowserWindows_Flag.checkBox.SetText( "Open Resource URLs on new web browser windows" );
+   OpenResourcesOnNewWebBrowserWindows_Flag.item = &instance.mainWindow.openResourcesOnNewWebBrowserWindows;
+   OpenResourcesOnNewWebBrowserWindows_Flag.SetToolTip(
+      "<p>Open URLs from the Resources main menu on newly created, independent web browser windows. If this option "
+      "is disabled, resources will be loaded by the browser component integrated with the Process Explorer window.</p>" );
+
+   PrivateWebBrowsingMode_Flag.checkBox.SetText( "Private web browsing mode" );
+   PrivateWebBrowsingMode_Flag.item = &instance.mainWindow.privateWebBrowsingMode;
+   PrivateWebBrowsingMode_Flag.SetToolTip(
+      "<p>Keep normally persistent data in volatile memory when using the integrated web browser component, "
+      "leaving no trace on disk. This includes cookies, the HTTP cache (documents, images, etc), and the browsing history.</p>"
+      "<p>Changes to this option will be applied to subsequently created web browser windows. Existing WebView controls "
+      "and the browsers integrated with the Process Explorer and Object Explorer windows will require an application restart "
+      "for changes to take effect.</p>" );
+
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( SwapDirectories_DirList );
    Page_Sizer.Add( SwapCompression_Flag );
@@ -1905,6 +1930,9 @@ DirectoriesAndNetworkPreferencesPage::DirectoriesAndNetworkPreferencesPage( Pref
    Page_Sizer.Add( ProxyURL_String );
    Page_Sizer.Add( FollowDownloadLocations_Flag );
    Page_Sizer.Add( VerboseNetworkOperations_Flag );
+   Page_Sizer.Add( OpenURLsWithInternalBrowser_Flag );
+   Page_Sizer.Add( OpenResourcesOnNewWebBrowserWindows_Flag );
+   Page_Sizer.Add( PrivateWebBrowsingMode_Flag );
    Page_Sizer.AddStretch();
 
    SetSizer( Page_Sizer );
@@ -1912,12 +1940,15 @@ DirectoriesAndNetworkPreferencesPage::DirectoriesAndNetworkPreferencesPage( Pref
 
 void DirectoriesAndNetworkPreferencesPage::TransferSettings( PreferencesInstance& to, const PreferencesInstance& from )
 {
-   to.imageWindow.swapDirectories          = from.imageWindow.swapDirectories;
-   to.imageWindow.swapCompression          = from.imageWindow.swapCompression;
-   to.imageWindow.downloadsDirectory       = from.imageWindow.downloadsDirectory;
-   to.imageWindow.proxyURL                 = from.imageWindow.proxyURL;
-   to.imageWindow.followDownloadLocations  = from.imageWindow.followDownloadLocations;
-   to.imageWindow.verboseNetworkOperations = from.imageWindow.verboseNetworkOperations;
+   to.imageWindow.swapDirectories                    = from.imageWindow.swapDirectories;
+   to.imageWindow.swapCompression                    = from.imageWindow.swapCompression;
+   to.imageWindow.downloadsDirectory                 = from.imageWindow.downloadsDirectory;
+   to.imageWindow.proxyURL                           = from.imageWindow.proxyURL;
+   to.imageWindow.followDownloadLocations            = from.imageWindow.followDownloadLocations;
+   to.imageWindow.verboseNetworkOperations           = from.imageWindow.verboseNetworkOperations;
+   to.mainWindow.openURLsWithInternalBrowser         = from.mainWindow.openURLsWithInternalBrowser;
+   to.mainWindow.openResourcesOnNewWebBrowserWindows = from.mainWindow.openResourcesOnNewWebBrowserWindows;
+   to.mainWindow.privateWebBrowsingMode              = from.mainWindow.privateWebBrowsingMode;
 }
 
 // ----------------------------------------------------------------------------
@@ -2588,7 +2619,7 @@ void TransparencyColorsPreferencesPage::TransferSettings( PreferencesInstance& t
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-PreferencesInterface::GUIData::GUIData( PreferencesInterface& w ) : window( w )
+PreferencesInterface::GUIData::GUIData( PreferencesInterface& w ) : m_window( w )
 {
    InitializeCategories();
 
@@ -2625,7 +2656,7 @@ PreferencesInterface::GUIData::GUIData( PreferencesInterface& w ) : window( w )
    CategoryStack_Sizer.AddStretch();
 
    CategoryStack_Control.SetSizer( CategoryStack_Sizer );
-   CategoryStack_Control.SetScaledMinHeight( 650 );
+   CategoryStack_Control.SetScaledMinHeight( 675 );
 
    TopRow_Sizer.SetSpacing( 12 );
    TopRow_Sizer.Add( CategorySelection_TreeBox );
@@ -2660,6 +2691,8 @@ PreferencesInterface::GUIData::GUIData( PreferencesInterface& w ) : window( w )
    w.SetMinSize();
 }
 
+// ----------------------------------------------------------------------------
+
 PreferencesInterface::GUIData::~GUIData()
 {
    categories.Destroy();
@@ -2675,7 +2708,7 @@ PreferencesCategoryPage* PreferencesInterface::GUIData::PageByIndex( int index )
    PreferencesCategoryPage* page = categories[index].page;
    if ( page == nullptr )
    {
-      page = categories[index].CreatePage( window.instance );
+      page = categories[index].CreatePage( m_window.m_instance );
 
       CategoryStack_Sizer.Insert( 2, *page );
 
@@ -2695,17 +2728,23 @@ PreferencesCategoryPage* PreferencesInterface::GUIData::PageByIndex( int index )
    return page;
 }
 
+// ----------------------------------------------------------------------------
+
 void PreferencesInterface::GUIData::HideAllPages()
 {
    for ( category_list::iterator i = categories.Begin(); i != categories.End(); ++i )
       i->HidePage();
 }
 
+// ----------------------------------------------------------------------------
+
 void PreferencesInterface::GUIData::PerformAllPageAdditionalUpdates()
 {
    for ( category_list::iterator i = categories.Begin(); i != categories.End(); ++i )
       i->PerformAdditionalUpdates();
 }
+
+// ----------------------------------------------------------------------------
 
 void PreferencesInterface::GUIData::InitializeCategories()
 {
@@ -2733,4 +2772,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF PreferencesInterface.cpp - Released 2020-07-31T19:33:39Z

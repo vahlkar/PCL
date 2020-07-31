@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2020-02-27T12:55:23Z
+// pcl/Matrix.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -235,7 +235,8 @@ public:
     * Copy constructor. This object will reference the same data that is being
     * referenced by the specified matrix \a x.
     */
-   GenericMatrix( const GenericMatrix& x ) : m_data( x.m_data )
+   GenericMatrix( const GenericMatrix& x )
+      : m_data( x.m_data )
    {
       m_data->Attach();
    }
@@ -243,7 +244,8 @@ public:
    /*!
     * Move constructor.
     */
-   GenericMatrix( GenericMatrix&& x ) : m_data( x.m_data )
+   GenericMatrix( GenericMatrix&& x )
+      : m_data( x.m_data )
    {
       x.m_data = nullptr;
    }
@@ -2024,6 +2026,30 @@ public:
    }
 
    /*!
+    * Computes the two-sided, asymmetric trimmed mean of the values in this
+    * matrix. See pcl::TrimmedMean() for a complete description of the
+    * implemented algorithm with information on function parameters.
+    *
+    * For empty matrices, this function returns zero.
+    */
+   double TrimmedMean( distance_type l = 1, distance_type h = 1 ) const
+   {
+      return pcl::TrimmedMean( m_data->Begin(), m_data->End(), l, h );
+   }
+
+   /*!
+    * Computes the two-sided, asymmetric trimmed mean of the squared values in
+    * this matrix. See pcl::TrimmedMeanOfSquares() for a complete description
+    * of the implemented algorithm with information on function parameters.
+    *
+    * For empty matrices, this function returns zero.
+    */
+   double TrimmedMeanOfSquares( distance_type l = 1, distance_type h = 1 ) const
+   {
+      return pcl::TrimmedMeanOfSquares( m_data->Begin(), m_data->End(), l, h );
+   }
+
+   /*!
     * Returns the variance from the mean for the values in this matrix.
     *
     * For matrices with less than two elements, this function returns zero.
@@ -2048,35 +2074,10 @@ public:
     * Returns the median of element values in this matrix.
     *
     * For matrices with less than two elements, this function returns zero.
-    *
-    * Before computing the median, this function ensures that this instance
-    * uniquely references its matrix data, generating a duplicate if necessary.
-    *
-    * \note This is a destructive median calculation algorithm: it alters the
-    * order in the sequence of matrix elements. For a nondestructive version,
-    * see the immutable version of this member function.
-    */
-   double Median()
-   {
-      EnsureUnique();
-      return pcl::Median( m_data->Begin(), m_data->End() );
-   }
-
-   /*!
-    * Returns the median of element values in this matrix without modifying
-    * this object.
-    *
-    * For matrices with less than two elements, this function returns zero.
-    *
-    * This is a \e nondestructive median calculation routine that doesn't
-    * modify the order of existing matrix elements. To achieve that goal,
-    * this routine simply generates a temporary working matrix as a copy of
-    * this object, then calls its Median() member function to obtain the
-    * function's return value.
     */
    double Median() const
    {
-      return GenericMatrix( *this ).Median();
+      return pcl::Median( m_data->Begin(), m_data->End() );
    }
 
    /*!
@@ -2154,6 +2155,27 @@ public:
    }
 
    /*!
+    * Returns the two-sided average absolute deviation with respect to the
+    * specified \a center value.
+    *
+    * See AvgDev( double ) for more information.
+    */
+   TwoSidedEstimate TwoSidedAvgDev( double center ) const
+   {
+      return pcl::TwoSidedAvgDev( m_data->Begin(), m_data->End(), center );
+   }
+
+   /*!
+    * Returns the two-sided average absolute deviation from the median.
+    *
+    * See AvgDev() for more information.
+    */
+   TwoSidedEstimate TwoSidedAvgDev() const
+   {
+      return pcl::TwoSidedAvgDev( m_data->Begin(), m_data->End() );
+   }
+
+   /*!
     * Returns the median absolute deviation (MAD) with respect to the specified
     * \a center value.
     *
@@ -2185,7 +2207,28 @@ public:
    }
 
    /*!
-    * Returns a biweight midvariance (BWMV).
+    * Returns the two-sided median absolute deviation (MAD) with respect to the
+    * specified \a center value.
+    *
+    * See MAD( double ) for more information.
+    */
+   TwoSidedEstimate TwoSidedMAD( double center ) const
+   {
+      return pcl::TwoSidedMAD( m_data->Begin(), m_data->End(), center );
+   }
+
+   /*!
+    * Returns the two-sided median absolute deviation from the median (MAD).
+    *
+    * See MAD() for more information.
+    */
+   TwoSidedEstimate TwoSidedMAD() const
+   {
+      return pcl::TwoSidedMAD( m_data->Begin(), m_data->End() );
+   }
+
+   /*!
+    * Returns the biweight midvariance (BWMV).
     *
     * \param center  Reference center value. Normally, the median of the matrix
     *                elements should be used.
@@ -2196,6 +2239,17 @@ public:
     *
     * \param k       Rejection limit in sigma units. The default value is k=9.
     *
+    * \param reducedLength    If true, reduce the sample size to exclude
+    *                rejected matrix elements. This tends to approximate the
+    *                true dispersion of the data more accurately for relatively
+    *                small samples, or samples with large amounts of outliers.
+    *                Note that this departs from the standard definition of
+    *                biweight midvariance, where the total number of data items
+    *                is used to scale the variance estimate. If false, use the
+    *                full number of matrix elements, including rejected
+    *                elements, which gives a standard biweight midvariance
+    *                estimate.
+    *
     * The square root of the biweight midvariance is a robust estimator of
     * scale. It is an efficient estimator with respect to many statistical
     * distributions (about 87% Gaussian efficiency), and appears to have a
@@ -2205,19 +2259,30 @@ public:
     *
     * \b References
     *
-    * Rand R. Wilcox (2012), <em>Introduction to Robust Estimation and
-    * Hypothesis Testing, 3rd Edition</em>, Elsevier Inc., Section 3.12.1.
+    * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and
+    * Hypothesis Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.1.
     */
-   double BiweightMidvariance( double center, double sigma, int k = 9 ) const
+   double BiweightMidvariance( double center, double sigma, int k = 9, bool reducedLength = false ) const
    {
-      return pcl::BiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k );
+      return pcl::BiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k, reducedLength );
    }
 
    /*!
     * Returns the biweight midvariance (BWMV) with respect to the median and
-    * median absolute deviation (MAD).
+    * the median absolute deviation from the median (MAD).
     *
     * \param k       Rejection limit in sigma units. The default value is k=9.
+    *
+    * \param reducedLength    If true, reduce the sample size to exclude
+    *                rejected matrix elements. This tends to approximate the
+    *                true dispersion of the data more accurately for relatively
+    *                small samples, or samples with large amounts of outliers.
+    *                Note that this departs from the standard definition of
+    *                biweight midvariance, where the total number of data items
+    *                is used to scale the variance estimate. If false, use the
+    *                full number of matrix elements, including rejected
+    *                elements, which gives a standard biweight midvariance
+    *                estimate.
     *
     * The square root of the biweight midvariance is a robust estimator of
     * scale. It is an efficient estimator with respect to many statistical
@@ -2228,14 +2293,45 @@ public:
     *
     * \b References
     *
-    * Rand R. Wilcox (2012), <em>Introduction to Robust Estimation and
-    * Hypothesis Testing, 3rd Edition</em>, Elsevier Inc., Section 3.12.1.
+    * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and
+    * Hypothesis Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.1.
     */
-   double BiweightMidvariance( int k = 9 ) const
+   double BiweightMidvariance( int k = 9, bool reducedLength = false ) const
    {
       double center = Median();
-      double sigma = 1.4826*MAD( center );
-      return pcl::BiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k );
+      return BiweightMidvariance( center, MAD( center ), k, reducedLength );
+   }
+
+   /*!
+    * Returns the two-sided biweight midvariance (BWMV).
+    *
+    * \param center  Reference center value. Normally, the median of the vector
+    *                components should be used.
+    *
+    * \param sigma   A two-sided reference estimate of dispersion. Normally,
+    *                the two-sided median absolute deviation from the median
+    *                (MAD) of the vector components should be used. See the
+    *                TwoSidedMAD() member function.
+    *
+    * See BiweightMidvariance( double, double, int, bool ) for more information
+    * on the rest of parameters and references.
+    */
+   TwoSidedEstimate TwoSidedBiweightMidvariance( double center, const TwoSidedEstimate& sigma,
+                                                 int k = 9, bool reducedLength = false ) const
+   {
+      return pcl::TwoSidedBiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k, reducedLength );
+   }
+
+   /*!
+    * Returns the two-sided biweight midvariance (BWMV) with respect to the
+    * median and the two-sided median absolute deviation from the median (MAD).
+    *
+    * See BiweightMidvariance( int, bool ) for more information and references.
+    */
+   TwoSidedEstimate TwoSidedBiweightMidvariance( int k = 9, bool reducedLength = false ) const
+   {
+      double center = Median();
+      return TwoSidedBiweightMidvariance( center, TwoSidedMAD( center ), k, reducedLength );
    }
 
    /*!
@@ -2257,8 +2353,8 @@ public:
     *
     * \b References
     *
-    * Rand R. Wilcox (2012), <em>Introduction to Robust Estimation and Hypothesis
-    * Testing, 3rd Edition</em>, Elsevier Inc., Section 3.12.3.
+    * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and
+    * Hypothesis Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.3.
     */
    double BendMidvariance( double center, double beta = 0.2 ) const
    {
@@ -3444,4 +3540,4 @@ typedef F80Matrix                   LDMatrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Matrix.h - Released 2020-07-31T19:33:04Z

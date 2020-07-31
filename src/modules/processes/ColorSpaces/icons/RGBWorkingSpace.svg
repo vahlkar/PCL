@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="a" x1="12.027" x2="70.235" y1="86.124" y2="27.916" gradientTransform="matrix(2 0 0 2 120.71 -72.956)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0405ff" offset="0"/>
+<stop stop-color="#9fc9ff" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-49.5 40.845)">
+<g transform="translate(-85.743 -14.196)">
+<rect x="144.77" y="-17.124" width="116.42" height="116.42" fill="url(#a)" stroke="#000" stroke-linecap="round" stroke-width="6.35"/>
+<g transform="matrix(.9621 0 0 .96211 5.9109 3.3384)" fill="none" stroke="#808080" stroke-width="4.4001">
+<path d="m155.8-17.968v114.4"/>
+<path d="m178.68-17.968v114.4"/>
+<path d="m201.97-17.968v114.4"/>
+<path d="m224.85-17.968v114.4"/>
+<path d="m262.03-4.0769-114.4 0.072229"/>
+<path d="m262.03 18.803h-114.4"/>
+<path d="m262.03 42.041h-114.4"/>
+<path d="m262.03 64.972h-114.4"/>
+<path d="m262.03 87.852h-114.4"/>
+<path d="m248.14-17.967v114.4"/>
+</g>
+<g transform="matrix(1.0658 0 0 1.0658 -9.3704 -6.327)" stroke-width=".93824">
+<rect x="152.83" y="20.6" width="30.654" height="75.493" fill="#f00" style="paint-order:fill markers stroke"/>
+<rect x="183.48" y="54.994" width="30.654" height="41.099" fill="#0f0" style="paint-order:fill markers stroke"/>
+<rect x="213.99" y="9.661" width="30.654" height="86.456" fill="#00f" style="paint-order:fill markers stroke"/>
+</g>
+</g>
+</g>
+</svg>

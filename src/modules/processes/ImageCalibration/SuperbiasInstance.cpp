@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SuperbiasInstance.cpp - Released 2020-02-27T12:56:01Z
+// SuperbiasInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -68,21 +68,21 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SuperbiasInstance::SuperbiasInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_columns( TheSBColumnsParameter->DefaultValue() ),
-   p_rows( TheSBRowsParameter->DefaultValue() ),
-   p_medianTransform( TheSBMedianTransformParameter->DefaultValue() ),
-   p_excludeLargeScale( TheSBExcludeLargeScaleParameter->DefaultValue() ),
-   p_multiscaleLayers( TheSBMultiscaleLayersParameter->DefaultValue() ),
-   p_trimmingFactor( TheSBTrimmingFactorParameter->DefaultValue() )
+SuperbiasInstance::SuperbiasInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_columns( TheSBColumnsParameter->DefaultValue() )
+   , p_rows( TheSBRowsParameter->DefaultValue() )
+   , p_medianTransform( TheSBMedianTransformParameter->DefaultValue() )
+   , p_excludeLargeScale( TheSBExcludeLargeScaleParameter->DefaultValue() )
+   , p_multiscaleLayers( TheSBMultiscaleLayersParameter->DefaultValue() )
+   , p_trimmingFactor( TheSBTrimmingFactorParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-SuperbiasInstance::SuperbiasInstance( const SuperbiasInstance& x ) :
-   ProcessImplementation( x )
+SuperbiasInstance::SuperbiasInstance( const SuperbiasInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -371,4 +371,4 @@ size_type SuperbiasInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF SuperbiasInstance.cpp - Released 2020-07-31T19:33:39Z

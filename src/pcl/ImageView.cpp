@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ImageView.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ImageView.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -63,8 +63,8 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 ImageView::ImageView( Control& parent, int width, int height, int numberOfChannels,
-                      int bitsPerSample, bool floatSample, bool color ) :
-   ScrollBox( nullptr )
+                      int bitsPerSample, bool floatSample, bool color )
+   : ScrollBox( nullptr )
 {
    TransferHandle( (*API->ImageView->CreateImageView)( ModuleHandle(), this, parent.handle, 0/*flags*/,
                                                        width, height, numberOfChannels,
@@ -77,8 +77,8 @@ ImageView::ImageView( Control& parent, int width, int height, int numberOfChanne
       throw APIFunctionError( "CreateImageViewViewport" );
 }
 
-ImageView::ImageView( void* h ) :
-   ScrollBox( nullptr )
+ImageView::ImageView( void* h )
+   : ScrollBox( nullptr )
 {
    TransferHandle( h );
    if ( !IsNull() )
@@ -89,8 +89,8 @@ ImageView::ImageView( void* h ) :
    }
 }
 
-ImageView::ImageView( void* h, void* hV ) :
-   ScrollBox( h, hV )
+ImageView::ImageView( void* h, void* hV )
+   : ScrollBox( h, hV )
 {
 }
 
@@ -681,4 +681,4 @@ void ImageView::OnScrollViewport( scroll_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageView.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ImageView.cpp - Released 2020-07-31T19:33:12Z

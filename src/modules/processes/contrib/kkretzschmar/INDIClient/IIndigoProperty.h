@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// IIndigoProperty.h - Released 2020-02-27T12:56:01Z
+// IIndigoProperty.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -75,8 +75,8 @@ class IProperty
 {
 public:
 
-   IProperty( indigo_property* property ) :
-      m_property( property )
+   IProperty( indigo_property* property )
+      : m_property( property )
    {
    }
 
@@ -201,8 +201,8 @@ class NumberProperty : public IProperty
 {
 public:
 
-   NumberProperty( indigo_property* property ) :
-      IProperty( property )
+   NumberProperty( indigo_property* property )
+      : IProperty( property )
    {
    }
 
@@ -222,8 +222,8 @@ class TextProperty : public IProperty
 {
 public:
 
-   TextProperty( indigo_property* property ) :
-      IProperty( property )
+   TextProperty( indigo_property* property )
+      : IProperty( property )
    {
    }
 
@@ -238,8 +238,8 @@ class SwitchProperty : public IProperty
 {
 public:
 
-   SwitchProperty( indigo_property* property ) :
-      IProperty( property )
+   SwitchProperty( indigo_property* property )
+      : IProperty( property )
    {
    }
 
@@ -254,8 +254,8 @@ class LightProperty : public IProperty
 {
 public:
 
-   LightProperty( indigo_property* property ) :
-      IProperty( property )
+   LightProperty( indigo_property* property )
+      : IProperty( property )
    {
    }
 
@@ -270,8 +270,8 @@ class BlobProperty : public IProperty
 {
 public:
 
-   BlobProperty( indigo_property* property ) :
-      IProperty( property )
+   BlobProperty( indigo_property* property )
+      : IProperty( property )
    {
    }
 
@@ -344,4 +344,4 @@ public:
 #endif // __IIndigoProperty_h
 
 // ----------------------------------------------------------------------------
-// EOF IIndigoProperty.h - Released 2020-02-27T12:56:01Z
+// EOF IIndigoProperty.h - Released 2020-07-31T19:33:39Z

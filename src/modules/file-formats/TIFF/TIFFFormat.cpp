@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFFormat.cpp - Released 2020-02-27T12:55:48Z
+// TIFFFormat.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -66,15 +66,21 @@ TIFFFormat::TIFFFormat()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString TIFFFormat::Name() const
 {
    return "TIFF";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList TIFFFormat::FileExtensions() const
 {
    return StringList() << ".tif" << ".tiff";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList TIFFFormat::MimeTypes() const
 {
@@ -82,15 +88,21 @@ IsoStringList TIFFFormat::MimeTypes() const
    return IsoStringList() << "image/tiff" << "image/tif" << "application/tiff" << "application/tif";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 TIFFFormat::Version() const
 {
    return 0x103;
 }
 
+// ----------------------------------------------------------------------------
+
 String TIFFFormat::Description() const
 {
    return "Tag Image File Format (TIFF), 6.0 Specification.";
 }
+
+// ----------------------------------------------------------------------------
 
 String TIFFFormat::Implementation() const
 {
@@ -107,7 +119,7 @@ String TIFFFormat::Implementation() const
    "Copyright (c) 1991-1997 Silicon Graphics, Inc.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -162,55 +174,77 @@ String TIFFFormat::Implementation() const
    "</html>";
 }
 
-String TIFFFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String TIFFFormat::IconImageSVGFile() const
 {
-   return ":/file-format/tiff-format-icon.png";
+   return "@module_icons_dir/TIFF.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool TIFFFormat::CanStore32Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool TIFFFormat::CanStoreFloat() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool TIFFFormat::CanStoreDouble() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool TIFFFormat::CanStoreResolution() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool TIFFFormat::CanStoreICCProfiles() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool TIFFFormat::SupportsCompression() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool TIFFFormat::CanEditPreferences() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool TIFFFormat::UsesFormatSpecificData() const
 {
    return true; // use format-specific data to manage some special TIFF flags and data
 }
 
+// ----------------------------------------------------------------------------
+
 bool TIFFFormat::ValidateFormatSpecificData( const void* data ) const
 {
    return FormatOptions::FromGenericDataBlock( data ) != nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 void TIFFFormat::DisposeFormatSpecificData( void* data ) const
 {
@@ -218,10 +252,14 @@ void TIFFFormat::DisposeFormatSpecificData( void* data ) const
       delete o;
 }
 
+// ----------------------------------------------------------------------------
+
 FileFormatImplementation* TIFFFormat::Create() const
 {
    return new TIFFInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 bool TIFFFormat::EditPreferences() const
 {
@@ -274,6 +312,8 @@ bool TIFFFormat::EditPreferences() const
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 TIFFImageOptions TIFFFormat::DefaultOptions()
 {
    TIFFImageOptions options;
@@ -302,6 +342,8 @@ TIFFImageOptions TIFFFormat::DefaultOptions()
    return options;
 }
 
+// ----------------------------------------------------------------------------
+
 TIFFFormat::OutOfRangePolicyOptions TIFFFormat::DefaultOutOfRangePolicyOptions()
 {
    OutOfRangePolicyOptions options;
@@ -314,6 +356,8 @@ TIFFFormat::OutOfRangePolicyOptions TIFFFormat::DefaultOutOfRangePolicyOptions()
    return options;
 }
 
+// ----------------------------------------------------------------------------
+
 TIFFFormat::EmbeddingOverrides TIFFFormat::DefaultEmbeddingOverrides()
 {
    EmbeddingOverrides overrides;
@@ -325,16 +369,19 @@ TIFFFormat::EmbeddingOverrides TIFFFormat::DefaultEmbeddingOverrides()
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 #define TIFF_SIGNATURE  0x54494646u
 
-TIFFFormat::FormatOptions::FormatOptions() :
-   signature( TIFF_SIGNATURE ), options( TIFFFormat::DefaultOptions() )
+TIFFFormat::FormatOptions::FormatOptions()
+   : signature( TIFF_SIGNATURE )
+   , options( TIFFFormat::DefaultOptions() )
 {
 }
 
-TIFFFormat::FormatOptions::FormatOptions( const TIFFFormat::FormatOptions& x ) :
-   signature( TIFF_SIGNATURE ), options( x.options )
+TIFFFormat::FormatOptions::FormatOptions( const TIFFFormat::FormatOptions& x )
+   : signature( TIFF_SIGNATURE )
+   , options( x.options )
 {
 }
 
@@ -353,4 +400,4 @@ TIFFFormat::FormatOptions* TIFFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFFormat.cpp - Released 2020-02-27T12:55:48Z
+// EOF TIFFFormat.cpp - Released 2020-07-31T19:33:23Z

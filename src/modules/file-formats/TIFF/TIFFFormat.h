@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFFormat.h - Released 2020-02-27T12:55:48Z
+// TIFFFormat.h - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -78,7 +78,7 @@ public:
    String Description() const override;
    String Implementation() const override;
 
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
 
    bool CanStore32Bit() const override;
    bool CanStoreFloat() const override;
@@ -159,4 +159,4 @@ public:
 #endif   // __TIFFFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF TIFFFormat.h - Released 2020-02-27T12:55:48Z
+// EOF TIFFFormat.h - Released 2020-07-31T19:33:23Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Homography.h - Released 2020-02-27T12:55:23Z
+// pcl/Homography.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -101,14 +101,16 @@ public:
     * Default constructor. Constructs a no-op transformation with a unit matrix
     * transformation matrix.
     */
-   Homography() : m_H( Matrix::UnitMatrix( 3 ) )
+   Homography()
+      : m_H( Matrix::UnitMatrix( 3 ) )
    {
    }
 
    /*!
     * Constructor from a given homography matrix.
     */
-   Homography( const Matrix& H ) : m_H( H )
+   Homography( const Matrix& H )
+      : m_H( H )
    {
    }
 
@@ -136,7 +138,8 @@ public:
     * Transactions on Pattern Analysis and Machine Intelligence, vol. 19, pp.
     * 580–593, June 1997.
     */
-   Homography( const point_list& P1, const point_list& P2 ) : m_H( DLT( P1, P2 ) )
+   Homography( const point_list& P1, const point_list& P2 )
+      : m_H( DLT( P1, P2 ) )
    {
    }
 
@@ -400,4 +403,4 @@ private:
 #endif   // __PCL_Homography_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Homography.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Homography.h - Released 2020-07-31T19:33:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Translation.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Translation.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -142,9 +142,11 @@ private:
    template <class P>
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( const DPoint& a_delta, int a_width, int a_height, const StatusMonitor& a_status, size_type a_count ) :
-         AbstractImage::ThreadData( a_status, a_count ),
-         delta( a_delta ), width( a_width ), height( a_height )
+      ThreadData( const DPoint& a_delta, int a_width, int a_height, const StatusMonitor& a_status, size_type a_count )
+         : AbstractImage::ThreadData( a_status, a_count )
+         , delta( a_delta )
+         , width( a_width )
+         , height( a_height )
       {
       }
 
@@ -162,8 +164,11 @@ private:
 
       typedef PixelInterpolation::Interpolator<P>  interpolator_type;
 
-      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow ) :
-         m_data( data ), m_firstRow( firstRow ), m_endRow( endRow ), m_interpolator( interpolator )
+      Thread( ThreadData<P>& data, interpolator_type* interpolator, int firstRow, int endRow )
+         : m_data( data )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
+         , m_interpolator( interpolator )
       {
       }
 
@@ -228,4 +233,4 @@ void Translation::Apply( UInt32Image& img ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Translation.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Translation.cpp - Released 2020-07-31T19:33:12Z

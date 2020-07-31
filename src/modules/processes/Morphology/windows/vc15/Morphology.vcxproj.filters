@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:02.570Z
+# Generated on .... 2020-07-31T19:36:37.100Z
 # Project id ...... Morphology
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>1f9c30c8-8d5e-4eaf-accf-fc17ab415b7f</UniqueIdentifier>
+      <UniqueIdentifier>7c7ade06-72b5-4f30-9e2e-6180c0385d77</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>3e191d48-4944-4c25-b04b-6513d50b9641</UniqueIdentifier>
+      <UniqueIdentifier>9f7ae7f0-315b-4477-8582-72764a30bd9a</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>416c3737-8cbd-4f42-8d08-da29d221a323</UniqueIdentifier>
+      <UniqueIdentifier>e4f44722-1743-492c-848d-5787eaf3a13c</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -72,82 +72,61 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\MorphologicalTransformationIcon.png">
+    <None Include="..\..\cursors\pen.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\add_structure.png">
+    <None Include="..\..\icons\MorphologicalTransformation.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\delete_all_structures.png">
+    <None Include="..\..\icons\paint_clear.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\delete_structure.png">
+    <None Include="..\..\icons\paint_set.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\paint_clear.png">
+    <None Include="..\..\icons\show_all_ways.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\paint_set.png">
+    <None Include="..\..\icons\way_add.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\pen_cursor.png">
+    <None Include="..\..\icons\way_circular.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\redo_structure.png">
+    <None Include="..\..\icons\way_clear.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\replace_structure.png">
+    <None Include="..\..\icons\way_clear_all.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\reset_structure.png">
+    <None Include="..\..\icons\way_diagonal.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\show_all_ways.png">
+    <None Include="..\..\icons\way_diamond.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\undo_structure.png">
+    <None Include="..\..\icons\way_invert.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\way_add.png">
+    <None Include="..\..\icons\way_orthogonal.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\way_circular.png">
+    <None Include="..\..\icons\way_remove.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\way_clear.png">
+    <None Include="..\..\icons\way_restore.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\way_clear_all.png">
+    <None Include="..\..\icons\way_rotate.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\way_delete.png">
+    <None Include="..\..\icons\way_set.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\way_diagonal.png">
+    <None Include="..\..\icons\way_set_all.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\way_diamond.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\way_invert.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\way_orthogonal.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\way_restore.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\way_rotate.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\way_set.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\way_set_all.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\way_store.png">
+    <None Include="..\..\icons\way_store.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

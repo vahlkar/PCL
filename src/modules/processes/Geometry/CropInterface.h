@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// CropInterface.h - Released 2020-02-27T12:56:01Z
+// CropInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -78,35 +78,27 @@ public:
    CropInterface();
    virtual ~CropInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-
-   virtual void ApplyInstance() const;
-   virtual void TrackViewUpdated( bool active );
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual bool WantsImageNotifications() const;
-   virtual void ImageUpdated( const View& );
-   virtual void ImageFocused( const View& );
-
-   virtual bool WantsReadoutNotifications() const;
-   virtual void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A );
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void TrackViewUpdated( bool active ) override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   bool WantsImageNotifications() const override;
+   void ImageUpdated( const View& ) override;
+   void ImageFocused( const View& ) override;
+   bool WantsReadoutNotifications() const override;
+   void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A ) override;
 
 private:
 
-   CropInstance instance;
+   CropInstance m_instance;
 
    // Sample source dimensions in pixels.
    int sourceWidth = 1000;
@@ -242,4 +234,4 @@ PCL_END_LOCAL
 #endif   // __CropInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CropInterface.h - Released 2020-02-27T12:56:01Z
+// EOF CropInterface.h - Released 2020-07-31T19:33:39Z

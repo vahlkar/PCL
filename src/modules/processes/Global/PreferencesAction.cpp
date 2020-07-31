@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesAction.cpp - Released 2020-02-27T12:56:01Z
+// PreferencesAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -60,15 +60,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "PreferencesActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-PreferencesAction::PreferencesAction() :
-   Action( "Edit > Global Preferences", Bitmap( PreferencesActionIcon_XPM ), "Edit" )
+PreferencesAction::PreferencesAction()
+   : Action( "Edit > Global Preferences",
+             "@module_icons_dir/Preferences.svg",
+             "Edit" )
 {
    SetToolTip( "Global Preferences" );
 }
+
+// ----------------------------------------------------------------------------
 
 void PreferencesAction::Execute()
 {
@@ -84,4 +84,4 @@ void PreferencesAction::Execute()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF PreferencesAction.cpp - Released 2020-07-31T19:33:39Z

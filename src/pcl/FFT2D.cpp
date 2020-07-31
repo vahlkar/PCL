@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/FFT2D.cpp - Released 2020-02-27T12:55:33Z
+// pcl/FFT2D.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -66,9 +66,15 @@ public:
    typedef To             output_type;
    typedef ReferenceArray<Thread> thread_list;
 
-   PCL_FFT2DEngineBase( int rows, int cols, To* output, const Ti* input, int dir, StatusMonitor* monitor, bool parallel, int maxProcessors ) :
-      m_rows( rows ), m_cols( cols ), m_output( output ), m_input( input ), m_dir( dir ),
-      m_monitor( monitor ), m_parallel( parallel ), m_maxProcessors( maxProcessors )
+   PCL_FFT2DEngineBase( int rows, int cols, To* output, const Ti* input, int dir, StatusMonitor* monitor, bool parallel, int maxProcessors )
+      : m_rows( rows )
+      , m_cols( cols )
+      , m_output( output )
+      , m_input( input )
+      , m_dir( dir )
+      , m_monitor( monitor )
+      , m_parallel( parallel )
+      , m_maxProcessors( maxProcessors )
    {
       if ( m_monitor != nullptr )
          if ( m_monitor->IsInitializationEnabled() )
@@ -87,8 +93,8 @@ protected:
    const Ti*            m_input;
          int            m_dir;
          StatusMonitor* m_monitor;
-         bool           m_parallel : 1;
-         unsigned       m_maxProcessors : PCL_MAX_PROCESSORS_BITCOUNT;
+         bool           m_parallel;
+         unsigned       m_maxProcessors;
 
    void RunThreads( thread_list& threads, int count )
    {
@@ -119,8 +125,8 @@ public:
    typedef PCL_FFT2DEngineBase<complex,complex> base;
    typedef typename base::thread_list           thread_list;
 
-   PCL_FFT2DEngine( int rows, int cols, complex* output, const complex* input, int dir, StatusMonitor* monitor, bool parallel, int maxProcessors ) :
-      base( rows, cols, output, input, dir, monitor, parallel, maxProcessors )
+   PCL_FFT2DEngine( int rows, int cols, complex* output, const complex* input, int dir, StatusMonitor* monitor, bool parallel, int maxProcessors )
+      : base( rows, cols, output, input, dir, monitor, parallel, maxProcessors )
    {
       size_type N = size_type( this->m_rows )*size_type( this->m_cols );
       const void* i0 = this->m_input;
@@ -149,7 +155,7 @@ public:
 
 private:
 
-   bool m_overlapped : 1;
+   bool m_overlapped;
 
    friend class RowThread;
 
@@ -157,8 +163,10 @@ private:
    {
    public:
 
-      RowThread( PCL_FFT2DEngine& e, int r0, int r1 ) :
-         m_engine( e ), m_firstRow( r0 ), m_endRow( r1 )
+      RowThread( PCL_FFT2DEngine& e, int r0, int r1 )
+         : m_engine( e )
+         , m_firstRow( r0 )
+         , m_endRow( r1 )
       {
       }
 
@@ -203,8 +211,10 @@ private:
    {
    public:
 
-      ColThread( PCL_FFT2DEngine& e, int c0, int c1 ) :
-         m_engine( e ), m_firstCol( c0 ), m_endCol( c1 )
+      ColThread( PCL_FFT2DEngine& e, int c0, int c1 )
+         : m_engine( e )
+         , m_firstCol( c0 )
+         , m_endCol( c1 )
       {
       }
 
@@ -248,9 +258,9 @@ public:
    typedef PCL_FFT2DEngineBase<To,Ti> base;
    typedef typename base::thread_list thread_list;
 
-   PCL_FFT2DRealEngineBase( int _rows, int _cols, To* _output, const Ti* _input, int dir, StatusMonitor* _monitor, bool parallel, int maxProcessors ) :
-      base( _rows, _cols, _output, _input, dir, _monitor, parallel, maxProcessors ),
-      m_transformCols( _cols/2 + 1 )
+   PCL_FFT2DRealEngineBase( int _rows, int _cols, To* _output, const Ti* _input, int dir, StatusMonitor* _monitor, bool parallel, int maxProcessors )
+      : base( _rows, _cols, _output, _input, dir, _monitor, parallel, maxProcessors )
+      , m_transformCols( _cols/2 + 1 )
    {
    }
 
@@ -278,8 +288,8 @@ public:
    typedef PCL_FFT2DRealEngineBase<complex,scalar> base;
    typedef typename base::thread_list              thread_list;
 
-   PCL_FFT2DRealEngine( int rows, int cols, complex* output, const scalar* input, StatusMonitor* monitor, bool parallel, int maxProcessors ) :
-      base( rows, cols, output, input, PCL_FFT_FORWARD, monitor, parallel, maxProcessors )
+   PCL_FFT2DRealEngine( int rows, int cols, complex* output, const scalar* input, StatusMonitor* monitor, bool parallel, int maxProcessors )
+      : base( rows, cols, output, input, PCL_FFT_FORWARD, monitor, parallel, maxProcessors )
    {
       for ( int direction = 0; direction < 2; ++direction ) // FFT of m_rows, m_cols
       {
@@ -307,8 +317,10 @@ private:
    {
    public:
 
-      RowThread( PCL_FFT2DRealEngine& e, int r0, int r1 ) :
-         m_engine( e ), m_firstRow( r0 ), m_endRow( r1 )
+      RowThread( PCL_FFT2DRealEngine& e, int r0, int r1 )
+         : m_engine( e )
+         , m_firstRow( r0 )
+         , m_endRow( r1 )
       {
       }
 
@@ -333,8 +345,10 @@ private:
    {
    public:
 
-      ColThread( PCL_FFT2DRealEngine& e, int c0, int c1 ) :
-         m_engine( e ), m_firstCol( c0 ), m_endCol( c1 )
+      ColThread( PCL_FFT2DRealEngine& e, int c0, int c1 )
+         : m_engine( e )
+         , m_firstCol( c0 )
+         , m_endCol( c1 )
       {
       }
 
@@ -383,9 +397,9 @@ public:
    typedef PCL_FFT2DRealEngineBase<scalar,complex> base;
    typedef typename base::thread_list              thread_list;
 
-   PCL_FFT2DRealInverseEngine( int rows, int cols, scalar* output, const complex* input, StatusMonitor* monitor, bool parallel, int maxProcessors ) :
-      base( rows, cols, output, input, PCL_FFT_BACKWARD, monitor, parallel, maxProcessors ),
-      m_colTransform( this->m_rows, this->m_transformCols )
+   PCL_FFT2DRealInverseEngine( int rows, int cols, scalar* output, const complex* input, StatusMonitor* monitor, bool parallel, int maxProcessors )
+      : base( rows, cols, output, input, PCL_FFT_BACKWARD, monitor, parallel, maxProcessors )
+      , m_colTransform( this->m_rows, this->m_transformCols )
    {
       for ( int direction = 0; direction < 2; ++direction ) // FFT of m_cols, m_rows
       {
@@ -415,8 +429,10 @@ private:
    {
    public:
 
-      ColThread( PCL_FFT2DRealInverseEngine& e, int c0, int c1 ) :
-         m_engine( e ), m_firstCol( c0 ), m_endCol( c1 )
+      ColThread( PCL_FFT2DRealInverseEngine& e, int c0, int c1 )
+         : m_engine( e )
+         , m_firstCol( c0 )
+         , m_endCol( c1 )
       {
       }
 
@@ -454,8 +470,10 @@ private:
    {
    public:
 
-      RowThread( PCL_FFT2DRealInverseEngine& e, int r0, int r1 ) :
-         m_engine( e ), m_firstRow( r0 ), m_endRow( r1 )
+      RowThread( PCL_FFT2DRealInverseEngine& e, int r0, int r1 )
+         : m_engine( e )
+         , m_firstRow( r0 )
+         , m_endRow( r1 )
       {
       }
 
@@ -512,4 +530,4 @@ void FFT2DBase::Transform( int rows, int cols, double* y, const dcomplex* x, Sta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFT2D.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/FFT2D.cpp - Released 2020-07-31T19:33:12Z

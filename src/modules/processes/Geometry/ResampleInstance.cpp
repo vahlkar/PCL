@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ResampleInstance.cpp - Released 2020-02-27T12:56:01Z
+// ResampleInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -66,25 +66,25 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ResampleInstance::ResampleInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   p_size( TheRSXSizeParameter->DefaultValue(), TheRSYSizeParameter->DefaultValue() ),
-   p_mode( TheRSModeParameter->Default ),
-   p_absMode( TheRSAbsoluteModeParameter->Default ),
-   p_resolution( TheRSXResolutionParameter->DefaultValue(), TheRSYResolutionParameter->DefaultValue() ),
-   p_metric( TheRSMetricResolutionParameter->DefaultValue() ),
-   p_forceResolution( TheRSForceResolutionParameter->DefaultValue() ),
-   p_interpolation( TheRSInterpolationAlgorithmParameter->Default ),
-   p_clampingThreshold( TheRSClampingThresholdParameter->DefaultValue() ),
-   p_smoothness( TheRSSmoothnessParameter->DefaultValue() ),
-   p_noGUIMessages( TheRSNoGUIMessagesParameter->DefaultValue() )
+ResampleInstance::ResampleInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , p_size( TheRSXSizeParameter->DefaultValue(), TheRSYSizeParameter->DefaultValue() )
+   , p_mode( TheRSModeParameter->Default )
+   , p_absMode( TheRSAbsoluteModeParameter->Default )
+   , p_resolution( TheRSXResolutionParameter->DefaultValue(), TheRSYResolutionParameter->DefaultValue() )
+   , p_metric( TheRSMetricResolutionParameter->DefaultValue() )
+   , p_forceResolution( TheRSForceResolutionParameter->DefaultValue() )
+   , p_interpolation( TheRSInterpolationAlgorithmParameter->Default )
+   , p_clampingThreshold( TheRSClampingThresholdParameter->DefaultValue() )
+   , p_smoothness( TheRSSmoothnessParameter->DefaultValue() )
+   , p_noGUIMessages( TheRSNoGUIMessagesParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ResampleInstance::ResampleInstance( const ResampleInstance& x ) :
-   ProcessImplementation( x )
+ResampleInstance::ResampleInstance( const ResampleInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -135,7 +135,6 @@ bool ResampleInstance::CanExecuteOn( const View& v, String& whyNot ) const
       whyNot = "Resample cannot be executed on previews.";
       return false;
    }
-
    return true;
 }
 
@@ -273,4 +272,4 @@ void* ResampleInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ResampleInstance.cpp - Released 2020-07-31T19:33:39Z

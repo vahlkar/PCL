@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:08.548Z
+# Generated on .... 2020-07-31T19:36:45.648Z
 # Project id ...... SplitCFA
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,10 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>4095d370-85e9-4c53-8176-7d77b7deb198</UniqueIdentifier>
+      <UniqueIdentifier>2c0ee1d0-aa43-4240-85e7-9c4820ff1457</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>2938c133-35fd-4499-a284-50cafaa0add3</UniqueIdentifier>
+      <UniqueIdentifier>93c5ab5a-65e2-4025-a9dd-06cb6f958e69</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>564ec9d9-ac12-417a-977f-f7955943ff12</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -79,5 +82,13 @@
     <ClInclude Include="..\..\SplitCFAProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\MergeCFA.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\SplitCFA.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

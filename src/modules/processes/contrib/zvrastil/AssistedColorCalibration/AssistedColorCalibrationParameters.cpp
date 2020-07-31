@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// AssistedColorCalibrationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -58,18 +58,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ACCRedCorrectionFactor*    TheACCRedCorrectionFactor = 0;
-ACCGreenCorrectionFactor*  TheACCGreenCorrectionFactor = 0;
-ACCBlueCorrectionFactor*   TheACCBlueCorrectionFactor = 0;
-ACCBackgroundReference*    TheACCBackgroundReference = 0;
-ACCHistogramShadows*       TheACCHistogramShadows = 0;
-ACCHistogramHighlights*    TheACCHistogramHighlights = 0;
-ACCHistogramMidtones*      TheACCHistogramMidtones = 0;
-ACCSaturationBoost*        TheACCSaturationBoost = 0;
+ACCRedCorrectionFactor*   TheACCRedCorrectionFactor = nullptr;
+ACCGreenCorrectionFactor* TheACCGreenCorrectionFactor = nullptr;
+ACCBlueCorrectionFactor*  TheACCBlueCorrectionFactor = nullptr;
+ACCBackgroundReference*   TheACCBackgroundReference = nullptr;
+ACCHistogramShadows*      TheACCHistogramShadows = nullptr;
+ACCHistogramHighlights*   TheACCHistogramHighlights = nullptr;
+ACCHistogramMidtones*     TheACCHistogramMidtones = nullptr;
+ACCSaturationBoost*       TheACCSaturationBoost = nullptr;
 
 // ----------------------------------------------------------------------------
 
-ACCRedCorrectionFactor::ACCRedCorrectionFactor( MetaProcess* P ) : MetaFloat( P )
+ACCRedCorrectionFactor::ACCRedCorrectionFactor( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheACCRedCorrectionFactor = this;
 }
@@ -101,7 +102,8 @@ double ACCRedCorrectionFactor::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ACCGreenCorrectionFactor::ACCGreenCorrectionFactor( MetaProcess* P ) : MetaFloat( P )
+ACCGreenCorrectionFactor::ACCGreenCorrectionFactor( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheACCGreenCorrectionFactor = this;
 }
@@ -133,7 +135,8 @@ double ACCGreenCorrectionFactor::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ACCBlueCorrectionFactor::ACCBlueCorrectionFactor( MetaProcess* P ) : MetaFloat( P )
+ACCBlueCorrectionFactor::ACCBlueCorrectionFactor( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheACCBlueCorrectionFactor = this;
 }
@@ -165,7 +168,8 @@ double ACCBlueCorrectionFactor::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ACCBackgroundReference::ACCBackgroundReference( MetaProcess* P ) : MetaString( P )
+ACCBackgroundReference::ACCBackgroundReference( MetaProcess* P )
+   : MetaString( P )
 {
    TheACCBackgroundReference = this;
 }
@@ -187,7 +191,8 @@ String ACCBackgroundReference::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-ACCHistogramShadows::ACCHistogramShadows( MetaProcess* P ) : MetaFloat( P )
+ACCHistogramShadows::ACCHistogramShadows( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheACCHistogramShadows = this;
 }
@@ -219,7 +224,8 @@ double ACCHistogramShadows::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ACCHistogramHighlights::ACCHistogramHighlights( MetaProcess* P ) : MetaFloat( P )
+ACCHistogramHighlights::ACCHistogramHighlights( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheACCHistogramHighlights = this;
 }
@@ -251,7 +257,8 @@ double ACCHistogramHighlights::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ACCHistogramMidtones::ACCHistogramMidtones( MetaProcess* P ) : MetaFloat( P )
+ACCHistogramMidtones::ACCHistogramMidtones( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheACCHistogramMidtones = this;
 }
@@ -283,7 +290,8 @@ double ACCHistogramMidtones::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-ACCSaturationBoost::ACCSaturationBoost( MetaProcess* P ) : MetaFloat( P )
+ACCSaturationBoost::ACCSaturationBoost( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheACCSaturationBoost = this;
 }
@@ -315,8 +323,7 @@ double ACCSaturationBoost::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF AssistedColorCalibrationParameters.cpp - Released 2020-07-31T19:33:39Z

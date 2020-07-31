@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerParameters.cpp - Released 2020-02-27T12:56:01Z
+// INDIDeviceControllerParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -83,8 +83,8 @@ IDCNewPropertyValue* TheIDCNewPropertyValueParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
-IDCServerHostName::IDCServerHostName( MetaProcess* P ) :
-   MetaString( P )
+IDCServerHostName::IDCServerHostName( MetaProcess* P )
+   : MetaString( P )
 {
    TheIDCServerHostNameParameter = this;
 }
@@ -101,8 +101,8 @@ String IDCServerHostName::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
-IDCServerPort::IDCServerPort( MetaProcess* P ) :
-   MetaUInt32( P )
+IDCServerPort::IDCServerPort( MetaProcess* P )
+   : MetaUInt32( P )
 {
    TheIDCServerPortParameter = this;
 }
@@ -129,8 +129,8 @@ double IDCServerPort::MaximumValue() const
 
 // ----------------------------------------------------------------------------
 
-IDCServerConnect::IDCServerConnect( MetaProcess* P ) :
-   MetaBoolean( P )
+IDCServerConnect::IDCServerConnect( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheIDCServerConnectParameter = this;
 }
@@ -147,8 +147,8 @@ bool IDCServerConnect::DefaultValue() const
 
 // --------------------------------------------------------------------------
 
-IDCServerCommand::IDCServerCommand( MetaProcess* P ) :
-   MetaString( P )
+IDCServerCommand::IDCServerCommand( MetaProcess* P )
+   : MetaString( P )
 {
    TheIDCServerCommandParameter = this;
 }
@@ -160,8 +160,8 @@ IsoString IDCServerCommand::Id() const
 
 // ----------------------------------------------------------------------------
 
-IDCAbort::IDCAbort( MetaProcess* P ) :
-   MetaBoolean( P )
+IDCAbort::IDCAbort( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheIDCAbortParameter = this;
 }
@@ -173,8 +173,8 @@ IsoString IDCAbort::Id() const
 
 // --------------------------------------------------------------------------
 
-IDCVerbosity::IDCVerbosity( MetaProcess* P ) :
-   MetaInt32( P )
+IDCVerbosity::IDCVerbosity( MetaProcess* P )
+   : MetaInt32( P )
 {
    TheIDCVerbosityParameter = this;
 }
@@ -191,8 +191,8 @@ double IDCVerbosity::DefaultValue() const
 
 // --------------------------------------------------------------------------
 
-IDCGetCommandParameters::IDCGetCommandParameters( MetaProcess* P ) :
-   MetaString( P )
+IDCGetCommandParameters::IDCGetCommandParameters( MetaProcess* P )
+   : MetaString( P )
 {
    TheIDCGetCommandParametersParameter = this;
 }
@@ -204,8 +204,8 @@ IsoString IDCGetCommandParameters::Id() const
 
 // --------------------------------------------------------------------------
 
-IDCGetCommandResult::IDCGetCommandResult( MetaProcess* P ) :
-   MetaString( P )
+IDCGetCommandResult::IDCGetCommandResult( MetaProcess* P )
+   : MetaString( P )
 {
    TheIDCGetCommandResultParameter = this;
 }
@@ -222,8 +222,8 @@ bool IDCGetCommandResult::IsReadOnly() const
 
 // --------------------------------------------------------------------------
 
-IDCDevices::IDCDevices( MetaProcess* P ) :
-   MetaTable( P )
+IDCDevices::IDCDevices( MetaProcess* P )
+   : MetaTable( P )
 {
    TheIDCDevicesParameter = this;
 }
@@ -240,8 +240,8 @@ bool IDCDevices::IsReadOnly() const
 
 // --------------------------------------------------------------------------
 
-IDCDeviceName::IDCDeviceName( MetaTable* T ) :
-   MetaString( T )
+IDCDeviceName::IDCDeviceName( MetaTable* T )
+   : MetaString( T )
 {
    TheIDCDeviceNameParameter = this;
 }
@@ -258,8 +258,8 @@ bool IDCDeviceName::IsReadOnly() const
 
 // --------------------------------------------------------------------------
 
-IDCDeviceLabel::IDCDeviceLabel( MetaTable* T ) :
-   MetaString( T )
+IDCDeviceLabel::IDCDeviceLabel( MetaTable* T )
+   : MetaString( T )
 {
    TheIDCDeviceLabelParameter = this;
 }
@@ -276,8 +276,8 @@ bool IDCDeviceLabel::IsReadOnly() const
 
 // --------------------------------------------------------------------------
 
-IDCProperties::IDCProperties( MetaProcess* P ) :
-   MetaTable( P )
+IDCProperties::IDCProperties( MetaProcess* P )
+   : MetaTable( P )
 {
    TheIDCPropertiesParameter = this;
 }
@@ -294,8 +294,8 @@ bool IDCProperties::IsReadOnly() const
 
 // --------------------------------------------------------------------------
 
-IDCPropertyName::IDCPropertyName( MetaTable* T ) :
-   MetaString( T )
+IDCPropertyName::IDCPropertyName( MetaTable* T )
+   : MetaString( T )
 {
    TheIDCPropertyNameParameter = this;
 }
@@ -312,8 +312,8 @@ bool IDCPropertyName::IsReadOnly() const
 
 // --------------------------------------------------------------------------
 
-IDCPropertyValue::IDCPropertyValue( MetaTable* T ) :
-   MetaString( T )
+IDCPropertyValue::IDCPropertyValue( MetaTable* T )
+   : MetaString( T )
 {
    TheIDCPropertyValueParameter = this;
 }
@@ -330,8 +330,8 @@ bool IDCPropertyValue::IsReadOnly() const
 
 // --------------------------------------------------------------------------
 
-IDCPropertyType::IDCPropertyType( MetaTable* T ) :
-   MetaString( T )
+IDCPropertyType::IDCPropertyType( MetaTable* T )
+   : MetaString( T )
 {
    TheIDCPropertyTypeParameter = this;
 }
@@ -348,8 +348,8 @@ bool IDCPropertyType::IsReadOnly() const
 
 // --------------------------------------------------------------------------
 
-IDCPropertyState::IDCPropertyState( MetaTable* T ) :
-   MetaUInt32( T )
+IDCPropertyState::IDCPropertyState( MetaTable* T )
+   : MetaUInt32( T )
 {
    TheIDCPropertyStateParameter = this;
 }
@@ -381,8 +381,8 @@ bool IDCPropertyState::IsReadOnly() const
 
 // --------------------------------------------------------------------------
 
-IDCNewProperties::IDCNewProperties( MetaProcess* P ) :
-   MetaTable( P )
+IDCNewProperties::IDCNewProperties( MetaProcess* P )
+   : MetaTable( P )
 {
    TheIDCNewPropertiesParameter = this;
 }
@@ -394,8 +394,8 @@ IsoString IDCNewProperties::Id() const
 
 // --------------------------------------------------------------------------
 
-IDCNewPropertyKey::IDCNewPropertyKey( MetaTable* T ) :
-   MetaString( T )
+IDCNewPropertyKey::IDCNewPropertyKey( MetaTable* T )
+   : MetaString( T )
 {
    TheIDCNewPropertyKeyParameter = this;
 }
@@ -407,8 +407,8 @@ IsoString IDCNewPropertyKey::Id() const
 
 // --------------------------------------------------------------------------
 
-IDCNewPropertyType::IDCNewPropertyType( MetaTable* T ) :
-   MetaString( T )
+IDCNewPropertyType::IDCNewPropertyType( MetaTable* T )
+   : MetaString( T )
 {
    TheIDCNewPropertyTypeParameter = this;
 }
@@ -420,8 +420,8 @@ IsoString IDCNewPropertyType::Id() const
 
 // --------------------------------------------------------------------------
 
-IDCNewPropertyValue::IDCNewPropertyValue( MetaTable* T ) :
-   MetaString( T )
+IDCNewPropertyValue::IDCNewPropertyValue( MetaTable* T )
+   : MetaString( T )
 {
    TheIDCNewPropertyValueParameter = this;
 }
@@ -436,4 +436,4 @@ IsoString IDCNewPropertyValue::Id() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF INDIDeviceControllerParameters.cpp - Released 2020-07-31T19:33:39Z

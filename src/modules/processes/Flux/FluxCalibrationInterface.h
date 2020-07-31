@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInterface.h - Released 2020-02-27T12:56:01Z
+// FluxCalibrationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -76,7 +76,7 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    void ApplyInstance() const override;
    void ResetInstance() override;
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
@@ -243,4 +243,4 @@ PCL_END_LOCAL
 #endif   // __FluxCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF FluxCalibrationInterface.h - Released 2020-07-31T19:33:39Z

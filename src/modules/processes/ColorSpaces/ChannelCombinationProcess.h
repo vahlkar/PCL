@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationProcess.h - Released 2020-02-27T12:56:01Z
+// ChannelCombinationProcess.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -69,7 +69,7 @@ public:
    IsoString Id() const override;
    IsoString Categories() const override;
    String Description() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    ProcessInterface* DefaultInterface() const override;
    ProcessImplementation* Create() const override;
    ProcessImplementation* Clone( const ProcessImplementation& ) const override;
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __ChannelCombinationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationProcess.h - Released 2020-02-27T12:56:01Z
+// EOF ChannelCombinationProcess.h - Released 2020-07-31T19:33:39Z

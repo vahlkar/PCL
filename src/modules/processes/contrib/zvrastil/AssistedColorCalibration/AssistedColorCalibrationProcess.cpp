@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// AssistedColorCalibrationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -52,25 +52,21 @@
 // ----------------------------------------------------------------------------
 
 #include "AssistedColorCalibrationProcess.h"
-#include "AssistedColorCalibrationParameters.h"
 #include "AssistedColorCalibrationInstance.h"
 #include "AssistedColorCalibrationInterface.h"
+#include "AssistedColorCalibrationParameters.h"
 
-#include <pcl/Console.h>
 #include <pcl/Arguments.h>
-#include <pcl/View.h>
+#include <pcl/Console.h>
 #include <pcl/Exception.h>
+#include <pcl/View.h>
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-#include "AssistedColorCalibrationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-AssistedColorCalibrationProcess* TheAssistedColorCalibrationProcess = 0;
+AssistedColorCalibrationProcess* TheAssistedColorCalibrationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -78,7 +74,6 @@ AssistedColorCalibrationProcess::AssistedColorCalibrationProcess()
 {
    TheAssistedColorCalibrationProcess = this;
 
-   // Instantiate process parameters
    new ACCRedCorrectionFactor( this );
    new ACCGreenCorrectionFactor( this );
    new ACCBlueCorrectionFactor( this );
@@ -115,7 +110,6 @@ uint32 AssistedColorCalibrationProcess::Version() const
 String AssistedColorCalibrationProcess::Description() const
 {
    return
-
    "<html>"
    "<p>AssistedColorCalibration process is used to do <b>manual</b> color calibration (white balance) on the image."
    "The color calibration should be done before further processing, even before the background (sky glow, light pollution) is subtracted. "
@@ -131,16 +125,18 @@ String AssistedColorCalibrationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** AssistedColorCalibrationProcess::IconImageXPM() const
+String AssistedColorCalibrationProcess::IconImageSVGFile() const
 {
-   return AssistedColorCalibrationIcon_XPM;
+   return "@module_icons_dir/AssistedColorCalibration.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* AssistedColorCalibrationProcess::DefaultInterface() const
 {
    return TheAssistedColorCalibrationInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* AssistedColorCalibrationProcess::Create() const
@@ -153,7 +149,7 @@ ProcessImplementation* AssistedColorCalibrationProcess::Create() const
 ProcessImplementation* AssistedColorCalibrationProcess::Clone( const ProcessImplementation& p ) const
 {
    const AssistedColorCalibrationInstance* instPtr = dynamic_cast<const AssistedColorCalibrationInstance*>( &p );
-   return (instPtr != 0) ? new AssistedColorCalibrationInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new AssistedColorCalibrationInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -163,10 +159,9 @@ bool AssistedColorCalibrationProcess::CanProcessCommandLines() const
    return false;
 }
 
-
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF AssistedColorCalibrationProcess.cpp - Released 2020-07-31T19:33:39Z

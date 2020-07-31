@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ToolButton.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ToolButton.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -59,8 +59,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ToolButton::ToolButton( const String& text, const pcl::Bitmap& icon, bool checkable, Control& parent ) :
-   Button( (*API->Button->CreateToolButton)( ModuleHandle(), this, text.c_str(), icon.handle, checkable, parent.handle, 0/*flags*/ ) )
+ToolButton::ToolButton( const String& text, const pcl::Bitmap& icon, bool checkable, Control& parent )
+   : Button( (*API->Button->CreateToolButton)( ModuleHandle(), this, text.c_str(), icon.handle, checkable, parent.handle, 0/*flags*/ ) )
 {
    if ( handle == 0 )
       throw APIFunctionError( "CreateToolButton" );
@@ -85,4 +85,4 @@ void ToolButton::SetCheckable( bool checkable )
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ToolButton.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ToolButton.cpp - Released 2020-07-31T19:33:12Z

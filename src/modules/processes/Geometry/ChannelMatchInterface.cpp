@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ChannelMatchInterface.cpp - Released 2020-02-27T12:56:01Z
+// ChannelMatchInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -63,15 +63,13 @@ ChannelMatchInterface* TheChannelMatchInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ChannelMatchIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ChannelMatchInterface::ChannelMatchInterface() :
-   instance( TheChannelMatchProcess )
+ChannelMatchInterface::ChannelMatchInterface()
+   : m_instance( TheChannelMatchProcess )
 {
    TheChannelMatchInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 ChannelMatchInterface::~ChannelMatchInterface()
 {
@@ -79,31 +77,43 @@ ChannelMatchInterface::~ChannelMatchInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ChannelMatchInterface::Id() const
 {
    return "ChannelMatch";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* ChannelMatchInterface::Process() const
 {
    return TheChannelMatchProcess;
 }
 
-const char** ChannelMatchInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String ChannelMatchInterface::IconImageSVGFile() const
 {
-   return ChannelMatchIcon_XPM;
+   return "@module_icons_dir/ChannelMatch.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelMatchInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelMatchInterface::ResetInstance()
 {
    ChannelMatchInstance defaultInstance( TheChannelMatchProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ChannelMatchInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -118,10 +128,14 @@ bool ChannelMatchInterface::Launch( const MetaProcess& P, const ProcessImplement
    return &P == TheChannelMatchProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* ChannelMatchInterface::NewProcess() const
 {
-   return new ChannelMatchInstance( instance );
+   return new ChannelMatchInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool ChannelMatchInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -131,86 +145,88 @@ bool ChannelMatchInterface::ValidateProcess( const ProcessImplementation& p, Str
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ChannelMatchInterface::RequiresInstanceValidation() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ChannelMatchInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
 void ChannelMatchInterface::UpdateControls()
 {
-   bool isR = instance.p_channelEnabled[0];
-   bool isG = instance.p_channelEnabled[1];
-   bool isB = instance.p_channelEnabled[2];
+   bool isR = m_instance.p_channelEnabled[0];
+   bool isG = m_instance.p_channelEnabled[1];
+   bool isB = m_instance.p_channelEnabled[2];
 
    //
 
    GUI->R_CheckBox.SetChecked( isR );
 
-   GUI->R_XOffset_NumericEdit.SetValue( instance.p_channelOffset[0].x );
+   GUI->R_XOffset_NumericEdit.SetValue( m_instance.p_channelOffset[0].x );
    GUI->R_XOffset_NumericEdit.Enable( isR );
 
    GUI->R_Left_ToolButton.Enable( isR );
    GUI->R_Right_ToolButton.Enable( isR );
 
-   GUI->R_YOffset_NumericEdit.SetValue( instance.p_channelOffset[0].y );
+   GUI->R_YOffset_NumericEdit.SetValue( m_instance.p_channelOffset[0].y );
    GUI->R_YOffset_NumericEdit.Enable( isR );
 
    GUI->R_Up_ToolButton.Enable( isR );
    GUI->R_Down_ToolButton.Enable( isR );
 
-   GUI->R_Factor_NumericControl.SetValue( instance.p_channelFactor[0] );
+   GUI->R_Factor_NumericControl.SetValue( m_instance.p_channelFactor[0] );
    GUI->R_Factor_NumericControl.Enable( isR );
 
    //
 
    GUI->G_CheckBox.SetChecked( isG );
 
-   GUI->G_XOffset_NumericEdit.SetValue( instance.p_channelOffset[1].x );
+   GUI->G_XOffset_NumericEdit.SetValue( m_instance.p_channelOffset[1].x );
    GUI->G_XOffset_NumericEdit.Enable( isG );
 
    GUI->G_Left_ToolButton.Enable( isG );
    GUI->G_Right_ToolButton.Enable( isG );
 
-   GUI->G_YOffset_NumericEdit.SetValue( instance.p_channelOffset[1].y );
+   GUI->G_YOffset_NumericEdit.SetValue( m_instance.p_channelOffset[1].y );
    GUI->G_YOffset_NumericEdit.Enable( isG );
 
    GUI->G_Up_ToolButton.Enable( isG );
    GUI->G_Down_ToolButton.Enable( isG );
 
-   GUI->G_Factor_NumericControl.SetValue( instance.p_channelFactor[1] );
+   GUI->G_Factor_NumericControl.SetValue( m_instance.p_channelFactor[1] );
    GUI->G_Factor_NumericControl.Enable( isG );
 
    //
 
    GUI->B_CheckBox.SetChecked( isB );
 
-   GUI->B_XOffset_NumericEdit.SetValue( instance.p_channelOffset[2].x );
+   GUI->B_XOffset_NumericEdit.SetValue( m_instance.p_channelOffset[2].x );
    GUI->B_XOffset_NumericEdit.Enable( isB );
 
    GUI->B_Left_ToolButton.Enable( isB );
    GUI->B_Right_ToolButton.Enable( isB );
 
-   GUI->B_YOffset_NumericEdit.SetValue( instance.p_channelOffset[2].y );
+   GUI->B_YOffset_NumericEdit.SetValue( m_instance.p_channelOffset[2].y );
    GUI->B_YOffset_NumericEdit.Enable( isB );
 
    GUI->B_Up_ToolButton.Enable( isB );
    GUI->B_Down_ToolButton.Enable( isB );
 
-   GUI->B_Factor_NumericControl.SetValue( instance.p_channelFactor[2] );
+   GUI->B_Factor_NumericControl.SetValue( m_instance.p_channelFactor[2] );
    GUI->B_Factor_NumericControl.Enable( isB );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void ChannelMatchInterface::__Channel_Click( Button& sender, bool checked )
@@ -229,18 +245,20 @@ void ChannelMatchInterface::__Channel_Click( Button& sender, bool checked )
       for ( int j = 0; j < 3; ++j )
       {
          if ( j == i )
-            instance.p_channelEnabled[i] = checked;
-         if ( instance.p_channelEnabled[j] )
+            m_instance.p_channelEnabled[i] = checked;
+         if ( m_instance.p_channelEnabled[j] )
             ++n;
       }
 
       if ( n == 0 )
          for ( int j = 0; j < 3; ++j )
-            instance.p_channelEnabled[j] = true;
+            m_instance.p_channelEnabled[j] = true;
 
       UpdateControls();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelMatchInterface::__Channel_Offset_Click( Button& sender, bool /*checked*/ )
 {
@@ -251,75 +269,75 @@ void ChannelMatchInterface::__Channel_Offset_Click( Button& sender, bool /*check
    if ( sender == GUI->R_Left_ToolButton )
    {
       sign = -1;
-      item = &(instance.p_channelOffset[0].x);
+      item = &(m_instance.p_channelOffset[0].x);
       edit = &GUI->R_XOffset_NumericEdit;
    }
    else if ( sender == GUI->R_Right_ToolButton )
    {
       sign = +1;
-      item = &(instance.p_channelOffset[0].x);
+      item = &(m_instance.p_channelOffset[0].x);
       edit = &GUI->R_XOffset_NumericEdit;
    }
    else if ( sender == GUI->R_Up_ToolButton )
    {
       sign = -1;
-      item = &(instance.p_channelOffset[0].y);
+      item = &(m_instance.p_channelOffset[0].y);
       edit = &GUI->R_YOffset_NumericEdit;
    }
    else if ( sender == GUI->R_Down_ToolButton )
    {
       sign = +1;
-      item = &(instance.p_channelOffset[0].y);
+      item = &(m_instance.p_channelOffset[0].y);
       edit = &GUI->R_YOffset_NumericEdit;
    }
 
    else if ( sender == GUI->G_Left_ToolButton )
    {
       sign = -1;
-      item = &(instance.p_channelOffset[1].x);
+      item = &(m_instance.p_channelOffset[1].x);
       edit = &GUI->G_XOffset_NumericEdit;
    }
    else if ( sender == GUI->G_Right_ToolButton )
    {
       sign = +1;
-      item = &(instance.p_channelOffset[1].x);
+      item = &(m_instance.p_channelOffset[1].x);
       edit = &GUI->G_XOffset_NumericEdit;
    }
    else if ( sender == GUI->G_Up_ToolButton )
    {
       sign = -1;
-      item = &(instance.p_channelOffset[1].y);
+      item = &(m_instance.p_channelOffset[1].y);
       edit = &GUI->G_YOffset_NumericEdit;
    }
    else if ( sender == GUI->G_Down_ToolButton )
    {
       sign = +1;
-      item = &(instance.p_channelOffset[1].y);
+      item = &(m_instance.p_channelOffset[1].y);
       edit = &GUI->G_YOffset_NumericEdit;
    }
 
    else if ( sender == GUI->B_Left_ToolButton )
    {
       sign = -1;
-      item = &(instance.p_channelOffset[2].x);
+      item = &(m_instance.p_channelOffset[2].x);
       edit = &GUI->B_XOffset_NumericEdit;
    }
    else if ( sender == GUI->B_Right_ToolButton )
    {
       sign = +1;
-      item = &(instance.p_channelOffset[2].x);
+      item = &(m_instance.p_channelOffset[2].x);
       edit = &GUI->B_XOffset_NumericEdit;
    }
    else if ( sender == GUI->B_Up_ToolButton )
    {
       sign = -1;
-      item = &(instance.p_channelOffset[2].y);
+      item = &(m_instance.p_channelOffset[2].y);
       edit = &GUI->B_YOffset_NumericEdit;
    }
    else if ( sender == GUI->B_Down_ToolButton )
    {
       sign = +1;
-      item = &(instance.p_channelOffset[2].y);
+      item = &(m_instance.p_channelOffset[2].y);
       edit = &GUI->B_YOffset_NumericEdit;
    }
    else
@@ -330,32 +348,36 @@ void ChannelMatchInterface::__Channel_Offset_Click( Button& sender, bool /*check
    edit->SetValue( *item );
 }
 
+// ----------------------------------------------------------------------------
+
 void ChannelMatchInterface::__Channel_Offset_ValueUpdated( NumericEdit& sender, double value )
 {
         if ( sender == GUI->R_XOffset_NumericEdit )
-      instance.p_channelOffset[0].x = value;
+      m_instance.p_channelOffset[0].x = value;
    else if ( sender == GUI->R_YOffset_NumericEdit )
-      instance.p_channelOffset[0].y = value;
+      m_instance.p_channelOffset[0].y = value;
 
    else if ( sender == GUI->G_XOffset_NumericEdit )
-      instance.p_channelOffset[1].x = value;
+      m_instance.p_channelOffset[1].x = value;
    else if ( sender == GUI->G_YOffset_NumericEdit )
-      instance.p_channelOffset[1].y = value;
+      m_instance.p_channelOffset[1].y = value;
 
    else if ( sender == GUI->B_XOffset_NumericEdit )
-      instance.p_channelOffset[2].x = value;
+      m_instance.p_channelOffset[2].x = value;
    else if ( sender == GUI->B_YOffset_NumericEdit )
-      instance.p_channelOffset[2].y = value;
+      m_instance.p_channelOffset[2].y = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void ChannelMatchInterface::__Channel_Factor_ValueUpdated( NumericEdit& sender, double value )
 {
         if ( sender == GUI->R_Factor_NumericControl )
-      instance.p_channelFactor[0] = value;
+      m_instance.p_channelFactor[0] = value;
    else if ( sender == GUI->G_Factor_NumericControl )
-      instance.p_channelFactor[1] = value;
+      m_instance.p_channelFactor[1] = value;
    else if ( sender == GUI->B_Factor_NumericControl )
-      instance.p_channelFactor[2] = value;
+      m_instance.p_channelFactor[2] = value;
 }
 
 // ----------------------------------------------------------------------------
@@ -591,4 +613,4 @@ ChannelMatchInterface::GUIData::GUIData( ChannelMatchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ChannelMatchInterface.cpp - Released 2020-07-31T19:33:39Z

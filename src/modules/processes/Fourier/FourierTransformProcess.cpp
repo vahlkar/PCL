@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformProcess.cpp - Released 2020-02-27T12:56:01Z
+// FourierTransformProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -64,33 +64,36 @@ FourierTransformProcess* TheFourierTransformProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "FourierTransformIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 FourierTransformProcess::FourierTransformProcess()
 {
    TheFourierTransformProcess = this;
 
-   // Instantiate process parameters
    new FTRadialCoordinates( this );
    new FTCentered( this );
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString FourierTransformProcess::Id() const
 {
    return "FourierTransform";
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString FourierTransformProcess::Category() const
 {
    return "Fourier";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 FourierTransformProcess::Version() const
 {
    return 0x100;
 }
+
+// ----------------------------------------------------------------------------
 
 String FourierTransformProcess::Description() const
 {
@@ -103,20 +106,28 @@ String FourierTransformProcess::Description() const
    "</html>";
 }
 
-const char** FourierTransformProcess::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String FourierTransformProcess::IconImageSVGFile() const
 {
-   return FourierTransformIcon_XPM;
+   return "@module_icons_dir/FourierTransform.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessInterface* FourierTransformProcess::DefaultInterface() const
 {
    return TheFourierTransformInterface;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* FourierTransformProcess::Create() const
 {
    return new FourierTransformInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 ProcessImplementation* FourierTransformProcess::Clone( const ProcessImplementation& p ) const
 {
@@ -129,4 +140,4 @@ ProcessImplementation* FourierTransformProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF FourierTransformProcess.cpp - Released 2020-07-31T19:33:39Z

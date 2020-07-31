@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIClient.h - Released 2020-02-27T12:56:01Z
+// INDIClient.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -73,9 +73,9 @@ public:
 
    typedef T item_type;
 
-   ExclusiveAccess( Mutex& mutex, item_type& item ) :
-      m_lock( mutex ),
-      m_item( item )
+   ExclusiveAccess( Mutex& mutex, item_type& item )
+      : m_lock( mutex )
+      , m_item( item )
    {
    }
 
@@ -104,9 +104,9 @@ public:
 
    typedef T item_type;
 
-   ExclusiveConstAccess( Mutex& mutex, const item_type& item ) :
-      m_lock( mutex ),
-      m_item( item )
+   ExclusiveConstAccess( Mutex& mutex, const item_type& item )
+      : m_lock( mutex )
+      , m_item( item )
    {
    }
 
@@ -127,8 +127,8 @@ class ExclPropertyList : public ExclusiveAccess<INDIPropertyListItemArray>
 {
 public:
 
-   ExclPropertyList( Mutex& mutex, INDIPropertyListItemArray& list ) :
-      ExclusiveAccess( mutex, list )
+   ExclPropertyList( Mutex& mutex, INDIPropertyListItemArray& list )
+      : ExclusiveAccess( mutex, list )
    {
    }
 };
@@ -139,8 +139,8 @@ class ExclConstPropertyList : public ExclusiveConstAccess<INDIPropertyListItemAr
 {
 public:
 
-   ExclConstPropertyList( Mutex& mutex, const INDIPropertyListItemArray& list ) :
-      ExclusiveConstAccess( mutex, list )
+   ExclConstPropertyList( Mutex& mutex, const INDIPropertyListItemArray& list )
+      : ExclusiveConstAccess( mutex, list )
    {
    }
 };
@@ -151,8 +151,8 @@ class ExclDeviceList : public ExclusiveAccess<INDIDeviceListItemArray>
 {
 public:
 
-   ExclDeviceList( Mutex& mutex, INDIDeviceListItemArray& list ) :
-      ExclusiveAccess( mutex, list )
+   ExclDeviceList( Mutex& mutex, INDIDeviceListItemArray& list )
+      : ExclusiveAccess( mutex, list )
    {
    }
 };
@@ -163,8 +163,8 @@ class ExclConstDeviceList : public ExclusiveConstAccess<INDIDeviceListItemArray>
 {
 public:
 
-   ExclConstDeviceList( Mutex& mutex, const INDIDeviceListItemArray& list ) :
-      ExclusiveConstAccess( mutex, list )
+   ExclConstDeviceList( Mutex& mutex, const INDIDeviceListItemArray& list )
+      : ExclusiveConstAccess( mutex, list )
    {
    }
 };
@@ -181,10 +181,10 @@ public:
       int m_messageSeverity = 0;
    };
 
-   INDIClient( const IsoString& hostName = "localhost", uint32 port = 7624 ) :
-      m_indigoClient( "PixInsight", hostName.c_str(), port ),
-      m_serverHost( hostName ),
-      m_serverPort( port )
+   INDIClient( const IsoString& hostName = "localhost", uint32 port = 7624 )
+      : m_indigoClient( "PixInsight", hostName.c_str(), port )
+      , m_serverHost( hostName )
+      , m_serverPort( port )
    {
       // register Indigo callbacks
       registerNewDeviceCallback();
@@ -432,7 +432,6 @@ private:
    IndigoClient              m_indigoClient;
    IsoString                 m_serverHost;
    uint32_t                  m_serverPort;
-   bool                      m_serverIsConnected;
    INDIDeviceListItemArray   m_deviceList;
    mutable Mutex             m_deviceListMutex;
    INDIPropertyListItemArray m_propertyList;
@@ -526,4 +525,4 @@ private:
 #endif // __INDIClient_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIClient.h - Released 2020-02-27T12:56:01Z
+// EOF INDIClient.h - Released 2020-07-31T19:33:39Z

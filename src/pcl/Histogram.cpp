@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Histogram.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Histogram.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -165,8 +165,12 @@ private:
 
       double min, max;
 
-      RealMinMaxThread( const ImageVariant& image, const Rect& rect, int channel, int startRow, int endRow ) :
-         m_image( image ), m_rect( rect ), m_channel( channel ), m_startRow( startRow ), m_endRow( endRow )
+      RealMinMaxThread( const ImageVariant& image, const Rect& rect, int channel, int startRow, int endRow )
+         : m_image( image )
+         , m_rect( rect )
+         , m_channel( channel )
+         , m_startRow( startRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -215,9 +219,15 @@ private:
       Histogram::histogram_type histogram;
 
       HistogramThread( const ImageVariant& image, const Rect& rect, int channel,
-                       int resolution, double min, double max, int startRow, int endRow ) :
-         histogram( 0, resolution ), m_image( image ), m_rect( rect ), m_channel( channel ),
-         m_min( min ), m_max( max ), m_startRow( startRow ), m_endRow( endRow )
+                       int resolution, double min, double max, int startRow, int endRow )
+         : histogram( 0, resolution )
+         , m_image( image )
+         , m_rect( rect )
+         , m_channel( channel )
+         , m_min( min )
+         , m_max( max )
+         , m_startRow( startRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -345,4 +355,4 @@ const pcl::ImageVariant& Histogram::operator <<( const pcl::ImageVariant& v )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Histogram.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Histogram.cpp - Released 2020-07-31T19:33:12Z

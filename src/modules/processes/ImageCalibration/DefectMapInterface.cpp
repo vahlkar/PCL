@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// DefectMapInterface.cpp - Released 2020-02-27T12:56:01Z
+// DefectMapInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -69,16 +69,13 @@ DefectMapInterface* TheDefectMapInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "DefectMapIcon.xpm"
-
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-
-DefectMapInterface::DefectMapInterface() :
-   instance( TheDefectMapProcess )
+DefectMapInterface::DefectMapInterface()
+   : instance( TheDefectMapProcess )
 {
    TheDefectMapInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 DefectMapInterface::~DefectMapInterface()
 {
@@ -86,31 +83,43 @@ DefectMapInterface::~DefectMapInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString DefectMapInterface::Id() const
 {
    return "DefectMap";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* DefectMapInterface::Process() const
 {
    return TheDefectMapProcess;
 }
 
-const char** DefectMapInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String DefectMapInterface::IconImageSVGFile() const
 {
-   return DefectMapIcon_XPM;
+   return "@module_icons_dir/DefectMap.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void DefectMapInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentView();
 }
 
+// ----------------------------------------------------------------------------
+
 void DefectMapInterface::ResetInstance()
 {
    DefectMapInstance defaultInstance( TheDefectMapProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool DefectMapInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -125,10 +134,14 @@ bool DefectMapInterface::Launch( const MetaProcess& P, const ProcessImplementati
    return &P == TheDefectMapProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* DefectMapInterface::NewProcess() const
 {
    return new DefectMapInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool DefectMapInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -138,10 +151,14 @@ bool DefectMapInterface::ValidateProcess( const ProcessImplementation& p, String
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool DefectMapInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool DefectMapInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -176,6 +193,8 @@ void DefectMapInterface::__MapImage_EditCompleted( Edit& sender )
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void DefectMapInterface::__MapImage_Click( Button& sender, bool checked )
 {
    ViewSelectionDialog d( instance.mapId, false/*allowPreviews*/ );
@@ -187,15 +206,21 @@ void DefectMapInterface::__MapImage_Click( Button& sender, bool checked )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void DefectMapInterface::__Operation_ItemSelected( ComboBox& sender, int itemIndex )
 {
    instance.operation = itemIndex;
 }
 
+// ----------------------------------------------------------------------------
+
 void DefectMapInterface::__Structure_ItemSelected( ComboBox& sender, int itemIndex )
 {
    instance.structure = itemIndex;
 }
+
+// ----------------------------------------------------------------------------
 
 void DefectMapInterface::__ItemClicked( Button& sender, bool checked )
 {
@@ -203,11 +228,15 @@ void DefectMapInterface::__ItemClicked( Button& sender, bool checked )
       instance.isCFA = checked;
 }
 
+// ----------------------------------------------------------------------------
+
 void DefectMapInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->MapImage_Edit )
       wantsView = !view.IsPreview();
 }
+
+// ----------------------------------------------------------------------------
 
 void DefectMapInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -219,6 +248,7 @@ void DefectMapInterface::__ViewDrop( Control& sender, const Point& pos, const Vi
       }
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 DefectMapInterface::GUIData::GUIData( DefectMapInterface& w )
@@ -338,4 +368,4 @@ DefectMapInterface::GUIData::GUIData( DefectMapInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF DefectMapInterface.cpp - Released 2020-07-31T19:33:39Z

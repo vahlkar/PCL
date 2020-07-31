@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="a" x1="178.03" x2="300.77" y1="-28.579" y2="-28.579" gradientUnits="userSpaceOnUse">
+<stop offset="0"/>
+<stop stop-color="#fdfdfd" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="matrix(1 0 0 1.0032 -30.238 40.018)" stroke-width=".99838">
+<g transform="translate(-141.44 56.205)" stroke-width=".99838">
+<rect x="178.03" y="-89.764" width="122.74" height="122.37" fill="url(#a)" style="paint-order:markers fill stroke"/>
+<path d="m294.39-17.269-27.161-38.115v27.813l-89.188-0.14047v22.756h89.048l0.28179 27.532z" fill-rule="evenodd"/>
+<path d="m184.44-39.884 27.161-38.115v27.813l89.188-0.14047v22.756h-89.048l-0.28178 27.532z" fill="#fff" fill-rule="evenodd"/>
+<path d="m294.39-17.269-27.161-38.115v27.813l-55.479-6e-6 -0.14086 22.615 55.479 2.1e-6 0.28178 27.532z" fill-rule="evenodd"/>
+</g>
+</g>
+</svg>

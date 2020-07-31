@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInterface.h - Released 2020-02-27T12:56:01Z
+// StarGeneratorInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -69,8 +69,6 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// StarGeneratorInterface
-// ----------------------------------------------------------------------------
 
 class StarGeneratorInterface : public ProcessInterface
 {
@@ -79,28 +77,19 @@ public:
    StarGeneratorInterface();
    virtual ~StarGeneratorInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   InterfaceFeatures Features() const;
-
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual void SaveSettings() const;
-   virtual void LoadSettings();
-
-   // -------------------------------------------------------------------------
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   void SaveSettings() const override;
+   void LoadSettings() override;
 
 private:
 
@@ -162,7 +151,7 @@ private:
          NumericEdit       TargetMinimumValue_NumericEdit;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
    void UpdateControls();
    void UpdateRAControls();
@@ -172,8 +161,6 @@ private:
    void GetRA();
    void GetDec();
    void GetEpoch();
-
-   // Event Handlers
 
    void __EditCompleted( Edit& sender );
    void __RealValueUpdated( NumericEdit& sender, double value );
@@ -197,4 +184,4 @@ PCL_END_LOCAL
 #endif   // __StarGeneratorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInterface.h - Released 2020-02-27T12:56:01Z
+// EOF StarGeneratorInterface.h - Released 2020-07-31T19:33:39Z

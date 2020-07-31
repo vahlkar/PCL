@@ -3,18 +3,20 @@
 	-lf2c -lm   (in that order)
 */
 
-#include <math.h>
 #include "cminpack.h"
+#include <math.h>
+#include "cminpackP.h"
 
-/* Subroutine */ void r1mpyq(int m, int n, double *a, int
-	lda, const double *v, const double *w)
+__cminpack_attr__
+void __cminpack_func__(r1mpyq)(int m, int n, real *a, int
+	lda, const real *v, const real *w)
 {
     /* System generated locals */
     int a_dim1, a_offset;
 
     /* Local variables */
     int i, j, nm1, nmj;
-    double cos, sin, temp;
+    real cos, sin, temp;
 
 /*     ********** */
 

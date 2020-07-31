@@ -7,7 +7,7 @@
 // ----------------------------------------------------------------------------
 // This file is part of PixInsight X11 UNIX/Linux Installer
 // ----------------------------------------------------------------------------
-// 2020/02/26 15:40:13 UTC
+// 2020/07/31 19:35:19 UTC
 // installer.cpp
 // ----------------------------------------------------------------------------
 // Copyright (c) 2013-2020 Pleiades Astrophoto S.L.
@@ -71,9 +71,13 @@ public:
 private:
 
    /*
-    * Parameters
+    * Install PixInsight by default.
     */
-   Task   m_task;
+   Task m_task = InstallTask;
+
+   /*
+    * Installation source and target directories.
+    */
    String m_executablePath;
    String m_baseDir;
    String m_sourceDir;
@@ -81,8 +85,22 @@ private:
    String m_installDesktopDir;
    String m_installMIMEDir;
    String m_installIconsDir;
-   bool   m_createBinLauncher;
-   bool   m_removePrevious;
+
+   /*
+    * We create a launcher script on /bin by default, so one can say just
+    * 'PixInsight' from a terminal.
+    */
+   bool m_createBinLauncher = true;
+
+   /*
+    * We do not backup a previous installation by default.
+    */
+   bool m_removePrevious = true;
+
+   /*
+    * By default, ask for user confirmation with a 'yes/no' prompt.
+    */
+   bool m_forceYes = false;
 
    /*
     * The application launcher script on /bin
@@ -275,9 +293,6 @@ private:
 
 PixInsightX11Installer::PixInsightX11Installer( int argc, const char** argv )
 {
-   // Install PixInsight by default.
-   m_task = InstallTask;
-
    // Assume that we get a path to the executable file (possibly a relative
    // path) in argv[0]. This is standard in all known unices.
    m_executablePath = String::UTF8ToUTF16( argv[0] ).Unquoted().Trimmed();
@@ -307,13 +322,6 @@ PixInsightX11Installer::PixInsightX11Installer( int argc, const char** argv )
    m_installIconsDir = "/usr/share/icons/hicolor";
    if ( !File::DirectoryExists( m_installIconsDir ) )
       m_installIconsDir = "/usr/local/share/icons/hicolor"; // FreeBSD
-
-   // By default, we create a launcher script on /bin so one can say just
-   // PixInsight from a terminal.
-   m_createBinLauncher = true;
-
-   // By default, we do not backup a previous installation.
-   m_removePrevious = true;
 
    // Assume we are running on an UTF-8 POSIX-compliant system.
    StringList inputArgs;
@@ -368,6 +376,8 @@ PixInsightX11Installer::PixInsightX11Installer( int argc, const char** argv )
             m_task = UninstallTask;
          else if ( i->Id() == "-version" )
             m_task = ShowVersionTask;
+         else if ( i->Id() == "-yes" || i->Id() == "y" )
+            m_forceYes = true;
          else if ( i->Id() == "-help" )
             m_task = ShowHelpTask;
          else
@@ -524,8 +534,9 @@ bool PixInsightX11Installer::DoInstall()
    "\nRemove previous installation .... " << (m_removePrevious ? "yes" : "no") <<
    "\n";
 
-   if ( !AskForConfirmation() )
-      return false;
+   if ( !m_forceYes )
+      if ( !AskForConfirmation() )
+         return false;
 
    std::cout << "\nPlease wait while PixInsight is being installed...\n" << std::flush;
 
@@ -761,8 +772,9 @@ bool PixInsightX11Installer::DoUninstall()
    "\n" + m_installDir +
    "\n";
 
-   if ( !AskForConfirmation() )
-      return false;
+   if ( !m_forceYes )
+      if ( !AskForConfirmation() )
+         return false;
 
    std::cout << "\nPlease wait while PixInsight is being uninstalled...\n" << std::flush;
 
@@ -822,6 +834,13 @@ bool PixInsightX11Installer::DoShowHelp()
    "\n      reasons, this should always be a protected system directory with"
    "\n      exclusive root write permission."
    "\n      (/opt/PixInsight)"
+   "\n"
+   "\n-y | --yes"
+   "\n"
+   "\n      Do not ask for confirmation to install/uninstall. Without this"
+   "\n      argument the installer asks for confirmation with a 'yes/no' prompt."
+   "\n      This argument is useful to perform automated"
+   "\n      installations/uninstallations without user interaction."
    "\n"
    "\n--install-desktop-dir=<dir>"
    "\n"
@@ -1217,5 +1236,5 @@ int main( int argc, const char** argv )
 }
 
 // ----------------------------------------------------------------------------
-// 2020/02/26 15:40:13 UTC
+// 2020/07/31 19:35:19 UTC
 // installer.cpp

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MetaFileFormat.h - Released 2020-02-27T12:55:23Z
+// pcl/MetaFileFormat.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -199,7 +199,7 @@ public:
     * Avoid also describing a file format itself; the information given should
     * not intend to replace an official/formal definition of an image format.
     *
-    * Descriptions of file format implementations are always printed on
+    * Descriptions of file format implementations are always written on
     * PixInsight consoles. This means that the text output functionality of the
     * Console class can be used to format the string returned by this function.
     * Refer to that class and its documentation for further information.
@@ -236,14 +236,110 @@ public:
    }
 
    /*!
+    * Returns the icon image of this file format as a document in SVG format.
+    *
+    * The specified image will be used to identify all instances of this file
+    * format in the core application's GUI. It will be used on the %Format
+    * Explorer window, on image icons of this format, and in general for every
+    * graphical item related to this format or to an instance of this format.
+    *
+    * The returned string must be the source code of a valid SVG document
+    * representing the icon image, encoded in UTF-8.
+    *
+    * Since core version 1.8.8-6, all process, interface and file format icons
+    * should be specified in SVG format. Raster formats, such as XPM and PNG,
+    * have been deprecated for this purpose.
+    *
+    * If both this function and IconImageSVGFile() return an empty string, or
+    * if the specified SVG document does not exist or is not valid, a default
+    * icon will be assigned to this format automatically by the PixInsight core
+    * application.
+    *
+    * \note The default implementation of this function returns an empty
+    * string.
+    *
+    * \sa IconImageSVGFile()
+    */
+   virtual IsoString IconImageSVG() const
+   {
+      return IsoString();
+   }
+
+   /*!
+    * Returns the icon image of this file format as a document in SVG format,
+    * stored as an external file.
+    *
+    * The specified image will be used to identify all instances of this file
+    * format in the core application's GUI. It will be used on the %Format
+    * Explorer window, on image icons of this format, and in general for every
+    * graphical item related to this format or to an instance of this format.
+    *
+    * The returned string must be a path to an existing file in the local
+    * file system (remote resources are not supported in current PCL versions),
+    * which must store a valid SVG document representing the icon image. The
+    * SVG source code must be encoded in UTF-8.
+    *
+    * Since core version 1.8.8-6, all process, interface and file format icons
+    * should be specified in SVG format. Raster formats, such as XPM and PNG,
+    * have been deprecated for this purpose.
+    *
+    * If both this function and IconImageSVG() return an empty string, or if
+    * the specified SVG document does not exist or is not valid, a default icon
+    * will be assigned to this format automatically by the PixInsight core
+    * application.
+    *
+    * <b>Automatic Resource Location</b>
+    *
+    * Format icon image files can be loaded from arbitrary locations on the
+    * local file system. However, modules typically install their file format
+    * icons on the /rsc/icons/module directory under the local PixInsight
+    * installation. A module can specify the "@module_icons_dir/" prefix in
+    * icon file paths to let the PixInsight core application load the
+    * corresponding SVG documents from the appropriate standard distribution
+    * directory automatically. For example, suppose that a "Bar" file format,
+    * pertaining to a "Foo" module, reimplements this member function in its
+    * %MetaFileFormat derived class as follows:
+    *
+    * \code
+    * class Bar : public MetaFileFormat
+    * {
+    * public:
+    *    ...
+    *
+    *    String IconImageSVGFile() const override
+    *    {
+    *       return "@module_icons_dir/Bar.svg";
+    *    }
+    *
+    *    ...
+    * };
+    * \endcode
+    *
+    * Then the core application will attempt to load the following SVG file:
+    *
+    * &lt;install-dir&gt;/rsc/icons/module/Foo/Bar.svg
+    *
+    * where &lt;install-dir&gt; is the local directory where the running
+    * PixInsight core application is installed.
+    *
+    * \note The default implementation of this function returns an empty
+    * string.
+    *
+    * \sa IconImageSVG()
+    */
+   virtual String IconImageSVGFile() const
+   {
+      return String();
+   }
+
+   /*!
     * Returns a <em>large icon</em> for this format as an image in the
     * standard XPM format.
     *
-    * The specified image will be used to identify all instances of this
-    * format (e.g., images and files) in the core application's GUI. It will be
-    * used on the Format Explorer window, on image icons of this format, and in
-    * general for every graphical item related to this format or to an instance
-    * of this format.
+    * The specified image will be used to identify all instances of this file
+    * format in the core application's GUI. It will be used on the %Format
+    * Explorer window, on image icons of this format, and in general for every
+    * graphical item related to this format or to an instance of this format.
     *
     * 32-bit RGBA color images (including an alpha channel) are fully
     * supported.
@@ -252,6 +348,13 @@ public:
     * file format automatically.
     *
     * \note    The default implementation of this function returns nullptr.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define file format icons in SVG format. Existing modules should also be
+    * refactored in the same way to support scalable icons.
     *
     * \sa IconImageFile()
     */
@@ -269,14 +372,15 @@ public:
     * For details on format icon images, see the documentation for
     * IconImageXPM().
     *
-    * \note    Using this function is discouraged, since it produces an
-    * unnecessary dependency on an external file, which complicates the module
-    * installation procedure. The recommended method is always reimplementing
-    * the IconImageXPM() member function in a derived class, to provide the
-    * address of a static image in the XPM format.
+    * \note The default implementation of this function returns an empty
+    * string.
     *
-    * \note    The default implementation of this function returns an empty
-    *          string.
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define file format icons in SVG format. Existing modules should also be
+    * refactored in the same way to support scalable icons.
     *
     * \sa IconImageXPM()
     */
@@ -304,6 +408,13 @@ public:
     * application does a fine work resampling large icons to obtain reduced
     * versions.
     *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define file format icons in SVG format. Existing modules should also be
+    * refactored in the same way to support scalable icons.
+    *
     * \sa SmallIconImageFile()
     */
    virtual const char** SmallIconImageXPM() const
@@ -320,8 +431,12 @@ public:
     * For details on small format icon images, see the documentation for
     * SmallIconImageXPM().
     *
-    * \note    Using this function is discouraged, for the same reasons
-    * explained on the documentation entry for IconImageFile().
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define file format icons in SVG format. Existing modules should also be
+    * refactored in the same way to support scalable icons.
     *
     * \sa SmallIconImageXPM()
     */
@@ -777,4 +892,4 @@ private:
 #endif   // __PCL_MetaFileFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaFileFormat.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/MetaFileFormat.h - Released 2020-07-31T19:33:04Z

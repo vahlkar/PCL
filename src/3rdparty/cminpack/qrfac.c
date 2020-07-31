@@ -1,33 +1,118 @@
-/* qrfac.f -- translated by f2c (version 20020621).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
-#include <math.h>
 #include "cminpack.h"
-#define min(a,b) ((a) <= (b) ? (a) : (b))
-#define max(a,b) ((a) >= (b) ? (a) : (b))
+#include <math.h>
+#ifdef USE_LAPACK
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#endif
+#include "cminpackP.h"
 
-/* Subroutine */ void qrfac(int m, int n, double *a, int
-	lda, int pivot, int *ipvt, int lipvt, double *rdiag,
-	 double *acnorm, double *wa)
+__cminpack_attr__
+void __cminpack_func__(qrfac)(int m, int n, real *a, int
+	lda, int pivot, int *ipvt, int lipvt, real *rdiag,
+	 real *acnorm, real *wa)
 {
+#ifdef USE_LAPACK
+    __CLPK_integer m_ = m;
+    __CLPK_integer n_ = n;
+    __CLPK_integer lda_ = lda;
+    __CLPK_integer *jpvt;
+
+    int i, j, k;
+    double t;
+    double* tau = wa;
+    const __CLPK_integer ltau = m > n ? n : m;
+    __CLPK_integer lwork = -1;
+    __CLPK_integer info = 0;
+    double* work;
+
+    if (pivot) {
+        assert( lipvt >= n );
+        if (sizeof(__CLPK_integer) != sizeof(ipvt[0])) {
+            jpvt = malloc(n*sizeof(__CLPK_integer));
+        } else {
+            /* __CLPK_integer is actually an int, just do a cast */
+            jpvt = (__CLPK_integer *)ipvt;
+        }
+        /* set all columns free */
+        memset(jpvt, 0, sizeof(int)*n);
+    }
+    
+    /* query optimal size of work */
+    lwork = -1;
+    if (pivot) {
+        dgeqp3_(&m_,&n_,a,&lda_,jpvt,tau,tau,&lwork,&info);
+        lwork = (int)tau[0];
+        assert( lwork >= 3*n+1  );
+    } else {
+        dgeqrf_(&m_,&n_,a,&lda_,tau,tau,&lwork,&info);
+        lwork = (int)tau[0];
+        assert( lwork >= 1 && lwork >= n );
+    }
+    
+    assert( info == 0 );
+    
+    /* alloc work area */
+    work = (double *)malloc(sizeof(double)*lwork);
+    assert(work != NULL);
+    
+    /* set acnorm first (from the doc of qrfac, acnorm may point to the same area as rdiag) */
+    if (acnorm != rdiag) {
+        for (j = 0; j < n; ++j) {
+            acnorm[j] = __cminpack_enorm__(m, &a[j * lda]);
+        }
+    }
+    
+    /* QR decomposition */
+    if (pivot) {
+        dgeqp3_(&m_,&n_,a,&lda_,jpvt,tau,work,&lwork,&info);
+    } else {
+        dgeqrf_(&m_,&n_,a,&lda_,tau,work,&lwork,&info);
+    }
+    assert(info == 0);
+    
+    /* set rdiag, before the diagonal is replaced */
+    memset(rdiag, 0, sizeof(double)*n);
+    for(i=0 ; i<n ; ++i) {
+        rdiag[i] = a[i*lda+i];
+    }
+    
+    /* modify lower trinagular part to look like qrfac's output */
+    for(i=0 ; i<ltau ; ++i) {
+        k = i*lda+i;
+        t = tau[i];
+        a[k] = t;
+        for(j=i+1 ; j<m ; j++) {
+            k++;
+            a[k] *= t;
+        }
+    }
+    
+    free(work);
+    if (pivot) {
+        /* convert back jpvt to ipvt */
+        if (sizeof(__CLPK_integer) != sizeof(ipvt[0])) {
+            for(i=0; i<n; ++i) {
+                ipvt[i] = jpvt[i];
+            }
+            free(jpvt);
+        }
+    }
+#else /* !USE_LAPACK */
     /* Initialized data */
 
 #define p05 .05
 
     /* System generated locals */
-    int a_dim1, a_offset;
-    double d1;
+    real d1;
 
     /* Local variables */
     int i, j, k, jp1;
-    double sum;
-    int kmax;
-    double temp;
+    real sum;
+    real temp;
     int minmn;
-    double epsmch;
-    double ajnorm;
+    real epsmch;
+    real ajnorm;
 
 /*     ********** */
 
@@ -104,51 +189,42 @@
 /*     burton s. garbow, kenneth e. hillstrom, jorge j. more */
 
 /*     ********** */
-    /* Parameter adjustments */
-    --wa;
-    --acnorm;
-    --rdiag;
-    a_dim1 = lda;
-    a_offset = 1 + a_dim1 * 1;
-    a -= a_offset;
-    --ipvt;
-
-    /* Function Body */
+    (void)lipvt;
 
 /*     epsmch is the machine precision. */
 
-    epsmch = dpmpar(1);
+    epsmch = __cminpack_func__(dpmpar)(1);
 
 /*     compute the initial column norms and initialize several arrays. */
 
-    for (j = 1; j <= n; ++j) {
-	acnorm[j] = enorm(m, &a[j * a_dim1 + 1]);
+    for (j = 0; j < n; ++j) {
+	acnorm[j] = __cminpack_enorm__(m, &a[j * lda + 0]);
 	rdiag[j] = acnorm[j];
 	wa[j] = rdiag[j];
 	if (pivot) {
-	    ipvt[j] = j;
+	    ipvt[j] = j+1;
 	}
     }
 
 /*     reduce a to r with householder transformations. */
 
     minmn = min(m,n);
-    for (j = 1; j <= minmn; ++j) {
+    for (j = 0; j < minmn; ++j) {
 	if (pivot) {
 
 /*        bring the column of largest norm into the pivot position. */
 
-            kmax = j;
-            for (k = j; k <= n; ++k) {
+            int kmax = j;
+            for (k = j; k < n; ++k) {
                 if (rdiag[k] > rdiag[kmax]) {
                     kmax = k;
                 }
             }
             if (kmax != j) {
-                for (i = 1; i <= m; ++i) {
-                    temp = a[i + j * a_dim1];
-                    a[i + j * a_dim1] = a[i + kmax * a_dim1];
-                    a[i + kmax * a_dim1] = temp;
+                for (i = 0; i < m; ++i) {
+                    temp = a[i + j * lda];
+                    a[i + j * lda] = a[i + kmax * lda];
+                    a[i + kmax * lda] = temp;
                 }
                 rdiag[kmax] = rdiag[j];
                 wa[kmax] = wa[j];
@@ -161,39 +237,39 @@
 /*        compute the householder transformation to reduce the */
 /*        j-th column of a to a multiple of the j-th unit vector. */
 
-	ajnorm = enorm(m - j + 1, &a[j + j * a_dim1]);
+	ajnorm = __cminpack_enorm__(m - (j+1) + 1, &a[j + j * lda]);
 	if (ajnorm != 0.) {
-            if (a[j + j * a_dim1] < 0.) {
+            if (a[j + j * lda] < 0.) {
                 ajnorm = -ajnorm;
             }
-            for (i = j; i <= m; ++i) {
-                a[i + j * a_dim1] /= ajnorm;
+            for (i = j; i < m; ++i) {
+                a[i + j * lda] /= ajnorm;
             }
-            a[j + j * a_dim1] += 1.;
+            a[j + j * lda] += 1.;
 
 /*        apply the transformation to the remaining columns */
 /*        and update the norms. */
 
             jp1 = j + 1;
-            if (n >= jp1) {
-                for (k = jp1; k <= n; ++k) {
+            if (n > jp1) {
+                for (k = jp1; k < n; ++k) {
                     sum = 0.;
-                    for (i = j; i <= m; ++i) {
-                        sum += a[i + j * a_dim1] * a[i + k * a_dim1];
+                    for (i = j; i < m; ++i) {
+                        sum += a[i + j * lda] * a[i + k * lda];
                     }
-                    temp = sum / a[j + j * a_dim1];
-                    for (i = j; i <= m; ++i) {
-                        a[i + k * a_dim1] -= temp * a[i + j * a_dim1];
+                    temp = sum / a[j + j * lda];
+                    for (i = j; i < m; ++i) {
+                        a[i + k * lda] -= temp * a[i + j * lda];
                     }
                     if (pivot && rdiag[k] != 0.) {
-                        temp = a[j + k * a_dim1] / rdiag[k];
+                        temp = a[j + k * lda] / rdiag[k];
                         /* Computing MAX */
                         d1 = 1. - temp * temp;
-                        rdiag[k] *= sqrt((max(0.,d1)));
+                        rdiag[k] *= sqrt((max((real)0.,d1)));
                         /* Computing 2nd power */
                         d1 = rdiag[k] / wa[k];
                         if (p05 * (d1 * d1) <= epsmch) {
-                            rdiag[k] = enorm(m - j, &a[jp1 + k * a_dim1]);
+                            rdiag[k] = __cminpack_enorm__(m - (j+1), &a[jp1 + k * lda]);
                             wa[k] = rdiag[k];
                         }
                     }
@@ -204,6 +280,6 @@
     }
 
 /*     last card of subroutine qrfac. */
-
+#endif /* !USE_LAPACK */
 } /* qrfac_ */
 

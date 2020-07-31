@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// CurvesTransformationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -65,6 +65,7 @@ PCL_BEGIN_LOCAL
 class CurveIndex
 {
 public:
+
    enum { R, G, B, RGBK, A, L, a, b, c, H, S, NumberOfCurves };
 };
 
@@ -73,6 +74,7 @@ public:
 class TableIndexer
 {
 public:
+
    virtual int CurveTableIndex() const = 0;
 };
 
@@ -82,7 +84,7 @@ class CurveTable : public MetaTable, public TableIndexer
 {
 public:
 
-   CurveTable( MetaProcess* P ) : MetaTable( P ), TableIndexer()
+   CurveTable( MetaProcess* P ) : MetaTable( P )
    {
    }
 
@@ -98,8 +100,8 @@ class classId : public CurveTable                                          \
 public:                                                                    \
    classId( MetaProcess* P ) : CurveTable( P )                             \
    { if ( The##classId##Parameter == 0 ) The##classId##Parameter = this; } \
-   virtual IsoString Id() const { return parId; }                          \
-   virtual int CurveTableIndex() const { return idx; }                     \
+   IsoString Id() const override { return parId; }                         \
+   int CurveTableIndex() const override { return idx; }                    \
 }
 
 DECLARE_CURVE_TABLE_PARAMETER( RedCurve,        "R", CurveIndex::R );
@@ -124,13 +126,12 @@ public:
 
    virtual IsoString Id() const = 0;
 
-   virtual int Precision() const;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-
-   virtual int CurveTableIndex() const
+   int CurveTableIndex() const override
    {
       return dynamic_cast<const TableIndexer*>( Parent() )->CurveTableIndex();
    }
@@ -146,8 +147,8 @@ class classId : public CurvePointValue                                     \
 public:                                                                    \
    classId( MetaTable* t ) : CurvePointValue( t )                          \
    { if ( The##classId##Parameter == 0 ) The##classId##Parameter = this; } \
-   virtual IsoString Id() const { return parId; }                          \
-   virtual bool IsX() const { return isX; }                                \
+   IsoString Id() const override { return parId; }                         \
+   bool IsX() const override { return isX; }                               \
 }
 
 DECLARE_CURVE_POINT_VALUE_PARAMETER( XR, "x", true  );
@@ -198,12 +199,10 @@ public:
    CurveType( MetaProcess* );
 
    virtual IsoString Id() const = 0;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
-
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
    virtual int CurveTableIndex() const = 0;
 };
 
@@ -215,8 +214,8 @@ class classId : public CurveType                                           \
 public:                                                                    \
    classId( MetaProcess* P ) : CurveType( P )                              \
    { if ( The##classId##Parameter == 0 ) The##classId##Parameter = this; } \
-   virtual IsoString Id() const { return parId; }                          \
-   virtual int CurveTableIndex() const { return idx; }                     \
+   IsoString Id() const override { return parId; }                         \
+   int CurveTableIndex() const override { return idx; }                    \
 }
 
 DECLARE_CURVE_TYPE_PARAMETER( RedCurveType,        "Rt", CurveIndex::R );
@@ -240,4 +239,4 @@ PCL_END_LOCAL
 #endif   // __CurvesTransformationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF CurvesTransformationParameters.h - Released 2020-07-31T19:33:39Z

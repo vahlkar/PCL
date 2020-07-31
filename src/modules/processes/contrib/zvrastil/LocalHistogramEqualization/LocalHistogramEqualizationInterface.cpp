@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInterface.cpp - Released 2020-02-27T12:56:01Z
+// LocalHistogramEqualizationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
-// Copyright (c) 2011-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -52,8 +52,8 @@
 // ----------------------------------------------------------------------------
 
 #include "LocalHistogramEqualizationInterface.h"
-#include "LocalHistogramEqualizationProcess.h"
 #include "LocalHistogramEqualizationParameters.h"
+#include "LocalHistogramEqualizationProcess.h"
 
 #include <pcl/RealTimePreview.h>
 
@@ -66,15 +66,13 @@ LocalHistogramEqualizationInterface* TheLocalHistogramEqualizationInterface = nu
 
 // ----------------------------------------------------------------------------
 
-#include "LocalHistogramEqualizationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-LocalHistogramEqualizationInterface::LocalHistogramEqualizationInterface() :
-   instance( TheLocalHistogramEqualizationProcess )
+LocalHistogramEqualizationInterface::LocalHistogramEqualizationInterface()
+   : instance( TheLocalHistogramEqualizationProcess )
 {
    TheLocalHistogramEqualizationInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 LocalHistogramEqualizationInterface::~LocalHistogramEqualizationInterface()
 {
@@ -98,9 +96,9 @@ MetaProcess* LocalHistogramEqualizationInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** LocalHistogramEqualizationInterface::IconImageXPM() const
+String LocalHistogramEqualizationInterface::IconImageSVGFile() const
 {
-   return LocalHistogramEqualizationIcon_XPM;
+   return "@module_icons_dir/LocalHistogramEqualization.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -121,7 +119,7 @@ void LocalHistogramEqualizationInterface::ApplyInstance() const
 
 void LocalHistogramEqualizationInterface::RealTimePreviewUpdated( bool active )
 {
-   if ( GUI != 0 )
+   if ( GUI != nullptr )
       if ( active )
          RealTimePreview::SetOwner( *this ); // implicitly updates the r-t preview
       else
@@ -140,7 +138,7 @@ void LocalHistogramEqualizationInterface::ResetInstance()
 
 bool LocalHistogramEqualizationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
-   if ( GUI == 0 )
+   if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
       SetWindowTitle( "LocalHistogramEqualization" );
@@ -193,27 +191,34 @@ bool LocalHistogramEqualizationInterface::RequiresRealTimePreviewUpdate( const U
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-LocalHistogramEqualizationInterface::RealTimeThread::RealTimeThread() :
-Thread(), m_instance( TheLocalHistogramEqualizationProcess )
+LocalHistogramEqualizationInterface::RealTimeThread::RealTimeThread()
+   : m_instance( TheLocalHistogramEqualizationProcess )
 {
 }
 
+// ----------------------------------------------------------------------------
+
 void LocalHistogramEqualizationInterface::RealTimeThread::Reset( const UInt16Image& image,
-                                                                 const LocalHistogramEqualizationInstance& instance )
+   const LocalHistogramEqualizationInstance& instance )
 {
    image.ResetSelections();
    m_image.Assign( image );
    m_instance.Assign( instance );
 }
 
+// ----------------------------------------------------------------------------
+
 void LocalHistogramEqualizationInterface::RealTimeThread::Run()
 {
    m_instance.Preview( m_image );
 }
 
+// ----------------------------------------------------------------------------
+
 bool LocalHistogramEqualizationInterface::GenerateRealTimePreview( UInt16Image& image, const View&,
-                                                                   const Rect&, int zoomLevel, String& ) const
+   const Rect&, int zoomLevel, String& ) const
 {
    m_realTimeThread = new RealTimeThread;
 
@@ -221,7 +226,7 @@ bool LocalHistogramEqualizationInterface::GenerateRealTimePreview( UInt16Image& 
    {
       LocalHistogramEqualizationInstance previewInstance( instance );
       if ( zoomLevel < 0 )
-         previewInstance.radius = Max( 2, previewInstance.radius/-zoomLevel );
+         previewInstance.radius = Max( 2, previewInstance.radius / -zoomLevel );
 
       m_realTimeThread->Reset( image, previewInstance );
       m_realTimeThread->Start();
@@ -253,6 +258,7 @@ bool LocalHistogramEqualizationInterface::GenerateRealTimePreview( UInt16Image& 
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 void LocalHistogramEqualizationInterface::UpdateControls()
 {
@@ -263,11 +269,13 @@ void LocalHistogramEqualizationInterface::UpdateControls()
    GUI->CircularKernel_CheckBox.SetChecked( instance.circularKernel );
 }
 
+// ----------------------------------------------------------------------------
+
 void LocalHistogramEqualizationInterface::UpdateRealTimePreview()
 {
    if ( IsRealTimePreviewActive() )
    {
-      if ( m_realTimeThread != 0 )
+      if ( m_realTimeThread != nullptr )
          m_realTimeThread->Abort();
       GUI->UpdateRealTimePreview_Timer.Start();
    }
@@ -299,7 +307,7 @@ void LocalHistogramEqualizationInterface::__ItemClicked( Button& sender, bool ch
 
 void LocalHistogramEqualizationInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 {
-   if (sender == GUI->HistogramBins_ComboBox )
+   if ( sender == GUI->HistogramBins_ComboBox )
       instance.histogramBins = itemIndex;
    UpdateRealTimePreview();
 }
@@ -308,7 +316,7 @@ void LocalHistogramEqualizationInterface::__ItemSelected( ComboBox& sender, int 
 
 void LocalHistogramEqualizationInterface::__UpdateRealTimePreview_Timer( Timer& sender )
 {
-   if ( m_realTimeThread != 0 )
+   if ( m_realTimeThread != nullptr )
       if ( m_realTimeThread->IsActive() )
          return;
 
@@ -332,7 +340,7 @@ LocalHistogramEqualizationInterface::GUIData::GUIData( LocalHistogramEqualizatio
    Radius_NumericControl.SetRange( TheLHERadiusParameter->MinimumValue(), TheLHERadiusParameter->MaximumValue() );
    Radius_NumericControl.SetPrecision( 0 );
    Radius_NumericControl.SetToolTip( "<p>The radius (in pixels) of the circular or square kernel in which the local histogram is evaluated.</p>"
-      "<p>For most images, values between 50 and 200 give the best result.</p>");
+                                     "<p>For most images, values between 50 and 200 give the best result.</p>" );
    Radius_NumericControl.edit.SetFixedWidth( editWidth1 );
    Radius_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalHistogramEqualizationInterface::__RealValueUpdated, w );
 
@@ -341,8 +349,8 @@ LocalHistogramEqualizationInterface::GUIData::GUIData( LocalHistogramEqualizatio
    HistogramBins_Label.SetText( "Histogram Resolution:" );
    HistogramBins_Label.SetFixedWidth( labelWidth1 );
    HistogramBins_Label.SetToolTip( "<p>The resolution of the histogram used to evaluate contrast transfer function. Usually 8-bit resolution is enough. "
-      "For large kernel size, you may try higher resolutions to improve precision, but the computation will be slower.</p>" );
-   HistogramBins_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+                                   "For large kernel size, you may try higher resolutions to improve precision, but the computation will be slower.</p>" );
+   HistogramBins_Label.SetTextAlignment( TextAlign::Right | TextAlign::VertCenter );
 
    HistogramBins_ComboBox.AddItem( "8-bit (256)" );
    HistogramBins_ComboBox.AddItem( "10-bit (1024)" );
@@ -361,7 +369,7 @@ LocalHistogramEqualizationInterface::GUIData::GUIData( LocalHistogramEqualizatio
    SlopeLimit_NumericControl.SetRange( TheLHESlopeLimitParameter->MinimumValue(), TheLHESlopeLimitParameter->MaximumValue() );
    SlopeLimit_NumericControl.SetPrecision( TheLHESlopeLimitParameter->Precision() );
    SlopeLimit_NumericControl.SetToolTip( "<p>The maximal allowed slope of the local contrast transfer function. Value of 1 does not change original image at all. "
-      "Higher values make an effect stronger. Too high values strenghten the noise in the image. Typical values are 1.5-3.0.</p>" );
+                                         "Higher values make an effect stronger. Too high values strenghten the noise in the image. Typical values are 1.5-3.0.</p>" );
    SlopeLimit_NumericControl.edit.SetFixedWidth( editWidth1 );
    SlopeLimit_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalHistogramEqualizationInterface::__RealValueUpdated, w );
 
@@ -375,10 +383,9 @@ LocalHistogramEqualizationInterface::GUIData::GUIData( LocalHistogramEqualizatio
    Amount_NumericControl.SetRange( TheLHEAmountParameter->MinimumValue(), TheLHEAmountParameter->MaximumValue() );
    Amount_NumericControl.SetPrecision( TheLHEAmountParameter->Precision() );
    Amount_NumericControl.SetToolTip( "<p>Amount of the local histogram equalization. This parameter is used to blend processed image with original one. "
-      "For example value of 0.75 means that resulting image is blend of 1/4 of the original with 3/4 of the processed image.</p>" );
+                                     "For example value of 0.75 means that resulting image is blend of 1/4 of the original with 3/4 of the processed image.</p>" );
    Amount_NumericControl.edit.SetFixedWidth( editWidth1 );
    Amount_NumericControl.OnValueUpdated( (NumericEdit::value_event_handler)&LocalHistogramEqualizationInterface::__RealValueUpdated, w );
-
 
    //
 
@@ -415,7 +422,7 @@ LocalHistogramEqualizationInterface::GUIData::GUIData( LocalHistogramEqualizatio
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF LocalHistogramEqualizationInterface.cpp - Released 2020-07-31T19:33:39Z

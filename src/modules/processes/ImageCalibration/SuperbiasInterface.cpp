@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SuperbiasInterface.cpp - Released 2020-02-27T12:56:01Z
+// SuperbiasInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -63,12 +63,8 @@ SuperbiasInterface* TheSuperbiasInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "SuperbiasIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-SuperbiasInterface::SuperbiasInterface() :
-   m_instance( TheSuperbiasProcess )
+SuperbiasInterface::SuperbiasInterface()
+   : m_instance( TheSuperbiasProcess )
 {
    TheSuperbiasInterface = this;
 }
@@ -97,9 +93,9 @@ MetaProcess* SuperbiasInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** SuperbiasInterface::IconImageXPM() const
+String SuperbiasInterface::IconImageSVGFile() const
 {
-   return SuperbiasIcon_XPM;
+   return "@module_icons_dir/Superbias.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -217,6 +213,7 @@ void SuperbiasInterface::__ButtonClicked( Button& sender, bool checked )
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 SuperbiasInterface::GUIData::GUIData( SuperbiasInterface& w )
 {
@@ -319,4 +316,4 @@ SuperbiasInterface::GUIData::GUIData( SuperbiasInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF SuperbiasInterface.cpp - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/WorldTransformation.h - Released 2020-02-27T12:55:23Z
+// pcl/WorldTransformation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -161,9 +161,9 @@ public:
     * \a transIW must transform from image coordinates to native spherical
     * coordinates.
     */
-   LinearWorldTransformation( const LinearTransformation& transIW ) :
-      m_transWI( transIW.Inverse() ),
-      m_transIW( transIW )
+   LinearWorldTransformation( const LinearTransformation& transIW )
+      : m_transWI( transIW.Inverse() )
+      , m_transIW( transIW )
    {
    }
 
@@ -347,15 +347,15 @@ public:
                               int order = __PCL_WCS_DEFAULT_SPLINE_ORDER,
                               bool enableSimplifier = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_ENABLED,
                               float simplifierTolerance = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_TOLERANCE,
-                              float simplifierRejectFraction = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_REJECT_FRACTION ) :
-      m_controlPointsW( controlPointsW ),
-      m_controlPointsI( controlPointsI ),
-      m_order( order ),
-      m_smoothness( smoothness ),
-      m_weights( weights ),
-      m_enableSimplifier( enableSimplifier ),
-      m_simplifierTolerance( simplifierTolerance ),
-      m_simplifierRejectFraction( simplifierRejectFraction )
+                              float simplifierRejectFraction = __PCL_WCS_SURFACE_SIMPLIFIER_DEFAULT_REJECT_FRACTION )
+      : m_controlPointsW( controlPointsW )
+      , m_controlPointsI( controlPointsI )
+      , m_order( order )
+      , m_smoothness( smoothness )
+      , m_weights( weights )
+      , m_enableSimplifier( enableSimplifier )
+      , m_simplifierTolerance( simplifierTolerance )
+      , m_simplifierRejectFraction( simplifierRejectFraction )
    {
       InitializeSplines();
       CalculateLinearApproximation();
@@ -678,4 +678,4 @@ private:
 #endif   // __PCL_WorldTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WorldTransformation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/WorldTransformation.h - Released 2020-07-31T19:33:04Z

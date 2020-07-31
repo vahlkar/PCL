@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationInstance.h - Released 2020-02-27T12:56:01Z
+// NoOperationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -66,12 +66,12 @@ public:
 
    NoOperationInstance( const MetaProcess* );
 
-   virtual bool IsHistoryUpdater( const View& ) const;
-   virtual bool IsMaskable( const View&, const ImageWindow& mask ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
+   bool IsHistoryUpdater( const View& ) const override;
+   bool IsMaskable( const View&, const ImageWindow& mask ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
 };
 
 // ----------------------------------------------------------------------------
@@ -81,4 +81,4 @@ public:
 #endif   // __NoOperationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF NoOperationInstance.h - Released 2020-07-31T19:33:39Z

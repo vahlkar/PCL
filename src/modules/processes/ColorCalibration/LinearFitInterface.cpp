@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// LinearFitInterface.cpp - Released 2020-02-27T12:56:01Z
+// LinearFitInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -66,12 +66,8 @@ LinearFitInterface* TheLinearFitInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "LinearFitIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-LinearFitInterface::LinearFitInterface() :
-   m_instance( TheLinearFitProcess )
+LinearFitInterface::LinearFitInterface()
+   : m_instance( TheLinearFitProcess )
 {
    TheLinearFitInterface = this;
 }
@@ -100,9 +96,9 @@ MetaProcess* LinearFitInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** LinearFitInterface::IconImageXPM() const
+String LinearFitInterface::IconImageSVGFile() const
 {
-   return LinearFitIcon_XPM;
+   return "@module_icons_dir/LinearFit.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -184,7 +180,6 @@ void LinearFitInterface::UpdateControls()
    GUI->RejectHigh_NumericControl.SetValue( m_instance.p_rejectHigh );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void LinearFitInterface::__EditCompleted( Edit& sender )
@@ -375,4 +370,4 @@ LinearFitInterface::GUIData::GUIData( LinearFitInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF LinearFitInterface.cpp - Released 2020-07-31T19:33:39Z

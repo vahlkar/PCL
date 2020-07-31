@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionInstance.cpp - Released 2020-02-27T12:56:01Z
+// ChannelExtractionInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -64,10 +64,10 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ChannelExtractionInstance::ChannelExtractionInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   p_colorSpace( ColorSpaceId::Default ),
-   p_sampleFormat( ChannelSampleFormat::Default )
+ChannelExtractionInstance::ChannelExtractionInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , p_colorSpace( ColorSpaceId::Default )
+   , p_sampleFormat( ChannelSampleFormat::Default )
 {
    for ( int i = 0; i < 3; ++i )
    {
@@ -78,10 +78,10 @@ ChannelExtractionInstance::ChannelExtractionInstance( const MetaProcess* P ) :
 
 // ----------------------------------------------------------------------------
 
-ChannelExtractionInstance::ChannelExtractionInstance( const ChannelExtractionInstance& x ) :
-   ProcessImplementation( x ),
-   p_colorSpace( x.p_colorSpace ),
-   p_sampleFormat( x.p_sampleFormat )
+ChannelExtractionInstance::ChannelExtractionInstance( const ChannelExtractionInstance& x )
+   : ProcessImplementation( x )
+   , p_colorSpace( x.p_colorSpace )
+   , p_sampleFormat( x.p_sampleFormat )
 {
    for ( int i = 0; i < 3; ++i )
    {
@@ -503,4 +503,4 @@ size_type ChannelExtractionInstance::ParameterLength( const MetaParameter* p, si
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ChannelExtractionInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInstance.h - Released 2020-02-27T12:56:01Z
+// AdaptiveStretchInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -121,7 +121,7 @@ private:
    pcl_bool p_useProtection;
    int32    p_maxCurvePoints;
    pcl_bool p_useROI;
-   Rect     p_roi;
+   Rect     p_roi = 0;
 
    friend class AdaptiveStretchCurve;
    friend class AdaptiveStretchEngine;
@@ -136,4 +136,4 @@ private:
 #endif   // __AdaptiveStretchInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInstance.h - Released 2020-02-27T12:56:01Z
+// EOF AdaptiveStretchInstance.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformInstance.h - Released 2020-02-27T12:56:01Z
+// FourierTransformInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -70,11 +70,11 @@ public:
    FourierTransformInstance( const MetaProcess* );
    FourierTransformInstance( const FourierTransformInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool IsHistoryUpdater( const View& ) const;
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
+   void Assign( const ProcessImplementation& ) override;
+   bool IsHistoryUpdater( const View& ) const override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
 
 private:
 
@@ -92,4 +92,4 @@ private:
 #endif   // __FourierTransformInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformInstance.h - Released 2020-02-27T12:56:01Z
+// EOF FourierTransformInstance.h - Released 2020-07-31T19:33:39Z

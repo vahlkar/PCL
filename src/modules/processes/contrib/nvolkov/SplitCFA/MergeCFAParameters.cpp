@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAParameters.cpp - Released 2020-02-27T12:56:01Z
+// MergeCFAParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -66,7 +66,8 @@ MergeCFAOutputViewId* TheMergeCFAOutputViewIdParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
-MergeCFASourceImage0::MergeCFASourceImage0( MetaProcess* P ) : MetaString( P )
+MergeCFASourceImage0::MergeCFASourceImage0( MetaProcess* P )
+   : MetaString( P )
 {
    TheMergeCFASourceImage0Parameter = this;
 }
@@ -78,7 +79,8 @@ IsoString MergeCFASourceImage0::Id() const
 
 // ----------------------------------------------------------------------------
 
-MergeCFASourceImage1::MergeCFASourceImage1( MetaProcess* P ) : MetaString( P )
+MergeCFASourceImage1::MergeCFASourceImage1( MetaProcess* P )
+   : MetaString( P )
 {
    TheMergeCFASourceImage1Parameter = this;
 }
@@ -90,7 +92,8 @@ IsoString MergeCFASourceImage1::Id() const
 
 // ----------------------------------------------------------------------------
 
-MergeCFASourceImage2::MergeCFASourceImage2( MetaProcess* P ) : MetaString( P )
+MergeCFASourceImage2::MergeCFASourceImage2( MetaProcess* P )
+   : MetaString( P )
 {
    TheMergeCFASourceImage2Parameter = this;
 }
@@ -102,7 +105,8 @@ IsoString MergeCFASourceImage2::Id() const
 
 // ----------------------------------------------------------------------------
 
-MergeCFASourceImage3::MergeCFASourceImage3( MetaProcess* P ) : MetaString( P )
+MergeCFASourceImage3::MergeCFASourceImage3( MetaProcess* P )
+   : MetaString( P )
 {
    TheMergeCFASourceImage3Parameter = this;
 }
@@ -114,7 +118,8 @@ IsoString MergeCFASourceImage3::Id() const
 
 // ----------------------------------------------------------------------------
 
-MergeCFAOutputViewId::MergeCFAOutputViewId( MetaProcess* P ) : MetaString( P )
+MergeCFAOutputViewId::MergeCFAOutputViewId( MetaProcess* P )
+   : MetaString( P )
 {
    TheMergeCFAOutputViewIdParameter = this;
 }
@@ -131,7 +136,7 @@ bool MergeCFAOutputViewId::IsReadOnly() const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF MergeCFAParameters.cpp - Released 2020-07-31T19:33:39Z

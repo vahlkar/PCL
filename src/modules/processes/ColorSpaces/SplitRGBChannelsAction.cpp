@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// SplitRGBChannelsAction.cpp - Released 2020-02-27T12:56:01Z
+// SplitRGBChannelsAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -63,18 +63,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "SplitRGBChannelsActionIcon.xpm"
-#include "ExtractRedChannelActionIcon.xpm"
-#include "ExtractGreenChannelActionIcon.xpm"
-#include "ExtractBlueChannelActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-SplitRGBChannelsAction::SplitRGBChannelsAction() :
-   Action( "Image > Extract > Split RGB Channels", Bitmap( SplitRGBChannelsActionIcon_XPM ), "Image" )
+SplitRGBChannelsAction::SplitRGBChannelsAction()
+   : Action( "Image > Extract > Split RGB Channels",
+             "@module_icons_dir/SplitRGBChannelsAction.svg",
+             "Image" )
 {
    SetToolTip( "Split RGB Channels" );
 }
+
+// ----------------------------------------------------------------------------
 
 void SplitRGBChannelsAction::Execute()
 {
@@ -88,18 +85,24 @@ void SplitRGBChannelsAction::Execute()
    instance.LaunchOnCurrentView();
 }
 
+// ----------------------------------------------------------------------------
+
 bool SplitRGBChannelsAction::IsEnabled( ActionInfo info ) const
 {
    return info.isImage && info.isColor;
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-ExtractRedChannelAction::ExtractRedChannelAction() :
-   Action( "Image > Extract > Red Channel", Bitmap( ExtractRedChannelActionIcon_XPM ) )
+ExtractRedChannelAction::ExtractRedChannelAction()
+   : Action( "Image > Extract > Red Channel",
+             "@module_icons_dir/ExtractRedChannelAction.svg" )
 {
    SetToolTip( "Extract Red Channel" );
 }
+
+// ----------------------------------------------------------------------------
 
 void ExtractRedChannelAction::Execute()
 {
@@ -113,18 +116,24 @@ void ExtractRedChannelAction::Execute()
    instance.LaunchOnCurrentView();
 }
 
+// ----------------------------------------------------------------------------
+
 bool ExtractRedChannelAction::IsEnabled( ActionInfo info ) const
 {
    return info.isImage && info.isColor;
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-ExtractGreenChannelAction::ExtractGreenChannelAction() :
-   Action( "Image > Extract > Green Channel", Bitmap( ExtractGreenChannelActionIcon_XPM ) )
+ExtractGreenChannelAction::ExtractGreenChannelAction()
+   : Action( "Image > Extract > Green Channel",
+             "@module_icons_dir/ExtractGreenChannelAction.svg" )
 {
    SetToolTip( "Extract Green Channel" );
 }
+
+// ----------------------------------------------------------------------------
 
 void ExtractGreenChannelAction::Execute()
 {
@@ -138,18 +147,24 @@ void ExtractGreenChannelAction::Execute()
    instance.LaunchOnCurrentView();
 }
 
+// ----------------------------------------------------------------------------
+
 bool ExtractGreenChannelAction::IsEnabled( ActionInfo info ) const
 {
    return info.isImage && info.isColor;
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-ExtractBlueChannelAction::ExtractBlueChannelAction() :
-   Action( "Image > Extract > Blue Channel", Bitmap( ExtractBlueChannelActionIcon_XPM ) )
+ExtractBlueChannelAction::ExtractBlueChannelAction()
+   : Action( "Image > Extract > Blue Channel",
+             "@module_icons_dir/ExtractBlueChannelAction.svg" )
 {
    SetToolTip( "Extract Blue Channel" );
 }
+
+// ----------------------------------------------------------------------------
 
 void ExtractBlueChannelAction::Execute()
 {
@@ -163,6 +178,8 @@ void ExtractBlueChannelAction::Execute()
    instance.LaunchOnCurrentView();
 }
 
+// ----------------------------------------------------------------------------
+
 bool ExtractBlueChannelAction::IsEnabled( ActionInfo info ) const
 {
    return info.isImage && info.isColor;
@@ -173,4 +190,4 @@ bool ExtractBlueChannelAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitRGBChannelsAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF SplitRGBChannelsAction.cpp - Released 2020-07-31T19:33:39Z

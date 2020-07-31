@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInstance.h - Released 2020-02-27T12:56:01Z
+// ColorSaturationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -71,7 +71,7 @@ public:
    typedef CurveBase::output_list   output_list;
    typedef CurveBase::interpolator  interpolator;
 
-   HSCurve() : CurveBase()
+   HSCurve()
    {
       Initialize();
    }
@@ -79,13 +79,13 @@ public:
    HSCurve( const HSCurve& ) = default;
    HSCurve& operator =( const HSCurve& ) = default;
 
-   virtual void Reverse()
+   void Reverse() override
    {
       for ( size_type i = 0; i < x.Length(); ++i )
          y[i] = -y[i];
    }
 
-   virtual bool IsIdentity() const
+   bool IsIdentity() const override
    {
       for ( size_type i = 0; i < x.Length(); ++i )
          if ( y[i] + 1 != 1 )
@@ -100,10 +100,10 @@ public:
 
 private:
 
-   virtual void Initialize()
+   void Initialize() override
    {
-      x.Add( 0.0 ); y.Add( 0.0 );
-      x.Add( 1.0 ); y.Add( 0.0 );
+      x << 0.0 << 1.0;
+      y << 0.0 << 0.0;
    }
 };
 
@@ -116,13 +116,13 @@ public:
    ColorSaturationInstance( const MetaProcess* );
    ColorSaturationInstance( const ColorSaturationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View& v, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View& v, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
    const HSCurve& Curve() const
    {
@@ -152,7 +152,7 @@ public:
 private:
 
    HSCurve C;
-   float   hueShift;
+   float   hueShift = 0;
 
    friend class ColorSaturationInterface;
    friend class ColorSaturationProcess;
@@ -165,4 +165,4 @@ private:
 #endif   // __ColorSaturationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ColorSaturationInstance.h - Released 2020-07-31T19:33:39Z

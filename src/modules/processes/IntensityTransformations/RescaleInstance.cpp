@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleInstance.cpp - Released 2020-02-27T12:56:01Z
+// RescaleInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -63,16 +63,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-RescaleInstance::RescaleInstance( const MetaProcess* m, int r ) :
-   ProcessImplementation( m ),
-   mode( r )
+RescaleInstance::RescaleInstance( const MetaProcess* m, int r )
+   : ProcessImplementation( m )
+   , p_mode( r )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-RescaleInstance::RescaleInstance( const RescaleInstance& x ) :
-   ProcessImplementation( x )
+RescaleInstance::RescaleInstance( const RescaleInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -83,7 +83,7 @@ void RescaleInstance::Assign( const ProcessImplementation& p )
 {
    const RescaleInstance* x = dynamic_cast<const RescaleInstance*>( &p );
    if ( x != nullptr )
-      mode = x->mode;
+      p_mode = x->p_mode;
 }
 
 // ----------------------------------------------------------------------------
@@ -122,7 +122,7 @@ bool RescaleInstance::ExecuteOn( View& view )
    StandardStatus status;
    image.SetStatusCallback( &status );
 
-   switch ( mode )
+   switch ( p_mode )
    {
    default:
    case RescalingMode::RGBK:
@@ -162,7 +162,7 @@ bool RescaleInstance::ExecuteOn( View& view )
 void* RescaleInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
    if ( p == TheRescalingModeParameter )
-      return &mode;
+      return &p_mode;
    return nullptr;
 }
 
@@ -171,4 +171,4 @@ void* RescaleInstance::LockParameter( const MetaParameter* p, size_type /*tableR
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF RescaleInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Cursor.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Cursor.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -61,22 +61,22 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-Cursor::Cursor( std_cursor stdShape ) :
-   UIObject( (*API->Cursor->CreateCursor)( ModuleHandle(), stdShape ) )
+Cursor::Cursor( std_cursor stdShape )
+   : UIObject( (*API->Cursor->CreateCursor)( ModuleHandle(), stdShape ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateCursor" );
 }
 
-Cursor::Cursor( const Bitmap& p, const pcl::Point& hotSpot ) :
-   UIObject( (*API->Cursor->CreateBitmapCursor)( ModuleHandle(), p.handle, hotSpot.x, hotSpot.y ) )
+Cursor::Cursor( const Bitmap& p, const pcl::Point& hotSpot )
+   : UIObject( (*API->Cursor->CreateBitmapCursor)( ModuleHandle(), p.handle, hotSpot.x, hotSpot.y ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateBitmapCursor" );
 }
 
-Cursor::Cursor( const Bitmap& p, int hotSpotX, int hotSpotY ) :
-   UIObject( (*API->Cursor->CreateBitmapCursor)( ModuleHandle(), p.handle, hotSpotX, hotSpotY ) )
+Cursor::Cursor( const Bitmap& p, int hotSpotX, int hotSpotY )
+   : UIObject( (*API->Cursor->CreateBitmapCursor)( ModuleHandle(), p.handle, hotSpotX, hotSpotY ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateBitmapCursor" );
@@ -131,4 +131,4 @@ void* Cursor::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Cursor.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Cursor.cpp - Released 2020-07-31T19:33:12Z

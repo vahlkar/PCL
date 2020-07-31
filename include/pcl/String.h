@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/String.h - Released 2020-02-27T12:55:23Z
+// pcl/String.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -205,13 +205,13 @@ struct PCL_CLASS SexagesimalConversionOptions
                                            bool     sign_      = false,
                                            unsigned width_     = 0,
                                            char     separator_ = ':',
-                                           char     padding_   = ' ' ) :
-      items( items_ ),
-      precision( precision_ ),
-      sign( sign_ ),
-      width( width_ ),
-      separator( separator_ ),
-      padding( padding_ )
+                                           char     padding_   = ' ' )
+      : items( items_ )
+      , precision( precision_ )
+      , sign( sign_ )
+      , width( width_ )
+      , separator( separator_ )
+      , padding( padding_ )
    {
    }
 
@@ -249,8 +249,8 @@ struct PCL_CLASS AngleConversionOptions : public SexagesimalConversionOptions
     * spaces. If \a width is nonzero, the first item will be represented
     * right-justified within a field of \a width \a padding characters.
     */
-   constexpr AngleConversionOptions( unsigned precision = 2, unsigned width = 3, char padding = ' ' ) :
-      SexagesimalConversionOptions( 3/*items*/, precision, false/*sign*/, width, ' '/*separator*/, padding )
+   constexpr AngleConversionOptions( unsigned precision = 2, unsigned width = 3, char padding = ' ' )
+      : SexagesimalConversionOptions( 3/*items*/, precision, false/*sign*/, width, ' '/*separator*/, padding )
    {}
 };
 
@@ -279,8 +279,8 @@ struct PCL_CLASS LongitudeConversionOptions : public SexagesimalConversionOption
     * right-justified within a field of \a width \a padding characters,
     * including a leading sign character.
     */
-   constexpr LongitudeConversionOptions( unsigned precision = 2, unsigned width = 4, char padding = ' ' ) :
-      SexagesimalConversionOptions( 3/*items*/, precision, true/*sign*/, width, ' '/*separator*/, padding )
+   constexpr LongitudeConversionOptions( unsigned precision = 2, unsigned width = 4, char padding = ' ' )
+      : SexagesimalConversionOptions( 3/*items*/, precision, true/*sign*/, width, ' '/*separator*/, padding )
    {}
 };
 
@@ -309,8 +309,8 @@ struct PCL_CLASS RAConversionOptions : public SexagesimalConversionOptions
     * \a width is nonzero, the first item will be represented right-justified
     * within a field of \a width \a padding characters.
     */
-   constexpr RAConversionOptions( unsigned precision = 3, unsigned width = 2, char padding = ' ' ) :
-      SexagesimalConversionOptions( 3/*items*/, precision, false/*sign*/, width, ' '/*separator*/, padding )
+   constexpr RAConversionOptions( unsigned precision = 3, unsigned width = 2, char padding = ' ' )
+      : SexagesimalConversionOptions( 3/*items*/, precision, false/*sign*/, width, ' '/*separator*/, padding )
    {}
 };
 
@@ -339,8 +339,8 @@ struct PCL_CLASS LatitudeConversionOptions : public SexagesimalConversionOptions
     * right-justified within a field of \a width \a padding characters,
     * including a leading sign character.
     */
-   constexpr LatitudeConversionOptions( unsigned precision = 2, unsigned width = 3, char padding = ' ' ) :
-      SexagesimalConversionOptions( 3/*items*/, precision, true/*sign*/, width, ' '/*separator*/, padding )
+   constexpr LatitudeConversionOptions( unsigned precision = 2, unsigned width = 3, char padding = ' ' )
+      : SexagesimalConversionOptions( 3/*items*/, precision, true/*sign*/, width, ' '/*separator*/, padding )
    {}
 };
 
@@ -368,8 +368,8 @@ struct PCL_CLASS DecConversionOptions : public LatitudeConversionOptions
     * right-justified within a field of \a width \a padding characters,
     * including a leading sign character.
     */
-   constexpr DecConversionOptions( unsigned precision = 2, unsigned width = 3, char padding = ' ' ) :
-      LatitudeConversionOptions( precision, width, padding )
+   constexpr DecConversionOptions( unsigned precision = 2, unsigned width = 3, char padding = ' ' )
+      : LatitudeConversionOptions( precision, width, padding )
    {}
 };
 
@@ -416,11 +416,11 @@ struct PCL_CLASS ISO8601ConversionOptions
    constexpr ISO8601ConversionOptions( unsigned timeItems_ = 3,
                                        unsigned precision_ = 3,
                                        bool     timeZone_  = true,
-                                       bool     zuluTime_  = true ) :
-      timeItems( timeItems_ ),
-      precision( precision_ ),
-      timeZone( timeZone_ ),
-      zuluTime( zuluTime_ )
+                                       bool     zuluTime_  = true )
+      : timeItems( timeItems_ )
+      , precision( precision_ )
+      , timeZone( timeZone_ )
+      , zuluTime( zuluTime_ )
    {
    }
 
@@ -538,7 +538,8 @@ public:
    /*!
     * Copy constructor. Increments the reference counter of the string \a s.
     */
-   GenericString( const GenericString& s ) : m_data( s.m_data )
+   GenericString( const GenericString& s )
+      : m_data( s.m_data )
    {
       m_data->Attach();
    }
@@ -546,7 +547,8 @@ public:
    /*!
     * Move constructor.
     */
-   GenericString( GenericString&& s ) : m_data( s.m_data )
+   GenericString( GenericString&& s )
+      : m_data( s.m_data )
    {
       s.m_data = nullptr;
    }
@@ -604,7 +606,8 @@ public:
     *
     * \code GenericString( l.begin(), l.end() ) \endcode
     */
-   GenericString( std::initializer_list<char_type> l ) : GenericString( l.begin(), l.end() )
+   GenericString( std::initializer_list<char_type> l )
+      : GenericString( l.begin(), l.end() )
    {
    }
 
@@ -4501,12 +4504,12 @@ protected:
        * than 4 characters.
        */
       SearchEngine( const_iterator pattern, size_type patternLength,
-                    bool caseSensitive = true, bool searchLast = false, bool useBoyerMoore = true ) :
-         m_pattern( pattern ),
-         m_patternLength( int( patternLength ) ),
-         m_caseSensitive( caseSensitive ),
-         m_searchLast( searchLast ),
-         m_useBoyerMoore( useBoyerMoore && m_patternLength > 3 )
+                    bool caseSensitive = true, bool searchLast = false, bool useBoyerMoore = true )
+         : m_pattern( pattern )
+         , m_patternLength( int( patternLength ) )
+         , m_caseSensitive( caseSensitive )
+         , m_searchLast( searchLast )
+         , m_useBoyerMoore( useBoyerMoore && m_patternLength > 3 )
       {
          if ( m_useBoyerMoore )
             InitSkipList();
@@ -5487,39 +5490,35 @@ public:
    /*!
     * Constructs an empty %IsoString object.
     */
-   IsoString() : string_base()
-   {
-   }
+   IsoString() = default;
 
    /*!
     * Constructs an %IsoString object as a shallow copy of the specified
     * \c string_base string \a s (copy constructor from the base class).
     */
-   IsoString( const string_base& s ) : string_base( s )
+   IsoString( const string_base& s )
+      : string_base( s )
    {
    }
 
    /*!
     * Copy constructor.
     */
-   IsoString( const IsoString& s ) : string_base( s )
-   {
-   }
+   IsoString( const IsoString& ) = default;
 
    /*!
     * Constructs an %IsoString object by transferring data from the specified
     * \c string_base string \a s (move constructor from the base class).
     */
-   IsoString( string_base&& s ) : string_base( std::move( s ) )
+   IsoString( string_base&& s )
+      : string_base( std::move( s ) )
    {
    }
 
    /*!
     * Move constructor.
     */
-   IsoString( const IsoString&& s ) : string_base( std::move( s ) )
-   {
-   }
+   IsoString( IsoString&& ) = default;
 
    /*!
     * Constructs an %IsoString as a copy of the specified Unicode string \a s,
@@ -5529,7 +5528,7 @@ public:
     * are represented with question mark characters (?).
     */
    explicit
-   IsoString( const ustring_base& s ) : string_base()
+   IsoString( const ustring_base& s )
    {
       (void)operator =( s );
    }
@@ -5537,7 +5536,8 @@ public:
    /*!
     * Constructs an %IsoString as a copy of a null-terminated string \a t.
     */
-   IsoString( const_c_string t ) : string_base( t )
+   IsoString( const_c_string t )
+      : string_base( t )
    {
    }
 
@@ -5545,14 +5545,16 @@ public:
     * Constructs an %IsoString with the \a n first characters of the
     * null-terminated string \a t, starting from its \a i-th character.
     */
-   IsoString( const_c_string t, size_type i, size_type n ) : string_base( t, i, n )
+   IsoString( const_c_string t, size_type i, size_type n )
+      : string_base( t, i, n )
    {
    }
 
    /*!
     * Constructs an %IsoString with \a n copies of a character \a c.
     */
-   IsoString( char_type c, size_type n = 1 ) : string_base( c, n )
+   IsoString( char_type c, size_type n = 1 )
+      : string_base( c, n )
    {
    }
 
@@ -5560,7 +5562,8 @@ public:
     * Constructs an %IsoString with a copy of the character sequence defined by
     * the range [i,j).
     */
-   IsoString( const_iterator i, const_iterator j ) : string_base( i, j )
+   IsoString( const_iterator i, const_iterator j )
+      : string_base( i, j )
    {
    }
 
@@ -5572,7 +5575,8 @@ public:
     *
     * \code IsoString( l.begin(), l.end() ) \endcode
     */
-   IsoString( std::initializer_list<char_type> l ) : IsoString( l.begin(), l.end() )
+   IsoString( std::initializer_list<char_type> l )
+      : IsoString( l.begin(), l.end() )
    {
    }
 
@@ -5586,7 +5590,7 @@ public:
     * UTF-8, see String::ToUTF8() and String::UTF16ToUTF8().
     */
    explicit
-   IsoString( const_c_ustring t ) : string_base()
+   IsoString( const_c_ustring t )
    {
       (void)operator =( t );
    }
@@ -5611,8 +5615,8 @@ public:
     * characters.
     */
    explicit
-   IsoString( const ByteArray& B ) :
-      IsoString( const_iterator( B.Begin() ), const_iterator( B.End() ) )
+   IsoString( const ByteArray& B )
+      : IsoString( const_iterator( B.Begin() ), const_iterator( B.End() ) )
    {
    }
 
@@ -5620,7 +5624,8 @@ public:
     * Constructs an %IsoString as a literal representation of a \c bool value.
     */
    explicit
-   IsoString( bool x ) : string_base( x ? "true" : "false" )
+   IsoString( bool x )
+      : string_base( x ? "true" : "false" )
    {
    }
 
@@ -5629,7 +5634,7 @@ public:
     * \c signed \c short value.
     */
    explicit
-   IsoString( short x ) : string_base()
+   IsoString( short x )
    {
       (void)Format( "%hd", x );
    }
@@ -5639,7 +5644,7 @@ public:
     * \c unsigned \c short value.
     */
    explicit
-   IsoString( unsigned short x ) : string_base()
+   IsoString( unsigned short x )
    {
       (void)Format( "%hu", x );
    }
@@ -5649,7 +5654,7 @@ public:
     * \c signed \c int value.
     */
    explicit
-   IsoString( int x ) : string_base()
+   IsoString( int x )
    {
       (void)Format( "%i", x );
    }
@@ -5659,7 +5664,7 @@ public:
     * \c unsigned \c int value.
     */
    explicit
-   IsoString( unsigned int x ) : string_base()
+   IsoString( unsigned int x )
    {
       (void)Format( "%u", x );
    }
@@ -5669,7 +5674,7 @@ public:
     * \c signed \c long value.
     */
    explicit
-   IsoString( long x ) : string_base()
+   IsoString( long x )
    {
       (void)Format( "%ld", x );
    }
@@ -5679,7 +5684,7 @@ public:
     * \c unsigned \c long value.
     */
    explicit
-   IsoString( unsigned long x ) : string_base()
+   IsoString( unsigned long x )
    {
       (void)Format( "%lu", x );
    }
@@ -5689,7 +5694,7 @@ public:
     * \c signed \c long \c long value.
     */
    explicit
-   IsoString( long long x ) : string_base()
+   IsoString( long long x )
    {
       (void)Format( "%lli", x );
    }
@@ -5699,7 +5704,7 @@ public:
     * \c unsigned \c long \c long value.
     */
    explicit
-   IsoString( unsigned long long x ) : string_base()
+   IsoString( unsigned long long x )
    {
       (void)Format( "%llu", x );
    }
@@ -5709,7 +5714,7 @@ public:
     * \c float value.
     */
    explicit
-   IsoString( float x ) : string_base()
+   IsoString( float x )
    {
       (void)Format( "%.7g", x );
    }
@@ -5719,7 +5724,7 @@ public:
     * \c double value.
     */
    explicit
-   IsoString( double x ) : string_base()
+   IsoString( double x )
    {
       (void)Format( "%.16g", x );
    }
@@ -5729,7 +5734,7 @@ public:
     * \c long \c double value.
     */
    explicit
-   IsoString( long double x ) : string_base()
+   IsoString( long double x )
    {
 #ifdef _MSC_VER
       (void)Format( "%.16Lg", x );
@@ -5745,7 +5750,7 @@ public:
     * \c fcomplex value.
     */
    explicit
-   IsoString( Complex<float>& x ) : string_base()
+   IsoString( Complex<float>& x )
    {
       (void)Format( "{%.7g,%.7g}", x.Real(), x.Imag() );
    }
@@ -5755,7 +5760,7 @@ public:
     * \c dcomplex value.
     */
    explicit
-   IsoString( Complex<double>& x ) : string_base()
+   IsoString( Complex<double>& x )
    {
       (void)Format( "{%.16g,%.16g}", x.Real(), x.Imag() );
    }
@@ -5765,7 +5770,7 @@ public:
     * \c lcomplex value.
     */
    explicit
-   IsoString( Complex<long double>& x ) : string_base()
+   IsoString( Complex<long double>& x )
    {
 #ifdef _MSC_VER
       (void)Format( "{%.16Lg,%.16Lg}", x.Real(), x.Imag() );
@@ -5779,26 +5784,26 @@ public:
 #ifdef __PCL_QT_INTERFACE
 
    explicit
-   IsoString( const QString& qs ) :
-      string_base( qs.isEmpty() ? iterator( nullptr ) : iterator( PCL_GET_CHARPTR_FROM_QSTRING( qs ) ) )
+   IsoString( const QString& qs )
+      : string_base( qs.isEmpty() ? iterator( nullptr ) : iterator( PCL_GET_CHARPTR_FROM_QSTRING( qs ) ) )
    {
    }
 
    explicit
-   IsoString( const QByteArray& qb ) :
-      string_base( qb.isEmpty() ? iterator( nullptr ) : iterator( PCL_GET_CHARPTR_FROM_QBYTEARRAY( qb ) ) )
+   IsoString( const QByteArray& qb )
+      : string_base( qb.isEmpty() ? iterator( nullptr ) : iterator( PCL_GET_CHARPTR_FROM_QBYTEARRAY( qb ) ) )
    {
    }
 
    explicit
-   IsoString( const QDate& qd ) :
-      string_base( iterator( PCL_GET_CHARPTR_FROM_QSTRING( qd.toString( PCL_QDATE_FMT_STR ) ) ) )
+   IsoString( const QDate& qd )
+      : string_base( iterator( PCL_GET_CHARPTR_FROM_QSTRING( qd.toString( PCL_QDATE_FMT_STR ) ) ) )
    {
    }
 
    explicit
-   IsoString( const QDateTime& qdt ) :
-      string_base( iterator( PCL_GET_CHARPTR_FROM_QSTRING( qdt.toString( PCL_QDATETIME_FMT_STR ) ) ) )
+   IsoString( const QDateTime& qdt )
+      : string_base( iterator( PCL_GET_CHARPTR_FROM_QSTRING( qdt.toString( PCL_QDATETIME_FMT_STR ) ) ) )
    {
    }
 
@@ -8023,45 +8028,41 @@ public:
    /*!
     * Constructs an empty %String object.
     */
-   String() : string_base()
-   {
-   }
+   String() = default;
 
    /*!
     * Constructs a %String object as a copy of the specified \c string_base
     * string \a s (copy constructor from the base class).
     */
-   String( const string_base& s ) : string_base( s )
+   String( const string_base& s )
+      : string_base( s )
    {
    }
 
    /*!
     * Copy constructor.
     */
-   String( const String& s ) : string_base( s )
-   {
-   }
+   String( const String& ) = default;
 
    /*!
     * Constructs a %String object by transferring data from the specified
     * \c string_base string \a s (move constructor from the base class).
     */
-   String( string_base&& s ) : string_base( std::move( s ) )
+   String( string_base&& s )
+      : string_base( std::move( s ) )
    {
    }
 
    /*!
     * Move constructor.
     */
-   String( String&& s ) : string_base( std::move( s ) )
-   {
-   }
+   String( String&& ) = default;
 
    /*!
     * Constructs a %String as a transformed copy of the specified 8-bit,
     * ISO/IEC-8859-1 string \a s.
     */
-   String( const string8_base& s ) : string_base()
+   String( const string8_base& s )
    {
       Assign( s );
    }
@@ -8069,7 +8070,8 @@ public:
    /*!
     * Constructs a %String as a copy of a null-terminated string \a t.
     */
-   String( const_iterator t ) : string_base( t )
+   String( const_iterator t )
+      : string_base( t )
    {
    }
 
@@ -8077,14 +8079,16 @@ public:
     * Constructs a %String with the \a n first characters of the
     * null-terminated string \a t, starting from its \a i-th character.
     */
-   String( const_iterator t, size_type i, size_type n ) : string_base( t, i, n )
+   String( const_iterator t, size_type i, size_type n )
+      : string_base( t, i, n )
    {
    }
 
    /*!
     * Constructs a %String with \a n copies of a UTF-16 character \a c.
     */
-   String( char_type c, size_type n ) : string_base( c, n )
+   String( char_type c, size_type n )
+      : string_base( c, n )
    {
    }
 
@@ -8092,7 +8096,8 @@ public:
     * Constructs a %String with a copy of the character sequence defined by
     * the range [i,j).
     */
-   String( const_iterator i, const_iterator j ) : string_base( i, j )
+   String( const_iterator i, const_iterator j )
+      : string_base( i, j )
    {
    }
 
@@ -8104,7 +8109,8 @@ public:
     *
     * \code String( l.begin(), l.end() ) \endcode
     */
-   String( std::initializer_list<char_type> l ) : String( l.begin(), l.end() )
+   String( std::initializer_list<char_type> l )
+      : String( l.begin(), l.end() )
    {
    }
 
@@ -8112,7 +8118,8 @@ public:
     * Constructs a %String as a copy of a null-terminated string \a t of
     * \c char16_t characters.
     */
-   String( const char16_t* t ) : string_base( reinterpret_cast<const_iterator>( t ) )
+   String( const char16_t* t )
+      : string_base( reinterpret_cast<const_iterator>( t ) )
    {
    }
 
@@ -8121,14 +8128,16 @@ public:
     * null-terminated string \a t of \c char16_t characters, starting from its
     * \a i-th character.
     */
-   String( const char16_t* t, size_type i, size_type n ) : string_base( reinterpret_cast<const_iterator>( t ), i, n )
+   String( const char16_t* t, size_type i, size_type n )
+      : string_base( reinterpret_cast<const_iterator>( t ), i, n )
    {
    }
 
    /*!
     * Constructs a %String with \a n copies of a \c char16_t character \a c.
     */
-   String( char16_t c, size_type n ) : string_base( char_type( c ), n )
+   String( char16_t c, size_type n )
+      : string_base( char_type( c ), n )
    {
    }
 
@@ -8136,7 +8145,7 @@ public:
     * Constructs a %String as a copy of a null-terminated string \a t of
     * \c wchar_t characters.
     */
-   String( const wchar_t* t ) : string_base()
+   String( const wchar_t* t )
    {
       Assign( t );
    }
@@ -8146,7 +8155,7 @@ public:
     * null-terminated string \a t of \c wchar_t characters, starting from its
     * \a i-th character.
     */
-   String( const wchar_t* t, size_type i, size_type n ) : string_base()
+   String( const wchar_t* t, size_type i, size_type n )
    {
       Assign( t, i, n );
    }
@@ -8154,7 +8163,8 @@ public:
    /*!
     * Constructs a %String with \a n copies of a \c wchar_t character \a c.
     */
-   String( wchar_t c, size_type n ) : string_base( char_type( c ), n )
+   String( wchar_t c, size_type n )
+      : string_base( char_type( c ), n )
    {
    }
 
@@ -8162,7 +8172,7 @@ public:
     * Constructs a %String as a transformed copy of the null-terminated 8-bit,
     * ISO/IEC-8859-1 string \a t.
     */
-   String( const_c_string8 t ) : string_base()
+   String( const_c_string8 t )
    {
       Assign( t );
    }
@@ -8172,7 +8182,7 @@ public:
     * null-terminated, 8-bit ISO/IEC-8859-1 string \a t, starting from its
     * \a i-th character.
     */
-   String( const_c_string8 t, size_type i, size_type n ) : string_base()
+   String( const_c_string8 t, size_type i, size_type n )
    {
       Assign( t, i, n );
    }
@@ -8181,7 +8191,7 @@ public:
     * Constructs a %String with the sequence of 8-bit characters in the range
     * [i,j) of 8-bit string iterators.
     */
-   String( const_char8_iterator i, const_char8_iterator j ) : string_base()
+   String( const_char8_iterator i, const_char8_iterator j )
    {
       Assign( i, j );
    }
@@ -8194,7 +8204,8 @@ public:
     *
     * \code String( l.begin(), l.end() ) \endcode
     */
-   String( std::initializer_list<char8_type> l ) : String( l.begin(), l.end() )
+   String( std::initializer_list<char8_type> l )
+      : String( l.begin(), l.end() )
    {
    }
 
@@ -8202,7 +8213,8 @@ public:
     * Constructs a %String object with \a n copies of an ISO/IEC-8859-1
     * character \a c.
     */
-   String( char8_type c, size_type n = 1 ) : string_base( char_type( c ), n )
+   String( char8_type c, size_type n = 1 )
+      : string_base( char_type( c ), n )
    {
    }
 
@@ -8210,7 +8222,7 @@ public:
     * Constructs a %String as a literal representation of a \c bool value.
     */
    explicit
-   String( bool x ) : string_base()
+   String( bool x )
    {
       Assign( x ? "true" : "false" );
    }
@@ -8220,7 +8232,7 @@ public:
     * \c signed \c short value.
     */
    explicit
-   String( short x ) : string_base()
+   String( short x )
    {
       (void)Format( L"%hd", x );
    }
@@ -8230,7 +8242,7 @@ public:
     * \c unsigned \c short value.
     */
    explicit
-   String( unsigned short x ) : string_base()
+   String( unsigned short x )
    {
       (void)Format( L"%hu", x );
    }
@@ -8240,7 +8252,7 @@ public:
     * \c signed \c int value.
     */
    explicit
-   String( int x ) : string_base()
+   String( int x )
    {
       (void)Format( L"%i", x );
    }
@@ -8250,7 +8262,7 @@ public:
     * \c unsigned \c int value.
     */
    explicit
-   String( unsigned int x ) : string_base()
+   String( unsigned int x )
    {
       (void)Format( L"%u", x );
    }
@@ -8260,7 +8272,7 @@ public:
     * \c signed \c long value.
     */
    explicit
-   String( long x ) : string_base()
+   String( long x )
    {
       (void)Format( L"%ld", x );
    }
@@ -8270,7 +8282,7 @@ public:
     * \c unsigned \c long value.
     */
    explicit
-   String( unsigned long x ) : string_base()
+   String( unsigned long x )
    {
       (void)Format( L"%lu", x );
    }
@@ -8280,7 +8292,7 @@ public:
     * \c signed \c long \c long value.
     */
    explicit
-   String( long long x ) : string_base()
+   String( long long x )
    {
       (void)Format( L"%lli", x );
    }
@@ -8290,7 +8302,7 @@ public:
     * \c unsigned \c long \c long value.
     */
    explicit
-   String( unsigned long long x ) : string_base()
+   String( unsigned long long x )
    {
       (void)Format( L"%llu", x );
    }
@@ -8300,7 +8312,7 @@ public:
     * \c float value.
     */
    explicit
-   String( float x ) : string_base()
+   String( float x )
    {
       (void)Format( L"%.7g", x );
    }
@@ -8310,7 +8322,7 @@ public:
     * \c double value.
     */
    explicit
-   String( double x ) : string_base()
+   String( double x )
    {
       (void)Format( L"%.16g", x );
    }
@@ -8320,7 +8332,7 @@ public:
     * \c long \c double value.
     */
    explicit
-   String( long double x ) : string_base()
+   String( long double x )
    {
 #ifdef _MSC_VER
       (void)Format( L"%.16Lg", x );
@@ -8335,7 +8347,7 @@ public:
     * Constructs a %String as a literal representation of an \c fcomplex value.
     */
    explicit
-   String( Complex<float>& x ) : string_base()
+   String( Complex<float>& x )
    {
       (void)Format( L"{%.7g,%.7g}", x.Real(), x.Imag() );
    }
@@ -8344,7 +8356,7 @@ public:
     * Constructs a %String as a literal representation of a \c dcomplex value.
     */
    explicit
-   String( Complex<double>& x ) : string_base()
+   String( Complex<double>& x )
    {
       (void)Format( L"{%.16g,%.16g}", x.Real(), x.Imag() );
    }
@@ -8353,7 +8365,7 @@ public:
     * Constructs a %String as a literal representation of an \c lcomplex value.
     */
    explicit
-   String( Complex<long double>& x ) : string_base()
+   String( Complex<long double>& x )
    {
 #ifdef _MSC_VER
       (void)Format( L"{%.16Lg,%.16Lg}", x.Real(), x.Imag() );
@@ -8367,20 +8379,20 @@ public:
 #ifdef __PCL_QT_INTERFACE
 
    explicit
-   String( const QString& qs ) :
-      string_base( qs.isEmpty() ? iterator( nullptr ) : iterator( PCL_GET_CHAR16PTR_FROM_QSTRING( qs ) ) )
+   String( const QString& qs )
+      : string_base( qs.isEmpty() ? iterator( nullptr ) : iterator( PCL_GET_CHAR16PTR_FROM_QSTRING( qs ) ) )
    {
    }
 
    explicit
-   String( const QDate& qd ) :
-      string_base( iterator( PCL_GET_CHAR16PTR_FROM_QSTRING( qd.toString( PCL_QDATE_FMT_STR ) ) ) )
+   String( const QDate& qd )
+      : string_base( iterator( PCL_GET_CHAR16PTR_FROM_QSTRING( qd.toString( PCL_QDATE_FMT_STR ) ) ) )
    {
    }
 
    explicit
-   String( const QDateTime& qdt ) :
-      string_base( iterator( PCL_GET_CHAR16PTR_FROM_QSTRING( qdt.toString( PCL_QDATETIME_FMT_STR ) ) ) )
+   String( const QDateTime& qdt )
+      : string_base( iterator( PCL_GET_CHAR16PTR_FROM_QSTRING( qdt.toString( PCL_QDATETIME_FMT_STR ) ) ) )
    {
    }
 
@@ -11988,7 +12000,7 @@ public:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-inline IsoString::IsoString( const_c_ustring t, size_type p, size_type n ) : string_base()
+inline IsoString::IsoString( const_c_ustring t, size_type p, size_type n )
 {
    size_type len = uchar_traits::Length( t );
    if ( p < len )
@@ -13682,4 +13694,4 @@ inline std::ostream& operator <<( std::ostream& o, const String& s )
 #endif   // __PCL_String_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/String.h - Released 2020-07-31T19:33:04Z

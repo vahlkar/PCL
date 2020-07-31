@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ExtractCIELAction.cpp - Released 2020-02-27T12:56:01Z
+// ExtractCIELAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -64,22 +64,20 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "ExtractCIELActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ExtractCIELAction::ExtractCIELAction() :
-   Action( "Image > Extract > Lightness (CIE L*)",
-           Bitmap( ExtractCIELActionIcon_XPM ),
-           /*
-            * Don't hide this toolbar button because a lot of people loves it:
-            * https://pixinsight.com/forum/index.php?topic=11298.0
-            */
+ExtractCIELAction::ExtractCIELAction()
+   : Action( "Image > Extract > Lightness (CIE L*)",
+             "@module_icons_dir/ExtractCIELAction.svg",
+         /*
+          * Don't hide this toolbar button because a lot of people loves it:
+          * https://pixinsight.com/forum/index.php?topic=11298.0
+          */
 //            (PixInsightSettings::GlobalInteger( "MainWindow/LogicalScreenWidth" ) > 1920) ? "Image" : "" )
-           "Image" )
+             "Image" )
 {
    SetToolTip( "Extract CIE L* component" );
 }
+
+// ----------------------------------------------------------------------------
 
 void ExtractCIELAction::Execute()
 {
@@ -93,6 +91,8 @@ void ExtractCIELAction::Execute()
    instance.LaunchOnCurrentView();
 }
 
+// ----------------------------------------------------------------------------
+
 bool ExtractCIELAction::IsEnabled( ActionInfo info ) const
 {
    return info.isImage && info.isColor;
@@ -103,4 +103,4 @@ bool ExtractCIELAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractCIELAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF ExtractCIELAction.cpp - Released 2020-07-31T19:33:39Z

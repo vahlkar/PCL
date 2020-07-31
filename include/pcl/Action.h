@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Action.h - Released 2020-02-27T12:55:23Z
+// pcl/Action.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -177,23 +177,100 @@ public:
    /*!
     * Constructs a new %Action object.
     *
-    * \param menuItem   Specifies the menu item that will be associated to this
-    *             action.
+    * \param menuItem   Specifies the menu item that will be associated with
+    *                   this action.
     *
-    * \param icon       A Bitmap object representing the icon image that will
-    *             be associated to this action. The icon will be used for menu
-    *             items and tool bar buttons. If this parameter is not
-    *             specified, the action will have no associated icon.
+    * \param iconSVGFile   Path to an existing file in the local file system,
+    *                   which must store a valid SVG document defining the icon
+    *                   image that will be associated with this action. The SVG
+    *                   source code must be encoded in UTF-8. The icon will be
+    *                   used for menu items and tool bar buttons associated
+    *                   with this action. If this parameter is not specified,
+    *                   or if the specified SVG document does not exist, is not
+    *                   valid, or cannot be rendered, no icon will be used to
+    *                   represent this action.
     *
     * \param toolBar    The name of a tool bar where this action will be
-    *             integrated. If this parameter is not specified, the action
-    *             will not be integrated in a tool bar.
+    *                   integrated. If this parameter is not specified, the
+    *                   action will not be integrated in a tool bar.
+    *
+    * <b>Automatic Resource Location</b>
+    *
+    * The specified \a iconSVGFile string can be prefixed with the
+    * "@module_icons_dir/" special token to let the PixInsight core application
+    * load the corresponding SVG document automatically from the a standard
+    * distribution directory. See the documentation for
+    * MetaProcess::IconImageSVGFile() for complete information.
     *
     * To learn how the menu item and tool bar parameters work for actions, see
     * the description of the Action class.
     */
    Action( const String& menuItem,
-           const Bitmap& icon = Bitmap::Null(), const String toolBar = String() );
+           const String& iconSVGFile = String(), const String& toolBar = String() );
+
+   /*!
+    * Constructs a new %Action object.
+    *
+    * \param menuItem   Specifies the menu item that will be associated with
+    *                   this action.
+    *
+    * \param iconSVGsource    The source code of a valid SVG document defining
+    *                   the icon image that will be associated with this
+    *                   action. The SVG source code must be encoded in UTF-8.
+    *                   The icon will be used for all menu items and tool bar
+    *                   buttons associated with this action. If this parameter
+    *                   is not specified, or if the specified SVG document is
+    *                   not valid or cannot be rendered, no icon will be used
+    *                   to represent this action.
+    *
+    * \param toolBar    The name of a tool bar where this action will be
+    *                   integrated. If this parameter is not specified, the
+    *                   action will not be integrated in a tool bar.
+    *
+    * \note The unused third \c int parameter serves to distinguish this
+    * constructor from the other one that takes a file path argument. This is
+    * necessary because both String and IsoString can be constructed from
+    * literal \c const \c char* arguments.
+    *
+    * To learn how the menu item and tool bar parameters work for actions, see
+    * the description of the Action class.
+    */
+   Action( const String& menuItem,
+           const IsoString& iconSVGSource, int, const String& toolBar = String() );
+
+#ifdef __PCL_ACTION_DEPRECATED_CTOR
+
+   /*!
+    * Constructs a new %Action object.
+    *
+    * \param menuItem   Specifies the menu item that will be associated with
+    *                   this action.
+    *
+    * \param icon       A Bitmap object representing the icon image that will
+    *                   be associated with this action. The icon will be used
+    *                   for menu items and tool bar buttons. If this parameter
+    *                   is not specified, no menu icon will be used and a
+    *                   default icon will be assigned automatically for tool
+    *                   bar buttons, if necessary.
+    *
+    * \param toolBar    The name of a tool bar where this action will be
+    *                   integrated. If this parameter is not specified, the
+    *                   action will not be integrated in a tool bar.
+    *
+    * To learn how the menu item and tool bar parameters work for actions, see
+    * the description of the Action class.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use the constructors that define icon images
+    * in SVG format. Existing modules should also be refactored in the same way
+    * to support scalable icons.
+    */
+   Action( const String& menuItem,
+           const Bitmap& icon, const String& toolBar = String() );
+
+#endif // __PCL_ACTION_DEPRECATED_CTOR
 
    /*!
     * Move constructor.
@@ -207,7 +284,7 @@ public:
     *
     * This destructor does not destroy the actual action object, which is part
     * of the PixInsight core application. Only the managed alias object living
-    * in the user-defined module is destroyed.
+    * in the caller module is destroyed.
     */
    virtual ~Action()
    {
@@ -382,14 +459,63 @@ public:
    Bitmap Icon() const;
 
    /*!
-    * Changes the icon assigned to this %Action object. %Action icons are used
-    * to render the associated menu items and tool bar buttons.
+    * Changes the icon associated with this %Action to an image specified in
+    * SVG format.
     *
-    * \param icon    The new icon Bitmap that will be assigned to this %Action
-    *             object. If a null bitmap is specified, the core application
-    *             will assign a default icon for the tool bar button (if this
-    *             action has been integrated in a tool bar), and no icon will
-    *             be drawn on the associated menu item.
+    * \param svgSource  The source code of a valid SVG document defining the
+    *                   icon image that will be associated with this action.
+    *                   The SVG source code must be encoded in UTF-8.
+    *
+    * The new icon will be used for all menu items and tool bar buttons
+    * associated with this action after calling this function. If an empty
+    * string is specified, or if the specified SVG document is not valid, no
+    * icon will be used to represent this action.
+    *
+    * \sa SetIconSVGFile()
+    */
+   void SetIconSVG( const IsoString& svgSource );
+
+   /*!
+    * Changes the icon associated with this %Action to an image specified in
+    * SVG format.
+    *
+    * \param filePath   Path to an existing file in the local file system,
+    *                   which must store a valid SVG document representing the
+    *                   icon image that will be associated with this action.
+    *                   The SVG source code must be encoded in UTF-8.
+    *
+    * The new icon will be used for all menu items and tool bar buttons
+    * associated with this action after calling this function. If an empty
+    * string is specified, or if the specified SVG document does not exist or
+    * is not valid, no icon will be used to represent this action.
+    *
+    * <b>Automatic Resource Location</b>
+    *
+    * The specified \a filePath string can be prefixed with the
+    * "@module_icons_dir/" special token to let the PixInsight core application
+    * load the corresponding SVG document automatically from the a standard
+    * distribution directory. See the documentation for
+    * MetaProcess::IconImageSVGFile() for complete information.
+    *
+    * \sa SetIconSVG()
+    */
+   void SetIconSVGFile( const String& filePath );
+
+   /*!
+    * Changes the icon associated with this %Action object.
+    *
+    * \param icon    The new icon Bitmap that will be assigned to this %Action.
+    *
+    * The new icon will be used for all menu items and tool bar buttons
+    * associated with this action after calling this function. If a null bitmap
+    * is specified, no icon will be used to represent this action.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use the SetIconSVG() or SetIconSVGFile()
+    * member functions, which define action icon images in SVG format. Existing
+    * modules should be refactored in the same way to support scalable icons.
     *
     * \sa Icon()
     */
@@ -457,4 +583,4 @@ private:
 #endif   // __PCL_Action_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Action.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Action.h - Released 2020-07-31T19:33:04Z

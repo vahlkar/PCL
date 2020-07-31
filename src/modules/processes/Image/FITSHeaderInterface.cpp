@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderInterface.cpp - Released 2020-02-27T12:56:01Z
+// FITSHeaderInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -65,19 +65,17 @@ FITSHeaderInterface* TheFITSHeaderInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "FITSHeaderIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 #define currentView  GUI->AllImages_ViewList.CurrentView()
 
 // ----------------------------------------------------------------------------
 
-FITSHeaderInterface::FITSHeaderInterface() :
-   instance( TheFITSHeaderProcess )
+FITSHeaderInterface::FITSHeaderInterface()
+   : instance( TheFITSHeaderProcess )
 {
    TheFITSHeaderInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 FITSHeaderInterface::~FITSHeaderInterface()
 {
@@ -85,30 +83,42 @@ FITSHeaderInterface::~FITSHeaderInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString FITSHeaderInterface::Id() const
 {
    return "FITSHeader";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* FITSHeaderInterface::Process() const
 {
    return TheFITSHeaderProcess;
 }
 
-const char** FITSHeaderInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String FITSHeaderInterface::IconImageSVGFile() const
 {
-   return FITSHeaderIcon_XPM;
+   return "@module_icons_dir/FITSHeader.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSHeaderInterface::ApplyInstance() const
 {
    instance.LaunchOnCurrentWindow();
 }
 
+// ----------------------------------------------------------------------------
+
 InterfaceFeatures FITSHeaderInterface::Features() const
 {
    return InterfaceFeature::Default | InterfaceFeature::TrackViewButton;
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSHeaderInterface::TrackViewUpdated( bool active )
 {
@@ -123,11 +133,15 @@ void FITSHeaderInterface::TrackViewUpdated( bool active )
       }
 }
 
+// ----------------------------------------------------------------------------
+
 void FITSHeaderInterface::ResetInstance()
 {
    FITSHeaderInstance defaultInstance( TheFITSHeaderProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSHeaderInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -143,10 +157,14 @@ bool FITSHeaderInterface::Launch( const MetaProcess& P, const ProcessImplementat
    return &P == TheFITSHeaderProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* FITSHeaderInterface::NewProcess() const
 {
    return new FITSHeaderInstance( instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSHeaderInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -156,10 +174,14 @@ bool FITSHeaderInterface::ValidateProcess( const ProcessImplementation& p, pcl::
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSHeaderInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSHeaderInterface::ImportProcess( const ProcessImplementation& p )
 {
@@ -171,10 +193,14 @@ bool FITSHeaderInterface::ImportProcess( const ProcessImplementation& p )
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSHeaderInterface::WantsImageNotifications() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSHeaderInterface::ImageUpdated( const View& v )
 {
@@ -185,6 +211,8 @@ void FITSHeaderInterface::ImageUpdated( const View& v )
          UpdateControls();
       }
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSHeaderInterface::ImageFocused( const View& v )
 {
@@ -234,6 +262,8 @@ void FITSHeaderInterface::UpdateControls()
    UpdateButtons();
 }
 
+// ----------------------------------------------------------------------------
+
 void FITSHeaderInterface::UpdateKeywordList()
 {
    GUI->Keywords_List.DisableUpdates();
@@ -256,6 +286,8 @@ void FITSHeaderInterface::UpdateKeywordList()
    GUI->Keywords_List.EnableUpdates();
 }
 
+// ----------------------------------------------------------------------------
+
 void FITSHeaderInterface::UpdateButtons()
 {
    IndirectArray<TreeBox::Node> selected = GUI->Keywords_List.SelectedNodes();
@@ -275,6 +307,8 @@ void FITSHeaderInterface::UpdateButtons()
    GUI->Replace_PushButton.Enable( selected.Length() == 1 && !reserved );
 }
 
+// ----------------------------------------------------------------------------
+
 void FITSHeaderInterface::UpdateInfo()
 {
    String info;
@@ -289,6 +323,8 @@ void FITSHeaderInterface::UpdateInfo()
 
    GUI->Info_Label.SetText( info );
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSHeaderInterface::UpdateKeywordNode( int i )
 {
@@ -318,6 +354,8 @@ void FITSHeaderInterface::UpdateKeywordNode( int i )
    node->SetTextColor( 1, c );
    node->SetTextColor( 2, c );
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSHeaderInterface::GetKeywordData( FITSHeaderInstance::Keyword& k )
 {
@@ -427,10 +465,14 @@ void FITSHeaderInterface::__ViewList_ViewSelected( ViewList& sender, View& view 
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void FITSHeaderInterface::__Keywords_CurrentNodeUpdated( TreeBox& /*sender*/, TreeBox::Node& /*current*/, TreeBox::Node& /*oldCurrent*/ )
 {
    UpdateInfo();
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSHeaderInterface::__Keywords_NodeActivated( TreeBox& /*sender*/, TreeBox::Node& node, int /*col*/ )
 {
@@ -443,10 +485,14 @@ void FITSHeaderInterface::__Keywords_NodeActivated( TreeBox& /*sender*/, TreeBox
    UpdateButtons();
 }
 
+// ----------------------------------------------------------------------------
+
 void FITSHeaderInterface::__Keywords_NodeSelectionUpdated( TreeBox& /*sender*/ )
 {
    UpdateButtons();
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSHeaderInterface::__Keyword_ButtonClick( Button& sender, bool /*checked*/ )
 {
@@ -504,11 +550,15 @@ void FITSHeaderInterface::__Keyword_ButtonClick( Button& sender, bool /*checked*
    GUI->AllImages_ViewList.SelectView( View::Null() );
 }
 
+// ----------------------------------------------------------------------------
+
 void FITSHeaderInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->AllImages_ViewList || sender == GUI->Keywords_List.Viewport() )
       wantsView = view.IsMainView();
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSHeaderInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -522,6 +572,7 @@ void FITSHeaderInterface::__ViewDrop( Control& sender, const Point& pos, const V
       }
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 FITSHeaderInterface::GUIData::GUIData( FITSHeaderInterface& w )
@@ -639,4 +690,4 @@ FITSHeaderInterface::GUIData::GUIData( FITSHeaderInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF FITSHeaderInterface.cpp - Released 2020-07-31T19:33:39Z

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------------
 //
 //  Little Color Management System
-//  Copyright (c) 1998-2017 Marti Maria Saguer
+//  Copyright (c) 1998-2020 Marti Maria Saguer
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -2138,9 +2138,9 @@ Error:
 // Some empty defaults are created for missing parts
 
 static
-cmsBool  Type_LUT16_Write(struct _cms_typehandler_struct* self, cmsIOHANDLER* io, void* Ptr, cmsUInt32Number nItems)
+cmsBool Type_LUT16_Write(struct _cms_typehandler_struct* self, cmsIOHANDLER* io, void* Ptr, cmsUInt32Number nItems)
 {
-    cmsUInt32Number nTabSize, n;
+    cmsUInt32Number nTabSize;
     cmsPipeline* NewLUT = (cmsPipeline*) Ptr;
     cmsStage* mpe;
     _cmsStageToneCurvesData* PreMPE = NULL, *PostMPE = NULL;
@@ -2153,6 +2153,7 @@ cmsBool  Type_LUT16_Write(struct _cms_typehandler_struct* self, cmsIOHANDLER* io
     if (mpe != NULL && mpe ->Type == cmsSigMatrixElemType) {
 
         MatMPE = (_cmsStageMatrixData*) mpe ->Data;
+        if (mpe->InputChannels != 3 || mpe->OutputChannels != 3) return FALSE;
         mpe = mpe -> Next;
     }
 
@@ -2190,21 +2191,17 @@ cmsBool  Type_LUT16_Write(struct _cms_typehandler_struct* self, cmsIOHANDLER* io
     if (!_cmsWriteUInt8Number(io, (cmsUInt8Number) OutputChannels)) return FALSE;
     if (!_cmsWriteUInt8Number(io, (cmsUInt8Number) clutPoints)) return FALSE;
     if (!_cmsWriteUInt8Number(io, 0)) return FALSE; // Padding
-
-	n = NewLUT->InputChannels * NewLUT->OutputChannels;
-
+	
     if (MatMPE != NULL) {
-
-		for (i = 0; i < n; i++)
+        
+		for (i = 0; i < 9; i++)
 		{
 			if (!_cmsWrite15Fixed16Number(io, MatMPE->Double[i])) return FALSE;
 		}
       
     }
     else {
-
-		if (n != 9) return FALSE;
-
+		
         if (!_cmsWrite15Fixed16Number(io, 1)) return FALSE;
         if (!_cmsWrite15Fixed16Number(io, 0)) return FALSE;
         if (!_cmsWrite15Fixed16Number(io, 0)) return FALSE;

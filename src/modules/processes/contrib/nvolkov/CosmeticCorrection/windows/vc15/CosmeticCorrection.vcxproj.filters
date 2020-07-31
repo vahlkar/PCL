@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:08.201Z
+# Generated on .... 2020-07-31T19:36:45.145Z
 # Project id ...... CosmeticCorrection
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,10 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>3068327c-f708-40f3-9bb8-5a49aead3275</UniqueIdentifier>
+      <UniqueIdentifier>8a39b7cf-b07d-4313-9544-9692179270a9</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>c62fa2e0-df8b-44ff-a2b8-cdeaba355139</UniqueIdentifier>
+      <UniqueIdentifier>8ee2d86f-e2cf-438f-85aa-06b625daa209</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>eeb13de6-94d8-4cb9-b1d2-5862084ef6e3</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,5 +58,10 @@
     <ClInclude Include="..\..\CosmeticCorrectionProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\CosmeticCorrection.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

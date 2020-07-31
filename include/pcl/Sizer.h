@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Sizer.h - Released 2020-02-27T12:55:23Z
+// pcl/Sizer.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -587,7 +587,8 @@ public:
    /*!
     * Constructs a %HorizontalSizer object.
     */
-   HorizontalSizer() : Sizer( false )
+   HorizontalSizer()
+      : Sizer( false )
    {
    }
 
@@ -618,7 +619,8 @@ public:
    /*!
     * Constructs a %VerticalSizer object.
     */
-   VerticalSizer() : Sizer( true )
+   VerticalSizer()
+      : Sizer( true )
    {
    }
 
@@ -639,4 +641,4 @@ public:
 #endif   // __PCL_Sizer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Sizer.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Sizer.h - Released 2020-07-31T19:33:04Z

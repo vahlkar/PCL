@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformInstance.cpp - Released 2020-02-27T12:56:01Z
+// FourierTransformInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -65,19 +65,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FourierTransformInstance::FourierTransformInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   radialCoordinates( TheFTRadialCoordinatesParameter->DefaultValue() ),
-   centered( TheFTCenteredParameter->DefaultValue() )
+FourierTransformInstance::FourierTransformInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , radialCoordinates( TheFTRadialCoordinatesParameter->DefaultValue() )
+   , centered( TheFTCenteredParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-FourierTransformInstance::FourierTransformInstance( const FourierTransformInstance& x ) :
-   ProcessImplementation( x ),
-   radialCoordinates( x.radialCoordinates ),
-   centered( x.centered )
+FourierTransformInstance::FourierTransformInstance( const FourierTransformInstance& x )
+   : ProcessImplementation( x )
+   , radialCoordinates( x.radialCoordinates )
+   , centered( x.centered )
 {
 }
 
@@ -244,12 +244,12 @@ private:
       TransferMagnitudeAndPhaseDataThread( GenericImage<P3>& M,
                                            GenericImage<P3>& P,
                                            const GenericImage<P2>& C,
-                                           size_type start, size_type end ) :
-         m_M( M ),
-         m_P( P ),
-         m_C( C ),
-         m_start( start ),
-         m_end( end )
+                                           size_type start, size_type end )
+         : m_M( M )
+         , m_P( P )
+         , m_C( C )
+         , m_start( start )
+         , m_end( end )
       {
       }
 
@@ -375,4 +375,4 @@ void* FourierTransformInstance::LockParameter( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF FourierTransformInstance.cpp - Released 2020-07-31T19:33:39Z

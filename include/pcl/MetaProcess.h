@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MetaProcess.h - Released 2020-02-27T12:55:23Z
+// pcl/MetaProcess.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -273,6 +273,103 @@ public:
    }
 
    /*!
+    * Returns the icon image of this process as a document in SVG format.
+    *
+    * The specified image will be used to identify all instances of this
+    * process in the core application's GUI. It will be used on the %Process
+    * Explorer window, on process icons of this class, and in general for every
+    * graphical item related to this process or to an instance of this process.
+    *
+    * The returned string must be the source code of a valid SVG document
+    * representing the icon image, encoded in UTF-8.
+    *
+    * Since core version 1.8.8-6, all process, interface and file format icons
+    * should be specified in SVG format. Raster formats, such as XPM and PNG,
+    * have been deprecated for this purpose.
+    *
+    * If both this function and IconImageSVGFile() return an empty string, or
+    * if the specified SVG document does not exist or is not valid, a default
+    * icon will be assigned to this process automatically by the PixInsight
+    * core application.
+    *
+    * \note The default implementation of this function returns an empty
+    * string.
+    *
+    * \sa IconImageSVGFile()
+    */
+   virtual IsoString IconImageSVG() const
+   {
+      return IsoString();
+   }
+
+   /*!
+    * Returns the icon image of this process as a document in SVG format,
+    * stored as an external file.
+    *
+    * The specified image will be used to identify all instances of this
+    * process in the core application's GUI. It will be used on the %Process
+    * Explorer window, on process icons of this class, and in general for every
+    * graphical item related to this process or to an instance of this process.
+    *
+    * The returned string must be a path to an existing file in the local
+    * file system (remote resources are not supported in current PCL versions),
+    * which must store a valid SVG document representing the icon image. The
+    * SVG source code must be encoded in UTF-8.
+    *
+    * Since core version 1.8.8-6, all process, interface and file format icons
+    * should be specified in SVG format. Raster formats, such as XPM and PNG,
+    * have been deprecated for this purpose.
+    *
+    * If both this function and IconImageSVG() return an empty string, or if
+    * the specified SVG document does not exist or is not valid, a default icon
+    * will be assigned to this process automatically by the PixInsight core
+    * application.
+    *
+    * <b>Automatic Resource Location</b>
+    *
+    * Process icon image files can be loaded from arbitrary locations on the
+    * local file system. However, modules typically install their process and
+    * interface icons on the /rsc/icons/module directory under the local
+    * PixInsight installation. A module can specify the "@module_icons_dir/"
+    * prefix in icon file paths to let the PixInsight core application load the
+    * corresponding SVG documents from the appropriate standard distribution
+    * directory automatically. For example, suppose that a "Bar" process,
+    * pertaining to a "Foo" module, reimplements this member function in its
+    * %MetaProcess derived class as follows:
+    *
+    * \code
+    * class Bar : public MetaProcess
+    * {
+    * public:
+    *    ...
+    *
+    *    String IconImageSVGFile() const override
+    *    {
+    *       return "@module_icons_dir/Bar.svg";
+    *    }
+    *
+    *    ...
+    * };
+    * \endcode
+    *
+    * Then the core application will attempt to load the following SVG file:
+    *
+    * &lt;install-dir&gt;/rsc/icons/module/Foo/Bar.svg
+    *
+    * where &lt;install-dir&gt; is the local directory where the running
+    * PixInsight core application is installed.
+    *
+    * \note The default implementation of this function returns an empty
+    * string.
+    *
+    * \sa IconImageSVG()
+    */
+   virtual String IconImageSVGFile() const
+   {
+      return String();
+   }
+
+   /*!
     * Returns a <em>large icon</em> for this process as an image in the
     * standard XPM format.
     *
@@ -288,6 +385,13 @@ public:
     * process automatically.
     *
     * \note The default implementation of this function returns nullptr.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define process icons in SVG format. Existing modules should also be
+    * refactored in the same way to support scalable icons.
     *
     * \sa IconImageFile()
     */
@@ -305,14 +409,15 @@ public:
     * For details on process icon images, see the documentation for
     * IconImageXPM().
     *
-    * \deprecated Using this function is discouraged, since it produces an
-    * unnecessary dependency on an external file, which complicates the module
-    * installation procedure. The recommended method is always reimplementing
-    * the IconImageXPM() member function in a derived class, to provide the
-    * address of a static image in the XPM format.
-    *
     * \note The default implementation of this function returns an empty
     * string.
+    *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define process icons in SVG format. Existing modules should also be
+    * refactored in the same way to support scalable icons.
     *
     * \sa IconImageXPM()
     */
@@ -340,6 +445,13 @@ public:
     * application usually does a fine work resampling large icons to obtain
     * reduced versions.
     *
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define process icons in SVG format. Existing modules should also be
+    * refactored in the same way to support scalable icons.
+    *
     * \sa SmallIconImageFile()
     */
    virtual const char** SmallIconImageXPM() const
@@ -356,8 +468,12 @@ public:
     * For details on small process icon images, see the documentation for
     * SmallIconImageXPM().
     *
-    * \deprecated Using this function is discouraged, for the same reasons
-    * explained on the documentation entry for IconImageFile().
+    * \deprecated This member function has been deprecated since core version
+    * 1.8.8-6. It is still available for compatibility with existing modules
+    * that depend on it, but it will be removed in a future version of PCL.
+    * All newly produced code must use IconImageSVG() or IconImageSVGFile() to
+    * define process icons in SVG format. Existing modules should also be
+    * refactored in the same way to support scalable icons.
     *
     * \sa SmallIconImageXPM()
     */
@@ -385,7 +501,7 @@ public:
     * it if your process requires some initialization that cannot be
     * accomplished in the class constructor. This includes calling PCL
     * functions that require active communication with the PixInsight core
-    * application, as retrieving global settings, for example (see the
+    * application, as retrieving global settings for example (see the
     * pcl/GlobalSettings.h header).
     *
     * \note The default implementation of this function does nothing.
@@ -413,17 +529,17 @@ public:
     * An example of process activation with an instance is when the user
     * double-clicks a process icon on the core application's workspace.
     *
-    * If this function returns zero, no interface will be launched when this
+    * If this function returns nullptr, no interface will be launched when this
     * process is activated without an instance.
     *
-    * \note The default implementation of this function returns zero, so by
-    * default a process has no associated interface.
+    * \note The default implementation of this function returns nullptr, so a
+    * process has no associated interface by default.
     *
     * \sa ProcessImplementation::SelectInterface()
     */
    virtual ProcessInterface* DefaultInterface() const
    {
-      return 0; // by default, processes have no associated interfaces.
+      return nullptr; // by default, processes have no associated interfaces.
    }
 
    /*!
@@ -544,7 +660,7 @@ public:
     * Returns true iff this process is able to open a documentation browser with
     * specific documentation contents.
     *
-    * Starting from version 1.7, the PixInsight Core application implements an
+    * Starting from version 1.7, the PixInsight core application implements an
     * integrated documentation system. The core application provides automatic
     * documentation browsing and searching functionality. For this reason, the
     * default implementation of this member function returns true.
@@ -752,7 +868,7 @@ public:
     *
     * Reimplementing this function is strongly discouraged, unless some
     * nonstandard behavior is absolutely necessary for a particular process.
-    * Since version 1.7 of the PixInsight Core application, the integrated
+    * Since version 1.7 of the PixInsight core application, the integrated
     * documentation system works in a completely automatic and standardized way
     * to provide documentation browsing and searching functionality.
     *
@@ -777,6 +893,126 @@ public:
     */
    const MetaParameter* operator[]( size_type i ) const;
 
+   /*!
+    * Returns true iff this process can handle inter-process communication
+    * (IPC) messages send among running instances of the PixInsight core
+    * application.
+    *
+    * The following IPC process messages are implemented in current versions of
+    * the PixInsight platform:
+    *
+    * \li <em>Start Process.</em> Handled by a reimplementation of the
+    * IPCStart() member function in a derived class.
+    *
+    * \li <em>Stop Process.</em> Handled by a reimplementation of the
+    * IPCStop() member function in a derived class.
+    *
+    * \li <em>Set Process Parameters.</em> Handled by a reimplementation of the
+    * IPCSetParameters() member function in a derived class.
+    *
+    * \li <em>Get Process Status.</em> Handled by a reimplementation of the
+    * IPCStatus() member function in a derived class.
+    *
+    * Process execution controlled by IPC messages is primarily intended for
+    * automation of non-interactive or unattended tasks. A good example is the
+    * NetworkService process, which can be controlled with IPC messages to
+    * implement generic, asynchronous online services without user interaction.
+    *
+    * The default implementation of this member function returns false. This
+    * means that IPC messages are not supported by default. To support them,
+    * this member function must be reimplemented in a derived class to return
+    * true, along with IPCStart(), IPCStop(), IPCSetParameters() and
+    * IPCStatus().
+    */
+   virtual bool CanProcessIPCMessages() const
+   {
+      return false;
+   }
+
+   /*!
+    * Handles a start process IPC message.
+    *
+    * \param instance   The instance number of the running PixInsight core
+    *                   application. This is an integer > 0, which can be used
+    *                   for task logging purposes.
+    *
+    * \param messageUID Unique identifier of the IPC message that originated
+    *                   this call. This parameter can be used for task logging
+    *                   purposes.
+    *
+    * \param parameters A string in UTF-16 format with process-specific
+    *                   parameters. Can be an empty string if no parameters
+    *                   were specified by the IPC message that originated this
+    *                   function call.
+    *
+    * \note This function will never be called unless the
+    * CanProcessIPCMessages() member function is reimplemented to return true.
+    */
+   virtual void IPCStart( int instance, const IsoString& messageUID, const String& parameters ) const;
+
+   /*!
+    * Handles a stop process IPC message.
+    *
+    * \param instance   The instance number of the running PixInsight core
+    *                   application. This is an integer > 0, which can be used
+    *                   for task logging purposes.
+    *
+    * \param messageUID Unique identifier of the IPC message that originated
+    *                   this call. This parameter can be used for task logging
+    *                   purposes.
+    *
+    * \note This function will never be called unless the
+    * CanProcessIPCMessages() member function is reimplemented to return true.
+    */
+   virtual void IPCStop( int instance, const IsoString& messageUID ) const;
+
+   /*!
+    * Handles a set process parameters IPC message.
+    *
+    * \param instance   The instance number of the running PixInsight core
+    *                   application. This is an integer > 0, which can be used
+    *                   for task logging purposes.
+    *
+    * \param messageUID Unique identifier of the IPC message that originated
+    *                   this call. This parameter can be used for task logging
+    *                   purposes.
+    *
+    * \param parameters A string in UTF-16 format with process-specific
+    *                   parameters. Can be an empty string if no parameters
+    *                   were specified by the IPC message that originated this
+    *                   function call.
+    *
+    * \note This function will never be called unless the
+    * CanProcessIPCMessages() member function is reimplemented to return true.
+    */
+   virtual void IPCSetParameters( int instance, const IsoString& messageUID, const String& parameters ) const;
+
+   /*!
+    * Handles a get process status IPC message.
+    *
+    * \param instance   The instance number of the running PixInsight core
+    *                   application. This is an integer > 0, which can be used
+    *                   for task logging purposes.
+    *
+    * \param messageUID Unique identifier of the IPC message that originated
+    *                   this call. This parameter can be used for task logging
+    *                   purposes.
+    *
+    * The returned value is expected to be:
+    *
+    * = 0 If the process is not currently in execution.
+    *
+    * > 0 (process-specific positive nonzero integer codes) If the process is
+    *     now running.
+    *
+    * < 0 (process-specific negative integer codes) If the process is not
+    *     running because of an error condition.
+    *
+    * \note This function will never be called unless the
+    * CanProcessIPCMessages() member function is reimplemented to return true.
+    */
+   virtual int IPCStatus( int instance, const IsoString& messageUID ) const;
+
 private:
 
    void PerformAPIDefinitions() const override;
@@ -791,4 +1027,4 @@ private:
 #endif   // __PCL_MetaProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaProcess.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/MetaProcess.h - Released 2020-07-31T19:33:04Z

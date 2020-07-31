@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.h - Released 2020-02-27T12:55:23Z
+// pcl/ImageVariant.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -371,7 +371,8 @@ public:
     * removed, and the transported image is owned by %ImageVariant, it is
     * destroyed and deallocated.
     */
-   ImageVariant( const ImageVariant& image ) : m_data( image.m_data )
+   ImageVariant( const ImageVariant& image )
+      : m_data( image.m_data )
    {
       m_data->Attach();
    }
@@ -379,7 +380,8 @@ public:
    /*!
     * Move constructor.
     */
-   ImageVariant( ImageVariant&& image ) : m_data( image.m_data )
+   ImageVariant( ImageVariant&& image )
+      : m_data( image.m_data )
    {
       image.m_data = nullptr;
    }
@@ -1035,16 +1037,20 @@ public:
     * When range clipping is enabled, pixel samples outside the current
     * clipping range:
     *
-    * ]RangeClipLow(),RangeClipHigh()[
+    * ( RangeClipLow(), RangeClipHigh() )
     *
-    * are ignored by statistics calculation routines. The clipping range is
-    * always defined in the normalized [0,1] range for all pixel sample data
-    * types; the necessary conversions are performed transparently.
+    * are ignored by statistics calculation routines. Note that range bounds
+    * are always excluded, since the range is open on both sides. The clipping
+    * range is always defined in the normalized [0,1] range for all pixel
+    * sample data types; the necessary conversions are performed transparently.
     *
     * When range clipping is disabled, the clipping range is ignored and all
-    * pixel samples are considered for statistics calculations.
+    * pixel samples are considered for statistical calculations.
     *
-    * The default clipping range is the normalized [0,1] range. Range clipping
+    * To make it more flexible, range clipping can be enabled/disabled
+    * separately for the low and high bounds.
+    *
+    * The default clipping range is the normalized (0,1) range. Range clipping
     * is disabled by default.
     */
    bool IsRangeClippingEnabled() const
@@ -1053,14 +1059,44 @@ public:
    }
 
    /*!
+    * Returns true iff range clipping is currently enabled for the low clipping
+    * bound. Returns false if this object does not transport an image.
+    *
+    * When this function returns true, pixel samples with values less than or
+    * equal to the low clipping bound (as reported by RangeClipLow() ) will be
+    * rejected for statistical calculations.
+    *
+    * See IsRangeClippingEnabled() for more information on range clipping.
+    */
+   bool IsLowRangeClippingEnabled() const
+   {
+      return m_data->image ? m_data->image->IsLowRangeClippingEnabled() : false;
+   }
+
+   /*!
+    * Returns true iff range clipping is currently enabled for the high
+    * clipping bound. Returns false if this object does not transport an image.
+    *
+    * When this function returns true, pixel samples with values greater than
+    * or equal to the high clipping bound (as reported by RangeClipHigh() )
+    * will be rejected for statistical calculations.
+    *
+    * See IsRangeClippingEnabled() for more information on range clipping.
+    */
+   bool IsHighRangeClippingEnabled() const
+   {
+      return m_data->image ? m_data->image->IsHighRangeClippingEnabled() : false;
+   }
+
+   /*!
     * Enables range clipping for statistical calculations.
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void EnableRangeClipping( bool enable = true ) const
+   void EnableRangeClipping( bool enableLow = true, bool enableHigh = true ) const
    {
       if ( m_data->image )
-         m_data->image->EnableRangeClipping( enable );
+         m_data->image->EnableRangeClipping( enableLow, enableHigh );
    }
 
    /*!
@@ -1068,10 +1104,10 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void DisableRangeClipping( bool disable = true ) const
+   void DisableRangeClipping( bool disableLow = true, bool disableHigh = true ) const
    {
       if ( m_data->image )
-         m_data->image->DisableRangeClipping( disable );
+         m_data->image->DisableRangeClipping( disableLow, disableHigh );
    }
 
    /*!
@@ -1120,7 +1156,7 @@ public:
 
    /*!
     * Sets the lower and upper bounds of the clipping range and enables range
-    * clipping, in a single function call.
+    * clipping (both low and high clipping bounds), in a single function call.
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
@@ -1480,7 +1516,8 @@ public:
     * GenericImage::AbsoluteDifference()
     */
    template <typename T>
-   ImageVariant AbsoluteDifference( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant AbsoluteDifference( T scalar,
+                                    const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -1525,7 +1562,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Add()
     */
    template <typename T>
-   ImageVariant& Add( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Add( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __ADD )
@@ -1546,7 +1584,8 @@ private:
 
    template <class P> static
    void Add( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+             const Point& point, int channel,
+             const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __ADD_2 )
    }
@@ -1585,7 +1624,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Added()
     */
    template <typename T>
-   ImageVariant Added( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Added( T scalar,
+                       const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -1658,7 +1698,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::And()
     */
    template <typename T>
-   ImageVariant& And( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& And( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE_REAL( __AND )
@@ -1679,7 +1720,8 @@ private:
 
    template <class P> static
    void And( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+             const Point& point, int channel,
+             const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_REAL_2( image2, __AND_2 )
    }
@@ -1721,7 +1763,8 @@ public:
     * GenericImage::Applied( T )
     */
    template <typename T>
-   ImageVariant Applied( T scalar, image_op op = ImageOp::Mov, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Applied( T scalar, image_op op = ImageOp::Mov,
+                         const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -1744,7 +1787,8 @@ private:
 
    template <class P> static
    ImageVariant Applied( const GenericImage<P>& image1, const ImageVariant& image2,
-                         image_op op, const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+                         image_op op, const Point& point, int channel,
+                         const Rect& rect, int firstChannel, int lastChannel )
    {
       ImageVariant result;
       SOLVE_TEMPLATE_2( image2, __APPLIED_2 )
@@ -1813,7 +1857,8 @@ public:
     * GenericImage::Apply( T )
     */
    template <typename T>
-   ImageVariant& Apply( T scalar, image_op op = ImageOp::Mov, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Apply( T scalar, image_op op = ImageOp::Mov,
+                        const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __APPLY )
@@ -1834,7 +1879,8 @@ private:
 
    template <class P> static
    void Apply( GenericImage<P>& image1, const ImageVariant& image2,
-               image_op op, const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+               image_op op, const Point& point, int channel,
+               const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __APPLY_2 )
    }
@@ -1895,7 +1941,8 @@ public:
 private:
 
    template <class P> static
-   void AssignImage( GenericImage<P>& image1, const ImageVariant& image2, const Rect& rect, int firstChannel, int lastChannel )
+   void AssignImage( GenericImage<P>& image1, const ImageVariant& image2,
+                     const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __ASSIGN_IMAGE_2 )
    }
@@ -1908,7 +1955,8 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::Assign()
     */
-   ImageVariant& AssignImage( const ImageVariant& image, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& AssignImage( const ImageVariant& image,
+                              const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          if ( image )
@@ -1930,7 +1978,9 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::AvgDev()
     */
-   double AvgDev( double center, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double AvgDev( double center,
+                  const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                  int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -1939,6 +1989,30 @@ public:
    }
 
 #undef __AVG_DEV
+
+   // -------------------------------------------------------------------------
+
+#define __2SIDED_AVG_DEV( I ) \
+   result = static_cast<const pcl::I&>( **this ).TwoSidedAvgDev( center, rect, firstChannel, lastChannel, maxProcessors )
+
+   /*!
+    * Returns the two-sided mean absolute deviation of a subset of pixel
+    * samples with respect to the specified \a center value.
+    *
+    * This member function is a generalized wrapper for
+    * GenericImage::TwoSidedAvgDev()
+    */
+   TwoSidedEstimate TwoSidedAvgDev( double center,
+                                    const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                                    int maxProcessors = 0 ) const
+   {
+      TwoSidedEstimate result( 0 );
+      if ( *this )
+         SOLVE_TEMPLATE( __2SIDED_AVG_DEV )
+      return result;
+   }
+
+#undef __2SIDED_AVG_DEV
 
    // -------------------------------------------------------------------------
 
@@ -2047,7 +2121,7 @@ public:
                            const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
                            int maxProcessors = 0 ) const
    {
-      double result = false;
+      double result = 0;
       if ( *this )
          SOLVE_TEMPLATE( __PBMV )
       return result;
@@ -2058,7 +2132,7 @@ public:
    // -------------------------------------------------------------------------
 
 #define __BWMV( I ) \
-   result = static_cast<const pcl::I&>( **this ).BiweightMidvariance( center, sigma, k, rect, firstChannel, lastChannel, maxProcessors )
+   result = static_cast<const pcl::I&>( **this ).BiweightMidvariance( center, sigma, k, reducedLength, rect, firstChannel, lastChannel, maxProcessors )
 
    /*!
     * Returns a biweight midvariance (BWMV) for a subset of pixel samples, with
@@ -2068,17 +2142,42 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::BiweightMidvariance()
     */
-   double BiweightMidvariance( double center, double sigma, int k = 9,
+   double BiweightMidvariance( double center, double sigma, int k = 9, bool reducedLength = false,
                                const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
                                int maxProcessors = 0 ) const
    {
-      double result = false;
+      double result = 0;
       if ( *this )
          SOLVE_TEMPLATE( __BWMV )
       return result;
    }
 
 #undef __BWMV
+
+   // -------------------------------------------------------------------------
+
+#define __2SIDED_BWMV( I ) \
+   result = static_cast<const pcl::I&>( **this ).TwoSidedBiweightMidvariance( center, sigma, k, reducedLength, rect, firstChannel, lastChannel, maxProcessors )
+
+   /*!
+    * Returns a two-sided biweight midvariance (BWMV) for a subset of pixel
+    * samples, with respect the the specified \a center value, two-sided
+    * \a sigma estimate of dispersion, and \a k threshold in sigma units.
+    *
+    * This member function is a generalized wrapper for
+    * GenericImage::TwoSidedBiweightMidvariance()
+    */
+   TwoSidedEstimate TwoSidedBiweightMidvariance( double center, const TwoSidedEstimate& sigma, int k = 9, bool reducedLength = false,
+                                                 const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                                                 int maxProcessors = 0 ) const
+   {
+      TwoSidedEstimate result( 0 );
+      if ( *this )
+         SOLVE_TEMPLATE( __2SIDED_BWMV )
+      return result;
+   }
+
+#undef __2SIDED_BWMV
 
    // -------------------------------------------------------------------------
 
@@ -2111,7 +2210,8 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::Blend()
     */
-   ImageVariant& Blend( const Bitmap& bitmap, const Point& point = Point( int_max ), const Rect& rect = Rect( 0 ) )
+   ImageVariant& Blend( const Bitmap& bitmap,
+                        const Point& point = Point( int_max ), const Rect& rect = Rect( 0 ) )
    {
       if ( *this )
          SOLVE_TEMPLATE_REAL( __BLEND )
@@ -2436,7 +2536,8 @@ private:
 
    template <class P> static
    void Divide( GenericImage<P>& image1, const ImageVariant& image2,
-                const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+                const Point& point, int channel,
+                const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __DIVIDE_2 )
    }
@@ -2485,7 +2586,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Divided()
     */
    template <typename T>
-   ImageVariant Divided( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Divided( T scalar,
+                         const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -2507,7 +2609,8 @@ private:
 
    template <class P> static
    void Exchange( GenericImage<P>& image1, ImageVariant& image2,
-                  const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+                  const Point& point, int channel,
+                  const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __EXCHANGE_2 )
    }
@@ -2556,7 +2659,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Fill()
     */
    template <typename T>
-   ImageVariant& Fill( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Fill( T scalar,
+                       const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __FILL )
@@ -2578,7 +2682,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Fill()
     */
    template <typename T>
-   ImageVariant& Fill( const GenericVector<T>& values, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Fill( const GenericVector<T>& values,
+                       const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __FILL )
@@ -2600,7 +2705,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Filled()
     */
    template <typename T>
-   ImageVariant Filled( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Filled( T scalar,
+                        const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -2624,7 +2730,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Filled()
     */
    template <typename T>
-   ImageVariant Filled( const GenericVector<T>& values, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Filled( const GenericVector<T>& values,
+                        const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -2708,7 +2815,8 @@ public:
     * GenericImage::GetExtremeSampleValues()
     */
    template <typename T>
-   void GetExtremeSampleValues( T& min, T& max, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+   void GetExtremeSampleValues( T& min, T& max,
+                                const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
                                 int maxProcessors = 0 ) const
    {
       PCL_PRECONDITION( buffer != 0 )
@@ -2937,7 +3045,8 @@ public:
     * GenericImage::Inverted()
     */
    template <typename T>
-   ImageVariant Inverted( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Inverted( T scalar,
+                          const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -3106,7 +3215,8 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::LocateMaximumSampleValue()
     */
-   double LocateMaximumSampleValue( int& xmax, int& ymax, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+   double LocateMaximumSampleValue( int& xmax, int& ymax,
+                                    const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
                                     int maxProcessors = 0 ) const
    {
       double result = 0;
@@ -3129,7 +3239,8 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::LocateMaximumSampleValue()
     */
-   double LocateMaximumSampleValue( Point& pmax, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+   double LocateMaximumSampleValue( Point& pmax,
+                                    const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
                                     int maxProcessors = 0 ) const
    {
       double result = 0;
@@ -3176,7 +3287,8 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::LocateMinimumSampleValue()
     */
-   double LocateMinimumSampleValue( Point& pmin, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+   double LocateMinimumSampleValue( Point& pmin,
+                                    const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
                                     int maxProcessors = 0 ) const
    {
       double result = 0;
@@ -3198,9 +3310,11 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::MAD()
     */
-   double MAD( double center, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double MAD( double center,
+               const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+               int maxProcessors = 0 ) const
    {
-      double result = false;
+      double result = 0;
       if ( *this )
          SOLVE_TEMPLATE( __MAD )
       return result;
@@ -3208,7 +3322,31 @@ public:
 
 #undef __MAD
 
-   // -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
+
+#define __2SIDED_MAD( I ) \
+   result = static_cast<const pcl::I&>( **this ).TwoSidedMAD( center, rect, firstChannel, lastChannel, maxProcessors )
+
+   /*!
+    * Returns the two-sided median absolute deviation (MAD) of a subset of
+    * pixel samples with respect to the specified \a center value.
+    *
+    * This member function is a generalized wrapper for
+    * GenericImage::TwoSidedMAD()
+    */
+   TwoSidedEstimate TwoSidedMAD( double center,
+                                 const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                                 int maxProcessors = 0 ) const
+   {
+      TwoSidedEstimate result( 0 );
+      if ( *this )
+         SOLVE_TEMPLATE( __2SIDED_MAD )
+      return result;
+   }
+
+#undef __2SIDED_MAD
+
+// -------------------------------------------------------------------------
 
 #define __MAXIMUM( I ) \
    result.SetImage( *new pcl::I( static_cast<const pcl::I&>( **this ).Maximum( scalar, rect, firstChannel, lastChannel ) ) ); \
@@ -3222,7 +3360,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Maximum()
     */
    template <typename T>
-   ImageVariant Maximum( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Maximum( T scalar,
+                         const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -3243,7 +3382,8 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::MaximumSampleValue()
     */
-   double MaximumSampleValue( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double MaximumSampleValue( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                              int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -3263,7 +3403,8 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::Mean()
     */
-   double Mean( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double Mean( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -3284,7 +3425,8 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::MeanOfSquares()
     */
-   double MeanOfSquares( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double MeanOfSquares( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                         int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -3304,7 +3446,8 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::Median()
     */
-   double Median( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double Median( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                  int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -3328,7 +3471,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Minimum()
     */
    template <typename T>
-   ImageVariant Minimum( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Minimum( T scalar,
+                         const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -3349,7 +3493,8 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::MinimumSampleValue()
     */
-   double MinimumSampleValue( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double MinimumSampleValue( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                              int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -3370,7 +3515,8 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::Modulus()
     */
-   double Modulus( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double Modulus( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                   int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -3392,7 +3538,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Move()
     */
    template <typename T>
-   ImageVariant& Move( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Move( T scalar,
+                       const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __MOVE )
@@ -3422,7 +3569,8 @@ private:
 
    template <class P> static
    void Move( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+             const Point& point, int channel,
+              const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __MOVE_2 )
    }
@@ -3468,7 +3616,8 @@ public:
     * GenericImage::Multiply()
     */
    template <typename T>
-   ImageVariant& Multiply( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Multiply( T scalar,
+                           const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __MULTIPLY )
@@ -3481,7 +3630,8 @@ public:
     * A synonym for Multiply().
     */
    template <typename T>
-   ImageVariant& Mul( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Mul( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       return Multiply( scalar, rect, firstChannel, lastChannel );
    }
@@ -3498,7 +3648,8 @@ private:
 
    template <class P> static
    void Multiply( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+                  const Point& point, int channel,
+                  const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __MULTIPLY_2 )
    }
@@ -3549,7 +3700,8 @@ public:
     * GenericImage::Multiplied()
     */
    template <typename T>
-   ImageVariant Multiplied( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Multiplied( T scalar,
+                            const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -3572,7 +3724,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Nand()
     */
    template <typename T>
-   ImageVariant& Nand( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Nand( T scalar,
+                       const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE_REAL( __NAND )
@@ -3593,7 +3746,8 @@ private:
 
    template <class P> static
    void Nand( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+              const Point& point, int channel,
+              const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_REAL_2( image2, __NAND_2 )
    }
@@ -3633,7 +3787,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Nor()
     */
    template <typename T>
-   ImageVariant& Nor( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Nor( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE_REAL( __NOR )
@@ -3654,7 +3809,8 @@ private:
 
    template <class P> static
    void Nor( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+             const Point& point, int channel,
+             const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_REAL_2( image2, __NOR_2 )
    }
@@ -3692,7 +3848,8 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::Norm()
     */
-   double Norm( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double Norm( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -3715,7 +3872,8 @@ public:
     * GenericImage::Normalize()
     */
    template <typename T>
-   ImageVariant& Normalize( T lowerBound, T upperBound, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Normalize( T lowerBound, T upperBound,
+                            const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE_REAL( __NORMALIZE )
@@ -3759,7 +3917,8 @@ public:
     * GenericImage::Normalized()
     */
    template <typename T>
-   ImageVariant Normalized( T lowerBound, T upperBound, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Normalized( T lowerBound, T upperBound,
+                            const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -4141,7 +4300,8 @@ private:
 
    template <class P> static
    void Or( GenericImage<P>& image1, const ImageVariant& image2,
-            const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+            const Point& point, int channel,
+            const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_REAL_2( image2, __OR_2 )
    }
@@ -4180,7 +4340,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Raise()
     */
    template <typename T>
-   ImageVariant& Raise( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Raise( T scalar,
+                        const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __RAISE )
@@ -4193,7 +4354,8 @@ public:
     * A synonym for Raise().
     */
    template <typename T>
-   ImageVariant& Pow( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Pow( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       return Raise( scalar, rect, firstChannel, lastChannel );
    }
@@ -4209,7 +4371,8 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::Qn()
     */
-   double Qn( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double Qn( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+              int maxProcessors = 0 ) const
    {
       double result = false;
       if ( *this )
@@ -4231,7 +4394,8 @@ private:
 
    template <class P> static
    void Raise( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+               const Point& point, int channel,
+               const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __RAISE_2 )
    }
@@ -4281,7 +4445,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Raised()
     */
    template <typename T>
-   ImageVariant Raised( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Raised( T scalar,
+                        const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -4343,7 +4508,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Rescale()
     */
    template <typename T>
-   ImageVariant& Rescale( T lowerBound, T upperBound, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Rescale( T lowerBound, T upperBound,
+                          const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE_REAL( __RESCALE )
@@ -4386,7 +4552,8 @@ public:
     * GenericImage::Rescaled()
     */
    template <typename T>
-   ImageVariant Rescaled( T lowerBound, T upperBound, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Rescaled( T lowerBound, T upperBound,
+                          const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -4433,7 +4600,8 @@ public:
     * GenericImage::SetAbsoluteDifference()
     */
    template <typename T>
-   ImageVariant& SetAbsoluteDifference( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& SetAbsoluteDifference( T scalar,
+                                        const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __SET_ABSOLUTE_DIFFERENCE )
@@ -4446,7 +4614,8 @@ public:
     * A synonym for SetAbsoluteDifference().
     */
    template <typename T>
-   ImageVariant& Dif( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Dif( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       return SetAbsoluteDifference( scalar, rect, firstChannel, lastChannel );
    }
@@ -4463,7 +4632,8 @@ private:
 
    template <class P> static
    void SetAbsoluteDifference( GenericImage<P>& image1, const ImageVariant& image2,
-                               const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+                               const Point& point, int channel,
+                               const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __SET_ABSOLUTE_DIFFERENCE_2 )
    }
@@ -4663,7 +4833,8 @@ public:
     * GenericImage::SetMaximum()
     */
    template <typename T>
-   ImageVariant& SetMaximum( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& SetMaximum( T scalar,
+                             const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __SET_MAXIMUM )
@@ -4676,7 +4847,8 @@ public:
     * A synonym for SetMaximum().
     */
    template <typename T>
-   ImageVariant& Max( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Max( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       return SetMaximum( scalar, rect, firstChannel, lastChannel );
    }
@@ -4693,7 +4865,8 @@ private:
 
    template <class P> static
    void SetMaximum( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+                    const Point& point, int channel,
+                    const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __SET_MAXIMUM_2 )
    }
@@ -4744,7 +4917,8 @@ public:
     * GenericImage::SetMinimum()
     */
    template <typename T>
-   ImageVariant& SetMinimum( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& SetMinimum( T scalar,
+                             const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __SET_MINIMUM )
@@ -4757,7 +4931,8 @@ public:
     * A synonym for SetMinimum().
     */
    template <typename T>
-   ImageVariant& Min( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Min( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       return SetMinimum( scalar, rect, firstChannel, lastChannel );
    }
@@ -4774,7 +4949,8 @@ private:
 
    template <class P> static
    void SetMinimum( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+                    const Point& point, int channel,
+                    const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __SET_MINIMUM_2 )
    }
@@ -4823,7 +4999,8 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::Sn()
     */
-   double Sn( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double Sn( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+              int maxProcessors = 0 ) const
    {
       double result = false;
       if ( *this )
@@ -5302,7 +5479,8 @@ public:
     *
     * This member function is a generalized wrapper for GenericImage::StdDev()
     */
-   double StdDev( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double StdDev( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                  int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -5325,7 +5503,8 @@ public:
     * GenericImage::Subtract()
     */
    template <typename T>
-   ImageVariant& Subtract( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Subtract( T scalar,
+                           const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE( __SUBTRACT )
@@ -5338,7 +5517,8 @@ public:
     * A synonym for Subtract().
     */
    template <typename T>
-   ImageVariant& Sub( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Sub( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       return Subtract( scalar, rect, firstChannel, lastChannel );
    }
@@ -5355,7 +5535,8 @@ private:
 
    template <class P> static
    void Subtract( GenericImage<P>& image1, const ImageVariant& image2,
-                  const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+                  const Point& point, int channel,
+                  const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_2( image2, __SUBTRACT_2 )
    }
@@ -5406,7 +5587,8 @@ public:
     * GenericImage::Subtracted()
     */
    template <typename T>
-   ImageVariant Subtracted( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Subtracted( T scalar,
+                            const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -5427,7 +5609,8 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::SumOfSquares()
     */
-   double SumOfSquares( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1, int maxProcessors = 0 ) const
+   double SumOfSquares( const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                        int maxProcessors = 0 ) const
    {
       double result = 0;
       if ( *this )
@@ -5508,7 +5691,8 @@ public:
     * GenericImage::Truncate()
     */
    template <typename T>
-   ImageVariant& Truncate( T lowerBound, T upperBound, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Truncate( T lowerBound, T upperBound,
+                           const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE_REAL( __TRUNCATE )
@@ -5552,7 +5736,8 @@ public:
     * GenericImage::Truncated()
     */
    template <typename T>
-   ImageVariant Truncated( T lowerBound, T upperBound, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant Truncated( T lowerBound, T upperBound,
+                           const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       ImageVariant result;
       if ( *this )
@@ -5631,14 +5816,17 @@ public:
    static_cast<const pcl::I&>( **this ).Write( file, rect, firstChannel, lastChannel )
 
    /*!
-    * Writes a subset of pixel samples to a raw-storage output stream.
+    * Writes a subset of pixel samples to a raw-storage output stream. Returns
+    * a reference to this image.
     *
     * This member function is a generalized wrapper for GenericImage::Write()
     */
-   void Write( File& file, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant& Write( File& file,
+                        const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       if ( *this )
          SOLVE_TEMPLATE( __WRITE )
+      return const_cast<ImageVariant&>( *this );
    }
 
 #undef __WRITE
@@ -5649,14 +5837,17 @@ public:
    static_cast<const pcl::I&>( **this ).Write( filePath, rect, firstChannel, lastChannel )
 
    /*!
-    * Writes a subset of pixel samples to a raw-storage output stream.
+    * Writes a subset of pixel samples to a raw-storage output stream. Returns
+    * a reference to this image.
     *
     * This member function is a generalized wrapper for GenericImage::Write()
     */
-   void Write( const String& filePath, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
+   ImageVariant& Write( const String& filePath,
+                        const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 ) const
    {
       if ( *this )
          SOLVE_TEMPLATE( __WRITE )
+      return const_cast<ImageVariant&>( *this );
    }
 
 #undef __WRITE
@@ -5674,7 +5865,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Xnor()
     */
    template <typename T>
-   ImageVariant& Xnor( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Xnor( T scalar,
+                       const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE_REAL( __XNOR )
@@ -5695,7 +5887,8 @@ private:
 
    template <class P> static
    void Xnor( GenericImage<P>& image1, const ImageVariant& image2,
-              const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+              const Point& point, int channel,
+              const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_REAL_2( image2, __XNOR_2 )
    }
@@ -5735,7 +5928,8 @@ public:
     * This member function is a generalized wrapper for GenericImage::Xor()
     */
    template <typename T>
-   ImageVariant& Xor( T scalar, const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
+   ImageVariant& Xor( T scalar,
+                      const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1 )
    {
       if ( *this )
          SOLVE_TEMPLATE_REAL( __XOR )
@@ -5756,7 +5950,8 @@ private:
 
    template <class P> static
    void Xor( GenericImage<P>& image1, const ImageVariant& image2,
-             const Point& point, int channel, const Rect& rect, int firstChannel, int lastChannel )
+             const Point& point, int channel,
+             const Rect& rect, int firstChannel, int lastChannel )
    {
       SOLVE_TEMPLATE_REAL_2( image2, __XOR_2 )
    }
@@ -5840,8 +6035,8 @@ public:
    bool IsAs( const pcl::GenericImage<P>& ) const
    {
       return m_data->image && m_data->isFloatSample == P::IsFloatSample() &&
-                            m_data->isComplexSample == P::IsComplexSample() &&
-                            m_data->bitsPerSample == P::BitsPerSample();
+                              m_data->isComplexSample == P::IsComplexSample() &&
+                              m_data->bitsPerSample == P::BitsPerSample();
    }
 
    /*!
@@ -7036,4 +7231,4 @@ GenericImage<P>& GenericImage<P>::SetLightness( const ImageVariant& L, const Poi
 #endif   // __PCL_ImageVariant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ImageVariant.h - Released 2020-07-31T19:33:04Z

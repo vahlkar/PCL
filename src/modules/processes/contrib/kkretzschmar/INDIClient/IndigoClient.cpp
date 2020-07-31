@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// IndigoClient.cpp - Released 2020-02-27T12:56:01Z
+// IndigoClient.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -69,9 +69,9 @@ IndigoClient::IndigoClient( const char* clientName )
    indigo_start();
 }
 
-IndigoClient::IndigoClient( const char* clientName, const char* host, int32_t port ) :
-   m_serverHost( host ),
-   m_port( static_cast<uint32_t>( port ) )
+IndigoClient::IndigoClient( const char* clientName, const char* host, int32_t port )
+   : m_serverHost( host )
+   , m_port( static_cast<uint32_t>( port ) )
 {
    strncpy( m_indigoClient.name, clientName, pcl::Min( size_t( INDIGO_NAME_SIZE-1 ), strlen( clientName ) ) );
    m_indigoClient.client_context = reinterpret_cast<void*>( this );
@@ -315,4 +315,4 @@ bool IndigoClient::disconnectDevice( const std::string& deviceName )
 }
 
 // ----------------------------------------------------------------------------
-// EOF IndigoClient.cpp - Released 2020-02-27T12:56:01Z
+// EOF IndigoClient.cpp - Released 2020-07-31T19:33:39Z

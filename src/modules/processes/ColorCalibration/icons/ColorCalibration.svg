@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="a" cx="1026.9" cy="533.74" r="185" gradientTransform="matrix(.31464 0 0 .31464 -237.84 62.251)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#bababa" offset="1"/>
+</radialGradient>
+</defs>
+<g transform="translate(0 -161.53)">
+<g transform="translate(-17.524 -.92191)">
+<rect x="27.049" y="171.98" width="116.42" height="116.42" fill="url(#a)" stroke="#000" stroke-width="6.35"/>
+<ellipse cx="85.258" cy="207.22" rx="25.327" ry="25.327" fill="#f00"/>
+<ellipse cx="58.863" cy="253.15" rx="25.327" ry="25.327" fill="#0f0"/>
+<ellipse cx="111.65" cy="253.15" rx="25.327" ry="25.327" fill="#00f"/>
+</g>
+</g>
+</svg>

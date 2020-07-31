@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInterface.h - Released 2020-02-27T12:56:01Z
+// LocalHistogramEqualizationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
-// Copyright (c) 2011-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -81,22 +81,16 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
    void ApplyInstance() const override;
    void RealTimePreviewUpdated( bool active ) override;
    void ResetInstance() override;
-
-   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags ) override;
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
-
    bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const override;
    bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const override;
 
@@ -114,7 +108,7 @@ private:
 
       void Reset( const UInt16Image&, const LocalHistogramEqualizationInstance& );
 
-      virtual void Run();
+      void Run() override;
 
    private:
 
@@ -127,15 +121,15 @@ private:
    {
       GUIData( LocalHistogramEqualizationInterface& );
 
-      VerticalSizer     Global_Sizer;
-         NumericControl    Radius_NumericControl;
-         HorizontalSizer   HistogramBins_Sizer;
-            Label             HistogramBins_Label;
-            ComboBox          HistogramBins_ComboBox;
-         NumericControl    SlopeLimit_NumericControl;
-         NumericControl    Amount_NumericControl;
-         HorizontalSizer   CircularKernel_Sizer;
-            CheckBox          CircularKernel_CheckBox;
+      VerticalSizer Global_Sizer;
+      NumericControl Radius_NumericControl;
+      HorizontalSizer HistogramBins_Sizer;
+      Label HistogramBins_Label;
+      ComboBox HistogramBins_ComboBox;
+      NumericControl SlopeLimit_NumericControl;
+      NumericControl Amount_NumericControl;
+      HorizontalSizer CircularKernel_Sizer;
+      CheckBox CircularKernel_CheckBox;
 
       Timer UpdateRealTimePreview_Timer;
    };
@@ -144,8 +138,6 @@ private:
 
    void UpdateControls();
    void UpdateRealTimePreview();
-
-   // Event Handlers
 
    void __RealValueUpdated( NumericEdit& sender, double value );
    void __ItemClicked( Button& sender, bool checked );
@@ -163,9 +155,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __LocalHistogramEqualizationInterface_h
+#endif // __LocalHistogramEqualizationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF LocalHistogramEqualizationInterface.h - Released 2020-07-31T19:33:39Z

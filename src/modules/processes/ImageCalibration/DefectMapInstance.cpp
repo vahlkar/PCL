@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// DefectMapInstance.cpp - Released 2020-02-27T12:56:01Z
+// DefectMapInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -66,18 +66,18 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-DefectMapInstance::DefectMapInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   operation( DMPOperation::Default ),
-   structure( DMPStructure::Default ),
-   isCFA( TheDMPIsCFAParameter->DefaultValue() )
+DefectMapInstance::DefectMapInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , operation( DMPOperation::Default )
+   , structure( DMPStructure::Default )
+   , isCFA( TheDMPIsCFAParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-DefectMapInstance::DefectMapInstance( const DefectMapInstance& x ) :
-   ProcessImplementation( x )
+DefectMapInstance::DefectMapInstance( const DefectMapInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -541,4 +541,4 @@ size_type DefectMapInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF DefectMapInstance.cpp - Released 2020-07-31T19:33:39Z

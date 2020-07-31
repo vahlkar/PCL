@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationGraphInterface.h - Released 2020-02-27T12:56:01Z
+// PhotometricColorCalibrationGraphInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -71,21 +71,17 @@ public:
    PhotometricColorCalibrationGraphInterface();
    virtual ~PhotometricColorCalibrationGraphInterface();
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   bool IsInstanceGenerator() const override;
+   bool CanImportInstances() const override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned&/*flags*/ ) override;
+   void SaveSettings() const override;
+   void LoadSettings() override;
 
-   virtual MetaProcess* Process() const;
-
-   const char** IconImageXPM() const;
-   virtual InterfaceFeatures Features() const;
-
-   virtual bool IsInstanceGenerator() const;
-   virtual bool CanImportInstances() const;
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned&/*flags*/ );
    using ProcessInterface::Launch;
-
-   virtual void SaveSettings() const;
-   virtual void LoadSettings();
 
    void UpdateGraphs( const String& viewId, const String& catalogName,
                       const String& filterNameR, const String& filterNameG, const String& filterNameB,
@@ -120,4 +116,4 @@ extern PhotometricColorCalibrationGraphInterface* ThePhotometricColorCalibration
 #endif   // __PhotometricColorCalibrationGraphInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationGraphInterface.h - Released 2020-02-27T12:56:01Z
+// EOF PhotometricColorCalibrationGraphInterface.h - Released 2020-07-31T19:33:39Z

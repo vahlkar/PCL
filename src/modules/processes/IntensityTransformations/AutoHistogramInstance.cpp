@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramInstance.cpp - Released 2020-02-27T12:56:01Z
+// AutoHistogramInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -64,13 +64,13 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-AutoHistogramInstance::AutoHistogramInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_clip( TheAHClipParameter->DefaultValue() ),
-   p_clipTogether( TheAHClipTogetherParameter->DefaultValue() ),
-   p_stretch( TheAHStretchParameter->DefaultValue() ),
-   p_stretchTogether( TheAHStretchTogetherParameter->DefaultValue() ),
-   p_stretchMethod( AHStretchMethod::Default )
+AutoHistogramInstance::AutoHistogramInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_clip( TheAHClipParameter->DefaultValue() )
+   , p_clipTogether( TheAHClipTogetherParameter->DefaultValue() )
+   , p_stretch( TheAHStretchParameter->DefaultValue() )
+   , p_stretchTogether( TheAHStretchTogetherParameter->DefaultValue() )
+   , p_stretchMethod( AHStretchMethod::Default )
 {
    p_clipLow[0] = TheAHClipLowRParameter->DefaultValue();
    p_clipLow[1] = TheAHClipLowGParameter->DefaultValue();
@@ -87,8 +87,8 @@ AutoHistogramInstance::AutoHistogramInstance( const MetaProcess* m ) :
 
 // ----------------------------------------------------------------------------
 
-AutoHistogramInstance::AutoHistogramInstance( const AutoHistogramInstance& x ) :
-   ProcessImplementation( x )
+AutoHistogramInstance::AutoHistogramInstance( const AutoHistogramInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -98,7 +98,7 @@ AutoHistogramInstance::AutoHistogramInstance( const AutoHistogramInstance& x ) :
 void AutoHistogramInstance::Assign( const ProcessImplementation& p )
 {
    const AutoHistogramInstance* x = dynamic_cast<const AutoHistogramInstance*>( &p );
-   if ( x != 0 )
+   if ( x != nullptr )
    {
       p_clip            = x->p_clip;
       p_clipTogether    = x->p_clipTogether;
@@ -352,4 +352,4 @@ void* AutoHistogramInstance::LockParameter( const MetaParameter* p, size_type /*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF AutoHistogramInstance.cpp - Released 2020-07-31T19:33:39Z

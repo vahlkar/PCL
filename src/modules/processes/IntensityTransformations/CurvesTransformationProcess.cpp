@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationProcess.cpp - Released 2020-02-27T12:56:01Z
+// CurvesTransformationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -61,10 +61,6 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 CurvesTransformationProcess* TheCurvesTransformationProcess = nullptr;
-
-// ----------------------------------------------------------------------------
-
-#include "CurvesTransformationIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -204,9 +200,9 @@ String CurvesTransformationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** CurvesTransformationProcess::IconImageXPM() const
+String CurvesTransformationProcess::IconImageSVGFile() const
 {
-   return CurvesTransformationIcon_XPM;
+   return "@module_icons_dir/CurvesTransformation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -243,4 +239,4 @@ bool CurvesTransformationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF CurvesTransformationProcess.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ChannelMatchInstance.h - Released 2020-02-27T12:56:01Z
+// ChannelMatchInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -69,17 +69,13 @@ public:
    ChannelMatchInstance( const MetaProcess* );
    ChannelMatchInstance( const ChannelMatchInstance& );
 
-   virtual bool Validate( pcl::String& info );
-
-   virtual void Assign( const ProcessImplementation& );
-
-   virtual bool CanExecuteOn( const View& v, String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   bool Validate( pcl::String& info ) override;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View& v, String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
@@ -98,4 +94,4 @@ private:
 #endif   // __ChannelMatchInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ChannelMatchInstance.h - Released 2020-07-31T19:33:39Z

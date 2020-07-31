@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ImageDescription.h - Released 2020-02-27T12:55:23Z
+// pcl/ImageDescription.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -91,13 +91,13 @@ struct PCL_CLASS ImageDescription
     * Constructs an %ImageDescription object from the specified ImageInfo,
     * ImageOptions and image identifier.
     */
-   ImageDescription( const ImageInfo& i, const ImageOptions& o, const IsoString& s = IsoString() ) :
-      info( i ), options( o ), id( s )
+   ImageDescription( const ImageInfo& i, const ImageOptions& o, const IsoString& s = IsoString() )
+      : info( i ), options( o ), id( s )
    {
    }
 
-   ImageDescription( const ImageInfo& i, const ImageOptions& o, const String& s ) :
-      ImageDescription( i, o, IsoString( s ) )
+   ImageDescription( const ImageInfo& i, const ImageOptions& o, const String& s )
+      : ImageDescription( i, o, IsoString( s ) )
    {
    }
 
@@ -106,7 +106,8 @@ struct PCL_CLASS ImageDescription
     * structure with default format-independent options and an empty image
     * identifier.
     */
-   ImageDescription( const ImageInfo& i ) : info( i ), options(), id()
+   ImageDescription( const ImageInfo& i )
+      : info( i )
    {
    }
 
@@ -137,4 +138,4 @@ typedef Array<ImageDescription>  ImageDescriptionArray;
 #endif   // __PCL_ImageDescription_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageDescription.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ImageDescription.h - Released 2020-07-31T19:33:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ColorDialog.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ColorDialog.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -57,11 +57,10 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-SimpleColorDialog::SimpleColorDialog( RGBA* color, uint32 flags ) :
-   Dialog(),
-   m_color( color ),
-   m_workingColor( (color != nullptr) ? *color : 0u ),
-   m_flags( flags )
+SimpleColorDialog::SimpleColorDialog( RGBA* color, uint32 flags )
+   : m_color( color )
+   , m_workingColor( (color != nullptr) ? *color : 0u )
+   , m_flags( flags )
 {
    SetSizer( Global_Sizer );
 
@@ -243,4 +242,4 @@ void SimpleColorDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ColorDialog.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ColorDialog.cpp - Released 2020-07-31T19:33:12Z

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:07.511Z
+# Generated on .... 2020-07-31T19:36:44.152Z
 # Project id ...... Blink
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>701c53e4-05f5-4d89-93da-2cf262fcac44</UniqueIdentifier>
+      <UniqueIdentifier>1f4b258f-4d19-4cc0-83cb-6c3ff24e0f14</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>00b1ca0d-01cf-4d00-8e47-df8c02f09e27</UniqueIdentifier>
+      <UniqueIdentifier>24a9d009-6f4d-489e-8904-4a689aba7122</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>6232a22f-87f6-4cea-bd3f-b9a6f53a62a0</UniqueIdentifier>
+      <UniqueIdentifier>e9f78aa8-4a20-4e46-91dc-e1adf64b36c3</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -60,13 +60,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\BlinkIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\HistogramTransformationIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\ScreenTransferFunctionIcon.png">
+    <None Include="..\..\icons\Blink.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

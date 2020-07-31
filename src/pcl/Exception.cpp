@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Exception.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Exception.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -83,14 +83,14 @@ static String TranslateHTMLParagraphTags( const String& s )
       size_type p = s.FindIC( "<p", p0 );
       if ( p == String::notFound )
       {
-         r.Append( s.Substring( p0 ) );
+         r << s.Substring( p0 );
          break;
       }
 
       if ( p != p0 )
-         r.Append( s.Substring( p0, p-p0 ).Trimmed() );
+         r << s.Substring( p0, p-p0 ).Trimmed();
 
-      r.Append( '\n' );
+      r << '\n';
 
       size_type p1 = s.Find( '>', p+1 );
       if ( p1 == String::notFound )
@@ -101,14 +101,14 @@ static String TranslateHTMLParagraphTags( const String& s )
       size_type p2 = s.FindIC( "</p>", p1 );
       if ( p2 == String::notFound )
       {
-         r.Append( s.Substring( p1 ) );
+         r << s.Substring( p1 );
          break;
       }
 
       if ( p2 != p1 )
-         r.Append( s.Substring( p1, p2-p1 ).Trimmed() );
+         r << s.Substring( p1, p2-p1 ).Trimmed();
 
-      r.Append( '\n' );
+      r << '\n';
 
       p0 = p2 + 4;
    }
@@ -126,14 +126,14 @@ static String TranslateHTMLBreakTags( const String& s )
       size_type p = s.FindIC( "<br", p0 );
       if ( p == String::notFound )
       {
-         r.Append( s.Substring( p0 ) );
+         r << s.Substring( p0 );
          break;
       }
 
       if ( p != p0 )
-         r.Append( s.Substring( p0, p-p0 ) );
+         r << s.Substring( p0, p-p0 );
 
-      r.Append( '\n' );
+      r << '\n';
 
       size_type p1 = s.Find( '>', p+1 );
       if ( p1 == String::notFound )
@@ -154,7 +154,7 @@ static String RemoveHTMLTags( const String& s )
       size_type p = s.Find( '<', p0 );
       if ( p == String::notFound )
       {
-         r.Append( s.Substring( p0 ) );
+         r << s.Substring( p0 );
          return r;
       }
 
@@ -162,18 +162,17 @@ static String RemoveHTMLTags( const String& s )
       for ( ;; )
       {
          if ( ++p1 == n )
-         {
-            r.Append( s.Substring( p0 ) );
-            return r;
-         }
+            return r << s.Substring( p0 );
+
          if ( s[p1] == '>' )
          {
-            r.Append( s.Substring( p0, (p1-p > 1) ? p-p0 : p1-p0+1 ) );
+            r << s.Substring( p0, (p1-p > 1) ? p-p0 : p1-p0+1 );
             break;
          }
+
          if ( (s[p1] < 'a' || s[p1] > 'z') && (s[p1] < 'A' || s[p1] > 'Z') && s[p1] != '/' )
          {
-            r.Append( s.Substring( p0, p1-p0+1 ) );
+            r << s.Substring( p0, p1-p0+1 );
             break;
          }
       }
@@ -195,8 +194,8 @@ String Exception::FormatInfo() const
    if ( !msg.IsEmpty() )
    {
       if ( !info.IsEmpty() )
-         info += ": ";
-      info += msg;
+         info << ": ";
+      info << msg;
    }
 
    return info;
@@ -272,24 +271,38 @@ String ParseError::Message() const
    String info = m_message;
 
    if ( !m_beingParsed.IsEmpty() )
-      if ( m_errorPosition >= 0 )
+      if ( m_errorPosition >= 0 && size_type( m_errorPosition ) < m_beingParsed.Length() )
       {
          if ( !info.IsEmpty() )
-            info += ":\n";
-         info += "<code>";
-         info += m_beingParsed;
-         info += '\n';
-         info += String( '.', m_errorPosition );
-         info += '^';
-         info += "</code>";
+            info << ":\n";
+         info << "<code>";
+
+         int p0 = 0, p1 = 0;
+         String::const_iterator i0 = m_beingParsed.Begin();
+         for ( String::const_iterator i1 = m_beingParsed.Begin(); i1 < m_beingParsed.End(); ++i1, ++p1 )
+         {
+            if ( p1 == m_errorPosition )
+            {
+               for ( ; i1 < m_beingParsed.End(); ++i1 )
+                  if ( *i1 == '\n' )
+                     break;
+               info << String( i0, i1 ) << '\n'
+                    << String( '~', p1-p0  ) << '^' << "</code>";
+               break;
+            }
+            if ( *i1 == '\n' )
+            {
+               info << String( i0, i1 ) << '\n';
+               i0 = i1+1;
+               p0 = p1+1;
+            }
+         }
       }
       else
       {
          if ( !info.IsEmpty() )
-            info += ": ";
-         info += "<code>";
-         info += m_beingParsed;
-         info += "</code>";
+            info << ": ";
+         info << "<code>" << m_beingParsed << "</code>";
       }
 
    return info;
@@ -330,19 +343,19 @@ String SourceCodeError::Message() const
 
    if ( m_lineNumber >= 0 || m_columnNumber >= 0 )
    {
-      s += " (";
+      s << " (";
 
       if ( m_lineNumber >= 0 )
       {
          s.AppendFormat( "%d", m_lineNumber );
          if ( m_columnNumber >= 0 )
-            s += ':';
+            s << ':';
       }
 
       if ( m_columnNumber >= 0 )
          s.AppendFormat( "%d", m_columnNumber );
 
-      s += ")";
+      s << ")";
    }
 
    return s;
@@ -378,4 +391,4 @@ void SourceCodeError::Show() const
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Exception.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Exception.cpp - Released 2020-07-31T19:33:12Z

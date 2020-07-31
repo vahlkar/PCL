@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// JPEGOptionsDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -57,8 +57,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-JPEGOptionsDialog::JPEGOptionsDialog( const ImageOptions& o, const JPEGImageOptions& t ) :
-   options( o ), jpegOptions( t )
+JPEGOptionsDialog::JPEGOptionsDialog( const ImageOptions& o, const JPEGImageOptions& t )
+   : options( o )
+   , jpegOptions( t )
 {
    pcl::Font fnt = Font();
    int labelWidth = fnt.Width( String( "Quality:" ) + String( 'M', 3 ) );
@@ -223,4 +224,4 @@ void JPEGOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGOptionsDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF JPEGOptionsDialog.cpp - Released 2020-07-31T19:33:23Z

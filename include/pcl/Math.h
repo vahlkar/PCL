@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2020-02-27T12:55:23Z
+// pcl/Math.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -71,7 +71,7 @@
 #endif
 
 #if defined( __x86_64__ ) || defined( _M_X64 ) || defined( __PCL_MACOSX )
-#  define __PCL_HAVE_SSE2   1
+#  define __PCL_HAVE_SSE2  1
 #  include <emmintrin.h>
 #endif
 
@@ -90,6 +90,12 @@
 #ifdef __PCL_QT_INTERFACE
 #  include <QtWidgets/QtWidgets>
 #endif
+
+/*
+ * Number of histogram bins used by fast histogram-based median calculation
+ * algorithm implementations.
+ */
+#define __PCL_MEDIAN_HISTOGRAM_LENGTH  8192
 
 namespace pcl
 {
@@ -1065,6 +1071,11 @@ inline int __pcl_trunci__( double x )
    return _mm_cvttsd_si32( _mm_load_sd( &x ) );
 }
 
+inline int __pcl_trunci__( long double x )
+{
+   return int( x );
+}
+
 #endif
 
 /*!
@@ -1136,6 +1147,11 @@ inline int64 __pcl_trunci64__( double x )
 }
 
 #endif
+
+inline int64 __pcl_trunci64__( long double x )
+{
+   return int64( x );
+}
 
 #endif // __PCL_HAVE_SSE2
 
@@ -1273,7 +1289,7 @@ template <typename T> inline T Pow10( T x )
 template <typename T> inline T RotL( T x, uint32 n )
 {
    static_assert( std::is_unsigned<T>::value,
-                  "RotL() can only be used for unsigned scalar types" );
+                  "RotL() can only be used for unsigned integer scalar types" );
    const uint8 mask = 8*sizeof( x ) - 1;
    const uint8 r = uint8( n & mask );
    return (x << r) | (x >> ((-r) & mask));
@@ -1294,7 +1310,7 @@ template <typename T> inline T RotL( T x, uint32 n )
 template <typename T> inline T RotR( T x, uint32 n )
 {
    static_assert( std::is_unsigned<T>::value,
-                  "RotR() can only be used for unsigned scalar types" );
+                  "RotR() can only be used for unsigned integer scalar types" );
    const uint8 mask = 8*sizeof( x ) - 1;
    const uint8 r = uint8( n & mask );
    return (x >> r) | (x << ((-r) & mask));
@@ -1450,13 +1466,13 @@ template <typename T> inline int RoundInt( T x )
 #else
 
    volatile union { double d; int32 i; } v = { x + 6755399441055744.0 };
-   return v.i; // ### NB: Assuming little-endian architecture, i.e. Intel.
+   return v.i; // ### NB: Assuming little-endian architecture.
 
 /*
    ### Deprecated code - The above code based on magic numbers is faster and
                          more portable across platforms and compilers.
 
-   // ### N.B.: Default FPU rounding mode assumed to be nearest integer.
+   // Default FPU rounding mode assumed to be nearest integer.
    int r;
 
 #  ifdef _MSC_VER
@@ -2260,8 +2276,8 @@ inline double SexagesimalToDecimal( int sign, const S1& s1, const S2& s2 = S2( 0
 template <typename T> inline double Sum( const T* i, const T* j )
 {
    double sum = 0;
-   for ( ; i < j; ++i )
-      sum += double( *i );
+   while ( i < j )
+      sum += double( *i++ );
    return sum;
 }
 
@@ -2280,9 +2296,9 @@ template <typename T> inline double StableSum( const T* i, const T* j )
 {
    double sum = 0;
    double eps = 0;
-   for ( ; i < j; ++i )
+   while ( i < j )
    {
-      double y = double( *i ) - eps;
+      double y = double( *i++ ) - eps;
       double t = sum + y;
       eps = (t - sum) - y;
       sum = t;
@@ -2304,8 +2320,8 @@ template <typename T> inline double StableSum( const T* i, const T* j )
 template <typename T> inline double Modulus( const T* i, const T* j )
 {
    double S = 0;
-   for ( ; i < j; ++i )
-      S += Abs( double( *i ) );
+   while ( i < j )
+      S += Abs( double( *i++ ) );
    return S;
 }
 
@@ -2324,9 +2340,9 @@ template <typename T> inline double StableModulus( const T* i, const T* j )
 {
    double sum = 0;
    double eps = 0;
-   for ( ; i < j; ++i )
+   while ( i < j )
    {
-      double y = Abs( double( *i ) ) - eps;
+      double y = Abs( double( *i++ ) ) - eps;
       double t = sum + y;
       eps = (t - sum) - y;
       sum = t;
@@ -2348,9 +2364,9 @@ template <typename T> inline double StableModulus( const T* i, const T* j )
 template <typename T> inline double SumOfSquares( const T* i, const T* j )
 {
    double Q = 0;
-   for ( ; i < j; ++i )
+   while ( i < j )
    {
-      double f = double( *i );
+      double f = double( *i++ );
       Q += f*f;
    }
    return Q;
@@ -2371,9 +2387,9 @@ template <typename T> inline double StableSumOfSquares( const T* i, const T* j )
 {
    double sum = 0;
    double eps = 0;
-   for ( ; i < j; ++i )
+   while ( i < j )
    {
-      double f = double( *i );
+      double f = double( *i++ );
       double y = f*f - eps;
       double t = sum + y;
       eps = (t - sum) - y;
@@ -2421,84 +2437,6 @@ template <typename T> inline double StableMean( const T* i, const T* j )
 }
 
 /*!
- * Computes the two-sided, asymmetric trimmed mean of a sequence [i,j).
- *
- * The returned value is the arithmetic mean of a sequence [I+l,J-h-1], where
- * [I,J) is the input sequence [i,j) sorted in ascending order.
- *
- * Let n = j-i be the length of the input sequence. For empty sequences
- * (n &le; 0) or completely truncated sequences (l+h >= n), this function
- * returns zero. Otherwise the returned value is the arithmetic mean of the
- * nonrejected n-l-h elements in the sorted sequence, as described above.
- *
- * This function may alter the order of elements in the input sequence [i,j).
- * The type T must provide a valid less-than relational operator, copy
- * assignment, and conversion to double semantics.
- *
- * \ingroup statistical_functions
- */
-template <typename T> inline double TrimmedMean( T* i, T* j, distance_type l = 1, distance_type h = 1 )
-{
-   distance_type n = j - i;
-   if ( n < 1 )
-      return 0;
-   if ( l+h < 1 )
-      return Sum( i, j )/n;
-   if ( l+h >= n )
-      return 0;
-   double s = 0;
-   for ( const T* t0 = pcl::Select( i, j, l ),
-                * t1 = pcl::Select( i, j, n-h-1 ); ; )
-   {
-      if ( *i >= *t0 )
-         if ( *i <= *t1 )
-            s += double( *i );
-      if ( ++i == j )
-         return s/(n - l - h);
-   }
-}
-
-/*!
- * Computes the two-sided, asymmetric trimmed mean of a sequence [i,j) without
- * altering its order of elements (non-destructive trimmed mean).
- *
- * This function generates a temporary duplicate of the input sequence
- * elements, converted to \c double values, then calls
- * TrimmedMean( T*, T*, distance_type, distance_type ) to calculate the trimmed
- * mean value.
- *
- * \ingroup statistical_functions
- */
-template <typename T> inline double NondestructiveTrimmedMean( const T* i, const T* j, distance_type l = 1, distance_type h = 1 )
-{
-   distance_type n = j - i;
-   if ( n < 1 )
-      return 0;
-   if ( l+h < 1 )
-      return Sum( i, j )/n;
-   if ( l+h >= n )
-      return 0;
-   double* d = new double[ n ];
-   double* p = d;
-   for ( const T* f = i; f < j; ++f, ++p )
-      *p = double( *f );
-   double s = 0;
-   for ( const double* q = d,
-                     * t0 = pcl::Select( d, p, l ),
-                     * t1 = pcl::Select( d, p, n-h-1 ); ; )
-   {
-      if ( *q >= *t0 )
-         if ( *q <= *t1 )
-            s += *q;
-      if ( ++q == p )
-      {
-         delete [] d;
-         return s/(n - l - h);
-      }
-   }
-}
-
-/*!
  * Returns the variance of a sequence [i,j) with respect to the specified
  * \a center value.
  *
@@ -2521,12 +2459,13 @@ template <typename T> inline double Variance( const T* i, const T* j, double cen
    if ( n < 2 )
       return 0;
    double var = 0, eps = 0;
-   for ( ; i < j; ++i )
+   do
    {
-      double d = double( *i ) - center;
+      double d = double( *i++ ) - center;
       var += d*d;
       eps += d;
    }
+   while ( i < j );
    return (var - eps*eps/n)/(n - 1);
 }
 
@@ -2556,12 +2495,13 @@ template <typename T> inline double Variance( const T* i, const T* j )
       m += double( *f );
    m /= n;
    double var = 0, eps = 0;
-   for ( const T* f = i; f < j; ++f )
+   do
    {
-      double d = double( *f ) - m;
+      double d = double( *i++ ) - m;
       var += d*d;
       eps += d;
    }
+   while ( i < j );
    return (var - eps*eps/n)/(n - 1);
 }
 
@@ -2590,24 +2530,31 @@ template <typename T> inline double StdDev( const T* i, const T* j )
    return Sqrt( Variance( i, j ) );
 }
 
-#define CMPXCHG( a, b )  \
-   if ( i[b] < i[a] ) pcl::Swap( i[a], i[b] )
-
-#define MEAN( a, b ) \
-   (double( a ) + double( b ))/2
-
 /*!
  * Returns the median value of a sequence [i,j).
  *
- * Use fast, hard-coded selection networks for:
+ * For scalar data types the following algorithms are used:
  *
- * \li Sequences of 32 or less elements of standard scalar types (char, int,
- * float, double, etc.), implemented as out-of-line specialized functions.
+ * \li Hard-coded, fast selection networks for small sequences of 32 or less
+ * elements.
  *
- * \li Sequences of 9 or less elements of generic types, implemented as an
- * inline template function.
+ * \li A quick selection algorithm for sequences of up to about 2M elements.
+ * The actual limit has been determined empirically and can vary across PCL
+ * versions. This single-threaded algorithm can use up to 16 MiB of additional
+ * memory allocated dynamically (for 8-byte types such as \c double).
  *
- * Use a quick selection algorithm elsewhere.
+ * \li A parallelized, fast histogram-based algorithm for sequences larger than
+ * the limit described above. This algorithm has negligible additional memory
+ * space requirements.
+ *
+ * For non-scalar data types, this function requires the following type
+ * conversion operator publicly defined for the type T:
+ *
+ * \code T::operator double() const; \endcode
+ *
+ * This operator will be used to generate a temporary dynamic array of
+ * \c double values with the length of the input sequence, which will be used
+ * to compute the median with the algorithms enumerated above.
  *
  * \b References (selection networks)
  *
@@ -2629,12 +2576,91 @@ template <typename T> inline double StdDev( const T* i, const T* j )
  * \li Robert Sedgewick, Kevin Wayne, <em>Algorithms, 4th Edition,</em>
  * Addison-Wesley Professional, 2011, pp 345-347.
  *
- * \note This is a \e destructive median calculation algorithm: it may alter
- * the initial order of items in the specified [i,j) sequence.
+ * \ingroup statistical_functions
+ */
+template <class T> inline double Median( const T* i, const T* j )
+{
+   distance_type n = j - i;
+   if ( n < 1 )
+      return 0;
+   if ( n == 1 )
+      return double( *i );
+   double* d = new double[ n ];
+   double* t = d;
+   do
+      *t++ = double( *i++ );
+   while ( i < j );
+   double m = double( *pcl::Select( d, t, n >> 1 ) );
+   if ( (n & 1) == 0 )
+      m = (m + double( *pcl::Select( d, t, (n >> 1)-1 ) ))/2;
+   delete [] d;
+   return m;
+}
+
+double PCL_FUNC Median( const unsigned char* i, const unsigned char* j );
+double PCL_FUNC Median( const signed char* i, const signed char* j );
+double PCL_FUNC Median( const wchar_t* i, const wchar_t* j );
+double PCL_FUNC Median( const unsigned short* i, const unsigned short* j );
+double PCL_FUNC Median( const signed short* i, const signed short* j );
+double PCL_FUNC Median( const unsigned int* i, const unsigned int* j );
+double PCL_FUNC Median( const signed int* i, const signed int* j );
+double PCL_FUNC Median( const unsigned long* i, const unsigned long* j );
+double PCL_FUNC Median( const signed long* i, const signed long* j );
+double PCL_FUNC Median( const unsigned long long* i, const unsigned long long* j );
+double PCL_FUNC Median( const signed long long* i, const signed long long* j );
+double PCL_FUNC Median( const float* i, const float* j );
+double PCL_FUNC Median( const double* i, const double* j );
+double PCL_FUNC Median( const long double* i, const long double* j );
+
+#define CMPXCHG( a, b )  \
+   if ( i[b] < i[a] ) pcl::Swap( i[a], i[b] )
+
+#define MEAN( a, b ) \
+   (double( a ) + double( b ))/2
+
+/*!
+ * Returns the median value of a sequence [i,j), altering the existing order of
+ * elements in the input sequence.
+ *
+ * This function is intended for sequences of non-scalar objects where the
+ * order of elements is irrelevant, and hence generation of a working duplicate
+ * is unnecessary. The following type conversion operator must be publicly
+ * defined for the type T:
+ *
+ * \code T::operator double() const; \endcode
+ *
+ * The following algorithms are used:
+ *
+ * \li Hard-coded, fast selection networks for sequences of 9 or less elements.
+ *
+ * \li A quick selection algorithm for sequences larger than 9 elements.
+ *
+ * \note This is a \e destructive median calculation algorithm: it alters the
+ * existing order of items in the input [i,j) sequence.
+ *
+ * \b References (selection networks)
+ *
+ * \li Knuth, D. E., <em>The Art of Computer Programming, volume 3:
+ * Sorting and Searching,</em> Addison Wesley, 1973.
+ *
+ * \li Hillis, W. D., <em>Co-evolving parasites improve simulated
+ * evolution as an optimization procedure.</em> Langton, C. et al. (Eds.),
+ * Artificial Life II. Addison Wesley, 1992.
+ *
+ * \li Hugues Juille, <em>Evolution of Non-Deterministic Incremental
+ * Algorithms as a New Approach for Search in State Spaces,</em> 1995
+ *
+ * \b References (quick select algorithm)
+ *
+ * \li William H. Press et al., <em>Numerical Recipes 3rd Edition: The Art of
+ * Scientific Computing,</em> Cambridge University Press, 2007, Section 8.5.
+ *
+ * \li Robert Sedgewick, Kevin Wayne, <em>Algorithms, 4th Edition,</em>
+ * Addison-Wesley Professional, 2011, pp 345-347.
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double Median( T* i, T* j )
+template <typename T> inline double MedianDestructive( T* i, T* j )
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -2687,47 +2713,35 @@ template <typename T> inline double Median( T* i, T* j )
       return pcl::Min( i[2], i[4] );
    default:
       {
-         distance_type n2 = distance_type( n >> 1 );
+         double m = double( *pcl::Select( i, j, n >> 1 ) );
          if ( n & 1 )
-            return *pcl::Select( i, j, n2 );
-         return MEAN( *pcl::Select( i, j, n2 ), *pcl::Select( i, j, n2-1 ) );
+            return m;
+         return MEAN( m, double( *pcl::Select( i, j, (n >> 1)-1 ) ) );
       }
    }
 }
 
 #undef CMPXCHG
 
-double PCL_FUNC Median( unsigned char* i, unsigned char* j );
-double PCL_FUNC Median( signed char* i, signed char* j );
-double PCL_FUNC Median( wchar_t* i, wchar_t* j );
-double PCL_FUNC Median( unsigned short* i, unsigned short* j );
-double PCL_FUNC Median( signed short* i, signed short* j );
-double PCL_FUNC Median( unsigned int* i, unsigned int* j );
-double PCL_FUNC Median( signed int* i, signed int* j );
-double PCL_FUNC Median( unsigned long* i, unsigned long* j );
-double PCL_FUNC Median( signed long* i, signed long* j );
-double PCL_FUNC Median( unsigned long long* i, unsigned long long* j );
-double PCL_FUNC Median( signed long long* i, signed long long* j );
-double PCL_FUNC Median( float* i, float* j );
-double PCL_FUNC Median( double* i, double* j );
-double PCL_FUNC Median( long double* i, long double* j );
-
 #define CMPXCHG( a, b )  \
    if ( p( i[b], i[a] ) ) pcl::Swap( i[a], i[b] )
 
 /*!
- * Returns the median value of a sequence [i,j). Element comparison is given by
- * a binary predicate \a p such that p( a, b ) is true for any pair a, b of
- * elements such that a precedes b.
+ * Returns the median value of a sequence [i,j), altering the existing order of
+ * elements in the input sequence.
+ *
+ * Element comparison is given by a binary predicate \a p such that p( a, b )
+ * is true for any pair a, b of elements such that a precedes b.
  *
  * We use fast, hard-coded selection networks for sequences of 9 or less
  * elements, and a quick selection algorithm for larger sets.
  *
- * See the documentation of Median( T*, T* ) for references.
+ * See the documentation of MedianDestructive( T*, T* ) for more information
+ * and references.
  *
  * \ingroup statistical_functions
  */
-template <typename T, class BP> inline double Median( T* i, T* j, BP p )
+template <typename T, class BP> inline double MedianDestructive( T* i, T* j, BP p )
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -2780,10 +2794,10 @@ template <typename T, class BP> inline double Median( T* i, T* j, BP p )
       return pcl::Min( i[2], i[4] );
    default:
       {
-         distance_type n2 = distance_type( n >> 1 );
+         double m = double( *pcl::Select( i, j, n >> 1, p ) );
          if ( n & 1 )
-            return *pcl::Select( i, j, n2, p );
-         return MEAN( *pcl::Select( i, j, n2, p ), *pcl::Select( i, j, n2-1, p ) );
+            return m;
+         return MEAN( m, double( *pcl::Select( i, j, (n >> 1)-1, p ) ) );
       }
    }
 }
@@ -2792,51 +2806,282 @@ template <typename T, class BP> inline double Median( T* i, T* j, BP p )
 #undef MEAN
 
 /*!
- * Returns the median value of a sequence [i,j) without altering its order of
- * elements (non-destructive median).
+ * Returns the k-th order statistic of a sequence [i,j).
  *
- * This function generates a temporary duplicate of the input sequence, then
- * calls Median( T*, T* ) to find the median value.
+ * For scalar data types the following algorithms are used:
+ *
+ * \li A quick selection algorithm for sequences of up to about 2M elements.
+ * The actual limit has been determined empirically and can vary across PCL
+ * versions. This single-threaded algorithm can use up to 16 MiB of additional
+ * memory allocated dynamically (for 8-byte types such as \c double).
+ *
+ * \li A parallelized, fast histogram-based algorithm for sequences larger than
+ * the limit described above. This algorithm has negligible additional memory
+ * space requirements.
+ *
+ * For non-scalar data types, this function requires the following type
+ * conversion operator publicly defined for the type T:
+ *
+ * \code T::operator double() const; \endcode
+ *
+ * This operator will be used to generate a temporary dynamic array of
+ * \c double values with the length of the input sequence, which will be used
+ * to compute the median with the quick selection algorithm.
+ *
+ * \b References (quick select algorithm)
+ *
+ * \li William H. Press et al., <em>Numerical Recipes 3rd Edition: The Art of
+ * Scientific Computing,</em> Cambridge University Press, 2007, Section 8.5.
+ *
+ * \li Robert Sedgewick, Kevin Wayne, <em>Algorithms, 4th Edition,</em>
+ * Addison-Wesley Professional, 2011, pp 345-347.
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double NondestructiveMedian( const T* i, const T* j )
+template <typename T> inline double OrderStatistic( const T* i, const T* j, distance_type k )
 {
    distance_type n = j - i;
-   if ( n < 2 )
+   if ( n < 1 || k < 0 || k >= n )
       return 0;
+   if ( n == 1 )
+      return double( *i );
    double* d = new double[ n ];
-   double* p = d;
-   for ( const T* f = i; f < j; ++f, ++p )
-      *p = double( *f );
-   double m = pcl::Median( d, d+n );
+   double* t = d;
+   do
+      *t++ = double( *i++ );
+   while ( i < j );
+   double s = *pcl::Select( d, t, k );
    delete [] d;
-   return m;
+   return s;
+}
+
+double PCL_FUNC OrderStatistic( const unsigned char* i, const unsigned char* j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed char* i, const signed char* j, distance_type k );
+double PCL_FUNC OrderStatistic( const wchar_t* i, const wchar_t* j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned short* i, const unsigned short* j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed short* i, const signed short* j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned int* i, const unsigned int* j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed int* i, const signed int* j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned long* i, const unsigned long* j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed long* i, const signed long* j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned long long* i, const unsigned long long* j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed long long* i, const signed long long* j, distance_type k );
+double PCL_FUNC OrderStatistic( const float* i, const float* j, distance_type k );
+double PCL_FUNC OrderStatistic( const double* i, const double* j, distance_type k );
+double PCL_FUNC OrderStatistic( const long double* i, const long double* j, distance_type k );
+
+/*!
+ * Returns the k-th order statistic of a sequence [i,j), altering the existing
+ * order of elements in the input sequence.
+ *
+ * This function is intended for sequences of non-scalar objects where the
+ * order of elements is irrelevant, and hence generation of a working duplicate
+ * is unnecessary. The following type conversion operator must be publicly
+ * defined for the type T:
+ *
+ * \code T::operator double() const; \endcode
+ *
+ * The quick selection algorithm is used to find the k-th element in the
+ * ordered sequence.
+ *
+ * \note This is a \e destructive algorithm: it alters the existing order of
+ * items in the input [i,j) sequence.
+ *
+ * \b References (quick select algorithm)
+ *
+ * \li William H. Press et al., <em>Numerical Recipes 3rd Edition: The Art of
+ * Scientific Computing,</em> Cambridge University Press, 2007, Section 8.5.
+ *
+ * \li Robert Sedgewick, Kevin Wayne, <em>Algorithms, 4th Edition,</em>
+ * Addison-Wesley Professional, 2011, pp 345-347.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline double OrderStatisticDestructive( T* i, T* j, distance_type k )
+{
+   distance_type n = j - i;
+   if ( n < 1 || k < 0 || k >= n )
+      return 0;
+   if ( n == 1 )
+      return double( *i );
+   return double( *pcl::Select( i, j, k ) );
 }
 
 /*!
- * Returns the median value of a sequence [i,j) without altering its order of
- * elements (non-destructive median). Element comparison is given by a binary
- * predicate \a p such that p( a, b ) is true for any pair a, b of elements
- * such that a precedes b.
+ * Returns the k-th order statistic of a sequence [i,j), altering the existing
+ * order of elements in the input sequence.
  *
- * This function generates a temporary duplicate of the input sequence, then
- * calls Median( T*, T*, BP ) to find the median value.
+ * Element comparison is given by a binary predicate \a p such that p( a, b )
+ * is true for any pair a, b of elements such that a precedes b.
+ *
+ * See the documentation of OrderStatisticDestructive( T*, T*, distance_type )
+ * for more information and references.
  *
  * \ingroup statistical_functions
  */
-template <typename T, class BP> inline double NondestructiveMedian( const T* i, const T* j, BP p )
+template <typename T, class BP> inline double OrderStatisticDestructive( const T* i, const T* j, distance_type k, BP p )
 {
    distance_type n = j - i;
-   if ( n < 2 )
+   if ( n < 1 || k < 0 || k >= n )
       return 0;
-   double* d = new double[ n ];
-   double* t = d;
-   for ( const T* f = i; f < j; ++f, ++t )
-      *t = double( *f );
-   double m = pcl::Median( d, d+n, p );
-   delete [] d;
-   return m;
+   if ( n == 1 )
+      return double( *i );
+   return double( *pcl::Select( i, j, k, p ) );
+}
+
+/*!
+ * Computes the two-sided, asymmetric trimmed mean of a sequence [i,j).
+ *
+ * The returned value is the arithmetic mean of a sequence [I+l,J-h-1], where
+ * [I,J) is the input sequence [i,j) sorted in ascending order.
+ *
+ * Let n = j-i be the length of the input sequence. For empty sequences
+ * (n &le; 0) or completely truncated sequences (l+h >= n), this function
+ * returns zero. Otherwise the returned value is the arithmetic mean of the
+ * nonrejected n-l-h elements in the sorted sequence, as described above.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline double TrimmedMean( const T* i, const T* j, distance_type l = 1, distance_type h = 1 )
+{
+   distance_type n = j - i;
+   if ( n < 1 )
+      return 0;
+   if ( l+h < 1 )
+      return Sum( i, j )/n;
+   if ( l+h >= n )
+      return 0;
+   for ( double s = 0,
+         t0 = OrderStatistic( i, j, l ),
+         t1 = OrderStatistic( i, j, n-h-1 ); ; )
+   {
+      double x = double( *i );
+      if ( x >= t0 )
+         if ( x <= t1 )
+            s += x;
+      if ( ++i == j )
+         return s/(n - l - h);
+   }
+}
+
+/*!
+ * Computes the two-sided, asymmetric trimmed mean of a sequence [i,j),
+ * possibly altering the existing order of elements in the input sequence.
+ *
+ * The returned value is the arithmetic mean of a sequence [I+l,J-h-1], where
+ * [I,J) represents the input sequence [i,j) sorted in ascending order.
+ *
+ * Let n = j-i be the length of the input sequence. For empty sequences
+ * (n &le; 0) or completely truncated sequences (l+h >= n), this function
+ * returns zero. Otherwise the returned value is the arithmetic mean of the
+ * nonrejected n-l-h elements in the sorted sequence, as described above.
+ *
+ * \note This is a \e destructive trimmed mean calculation algorithm: it may
+ * alter the existing order of items in the input [i,j) sequence.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline double TrimmedMeanDestructive( T* i, T* j, distance_type l = 1, distance_type h = 1 )
+{
+   distance_type n = j - i;
+   if ( n < 1 )
+      return 0;
+   if ( l+h < 1 )
+      return Sum( i, j )/n;
+   if ( l+h >= n )
+      return 0;
+   for ( double s = 0,
+         t0 = OrderStatisticDestructive( i, j, l ),
+         t1 = OrderStatisticDestructive( i, j, n-h-1 ); ; )
+   {
+      double x = double( *i );
+      if ( x >= t0 )
+         if ( x <= t1 )
+            s += x;
+      if ( ++i == j )
+         return s/(n - l - h);
+   }
+}
+
+/*!
+ * Computes the two-sided, asymmetric trimmed mean of squares of a sequence
+ * [i,j).
+ *
+ * The returned value is the arithmetic mean of squares of a sequence
+ * [I+l,J-h-1], where [I,J) represents the input sequence [i,j) sorted in
+ * ascending order.
+ *
+ * Let n = j-i be the length of the input sequence. For empty sequences
+ * (n &le; 0) or completely truncated sequences (l+h >= n), this function
+ * returns zero. Otherwise the returned value is the arithmetic mean of the
+ * squared nonrejected n-l-h elements in the sorted sequence, as described
+ * above.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline double TrimmedMeanOfSquares( const T* i, const T* j, distance_type l = 1, distance_type h = 1 )
+{
+   distance_type n = j - i;
+   if ( n < 1 )
+      return 0;
+   if ( l+h < 1 )
+      return Sum( i, j )/n;
+   if ( l+h >= n )
+      return 0;
+   for ( double s = 0,
+         t0 = OrderStatistic( i, j, l ),
+         t1 = OrderStatistic( i, j, n-h-1 ); ; )
+   {
+      double x = double( *i );
+      if ( x >= t0 )
+         if ( x <= t1 )
+            s += x*x;
+      if ( ++i == j )
+         return s/(n - l - h);
+   }
+}
+
+/*!
+ * Computes the two-sided, asymmetric trimmed mean of squares of a sequence
+ * [i,j), possibly altering the existing order of elements in the input
+ * sequence.
+ *
+ * The returned value is the arithmetic mean of squares of a sequence
+ * [I+l,J-h-1], where [I,J) represents the input sequence [i,j) sorted in
+ * ascending order.
+ *
+ * Let n = j-i be the length of the input sequence. For empty sequences
+ * (n &le; 0) or completely truncated sequences (l+h >= n), this function
+ * returns zero. Otherwise the returned value is the arithmetic mean of the
+ * squared nonrejected n-l-h elements in the sorted sequence, as described
+ * above.
+ *
+ * \note This is a \e destructive trimmed mean of squares calculation
+ * algorithm: it may alter the existing order of items in the input [i,j)
+ * sequence.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline double TrimmedMeanOfSquaresDestructive( T* i, T* j, distance_type l = 1, distance_type h = 1 )
+{
+   distance_type n = j - i;
+   if ( n < 1 )
+      return 0;
+   if ( l+h < 1 )
+      return Sum( i, j )/n;
+   if ( l+h >= n )
+      return 0;
+   for ( double s = 0,
+         t0 = OrderStatisticDestructive( i, j, l ),
+         t1 = OrderStatisticDestructive( i, j, n-h-1 ); ; )
+   {
+      double x = double( *i );
+      if ( x >= t0 )
+         if ( x <= t1 )
+            s += x*x;
+      if ( ++i == j )
+         return s/(n - l - h);
+   }
 }
 
 /*!
@@ -2865,8 +3110,9 @@ template <typename T> inline double AvgDev( const T* i, const T* j, double cente
    if ( n < 2 )
       return 0;
    double d = 0;
-   for ( ; i < j; ++i )
-      d += Abs( double( *i ) - center );
+   do
+      d += Abs( double( *i++ ) - center );
+   while ( i < j );
    return d/n;
 }
 
@@ -2897,13 +3143,14 @@ template <typename T> inline double StableAvgDev( const T* i, const T* j, double
       return 0;
    double sum = 0;
    double eps = 0;
-   for ( ; i < j; ++i )
+   do
    {
-      double y = Abs( double( *i ) - center ) - eps;
+      double y = Abs( double( *i++ ) - center ) - eps;
       double t = sum + y;
       eps = (t - sum) - y;
       sum = t;
    }
+   while ( i < j );
    return sum/n;
 }
 
@@ -2931,13 +3178,11 @@ template <typename T> inline double AvgDev( const T* i, const T* j )
    distance_type n = j - i;
    if ( n < 2 )
       return 0;
-   T* t = new T[ n ];
-   pcl::Copy( t, i, j );
-   double m = Median( t, t+n );
-   delete [] t;
+   double m = Median( i, j );
    double d = 0;
-   for ( ; i < j; ++i )
-      d += Abs( double( *i ) - m );
+   do
+      d += Abs( double( *i++ ) - m );
+   while ( i < j );
    return d/n;
 }
 
@@ -2962,14 +3207,245 @@ template <typename T> inline double AvgDev( const T* i, const T* j )
  */
 template <typename T> inline double StableAvgDev( const T* i, const T* j )
 {
-   distance_type n = j - i;
-   if ( n < 2 )
-      return 0;
-   T* t = new T[ n ];
-   pcl::Copy( t, i, j );
-   double m = Median( t, t+n );
-   delete [] t;
-   return StableAvgDev( i, j, m );
+   return pcl::StableAvgDev( i, j, pcl::Median( i, j ) );
+}
+
+/*!
+ * \struct TwoSidedEstimate
+ * \brief Two-sided descriptive statistical estimate.
+ *
+ * This POD structure is returned by functions implementing two-sided scale
+ * estimators. Given a sample X = {x_0,...,x_n-1} and a reference center value
+ * m (typically, the median of X), a two-sided scale estimate is computed as
+ * two separate components: A <em>low estimate</em> for all x in X such that
+ * x &le; m, and a <em>high estimate</em> for all x in X such that x > m.
+ *
+ * Two-sided scale estimates are important in normalization for accurate
+ * outlier rejection and sample distribution characterization, especially for
+ * skewed or asymmetric distributions.
+ *
+ * \ingroup statistical_functions
+ * \sa TwoSidedAvgDev(), TwoSidedMAD(), TwoSidedBiweightMidvariance()
+ */
+struct TwoSidedEstimate
+{
+   double low = 0;  //!< Low estimate component.
+   double high = 0; //!< High estimate component.
+
+   /*!
+    * Default constructor. Both components are initialized to zero.
+    */
+   TwoSidedEstimate() = default;
+
+   /*!
+    * Copy constructor.
+    */
+   TwoSidedEstimate( const TwoSidedEstimate& ) = default;
+
+   /*!
+    * Move constructor.
+    */
+   TwoSidedEstimate( TwoSidedEstimate&& ) = default;
+
+   /*!
+    * Copy assignment operator.
+    */
+   TwoSidedEstimate& operator =( const TwoSidedEstimate& ) = default;
+
+   /*!
+    * Move assignment operator.
+    */
+   TwoSidedEstimate& operator =( TwoSidedEstimate&& ) = default;
+
+   /*!
+    * Constructor from separate low and high components.
+    */
+   template <typename T1, typename T2>
+   TwoSidedEstimate( const T1& l, const T2& h )
+      : low( double( l ) )
+      , high( double( h ) )
+   {
+   }
+
+   /*!
+    * Constructor from a unique component value \a x, which is assigned to both
+    * the low and high estimate components.
+    */
+   template <typename T>
+   TwoSidedEstimate( const T& x )
+   {
+      low = high = double( x );
+   }
+
+   /*!
+    * Returns true iff this two-sided scale estimate is valid. A two-sided
+    * scale estimate is valid if both the low and high components are finite,
+    * positive and nonzero with respect to the machine epsilon for the type
+    * \c double.
+    */
+   bool IsValid() const
+   {
+      return IsFinite( low ) && low > std::numeric_limits<double>::epsilon()
+          && IsFinite( high ) && high > std::numeric_limits<double>::epsilon();
+   }
+
+   /*!
+    * Conversion to scalar. Returns the arithmetic mean of the low and high
+    * estimates if both are nonzero. Returns the nonzero estimate otherwise if
+    * it exists, zero otherwise.
+    */
+   explicit operator double() const
+   {
+      if ( low != 0 )
+      {
+         if ( high != 0 )
+            return (low + high)/2;
+         return low;
+      }
+      return high;
+   }
+
+   /*!
+    * Assignment-multiplication by a scalar. Returns a reference to this
+    * object.
+    */
+   TwoSidedEstimate& operator *=( double x )
+   {
+      low *= x;
+      high *= x;
+      return *this;
+   }
+
+   /*!
+    * Assignment-division by a scalar. Returns a reference to this object.
+    */
+   TwoSidedEstimate& operator /=( double x )
+   {
+      low /= x;
+      high /= x;
+      return *this;
+   }
+
+   /*!
+    * Assignment-division by a two-sided estimate. Returns a reference to this
+    * object.
+    */
+   TwoSidedEstimate& operator /=( const TwoSidedEstimate& e )
+   {
+      low /= e.low;
+      high /= e.high;
+      return *this;
+   }
+
+   /*!
+    * Returns the result of multiplying this two-sided estimate by a scalar.
+    */
+   TwoSidedEstimate operator *( double x ) const
+   {
+      return { low*x, high*x };
+   }
+
+   /*!
+    * Returns the result of dividing this two-sided estimate by a scalar.
+    */
+   TwoSidedEstimate operator /( double x ) const
+   {
+      return { low/x, high/x };
+   }
+
+   /*!
+    * Returns the result of the component wise division of this two-sided
+    * estimate by another two-sided estimate.
+    */
+   TwoSidedEstimate operator /( const TwoSidedEstimate& e ) const
+   {
+      return { low/e.low, high/e.high };
+   }
+};
+
+/*!
+ * Returns the component wise square root of a two-sided estimate.
+ * \ingroup statistical_functions
+ */
+inline TwoSidedEstimate Sqrt( const TwoSidedEstimate& e )
+{
+   return { Sqrt( e.low ), Sqrt( e.high ) };
+}
+
+/*!
+ * Returns the component wise square root of a two-sided estimate.
+ * \ingroup statistical_functions
+ */
+template <typename T> inline TwoSidedEstimate Pow( const TwoSidedEstimate& e, T x )
+{
+   double x_ = double( x );
+   return { Pow( e.low, x_ ), Pow( e.high, x_ ) };
+}
+
+/*!
+ * Returns the two-sided average absolute deviation of the values in a sequence
+ * [i,j) with respect to the specified \a center value.
+ *
+ * When the median of the sequence is used as the center value, this function
+ * returns the average absolute deviation from the median, which is a
+ * well-known estimator of dispersion.
+ *
+ * For sequences of less than two elements, this function returns zero.
+ *
+ * See the remarks made for the Sum() function, which are equally applicable in
+ * this case. See StableAvgDev() for a (slow) numerically stable version of
+ * this function.
+ *
+ * \note To make the average absolute deviation about the median consistent
+ * with the standard deviation of a normal distribution, it must be
+ * multiplied by the constant 1.2533.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline TwoSidedEstimate TwoSidedAvgDev( const T* i, const T* j, double center )
+{
+   double dl = 0, dh = 0;
+   distance_type nl = 0, nh = 0;
+   while ( i < j )
+   {
+      double x = double( *i++ );
+      if ( x <= center )
+      {
+         dl += center - x;
+         ++nl;
+      }
+      else
+      {
+         dh += x - center;
+         ++nh;
+      }
+   }
+   return { (nl > 1) ? dl/nl : 0.0,
+            (nh > 1) ? dh/nh : 0.0 };
+}
+
+/*!
+ * Returns the two-sided average absolute deviation from the median of the
+ * values in a sequence [i,j).
+ *
+ * The average absolute deviation from the median is a well-known estimator of
+ * dispersion.
+ *
+ * For sequences of less than two elements, this function returns zero.
+ *
+ * See the remarks made for the Sum() function, which are equally applicable in
+ * this case. See StableAvgDev() for a (slow) numerically stable version of
+ * this function.
+ *
+ * \note To make the average absolute deviation about the median consistent
+ * with the standard deviation of a normal distribution, it must be
+ * multiplied by the constant 1.2533.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline TwoSidedEstimate TwoSidedAvgDev( const T* i, const T* j )
+{
+   return pcl::TwoSidedAvgDev( i, j, pcl::Median( i, j ) );
 }
 
 /*!
@@ -2981,7 +3457,7 @@ template <typename T> inline double StableAvgDev( const T* i, const T* j )
  * For sequences of less than two elements, this function returns zero.
  *
  * \note To make the MAD estimator consistent with the standard deviation of
- * a normal distribution, it must be multiplied by the constant 1.4826.
+ * a normal distribution, its result must be multiplied by the constant 1.4826.
  *
  * \ingroup statistical_functions
  */
@@ -2992,12 +3468,28 @@ template <typename T> inline double MAD( const T* i, const T* j, double center )
       return 0;
    double* d = new double[ n ];
    double* p = d;
-   for ( const T* f = i; f < j; ++f, ++p )
-      *p = Abs( double( *f ) - center );
+   do
+      *p++ = Abs( double( *i++ ) - center );
+   while ( i < j );
    double m = pcl::Median( d, d+n );
    delete [] d;
    return m;
 }
+
+double PCL_FUNC MAD( const unsigned char* i, const unsigned char* j, double center );
+double PCL_FUNC MAD( const signed char* i, const signed char* j, double center );
+double PCL_FUNC MAD( const wchar_t* i, const wchar_t* j, double center );
+double PCL_FUNC MAD( const unsigned short* i, const unsigned short* j, double center );
+double PCL_FUNC MAD( const signed short* i, const signed short* j, double center );
+double PCL_FUNC MAD( const unsigned int* i, const unsigned int* j, double center );
+double PCL_FUNC MAD( const signed int* i, const signed int* j, double center );
+double PCL_FUNC MAD( const unsigned long* i, const unsigned long* j, double center );
+double PCL_FUNC MAD( const signed long* i, const signed long* j, double center );
+double PCL_FUNC MAD( const unsigned long long* i, const unsigned long long* j, double center );
+double PCL_FUNC MAD( const signed long long* i, const signed long long* j, double center );
+double PCL_FUNC MAD( const float* i, const float* j, double center );
+double PCL_FUNC MAD( const double* i, const double* j, double center );
+double PCL_FUNC MAD( const long double* i, const long double* j, double center );
 
 /*!
  * Returns the median absolute deviation from the median (MAD) for the values
@@ -3008,26 +3500,82 @@ template <typename T> inline double MAD( const T* i, const T* j, double center )
  * For sequences of less than two elements, this function returns zero.
  *
  * \note To make the MAD estimator consistent with the standard deviation of
- * a normal distribution, it must be multiplied by the constant 1.4826.
+ * a normal distribution, its result must be multiplied by the constant 1.4826.
  *
  * \ingroup statistical_functions
  */
 template <typename T> inline double MAD( const T* i, const T* j )
+{
+   return pcl::MAD( i, j, pcl::Median( i, j ) );
+}
+
+/*!
+ * Returns the two-sided median absolute deviation (MAD) of the values in a
+ * sequence [i,j) with respect to the specified \a center value.
+ *
+ * The MAD is a well-known robust estimator of scale.
+ *
+ * For sequences of less than two elements, this function returns zero.
+ *
+ * \note To make the MAD estimator consistent with the standard deviation of
+ * a normal distribution, its result must be multiplied by the constant 1.4826.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* i, const T* j, double center )
 {
    distance_type n = j - i;
    if ( n < 2 )
       return 0;
    double* d = new double[ n ];
    double* p = d;
-   for ( const T* f = i; f < j; ++f, ++p )
-      *p = double( *f );
-   double m = pcl::Median( d, d+n );
-   p = d;
-   for ( const T* f = i; f < j; ++f, ++p )
-      *p = Abs( double( *f ) - m );
-   m = pcl::Median( d, d+n );
+   double* q = d + n;
+   do
+   {
+      double x = double( *i++ );
+      if ( x <= center )
+         *p++ = center - x;
+      else
+         *--q = x - center;
+   }
+   while( i < j );
+   double l = pcl::Median( d, p );
+   double h = pcl::Median( q, d+n );
    delete [] d;
-   return m;
+   return { l, h };
+}
+
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned char* i, const unsigned char* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed char* i, const signed char* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const wchar_t* i, const wchar_t* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned short* i, const unsigned short* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed short* i, const signed short* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned int* i, const unsigned int* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed int* i, const signed int* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long* i, const unsigned long* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long* i, const signed long* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long long* i, const unsigned long long* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long long* i, const signed long long* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const float* i, const float* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const double* i, const double* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* i, const long double* j, double center );
+
+/*!
+ * Returns the two-sided median absolute deviation from the median (MAD) for
+ * the values in a sequence [i,j).
+ *
+ * The MAD is a well-known robust estimator of scale.
+ *
+ * For sequences of less than two elements, this function returns zero.
+ *
+ * \note To make the MAD estimator consistent with the standard deviation of
+ * a normal distribution, its result must be multiplied by the constant 1.4826.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* i, const T* j )
+{
+   return pcl::TwoSidedMAD( i, j, pcl::Median( i, j ) );
 }
 
 /*!
@@ -3288,7 +3836,7 @@ inline double __pcl_whimed__( double* a, distance_type* iw, distance_type n,
  *
  * This implementation is a C++ translation of the original FORTRAN code by the
  * authors (see References). The algorithm has O(n*log_2(n)) time complexity
- * and requires about O(8*n) additional storage.
+ * and the implementation requires about O(9*n) additional storage.
  *
  * The constant c = 2.2219 must be used to make the Qn estimator converge to
  * the standard deviation of a pure normal distribution. However, this
@@ -3448,6 +3996,16 @@ template <typename T> double Qn( T* x, T* xn )
  *
  * \param k       Rejection limit in sigma units. The default value is k=9.
  *
+ * \param reducedLength    If true, reduce the sample size to exclude rejected
+ *                elements. This tends to approximate the true dispersion of
+ *                the data more accurately for relatively small samples, or
+ *                samples with large amounts of outliers. Note that this
+ *                departs from the standard definition of biweight midvariance,
+ *                where the total number of data items is used to scale the
+ *                variance estimate. If false, use the full sample size,
+ *                including rejected elements, which gives a standard biweight
+ *                midvariance estimate.
+ *
  * The square root of the biweight midvariance is a robust estimator of scale.
  * It is an efficient estimator with respect to many statistical distributions
  * (about 87% Gaussian efficiency), and appears to have a breakdown point close
@@ -3455,15 +4013,20 @@ template <typename T> double Qn( T* x, T* xn )
  *
  * For sequences of less than two elements, this function returns zero.
  *
+ * \note To make the BWMV estimator consistent with the standard deviation of
+ * a normal distribution, its square root must be multiplied by the constant
+ * 0.991.
+ *
  * \b References
  *
- * Rand R. Wilcox (2012), <em>Introduction to Robust Estimation and Hypothesis
- * Testing, 3rd Edition</em>, Elsevier Inc., Section 3.12.1.
+ * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and Hypothesis
+ * Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.1.
  *
  * \ingroup statistical_functions
  */
 template <typename T>
-double BiweightMidvariance( const T* x, const T* xn, double center, double sigma, int k = 9 )
+double BiweightMidvariance( const T* x, const T* xn, double center,
+                            double sigma, int k = 9, bool reducedLength = false )
 {
    distance_type n = xn - x;
    if ( n < 2 )
@@ -3474,6 +4037,7 @@ double BiweightMidvariance( const T* x, const T* xn, double center, double sigma
       return 0;
 
    double num = 0, den = 0;
+   distance_type nr = 0;
    for ( ; x < xn; ++x )
    {
       double xc = double( *x ) - center;
@@ -3484,13 +4048,91 @@ double BiweightMidvariance( const T* x, const T* xn, double center, double sigma
          double y21 = 1 - y2;
          num += xc*xc * y21*y21*y21*y21;
          den += y21 * (1 - 5*y2);
+         ++nr;
       }
    }
 
    den *= den;
-   if ( 1 + den == 1 )
+   return (1 + den != 1) ? (reducedLength ? nr : n)*num/den : 0.0;
+}
+
+/*!
+ * Returns a two-sided biweight midvariance (BWMV) for the elements in a
+ * sequence [x,xn).
+ *
+ * \param x, xn   Define a sequence of sample data points for which the
+ *                two-sided BWMV estimator will be calculated.
+ *
+ * \param center  Reference center value. Normally, the median of the sample
+ *                should be used.
+ *
+ * \param sigma   A reference two-sided estimate of dispersion. Normally, the
+ *                two-sided median absolute deviation from the median (MAD) of
+ *                the sample should be used. See the TwoSidedMAD() function.
+ *
+ * \param k       Rejection limit in sigma units. The default value is k=9.
+ *
+ * \param reducedLength    If true, reduce the sample size to exclude rejected
+ *                elements. Size reduction is performed separately for the low
+ *                and high halves of the data. This tends to approximate the
+ *                true dispersion of the data more accurately for relatively
+ *                small samples, or samples with large amounts of outliers.
+ *                Note that this departs from the standard definition of
+ *                biweight midvariance, where the total number of data items is
+ *                used to scale the variance estimate. If false, use the full
+ *                sample size, including rejected elements, which gives a
+ *                standard biweight midvariance estimate.
+ *
+ * See BiweightMidvariance() for more information and references.
+ *
+ * \ingroup statistical_functions
+ */
+template <typename T>
+TwoSidedEstimate TwoSidedBiweightMidvariance( const T* x, const T* xn, double center,
+                                              const TwoSidedEstimate& sigma, int k = 9, bool reducedLength = false )
+{
+   double kd0 = k * sigma.low;
+   double kd1 = k * sigma.high;
+   if ( kd0 < 0 || 1 + kd0 == 1 || kd1 < 0 || 1 + kd1 == 1 )
       return 0;
-   return n*num/den;
+
+   double num0 = 0, den0 = 0, num1 = 0, den1 = 0;
+   size_type n0 = 0, n1 = 0, nr0 = 0, nr1 = 0;
+   for ( ; x < xn; ++x )
+   {
+      double xc = double( *x ) - center;
+      bool low = xc <= 0;
+      if ( low )
+         ++n0;
+      else
+         ++n1;
+
+      double y = xc/(low ? kd0 : kd1);
+      if ( pcl::Abs( y ) < 1 )
+      {
+         double y2 = y*y;
+         double y21 = 1 - y2;
+         double num = xc*xc * y21*y21*y21*y21;
+         double den = y21 * (1 - 5*y2);
+         if ( low )
+         {
+            num0 += num;
+            den0 += den;
+            ++nr0;
+         }
+         else
+         {
+            num1 += num;
+            den1 += den;
+            ++nr1;
+         }
+      }
+   }
+
+   den0 *= den0;
+   den1 *= den1;
+   return { (n0 >= 2 && 1 + den0 != 1) ? (reducedLength ? nr0 : n0)*num0/den0 : 0.0,
+            (n1 >= 2 && 1 + den1 != 1) ? (reducedLength ? nr1 : n1)*num1/den1 : 0.0 };
 }
 
 /*!
@@ -3505,7 +4147,7 @@ double BiweightMidvariance( const T* x, const T* xn, double center, double sigma
  *
  * \param beta    Rejection parameter in the [0,0.5] range. Higher values
  *                improve robustness to outliers (i.e., increase the breakdown
- *                point of the estimator) at the expense of lower efficiency.
+ *                point of the estimator) at the expense of a lower efficiency.
  *                The default value is beta=0.2.
  *
  * The square root of the percentage bend midvariance is a robust estimator of
@@ -3550,9 +4192,8 @@ double BendMidvariance( const T* x, const T* xn, double center, double beta = 0.
          ++den;
    }
 
-   if ( den == 0 )
-      return 0;
-   return n*wb*wb*num/den/den;
+   den *= den;
+   return (1 + den != 1) ? n*wb*wb*num/den : 0.0;
 }
 
 // ----------------------------------------------------------------------------
@@ -3590,7 +4231,7 @@ inline double IncompleteBeta( double a, double b, double x, double eps = 1.0e-8 
     * The continued fraction converges nicely for x < (a+1)/(a+b+2)
     */
    if ( x > (a + 1)/(a + b + 2) )
-      return 1 - IncompleteBeta( b, a, 1 - x ); // Use the fact that beta is symmetrical
+      return 1 - IncompleteBeta( b, a, 1 - x ); // Use the fact that beta is symmetric
 
     /*
      * Find the first part before the continued fraction.
@@ -3908,4 +4549,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 )
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Math.h - Released 2020-07-31T19:33:04Z

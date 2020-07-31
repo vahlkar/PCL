@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// FluxCalibrationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -87,10 +87,10 @@ private:
       String   keyword;
       String   stdKeyword;
 
-      CalibrationParameter( float a_value, pcl_enum a_mode, const String& a_stdKeyword ) :
-         value( a_value ),
-         mode( a_mode ),
-         stdKeyword( a_stdKeyword )
+      CalibrationParameter( float a_value, pcl_enum a_mode, const String& a_stdKeyword )
+         : value( a_value )
+         , mode( a_mode )
+         , stdKeyword( a_stdKeyword )
       {
       }
 
@@ -144,4 +144,4 @@ private:
 #endif   // __FluxCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF FluxCalibrationInstance.h - Released 2020-07-31T19:33:39Z

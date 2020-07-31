@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFProcess.cpp - Released 2020-02-27T12:56:01Z
+// DynamicPSFProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -63,16 +63,18 @@ DynamicPSFProcess* TheDynamicPSFProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "DynamicPSFIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 DynamicPSFProcess::DynamicPSFProcess()
 {
    TheDynamicPSFProcess = this;
 
    new DPViewTable( this );
    new DPViewId( TheDPViewTableParameter );
+
+   /*
+    * ### N.B. Do not change the order of instantiation of table column
+    * parameters. Doing that would break compatibility with all scripts
+    * and tools depending on this process.
+    */
 
    new DPStarTable( this );
    new DPStarViewIndex( TheDPStarTableParameter );
@@ -102,6 +104,8 @@ DynamicPSFProcess::DynamicPSFProcess()
    new DPPSFCelestial( TheDPPSFTableParameter );
    new DPPSFCentroidRA( TheDPPSFTableParameter );
    new DPPSFCentroidDec( TheDPPSFTableParameter );
+   new DPPSFFlux( TheDPPSFTableParameter );
+   new DPPSFMeanSignal( TheDPPSFTableParameter );
 
    new DPAutoPSF( this );
    new DPCircularPSF( this );
@@ -114,6 +118,10 @@ DynamicPSFProcess::DynamicPSFProcess()
    new DPMoffat25PSF( this );
    new DPMoffat15PSF( this );
    new DPLorentzianPSF( this );
+   new DPVariableShapePSF( this );
+   new DPAutoVariableShapePSF( this );
+   new DPBetaMin( this );
+   new DPBetaMax( this );
 
    new DPSignedAngles( this );
    new DPRegenerate( this );
@@ -163,9 +171,9 @@ String DynamicPSFProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** DynamicPSFProcess::IconImageXPM() const
+String DynamicPSFProcess::IconImageSVGFile() const
 {
-   return DynamicPSFIcon_XPM;
+   return "@module_icons_dir/DynamicPSF.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -195,4 +203,4 @@ ProcessImplementation* DynamicPSFProcess::Clone( const ProcessImplementation& p 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF DynamicPSFProcess.cpp - Released 2020-07-31T19:33:39Z

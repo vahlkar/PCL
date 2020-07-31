@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionModule.h - Released 2020-02-27T12:56:01Z
+// CosmeticCorrectionModule.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -58,7 +58,6 @@
 
 namespace pcl
 {
-
 // ----------------------------------------------------------------------------
 
 class CosmeticCorrectionModule : public MetaModule
@@ -67,22 +66,22 @@ public:
 
    CosmeticCorrectionModule();
 
-   virtual const char* Version() const;
-   virtual IsoString Name() const;
-   virtual String Description() const;
-   virtual String Company() const;
-   virtual String Author() const;
-   virtual String Copyright() const;
-   virtual String TradeMarks() const;
-   virtual String OriginalFileName() const;
-   virtual void GetReleaseDate( int& year, int& month, int& day ) const;
+   const char* Version() const override;
+   IsoString Name() const override;
+   String Description() const override;
+   String Company() const override;
+   String Author() const override;
+   String Copyright() const override;
+   String TradeMarks() const override;
+   String OriginalFileName() const override;
+   void GetReleaseDate( int& year, int& month, int& day ) const override;
 };
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __CosmeticCorrectionModule_h
+#endif // __CosmeticCorrectionModule_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionModule.h - Released 2020-02-27T12:56:01Z
+// EOF CosmeticCorrectionModule.h - Released 2020-07-31T19:33:39Z

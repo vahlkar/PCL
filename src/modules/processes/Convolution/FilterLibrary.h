@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// FilterLibrary.h - Released 2020-02-27T12:56:01Z
+// FilterLibrary.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -53,11 +53,11 @@
 #ifndef __FilterLibrary_h
 #define __FilterLibrary_h
 
+#include <pcl/Array.h>
+#include <pcl/Exception.h>
 #include <pcl/KernelFilter.h>
 #include <pcl/SeparableFilter.h>
-#include <pcl/Array.h>
 #include <pcl/String.h>
-#include <pcl/Exception.h>
 
 namespace pcl
 {
@@ -68,11 +68,9 @@ class Filter
 {
 public:
 
-   Filter() : filter()
-   {
-   }
+   Filter() = default;
 
-   Filter( const Filter& x ) : filter()
+   Filter( const Filter& x )
    {
       if ( x.IsValid() )
       {
@@ -161,36 +159,34 @@ private:
    {
    private:
 
-      void* filter;
-      bool  separable : 1;
+      void* filter = nullptr;
+      bool  separable = false;
 
 #define KERNEL( f )     reinterpret_cast<KernelFilter*>( f )
 #define SEPARABLE( f )  reinterpret_cast<SeparableFilter*>( f )
 
       void Destroy()
       {
-         if ( filter != 0 )
+         if ( filter != nullptr )
          {
             if ( separable )
                delete SEPARABLE( filter );
             else
                delete KERNEL( filter );
-            filter = 0;
+            filter = nullptr;
          }
       }
 
    public:
 
-      FilterVariant() : filter( 0 ), separable( false )
-      {
-      }
+      FilterVariant() = default;
 
-      FilterVariant( const KernelFilter& k ) : filter( 0 ), separable( false )
+      FilterVariant( const KernelFilter& k )
       {
          filter = new KernelFilter( k );
       }
 
-      FilterVariant( const SeparableFilter& s ) : filter( 0 ), separable( true )
+      FilterVariant( const SeparableFilter& s ) : separable( true )
       {
          filter = new SeparableFilter( s );
       }
@@ -240,7 +236,7 @@ private:
 
       bool IsValid() const
       {
-         return filter != 0;
+         return filter != nullptr;
       }
 
       const KernelFilter& AsKernelFilter() const
@@ -307,7 +303,10 @@ private:
 
    struct Token
    {
-      Token( const IsoString& s, int l, int c ) : token( s.UTF8ToUTF16() ), line( l ), column( c )
+      Token( const IsoString& s, int l, int c )
+         : token( s.UTF8ToUTF16() )
+         , line( l )
+         , column( c )
       {
       }
 
@@ -335,11 +334,9 @@ public:
 
    typedef SortedArray<Filter> filter_list;
 
-   FilterLibrary() : filters(), filePath()
-   {
-   }
+   FilterLibrary() = default;
 
-   FilterLibrary( const String& _filePath ) : filters(), filePath()
+   FilterLibrary( const String& _filePath )
    {
       Load( _filePath );
    }
@@ -380,13 +377,13 @@ public:
    const Filter* FilterByName( const String& filterName ) const
    {
       filter_list::const_iterator i = filters.Search( filterName );
-      return (i == filters.End()) ? 0 : i;
+      return (i == filters.End()) ? nullptr : i;
    }
 
    void Add( const Filter& f )
    {
       const Filter* f0 = FilterByName( f.Name() );
-      if ( f0 == 0 )
+      if ( f0 == nullptr )
          filters.Add( f );
       else
       {
@@ -398,7 +395,7 @@ public:
    bool Remove( const Filter& f )
    {
       const Filter* f0 = FilterByName( f.Name() );
-      if ( f0 == 0 )
+      if ( f0 == nullptr )
          return false;
       filters.Remove( f );
       return true;
@@ -423,4 +420,4 @@ extern FilterLibrary TheFilterLibrary;
 #endif // __FilterLibrary_h
 
 // ----------------------------------------------------------------------------
-// EOF FilterLibrary.h - Released 2020-02-27T12:56:01Z
+// EOF FilterLibrary.h - Released 2020-07-31T19:33:39Z

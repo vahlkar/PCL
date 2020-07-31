@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInstance.cpp - Released 2020-02-27T12:56:01Z
+// INDIDeviceControllerInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -72,21 +72,25 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-INDIDeviceControllerInstance::INDIDeviceControllerInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_serverHostName( TheIDCServerHostNameParameter->DefaultValue() ),
-   p_serverPort( uint32( TheIDCServerPortParameter->DefaultValue() ) ),
-   p_serverConnect( TheIDCServerConnectParameter->DefaultValue() ),
-   p_verbosity( int32( TheIDCVerbosityParameter->DefaultValue() ) )
+INDIDeviceControllerInstance::INDIDeviceControllerInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_serverHostName( TheIDCServerHostNameParameter->DefaultValue() )
+   , p_serverPort( uint32( TheIDCServerPortParameter->DefaultValue() ) )
+   , p_serverConnect( TheIDCServerConnectParameter->DefaultValue() )
+   , p_verbosity( int32( TheIDCVerbosityParameter->DefaultValue() ) )
 {
    AcquireINDIClientProperties();
 }
 
-INDIDeviceControllerInstance::INDIDeviceControllerInstance( const INDIDeviceControllerInstance& x ) :
-   ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+INDIDeviceControllerInstance::INDIDeviceControllerInstance( const INDIDeviceControllerInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
+
+// ----------------------------------------------------------------------------
 
 void INDIDeviceControllerInstance::Assign( const ProcessImplementation& p )
 {
@@ -107,16 +111,22 @@ void INDIDeviceControllerInstance::Assign( const ProcessImplementation& p )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 bool INDIDeviceControllerInstance::CanExecuteOn( const View&, String& whyNot ) const
 {
    whyNot = "INDIDeviceController can only be executed in the global context.";
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool INDIDeviceControllerInstance::CanExecuteGlobal( String& whyNot ) const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 static void GetNewPropertyListItemParametersFromKey( const INDINewPropertyListItem& listItem, INDINewPropertyItem& item )
 {
@@ -134,6 +144,8 @@ static void GetNewPropertyListItemParametersFromKey( const INDINewPropertyListIt
       }
    throw Error( "Invalid property key '" + item.PropertyKey + "'" );
 }
+
+// ----------------------------------------------------------------------------
 
 bool INDIDeviceControllerInstance::ExecuteGlobal()
 {
@@ -254,6 +266,8 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void* INDIDeviceControllerInstance::LockParameter( const MetaParameter* p, size_type tableRow )
 {
    if ( p == TheIDCServerHostNameParameter )
@@ -294,6 +308,8 @@ void* INDIDeviceControllerInstance::LockParameter( const MetaParameter* p, size_
 
    return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool INDIDeviceControllerInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
@@ -394,6 +410,8 @@ bool INDIDeviceControllerInstance::AllocateParameter( size_type sizeOrLength, co
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type INDIDeviceControllerInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheIDCServerHostNameParameter )
@@ -431,6 +449,8 @@ size_type INDIDeviceControllerInstance::ParameterLength( const MetaParameter* p,
    return 0;
 }
 
+// ----------------------------------------------------------------------------
+
 void INDIDeviceControllerInstance::AcquireINDIClientProperties()
 {
    o_devices.Clear();
@@ -458,4 +478,4 @@ void INDIDeviceControllerInstance::AcquireINDIClientProperties()
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF INDIDeviceControllerInstance.cpp - Released 2020-07-31T19:33:39Z

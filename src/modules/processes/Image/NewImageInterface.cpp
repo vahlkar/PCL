@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageInterface.cpp - Released 2020-02-27T12:56:01Z
+// NewImageInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -69,12 +69,8 @@ NewImageInterface* TheNewImageInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "NewImageIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-NewImageInterface::NewImageInterface() :
-   instance( TheNewImageProcess )
+NewImageInterface::NewImageInterface()
+   : instance( TheNewImageProcess )
 {
    TheNewImageInterface = this;
 }
@@ -103,9 +99,9 @@ MetaProcess* NewImageInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** NewImageInterface::IconImageXPM() const
+String NewImageInterface::IconImageSVGFile() const
 {
-   return NewImageIcon_XPM;
+   return "@module_icons_dir/NewImage.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -255,11 +251,15 @@ void NewImageInterface::UpdateControls()
    GUI->ColorSample_Control.Update();
 }
 
+// ----------------------------------------------------------------------------
+
 void NewImageInterface::UpdateInitialValue( Edit& e, Slider& s, double v )
 {
    e.SetText( String().Format( "%.8f", v ) );
    s.SetValue( RoundInt( v*s.MaxValue() ) );
 }
+
+// ----------------------------------------------------------------------------
 
 void NewImageInterface::UpdateSizeInfo()
 {
@@ -288,6 +288,8 @@ void NewImageInterface::__Identifier_GetFocus( Control& /*sender*/ )
       GUI->Identifier_Edit.Clear();
 }
 
+// ----------------------------------------------------------------------------
+
 void NewImageInterface::__Identifier_EditCompleted( Edit& sender )
 {
    try
@@ -308,11 +310,15 @@ void NewImageInterface::__Identifier_EditCompleted( Edit& sender )
    )
 }
 
+// ----------------------------------------------------------------------------
+
 void NewImageInterface::__SampleFormat_ItemSelected( ComboBox& sender, int itemIndex )
 {
    instance.sampleFormat = itemIndex;
    UpdateSizeInfo();
 }
+
+// ----------------------------------------------------------------------------
 
 void NewImageInterface::__ColorSpace_Click( Button& sender, bool checked )
 {
@@ -339,6 +345,8 @@ void NewImageInterface::__ColorSpace_Click( Button& sender, bool checked )
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void NewImageInterface::__Geometry_ValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == GUI->Width_SpinBox )
@@ -350,6 +358,8 @@ void NewImageInterface::__Geometry_ValueUpdated( SpinBox& sender, int value )
 
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void NewImageInterface::SetAsImage( const ImageWindow& window )
 {
@@ -378,10 +388,14 @@ void NewImageInterface::SetAsImage( const ImageWindow& window )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void NewImageInterface::__SetAsActiveImage_Click( Button& /*sender*/, bool /*checked*/ )
 {
    SetAsImage( ImageWindow::ActiveWindow() );
 }
+
+// ----------------------------------------------------------------------------
 
 void NewImageInterface::__InitialValue_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -405,6 +419,8 @@ void NewImageInterface::__InitialValue_ValueUpdated( NumericEdit& sender, double
    GUI->ColorSample_Control.Update();
 }
 
+// ----------------------------------------------------------------------------
+
 void NewImageInterface::__ColorSample_Paint( Control& sender, const Rect& /*updateRect*/ )
 {
    Graphics g( sender );
@@ -425,11 +441,15 @@ void NewImageInterface::__ColorSample_Paint( Control& sender, const Rect& /*upda
    g.DrawRect( sender.BoundsRect() );
 }
 
+// ----------------------------------------------------------------------------
+
 void NewImageInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->Identifier_Edit || sender == GUI->SetAsActiveImage_Button )
       wantsView = view.IsMainView();
 }
+
+// ----------------------------------------------------------------------------
 
 void NewImageInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -440,6 +460,7 @@ void NewImageInterface::__ViewDrop( Control& sender, const Point& pos, const Vie
          SetAsImage( view.Window() );
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 NewImageInterface::GUIData::GUIData( NewImageInterface& w )
@@ -670,4 +691,4 @@ NewImageInterface::GUIData::GUIData( NewImageInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF NewImageInterface.cpp - Released 2020-07-31T19:33:39Z

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.115
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.118
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-11-29T09:40:28.412Z
+# Generated on .... 2020-07-31T19:36:17.267Z
 # Project id ...... lz4
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F81FE14E-733C-4007-B433-17128113F6F7}</ProjectGuid>
+    <ProjectGuid>{BF09CC58-8BED-47C6-9BB6-163FBCB67C2E}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -199,7 +199,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\lz4.h"/>
     <ClInclude Include="..\..\lz4hc.h"/>
-    <ClInclude Include="..\..\lz4opt.h"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets">

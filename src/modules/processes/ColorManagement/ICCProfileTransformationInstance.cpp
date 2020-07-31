@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// ICCProfileTransformationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -66,25 +66,21 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ICCProfileTransformationInstance::ICCProfileTransformationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   toDefaultProfile( TheICCTToDefaultProfileParameter->DefaultValue() ),
-   renderingIntent( ICCTRenderingIntent::Default ),
-   useBlackPointCompensation( TheICCTUseBlackPointCompensationParameter->DefaultValue() ),
-   useFloatingPointTransformation( TheICCTUseFloatingPointTransformationParameter->DefaultValue() )
+ICCProfileTransformationInstance::ICCProfileTransformationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_toDefaultProfile( TheICCTToDefaultProfileParameter->DefaultValue() )
+   , p_renderingIntent( ICCTRenderingIntent::Default )
+   , p_useBlackPointCompensation( TheICCTUseBlackPointCompensationParameter->DefaultValue() )
+   , p_useFloatingPointTransformation( TheICCTUseFloatingPointTransformationParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ICCProfileTransformationInstance::ICCProfileTransformationInstance( const ICCProfileTransformationInstance& x ) :
-   ProcessImplementation( x ),
-   targetProfile( x.targetProfile ),
-   toDefaultProfile( x.toDefaultProfile ),
-   renderingIntent( x.renderingIntent ),
-   useBlackPointCompensation( x.useBlackPointCompensation ),
-   useFloatingPointTransformation( x.useFloatingPointTransformation )
+ICCProfileTransformationInstance::ICCProfileTransformationInstance( const ICCProfileTransformationInstance& x )
+   : ProcessImplementation( x )
 {
+   Assign( x );
 }
 
 // -------------------------------------------------------------------------
@@ -94,10 +90,11 @@ void ICCProfileTransformationInstance::Assign( const ProcessImplementation& p )
    const ICCProfileTransformationInstance* x = dynamic_cast<const ICCProfileTransformationInstance*>( &p );
    if ( x != nullptr )
    {
-      targetProfile = x->targetProfile;
-      toDefaultProfile = x->toDefaultProfile;
-      useBlackPointCompensation = x->useBlackPointCompensation;
-      useFloatingPointTransformation = x->useFloatingPointTransformation;
+      p_targetProfile = x->p_targetProfile;
+      p_toDefaultProfile = x->p_toDefaultProfile;
+      p_renderingIntent = x->p_renderingIntent;
+      p_useBlackPointCompensation = x->p_useBlackPointCompensation;
+      p_useFloatingPointTransformation = x->p_useFloatingPointTransformation;
    }
 }
 
@@ -125,11 +122,12 @@ bool ICCProfileTransformationInstance::CanExecuteOn( const View& v, pcl::String&
       return false;
    }
 
-   if ( !toDefaultProfile && targetProfile.IsEmpty() )
-   {
-      whyNot = "This instance of ICCProfileTransformation cannot be executed because no target profile has been specified.";
-      return false;
-   }
+   if ( !p_toDefaultProfile )
+      if ( p_targetProfile.IsEmpty() )
+      {
+         whyNot = "This instance of ICCProfileTransformation cannot be executed because no target profile has been specified.";
+         return false;
+      }
 
    return true;
 }
@@ -169,7 +167,7 @@ bool ICCProfileTransformationInstance::ExecuteOn( View& view )
 
    ICCProfile targetICC;
 
-   if ( toDefaultProfile )
+   if ( p_toDefaultProfile )
    {
       String defaultProfilePath = PixInsightSettings::GlobalString( view.IsColor() ?
          "ColorManagement/DefaultRGBProfilePath" : "ColorManagement/DefaultGrayscaleProfilePath" );
@@ -185,27 +183,27 @@ bool ICCProfileTransformationInstance::ExecuteOn( View& view )
    }
    else
    {
-      if ( targetProfile.IsEmpty() )
+      if ( p_targetProfile.IsEmpty() )
          return false;
 
       bool hadProfiles = !profiles.IsEmpty();
       if ( !hadProfiles )
          profiles = ICCProfile::FindProfilesByColorSpace( ICCColorSpace::RGB|ICCColorSpace::Gray );
 
-      ICCProfile::profile_list::const_iterator i = profiles.Search( ICCProfile::Info( targetProfile ) );
+      ICCProfile::profile_list::const_iterator i = profiles.Search( ICCProfile::Info( p_targetProfile ) );
 
       if ( i == profiles.End() || !File::Exists( i->path ) )
       {
          if ( hadProfiles )
          {
             profiles = ICCProfile::FindProfilesByColorSpace( ICCColorSpace::RGB|ICCColorSpace::Gray );
-            i = profiles.Search( ICCProfile::Info( targetProfile ) );
+            i = profiles.Search( ICCProfile::Info( p_targetProfile ) );
          }
          else
             i = profiles.End();
 
          if ( i == profiles.End() )
-            throw Error( "Couldn't find the '" + targetProfile + "' profile. "
+            throw Error( "Couldn't find the '" + p_targetProfile + "' profile. "
                          "Either it has not been installed, or the corresponding disk file has been deleted." );
       }
 
@@ -216,11 +214,11 @@ bool ICCProfileTransformationInstance::ExecuteOn( View& view )
       ERROR_HANDLER
 
       if ( !targetICC.IsProfile() )
-         throw Error( "Unable to load the '" + targetProfile + "' profile. "
+         throw Error( "Unable to load the '" + p_targetProfile + "' profile. "
                       "The corresponding disk file could be corrupted, or it is not a valid ICC profile." );
 
       if ( w.MainView().IsColor() && !targetICC.IsRGB() )
-         throw Error( '\'' + targetProfile + "' is a grayscale profile. "
+         throw Error( '\'' + p_targetProfile + "' is a grayscale profile. "
                       "This profile cannot be used to transform a RGB color image." );
    }
 
@@ -229,9 +227,9 @@ bool ICCProfileTransformationInstance::ExecuteOn( View& view )
    ICCProfileTransformation T;
    T.Add( sourceICC );
    T.Add( targetICC );
-   T.SetRenderingIntent( ICCProfileTransformation::rendering_intent( renderingIntent ) );
-   T.EnableBlackPointCompensation( useBlackPointCompensation );
-   T.ForceFloatingPointTransformation( useFloatingPointTransformation );
+   T.SetRenderingIntent( ICCProfileTransformation::rendering_intent( p_renderingIntent ) );
+   T.EnableBlackPointCompensation( p_useBlackPointCompensation );
+   T.ForceFloatingPointTransformation( p_useFloatingPointTransformation );
    T.EnableHighResolutionCLUT();
 
    ImageVariant image = view.Image();
@@ -253,15 +251,15 @@ bool ICCProfileTransformationInstance::ExecuteOn( View& view )
 void* ICCProfileTransformationInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
    if ( p == TheICCTTargetProfileParameter )
-      return targetProfile.Begin();
+      return p_targetProfile.Begin();
    if ( p == TheICCTToDefaultProfileParameter )
-      return &toDefaultProfile;
+      return &p_toDefaultProfile;
    if ( p == TheICCTRenderingIntentParameter )
-      return &renderingIntent;
+      return &p_renderingIntent;
    if ( p == TheICCTUseBlackPointCompensationParameter )
-      return &useBlackPointCompensation;
+      return &p_useBlackPointCompensation;
    if ( p == TheICCTUseFloatingPointTransformationParameter )
-      return &useFloatingPointTransformation;
+      return &p_useFloatingPointTransformation;
 
    return nullptr;
 }
@@ -270,9 +268,9 @@ bool ICCProfileTransformationInstance::AllocateParameter( size_type sizeOrLength
 {
    if ( p == TheICCTTargetProfileParameter )
    {
-      targetProfile.Clear();
+      p_targetProfile.Clear();
       if ( sizeOrLength > 0 )
-         targetProfile.SetLength( sizeOrLength );
+         p_targetProfile.SetLength( sizeOrLength );
    }
    else
       return false;
@@ -283,7 +281,7 @@ bool ICCProfileTransformationInstance::AllocateParameter( size_type sizeOrLength
 size_type ICCProfileTransformationInstance::ParameterLength( const MetaParameter* p, size_type /*tableRow*/ ) const
 {
    if ( p == TheICCTTargetProfileParameter )
-      return targetProfile.Length();
+      return p_targetProfile.Length();
 
    return 0;
 }
@@ -293,4 +291,4 @@ size_type ICCProfileTransformationInstance::ParameterLength( const MetaParameter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ICCProfileTransformationInstance.cpp - Released 2020-07-31T19:33:39Z

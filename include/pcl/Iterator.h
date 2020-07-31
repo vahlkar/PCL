@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Iterator.h - Released 2020-02-27T12:55:23Z
+// pcl/Iterator.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -275,7 +275,9 @@ public:
    /*!
     * Copy constructor.
     */
-   ReverseIteratorBase( const ReverseIteratorBase& i ) : pcl::Iterator<C,T>( i ), iterator( i.iterator )
+   ReverseIteratorBase( const ReverseIteratorBase& i )
+      : pcl::Iterator<C,T>( i )
+      , iterator( i.iterator )
    {
    }
 
@@ -283,7 +285,8 @@ public:
     * Constructs a %ReverseIteratorBase object as a duplicate of the specified
     * bidirectional iterator \a i.
     */
-   ReverseIteratorBase( const BI& i ) : iterator( i )
+   ReverseIteratorBase( const BI& i )
+      : iterator( i )
    {
    }
 
@@ -389,7 +392,8 @@ public:
    /*!
     * Copy constructor.
     */
-   ReverseBidirectionalIterator( const ReverseBidirectionalIterator& i ) : __R__( i )
+   ReverseBidirectionalIterator( const ReverseBidirectionalIterator& i )
+      : __R__( i )
    {
    }
 
@@ -397,7 +401,8 @@ public:
     * Constructs a %ReverseBidirectionalIterator object as a duplicate of the
     * specified bidirectional iterator \a i.
     */
-   ReverseBidirectionalIterator( const BI& i ) : __R__( i )
+   ReverseBidirectionalIterator( const BI& i )
+      : __R__( i )
    {
    }
 
@@ -426,7 +431,8 @@ public:
    /*!
     * Copy constructor.
     */
-   ReverseRandomAccessIterator( const ReverseRandomAccessIterator& i ) : __R__( i )
+   ReverseRandomAccessIterator( const ReverseRandomAccessIterator& i )
+      : __R__( i )
    {
    }
 
@@ -434,7 +440,8 @@ public:
     * Constructs a %ReverseRandomAccessIterator object as a duplicate of the
     * specified random access iterator \a i.
     */
-   ReverseRandomAccessIterator( const RI& i ) : __R__( i )
+   ReverseRandomAccessIterator( const RI& i )
+      : __R__( i )
    {
    }
 
@@ -549,7 +556,8 @@ public:
 
    typedef C   container;
 
-   ReverseIterable( container& c ) : m_container( c )
+   ReverseIterable( container& c )
+      : m_container( c )
    {
    }
 
@@ -723,4 +731,4 @@ private:
 #endif  // __PCL_Iterator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Iterator.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Iterator.h - Released 2020-07-31T19:33:04Z

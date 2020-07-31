@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// StarDetector.cpp - Released 2020-02-27T12:56:01Z
+// StarDetector.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -54,6 +54,8 @@
 
 #include <pcl/Matrix.h>
 
+#include <iostream>
+
 namespace pcl
 {
 
@@ -67,7 +69,7 @@ void Threshold( FMatrix& V, float threshold )
 }
 
 static
-StarDetector::Status Detect( const Image& img, int channel,
+StarDetector::Status Detect( const Image& image, int channel,
                              DPoint& pos, int& radius, float threshold )
 {
    /*
@@ -80,12 +82,12 @@ StarDetector::Status Detect( const Image& img, int channel,
 
       // Search box
       Rect r0( p0-radius, p0+radius+1 );
-      if ( !img.Intersects( r0 ) )
+      if ( !image.Intersects( r0 ) )
          return StarDetector::OutsideImage;
 
       // Extract the search subimage
-      img.Clip( r0 ); // in case the search box is clipped
-      FMatrix V = FMatrix::FromImage( img, r0, channel );
+      image.Clip( r0 ); // in case the search box is clipped
+      FMatrix V = FMatrix::FromImage( image, r0, channel );
 
       // Threshold background pixels
       Threshold( V, threshold );
@@ -223,29 +225,38 @@ StarDetector::Status Detect( const Image& img, int channel,
    return StarDetector::NoConvergence;
 }
 
-StarDetector::StarDetector( const Image& img, int channel,
+// ----------------------------------------------------------------------------
+
+StarDetector::StarDetector( const Image& image, int channel,
                             const DPoint& pos, int radius, float threshold, bool autoAperture )
 {
    star.status = NotDetected;
    star.channel = channel;
    star.rect = pos;
    star.pos = pos;
-   star.status = Detect( img, channel, star.pos, radius, threshold );
+   star.status = Detect( image, channel, star.pos, radius, threshold );
    star.rect = DRect( star.pos - double( radius ), star.pos + double( radius ) );
 
    if ( star )
       if ( autoAperture )
       {
          Rect r = star.rect.RoundedToInt();
-         for ( double m0 = 1; ; )
+         double m0 = image.Median( r, channel, channel );
+         for ( int i = 0;; )
          {
-            double m = Matrix::FromImage( img, r ).Median();
-            if ( m0 < m || (m0 - m)/m0 < 0.01 )
+            Rect r1 = r.InflatedBy( 1, 1 );
+            double m = image.Median( r1, channel, channel );
+            if ( m > m0 || (m0 - m)/m0 < 0.01 )
                break;
+            if ( ++i == 200 )
+            {
+               // Guard us against rare ill-posed conditions.
+               star.status = StarDetector::NoConvergence;
+               break;
+            }
             m0 = m;
-            r.InflateBy( 1, 1 );
+            r = r1;
          }
-
          star.rect = r;
       }
 }
@@ -255,4 +266,4 @@ StarDetector::StarDetector( const Image& img, int channel,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.cpp - Released 2020-02-27T12:56:01Z
+// EOF StarDetector.cpp - Released 2020-07-31T19:33:39Z

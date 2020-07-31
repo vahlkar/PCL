@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertAction.cpp - Released 2020-02-27T12:56:01Z
+// InvertAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -62,21 +62,23 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "InvertActionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-InvertAction::InvertAction() :
-   Action( "Image > Invert", Bitmap( InvertActionIcon_XPM ), "Intensity Transformations" )
+InvertAction::InvertAction()
+   : Action( "Image > Invert",
+             "@module_icons_dir/Invert.svg",
+             "Intensity Transformations" )
 {
    SetAccelerator( KeyModifier::Control, KeyCode::I );
    SetToolTip( "Invert" );
 }
 
+// ----------------------------------------------------------------------------
+
 void InvertAction::Execute()
 {
    InvertInstance( TheInvertProcess ).LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 bool InvertAction::IsEnabled( ActionInfo info ) const
 {
@@ -88,4 +90,4 @@ bool InvertAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InvertAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF InvertAction.cpp - Released 2020-07-31T19:33:39Z

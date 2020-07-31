@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.5.3
+// Standard RAW File Format Module Version 1.5.4
 // ----------------------------------------------------------------------------
-// RawFormat.h - Released 2020-02-27T12:55:48Z
+// RawFormat.h - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -64,7 +64,7 @@ class RawFormat : public MetaFileFormat
 {
 public:
 
-   RawFormat();
+   RawFormat() = default;
 
    IsoString Name() const override;
 
@@ -75,7 +75,7 @@ public:
    String Description() const override;
    String Implementation() const override;
 
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
 
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -100,4 +100,4 @@ public:
 #endif   // __RawFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF RawFormat.h - Released 2020-02-27T12:55:48Z
+// EOF RawFormat.h - Released 2020-07-31T19:33:23Z

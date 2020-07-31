@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInstance.cpp - Released 2020-02-27T12:56:01Z
+// StarGeneratorInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -69,28 +69,28 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-StarGeneratorInstance::StarGeneratorInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   centerRA( TheSGCenterRAParameter->DefaultValue() ),
-   centerDec( TheSGCenterDecParameter->DefaultValue() ),
-   epoch( TheSGEpochParameter->DefaultValue() ),
-   projectionSystem( SGProjectionSystem::Default ),
-   focalLength( TheSGFocalLengthParameter->DefaultValue() ),
-   pixelSize( TheSGPixelSizeParameter->DefaultValue() ),
-   sensorWidth( TheSGSensorWidthParameter->DefaultValue() ),
-   sensorHeight( TheSGSensorHeightParameter->DefaultValue() ),
-   limitMagnitude( TheSGLimitMagnitudeParameter->DefaultValue() ),
-   starFWHM( TheSGStarFWHMParameter->DefaultValue() ),
-   nonlinear( TheSGNonlinearParameter->DefaultValue() ),
-   targetMinimumValue( TheSGTargetMinimumValueParameter->DefaultValue() ),
-   outputMode( SGOutputMode::Default )
+StarGeneratorInstance::StarGeneratorInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , centerRA( TheSGCenterRAParameter->DefaultValue() )
+   , centerDec( TheSGCenterDecParameter->DefaultValue() )
+   , epoch( TheSGEpochParameter->DefaultValue() )
+   , projectionSystem( SGProjectionSystem::Default )
+   , focalLength( TheSGFocalLengthParameter->DefaultValue() )
+   , pixelSize( TheSGPixelSizeParameter->DefaultValue() )
+   , sensorWidth( TheSGSensorWidthParameter->DefaultValue() )
+   , sensorHeight( TheSGSensorHeightParameter->DefaultValue() )
+   , limitMagnitude( TheSGLimitMagnitudeParameter->DefaultValue() )
+   , starFWHM( TheSGStarFWHMParameter->DefaultValue() )
+   , nonlinear( TheSGNonlinearParameter->DefaultValue() )
+   , targetMinimumValue( TheSGTargetMinimumValueParameter->DefaultValue() )
+   , outputMode( SGOutputMode::Default )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-StarGeneratorInstance::StarGeneratorInstance( const StarGeneratorInstance& x ) :
-   ProcessImplementation( x )
+StarGeneratorInstance::StarGeneratorInstance( const StarGeneratorInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -149,8 +149,8 @@ class StarGeneratorEngine
 {
 public:
 
-   StarGeneratorEngine( const StarGeneratorInstance& aInstance ) :
-   instance( aInstance )
+   StarGeneratorEngine( const StarGeneratorInstance& aInstance )
+      : instance( aInstance )
    {
       if ( S == nullptr )
       {
@@ -269,8 +269,6 @@ private:
 
    void ApplyProperMotions( StarDatabase::star_list& stars )
    {
-      // ### TODO: Compute apparent star positions
-
       if ( instance.epoch != TimePoint::J2000() )
       {
          StandardStatus status;
@@ -323,15 +321,15 @@ private:
       if ( image.IsFloatSample() )
          switch ( image.BitsPerSample() )
          {
-         case 32 : PlotStars( static_cast<Image&>( *image ), stars, starSigma ); break;
-         case 64 : PlotStars( static_cast<DImage&>( *image ), stars, starSigma ); break;
+         case 32: PlotStars( static_cast<Image&>( *image ), stars, starSigma ); break;
+         case 64: PlotStars( static_cast<DImage&>( *image ), stars, starSigma ); break;
          }
       else
          switch ( image.BitsPerSample() )
          {
-         case  8 : PlotStars( static_cast<UInt8Image&>( *image ), stars, starSigma ); break;
-         case 16 : PlotStars( static_cast<UInt16Image&>( *image ), stars, starSigma ); break;
-         case 32 : PlotStars( static_cast<UInt32Image&>( *image ), stars, starSigma ); break;
+         case  8: PlotStars( static_cast<UInt8Image&>( *image ), stars, starSigma ); break;
+         case 16: PlotStars( static_cast<UInt16Image&>( *image ), stars, starSigma ); break;
+         case 32: PlotStars( static_cast<UInt32Image&>( *image ), stars, starSigma ); break;
          }
    }
 
@@ -373,12 +371,12 @@ private:
                   const Image& a_star,
                   const Projection& a_projection,
                   const StarDatabase::star_list& a_stars,
-                  StatusMonitor& a_monitor ) :
-         AbstractImage::ThreadData( a_monitor, a_stars.Length() ),
-         image( a_image ),
-         star( a_star ),
-         projection( a_projection ),
-         stars( a_stars )
+                  StatusMonitor& a_monitor )
+         : AbstractImage::ThreadData( a_monitor, a_stars.Length() )
+         , image( a_image )
+         , star( a_star )
+         , projection( a_projection )
+         , stars( a_stars )
       {
       }
 
@@ -393,12 +391,12 @@ private:
    {
    public:
 
-      size_type N;
+      size_type N = 0;
 
-      PlotThread( ThreadData<P>& data, size_type first, size_type end ) :
-         N( 0 ),
-         m_data( data ),
-         m_first( first ), m_end( end )
+      PlotThread( ThreadData<P>& data, size_type first, size_type end )
+         : m_data( data )
+         , m_first( first )
+         , m_end( end )
       {
       }
 
@@ -543,16 +541,17 @@ bool StarGeneratorInstance::AllocateParameter( size_type sizeOrLength, const Met
       starDatabasePath.Clear();
       if ( sizeOrLength > 0 )
          starDatabasePath.SetLength( sizeOrLength );
-      return true;
    }
-   if ( p == TheSGOutputFilePathParameter )
+   else if ( p == TheSGOutputFilePathParameter )
    {
       outputFilePath.Clear();
       if ( sizeOrLength > 0 )
          outputFilePath.SetLength( sizeOrLength );
-      return true;
    }
-   return false;
+   else
+      return false;
+
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -563,6 +562,7 @@ size_type StarGeneratorInstance::ParameterLength( const MetaParameter* p, size_t
       return starDatabasePath.Length();
    if ( p == TheSGOutputFilePathParameter )
       return outputFilePath.Length();
+
    return 0;
 }
 
@@ -571,4 +571,4 @@ size_type StarGeneratorInstance::ParameterLength( const MetaParameter* p, size_t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF StarGeneratorInstance.cpp - Released 2020-07-31T19:33:39Z

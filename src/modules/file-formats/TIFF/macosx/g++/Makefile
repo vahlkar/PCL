@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:54.345Z
+# Generated on .... 2020-07-31T19:36:27.148Z
 # Project id ...... TIFF
 # Project type .... Module
 # Platform ........ MacOSX/g++

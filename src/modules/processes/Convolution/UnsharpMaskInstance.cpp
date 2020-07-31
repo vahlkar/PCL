@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInstance.cpp - Released 2020-02-27T12:56:01Z
+// UnsharpMaskInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -71,25 +71,25 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-UnsharpMaskInstance::UnsharpMaskInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   sigma( TheUSMSigmaParameter->DefaultValue() ),
-   amount( TheUSMAmountParameter->DefaultValue() ),
-   useLuminance( TheUSMUseLuminanceParameter->DefaultValue() ),
-   linear( TheUSMLinearParameter->DefaultValue() ),
-   deringing( TheUSMDeringingParameter->DefaultValue() ),
-   deringingDark( TheUSMDeringingDarkParameter->DefaultValue() ),
-   deringingBright( TheUSMDeringingBrightParameter->DefaultValue() ),
-   outputDeringingMaps( TheUSMOutputDeringingMapsParameter->DefaultValue() ),
-   rangeLow( TheUSMRangeLowParameter->DefaultValue() ),
-   rangeHigh( TheUSMRangeHighParameter->DefaultValue() )
+UnsharpMaskInstance::UnsharpMaskInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , sigma( TheUSMSigmaParameter->DefaultValue() )
+   , amount( TheUSMAmountParameter->DefaultValue() )
+   , useLuminance( TheUSMUseLuminanceParameter->DefaultValue() )
+   , linear( TheUSMLinearParameter->DefaultValue() )
+   , deringing( TheUSMDeringingParameter->DefaultValue() )
+   , deringingDark( TheUSMDeringingDarkParameter->DefaultValue() )
+   , deringingBright( TheUSMDeringingBrightParameter->DefaultValue() )
+   , outputDeringingMaps( TheUSMOutputDeringingMapsParameter->DefaultValue() )
+   , rangeLow( TheUSMRangeLowParameter->DefaultValue() )
+   , rangeHigh( TheUSMRangeHighParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-UnsharpMaskInstance::UnsharpMaskInstance( const UnsharpMaskInstance& x ) :
-   ProcessImplementation( x )
+UnsharpMaskInstance::UnsharpMaskInstance( const UnsharpMaskInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -141,8 +141,9 @@ class UnsharpMaskEngine
 {
 public:
 
-   UnsharpMaskEngine( ImageVariant& image, const UnsharpMaskInstance& i, bool aUseConsole = true ) :
-   instance( i ), useConsole( aUseConsole )
+   UnsharpMaskEngine( ImageVariant& image, const UnsharpMaskInstance& i, bool aUseConsole = true )
+      : instance( i )
+      , useConsole( aUseConsole )
    {
       if ( instance.useLuminance && image->IsColor() )
       {
@@ -164,8 +165,8 @@ public:
          if ( image.IsFloatSample() )
             switch ( image.BitsPerSample() )
             {
-            case 32 : Apply( static_cast<pcl::Image&>( *image ) ); break;
-            case 64 : Apply( static_cast<pcl::DImage&>( *image ) ); break;
+            case 32: Apply( static_cast<pcl::Image&>( *image ) ); break;
+            case 64: Apply( static_cast<pcl::DImage&>( *image ) ); break;
             }
          else
          {
@@ -174,8 +175,8 @@ public:
             floatImage.CopyImage( image );
             switch ( floatImage.BitsPerSample() )
             {
-            case 32 : Apply( static_cast<pcl::Image&>( *floatImage ) ); break;
-            case 64 : Apply( static_cast<pcl::DImage&>( *floatImage ) ); break;
+            case 32: Apply( static_cast<pcl::Image&>( *floatImage ) ); break;
+            case 64: Apply( static_cast<pcl::DImage&>( *floatImage ) ); break;
             }
             image.CopyImage( floatImage );
          }
@@ -192,12 +193,12 @@ private:
    {
    public:
 
-      USMThread( P*, typename P::sample* V, const typename P::sample* VN, const float* M, double A1, double A2 ) :
-      Thread(), v( V ), vN( VN ), m( M ), a1( A1 ), a2( A2 )
+      USMThread( P*, typename P::sample* V, const typename P::sample* VN, const float* M, double A1, double A2 )
+         : v( V ), vN( VN ), m( M ), a1( A1 ), a2( A2 )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          do
          {
@@ -516,4 +517,4 @@ void* UnsharpMaskInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF UnsharpMaskInstance.cpp - Released 2020-07-31T19:33:39Z

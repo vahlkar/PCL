@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// DrizzleIntegrationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -50,10 +50,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "DrizzleIntegrationParameters.h"
-#include "DrizzleIntegrationProcess.h"
 #include "DrizzleIntegrationInstance.h"
 #include "DrizzleIntegrationInterface.h"
+#include "DrizzleIntegrationParameters.h"
+#include "DrizzleIntegrationProcess.h"
 
 namespace pcl
 {
@@ -61,10 +61,6 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 DrizzleIntegrationProcess* TheDrizzleIntegrationProcess = nullptr;
-
-// ----------------------------------------------------------------------------
-
-#include "DrizzleIntegrationIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -167,9 +163,9 @@ String DrizzleIntegrationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** DrizzleIntegrationProcess::IconImageXPM() const
+String DrizzleIntegrationProcess::IconImageSVGFile() const
 {
-   return DrizzleIntegrationIcon_XPM;
+   return "@module_icons_dir/DrizzleIntegration.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -199,4 +195,4 @@ ProcessImplementation* DrizzleIntegrationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF DrizzleIntegrationProcess.cpp - Released 2020-07-31T19:33:39Z

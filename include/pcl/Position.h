@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Position.h - Released 2020-02-27T12:55:23Z
+// pcl/Position.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -141,14 +141,14 @@ struct PCL_CLASS StarPosition
                  double properMotionRA = 0, double properMotionDec = 0,
                  double parallax = 0,
                  double radialVelocity = 0,
-                 TimePoint epoch = TimePoint::J2000() ) :
-      alpha( ((ra = Mod( ra, 360.0 )) < 0) ? ra + 360 : ra ),
-      delta( Range( dec, -90.0, +90.0 ) ),
-      muAlpha( properMotionRA ),
-      muDelta( properMotionDec ),
-      p( parallax ),
-      v( radialVelocity ),
-      t0( epoch )
+                 TimePoint epoch = TimePoint::J2000() )
+      : alpha( ((ra = Mod( ra, 360.0 )) < 0) ? ra + 360 : ra )
+      , delta( Range( dec, -90.0, +90.0 ) )
+      , muAlpha( properMotionRA )
+      , muDelta( properMotionDec )
+      , p( parallax )
+      , v( radialVelocity )
+      , t0( epoch )
    {
    }
 };
@@ -255,14 +255,14 @@ struct PCL_CLASS ObserverPosition
                      double equatorialRadius = ea_eq_radius_IAU2009,
                      double flattening = ea_flattening_IERS2010,
                      const Vector& regionalCenter = Vector( 0, 0, 0 ),
-                     bool useCIO = false ) :
-      lambda( ((longitude = Mod( longitude, 360.0 )) < 0) ? longitude + 360 : longitude ),
-      phi( Range( latitude, -90.0, +90.0 ) ),
-      h( Max( 0.0, height ) ),
-      a( Max( 0.0, equatorialRadius ) ),
-      f( Max( 0.0, flattening ) ),
-      r0( regionalCenter ),
-      cioBased( useCIO )
+                     bool useCIO = false )
+      : lambda( ((longitude = Mod( longitude, 360.0 )) < 0) ? longitude + 360 : longitude )
+      , phi( Range( latitude, -90.0, +90.0 ) )
+      , h( Max( 0.0, height ) )
+      , a( Max( 0.0, equatorialRadius ) )
+      , f( Max( 0.0, flattening ) )
+      , r0( regionalCenter )
+      , cioBased( useCIO )
    {
    }
 };
@@ -1403,4 +1403,4 @@ private:
 #endif  // __PCL_Position_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Position.h - Released 2020-07-31T19:33:04Z

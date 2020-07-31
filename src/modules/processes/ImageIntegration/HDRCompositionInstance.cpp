@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// HDRCompositionInstance.cpp - Released 2020-02-27T12:56:01Z
+// HDRCompositionInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -80,26 +80,26 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-HDRCompositionInstance::HDRCompositionInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_maskBinarizingThreshold( TheHCMaskBinarizingThresholdParameter->DefaultValue() ),
-   p_maskSmoothness( TheHCMaskSmoothnessParameter->DefaultValue() ),
-   p_maskGrowth( TheHCMaskGrowthParameter->DefaultValue() ),
-   p_replaceLargeScales( TheHCReplaceLargeScalesParameter->DefaultValue() ),
-   p_autoExposures( TheHCAutoExposuresParameter->DefaultValue() ),
-   p_rejectBlack( TheHCRejectBlackParameter->DefaultValue() ),
-   p_useFittingRegion( TheHCUseFittingRegionParameter->DefaultValue() ),
-   p_fittingRect( 0 ),
-   p_generate64BitResult( TheHCGenerate64BitResultParameter->DefaultValue() ),
-   p_outputMasks( TheHCOutputMasksParameter->DefaultValue() ),
-   p_closePreviousImages( TheHCClosePreviousImagesParameter->DefaultValue() )
+HDRCompositionInstance::HDRCompositionInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_maskBinarizingThreshold( TheHCMaskBinarizingThresholdParameter->DefaultValue() )
+   , p_maskSmoothness( TheHCMaskSmoothnessParameter->DefaultValue() )
+   , p_maskGrowth( TheHCMaskGrowthParameter->DefaultValue() )
+   , p_replaceLargeScales( TheHCReplaceLargeScalesParameter->DefaultValue() )
+   , p_autoExposures( TheHCAutoExposuresParameter->DefaultValue() )
+   , p_rejectBlack( TheHCRejectBlackParameter->DefaultValue() )
+   , p_useFittingRegion( TheHCUseFittingRegionParameter->DefaultValue() )
+   , p_fittingRect( 0 )
+   , p_generate64BitResult( TheHCGenerate64BitResultParameter->DefaultValue() )
+   , p_outputMasks( TheHCOutputMasksParameter->DefaultValue() )
+   , p_closePreviousImages( TheHCClosePreviousImagesParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-HDRCompositionInstance::HDRCompositionInstance( const HDRCompositionInstance& x ) :
-   ProcessImplementation( x )
+HDRCompositionInstance::HDRCompositionInstance( const HDRCompositionInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -429,7 +429,7 @@ class HDRCompositionEngine
 {
 public:
 
-   HDRCompositionEngine( const HDRCompositionInstance* H ) : instance( H )
+   HDRCompositionEngine( const HDRCompositionInstance* instance ) : m_instance( instance )
    {
       ImageWindow hdrWindow;
       Console console;
@@ -437,7 +437,7 @@ public:
       try
       {
          ImageVariant hdr;
-         hdrWindow = CreateHDRWorkingImageWindow( "HDR", instance->p_generate64BitResult ? 64 : 32 );
+         hdrWindow = CreateHDRWorkingImageWindow( "HDR", m_instance->p_generate64BitResult ? 64 : 32 );
          hdr = hdrWindow.MainView().Image();
 
          console.WriteLn( String().Format( "<end><cbr><br>* HDR image component 1 of %d",
@@ -493,7 +493,7 @@ public:
                k /= L[i][c].b;
             console.WriteLn( String().Format( "q%d = %.5e (%.2f bits)", c, k, Log2( k ) ) );
 
-            if ( !instance->p_generate64BitResult && k > 1.2e+07 )
+            if ( !m_instance->p_generate64BitResult && k > 1.2e+07 )
                outOfRange = true;
          }
 
@@ -507,26 +507,26 @@ public:
                   << FITSHeaderKeyword( "HISTORY", IsoString(), "Integration with " + Module->ReadableVersion() )
                   << FITSHeaderKeyword( "HISTORY", IsoString(), "Integration with HDRComposition process" )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "HDRComposition.maskBinarizingThreshold: %.4f", instance->p_maskBinarizingThreshold ) )
+                                        IsoString().Format( "HDRComposition.maskBinarizingThreshold: %.4f", m_instance->p_maskBinarizingThreshold ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "HDRComposition.maskSmoothness: %d", instance->p_maskSmoothness ) )
+                                        IsoString().Format( "HDRComposition.maskSmoothness: %d", m_instance->p_maskSmoothness ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "HDRComposition.maskGrowth: %d", instance->p_maskGrowth ) )
+                                        IsoString().Format( "HDRComposition.maskGrowth: %d", m_instance->p_maskGrowth ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        IsoString().Format( "HDRComposition.replaceLargeScales: %d", instance->p_replaceLargeScales ) )
+                                        IsoString().Format( "HDRComposition.replaceLargeScales: %d", m_instance->p_replaceLargeScales ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        "HDRComposition.autoExposures: " + IsoString( bool( instance->p_autoExposures ) ) )
+                                        "HDRComposition.autoExposures: " + IsoString( bool( m_instance->p_autoExposures ) ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        "HDRComposition.rejectBlack: " + IsoString( bool( instance->p_rejectBlack ) ) )
+                                        "HDRComposition.rejectBlack: " + IsoString( bool( m_instance->p_rejectBlack ) ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        "HDRComposition.generate64BitResult: " + IsoString( bool( instance->p_generate64BitResult ) ) )
+                                        "HDRComposition.generate64BitResult: " + IsoString( bool( m_instance->p_generate64BitResult ) ) )
                   << FITSHeaderKeyword( "HISTORY", IsoString(),
-                                        "HDRComposition.useFittingRegion: " + IsoString( bool( instance->p_useFittingRegion ) ) );
-         if ( instance->p_useFittingRegion )
+                                        "HDRComposition.useFittingRegion: " + IsoString( bool( m_instance->p_useFittingRegion ) ) );
+         if ( m_instance->p_useFittingRegion )
             keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
                                            IsoString().Format( "HDRComposition.fittingRect: left=%d, top=%d, width=%d, height=%d",
-                                                            instance->p_fittingRect.x0, instance->p_fittingRect.y0,
-                                                            instance->p_fittingRect.Width(), instance->p_fittingRect.Height() ) );
+                                                            m_instance->p_fittingRect.x0, m_instance->p_fittingRect.y0,
+                                                            m_instance->p_fittingRect.Width(), m_instance->p_fittingRect.Height() ) );
 
          hdrWindow.SetKeywords( keywords );
          hdrWindow.Show();
@@ -541,7 +541,7 @@ public:
 
 private:
 
-   const HDRCompositionInstance* instance;
+   const HDRCompositionInstance* m_instance;
 
    template <class P>
    IVector Quantize( const GenericImage<P>& image ) const
@@ -594,14 +594,14 @@ private:
          {
             typename GenericImage<P>::const_pixel_iterator f( hdr );
             for ( ; f; ++f, ++m, ++mask.Status() )  // N
-               if ( Max( Max( f[0], f[1] ), f[2] ) >= instance->p_maskBinarizingThreshold )
+               if ( Max( Max( f[0], f[1] ), f[2] ) >= m_instance->p_maskBinarizingThreshold )
                   *m = 1, ++count;
          }
          else
          {
             typename GenericImage<P>::const_sample_iterator f( hdr );
             for ( ; f; ++f, ++m, ++mask.Status() )  // N
-               if ( *f >= instance->p_maskBinarizingThreshold )
+               if ( *f >= m_instance->p_maskBinarizingThreshold )
                   *m = 1, ++count;
          }
 
@@ -613,19 +613,19 @@ private:
          }
       }
 
-      if ( instance->p_maskGrowth > 0 )
+      if ( m_instance->p_maskGrowth > 0 )
       {
          DilationFilter D;
-         CircularStructure C( instance->p_maskGrowth*2 + 1 );
+         CircularStructure C( m_instance->p_maskGrowth*2 + 1 );
          MorphologicalTransformation M( D, C );
          M >> mask;
       }
       else
          mask.Status() += N;
 
-      if ( instance->p_maskSmoothness > 0 )
+      if ( m_instance->p_maskSmoothness > 0 )
       {
-         GaussianFilter G( instance->p_maskSmoothness*2 + 1 );
+         GaussianFilter G( m_instance->p_maskSmoothness*2 + 1 );
          if ( G.Size() >= PCL_FFT_CONVOLUTION_IS_FASTER_THAN_SEPARABLE_FILTER_SIZE )
          {
             FFTConvolution C( G );
@@ -641,7 +641,7 @@ private:
       else
          mask.Status() += N;
 
-      if ( instance->p_rejectBlack )
+      if ( m_instance->p_rejectBlack )
       {
          Image::sample_iterator m( mask );
          if ( hdr.IsColor() )
@@ -672,13 +672,13 @@ private:
          for ( int c = 0; c < hdr.NumberOfNominalChannels(); ++c )
          {
             Array<float> F0, F1;
-            if ( instance->p_useFittingRegion )
+            if ( m_instance->p_useFittingRegion )
             {
-               F0.Reserve( size_type( instance->p_fittingRect.Area() ) );
-               F1.Reserve( size_type( instance->p_fittingRect.Area() ) );
-               typename GenericImage<P>::const_roi_sample_iterator f( hdr, instance->p_fittingRect, c );
-               Image::const_roi_sample_iterator v( image, instance->p_fittingRect, c );
-               UInt8Image::const_roi_sample_iterator o( outlierMask, instance->p_fittingRect );
+               F0.Reserve( size_type( m_instance->p_fittingRect.Area() ) );
+               F1.Reserve( size_type( m_instance->p_fittingRect.Area() ) );
+               typename GenericImage<P>::const_roi_sample_iterator f( hdr, m_instance->p_fittingRect, c );
+               Image::const_roi_sample_iterator v( image, m_instance->p_fittingRect, c );
+               UInt8Image::const_roi_sample_iterator o( outlierMask, m_instance->p_fittingRect );
                for ( ; f; ++f, ++v, ++o, ++monitor )
                   if ( *o )
                      if ( *f > 0 && *f < FIT_MAX )
@@ -727,9 +727,9 @@ private:
             console.WriteLn( String().Format( "y%d = %+.6f + %.6f * x%d", c, L[c].a, L[c].b, c ) );
       }
 
-      if ( instance->p_replaceLargeScales > 0 )
+      if ( m_instance->p_replaceLargeScales > 0 )
       {
-         int J = 4 + instance->p_replaceLargeScales;
+         int J = 4 + m_instance->p_replaceLargeScales;
          image.SetStatusCallback( &status );
          image.Status().Initialize( "<end><cbr>Performing large-scale layer substitution", (2*J + 3)*N*hdr.NumberOfNominalChannels() );
          image.Status().DisableInitialization();
@@ -782,7 +782,7 @@ private:
          }
       }
 
-      if ( instance->p_outputMasks )
+      if ( m_instance->p_outputMasks )
          maskWindow.Show();
       else
          maskWindow.Close();
@@ -816,7 +816,7 @@ private:
                                   bool grayscale = true,
                                   int bitsPerSample = 32, bool floatingPoint = true ) const
    {
-      if ( instance->p_closePreviousImages )
+      if ( m_instance->p_closePreviousImages )
       {
          ImageWindow window = ImageWindow::WindowById( id );
          if ( !window.IsNull() )
@@ -835,6 +835,7 @@ private:
    }
 };
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 bool HDRCompositionInstance::ExecuteGlobal()
@@ -894,7 +895,6 @@ bool HDRCompositionInstance::ExecuteGlobal()
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
 void* HDRCompositionInstance::LockParameter( const MetaParameter* p, size_type tableRow )
 {
@@ -936,6 +936,8 @@ void* HDRCompositionInstance::LockParameter( const MetaParameter* p, size_type t
    return nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 bool HDRCompositionInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
    if ( p == TheHCImagesParameter )
@@ -962,6 +964,8 @@ bool HDRCompositionInstance::AllocateParameter( size_type sizeOrLength, const Me
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type HDRCompositionInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheHCImagesParameter )
@@ -979,4 +983,4 @@ size_type HDRCompositionInstance::ParameterLength( const MetaParameter* p, size_
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF HDRCompositionInstance.cpp - Released 2020-07-31T19:33:39Z

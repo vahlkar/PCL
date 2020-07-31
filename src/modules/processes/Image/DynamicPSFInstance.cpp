@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInstance.cpp - Released 2020-02-27T12:56:01Z
+// DynamicPSFInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -53,6 +53,7 @@
 #include "DynamicPSFInstance.h"
 #include "DynamicPSFInterface.h"
 
+#include <pcl/api/APIDefs.h>
 #include <pcl/Console.h>
 
 namespace pcl
@@ -60,21 +61,21 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-DynamicPSFInstance::DynamicPSFInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   p_signedAngles( TheDPSignedAnglesParameter->DefaultValue() ),
-   p_regenerate( TheDPRegenerateParameter->DefaultValue() ),
-   p_astrometry( TheDPAstrometryParameter->DefaultValue() ),
-   p_searchRadius( TheDPSearchRadiusParameter->DefaultValue() ),
-   p_threshold( TheDPThresholdParameter->DefaultValue() ),
-   p_autoAperture( TheDPAutoApertureParameter->DefaultValue() ),
-   p_scaleMode( DPScaleMode::Default ),
-   p_scaleValue( TheDPScaleValueParameter->DefaultValue() ),
-   p_starColor( TheDPStarColorParameter->DefaultValue() ),
-   p_selectedStarColor( TheDPSelectedStarColorParameter->DefaultValue() ),
-   p_selectedStarFillColor( TheDPSelectedStarFillColorParameter->DefaultValue() ),
-   p_badStarColor( TheDPBadStarColorParameter->DefaultValue() ),
-   p_badStarFillColor( TheDPBadStarFillColorParameter->DefaultValue() )
+DynamicPSFInstance::DynamicPSFInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , p_signedAngles( TheDPSignedAnglesParameter->DefaultValue() )
+   , p_regenerate( TheDPRegenerateParameter->DefaultValue() )
+   , p_astrometry( TheDPAstrometryParameter->DefaultValue() )
+   , p_searchRadius( TheDPSearchRadiusParameter->DefaultValue() )
+   , p_threshold( TheDPThresholdParameter->DefaultValue() )
+   , p_autoAperture( TheDPAutoApertureParameter->DefaultValue() )
+   , p_scaleMode( DPScaleMode::Default )
+   , p_scaleValue( TheDPScaleValueParameter->DefaultValue() )
+   , p_starColor( TheDPStarColorParameter->DefaultValue() )
+   , p_selectedStarColor( TheDPSelectedStarColorParameter->DefaultValue() )
+   , p_selectedStarFillColor( TheDPSelectedStarFillColorParameter->DefaultValue() )
+   , p_badStarColor( TheDPBadStarColorParameter->DefaultValue() )
+   , p_badStarFillColor( TheDPBadStarFillColorParameter->DefaultValue() )
 {
    p_psfOptions.autoPSF = TheDPAutoPSFParameter->DefaultValue();
    p_psfOptions.circular = TheDPCircularPSFParameter->DefaultValue();
@@ -87,12 +88,16 @@ DynamicPSFInstance::DynamicPSFInstance( const MetaProcess* P ) :
    p_psfOptions.moffat25 = TheDPMoffat25PSFParameter->DefaultValue();
    p_psfOptions.moffat15 = TheDPMoffat15PSFParameter->DefaultValue();
    p_psfOptions.lorentzian = TheDPLorentzianPSFParameter->DefaultValue();
+   p_psfOptions.variableShape = TheDPVariableShapePSFParameter->DefaultValue();
+   p_psfOptions.autoVariableShapePSF = TheDPAutoVariableShapePSFParameter->DefaultValue();
+   p_psfOptions.betaMin = TheDPBetaMinParameter->DefaultValue();
+   p_psfOptions.betaMax = TheDPBetaMaxParameter->DefaultValue();
 }
 
 // ----------------------------------------------------------------------------
 
-DynamicPSFInstance::DynamicPSFInstance( const DynamicPSFInstance& x ) :
-   ProcessImplementation( x )
+DynamicPSFInstance::DynamicPSFInstance( const DynamicPSFInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -125,6 +130,10 @@ void DynamicPSFInstance::Assign( const ProcessImplementation& p )
          p_psfOptions.moffat25 = x->p_psfOptions.moffat25;
          p_psfOptions.moffat15 = x->p_psfOptions.moffat15;
          p_psfOptions.lorentzian = x->p_psfOptions.lorentzian;
+         p_psfOptions.variableShape = x->p_psfOptions.variableShape;
+         p_psfOptions.autoVariableShapePSF = x->p_psfOptions.autoVariableShapePSF;
+         p_psfOptions.betaMin = x->p_psfOptions.betaMin;
+         p_psfOptions.betaMax = x->p_psfOptions.betaMax;
          p_signedAngles = x->p_signedAngles;
          p_regenerate = x->p_regenerate;
          p_astrometry = x->p_astrometry;
@@ -160,6 +169,10 @@ void DynamicPSFInstance::AssignOptions( const DynamicPSFInstance& x )
    p_psfOptions.moffat25 = x.p_psfOptions.moffat25;
    p_psfOptions.moffat15 = x.p_psfOptions.moffat15;
    p_psfOptions.lorentzian = x.p_psfOptions.lorentzian;
+   p_psfOptions.variableShape = x.p_psfOptions.variableShape;
+   p_psfOptions.autoVariableShapePSF = x.p_psfOptions.autoVariableShapePSF;
+   p_psfOptions.betaMin = x.p_psfOptions.betaMin;
+   p_psfOptions.betaMax = x.p_psfOptions.betaMax;
    p_signedAngles = x.p_signedAngles;
    p_regenerate = x.p_regenerate;
    p_astrometry = x.p_astrometry;
@@ -232,11 +245,25 @@ void* DynamicPSFInstance::LockParameter( const MetaParameter* p, size_type table
    if ( p == TheDPPSFStarIndexParameter )
       return &p_psfs[tableRow].star;
    if ( p == TheDPPSFFunctionParameter )
-      return &p_psfs[tableRow].function;
+   {
+      p_psfs[tableRow].p_function = p_psfs[tableRow].function;
+      return &p_psfs[tableRow].p_function;
+   }
    if ( p == TheDPPSFCircularParameter )
-      return &p_psfs[tableRow].circular;
+   {
+      p_psfs[tableRow].p_circular = p_psfs[tableRow].circular;
+      return &p_psfs[tableRow].p_circular;
+   }
    if ( p == TheDPPSFStatusParameter )
-      return &p_psfs[tableRow].status;
+   {
+      p_psfs[tableRow].p_status = p_psfs[tableRow].status;
+      return &p_psfs[tableRow].p_status;
+   }
+   if ( p == TheDPPSFCelestialParameter )
+   {
+      p_psfs[tableRow].p_celestial = p_psfs[tableRow].celestial;
+      return &p_psfs[tableRow].p_celestial;
+   }
    if ( p == TheDPPSFBackgroundParameter )
       return &p_psfs[tableRow].B;
    if ( p == TheDPPSFAmplitudeParameter )
@@ -253,10 +280,12 @@ void* DynamicPSFInstance::LockParameter( const MetaParameter* p, size_type table
       return &p_psfs[tableRow].theta;
    if ( p == TheDPPSFBetaParameter )
       return &p_psfs[tableRow].beta;
+   if ( p == TheDPPSFFluxParameter )
+      return &p_psfs[tableRow].flux;
+   if ( p == TheDPPSFMeanSignalParameter )
+      return &p_psfs[tableRow].meanSignal;
    if ( p == TheDPPSFMADParameter )
       return &p_psfs[tableRow].mad;
-   if ( p == TheDPPSFCelestialParameter )
-      return &p_psfs[tableRow].celestial;
    if ( p == TheDPPSFCentroidRAParameter )
       return &p_psfs[tableRow].q0.x;
    if ( p == TheDPPSFCentroidDecParameter )
@@ -284,7 +313,14 @@ void* DynamicPSFInstance::LockParameter( const MetaParameter* p, size_type table
       return &p_psfOptions.moffat15;
    if ( p == TheDPLorentzianPSFParameter )
       return &p_psfOptions.lorentzian;
-
+   if ( p == TheDPVariableShapePSFParameter )
+      return &p_psfOptions.variableShape;
+   if ( p == TheDPAutoVariableShapePSFParameter )
+      return &p_psfOptions.autoVariableShapePSF;
+   if ( p == TheDPBetaMinParameter )
+      return &p_psfOptions.betaMin;
+   if ( p == TheDPBetaMaxParameter )
+      return &p_psfOptions.betaMax;
    if ( p == TheDPSignedAnglesParameter )
       return &p_signedAngles;
    if ( p == TheDPRegenerateParameter )
@@ -317,6 +353,20 @@ void* DynamicPSFInstance::LockParameter( const MetaParameter* p, size_type table
       return &p_badStarFillColor;
 
    return nullptr;
+}
+
+// ----------------------------------------------------------------------------
+
+void DynamicPSFInstance::UnlockParameter( const MetaParameter* p, size_type tableRow )
+{
+   if ( p == TheDPPSFFunctionParameter )
+      p_psfs[tableRow].function = PSFData::psf_function( p_psfs[tableRow].p_function );
+   else if ( p == TheDPPSFCircularParameter )
+      p_psfs[tableRow].circular = !!p_psfs[tableRow].p_circular;
+   else if ( p == TheDPPSFStatusParameter )
+      p_psfs[tableRow].status = PSFData::psf_fit_status( p_psfs[tableRow].p_status );
+   else if ( p == TheDPPSFCelestialParameter )
+      p_psfs[tableRow].celestial = !!p_psfs[tableRow].p_celestial;
 }
 
 // ----------------------------------------------------------------------------
@@ -382,4 +432,4 @@ size_type DynamicPSFInstance::ParameterLength( const MetaParameter* p, size_type
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF DynamicPSFInstance.cpp - Released 2020-07-31T19:33:39Z

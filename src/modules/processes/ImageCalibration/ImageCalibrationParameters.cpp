@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// ImageCalibrationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -59,84 +59,90 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ICTargetFrames*              TheICTargetFramesParameter = 0;
-ICTargetFrameEnabled*        TheICTargetFrameEnabledParameter = 0;
-ICTargetFramePath*           TheICTargetFramePathParameter = 0;
+ICTargetFrames*                  TheICTargetFramesParameter = nullptr;
+ICTargetFrameEnabled*            TheICTargetFrameEnabledParameter = nullptr;
+ICTargetFramePath*               TheICTargetFramePathParameter = nullptr;
 
-ICInputHints*                TheICInputHintsParameter = 0;
-ICOutputHints*               TheICOutputHintsParameter = 0;
+ICCFAData*                       TheICCFADataParameter = nullptr;
+ICCFAPattern*                    TheICCFAPatternParameter = nullptr;
 
-ICPedestal*                  TheICPedestalParameter = 0;
-ICPedestalMode*              TheICPedestalModeParameter = 0;
-ICPedestalKeyword*           TheICPedestalKeywordParameter = 0;
+ICInputHints*                    TheICInputHintsParameter = nullptr;
+ICOutputHints*                   TheICOutputHintsParameter = nullptr;
 
-ICOverscanEnabled*           TheICOverscanEnabledParameter = 0;
+ICPedestal*                      TheICPedestalParameter = nullptr;
+ICPedestalMode*                  TheICPedestalModeParameter = nullptr;
+ICPedestalKeyword*               TheICPedestalKeywordParameter = nullptr;
 
-ICOverscanImageX0*           TheICOverscanImageX0Parameter = 0;
-ICOverscanImageY0*           TheICOverscanImageY0Parameter = 0;
-ICOverscanImageX1*           TheICOverscanImageX1Parameter = 0;
-ICOverscanImageY1*           TheICOverscanImageY1Parameter = 0;
+ICOverscanEnabled*               TheICOverscanEnabledParameter = nullptr;
 
-ICOverscanRegions*           TheICOverscanRegionsParameter = 0;
+ICOverscanImageX0*               TheICOverscanImageX0Parameter = nullptr;
+ICOverscanImageY0*               TheICOverscanImageY0Parameter = nullptr;
+ICOverscanImageX1*               TheICOverscanImageX1Parameter = nullptr;
+ICOverscanImageY1*               TheICOverscanImageY1Parameter = nullptr;
 
-ICOverscanRegionEnabled*     TheICOverscanRegionEnabledParameter = 0;
+ICOverscanRegions*               TheICOverscanRegionsParameter = nullptr;
 
-ICOverscanSourceX0*          TheICOverscanSourceX0Parameter = 0;
-ICOverscanSourceY0*          TheICOverscanSourceY0Parameter = 0;
-ICOverscanSourceX1*          TheICOverscanSourceX1Parameter = 0;
-ICOverscanSourceY1*          TheICOverscanSourceY1Parameter = 0;
+ICOverscanRegionEnabled*         TheICOverscanRegionEnabledParameter = nullptr;
 
-ICOverscanTargetX0*          TheICOverscanTargetX0Parameter = 0;
-ICOverscanTargetY0*          TheICOverscanTargetY0Parameter = 0;
-ICOverscanTargetX1*          TheICOverscanTargetX1Parameter = 0;
-ICOverscanTargetY1*          TheICOverscanTargetY1Parameter = 0;
+ICOverscanSourceX0*              TheICOverscanSourceX0Parameter = nullptr;
+ICOverscanSourceY0*              TheICOverscanSourceY0Parameter = nullptr;
+ICOverscanSourceX1*              TheICOverscanSourceX1Parameter = nullptr;
+ICOverscanSourceY1*              TheICOverscanSourceY1Parameter = nullptr;
 
-ICMasterBiasEnabled*         TheICMasterBiasEnabledParameter = 0;
-ICMasterBiasPath*            TheICMasterBiasPathParameter = 0;
+ICOverscanTargetX0*              TheICOverscanTargetX0Parameter = nullptr;
+ICOverscanTargetY0*              TheICOverscanTargetY0Parameter = nullptr;
+ICOverscanTargetX1*              TheICOverscanTargetX1Parameter = nullptr;
+ICOverscanTargetY1*              TheICOverscanTargetY1Parameter = nullptr;
 
-ICMasterDarkEnabled*         TheICMasterDarkEnabledParameter = 0;
-ICMasterDarkPath*            TheICMasterDarkPathParameter = 0;
+ICMasterBiasEnabled*             TheICMasterBiasEnabledParameter = nullptr;
+ICMasterBiasPath*                TheICMasterBiasPathParameter = nullptr;
 
-ICMasterFlatEnabled*         TheICMasterFlatEnabledParameter = 0;
-ICMasterFlatPath*            TheICMasterFlatPathParameter = 0;
+ICMasterDarkEnabled*             TheICMasterDarkEnabledParameter = nullptr;
+ICMasterDarkPath*                TheICMasterDarkPathParameter = nullptr;
 
-ICCalibrateBias*             TheICCalibrateBiasParameter = 0;
-ICCalibrateDark*             TheICCalibrateDarkParameter = 0;
-ICCalibrateFlat*             TheICCalibrateFlatParameter = 0;
+ICMasterFlatEnabled*             TheICMasterFlatEnabledParameter = nullptr;
+ICMasterFlatPath*                TheICMasterFlatPathParameter = nullptr;
 
-ICOptimizeDarks*             TheICOptimizeDarksParameter = 0;
-ICDarkOptimizationThreshold* TheICDarkOptimizationThresholdParameter = 0;
-ICDarkOptimizationLow*       TheICDarkOptimizationLowParameter = 0;
-ICDarkOptimizationWindow*    TheICDarkOptimizationWindowParameter = 0;
-ICDarkCFADetectionMode*      TheICDarkCFADetectionModeParameter = 0;
+ICCalibrateBias*                 TheICCalibrateBiasParameter = nullptr;
+ICCalibrateDark*                 TheICCalibrateDarkParameter = nullptr;
+ICCalibrateFlat*                 TheICCalibrateFlatParameter = nullptr;
 
-ICEvaluateNoise*             TheICEvaluateNoiseParameter = 0;
-ICNoiseEvaluationAlgorithm*  TheICNoiseEvaluationAlgorithmParameter = 0;
+ICOptimizeDarks*                 TheICOptimizeDarksParameter = nullptr;
+ICDarkOptimizationThreshold*     TheICDarkOptimizationThresholdParameter = nullptr;
+ICDarkOptimizationLow*           TheICDarkOptimizationLowParameter = nullptr;
+ICDarkOptimizationWindow*        TheICDarkOptimizationWindowParameter = nullptr;
+ICDarkCFADetectionMode*          TheICDarkCFADetectionModeParameter = nullptr;
 
-ICOutputDirectory*           TheICOutputDirectoryParameter = 0;
-ICOutputExtension*           TheICOutputExtensionParameter = 0;
-ICOutputPrefix*              TheICOutputPrefixParameter = 0;
-ICOutputPostfix*             TheICOutputPostfixParameter = 0;
-ICOutputSampleFormat*        TheICOutputSampleFormatParameter = 0;
-ICOutputPedestal*            TheICOutputPedestalParameter = 0;
-ICOverwriteExistingFiles*    TheICOverwriteExistingFilesParameter = 0;
-ICOnError*                   TheICOnErrorParameter = 0;
-ICNoGUIMessages*             TheICNoGUIMessagesParameter = 0;
+ICSeparateCFAFlatScalingFactors* TheICSeparateCFAFlatScalingFactorsParameter = nullptr;
+ICFlatScaleClippingFactor*       TheICFlatScaleClippingFactorParameter = nullptr;
 
-ICOutputData*                TheICOutputDataParameter = 0;
-ICOutputFilePath*            TheICOutputFilePathParameter = 0;
-ICDarkScalingFactorRK*       TheICDarkScalingFactorRKParameter = 0;
-ICDarkScalingFactorG*        TheICDarkScalingFactorGParameter = 0;
-ICDarkScalingFactorB*        TheICDarkScalingFactorBParameter = 0;
-ICNoiseEstimateRK*           TheICNoiseEstimateRKParameter = 0;
-ICNoiseEstimateG*            TheICNoiseEstimateGParameter = 0;
-ICNoiseEstimateB*            TheICNoiseEstimateBParameter = 0;
-ICNoiseFractionRK*           TheICNoiseFractionRKParameter = 0;
-ICNoiseFractionG*            TheICNoiseFractionGParameter = 0;
-ICNoiseFractionB*            TheICNoiseFractionBParameter = 0;
-ICNoiseAlgorithmRK*          TheICNoiseAlgorithmRKParameter = 0;
-ICNoiseAlgorithmG*           TheICNoiseAlgorithmGParameter = 0;
-ICNoiseAlgorithmB*           TheICNoiseAlgorithmBParameter = 0;
+ICEvaluateNoise*                 TheICEvaluateNoiseParameter = nullptr;
+ICNoiseEvaluationAlgorithm*      TheICNoiseEvaluationAlgorithmParameter = nullptr;
+
+ICOutputDirectory*               TheICOutputDirectoryParameter = nullptr;
+ICOutputExtension*               TheICOutputExtensionParameter = nullptr;
+ICOutputPrefix*                  TheICOutputPrefixParameter = nullptr;
+ICOutputPostfix*                 TheICOutputPostfixParameter = nullptr;
+ICOutputSampleFormat*            TheICOutputSampleFormatParameter = nullptr;
+ICOutputPedestal*                TheICOutputPedestalParameter = nullptr;
+ICOverwriteExistingFiles*        TheICOverwriteExistingFilesParameter = nullptr;
+ICOnError*                       TheICOnErrorParameter = nullptr;
+ICNoGUIMessages*                 TheICNoGUIMessagesParameter = nullptr;
+
+ICOutputData*                    TheICOutputDataParameter = nullptr;
+ICOutputFilePath*                TheICOutputFilePathParameter = nullptr;
+ICDarkScalingFactorRK*           TheICDarkScalingFactorRKParameter = nullptr;
+ICDarkScalingFactorG*            TheICDarkScalingFactorGParameter = nullptr;
+ICDarkScalingFactorB*            TheICDarkScalingFactorBParameter = nullptr;
+ICNoiseEstimateRK*               TheICNoiseEstimateRKParameter = nullptr;
+ICNoiseEstimateG*                TheICNoiseEstimateGParameter = nullptr;
+ICNoiseEstimateB*                TheICNoiseEstimateBParameter = nullptr;
+ICNoiseFractionRK*               TheICNoiseFractionRKParameter = nullptr;
+ICNoiseFractionG*                TheICNoiseFractionGParameter = nullptr;
+ICNoiseFractionB*                TheICNoiseFractionBParameter = nullptr;
+ICNoiseAlgorithmRK*              TheICNoiseAlgorithmRKParameter = nullptr;
+ICNoiseAlgorithmG*               TheICNoiseAlgorithmGParameter = nullptr;
+ICNoiseAlgorithmB*               TheICNoiseAlgorithmBParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -181,6 +187,67 @@ IsoString ICTargetFramePath::Id() const
 
 // ----------------------------------------------------------------------------
 
+ICCFAData::ICCFAData( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheICCFADataParameter = this;
+}
+
+IsoString ICCFAData::Id() const
+{
+   return "cfaData";
+}
+
+bool ICCFAData::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+ICCFAPattern::ICCFAPattern( MetaProcess* P ) : MetaEnumeration( P )
+{
+   TheICCFAPatternParameter = this;
+}
+
+IsoString ICCFAPattern::Id() const
+{
+   return "cfaPattern";
+}
+
+size_type ICCFAPattern::NumberOfElements() const
+{
+   return NumberOfItems;
+}
+
+IsoString ICCFAPattern::ElementId( size_type i ) const
+{
+   switch ( i )
+   {
+   default:
+   case Auto: return "Auto";
+   case RGGB: return "RGGB";
+   case BGGR: return "BGGR";
+   case GBRG: return "GBRG";
+   case GRBG: return "GRBG";
+   case GRGB: return "GRGB";
+   case GBGR: return "GBGR";
+   case RGBG: return "RGBG";
+   case BGRG: return "BGRG";
+   }
+}
+
+int ICCFAPattern::ElementValue( size_type i ) const
+{
+   return int( i );
+}
+
+size_type ICCFAPattern::DefaultValueIndex() const
+{
+   return Default;
+}
+
+// ----------------------------------------------------------------------------
+
 ICInputHints::ICInputHints( MetaProcess* P ) : MetaString( P )
 {
    TheICInputHintsParameter = this;
@@ -189,6 +256,15 @@ ICInputHints::ICInputHints( MetaProcess* P ) : MetaString( P )
 IsoString ICInputHints::Id() const
 {
    return "inputHints";
+}
+
+String ICInputHints::DefaultValue() const
+{
+   // Input format hints:
+   // * XISF: fits-keywords normalize
+   // * RAW: raw cfa
+   // * FITS: signed-is-physical
+   return "fits-keywords normalize raw cfa signed-is-physical";
 }
 
 // ----------------------------------------------------------------------------
@@ -201,6 +277,13 @@ ICOutputHints::ICOutputHints( MetaProcess* P ) : MetaString( P )
 IsoString ICOutputHints::Id() const
 {
    return "outputHints";
+}
+
+String ICOutputHints::DefaultValue() const
+{
+   // Output format hints:
+   // * XISF: properties fits-keywords no-compress-data no-embedded-data no-resolution
+   return "properties fits-keywords no-compress-data no-embedded-data no-resolution";
 }
 
 // ----------------------------------------------------------------------------
@@ -876,6 +959,55 @@ size_type ICDarkCFADetectionMode::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
+ICSeparateCFAFlatScalingFactors::ICSeparateCFAFlatScalingFactors( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheICSeparateCFAFlatScalingFactorsParameter = this;
+}
+
+IsoString ICSeparateCFAFlatScalingFactors::Id() const
+{
+   return "separateCFAFlatScalingFactors";
+}
+
+bool ICSeparateCFAFlatScalingFactors::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+ICFlatScaleClippingFactor::ICFlatScaleClippingFactor( MetaProcess* P ) : MetaFloat( P )
+{
+   TheICFlatScaleClippingFactorParameter = this;
+}
+
+IsoString ICFlatScaleClippingFactor::Id() const
+{
+   return "flatScaleClippingFactor";
+}
+
+int ICFlatScaleClippingFactor::Precision() const
+{
+   return 2;
+}
+
+double ICFlatScaleClippingFactor::DefaultValue() const
+{
+   return 0.05;
+}
+
+double ICFlatScaleClippingFactor::MinimumValue() const
+{
+   return 0.00;
+}
+
+double ICFlatScaleClippingFactor::MaximumValue() const
+{
+   return 0.25;
+}
+
+// ----------------------------------------------------------------------------
+
 ICEvaluateNoise::ICEvaluateNoise( MetaProcess* P ) : MetaBoolean( P )
 {
    TheICEvaluateNoiseParameter = this;
@@ -1433,4 +1565,4 @@ bool ICNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF ImageCalibrationParameters.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.6
+// Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITS.h - Released 2020-02-27T12:55:48Z
+// FITS.h - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -106,11 +106,12 @@ public:
    bool   reloadKeywords                    :  1; // Reload header keywords upon file write completion
    bool   bottomUp                          :  1; // When this flag is true, the origin of coordinates is at the lower left corner of
                                                   //   the image. When false, the origin is at the upper left corner
+   bool   useRowOrderKeywords               :  1; // Read and interpret nonstandard ROWORDER keywords to fix FITS orientation issues
    bool   signedIntegersArePhysical         :  1; // If true, truncate to [0,2^(n/2-1)] and do not rescale.
                                                   //   Otherwise the full range is [-2^(n/2),+2^(n/2-1)]
    bool   cleanupHeaders                    :  1; // Transform header keywords for FITS standard compliance before writing
    uint8  verbosity                         :  3; // Verbosity level: 0 = quiet, > 0 = write console state messages.
-   uint32 __rsv__                           : 22; // Reserved for future extension -- must be zero
+   uint32 __rsv__                           : 21; // Reserved for future extension -- must be zero
 
    double zeroOffset; // Zero offset value of read pixel values
    double scaleRange; // Scaling value of read pixel values
@@ -131,6 +132,7 @@ public:
       writeScalingKeywordsForSignedData = true;
       reloadKeywords                    = true;
       bottomUp                          = false;
+      useRowOrderKeywords               = true;
       signedIntegersArePhysical         = false;
       cleanupHeaders                    = false;
       verbosity                         = 1;
@@ -156,19 +158,19 @@ public:
    {
    public:
 
-      Error( const String& filePath, const String& message ) :
-         File::Error( filePath, message )
+      Error( const String& filePath, const String& message )
+         : File::Error( filePath, message )
       {
       }
 
       Error( const FITS::Error& x ) = default;
 
-      virtual String ExceptionClass() const
+      String ExceptionClass() const override
       {
          return "PCL Legacy FITS Format Support";
       }
 
-      virtual String Message() const; // reimplements File::Error
+      String Message() const override; // reimplements File::Error
    };
 
 #define PCL_DECLARE_FITS_ERROR( className, errorMessage )   \
@@ -515,7 +517,7 @@ public:
 
    /*
     * Sets new FITS-specific options for the current image in this FITS output
-    * stream. If you change options, you should do that \e before writing the
+    * stream. If you change options, you should do that *before* writing the
     * next image to this FITS file.
     */
    void SetFITSOptions( const FITSImageOptions& );
@@ -577,4 +579,4 @@ private:
 #endif   // __PCL_FITS_h
 
 // ----------------------------------------------------------------------------
-// EOF FITS.h - Released 2020-02-27T12:55:48Z
+// EOF FITS.h - Released 2020-07-31T19:33:23Z

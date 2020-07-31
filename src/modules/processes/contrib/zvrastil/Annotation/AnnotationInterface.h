@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationInterface.h - Released 2020-02-27T12:56:01Z
+// AnnotationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -56,15 +56,15 @@
 
 #include <pcl/ProcessInterface.h>
 
-#include <pcl/Sizer.h>
-#include <pcl/Label.h>
+#include <pcl/CheckBox.h>
+#include <pcl/ColorComboBox.h>
 #include <pcl/Edit.h>
 #include <pcl/FontComboBox.h>
-#include <pcl/ColorComboBox.h>
-#include <pcl/CheckBox.h>
-#include <pcl/SpinBox.h>
 #include <pcl/GroupBox.h>
+#include <pcl/Label.h>
 #include <pcl/NumericControl.h>
+#include <pcl/Sizer.h>
+#include <pcl/SpinBox.h>
 
 #include "AnnotationInstance.h"
 
@@ -72,17 +72,16 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// AnnotationInterface
-// ----------------------------------------------------------------------------
 
 namespace DraggingType
 {
-    enum dragging_type {
+   enum dragging_type
+   {
       None,
       Text,
       Leader,
       Both
-    };
+   };
 }
 
 class AnnotationInterface : public ProcessInterface
@@ -92,87 +91,74 @@ public:
    AnnotationInterface();
    virtual ~AnnotationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-
-   virtual bool IsDynamicInterface() const;
-   virtual void ExitDynamicMode();
-
-   virtual void Execute();
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual void DynamicMousePress( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers );
-   virtual void DynamicMouseMove( View&, const DPoint&, unsigned buttons, unsigned modifiers );
-   virtual void DynamicMouseRelease( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers );
-
-   virtual bool RequiresDynamicUpdate( const View&, const DRect& ) const;
-   virtual void DynamicPaint( const View&, VectorGraphics&, const DRect& ) const;
-
-   virtual IsoString SettingsKey() const;
-   virtual void LoadSettings();
-   virtual void SaveSettings() const;
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   bool IsDynamicInterface() const override;
+   void ExitDynamicMode() override;
+   void Execute() override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   void DynamicMousePress( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers ) override;
+   void DynamicMouseMove( View&, const DPoint&, unsigned buttons, unsigned modifiers ) override;
+   void DynamicMouseRelease( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers ) override;
+   bool RequiresDynamicUpdate( const View&, const DRect& ) const override;
+   void DynamicPaint( const View&, VectorGraphics&, const DRect& ) const override;
+   void LoadSettings() override;
+   void SaveSettings() const override;
 
 private:
 
+   AnnotationInstance instance;
 
-
-   AnnotationInstance          instance;          // the current annotation instance
-
-   View*                       view;              // dynamic target
-   bool                        annotationPlaced;  // flag whether annotation is placed in active view
-   bool                        leaderPlaced;      // flag whether leader is placed in active view
-   Rect                        textRect;          // actual position of the annotation text in the image
-   Rect                        leaderRect;        // actual position of the annotation leader in the image
-   Rect                        totalRect;         // union of text and leader rect
-   Rect                        invalidateRect;    // rectangle to invalidate in next UpdateView call
-   DraggingType::dragging_type dragging;          // actual dragging mode
-   int                         lastX, lastY;      // last position of the mouse while dragging
-   mutable int                 relPosX, relPosY;  // cached relative position of the annotation within bitmap
-   mutable Bitmap              annotationBmp;     // cached annotation bitmap
-   mutable Bitmap              screenBmp;         // cached screen bitmap
+   View* view = nullptr;          // dynamic target
+   bool annotationPlaced = false; // flag whether annotation is placed in active view
+   bool leaderPlaced = false;     // flag whether leader is placed in active view
+   Rect textRect = 0;             // actual position of the annotation text in the image
+   Rect leaderRect = 0;           // actual position of the annotation leader in the image
+   Rect totalRect = 0;            // union of text and leader rect
+   Rect invalidateRect = 0;       // rectangle to invalidate in next UpdateView call
+   DraggingType::dragging_type dragging = DraggingType::None; // actual dragging mode
+   int lastX = -1, lastY = -1;    // last position of the mouse while dragging
+   mutable int relPosX = 0, relPosY = 0; // cached relative position of the annotation within bitmap
+   mutable Bitmap annotationBmp = Bitmap::Null(); // cached annotation bitmap
+   mutable Bitmap screenBmp = Bitmap::Null();     // cached screen bitmap
 
    struct GUIData
    {
       GUIData( AnnotationInterface& );
 
-      VerticalSizer     Global_Sizer;
-         GroupBox          Content_GroupBox;
-            HorizontalSizer   AnnotationText_Sizer;
-               Label             AnnotationText_Label;
-               Edit              AnnotationText_Edit;
-               CheckBox          AnnotationShowLeader_CheckBox;
-         GroupBox          Font_GroupBox;
-            VerticalSizer     Font_Sizer;
-	            HorizontalSizer   AnnotationFont_Sizer;
-		            Label             AnnotationFont_Label;
-                  FontComboBox      AnnotationFont_ComboBox;
-			         Label             AnnotationFontSize_Label;
-	   		      SpinBox           AnnotationFontSize_SpinBox;
-		         HorizontalSizer   AnnotationFontOptions_Sizer;
-		            CheckBox          AnnotationFontBold_CheckBox;
-		    	      CheckBox          AnnotationFontItalic_CheckBox;
-			         CheckBox          AnnotationFontUnderline_CheckBox;
-			         CheckBox          AnnotationFontShadow_CheckBox;
-	            HorizontalSizer   AnnotationColor_Sizer;
-		            Label             AnnotationColor_Label;
-			         ColorComboBox     AnnotationColor_ComboBox;
-			         Control           AnnotationColor_CustomColorSample;
-               NumericControl    AnnotationOpacity_NumericControl;
+      VerticalSizer Global_Sizer;
+      GroupBox Content_GroupBox;
+      HorizontalSizer AnnotationText_Sizer;
+      Label AnnotationText_Label;
+      Edit AnnotationText_Edit;
+      CheckBox AnnotationShowLeader_CheckBox;
+      GroupBox Font_GroupBox;
+      VerticalSizer Font_Sizer;
+      HorizontalSizer AnnotationFont_Sizer;
+      Label AnnotationFont_Label;
+      FontComboBox AnnotationFont_ComboBox;
+      Label AnnotationFontSize_Label;
+      SpinBox AnnotationFontSize_SpinBox;
+      HorizontalSizer AnnotationFontOptions_Sizer;
+      CheckBox AnnotationFontBold_CheckBox;
+      CheckBox AnnotationFontItalic_CheckBox;
+      CheckBox AnnotationFontUnderline_CheckBox;
+      CheckBox AnnotationFontShadow_CheckBox;
+      HorizontalSizer AnnotationColor_Sizer;
+      Label AnnotationColor_Label;
+      ColorComboBox AnnotationColor_ComboBox;
+      Control AnnotationColor_CustomColorSample;
+      NumericControl AnnotationOpacity_NumericControl;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
    // Destroy working bitmaps
    void ClearBitmaps();
@@ -184,17 +170,17 @@ private:
    void UpdateView();
 
    // update text and leader rectangles
-   void UpdateAnnotationRect(bool reset = false);
+   void UpdateAnnotationRect( bool reset = false );
 
    // place leader to default position (if not yet placed)
    void PlaceLeaderDefault();
 
    // Event Handlers
-   void __EditTextUpdated( Edit& sender, const String &text );
-   void __FontComboBoxFontSelected( FontComboBox &sender, const String &font );
-   void __FontSizeSpinBoxValueUpdated( SpinBox &sender, int value );
-   void __FontOptionCheckBoxChecked( Button &sender, Button::check_state state );
-   void __ColorComboBoxColorSelected( ColorComboBox &sender, RGBA color );
+   void __EditTextUpdated( Edit& sender, const String& text );
+   void __FontComboBoxFontSelected( FontComboBox& sender, const String& font );
+   void __FontSizeSpinBoxValueUpdated( SpinBox& sender, int value );
+   void __FontOptionCheckBoxChecked( Button& sender, Button::check_state state );
+   void __ColorComboBoxColorSelected( ColorComboBox& sender, RGBA color );
    void __ColorSample_Paint( Control& sender, const Rect& );
    void __ColorSample_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers );
    void __OpacityUpdated( NumericEdit& sender, double value );
@@ -210,9 +196,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __AnnotationInterface_h
+#endif // __AnnotationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF AnnotationInterface.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// ProjectionSystem.h - Released 2020-02-27T12:56:01Z
+// ProjectionSystem.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -94,7 +94,9 @@ class ProjectionSystem
 {
 public:
 
-   ProjectionSystem( double lon, double lat ) : lon0( In2PiRange( lon ) ), lat0( lat )
+   ProjectionSystem( double lon, double lat )
+      : lon0( In2PiRange( lon ) )
+      , lat0( lat )
    {
    }
 
@@ -150,4 +152,4 @@ protected:
 #endif   // __ProjectionSystem_h
 
 // ----------------------------------------------------------------------------
-// EOF ProjectionSystem.h - Released 2020-02-27T12:56:01Z
+// EOF ProjectionSystem.h - Released 2020-07-31T19:33:39Z

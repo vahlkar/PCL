@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// SampleFormatConversionInterface.cpp - Released 2020-02-27T12:56:01Z
+// SampleFormatConversionInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -64,12 +64,8 @@ SampleFormatConversionInterface* TheSampleFormatConversionInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "SampleFormatConversionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-SampleFormatConversionInterface::SampleFormatConversionInterface() :
-   instance( TheSampleFormatConversionProcess )
+SampleFormatConversionInterface::SampleFormatConversionInterface()
+   : instance( TheSampleFormatConversionProcess )
 {
    TheSampleFormatConversionInterface = this;
 }
@@ -98,9 +94,9 @@ MetaProcess* SampleFormatConversionInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** SampleFormatConversionInterface::IconImageXPM() const
+String SampleFormatConversionInterface::IconImageSVGFile() const
 {
-   return SampleFormatConversionIcon_XPM;
+   return "@module_icons_dir/SampleFormatConversion.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -288,6 +284,8 @@ void SampleFormatConversionInterface::UpdateConversionControls()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void SampleFormatConversionInterface::UpdateCurrentViewInfoControls()
 {
    ImageWindow w( ImageWindow::ActiveWindow() );
@@ -346,11 +344,15 @@ void SampleFormatConversionInterface::__ButtonClick( Button& sender, bool /*chec
       UpdateCurrentViewInfoControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void SampleFormatConversionInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->Conversion_GroupBox )
       wantsView = true;
 }
+
+// ----------------------------------------------------------------------------
 
 void SampleFormatConversionInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -380,6 +382,7 @@ void SampleFormatConversionInterface::__ViewDrop( Control& sender, const Point& 
    }
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 SampleFormatConversionInterface::GUIData::GUIData( SampleFormatConversionInterface& w )
@@ -469,4 +472,4 @@ void SampleFormatConversionInterface::GUIData::SetupTrackViewControls( SampleFor
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF SampleFormatConversionInterface.cpp - Released 2020-07-31T19:33:39Z

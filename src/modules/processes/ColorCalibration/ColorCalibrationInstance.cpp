@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ColorCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// ColorCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -64,33 +64,31 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ColorCalibrationInstance::ColorCalibrationInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   whiteLow( TheCCWhiteLowParameter->DefaultValue() ),
-   whiteHigh( TheCCWhiteHighParameter->DefaultValue() ),
-   whiteUseROI( TheCCWhiteUseROIParameter->DefaultValue() ),
-   whiteROI( 0 ),
-   structureDetection( TheCCStructureDetectionParameter->DefaultValue() ),
-   structureLayers( TheCCStructureLayersParameter->DefaultValue() ),
-   noiseLayers( TheCCNoiseLayersParameter->DefaultValue() ),
-   manualWhiteBalance( TheCCManualWhiteBalanceParameter->DefaultValue() ),
-   manualRedFactor( TheCCManualRedFactorParameter->DefaultValue() ),
-   manualGreenFactor( TheCCManualGreenFactorParameter->DefaultValue() ),
-   manualBlueFactor( TheCCManualBlueFactorParameter->DefaultValue() ),
-   backgroundReferenceViewId(),
-   backgroundLow( TheCCBackgroundLowParameter->DefaultValue() ),
-   backgroundHigh( TheCCBackgroundHighParameter->DefaultValue() ),
-   backgroundUseROI( TheCCBackgroundUseROIParameter->DefaultValue() ),
-   backgroundROI( 0 ),
-   outputWhiteReferenceMask( TheCCOutputWhiteReferenceMaskParameter->DefaultValue() ),
-   outputBackgroundReferenceMask( TheCCOutputBackgroundReferenceMaskParameter->DefaultValue() )
+ColorCalibrationInstance::ColorCalibrationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , whiteLow( TheCCWhiteLowParameter->DefaultValue() )
+   , whiteHigh( TheCCWhiteHighParameter->DefaultValue() )
+   , whiteUseROI( TheCCWhiteUseROIParameter->DefaultValue() )
+   , structureDetection( TheCCStructureDetectionParameter->DefaultValue() )
+   , structureLayers( TheCCStructureLayersParameter->DefaultValue() )
+   , noiseLayers( TheCCNoiseLayersParameter->DefaultValue() )
+   , manualWhiteBalance( TheCCManualWhiteBalanceParameter->DefaultValue() )
+   , manualRedFactor( TheCCManualRedFactorParameter->DefaultValue() )
+   , manualGreenFactor( TheCCManualGreenFactorParameter->DefaultValue() )
+   , manualBlueFactor( TheCCManualBlueFactorParameter->DefaultValue() )
+   , backgroundReferenceViewId()
+   , backgroundLow( TheCCBackgroundLowParameter->DefaultValue() )
+   , backgroundHigh( TheCCBackgroundHighParameter->DefaultValue() )
+   , backgroundUseROI( TheCCBackgroundUseROIParameter->DefaultValue() )
+   , outputWhiteReferenceMask( TheCCOutputWhiteReferenceMaskParameter->DefaultValue() )
+   , outputBackgroundReferenceMask( TheCCOutputBackgroundReferenceMaskParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ColorCalibrationInstance::ColorCalibrationInstance( const ColorCalibrationInstance& x ) :
-   ProcessImplementation( x )
+ColorCalibrationInstance::ColorCalibrationInstance( const ColorCalibrationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -675,8 +673,11 @@ void* ColorCalibrationInstance::LockParameter( const MetaParameter* p, size_type
       return &outputWhiteReferenceMask;
    if ( p == TheCCOutputBackgroundReferenceMaskParameter )
       return &outputBackgroundReferenceMask;
-   return 0;
+
+   return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool ColorCalibrationInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
@@ -698,12 +699,15 @@ bool ColorCalibrationInstance::AllocateParameter( size_type sizeOrLength, const 
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type ColorCalibrationInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
    if ( p == TheCCWhiteReferenceViewIdParameter )
       return whiteReferenceViewId.Length();
    if ( p == TheCCBackgroundReferenceViewIdParameter )
       return backgroundReferenceViewId.Length();
+
    return 0;
 }
 
@@ -712,4 +716,4 @@ size_type ColorCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z

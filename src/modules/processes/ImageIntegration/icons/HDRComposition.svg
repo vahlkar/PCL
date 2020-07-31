@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="a" x1="556.2" x2="199.64" y1="331.56" y2="687.95" gradientTransform="matrix(.32387 0 0 .32387 -54.35 64.068)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ffe4b8" offset="0"/>
+<stop stop-color="#9ea7ff" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(0 -161.53)" stroke="#000">
+<rect x="9.525" y="171.06" width="116.42" height="116.42" fill="url(#a)" stroke-width="6.35"/>
+<g transform="matrix(.32387 0 0 .32387 -52.795 -2.9684)" stroke-width="2.4508">
+<path d="m226.88 798.44 140.75-215.64 25.825 269.87z" fill="#979758"/>
+<path d="m395.53 852.67 122.02-89.096-148.49-180.13z" fill="#262717"/>
+</g>
+</g>
+</svg>

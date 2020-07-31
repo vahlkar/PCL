@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:52.817Z
+# Generated on .... 2020-07-31T19:36:25.162Z
 # Project id ...... FITS
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -19,10 +19,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>bbd52205-1844-482e-b276-0ac4d51e6e68</UniqueIdentifier>
+      <UniqueIdentifier>47d5b032-567c-4c6a-850c-c3bd213fa48e</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>b73cfee4-2cd5-4b4d-b1b8-0d398a8173a6</UniqueIdentifier>
+      <UniqueIdentifier>015bbad6-66d9-4531-8e94-34906c795d39</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>6787d241-a975-45a8-aebf-da374e8f840f</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,5 +73,10 @@
     <ClInclude Include="..\..\FITSRangeOptionsDialog.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\FITS.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

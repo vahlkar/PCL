@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="b" x1="1.1691" x2="47.093" y1="297.2" y2="251.84" gradientTransform="matrix(2.0959 0 0 2.096 97.103 -376.75)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#199799" offset="0"/>
+<stop stop-color="#a1c5c6" offset="1"/>
+</linearGradient>
+<radialGradient id="a" cx="29.971" cy="268.21" r="8.2021" gradientTransform="matrix(3.7295 .092902 -.10097 4.0535 73.087 -902.03)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f96f6d" offset="0"/>
+<stop stop-color="#9c9696" offset="1"/>
+</radialGradient>
+</defs>
+<g transform="translate(2.7997 -165.7)">
+<g transform="translate(-92.848 45.5)">
+<rect x="99.554" y="129.71" width="116.46" height="116.46" fill="url(#b)" stroke="#43286f" stroke-width="5.5455" style="paint-order:normal"/>
+<ellipse cx="157.78" cy="187.93" rx="20.796" ry="20.796" fill="url(#a)" style="paint-order:normal"/>
+<path d="m99.554 129.71 40.567 40.403" fill="none" stroke="#974f4f" stroke-width="6.3104"/>
+<path d="m102.33 187.93h30.665" fill="none" stroke="#974f4f" stroke-width="6.3104"/>
+<path d="m157.78 132.08v30.384" fill="none" stroke="#974f4f" stroke-width="6.3104"/>
+<path d="m99.554 246.16 40.707-40.547" fill="none" stroke="#974f4f" stroke-width="6.3104"/>
+<path d="m216.01 129.71-40.547 40.225" fill="none" stroke="#974f4f" stroke-width="6.3104"/>
+<path d="m99.554 246.16 9.8052-9.6444s5.2174 4.8232 9.5306 7.7969c4.3132 2.9737 11.551 3.799 11.551 3.799l-25.327 0.0567z" fill="#974f4f" fill-rule="evenodd"/>
+<path d="m216.01 129.71-9.6444 9.8052s4.8232 5.2174 7.7969 9.5306c2.9737 4.3132 4.2536 6.8905 4.2536 6.8905z" fill="#974f4f" fill-rule="evenodd" stroke-width="0"/>
+<path d="m189.32 245.73s7.2018-2.1511 15.344-9.8884c8.1424-7.7374 11.252-14.549 11.252-14.549l0.0891 24.871z" fill="#974f4f" fill-rule="evenodd"/>
+<rect x="99.554" y="129.71" width="116.46" height="116.46" fill="none" stroke="#482e73" stroke-width="6.3104" style="paint-order:markers fill stroke"/>
+<g transform="rotate(45 12.055 375.13)" stroke="#974f4f" stroke-linejoin="round" stroke-width="15.875">
+<path d="m-17.126 100.83a38.878 38.888 0 0 1 38.747 38.888 38.878 38.888 0 0 1-38.747 38.888" fill="none" stroke="#974f4f" stroke-linejoin="round" stroke-width="15.875"/>
+</g>
+</g>
+</g>
+</svg>

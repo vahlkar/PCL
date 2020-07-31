@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionInstance.cpp - Released 2020-02-27T12:56:01Z
+// ScreenTransferFunctionInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -59,19 +59,17 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ScreenTransferFunctionInstance::ScreenTransferFunctionInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   stf( 4 ),
-   interaction( STFInteraction::Default )
+ScreenTransferFunctionInstance::ScreenTransferFunctionInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_stf( 4 )
+   , p_interaction( STFInteraction::Default )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ScreenTransferFunctionInstance::ScreenTransferFunctionInstance( const ScreenTransferFunctionInstance& x ) :
-   ProcessImplementation( x ),
-   stf( 4 ),
-   interaction( STFInteraction::Default )
+ScreenTransferFunctionInstance::ScreenTransferFunctionInstance( const ScreenTransferFunctionInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -83,8 +81,8 @@ void ScreenTransferFunctionInstance::Assign( const ProcessImplementation& p )
    const ScreenTransferFunctionInstance* x = dynamic_cast<const ScreenTransferFunctionInstance*>( &p );
    if ( x != nullptr )
    {
-      stf.Assign( x->stf );
-      interaction = x->interaction;
+      p_stf.Assign( x->p_stf );
+      p_interaction = x->p_interaction;
    }
 }
 
@@ -115,18 +113,18 @@ bool ScreenTransferFunctionInstance::ExecuteOn( View& view )
 void* ScreenTransferFunctionInstance::LockParameter( const MetaParameter* p, size_type tableRow )
 {
    if ( p == TheSTFInteractionParameter )
-      return &interaction;
+      return &p_interaction;
    if ( tableRow < 4 )
       if ( p == TheSTFShadowsClippingParameter )
-         return &stf[tableRow].c0;
+         return &p_stf[tableRow].c0;
       else if ( p == TheSTFHighlightsClippingParameter )
-         return &stf[tableRow].c1;
+         return &p_stf[tableRow].c1;
       else if ( p == TheSTFMidtonesBalanceParameter )
-         return &stf[tableRow].m;
+         return &p_stf[tableRow].m;
       else if ( p == TheSTFLowRangeParameter )
-         return &stf[tableRow].r0;
+         return &p_stf[tableRow].r0;
       else if ( p == TheSTFHighRangeParameter )
-         return &stf[tableRow].r1;
+         return &p_stf[tableRow].r1;
    return nullptr;
 }
 
@@ -136,9 +134,9 @@ bool ScreenTransferFunctionInstance::AllocateParameter( size_type length, const 
 {
    if ( p == TheSTFSetParameter )
    {
-      stf.Clear();
+      p_stf.Clear();
       if ( length > 0 )
-         stf.Add( STF(), length );
+         p_stf.Add( STF(), length );
       return true;
    }
 
@@ -164,7 +162,7 @@ void ScreenTransferFunctionInstance::GetViewSTF( const View& view )
       view.GetScreenTransferFunctions( F );
       for ( int c = 0; c < 4; ++c )
       {
-         STF& f = stf[c];
+         STF& f = p_stf[c];
          const HistogramTransformation& H = F[c];
          f.m = H.MidtonesBalance();
          f.c0 = H.ShadowsClipping();
@@ -173,7 +171,7 @@ void ScreenTransferFunctionInstance::GetViewSTF( const View& view )
          f.r1 = H.HighRange();
       }
 
-      interaction = view.IsColor() ? STFInteraction::SeparateChannels : STFInteraction::Grayscale;
+      p_interaction = view.IsColor() ? STFInteraction::SeparateChannels : STFInteraction::Grayscale;
    }
 }
 
@@ -184,7 +182,7 @@ void ScreenTransferFunctionInstance::ApplyTo( View& view ) const
    View::stf_list F;
    for ( int c = 0; c < 4; ++c )
    {
-      const STF& f = stf[c];
+      const STF& f = p_stf[c];
       F.Add( HistogramTransformation( f.m, f.c0, f.c1, f.r0, f.r1 ) );
    }
 
@@ -198,4 +196,4 @@ void ScreenTransferFunctionInstance::ApplyTo( View& view ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ScreenTransferFunctionInstance.cpp - Released 2020-07-31T19:33:39Z

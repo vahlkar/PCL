@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/IndirectArray.h - Released 2020-02-27T12:55:23Z
+// pcl/IndirectArray.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -145,16 +145,14 @@ public:
    /*!
     * Constructs an empty indirect array.
     */
-   IndirectArray() : m_array()
-   {
-   }
+   IndirectArray() = default;
 
    /*!
     * Constructs an indirect array of length \a n. All contained pointers are
     * initialized to \c nullptr.
     */
    explicit
-   IndirectArray( size_type n ) : m_array()
+   IndirectArray( size_type n )
    {
       m_array.Append( (void*)nullptr, n );
    }
@@ -162,7 +160,7 @@ public:
    /*!
     * Constructs an indirect array that stores \a n copies of a pointer \a p.
     */
-   IndirectArray( size_type n, const T* p ) : m_array()
+   IndirectArray( size_type n, const T* p )
    {
       m_array.Append( (void*)p, n );
    }
@@ -172,23 +170,20 @@ public:
     * defined by the range [i,j) of forward iterators.
     */
    template <class FI>
-   IndirectArray( FI i, FI j ) : m_array( i, j )
+   IndirectArray( FI i, FI j )
+      : m_array( i, j )
    {
    }
 
    /*!
     * Copy constructor.
     */
-   IndirectArray( const IndirectArray& x ) : m_array( x.m_array )
-   {
-   }
+   IndirectArray( const IndirectArray& ) = default;
 
    /*!
     * Move constructor.
     */
-   IndirectArray( IndirectArray&& x ) : m_array( std::move( x.m_array ) )
-   {
-   }
+   IndirectArray( IndirectArray&& ) = default;
 
    /*!
     * Destroys an %IndirectArray object.
@@ -1843,6 +1838,20 @@ public:
    }
 
    /*!
+    * Generates a newline-separated sequence of string tokens. Returns a
+    * reference to the target string \a s.
+    *
+    * This function is equivalent to:
+    *
+    * \code ToSeparated( s, '\n' ); \endcode
+    */
+   template <class S>
+   S& ToNewLineSeparated( S& s ) const
+   {
+      return ToSeparated( s, '\n' );
+   }
+
+   /*!
     * Returns a 64-bit non-cryptographic hash value computed for this indirect
     * array.
     *
@@ -2011,4 +2020,4 @@ IndirectArray<T,A>& operator <<( IndirectArray<T,A>&& x1, const IndirectArray<T,
 #endif  // __PCL_IndirectArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectArray.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/IndirectArray.h - Released 2020-07-31T19:33:04Z

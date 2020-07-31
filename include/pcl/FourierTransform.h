@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/FourierTransform.h - Released 2020-02-27T12:55:23Z
+// pcl/FourierTransform.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -129,8 +129,8 @@ public:
     *     <td>Inverse Fourier transform</td></tr>
     * </table>
     */
-   InPlaceFourierTransform( transform_type type = FFTDirection::Forward ) :
-      m_type( type )
+   InPlaceFourierTransform( transform_type type = FFTDirection::Forward )
+      : m_type( type )
    {
    }
 
@@ -187,8 +187,8 @@ public:
    /*!
     * Constructs an %InPlaceInverseFourierTransform instance.
     */
-   InPlaceInverseFourierTransform() :
-      InPlaceFourierTransform( FFTDirection::Backward )
+   InPlaceInverseFourierTransform()
+      : InPlaceFourierTransform( FFTDirection::Backward )
    {
    }
 
@@ -383,4 +383,4 @@ protected:
 #endif   // __PCL_FourierTransform_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FourierTransform.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/FourierTransform.h - Released 2020-07-31T19:33:04Z

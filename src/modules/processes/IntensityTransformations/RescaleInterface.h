@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleInterface.h - Released 2020-02-27T12:56:01Z
+// RescaleInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -74,23 +74,18 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    void ApplyInstance() const override;
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
-   RescaleInstance instance;
+   RescaleInstance m_instance;
 
    struct GUIData
    {
@@ -127,4 +122,4 @@ PCL_END_LOCAL
 #endif   // __RescaleInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF RescaleInterface.h - Released 2020-02-27T12:56:01Z
+// EOF RescaleInterface.h - Released 2020-07-31T19:33:39Z

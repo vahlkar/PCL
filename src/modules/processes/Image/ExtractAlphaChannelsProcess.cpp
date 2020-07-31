@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ExtractAlphaChannelsProcess.cpp - Released 2020-02-27T12:56:01Z
+// ExtractAlphaChannelsProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -69,15 +69,10 @@ ExtractAlphaChannelsProcess* TheExtractAlphaChannelsProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ExtractAlphaChannelsIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 ExtractAlphaChannelsProcess::ExtractAlphaChannelsProcess()
 {
    TheExtractAlphaChannelsProcess = this;
 
-   // Instantiate process parameter
    new EAChannels( this );
    new EAChannelList( this );
    new EAExtract( this );
@@ -114,9 +109,9 @@ String ExtractAlphaChannelsProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ExtractAlphaChannelsProcess::IconImageXPM() const
+String ExtractAlphaChannelsProcess::IconImageSVGFile() const
 {
-   return ExtractAlphaChannelsIcon_XPM;
+   return "@module_icons_dir/ExtractAlphaChannels.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -304,4 +299,4 @@ int ExtractAlphaChannelsProcess::ProcessCommandLine( const StringList& argv ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractAlphaChannelsProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ExtractAlphaChannelsProcess.cpp - Released 2020-07-31T19:33:39Z

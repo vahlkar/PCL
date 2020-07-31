@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInterface.cpp - Released 2020-02-27T12:56:01Z
+// CloneStampInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -78,25 +78,25 @@ const int s_tileSize = 64;
 #define CENTER_RADIUS 5
 
 // ----------------------------------------------------------------------------
-
-#include "CloneStampIcon.xpm"
-
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-CloneStampInterface::ViewRef::ViewRef( View& v ) :
-   view( v ),
-   refCount( 1 )
+CloneStampInterface::ViewRef::ViewRef( View& v )
+   : view( v )
+   , refCount( 1 )
 {
    if ( !view.IsNull() )
       view.AddToDynamicTargets();
 }
 
-CloneStampInterface::ViewRef::ViewRef( const View& v, int ) :
-   view( v ),
-   refCount( -1 )
+// ----------------------------------------------------------------------------
+
+CloneStampInterface::ViewRef::ViewRef( const View& v, int )
+   : view( v )
+   , refCount( -1 )
 {
 }
+
+// ----------------------------------------------------------------------------
 
 CloneStampInterface::ViewRef::~ViewRef()
 {
@@ -108,9 +108,9 @@ CloneStampInterface::ViewRef::~ViewRef()
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-CloneStampInterface::ClonerAction::ClonerAction( View& view, const BrushData& b, const Point& d ) :
-   brush( b ),
-   delta( d )
+CloneStampInterface::ClonerAction::ClonerAction( View& view, const BrushData& b, const Point& d )
+   : brush( b )
+   , delta( d )
 {
    if ( !view.IsNull() )
    {
@@ -125,16 +125,20 @@ CloneStampInterface::ClonerAction::ClonerAction( View& view, const BrushData& b,
    }
 }
 
-CloneStampInterface::ClonerAction::ClonerAction( const ClonerAction& x ) :
-   source( x.source ),
-   brush( x.brush ),
-   delta( x.delta ),
-   cloner( x.cloner ),
-   bounds( x.bounds )
+// ----------------------------------------------------------------------------
+
+CloneStampInterface::ClonerAction::ClonerAction( const ClonerAction& x )
+   : source( x.source )
+   , brush( x.brush )
+   , delta( x.delta )
+   , cloner( x.cloner )
+   , bounds( x.bounds )
 {
    if ( source != nullptr )
       ++source->refCount;
 }
+
+// ----------------------------------------------------------------------------
 
 CloneStampInterface::ClonerAction::~ClonerAction()
 {
@@ -145,6 +149,8 @@ CloneStampInterface::ClonerAction::~ClonerAction()
       source = nullptr;
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::ClonerAction::UpdateBounds()
 {
@@ -193,6 +199,8 @@ void CloneStampInterface::StoreRect( const Rect& rect )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 template <class P>
 static void RestoreTile( GenericImage<P>& image, const GenericImage<P>& tile )
 {
@@ -221,6 +229,8 @@ static void RestoreTile( ImageVariant& image, const ImageVariant& tile )
       case 32: RestoreTile( static_cast<UInt32Image&>( *image ), static_cast<const UInt32Image&>( *tile ) ); break;
       }
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::RestoreRect( const Rect& rect )
 {
@@ -262,6 +272,8 @@ void CloneStampInterface::RestoreView()
 {
    RestoreRect( targetView->Image().Bounds() );
 }
+
+// ----------------------------------------------------------------------------
 
 template <class P>
 static void XchgTile( GenericImage<P>& image, GenericImage<P>& tile )
@@ -344,6 +356,8 @@ void CloneStampInterface::Undo()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::UndoAll()
 {
    if ( !done.IsEmpty() )
@@ -370,6 +384,8 @@ void CloneStampInterface::UndoAll()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::Redo()
 {
    if ( !undone.IsEmpty() )
@@ -392,6 +408,8 @@ void CloneStampInterface::Redo()
       Broadcast();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::RedoAll()
 {
@@ -421,6 +439,8 @@ void CloneStampInterface::RedoAll()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::Delete()
 {
    if ( !done.IsEmpty() )
@@ -430,6 +450,8 @@ void CloneStampInterface::Delete()
       UpdateControls();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::PlayBack( action_list::const_iterator i, action_list::const_iterator j )
 {
@@ -679,9 +701,9 @@ Rect CloneStampInterface::Bounds() const
 
 // ----------------------------------------------------------------------------
 
-CloneStampInterface::CloneStampInterface() :
-   color( uint32( TheCSColorParameter->DefaultValue() ) ),
-   boundsColor( uint32( TheCSBoundsColorParameter->DefaultValue() ) )
+CloneStampInterface::CloneStampInterface()
+   : color( uint32( TheCSColorParameter->DefaultValue() ) )
+   , boundsColor( uint32( TheCSBoundsColorParameter->DefaultValue() ) )
 {
    TheCloneStampInterface = this;
 }
@@ -714,9 +736,9 @@ MetaProcess* CloneStampInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** CloneStampInterface::IconImageXPM() const
+String CloneStampInterface::IconImageSVGFile() const
 {
-   return CloneStampIcon_XPM;
+   return "@module_icons_dir/CloneStamp.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -795,6 +817,8 @@ void CloneStampInterface::Execute()
       UpdateControls();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::Cancel()
 {
@@ -1042,6 +1066,8 @@ void CloneStampInterface::DynamicMouseEnter( View& v )
          }
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::DynamicMouseLeave( View& v )
 {
    if ( !executing )
@@ -1052,6 +1078,8 @@ void CloneStampInterface::DynamicMouseLeave( View& v )
             onTarget = false;
          }
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::RasterizeStep( int dx, int dy )
 {
@@ -1067,7 +1095,7 @@ void CloneStampInterface::RasterizeStep( int dx, int dy )
 }
 
 /*
- * Bresenham line raster algorithm
+ * Bresenham line raster algorithm.
  */
 void CloneStampInterface::Rasterize( int dx, int dy, int step )
 {
@@ -1150,6 +1178,8 @@ void CloneStampInterface::Rasterize( int dx, int dy, int step )
       }
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::DynamicMouseMove( View& v, const DPoint& p, unsigned buttons, unsigned modifiers )
 {
@@ -1237,6 +1267,8 @@ void CloneStampInterface::DynamicMouseMove( View& v, const DPoint& p, unsigned b
 
    UpdateViews();
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::DynamicMousePress( View& v, const DPoint& p, int button, unsigned buttons, unsigned modifiers )
 {
@@ -1335,6 +1367,8 @@ void CloneStampInterface::DynamicMousePress( View& v, const DPoint& p, int butto
    UpdateViews();
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::DynamicMouseRelease( View& v, const DPoint& p, int button, unsigned buttons, unsigned modifiers )
 {
    dragging = false;
@@ -1409,6 +1443,8 @@ bool CloneStampInterface::DynamicKeyPress( View& v, int key, unsigned modifiers 
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool CloneStampInterface::DynamicKeyRelease( View& v, int key, unsigned modifiers )
 {
    if ( targetView == nullptr )
@@ -1478,6 +1514,8 @@ bool CloneStampInterface::RequiresDynamicUpdate( const View& v, const DRect& upd
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::DynamicPaint( const View& v, VectorGraphics& g, const DRect& ur  ) const
 {
    if ( targetView == nullptr || (v != *targetView && (sourceView == nullptr || v != *sourceView)) || !initialized )
@@ -1536,18 +1574,28 @@ void CloneStampInterface::DynamicPaint( const View& v, VectorGraphics& g, const 
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::SaveSettings() const
 {
+   // Placeholder
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::LoadSettings()
 {
+   // Placeholder
 }
+
+// ----------------------------------------------------------------------------
 
 bool CloneStampInterface::WantsMaskNotifications() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::MaskUpdated( const View& v )
 {
@@ -1558,17 +1606,20 @@ void CloneStampInterface::MaskUpdated( const View& v )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::MaskEnabled( const View& v )
 {
    MaskUpdated( v );
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::MaskDisabled( const View& v )
 {
    MaskUpdated( v );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void CloneStampInterface::UpdateControls()
@@ -1594,6 +1645,8 @@ void CloneStampInterface::UpdateControls()
 
    UpdateHistoryInfo();
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::UpdateHistoryInfo()
 {
@@ -1634,7 +1687,6 @@ void CloneStampInterface::UpdateHistoryInfo()
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
 void CloneStampInterface::__BrushRadius_ValueUpdated( SpinBox& sender, int value )
 {
@@ -1646,6 +1698,8 @@ void CloneStampInterface::__BrushRadius_ValueUpdated( SpinBox& sender, int value
    GUI->Brush_Control.Update();
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::__Brush_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->BrushSoftness_NumericControl )
@@ -1655,6 +1709,8 @@ void CloneStampInterface::__Brush_ValueUpdated( NumericEdit& sender, double valu
 
    GUI->Brush_Control.Update();
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::__History_Click( Button& sender, bool checked )
 {
@@ -1671,6 +1727,8 @@ void CloneStampInterface::__History_Click( Button& sender, bool checked )
 
    UpdateHistoryInfo();
 }
+
+// ----------------------------------------------------------------------------
 
 void CloneStampInterface::__Brush_Paint( Control& sender, const Rect& updateRect )
 {
@@ -1693,6 +1751,8 @@ void CloneStampInterface::__Brush_Paint( Control& sender, const Rect& updateRect
    g.DrawScaledBitmap( sender.BoundsRect(), bmp );
 }
 
+// ----------------------------------------------------------------------------
+
 void CloneStampInterface::__Option_Click( Button& sender, bool checked )
 {
    if ( sender == GUI->CopyBrush_PushButton )
@@ -1712,6 +1772,8 @@ void CloneStampInterface::__Option_Click( Button& sender, bool checked )
       UpdateViews();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 #ifndef __PCL_WINDOWS
 
@@ -1853,4 +1915,4 @@ CloneStampInterface::GUIData::GUIData( CloneStampInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF CloneStampInterface.cpp - Released 2020-07-31T19:33:39Z

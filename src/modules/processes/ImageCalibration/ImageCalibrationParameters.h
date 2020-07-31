@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationParameters.h - Released 2020-02-27T12:56:01Z
+// ImageCalibrationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -68,7 +68,7 @@ public:
 
    ICTargetFrames( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICTargetFrames* TheICTargetFramesParameter;
@@ -81,8 +81,8 @@ public:
 
    ICTargetFrameEnabled( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICTargetFrameEnabled* TheICTargetFrameEnabledParameter;
@@ -95,10 +95,53 @@ public:
 
    ICTargetFramePath( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICTargetFramePath* TheICTargetFramePathParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCFAData : public MetaBoolean
+{
+public:
+
+   ICCFAData( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern ICCFAData* TheICCFADataParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICCFAPattern : public MetaEnumeration
+{
+public:
+
+   enum { Auto, // includes X-Trans
+          RGGB,
+          BGGR,
+          GBRG,
+          GRBG,
+          GRGB,
+          GBGR,
+          RGBG,
+          BGRG,
+          NumberOfItems,
+          Default = Auto };
+
+   ICCFAPattern( MetaProcess* );
+
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+};
+
+extern ICCFAPattern* TheICCFAPatternParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -108,7 +151,8 @@ public:
 
    ICInputHints( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICInputHints* TheICInputHintsParameter;
@@ -121,7 +165,8 @@ public:
 
    ICOutputHints( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICOutputHints* TheICOutputHintsParameter;
@@ -134,10 +179,10 @@ public:
 
    ICPedestal( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICPedestal* TheICPedestalParameter;
@@ -156,11 +201,11 @@ public:
 
    ICPedestalMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ICPedestalMode* TheICPedestalModeParameter;
@@ -173,7 +218,7 @@ public:
 
    ICPedestalKeyword( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICPedestalKeyword* TheICPedestalKeywordParameter;
@@ -186,8 +231,8 @@ public:
 
    ICOverscanEnabled( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICOverscanEnabled* TheICOverscanEnabledParameter;
@@ -200,9 +245,9 @@ public:
 
    ICOverscanImageX0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanImageX0* TheICOverscanImageX0Parameter;
@@ -215,9 +260,9 @@ public:
 
    ICOverscanImageY0( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanImageY0* TheICOverscanImageY0Parameter;
@@ -230,9 +275,9 @@ public:
 
    ICOverscanImageX1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanImageX1* TheICOverscanImageX1Parameter;
@@ -245,9 +290,9 @@ public:
 
    ICOverscanImageY1( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanImageY1* TheICOverscanImageY1Parameter;
@@ -260,7 +305,7 @@ public:
 
    ICOverscanRegions( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICOverscanRegions* TheICOverscanRegionsParameter;
@@ -273,8 +318,8 @@ public:
 
    ICOverscanRegionEnabled( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICOverscanRegionEnabled* TheICOverscanRegionEnabledParameter;
@@ -287,9 +332,9 @@ public:
 
    ICOverscanSourceX0( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanSourceX0* TheICOverscanSourceX0Parameter;
@@ -302,9 +347,9 @@ public:
 
    ICOverscanSourceY0( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanSourceY0* TheICOverscanSourceY0Parameter;
@@ -317,9 +362,9 @@ public:
 
    ICOverscanSourceX1( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanSourceX1* TheICOverscanSourceX1Parameter;
@@ -332,9 +377,9 @@ public:
 
    ICOverscanSourceY1( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanSourceY1* TheICOverscanSourceY1Parameter;
@@ -347,9 +392,9 @@ public:
 
    ICOverscanTargetX0( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanTargetX0* TheICOverscanTargetX0Parameter;
@@ -362,9 +407,9 @@ public:
 
    ICOverscanTargetY0( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanTargetY0* TheICOverscanTargetY0Parameter;
@@ -377,9 +422,9 @@ public:
 
    ICOverscanTargetX1( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanTargetX1* TheICOverscanTargetX1Parameter;
@@ -392,9 +437,9 @@ public:
 
    ICOverscanTargetY1( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern ICOverscanTargetY1* TheICOverscanTargetY1Parameter;
@@ -407,8 +452,8 @@ public:
 
    ICMasterBiasEnabled( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICMasterBiasEnabled* TheICMasterBiasEnabledParameter;
@@ -421,7 +466,7 @@ public:
 
    ICMasterBiasPath( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICMasterBiasPath* TheICMasterBiasPathParameter;
@@ -434,8 +479,8 @@ public:
 
    ICMasterDarkEnabled( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICMasterDarkEnabled* TheICMasterDarkEnabledParameter;
@@ -448,7 +493,7 @@ public:
 
    ICMasterDarkPath( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICMasterDarkPath* TheICMasterDarkPathParameter;
@@ -461,8 +506,8 @@ public:
 
    ICMasterFlatEnabled( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICMasterFlatEnabled* TheICMasterFlatEnabledParameter;
@@ -475,7 +520,7 @@ public:
 
    ICMasterFlatPath( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICMasterFlatPath* TheICMasterFlatPathParameter;
@@ -488,8 +533,8 @@ public:
 
    ICCalibrateBias( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICCalibrateBias* TheICCalibrateBiasParameter;
@@ -502,8 +547,8 @@ public:
 
    ICCalibrateDark( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICCalibrateDark* TheICCalibrateDarkParameter;
@@ -516,8 +561,8 @@ public:
 
    ICCalibrateFlat( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICCalibrateFlat* TheICCalibrateFlatParameter;
@@ -530,8 +575,8 @@ public:
 
    ICOptimizeDarks( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICOptimizeDarks* TheICOptimizeDarksParameter;
@@ -545,11 +590,11 @@ public:
 
    ICDarkOptimizationThreshold( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICDarkOptimizationThreshold* TheICDarkOptimizationThresholdParameter;
@@ -562,11 +607,11 @@ public:
 
    ICDarkOptimizationLow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICDarkOptimizationLow* TheICDarkOptimizationLowParameter;
@@ -579,10 +624,10 @@ public:
 
    ICDarkOptimizationWindow( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICDarkOptimizationWindow* TheICDarkOptimizationWindowParameter;
@@ -601,14 +646,45 @@ public:
 
    ICDarkCFADetectionMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ICDarkCFADetectionMode* TheICDarkCFADetectionModeParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICSeparateCFAFlatScalingFactors : public MetaBoolean
+{
+public:
+
+   ICSeparateCFAFlatScalingFactors( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern ICSeparateCFAFlatScalingFactors* TheICSeparateCFAFlatScalingFactorsParameter;
+
+// ----------------------------------------------------------------------------
+
+class ICFlatScaleClippingFactor : public MetaFloat
+{
+public:
+
+   ICFlatScaleClippingFactor( MetaProcess* );
+
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+};
+
+extern ICFlatScaleClippingFactor* TheICFlatScaleClippingFactorParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -618,8 +694,8 @@ public:
 
    ICEvaluateNoise( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICEvaluateNoise* TheICEvaluateNoiseParameter;
@@ -637,11 +713,11 @@ public:
 
    ICNoiseEvaluationAlgorithm( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ICNoiseEvaluationAlgorithm* TheICNoiseEvaluationAlgorithmParameter;
@@ -654,7 +730,7 @@ public:
 
    ICOutputDirectory( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICOutputDirectory* TheICOutputDirectoryParameter;
@@ -667,8 +743,8 @@ public:
 
    ICOutputExtension( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICOutputExtension* TheICOutputExtensionParameter;
@@ -681,8 +757,8 @@ public:
 
    ICOutputPrefix( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICOutputPrefix* TheICOutputPrefixParameter;
@@ -695,8 +771,8 @@ public:
 
    ICOutputPostfix( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
 
 extern ICOutputPostfix* TheICOutputPostfixParameter;
@@ -716,11 +792,11 @@ public:
 
    ICOutputSampleFormat( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ICOutputSampleFormat* TheICOutputSampleFormatParameter;
@@ -733,10 +809,10 @@ public:
 
    ICOutputPedestal( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ICOutputPedestal* TheICOutputPedestalParameter;
@@ -749,8 +825,8 @@ public:
 
    ICOverwriteExistingFiles( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICOverwriteExistingFiles* TheICOverwriteExistingFilesParameter;
@@ -769,11 +845,11 @@ public:
 
    ICOnError( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ICOnError* TheICOnErrorParameter;
@@ -786,8 +862,8 @@ public:
 
    ICNoGUIMessages( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICNoGUIMessages* TheICNoGUIMessagesParameter;
@@ -804,8 +880,8 @@ public:
 
    ICOutputData( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICOutputData* TheICOutputDataParameter;
@@ -818,8 +894,8 @@ public:
 
    ICOutputFilePath( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICOutputFilePath* TheICOutputFilePathParameter;
@@ -832,9 +908,9 @@ public:
 
    ICDarkScalingFactorRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICDarkScalingFactorRK* TheICDarkScalingFactorRKParameter;
@@ -847,9 +923,9 @@ public:
 
    ICDarkScalingFactorG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICDarkScalingFactorG* TheICDarkScalingFactorGParameter;
@@ -862,9 +938,9 @@ public:
 
    ICDarkScalingFactorB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICDarkScalingFactorB* TheICDarkScalingFactorBParameter;
@@ -877,10 +953,10 @@ public:
 
    ICNoiseEstimateRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICNoiseEstimateRK* TheICNoiseEstimateRKParameter;
@@ -893,10 +969,10 @@ public:
 
    ICNoiseEstimateG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICNoiseEstimateG* TheICNoiseEstimateGParameter;
@@ -909,10 +985,10 @@ public:
 
    ICNoiseEstimateB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool ScientificNotation() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool ScientificNotation() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICNoiseEstimateB* TheICNoiseEstimateBParameter;
@@ -925,9 +1001,9 @@ public:
 
    ICNoiseFractionRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICNoiseFractionRK* TheICNoiseFractionRKParameter;
@@ -940,9 +1016,9 @@ public:
 
    ICNoiseFractionG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICNoiseFractionG* TheICNoiseFractionGParameter;
@@ -955,9 +1031,9 @@ public:
 
    ICNoiseFractionB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICNoiseFractionB* TheICNoiseFractionBParameter;
@@ -970,8 +1046,8 @@ public:
 
    ICNoiseAlgorithmRK( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICNoiseAlgorithmRK* TheICNoiseAlgorithmRKParameter;
@@ -984,8 +1060,8 @@ public:
 
    ICNoiseAlgorithmG( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICNoiseAlgorithmG* TheICNoiseAlgorithmGParameter;
@@ -998,8 +1074,8 @@ public:
 
    ICNoiseAlgorithmB( MetaTable* );
 
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
 extern ICNoiseAlgorithmB* TheICNoiseAlgorithmBParameter;
@@ -1013,4 +1089,4 @@ PCL_END_LOCAL
 #endif   // __ImageCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ImageCalibrationParameters.h - Released 2020-07-31T19:33:39Z

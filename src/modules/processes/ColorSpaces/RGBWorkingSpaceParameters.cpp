@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceParameters.cpp - Released 2020-02-27T12:56:01Z
+// RGBWorkingSpaceParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -239,4 +239,4 @@ bool RGBWSApplyGlobal::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF RGBWorkingSpaceParameters.cpp - Released 2020-07-31T19:33:39Z

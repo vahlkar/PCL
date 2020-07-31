@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// RgbPreserve.cpp - Released 2020-02-27T12:56:01Z
+// RgbPreserve.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -32,54 +32,61 @@
 #include "Assert.h"
 //#include <cassert>
 
-namespace pcl {
+namespace pcl
+{
+
+// ----------------------------------------------------------------------------
 
 RgbPreserve::RgbPreserve()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 RgbPreserve::~RgbPreserve()
 {
 }
 
+// ----------------------------------------------------------------------------
 
-void
-RgbPreserve::rgbTransformation(imageType_t const &rOrigLuminance_p,
-			       imageType_t const &rNewLuminance_p,
-			       imageType_t &rImage_p) const
+void RgbPreserve::rgbTransformation( imageType_t const& rOrigLuminance_p,
+   imageType_t const& rNewLuminance_p,
+   imageType_t& rImage_p ) const
 {
 #ifdef DEBUG
-  int width=rImage_p.Width();
-  int height=rImage_p.Height();
-  Assert(width==rOrigLuminance_p.Width());
-  Assert(height==rOrigLuminance_p.Height());
-  Assert(width==rNewLuminance_p.Width());
-  Assert(height==rNewLuminance_p.Height());
-  Assert(rOrigLuminance_p.NumberOfNominalChannels()==1);
-  Assert(rNewLuminance_p.NumberOfNominalChannels()==1);
+   int width = rImage_p.Width();
+   int height = rImage_p.Height();
+   Assert( width == rOrigLuminance_p.Width() );
+   Assert( height == rOrigLuminance_p.Height() );
+   Assert( width == rNewLuminance_p.Width() );
+   Assert( height == rNewLuminance_p.Height() );
+   Assert( rOrigLuminance_p.NumberOfNominalChannels() == 1 );
+   Assert( rNewLuminance_p.NumberOfNominalChannels() == 1 );
 #endif
-  std::size_t channels=rImage_p.NumberOfNominalChannels();
+   std::size_t channels = rImage_p.NumberOfNominalChannels();
 
+   // this is the multiplication factor
+   imageType_t propImage( rNewLuminance_p );
+   propImage.ResetSelections();
+   propImage.Div( rOrigLuminance_p );
 
-  // this is the multiplication factor
-  imageType_t propImage(rNewLuminance_p);
-  propImage.ResetSelections();
-  propImage.Div(rOrigLuminance_p);
-
-  rImage_p.ResetSelections();
-  // note: we need to do this on a float image. Otherwise, we
-  // most likely will suffer from overflows
-  for (std::size_t chan=0;chan<channels;chan++){
-    rImage_p.SelectChannel(chan);
-    rImage_p.Mul(propImage);
-  }
-  realType_t dMin,dMax;
-  rNewLuminance_p.GetExtremePixelValues(dMin, dMax);
-  rImage_p.ResetSelections();
-  rImage_p.Rescale(dMin,dMax);
+   rImage_p.ResetSelections();
+   // note: we need to do this on a float image. Otherwise, we
+   // most likely will suffer from overflows
+   for ( std::size_t chan = 0; chan < channels; chan++ )
+   {
+      rImage_p.SelectChannel( chan );
+      rImage_p.Mul( propImage );
+   }
+   realType_t dMin, dMax;
+   rNewLuminance_p.GetExtremePixelValues( dMin, dMax );
+   rImage_p.ResetSelections();
+   rImage_p.Rescale( dMin, dMax );
 }
 
-};
+// ----------------------------------------------------------------------------
+
+}; // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF RgbPreserve.cpp - Released 2020-02-27T12:56:01Z
+// EOF RgbPreserve.cpp - Released 2020-07-31T19:33:39Z

@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.h - Released 2020-02-27T12:56:01Z
+// SubframeSelectorCache.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -78,8 +78,8 @@ public:
    double   starResidual;
    double   starResidualMeanDev;
 
-   SubframeSelectorCacheItem( const String& path = String() ) :
-      FileDataCacheItem( path )
+   SubframeSelectorCacheItem( const String& path = String() )
+      : FileDataCacheItem( path )
    {
    }
 
@@ -89,9 +89,9 @@ public:
 
 private:
 
-   virtual void AssignData( const FileDataCacheItem& item );
-   virtual String DataAsString() const;
-   virtual bool GetDataFromTokens( const StringList& tokens );
+   void AssignData( const FileDataCacheItem& item ) override;
+   String DataAsString() const override;
+   bool GetDataFromTokens( const StringList& tokens ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -103,14 +103,14 @@ public:
    SubframeSelectorCache();
    virtual ~SubframeSelectorCache();
 
-   virtual String CacheName() const
+   String CacheName() const override
    {
       return "SubframeSelector Cache";
    }
 
 private:
 
-   virtual FileDataCacheItem* NewItem() const
+   FileDataCacheItem* NewItem() const override
    {
       return new SubframeSelectorCacheItem;
    }
@@ -125,4 +125,4 @@ extern SubframeSelectorCache* TheSubframeSelectorCache;
 #endif   // __SubframeSelectorCache_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.h - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorCache.h - Released 2020-07-31T19:33:39Z

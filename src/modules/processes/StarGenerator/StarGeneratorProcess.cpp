@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorProcess.cpp - Released 2020-02-27T12:56:01Z
+// StarGeneratorProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "StarGeneratorIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 StarGeneratorProcess* TheStarGeneratorProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -77,7 +73,6 @@ StarGeneratorProcess::StarGeneratorProcess()
 {
    TheStarGeneratorProcess = this;
 
-   // Instantiate process parameters
    new SGStarDatabasePath( this );
    new SGCenterRA( this );
    new SGCenterDec( this );
@@ -125,16 +120,18 @@ String StarGeneratorProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** StarGeneratorProcess::IconImageXPM() const
+String StarGeneratorProcess::IconImageSVGFile() const
 {
-   return StarGeneratorIcon_XPM;
+   return "@module_icons_dir/StarGenerator.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* StarGeneratorProcess::DefaultInterface() const
 {
    return TheStarGeneratorInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* StarGeneratorProcess::Create() const
@@ -227,4 +224,4 @@ int StarGeneratorProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF StarGeneratorProcess.cpp - Released 2020-07-31T19:33:39Z

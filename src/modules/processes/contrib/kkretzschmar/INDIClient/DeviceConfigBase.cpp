@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// DeviceConfigBase.cpp - Released 2020-02-27T12:56:01Z
+// DeviceConfigBase.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -58,8 +58,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ConfigDialogBase::ConfigDialogBase( const String& deviceName ) :
-   m_device( deviceName )
+ConfigDialogBase::ConfigDialogBase( const String& deviceName )
+   : m_device( deviceName )
 {
    SaveConfig_Button.SetText( "Save" );
    SaveConfig_Button.SetToolTip( "<p>Stores the current configuration on the Indigo server.</p>" );
@@ -139,4 +139,4 @@ void ConfigDialogBase::e_Click( Button& sender, bool checked )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF DeviceConfigBase.cpp - Released 2020-02-27T12:56:01Z
+// EOF DeviceConfigBase.cpp - Released 2020-07-31T19:33:39Z

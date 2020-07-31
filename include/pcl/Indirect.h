@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Indirect.h - Released 2020-02-27T12:55:23Z
+// pcl/Indirect.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -83,7 +83,8 @@ public:
    /*!
     * Constructs an %IndirectUnaryFunction to wrap a unary m_function \a f.
     */
-   IndirectUnaryFunction( UF f ) : m_function( f )
+   IndirectUnaryFunction( UF f )
+      : m_function( f )
    {
    }
 
@@ -134,7 +135,8 @@ public:
    /*!
     * Constructs an %IndirectBinaryFunction to wrap a binary function \a f.
     */
-   IndirectBinaryFunction( BF f ) : m_function( f )
+   IndirectBinaryFunction( BF f )
+      : m_function( f )
    {
    }
 
@@ -186,7 +188,8 @@ public:
    /*!
     * Constructs an %IndirectUnaryFunction to wrap a unary predicate \a p.
     */
-   IndirectUnaryPredicate( UP p ) : m_predicate( p )
+   IndirectUnaryPredicate( UP p )
+      : m_predicate( p )
    {
    }
 
@@ -236,7 +239,8 @@ public:
    /*!
     * Constructs an %IndirectBinaryPredicate to wrap a binary predicate \a p.
     */
-   IndirectBinaryPredicate( BP p ) : m_predicate( p )
+   IndirectBinaryPredicate( BP p )
+      : m_predicate( p )
    {
    }
 
@@ -316,4 +320,4 @@ struct PCL_CLASS IndirectLess
 #endif  // __PCL_Indirect_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Indirect.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Indirect.h - Released 2020-07-31T19:33:04Z

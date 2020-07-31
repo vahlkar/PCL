@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// RotationInterface.h - Released 2020-02-27T12:56:01Z
+// RotationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -76,28 +76,22 @@ public:
    RotationInterface();
    virtual ~RotationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual bool WantsReadoutNotifications() const;
-   virtual void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A );
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   bool WantsReadoutNotifications() const override;
+   void UpdateReadout( const View&, const DPoint&, double R, double G, double B, double A ) override;
 
 private:
 
-   RotationInstance instance;
+   RotationInstance m_instance;
 
    struct GUIData
    {
@@ -173,4 +167,4 @@ PCL_END_LOCAL
 #endif   // __RotationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF RotationInterface.h - Released 2020-07-31T19:33:39Z

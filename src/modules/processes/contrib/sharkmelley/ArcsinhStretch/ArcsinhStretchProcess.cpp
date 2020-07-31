@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchProcess.cpp - Released 2020-02-27T12:56:01Z
+// ArcsinhStretchProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
-// Copyright (c) 2017-2018 Mark Shelley
+// Copyright (c) 2017-2020 Mark Shelley
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-//#include "ArcsinhStretchIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 ArcsinhStretchProcess* TheArcsinhStretchProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -77,7 +73,6 @@ ArcsinhStretchProcess::ArcsinhStretchProcess()
 {
    TheArcsinhStretchProcess = this;
 
-   // Instantiate process parameters
    new ArcsinhStretch( this );
    new ArcsinhStretchBlackPoint( this );
    new ArcsinhStretchProtectHighlights( this );
@@ -118,16 +113,18 @@ String ArcsinhStretchProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ArcsinhStretchProcess::IconImageXPM() const
+String ArcsinhStretchProcess::IconImageSVGFile() const
 {
-   return nullptr; // ArcsinhStretchIcon_XPM; ---> put a nice icon here
+   return "@module_icons_dir/ArcsinhStretch.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* ArcsinhStretchProcess::DefaultInterface() const
 {
    return TheArcsinhStretchInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* ArcsinhStretchProcess::Create() const
@@ -241,4 +238,4 @@ int ArcsinhStretchProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ArcsinhStretchProcess.cpp - Released 2020-07-31T19:33:39Z

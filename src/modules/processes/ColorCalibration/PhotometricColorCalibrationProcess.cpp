@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// PhotometricColorCalibrationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -62,10 +62,6 @@
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-#include "PhotometricColorCalibrationIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -162,10 +158,11 @@ String PhotometricColorCalibrationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** PhotometricColorCalibrationProcess::IconImageXPM() const
+String PhotometricColorCalibrationProcess::IconImageSVGFile() const
 {
-   return PhotometricColorCalibrationIcon_XPM;
+   return "@module_icons_dir/PhotometricColorCalibration.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* PhotometricColorCalibrationProcess::DefaultInterface() const
@@ -359,4 +356,4 @@ int PhotometricColorCalibrationProcess::FindWhiteReferenceById( const String& id
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF PhotometricColorCalibrationProcess.cpp - Released 2020-07-31T19:33:39Z

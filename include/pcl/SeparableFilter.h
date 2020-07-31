@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SeparableFilter.h - Released 2020-02-27T12:55:23Z
+// pcl/SeparableFilter.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -108,8 +108,8 @@ public:
    /*!
     * Constructs an empty %SeparableFilter object with optional \a name.
     */
-   SeparableFilter( const String& name = String() ) :
-      filterName( name )
+   SeparableFilter( const String& name = String() )
+      : filterName( name )
    {
    }
 
@@ -121,9 +121,10 @@ public:
     * A %SeparableFilter object must be initialized with either a zero size
     * (which yields an empty filter), or an odd size >= 3.
     */
-   SeparableFilter( int n, const String& name = String() ) :
-      rowFilter( PCL_VALID_KERNEL_SIZE( n ) ),
-      colFilter( PCL_VALID_KERNEL_SIZE( n ) ), filterName( name )
+   SeparableFilter( int n, const String& name = String() )
+      : rowFilter( PCL_VALID_KERNEL_SIZE( n ) )
+      , colFilter( PCL_VALID_KERNEL_SIZE( n ) )
+      , filterName( name )
    {
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
@@ -137,9 +138,10 @@ public:
     * two-dimentional filter whose weight is \a x.
     */
    template <typename T>
-   SeparableFilter( int n, const T& x, const String& name = String() ) :
-      rowFilter( x, PCL_VALID_KERNEL_SIZE( n ) ),
-      colFilter( x, PCL_VALID_KERNEL_SIZE( n ) ), filterName( name )
+   SeparableFilter( int n, const T& x, const String& name = String() )
+      : rowFilter( x, PCL_VALID_KERNEL_SIZE( n ) )
+      , colFilter( x, PCL_VALID_KERNEL_SIZE( n ) )
+      , filterName( name )
    {
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
@@ -150,8 +152,10 @@ public:
     * row and column filter vectors \a h and \a v, respectively, and an
     * optional \a name.
     */
-   SeparableFilter( const coefficient_vector& h, const coefficient_vector& v, const String& name = String() ) :
-      rowFilter( h ), colFilter( v ), filterName( name )
+   SeparableFilter( const coefficient_vector& h, const coefficient_vector& v, const String& name = String() )
+      : rowFilter( h )
+      , colFilter( v )
+      , filterName( name )
    {
       PCL_PRECONDITION( v.Length() == h.Length() )
       PCL_PRECONDITION( v.IsEmpty() || v.Length() >= 3 )
@@ -165,9 +169,10 @@ public:
     * vectors in this object, respectively.
     */
    template <typename T>
-   SeparableFilter( const T* h, const T* v, int n, const String& name = String() ) :
-      rowFilter( h, PCL_VALID_KERNEL_SIZE( n ) ),
-      colFilter( v, PCL_VALID_KERNEL_SIZE( n ) ), filterName( name )
+   SeparableFilter( const T* h, const T* v, int n, const String& name = String() )
+      : rowFilter( h, PCL_VALID_KERNEL_SIZE( n ) )
+      , colFilter( v, PCL_VALID_KERNEL_SIZE( n ) )
+      , filterName( name )
    {
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
@@ -391,4 +396,4 @@ protected:
 #endif   // __PCL_SeparableFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableFilter.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/SeparableFilter.h - Released 2020-07-31T19:33:04Z

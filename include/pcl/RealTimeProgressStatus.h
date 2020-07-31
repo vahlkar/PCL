@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/RealTimeProgressStatus.h - Released 2020-02-27T12:55:23Z
+// pcl/RealTimeProgressStatus.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,14 +93,17 @@ public:
     *                Preview progress dialog window. Typically this text will
     *                be shown centered on the dialog's title bar.
     */
-   RealTimeProgressStatus( const String& title ) : MuteStatus(), m_title( title )
+   RealTimeProgressStatus( const String& title )
+      : m_title( title )
    {
    }
 
    /*!
     * Copy constructor.
     */
-   RealTimeProgressStatus( const RealTimeProgressStatus& x ) : MuteStatus( x ), m_title( x.m_title )
+   RealTimeProgressStatus( const RealTimeProgressStatus& x )
+      : MuteStatus( x )
+      , m_title( x.m_title )
    {
    }
 
@@ -182,4 +185,4 @@ private:
 #endif   // __PCL_RealTimeProgressStatus_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RealTimeProgressStatus.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/RealTimeProgressStatus.h - Released 2020-07-31T19:33:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ChebyshevFit.h - Released 2020-02-27T12:55:23Z
+// pcl/ChebyshevFit.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -157,10 +157,10 @@ public:
     * bound. See the Truncate() and Evaluate() member functions for details.
     */
    template <class F>
-   GenericChebyshevFit( F f, Tx x1, Tx x2, int N, int n ) :
-      dx( Abs( x2 - x1 ) ),
-      x0( (x1 + x2)/2 ),
-      m( Max( 2, n ), Max( 1, N ) )
+   GenericChebyshevFit( F f, Tx x1, Tx x2, int N, int n )
+      : dx( Abs( x2 - x1 ) )
+      , x0( (x1 + x2)/2 )
+      , m( Max( 2, n ), Max( 1, N ) )
    {
       PCL_PRECONDITION( N > 0 )
       PCL_PRECONDITION( n > 1 )
@@ -197,11 +197,11 @@ public:
     * coefficients cannot be verified; ensuring it is the responsibility of the
     * caller.
     */
-   GenericChebyshevFit( const coefficient_series& ck, Tx x1, Tx x2 ) :
-      dx( Abs( x2 - x1 ) ),
-      x0( (x1 + x2)/2 ),
-      c( ck ),
-      m( int( ck.Length() ) )
+   GenericChebyshevFit( const coefficient_series& ck, Tx x1, Tx x2 )
+      : dx( Abs( x2 - x1 ) )
+      , x0( (x1 + x2)/2 )
+      , c( ck )
+      , m( int( ck.Length() ) )
    {
       if ( 1 + dx == 1 )
          throw Error( "GenericChebyshevFit: Empty or insignificant function evaluation interval." );
@@ -620,8 +620,8 @@ public:
     * See GenericChebyshevFit::GenericChebyshevFit() for detailed information.
     */
    template <class F>
-   GenericScalarChebyshevFit( F f, Tx x1, Tx x2, int n ) :
-      GenericChebyshevFit<Tx,Ty>( [f]( Tx x ){ return GenericVector<Ty>( f( x ), 1 ); }, x1, x2, 1, n )
+   GenericScalarChebyshevFit( F f, Tx x1, Tx x2, int n )
+      : GenericChebyshevFit<Tx,Ty>( [f]( Tx x ){ return GenericVector<Ty>( f( x ), 1 ); }, x1, x2, 1, n )
    {
    }
 
@@ -741,8 +741,8 @@ private:
     * \internal
     * Private constructor from the base class.
     */
-   GenericScalarChebyshevFit( const GenericChebyshevFit<Tx,Ty>& T ) :
-      GenericChebyshevFit<Tx,Ty>()
+   GenericScalarChebyshevFit( const GenericChebyshevFit<Tx,Ty>& T )
+      : GenericChebyshevFit<Tx,Ty>()
    {
       this->dx = T.dx;
       this->x0 = T.x0;
@@ -935,4 +935,4 @@ typedef F80ScalarChebyshevFit                         LDScalarChebyshevFit;
 #endif  // __PCL_ChebyshevFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ChebyshevFit.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ChebyshevFit.h - Released 2020-07-31T19:33:04Z

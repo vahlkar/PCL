@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/PixelInterpolation.h - Released 2020-02-27T12:55:23Z
+// pcl/PixelInterpolation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -144,9 +144,9 @@ public:
        *                         sense for floating point pixel sample types.
        */
       Interpolator( BidimensionalInterpolation<sample>* interpolation,
-                    const sample* data, int width, int height, bool unclipped = false ) :
-         m_interpolation( interpolation ),
-         m_unclipped( unclipped )
+                    const sample* data, int width, int height, bool unclipped = false )
+         : m_interpolation( interpolation )
+         , m_unclipped( unclipped )
       {
          if ( !m_interpolation.IsNull() )
             m_interpolation->Initialize( data, width, height );
@@ -228,8 +228,8 @@ public:
 
    private:
 
-      AutoPointer<BidimensionalInterpolation<sample> > m_interpolation;
-                                                  bool m_unclipped : 1;
+      AutoPointer<BidimensionalInterpolation<sample>> m_interpolation;
+                                                      bool m_unclipped;
    };
 
    // -------------------------------------------------------------------------
@@ -496,8 +496,8 @@ public:
     * BicubicSplineInterpolation for a detailed description of the automatic
     * linear clamping feature.
     */
-   BicubicSplinePixelInterpolation( double clamp = __PCL_BICUBIC_SPLINE_CLAMPING_THRESHOLD ) :
-      m_clamp( clamp )
+   BicubicSplinePixelInterpolation( double clamp = __PCL_BICUBIC_SPLINE_CLAMPING_THRESHOLD )
+      : m_clamp( clamp )
    {
    }
 
@@ -569,8 +569,8 @@ public:
     * BicubicSplineInterpolation for a detailed description of the automatic
     * linear clamping feature.
     */
-   BicubicPixelInterpolation( double c = __PCL_BICUBIC_SPLINE_CLAMPING_THRESHOLD ) :
-      BicubicSplinePixelInterpolation( c )
+   BicubicPixelInterpolation( double c = __PCL_BICUBIC_SPLINE_CLAMPING_THRESHOLD )
+      : BicubicSplinePixelInterpolation( c )
    {
    }
 
@@ -679,9 +679,9 @@ public:
     *                the interpolation filter.
     *
     */
-   BicubicFilterPixelInterpolation( int rh, int rv, const CubicFilter& filter ) :
-      m_rh( Max( 1, rh ) ),
-      m_rv( Max( 1, rv ) )
+   BicubicFilterPixelInterpolation( int rh, int rv, const CubicFilter& filter )
+      : m_rh( Max( 1, rh ) )
+      , m_rv( Max( 1, rv ) )
    {
       PCL_PRECONDITION( rh >= 1 )
       PCL_PRECONDITION( rv >= 1 )
@@ -691,9 +691,9 @@ public:
    /*!
     * Copy constructor.
     */
-   BicubicFilterPixelInterpolation( const BicubicFilterPixelInterpolation& x ) :
-      m_rh( x.m_rh ),
-      m_rv( x.m_rv )
+   BicubicFilterPixelInterpolation( const BicubicFilterPixelInterpolation& x )
+      : m_rh( x.m_rh )
+      , m_rv( x.m_rv )
    {
       m_filter = x.m_filter->Clone();
    }
@@ -798,9 +798,9 @@ public:
     *                achieved. A negative threshold value disables the
     *                interpolation clamping feature. The default value is 0.3.
     */
-   LanczosPixelInterpolation( int n = 3, float clamp = 0.3 ) :
-      m_n( Max( 1, n ) ),
-      m_clamp( clamp )
+   LanczosPixelInterpolation( int n = 3, float clamp = 0.3 )
+      : m_n( Max( 1, n ) )
+      , m_clamp( clamp )
    {
       PCL_PRECONDITION( n >= 1 )
       PCL_PRECONDITION( clamp < 0 || 0 <= clamp && clamp <= 1 )
@@ -888,8 +888,8 @@ public:
     *                achieved. A negative threshold value disables the
     *                interpolation clamping feature. The default value is 0.3.
     */
-   Lanczos3LUTPixelInterpolation( float clamp = 0.3F ) :
-      m_clamp( clamp )
+   Lanczos3LUTPixelInterpolation( float clamp = 0.3F )
+      : m_clamp( clamp )
    {
       PCL_PRECONDITION( clamp < 0 || 0 <= clamp && clamp <= 1 )
    }
@@ -975,8 +975,8 @@ public:
     *                achieved. A negative threshold value disables the
     *                interpolation clamping feature. The default value is 0.3.
     */
-   Lanczos4LUTPixelInterpolation( float clamp = 0.3F ) :
-      m_clamp( Range( clamp, 0.0F, 1.0F ) )
+   Lanczos4LUTPixelInterpolation( float clamp = 0.3F )
+      : m_clamp( Range( clamp, 0.0F, 1.0F ) )
    {
       PCL_PRECONDITION( clamp < 0 || 0 <= clamp && clamp <= 1 )
    }
@@ -1062,8 +1062,8 @@ public:
     *                achieved. A negative threshold value disables the
     *                interpolation clamping feature. The default value is 0.3.
     */
-   Lanczos5LUTPixelInterpolation( float clamp = 0.3F ) :
-      m_clamp( Range( clamp, 0.0F, 1.0F ) )
+   Lanczos5LUTPixelInterpolation( float clamp = 0.3F )
+      : m_clamp( Range( clamp, 0.0F, 1.0F ) )
    {
       PCL_PRECONDITION( clamp < 0 || 0 <= clamp && clamp <= 1 )
    }
@@ -1129,4 +1129,4 @@ private:
 #endif   // __PCL_PixelInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelInterpolation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/PixelInterpolation.h - Released 2020-07-31T19:33:04Z

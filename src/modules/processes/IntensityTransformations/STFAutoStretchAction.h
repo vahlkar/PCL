@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// STFAutoStretchAction.h - Released 2020-02-27T12:56:01Z
+// STFAutoStretchAction.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -64,15 +64,17 @@ class STFAutoStretchActionBase : public Action
 {
 public:
 
-   STFAutoStretchActionBase( bool boost, const String& menuItem, const Bitmap& icon );
+   STFAutoStretchActionBase( bool boost, const String& menuItem, const char* icon );
 
-   virtual void Execute();
-   virtual bool IsEnabled( ActionInfo ) const;
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 
 private:
 
-   bool m_boost : 1;
+   bool m_boost;
 };
+
+// ----------------------------------------------------------------------------
 
 class STFAutoStretchAction : public STFAutoStretchActionBase
 {
@@ -80,6 +82,8 @@ public:
 
    STFAutoStretchAction();
 };
+
+// ----------------------------------------------------------------------------
 
 class STFAutoStretchBoostAction : public STFAutoStretchActionBase
 {
@@ -89,24 +93,27 @@ public:
 };
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 class STFAutoStretchToolBarActionBase : public Action
 {
 public:
 
-   STFAutoStretchToolBarActionBase( bool boost, const Bitmap& icon, const String& toolBar );
+   STFAutoStretchToolBarActionBase( bool boost, const char* icon, const String& toolBar );
 
-   virtual void Execute();
-   virtual bool IsEnabled( ActionInfo ) const;
+   void Execute() override;
+   bool IsEnabled( ActionInfo ) const override;
 
 private:
 
-   bool m_boost : 1;
+   bool m_boost;
 
 protected:
 
    static String AdditionalInformation();
 };
+
+// ----------------------------------------------------------------------------
 
 class STFAutoStretchToolBarAction : public STFAutoStretchToolBarActionBase
 {
@@ -114,6 +121,8 @@ public:
 
    STFAutoStretchToolBarAction();
 };
+
+// ----------------------------------------------------------------------------
 
 class STFAutoStretchToolBarBoostAction : public STFAutoStretchToolBarActionBase
 {
@@ -129,4 +138,4 @@ public:
 #endif   // __STFAutoStretchAction_h
 
 // ----------------------------------------------------------------------------
-// EOF STFAutoStretchAction.h - Released 2020-02-27T12:56:01Z
+// EOF STFAutoStretchAction.h - Released 2020-07-31T19:33:39Z

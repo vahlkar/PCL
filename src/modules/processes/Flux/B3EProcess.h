@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EProcess.h - Released 2020-02-27T12:56:01Z
+// B3EProcess.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -70,7 +70,7 @@ public:
    IsoString Category() const override;
    uint32 Version() const override;
    String Description() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    ProcessInterface* DefaultInterface() const override;
    ProcessImplementation* Create() const override;
    ProcessImplementation* Clone( const ProcessImplementation& ) const override;
@@ -92,4 +92,4 @@ PCL_END_LOCAL
 #endif   // __B3EProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF B3EProcess.h - Released 2020-02-27T12:56:01Z
+// EOF B3EProcess.h - Released 2020-07-31T19:33:39Z

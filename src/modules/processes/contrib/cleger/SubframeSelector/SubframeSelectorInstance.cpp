@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2020-02-27T12:56:01Z
+// SubframeSelectorInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -60,9 +60,9 @@
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
 #include <pcl/ProcessInstance.h>
+#include <pcl/PSFFit.h>
 #include <pcl/Version.h>
 
-#include "PSF.h"
 #include "SubframeSelectorCache.h"
 #include "SubframeSelectorInstance.h"
 #include "SubframeSelectorInterface.h"
@@ -73,7 +73,7 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// From Debayer
+
 /*
  * 5x5 B3-spline wavelet scaling function used by the noise estimation routine.
  *
@@ -89,56 +89,55 @@ namespace pcl
  * vectors) for performance reasons.
  */
 // Separable filter coefficients
-const float __5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
+const float s_5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
 // Gaussian noise scaling factors
-const float __5x5B3Spline_kj[] =
+const float s_5x5B3Spline_kj[] =
         { 0.8907F, 0.2007F, 0.0856F, 0.0413F, 0.0205F, 0.0103F, 0.0052F, 0.0026F, 0.0013F, 0.0007F };
 
 // ----------------------------------------------------------------------------
 
-SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_routine( SSRoutine::Default ),
-   p_fileCache( TheSSFileCacheParameter->DefaultValue() ),
-   p_subframeScale( TheSSSubframeScaleParameter->DefaultValue() ),
-   p_cameraGain( TheSSCameraGainParameter->DefaultValue() ),
-   p_cameraResolution( SSCameraResolution::Default ),
-   p_siteLocalMidnight( TheSSSiteLocalMidnightParameter->DefaultValue() ),
-   p_scaleUnit( SSScaleUnit::Default ),
-   p_dataUnit( SSDataUnit::Default ),
-   p_structureLayers( TheSSStructureLayersParameter->DefaultValue() ),
-   p_noiseLayers( TheSSNoiseLayersParameter->DefaultValue() ),
-   p_hotPixelFilterRadius( TheSSHotPixelFilterRadiusParameter->DefaultValue() ),
-   p_hotPixelFilter( TheSSApplyHotPixelFilterParameter->DefaultValue() ),
-   p_noiseReductionFilterRadius( TheSSNoiseReductionFilterRadiusParameter->DefaultValue() ),
-   p_sensitivity( TheSSSensitivityParameter->DefaultValue() ),
-   p_peakResponse( TheSSPeakResponseParameter->DefaultValue() ),
-   p_maxDistortion( TheSSMaxDistortionParameter->DefaultValue() ),
-   p_upperLimit( TheSSUpperLimitParameter->DefaultValue() ),
-   p_backgroundExpansion( TheSSBackgroundExpansionParameter->DefaultValue() ),
-   p_xyStretch( TheSSXYStretchParameter->DefaultValue() ),
-   p_psfFit( SSPSFFit::Default ),
-   p_psfFitCircular( TheSSPSFFitCircularParameter->DefaultValue() ),
-   p_pedestal( TheSSPedestalParameter->DefaultValue() ),
-   p_roi( 0 ),
-   p_inputHints( TheSSInputHintsParameter->DefaultValue() ),
-   p_outputHints( TheSSOutputHintsParameter->DefaultValue() ),
-   p_outputDirectory( TheSSOutputDirectoryParameter->DefaultValue() ),
-   p_outputExtension( TheSSOutputExtensionParameter->DefaultValue() ),
-   p_outputPrefix( TheSSOutputPrefixParameter->DefaultValue() ),
-   p_outputPostfix( TheSSOutputPostfixParameter->DefaultValue() ),
-   p_outputKeyword( TheSSOutputKeywordParameter->DefaultValue() ),
-   p_overwriteExistingFiles( TheSSOverwriteExistingFilesParameter->DefaultValue() ),
-   p_onError( SSOnError::Default ),
-   p_sortingProperty( SSSortingProperty::Default ),
-   p_graphProperty( SSGraphProperty::Default )
+SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_routine( SSRoutine::Default )
+   , p_fileCache( TheSSFileCacheParameter->DefaultValue() )
+   , p_subframeScale( TheSSSubframeScaleParameter->DefaultValue() )
+   , p_cameraGain( TheSSCameraGainParameter->DefaultValue() )
+   , p_cameraResolution( SSCameraResolution::Default )
+   , p_siteLocalMidnight( TheSSSiteLocalMidnightParameter->DefaultValue() )
+   , p_scaleUnit( SSScaleUnit::Default )
+   , p_dataUnit( SSDataUnit::Default )
+   , p_structureLayers( TheSSStructureLayersParameter->DefaultValue() )
+   , p_noiseLayers( TheSSNoiseLayersParameter->DefaultValue() )
+   , p_hotPixelFilterRadius( TheSSHotPixelFilterRadiusParameter->DefaultValue() )
+   , p_hotPixelFilter( TheSSApplyHotPixelFilterParameter->DefaultValue() )
+   , p_noiseReductionFilterRadius( TheSSNoiseReductionFilterRadiusParameter->DefaultValue() )
+   , p_sensitivity( TheSSSensitivityParameter->DefaultValue() )
+   , p_peakResponse( TheSSPeakResponseParameter->DefaultValue() )
+   , p_maxDistortion( TheSSMaxDistortionParameter->DefaultValue() )
+   , p_upperLimit( TheSSUpperLimitParameter->DefaultValue() )
+   , p_backgroundExpansion( TheSSBackgroundExpansionParameter->DefaultValue() )
+   , p_xyStretch( TheSSXYStretchParameter->DefaultValue() )
+   , p_psfFit( SSPSFFit::Default )
+   , p_psfFitCircular( TheSSPSFFitCircularParameter->DefaultValue() )
+   , p_pedestal( TheSSPedestalParameter->DefaultValue() )
+   , p_inputHints( TheSSInputHintsParameter->DefaultValue() )
+   , p_outputHints( TheSSOutputHintsParameter->DefaultValue() )
+   , p_outputDirectory( TheSSOutputDirectoryParameter->DefaultValue() )
+   , p_outputExtension( TheSSOutputExtensionParameter->DefaultValue() )
+   , p_outputPrefix( TheSSOutputPrefixParameter->DefaultValue() )
+   , p_outputPostfix( TheSSOutputPostfixParameter->DefaultValue() )
+   , p_outputKeyword( TheSSOutputKeywordParameter->DefaultValue() )
+   , p_overwriteExistingFiles( TheSSOverwriteExistingFilesParameter->DefaultValue() )
+   , p_onError( SSOnError::Default )
+   , p_sortingProperty( SSSortingProperty::Default )
+   , p_graphProperty( SSGraphProperty::Default )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-SubframeSelectorInstance::SubframeSelectorInstance( const SubframeSelectorInstance& x ) :
-   ProcessImplementation( x )
+SubframeSelectorInstance::SubframeSelectorInstance( const SubframeSelectorInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -212,11 +211,11 @@ public:
    SubframeSelectorMeasureThread( int index,
                                   ImageVariant* subframe,
                                   const String& subframePath,
-                                  MeasureThreadInputData* data ) :
-      m_index( index ),
-      m_subframe( subframe ),
-      m_outputData( subframePath ),
-      m_data( data )
+                                  MeasureThreadInputData* data )
+      : m_index( index )
+      , m_subframe( subframe )
+      , m_outputData( subframePath )
+      , m_data( data )
    {
    }
 
@@ -317,7 +316,7 @@ private:
       double noiseFraction = 0;
       double noiseEstimateKS = 0;
       double noiseFractionKS = 0;
-      SeparableFilter H( __5x5B3Spline_hv, __5x5B3Spline_hv, 5 );
+      SeparableFilter H( s_5x5B3Spline_hv, s_5x5B3Spline_hv, 5 );
       for ( int n = 4; ; )
       {
          ATrousWaveletTransform W( H, n );
@@ -326,10 +325,10 @@ private:
          size_type N;
          if ( n == 4 )
          {
-            noiseEstimateKS = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/__5x5B3Spline_kj[0];
+            noiseEstimateKS = W.NoiseKSigma( 0, 3, 0.01, 10, &N )/s_5x5B3Spline_kj[0];
             noiseFractionKS = double( N )/m_subframe->NumberOfPixels();
          }
-         noiseEstimate = W.NoiseMRS( ImageVariant( *m_subframe ), __5x5B3Spline_kj, noiseEstimateKS, 3, &N );
+         noiseEstimate = W.NoiseMRS( ImageVariant( *m_subframe ), s_5x5B3Spline_kj, noiseEstimateKS, 3, &N );
          noiseFraction = double( N )/m_subframe->NumberOfPixels();
 
          if ( noiseEstimate > 0 && noiseFraction >= 0.01 )
@@ -354,7 +353,7 @@ private:
       m_outputData.medianMeanDev = m_subframe->AvgDev( m_outputData.median, 0, -1, -1, 1 );
       EvaluateNoise();
       m_outputData.snrWeight = m_outputData.noise != 0 ?
-                               pcl::Pow( m_outputData.medianMeanDev, 2.0 ) / pcl::Pow( m_outputData.noise, 2.0 ) : 0;
+                     Pow( m_outputData.medianMeanDev, 2.0 ) / Pow( m_outputData.noise, 2.0 ) : 0;
    }
 
    star_list StarDetector()
@@ -381,33 +380,31 @@ private:
       psf_list PSFs;
       for ( star_list::const_iterator i = begin; i != end; ++i )
       {
-         int radius = pcl::Max(3, pcl::Ceil(pcl::Sqrt(i->size)));
+         int radius = Max( 3, Ceil( Sqrt( i->size ) ) );
          Rect rect( Point( i->position.x - radius, i->position.y - radius ),
                     Point( i->position.x + radius, i->position.y + radius ) );
 
-         PSFFit psfFit( *m_subframe, i->position, rect, PSFFunction( m_data->instance->p_psfFit ),
-                        m_data->instance->p_psfFitCircular );
-         PSFData psf = psfFit.psf;
-
-         if ( psf.status == PSFFit::FittedOk )
-            PSFs.Append( psf );
+         PSFFit fit( *m_subframe, i->position, rect, PSFFunction( m_data->instance->p_psfFit ),
+                     m_data->instance->p_psfFitCircular );
+         if ( fit )
+            PSFs << fit.psf;
       }
       return PSFs;
    }
 
-   PSFFit::Function PSFFunction( const pcl_enum& fit )
+   PSFFit::psf_function PSFFunction( const pcl_enum& fit )
    {
       switch ( m_data->instance->p_psfFit )
       {
-      case SSPSFFit::Gaussian:   return PSFFit::Function::Gaussian;
-      case SSPSFFit::Moffat10:   return PSFFit::Function::MoffatA;
-      case SSPSFFit::Moffat8:    return PSFFit::Function::Moffat8;
-      case SSPSFFit::Moffat6:    return PSFFit::Function::Moffat6;
-      case SSPSFFit::Moffat4:    return PSFFit::Function::Moffat4;
-      case SSPSFFit::Moffat25:   return PSFFit::Function::Moffat25;
-      case SSPSFFit::Moffat15:   return PSFFit::Function::Moffat15;
-      case SSPSFFit::Lorentzian: return PSFFit::Function::Lorentzian;
-      default: return PSFFit::Function::Gaussian;
+      default: // ?!
+      case SSPSFFit::Gaussian:   return PSFunction::Gaussian;
+      case SSPSFFit::Moffat10:   return PSFunction::MoffatA;
+      case SSPSFFit::Moffat8:    return PSFunction::Moffat8;
+      case SSPSFFit::Moffat6:    return PSFunction::Moffat6;
+      case SSPSFFit::Moffat4:    return PSFunction::Moffat4;
+      case SSPSFFit::Moffat25:   return PSFunction::Moffat25;
+      case SSPSFFit::Moffat15:   return PSFunction::Moffat15;
+      case SSPSFFit::Lorentzian: return PSFunction::Lorentzian;
       }
    }
 
@@ -418,7 +415,7 @@ private:
       // Determine the best fit to weight the others against
       double minMAD = DBL_MAX;
       for ( const PSFData& psf : fits )
-         minMAD = pcl::Min( minMAD, psf.mad );
+         minMAD = Min( minMAD, psf.mad );
 
       // Analyze each star parameter against the best residual
       double fwhmSumSigma = 0;
@@ -436,8 +433,8 @@ private:
          double weight = minMAD / MAD;
          sumWeight += weight;
 
-         fwhms[i] = pcl::Sqrt( fit->sx * fit->sy );
-         eccentricities[i] = pcl::Sqrt(1.0 - pcl::Pow(fit->sy / fit->sx, 2.0));
+         fwhms[i] = Sqrt( fit->sx * fit->sy );
+         eccentricities[i] = Sqrt( 1.0 - Pow( fit->sy / fit->sx, 2.0 ) );
          residuals[i] = MAD;
 
          fwhmSumSigma += weight * fwhms[i];
@@ -452,14 +449,12 @@ private:
       m_outputData.starResidual = residualSumSigma / sumWeight;
 
       // Determine Mean Deviation for each star parameter
-      m_outputData.fwhmMeanDev = pcl::AvgDev( fwhms.Begin(), fwhms.End(),
-                                              pcl::Median( fwhms.Begin(), fwhms.End() ) );
-      m_outputData.fwhmMeanDev = PSFData::FWHM( PSFFunction( m_data->instance->p_psfFit ),
-                                                m_outputData.fwhmMeanDev, 0 ); // beta is unused here
-      m_outputData.eccentricityMeanDev = pcl::AvgDev( eccentricities.Begin(), eccentricities.End(),
-                                                      pcl::Median( eccentricities.Begin(), eccentricities.End() ) );
-      m_outputData.starResidualMeanDev = pcl::AvgDev( residuals.Begin(), residuals.End(),
-                                                      pcl::Median( residuals.Begin(), residuals.End() ) );
+      m_outputData.fwhmMeanDev = AvgDev( fwhms.Begin(), fwhms.End(), Median( fwhms.Begin(), fwhms.End() ) );
+      m_outputData.fwhmMeanDev = PSFData::FWHM( PSFFunction( m_data->instance->p_psfFit ), m_outputData.fwhmMeanDev );
+      m_outputData.eccentricityMeanDev = AvgDev( eccentricities.Begin(), eccentricities.End(),
+                                                 Median( eccentricities.Begin(), eccentricities.End() ) );
+      m_outputData.starResidualMeanDev = AvgDev( residuals.Begin(), residuals.End(),
+                                                 Median( residuals.Begin(), residuals.End() ) );
    }
 
    int                        m_index;
@@ -1694,4 +1689,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorInstance.cpp - Released 2020-07-31T19:33:39Z

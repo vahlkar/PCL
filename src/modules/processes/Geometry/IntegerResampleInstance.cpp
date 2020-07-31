@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// IntegerResampleInstance.cpp - Released 2020-02-27T12:56:01Z
+// IntegerResampleInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -64,21 +64,21 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-IntegerResampleInstance::IntegerResampleInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   p_zoomFactor( int32( TheIRZoomFactorParameter->DefaultValue() ) ),
-   p_downsampleMode( TheIRDownsamplingModeParameter->Default ),
-   p_resolution( TheIRXResolutionParameter->DefaultValue(), TheIRYResolutionParameter->DefaultValue() ),
-   p_metric( TheIRMetricResolutionParameter->DefaultValue() ),
-   p_forceResolution( TheIRForceResolutionParameter->DefaultValue() ),
-   p_noGUIMessages( TheIRNoGUIMessagesParameter->DefaultValue() )
+IntegerResampleInstance::IntegerResampleInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , p_zoomFactor( int32( TheIRZoomFactorParameter->DefaultValue() ) )
+   , p_downsampleMode( TheIRDownsamplingModeParameter->Default )
+   , p_resolution( TheIRXResolutionParameter->DefaultValue(), TheIRYResolutionParameter->DefaultValue() )
+   , p_metric( TheIRMetricResolutionParameter->DefaultValue() )
+   , p_forceResolution( TheIRForceResolutionParameter->DefaultValue() )
+   , p_noGUIMessages( TheIRNoGUIMessagesParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-IntegerResampleInstance::IntegerResampleInstance( const IntegerResampleInstance& x ) :
-   ProcessImplementation( x )
+IntegerResampleInstance::IntegerResampleInstance( const IntegerResampleInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -125,7 +125,6 @@ bool IntegerResampleInstance::CanExecuteOn( const View& view, pcl::String& whyNo
       whyNot = "IntegerResample cannot be executed on previews.";
       return false;
    }
-
    return true;
 }
 
@@ -233,4 +232,4 @@ void* IntegerResampleInstance::LockParameter( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF IntegerResampleInstance.cpp - Released 2020-07-31T19:33:39Z

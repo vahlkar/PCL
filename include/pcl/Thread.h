@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Thread.h - Released 2020-02-27T12:55:23Z
+// pcl/Thread.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -657,22 +657,61 @@ public:
     * process the specified number of items, with the specified overhead limit
     * and maximum number of processors.
     *
-    * \note In the current implementation of this function, the returned array
-    * tends to spread the total work load uniformly across the threads
-    * available. Future implementations may consider additional factors,
-    * including the possibility of using new global settings specific for
-    * thread execution optimization. For this reason, under normal conditions a
-    * module should always use the result of calling this function to define
-    * a thread execution schedule.
+    * In the current implementation of this function, the returned array tends
+    * to spread the total work load uniformly across the threads available.
+    * Future implementations may consider additional factors, including the
+    * possibility of using new global settings specific for thread execution
+    * optimization. For this reason, under normal conditions a module should
+    * always use the result of calling this function to define a thread
+    * execution schedule. See also OptimalThreadLoadsAligned() for a variant of
+    * this function with prescribed item alignment.
     *
     * \note A module must never try to run more threads concurrently than the
     * length of the array returned by this function. Failure to follow this
     * rule will invalidate a module for certification.
+    *
+    * \sa OptimalThreadLoadsAligned()
     */
    static Array<size_type> OptimalThreadLoads( size_type count,
                                                size_type overheadLimit = 1u,
                                                int maxThreads = PCL_MAX_PROCESSORS );
 
+   /*!
+    * Returns a list of per-thread counts optimized for parallel processing of
+    * a contiguous set of items stored with a prescribed alignment.
+    *
+    * \param count   Number of <em>processing units</em>. A processing unit can
+    *             be a single pixel, a row of pixels, or any suitable item,
+    *             according to the task being performed by the caller. For
+    *             optimal performance, the size in bytes of a processing unit
+    *             should be even, assuming that the task will be applied to a
+    *             contiguous list of \a count items.
+    *
+    * \param align   Item alignment. The function will return a list of counts,
+    *             where all counts but the last one are guaranteed to be
+    *             integer multiples of this parameter. The default value is 16.
+    *
+    * \param overheadLimit    %Thread overhead limit in processing units. The
+    *             function returns a list with a maximum length such that no
+    *             thread would have to process less processing units than this
+    *             value. The default overhead limit is one processing unit.
+    *
+    * \param maxThreads    Maximum number of threads to use. The length of the
+    *             returned list will be at most either this value, or the
+    *             maximum number of threads currently allowed for the calling
+    *             process (whichever is less), or maybe a smaller length, if
+    *             necessary to enforce the specified alignment. The default
+    *             value of this parameter does not impose a practical limit.
+    *
+    * Other than the prescribed alignment, this function is equivalent to its
+    * unaligned counterpart OptimalThreadLoads().
+    *
+    * \sa OptimalThreadLoads()
+    */
+   static Array<size_type> OptimalThreadLoadsAligned( size_type count,
+                                                      int align = 16,
+                                                      size_type overheadLimit = 1u,
+                                                      int maxThreads = PCL_MAX_PROCESSORS );
 private:
 
    int m_processorIndex = -1;
@@ -711,4 +750,4 @@ void PCL_FUNC Sleep( unsigned ms );
 #endif   // __PCL_Thread_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Thread.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Thread.h - Released 2020-07-31T19:33:04Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInstance.cpp - Released 2020-02-27T12:56:01Z
+// AdaptiveStretchInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,19 +68,20 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-AdaptiveStretchInstance::AdaptiveStretchInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_noiseThreshold( TheASNoiseThresholdParameter->DefaultValue() ),
-   p_protection( TheASProtectionParameter->DefaultValue() ),
-   p_useProtection( TheASUseProtectionParameter->DefaultValue() ),
-   p_maxCurvePoints( TheASMaxCurvePointsParameter->DefaultValue() ),
-   p_useROI( TheASUseROIParameter->DefaultValue() ),
-   p_roi( 0 )
+AdaptiveStretchInstance::AdaptiveStretchInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_noiseThreshold( TheASNoiseThresholdParameter->DefaultValue() )
+   , p_protection( TheASProtectionParameter->DefaultValue() )
+   , p_useProtection( TheASUseProtectionParameter->DefaultValue() )
+   , p_maxCurvePoints( TheASMaxCurvePointsParameter->DefaultValue() )
+   , p_useROI( TheASUseROIParameter->DefaultValue() )
 {
 }
 
-AdaptiveStretchInstance::AdaptiveStretchInstance( const AdaptiveStretchInstance& x ) :
-   ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+AdaptiveStretchInstance::AdaptiveStretchInstance( const AdaptiveStretchInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -135,8 +136,8 @@ public:
     * Create a curve with n bins for one channel of an image.
     */
    template <class P>
-   AdaptiveStretchCurve( const GenericImage<P>& image, int numberOfBins, const AdaptiveStretchInstance& instance, int channel = 0 ) :
-      StretchCurve( numberOfBins )
+   AdaptiveStretchCurve( const GenericImage<P>& image, int numberOfBins, const AdaptiveStretchInstance& instance, int channel = 0 )
+      : StretchCurve( numberOfBins )
    {
       /*
        * Sampling region.
@@ -317,8 +318,8 @@ private:
 
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( const AbstractImage& image, size_type count ) :
-         AbstractImage::ThreadData( image, count )
+      ThreadData( const AbstractImage& image, size_type count )
+         : AbstractImage::ThreadData( image, count )
       {
       }
 
@@ -339,14 +340,15 @@ private:
 
       BuilderThread( const ThreadData& data,
                      const GenericImage<P>& image,
-                     int begin, int end ) :
-         m_data( data ),
-         m_image( image ),
-         m_begin( begin ), m_end( end )
+                     int begin, int end )
+         : m_data( data )
+         , m_image( image )
+         , m_begin( begin )
+         , m_end( end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -430,15 +432,18 @@ private:
                          const partial_force_list& partialPositiveForces,
                          const partial_force_list& partialNegativeForces,
                          int                       begin,
-                         int                       end ) :
-         m_data( data ),
-         m_positiveForces( positiveForces ), m_negativeForces( negativeForces ),
-         m_partialPositiveForces( partialPositiveForces ), m_partialNegativeForces( partialNegativeForces ),
-         m_begin( begin ), m_end( end )
+                         int                       end )
+         : m_data( data )
+         , m_positiveForces( positiveForces )
+         , m_negativeForces( negativeForces )
+         , m_partialPositiveForces( partialPositiveForces )
+         , m_partialNegativeForces( partialNegativeForces )
+         , m_begin( begin )
+         , m_end( end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -486,15 +491,16 @@ private:
       TransformationThread( const ThreadData& data,
                             GenericImage<P>& image,
                             const AdaptiveStretchCurve& curve,
-                            size_type begin, size_type end ) :
-         m_data( data ),
-         m_image( image ),
-         m_curve( curve ),
-         m_begin( begin ), m_end( end )
+                            size_type begin, size_type end )
+         : m_data( data )
+         , m_image( image )
+         , m_curve( curve )
+         , m_begin( begin )
+         , m_end( end )
       {
       }
 
-      virtual void Run()
+      void Run() override
       {
          INIT_THREAD_MONITOR()
 
@@ -716,4 +722,4 @@ StretchCurve AdaptiveStretchInstance::Preview( UInt16Image& image, const View& v
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF AdaptiveStretchInstance.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeProcess.cpp - Released 2020-02-27T12:56:01Z
+// BinarizeProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -65,10 +65,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "BinarizeIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 BinarizeProcess* TheBinarizeProcess = nullptr;
 
 // ----------------------------------------------------------------------------
@@ -123,10 +119,11 @@ String BinarizeProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** BinarizeProcess::IconImageXPM() const
+String BinarizeProcess::IconImageSVGFile() const
 {
-   return BinarizeIcon_XPM;
+   return "@module_icons_dir/Binarize.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* BinarizeProcess::DefaultInterface() const
@@ -223,23 +220,23 @@ int BinarizeProcess::ProcessCommandLine( const StringList& argv ) const
       {
          if ( arg.Id() == "t" || arg.Id() == "threshold" )
          {
-            instance.level[0] = instance.level[1] = instance.level[2] = ArgumentThresholdValue( arg );
-            instance.isGlobal = true;
+            instance.p_level[0] = instance.p_level[1] = instance.p_level[2] = ArgumentThresholdValue( arg );
+            instance.p_global = true;
          }
          else if ( arg.Id() == "tR" || arg.Id() == "thresholdR" )
          {
-            instance.level[0] = ArgumentThresholdValue( arg );
-            instance.isGlobal = false;
+            instance.p_level[0] = ArgumentThresholdValue( arg );
+            instance.p_global = false;
          }
          else if ( arg.Id() == "tG" || arg.Id() == "thresholdG" )
          {
-            instance.level[1] = ArgumentThresholdValue( arg );
-            instance.isGlobal = false;
+            instance.p_level[1] = ArgumentThresholdValue( arg );
+            instance.p_global = false;
          }
          else if ( arg.Id() == "tB" || arg.Id() == "thresholdB" )
          {
-            instance.level[2] = ArgumentThresholdValue( arg );
-            instance.isGlobal = false;
+            instance.p_level[2] = ArgumentThresholdValue( arg );
+            instance.p_global = false;
          }
          else
             throw Error( "Unknown numeric argument: " + arg.Token() );
@@ -297,4 +294,4 @@ int BinarizeProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF BinarizeProcess.cpp - Released 2020-07-31T19:33:39Z

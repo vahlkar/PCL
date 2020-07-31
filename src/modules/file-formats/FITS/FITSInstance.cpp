@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.6
+// Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITSInstance.cpp - Released 2020-02-27T12:55:48Z
+// FITSInstance.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -70,9 +70,10 @@ public:
    double                            lowerRange;
    double                            upperRange;
    FITSFormat::out_of_range_fix_mode outOfRangeFixMode;
-   bool                              bottomUp                  : 1;
-   bool                              signedIntegersArePhysical : 1;
-   bool                              noProperties              : 1;
+   bool                              bottomUp;
+   bool                              useRowOrderKeywords;
+   bool                              signedIntegersArePhysical;
+   bool                              noProperties;
    int                               verbosity;
 
    FITSReadHints( const IsoString& hints )
@@ -84,6 +85,7 @@ public:
 
       FITSImageOptions fitsOptions = FITSFormat::DefaultOptions();
       bottomUp = fitsOptions.bottomUp;
+      useRowOrderKeywords = fitsOptions.useRowOrderKeywords;
       signedIntegersArePhysical = fitsOptions.signedIntegersArePhysical;
       noProperties = false;
       verbosity = 1;
@@ -113,8 +115,12 @@ public:
             outOfRangeFixMode = FITSFormat::OutOfRangeFix_Ignore;
          else if ( *i == "bottom-up" )
             bottomUp = true;
-         else if ( *i == "up-bottom" )
+         else if ( *i == "up-bottom" || *i == "top-down" )
             bottomUp = false;
+         else if ( *i == "use-roworder-keywords" )
+            useRowOrderKeywords = true;
+         else if ( *i == "ignore-roworder-keywords" )
+            useRowOrderKeywords = false;
          else if ( *i == "signed-is-physical" )
             signedIntegersArePhysical = true;
          else if ( *i == "signed-is-logical" )
@@ -138,8 +144,8 @@ public:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-FITSInstance::FITSInstance( const FITSFormat* f ) :
-   FileFormatImplementation( f )
+FITSInstance::FITSInstance( const FITSFormat* f )
+   : FileFormatImplementation( f )
 {
 }
 
@@ -172,14 +178,15 @@ ImageDescriptionArray FITSInstance::Open( const String& filePath, const IsoStrin
       m_reader = new FITSReader;
       m_reader->Open( filePath );
 
-      FITSImageOptions defaultOptions = FITSFormat::DefaultOptions();
+      FITSImageOptions options = FITSFormat::DefaultOptions();
 
       if ( !hints.IsEmpty() )
       {
          m_readHints = new FITSReadHints( hints );
-         defaultOptions.bottomUp = m_readHints->bottomUp;
-         defaultOptions.signedIntegersArePhysical = m_readHints->signedIntegersArePhysical;
-         defaultOptions.verbosity = m_readHints->verbosity;
+         options.bottomUp = m_readHints->bottomUp;
+         options.useRowOrderKeywords = m_readHints->useRowOrderKeywords;
+         options.signedIntegersArePhysical = m_readHints->signedIntegersArePhysical;
+         options.verbosity = m_readHints->verbosity;
       }
 
       ImageDescriptionArray a;
@@ -187,7 +194,7 @@ ImageDescriptionArray FITSInstance::Open( const String& filePath, const IsoStrin
       for ( int i = 0; i < int( m_reader->NumberOfImages() ); ++i )
       {
          m_reader->SetIndex( i );
-         m_reader->SetFITSOptions( defaultOptions );
+         m_reader->SetFITSOptions( options );
 
          // Some alien FITS files use invalid image identifiers - fix them here
          IsoString id = m_reader->Id();
@@ -763,7 +770,7 @@ void FITSInstance::Create( const String& filePath, int numberOfImages, const Iso
             fitsOptions.unsignedIntegers = false;
          else if ( *i == "bottom-up" )
             fitsOptions.bottomUp = true;
-         else if ( *i == "up-bottom" )
+         else if ( *i == "up-bottom" || *i == "top-down" )
             fitsOptions.bottomUp = false;
          else if ( *i == "cleanup-headers" )
             fitsOptions.cleanupHeaders = true;
@@ -980,4 +987,4 @@ void FITSInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.cpp - Released 2020-02-27T12:55:48Z
+// EOF FITSInstance.cpp - Released 2020-07-31T19:33:23Z

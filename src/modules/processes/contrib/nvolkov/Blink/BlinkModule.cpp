@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkModule.cpp - Released 2020-02-27T12:56:01Z
+// BlinkModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -58,8 +58,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "BlinkModule.h"
 #include "BlinkProcess.h"
@@ -103,21 +103,21 @@ String BlinkModule::Description() const
 
 String BlinkModule::Company() const
 {
-   return "";
+   return String();
 }
 
 // ----------------------------------------------------------------------------
 
 String BlinkModule::Author() const
 {
-   return "Nikolay Volkov";
+   return "Nikolay Volkov (PTeam)";
 }
 
 // ----------------------------------------------------------------------------
 
 String BlinkModule::Copyright() const
 {
-   return "Copyright (c) 2011-2018 Nikolay Volkov";
+   return "Copyright (C) 2011-2020 Nikolay Volkov";
 }
 
 // ----------------------------------------------------------------------------
@@ -158,6 +158,8 @@ void BlinkModule::GetReleaseDate( int& year, int& month, int& day ) const
 
 } // pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::BlinkModule;
@@ -172,4 +174,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF BlinkModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF BlinkModule.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationProcess.cpp - Released 2020-02-27T12:56:01Z
+// NoOperationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -50,8 +50,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "NoOperationProcess.h"
 #include "NoOperationInstance.h"
+#include "NoOperationProcess.h"
 
 namespace pcl
 {
@@ -59,8 +59,6 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 NoOperationProcess* TheNoOperationProcess = nullptr;
-
-#include "NoOperationIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -98,12 +96,12 @@ String NoOperationProcess::Description() const
 
    "<html>"
    "<p>As its name suggests, NoOperation does exactly nothing. This is indeed the simplest possible "
-   "process in the PixInsight platform :)</p>"
+   "process on the PixInsight platform</p>"
 
    "<p>The purpose of NoOperation, however, is not so simple. Process instances are the main actors in "
    "PixInsight, since they are responsible for all of the actual image processing work. However, "
    "there are special situations in which one does not want to modify any image, but despite that, "
-   "a proces has to be used <i>in formal terms</i> for a given task to be accomplished.</p>"
+   "a process has to be used <i>in formal terms</i> for a given task to be accomplished.</p>"
 
    "<p>A notable example of such situations happens with ImageContainer. ImageContainer can be used to "
    "perform a batch format conversion for a set of image files. In this case, one simply specifies "
@@ -113,17 +111,18 @@ String NoOperationProcess::Description() const
 
    "<p>to convert every input image file (in any supported file format) to the JPEG format.</p>"
 
-   "<p>However, for ImageContainer to work, a process instance is always required. In this case, NoOperation "
-   "can be used to execute ImageContainer without applying any actual process to input images, which are "
-   "simply read from disk and written in the JPEG format (which corresponds to the .jpg file extension).</p>"
+   "<p>However, for ImageContainer to work, execution of a process instance is always required. In this "
+   "case, NoOperation can be used to execute ImageContainer without applying any actual process to the "
+   "input images, which are simply read from disk and written in the JPEG format (which corresponds to "
+   "the .jpg file extension).</p>"
    "</html>";
 }
 
 // ----------------------------------------------------------------------------
 
-const char** NoOperationProcess::IconImageXPM() const
+String NoOperationProcess::IconImageSVGFile() const
 {
-   return NoOperationIcon_XPM;
+   return "@module_icons_dir/NoOperation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -153,4 +152,4 @@ ProcessImplementation* NoOperationProcess::Clone( const ProcessImplementation& p
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF NoOperationProcess.cpp - Released 2020-07-31T19:33:39Z

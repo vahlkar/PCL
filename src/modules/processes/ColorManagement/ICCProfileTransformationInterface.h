@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationInterface.h - Released 2020-02-27T12:56:01Z
+// ICCProfileTransformationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -80,39 +80,31 @@ public:
    ICCProfileTransformationInterface();
    virtual ~ICCProfileTransformationInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-
-   virtual void ApplyInstance() const;
-   virtual void TrackViewUpdated( bool active );
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
-   virtual bool WantsImageNotifications() const;
-   virtual void ImageUpdated( const View& );
-   virtual void ImageFocused( const View& );
-   virtual void ImageCMUpdated( const View& );
-
-   virtual bool WantsGlobalNotifications() const;
-   virtual void GlobalCMUpdated();
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void ApplyInstance() const override;
+   void TrackViewUpdated( bool active ) override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
+   bool WantsImageNotifications() const override;
+   void ImageUpdated( const View& ) override;
+   void ImageFocused( const View& ) override;
+   void ImageCMUpdated( const View& ) override;
+   bool WantsGlobalNotifications() const override;
+   void GlobalCMUpdated() override;
 
 private:
 
-   ICCProfileTransformationInstance instance;
-   ICCProfile::profile_list         profiles;
-   String                           defaultRGBProfile;
-   String                           defaultGrayscaleProfile;
+   ICCProfileTransformationInstance m_instance;
+   ICCProfile::profile_list         m_profiles;
+   String                           m_defaultRGBProfile;
+   String                           m_defaultGrayscaleProfile;
 
    struct GUIData
    {
@@ -183,4 +175,4 @@ PCL_END_LOCAL
 #endif   // __ICCProfileTransformationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF ICCProfileTransformationInterface.h - Released 2020-07-31T19:33:39Z

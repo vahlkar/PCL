@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/IntegerResample.cpp - Released 2020-02-27T12:55:33Z
+// pcl/IntegerResample.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -288,4 +288,4 @@ void IntegerResample::Apply( UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegerResample.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/IntegerResample.cpp - Released 2020-07-31T19:33:12Z

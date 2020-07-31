@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterInstance.cpp - Released 2020-02-27T12:56:01Z
+// RestorationFilterInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -67,33 +67,34 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-RestorationFilterInstance::RestorationFilterInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   psfMode( RFPSFMode::Default ),
-   psfSigma( TheRFPSFParametricSigmaParameter->DefaultValue() ),
-   psfShape( TheRFPSFParametricShapeParameter->DefaultValue() ),
-   psfAspectRatio( TheRFPSFParametricAspectRatioParameter->DefaultValue() ),
-   psfRotationAngle( TheRFPSFParametricRotationAngleParameter->DefaultValue() ),
-   psfMotionLength( TheRFPSFMotionLengthParameter->DefaultValue() ),
-   psfMotionRotationAngle( TheRFPSFMotionRotationAngleParameter->DefaultValue() ),
-   K( TheRFWienerKParameter->DefaultValue() ),
-   gamma( TheRFLeastSquaresGammaParameter->DefaultValue() ),
-   algorithm( RFAlgorithm::Default ),
-   amount( TheRFAmountParameter->DefaultValue() ),
-   toLuminance( TheRFToLuminanceParameter->DefaultValue() ),
-   linear( TheRFLinearParameter->DefaultValue() ),
-   deringing( TheRFDeringingParameter->DefaultValue() ),
-   deringingDark( TheRFDeringingDarkParameter->DefaultValue() ),
-   deringingBright( TheRFDeringingBrightParameter->DefaultValue() ),
-   outputDeringingMaps( TheRFOutputDeringingMapsParameter->DefaultValue() ),
-   rangeLow( TheRFRangeLowParameter->DefaultValue() ),
-   rangeHigh( TheRFRangeHighParameter->DefaultValue() )
+RestorationFilterInstance::RestorationFilterInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , psfMode( RFPSFMode::Default )
+   , psfSigma( TheRFPSFParametricSigmaParameter->DefaultValue() )
+   , psfShape( TheRFPSFParametricShapeParameter->DefaultValue() )
+   , psfAspectRatio( TheRFPSFParametricAspectRatioParameter->DefaultValue() )
+   , psfRotationAngle( TheRFPSFParametricRotationAngleParameter->DefaultValue() )
+   , psfMotionLength( TheRFPSFMotionLengthParameter->DefaultValue() )
+   , psfMotionRotationAngle( TheRFPSFMotionRotationAngleParameter->DefaultValue() )
+   , K( TheRFWienerKParameter->DefaultValue() )
+   , gamma( TheRFLeastSquaresGammaParameter->DefaultValue() )
+   , algorithm( RFAlgorithm::Default )
+   , amount( TheRFAmountParameter->DefaultValue() )
+   , toLuminance( TheRFToLuminanceParameter->DefaultValue() )
+   , linear( TheRFLinearParameter->DefaultValue() )
+   , deringing( TheRFDeringingParameter->DefaultValue() )
+   , deringingDark( TheRFDeringingDarkParameter->DefaultValue() )
+   , deringingBright( TheRFDeringingBrightParameter->DefaultValue() )
+   , outputDeringingMaps( TheRFOutputDeringingMapsParameter->DefaultValue() )
+   , rangeLow( TheRFRangeLowParameter->DefaultValue() )
+   , rangeHigh( TheRFRangeHighParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-RestorationFilterInstance::RestorationFilterInstance( const RestorationFilterInstance& x ) : ProcessImplementation( x )
+RestorationFilterInstance::RestorationFilterInstance( const RestorationFilterInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -165,8 +166,8 @@ class RestorationFilterEngine
 {
 public:
 
-   RestorationFilterEngine( ImageVariant& image, const RestorationFilterInstance& instance, const View& view ) :
-   m_instance( instance ), m_psf()
+   RestorationFilterEngine( ImageVariant& image, const RestorationFilterInstance& instance, const View& view )
+      : m_instance( instance )
    {
       if ( m_instance.toLuminance && image.IsColor() )
       {
@@ -223,8 +224,8 @@ public:
       {
          switch ( image.BitsPerSample() )
          {
-         case 32 : Apply( static_cast<pcl::Image&>( *image ), (ComplexPixelTraits*)0 ); break;
-         case 64 : Apply( static_cast<pcl::DImage&>( *image ), (DComplexPixelTraits*)0 ); break;
+         case 32: Apply( static_cast<pcl::Image&>( *image ), (ComplexPixelTraits*)0 ); break;
+         case 64: Apply( static_cast<pcl::DImage&>( *image ), (DComplexPixelTraits*)0 ); break;
          }
       }
       else
@@ -234,8 +235,8 @@ public:
          floatImage.CopyImage( image );
          switch ( floatImage.BitsPerSample() )
          {
-         case 32 : Apply( static_cast<pcl::Image&>( *floatImage ), (ComplexPixelTraits*)0 ); break;
-         case 64 : Apply( static_cast<pcl::DImage&>( *floatImage ), (DComplexPixelTraits*)0 ); break;
+         case 32: Apply( static_cast<pcl::Image&>( *floatImage ), (ComplexPixelTraits*)0 ); break;
+         case 64: Apply( static_cast<pcl::DImage&>( *floatImage ), (DComplexPixelTraits*)0 ); break;
          }
          image.CopyImage( floatImage );
       }
@@ -749,4 +750,4 @@ bool RestorationFilterInstance::CreatePSF( Image& psf ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF RestorationFilterInstance.cpp - Released 2020-07-31T19:33:39Z

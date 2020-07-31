@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFModule.cpp - Released 2020-02-27T12:55:48Z
+// TIFFModule.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "TIFFModule.h"
 #include "TIFFFormat.h"
@@ -129,10 +129,10 @@ String TIFFModule::TradeMarks() const
 
 String TIFFModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "TIFF-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "TIFF-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -156,6 +156,8 @@ void TIFFModule::GetReleaseDate( int& year, int& month, int& day ) const
 
 } // pcl
 
+// -------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::TIFFModule;
@@ -167,4 +169,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF TIFFModule.cpp - Released 2020-02-27T12:55:48Z
+// EOF TIFFModule.cpp - Released 2020-07-31T19:33:23Z

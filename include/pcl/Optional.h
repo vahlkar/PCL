@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Optional.h - Released 2020-02-27T12:55:23Z
+// pcl/Optional.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -88,8 +88,9 @@ public:
     * The value instance will be default-constructed implicitly, which means
     * that the type T must provide valid default construction semantics.
     */
-   Optional() : m_value() // N.B: this initialization prevents warnings like
-   {                      // 'Optional<>::m_value may be used uninitialized...'
+   Optional()
+      : m_value() // N.B: this initialization prevents warnings such as
+   {              // 'Optional<>::m_value may be used uninitialized...'
    }
 
    /*!
@@ -109,9 +110,9 @@ public:
    /*!
     * Constructs a defined %Optional object with the specified \a value.
     */
-   Optional( const T& value ) :
-      m_value( value ),
-      m_defined( true )
+   Optional( const T& value )
+      : m_value( value )
+      , m_defined( true )
    {
    }
 
@@ -279,4 +280,4 @@ private:
 #endif   // __PCL_Optional_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Optional.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Optional.h - Released 2020-07-31T19:33:04Z

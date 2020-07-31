@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// FileDataCachePreferencesDialog.h - Released 2020-02-27T12:56:01Z
+// FileDataCachePreferencesDialog.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -53,12 +53,12 @@
 #ifndef __FileDataCachePreferencesDialog_h
 #define __FileDataCachePreferencesDialog_h
 
-#include <pcl/Dialog.h>
-#include <pcl/Sizer.h>
 #include <pcl/CheckBox.h>
-#include <pcl/SpinBox.h>
+#include <pcl/Dialog.h>
 #include <pcl/Label.h>
 #include <pcl/PushButton.h>
+#include <pcl/Sizer.h>
+#include <pcl/SpinBox.h>
 
 namespace pcl
 {
@@ -95,9 +95,9 @@ private:
 
    void Update();
 
-   void SpinBox_ValueUpdated( SpinBox& sender, int value );
-   void Button_Click( Button& sender, bool checked );
-   void Dialog_Return( Dialog& sender, int retVal );
+   void e_ValueUpdated( SpinBox& sender, int value );
+   void e_Click( Button& sender, bool checked );
+   void e_Return( Dialog& sender, int retVal );
 };
 
 // ----------------------------------------------------------------------------
@@ -107,4 +107,4 @@ private:
 #endif   // __FileDataCachePreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCachePreferencesDialog.h - Released 2020-02-27T12:56:01Z
+// EOF FileDataCachePreferencesDialog.h - Released 2020-07-31T19:33:39Z

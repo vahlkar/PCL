@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.6
+// Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITSFormat.cpp - Released 2020-02-27T12:55:48Z
+// FITSFormat.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -62,19 +62,19 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-FITSFormat::FITSFormat()
-{
-}
-
 IsoString FITSFormat::Name() const
 {
    return "FITS";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList FITSFormat::FileExtensions() const
 {
    return StringList() << ".fit" << ".fits" << ".fts" << ".fits.fz";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList FITSFormat::MimeTypes() const
 {
@@ -82,10 +82,14 @@ IsoStringList FITSFormat::MimeTypes() const
    return IsoStringList() << "image/fits" << "application/fits";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 FITSFormat::Version() const
 {
-   return 0x102;
+   return 0x103;
 }
+
+// ----------------------------------------------------------------------------
 
 String FITSFormat::Description() const
 {
@@ -97,6 +101,8 @@ String FITSFormat::Description() const
    "volume 376, page 359; bibcode: 2001A&A...376..359H</p>"
    "</html>";
 }
+
+// ----------------------------------------------------------------------------
 
 String FITSFormat::Implementation() const
 {
@@ -117,77 +123,88 @@ String FITSFormat::Implementation() const
    "National Aeronautics and Space Administration.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
-"\nFITS Format Hints             Description"
-"\n============================  ================================================="
-"\nlower-range n           (r )  n is the lower bound of the input range for"
-"\n                              floating point pixel data (default = 0)."
+"\nFITS Format Hints              Description"
+"\n=============================  ================================================"
+"\nlower-range n            (r )  n is the lower bound of the input range for"
+"\n                               floating point pixel data (default = 0)."
 "\n-------------------------------------------------------------------------------"
-"\nupper-range n           (r )  n is the upper bound of the input range for"
-"\n                              floating point pixel data (default = 1)."
+"\nupper-range n            (r )  n is the upper bound of the input range for"
+"\n                               floating point pixel data (default = 1)."
 "\n-------------------------------------------------------------------------------"
-"\nrescale-out-of-range    (r )  Normalize out-of-range floating point pixel data."
+"\nrescale-out-of-range     (r )  Normalize out-of-range floating point pixel data"
+"\n                               to the [0,1] range."
 "\n-------------------------------------------------------------------------------"
-"\ntruncate-out-of-range   (r )  Truncate out-of-range floating point pixel data."
-"\n                              Warning &emdash; out-of-range pixel values will"
-"\n                              be set to fixed values, so data will be lost."
+"\ntruncate-out-of-range    (r )  Truncate out-of-range floating point pixel data."
+"\n                               Warning &emdash; out-of-range pixel values will"
+"\n                               be set to fixed values; some data will be lost."
 "\n-------------------------------------------------------------------------------"
-"\nignore-out-of-range     (r )  Ignore out-of-range floating point pixel data."
-"\n                              Warning &emdash; out-of-range pixel values will"
-"\n                              not be fixed. Use at your own risk."
+"\nignore-out-of-range      (r )  Ignore out-of-range floating point pixel data."
+"\n                               Warning &emdash; out-of-range pixel values will"
+"\n                               not be fixed. Use at your own risk."
 "\n-------------------------------------------------------------------------------"
-"\nsigned-is-physical      (r )  Signed integer images store physical pixel data"
-"\n                              in the range [0,+2^(n-1)-1], where n is bit"
-"\n                              depth."
+"\nsigned-is-physical       (r )  Signed integer images store physical pixel data"
+"\n                               in the range [0,+2^(n-1)-1], where n is bit"
+"\n                               depth."
 "\n-------------------------------------------------------------------------------"
-"\nsigned-is-logical       (r )  Signed integer images store pixel data with the"
-"\n                              full range [-2^(n-1),+2^(n-1)-1], where n is bit"
-"\n                              depth."
+"\nsigned-is-logical        (r )  Signed integer images store pixel data with the"
+"\n                               full range [-2^(n-1),+2^(n-1)-1], where n is bit"
+"\n                               depth."
 "\n-------------------------------------------------------------------------------"
-"\nbottom-up               (rw)  Follow the lower left origin, bottom to top"
-"\n                              convention of image coordinates."
+"\nbottom-up                (rw)  Follow the lower left origin, bottom to top"
+"\n                               convention of image coordinates."
 "\n-------------------------------------------------------------------------------"
-"\nup-bottom               (rw)  Follow the upper left origin, top to bottom"
-"\n                              convention of image coordinates."
+"\nup-bottom                (rw)  Follow the upper left origin, top to bottom"
+"\n                               convention of image coordinates."
 "\n-------------------------------------------------------------------------------"
-"\nproperties              (rw)  Read/write image properties stored as BLOBs in"
-"\n                              FITS image extensions."
+"\ntop-down                 (rw)  A synonym for up-bottom."
 "\n-------------------------------------------------------------------------------"
-"\nno-properties           (rw)  Do not read/write BLOB image properties."
+"\nuse-roworder-keywords    (r )  Use existing ROWORDER keywords to override the"
+"\n                               default FITS coordinate origin and vertical"
+"\n                               orientation."
 "\n-------------------------------------------------------------------------------"
-"\nicc-profile             ( w)  Write ICC profiles stored as special FITS image"
-"\n                              extensions."
+"\nignore-roworder-keywords (r )  Ignore existing ROWORDER keywords."
 "\n-------------------------------------------------------------------------------"
-"\nno-icc-profile          ( w)  Do not write ICC profile image extensions."
+"\nproperties               (rw)  Read/write image properties stored as BLOBs in"
+"\n                               FITS image extensions."
 "\n-------------------------------------------------------------------------------"
-"\nthumbnail               ( w)  Write thumbnail image extensions."
+"\nno-properties            (rw)  Do not read/write BLOB image properties."
 "\n-------------------------------------------------------------------------------"
-"\nno-thumbnail            ( w)  Do not write thumbnail image extensions."
+"\nicc-profile              ( w)  Write ICC profiles stored as special FITS image"
+"\n                               extensions."
 "\n-------------------------------------------------------------------------------"
-"\nverbosity n             (rw)  n is a verbosity level in the range [0,3] to"
-"\n                              control the amount of generated messages"
-"\n                              (default = 1)."
+"\nno-icc-profile           ( w)  Do not write ICC profile image extensions."
 "\n-------------------------------------------------------------------------------"
-"\nunsigned                ( w)  Write unsigned integer pixel data in the range"
-"\n                              [0,2^n-1], where n is bit depth."
+"\nthumbnail                ( w)  Write thumbnail image extensions."
 "\n-------------------------------------------------------------------------------"
-"\nsigned                  ( w)  Write signed integer pixel data in the range"
-"\n                              [-2^(n-1),+2^(n-1)-1], where n is bit depth."
+"\nno-thumbnail             ( w)  Do not write thumbnail image extensions."
 "\n-------------------------------------------------------------------------------"
-"\ncleanup-headers         ( w)  Automatically fix characters outside the"
-"\n                              printable range of ASCII (from 0x20 to 0x7E) in"
-"\n                              generated FITS header keywords."
+"\nverbosity n              (rw)  n is a verbosity level in the range [0,3] to"
+"\n                               control the amount of generated messages"
+"\n                               (default = 1)."
 "\n-------------------------------------------------------------------------------"
-"\nno-cleanup-headers      ( w)  Do not fix non-printable ASCII characters in FITS"
-"\n                              header keywords."
+"\nunsigned                 ( w)  Write unsigned integer pixel data in the range"
+"\n                               [0,2^n-1], where n is bit depth."
+"\n-------------------------------------------------------------------------------"
+"\nsigned                   ( w)  Write signed integer pixel data in the range"
+"\n                               [-2^(n-1),+2^(n-1)-1], where n is bit depth."
+"\n-------------------------------------------------------------------------------"
+"\ncleanup-headers          ( w)  Automatically fix characters outside the"
+"\n                               printable range of ASCII (from 0x20 to 0x7E) in"
+"\n                               generated FITS header keywords."
+"\n-------------------------------------------------------------------------------"
+"\nno-cleanup-headers       ( w)  Do not fix non-printable ASCII characters in"
+"\n                               FITS header keywords."
 "\n-------------------------------------------------------------------------------"
 "\n"
    "</p>"
    "</html>";
 }
+
+// ----------------------------------------------------------------------------
 
 String FITSFormat::Status() const
 {
@@ -205,93 +222,129 @@ String FITSFormat::Status() const
    "management and interchange of digital images and associated data. For "
    "up-to-date information on XISF, please visit:</p>"
 
-   "<p>http://pixinsight.com/xisf/</p>";
+   "<p>https://pixinsight.com/xisf/</p>";
 }
 
-String FITSFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String FITSFormat::IconImageSVGFile() const
 {
-   return ":/file-format/fits-format-icon.png";
+   return "@module_icons_dir/FITS.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSFormat::CanReadIncrementally() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSFormat::CanWriteIncrementally() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSFormat::CanStore32Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSFormat::CanStore64Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSFormat::CanStoreFloat() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSFormat::CanStoreDouble() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSFormat::CanStoreResolution() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSFormat::CanStoreKeywords() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSFormat::CanStoreICCProfiles() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSFormat::CanStoreThumbnails() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSFormat::CanStoreImageProperties() const
 {
    return true; // BLOBs only
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSFormat::SupportsMultipleImages() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSFormat::CanEditPreferences() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSFormat::UsesFormatSpecificData() const
 {
    return true; // use format-specific data to manage some special FITS options
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSFormat::IsDeprecated() const
 {
    return true; // formally deprecated since core build 1187
 }
 
+// ----------------------------------------------------------------------------
+
 bool FITSFormat::ValidateFormatSpecificData( const void* data ) const
 {
    return FormatOptions::FromGenericDataBlock( data ) != nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSFormat::DisposeFormatSpecificData( void* data ) const
 {
@@ -299,10 +352,14 @@ void FITSFormat::DisposeFormatSpecificData( void* data ) const
       delete o;
 }
 
+// ----------------------------------------------------------------------------
+
 FileFormatImplementation* FITSFormat::Create() const
 {
    return new FITSInstance( this );
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSFormat::EditPreferences() const
 {
@@ -346,6 +403,7 @@ bool FITSFormat::EditPreferences() const
       Settings::Write ( "FITSEmbedProperties",                   overrides.embedProperties );
 
       Settings::Write ( "FITSBottomUp",                          options.bottomUp );
+      Settings::Write ( "FITSUseRowOrderKeywords",               options.useRowOrderKeywords );
       Settings::Write ( "FITSUnsignedIntegers",                  options.unsignedIntegers );
       Settings::Write ( "FITSWriteFixedFloatKeywords",           options.writeFixedFloatKeywords );
       Settings::Write ( "FITSWriteScalingKeywordsForSignedData", options.writeScalingKeywordsForSignedData );
@@ -358,37 +416,31 @@ bool FITSFormat::EditPreferences() const
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
+#define ReadBooleanBitFieldFromSettings( key, bit )   \
+   {                                                  \
+      bool b = bit;                                   \
+      Settings::Read( key, b );                       \
+      bit = b;                                        \
+   }
+
 FITSImageOptions FITSFormat::DefaultOptions()
 {
    FITSImageOptions options;
-   bool b;
 
-   b = options.bottomUp;
-   Settings::Read( "FITSBottomUp", b );
-   options.bottomUp = b;
-
-   b = options.unsignedIntegers;
-   Settings::Read( "FITSUnsignedIntegers", b );
-   options.unsignedIntegers = b;
-
-   b = options.writeFixedFloatKeywords;
-   Settings::Read( "FITSWriteFixedFloatKeywords", b );
-   options.writeFixedFloatKeywords = b;
-
-   b = options.writeScalingKeywordsForSignedData;
-   Settings::Read( "FITSWriteScalingKeywordsForSignedData", b );
-   options.writeScalingKeywordsForSignedData = b;
-
-   b = options.signedIntegersArePhysical;
-   Settings::Read( "FITSSignedIntegersArePhysical", b );
-   options.signedIntegersArePhysical = b;
-
-   b = options.cleanupHeaders;
-   Settings::Read( "FITSCleanupHeaders", b );
-   options.cleanupHeaders = b;
+   ReadBooleanBitFieldFromSettings( "FITSBottomUp",                          options.bottomUp );
+   ReadBooleanBitFieldFromSettings( "FITSUseRowOrderKeywords",               options.useRowOrderKeywords );
+   ReadBooleanBitFieldFromSettings( "FITSUnsignedIntegers",                  options.unsignedIntegers );
+   ReadBooleanBitFieldFromSettings( "FITSWriteFixedFloatKeywords",           options.writeFixedFloatKeywords );
+   ReadBooleanBitFieldFromSettings( "FITSWriteScalingKeywordsForSignedData", options.writeScalingKeywordsForSignedData );
+   ReadBooleanBitFieldFromSettings( "FITSSignedIntegersArePhysical",         options.signedIntegersArePhysical );
+   ReadBooleanBitFieldFromSettings( "FITSCleanupHeaders",                    options.cleanupHeaders );
 
    return options;
 }
+
+// ----------------------------------------------------------------------------
 
 FITSFormat::OutOfRangePolicyOptions FITSFormat::DefaultOutOfRangePolicyOptions()
 {
@@ -401,6 +453,8 @@ FITSFormat::OutOfRangePolicyOptions FITSFormat::DefaultOutOfRangePolicyOptions()
 
    return options;
 }
+
+// ----------------------------------------------------------------------------
 
 FITSFormat::EmbeddingOverrides FITSFormat::DefaultEmbeddingOverrides()
 {
@@ -417,18 +471,19 @@ FITSFormat::EmbeddingOverrides FITSFormat::DefaultEmbeddingOverrides()
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 #define FITS_SIGNATURE  0x46495453u // 'FITS'
 
-FITSFormat::FormatOptions::FormatOptions() :
-   signature( FITS_SIGNATURE ),
-   options( FITSFormat::DefaultOptions() )
+FITSFormat::FormatOptions::FormatOptions()
+   : signature( FITS_SIGNATURE )
+   , options( FITSFormat::DefaultOptions() )
 {
 }
 
-FITSFormat::FormatOptions::FormatOptions( const FITSFormat::FormatOptions& x ) :
-   signature( FITS_SIGNATURE ),
-   options( x.options )
+FITSFormat::FormatOptions::FormatOptions( const FITSFormat::FormatOptions& x )
+   : signature( FITS_SIGNATURE )
+   , options( x.options )
 {
 }
 
@@ -447,4 +502,4 @@ FITSFormat::FormatOptions* FITSFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.cpp - Released 2020-02-27T12:55:48Z
+// EOF FITSFormat.cpp - Released 2020-07-31T19:33:23Z

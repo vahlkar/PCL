@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFParameters.cpp - Released 2020-02-27T12:56:01Z
+// DynamicPSFParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -76,6 +76,7 @@ DPPSFStarIndex*          TheDPPSFStarIndexParameter = nullptr;
 DPPSFFunction*           TheDPPSFFunctionParameter = nullptr;
 DPPSFCircular*           TheDPPSFCircularParameter = nullptr;
 DPPSFStatus*             TheDPPSFStatusParameter = nullptr;
+DPPSFCelestial*          TheDPPSFCelestialParameter = nullptr;
 DPPSFBackground*         TheDPPSFBackgroundParameter = nullptr;
 DPPSFAmplitude*          TheDPPSFAmplitudeParameter = nullptr;
 DPPSFCentroidX*          TheDPPSFCentroidXParameter = nullptr;
@@ -84,8 +85,9 @@ DPPSFRadiusX*            TheDPPSFRadiusXParameter = nullptr;
 DPPSFRadiusY*            TheDPPSFRadiusYParameter = nullptr;
 DPPSFRotationAngle*      TheDPPSFRotationAngleParameter = nullptr;
 DPPSFBeta*               TheDPPSFBetaParameter = nullptr;
+DPPSFFlux*               TheDPPSFFluxParameter = nullptr;
+DPPSFMeanSignal*         TheDPPSFMeanSignalParameter = nullptr;
 DPPSFMAD*                TheDPPSFMADParameter = nullptr;
-DPPSFCelestial*          TheDPPSFCelestialParameter = nullptr;
 DPPSFCentroidRA*         TheDPPSFCentroidRAParameter = nullptr;
 DPPSFCentroidDec*        TheDPPSFCentroidDecParameter = nullptr;
 
@@ -100,6 +102,10 @@ DPMoffat4PSF*            TheDPMoffat4PSFParameter = nullptr;
 DPMoffat25PSF*           TheDPMoffat25PSFParameter = nullptr;
 DPMoffat15PSF*           TheDPMoffat15PSFParameter = nullptr;
 DPLorentzianPSF*         TheDPLorentzianPSFParameter = nullptr;
+DPVariableShapePSF*      TheDPVariableShapePSFParameter = nullptr;
+DPAutoVariableShapePSF*  TheDPAutoVariableShapePSFParameter = nullptr;
+DPBetaMin*               TheDPBetaMinParameter = nullptr;
+DPBetaMax*               TheDPBetaMaxParameter = nullptr;
 
 DPSignedAngles*          TheDPSignedAnglesParameter = nullptr;
 DPRegenerate*            TheDPRegenerateParameter = nullptr;
@@ -425,15 +431,16 @@ IsoString DPPSFFunction::ElementId( size_type i ) const
    switch ( i )
    {
    default:
-   case Gaussian:   return "Function_Gaussian";
-   case Moffat:     return "Function_Moffat";
-   case MoffatA:    return "Function_Moffat10";
-   case Moffat8:    return "Function_Moffat8";
-   case Moffat6:    return "Function_Moffat6";
-   case Moffat4:    return "Function_Moffat4";
-   case Moffat25:   return "Function_Moffat25";
-   case Moffat15:   return "Function_Moffat15";
-   case Lorentzian: return "Function_Lorentzian";
+   case Gaussian:      return "Function_Gaussian";
+   case Moffat:        return "Function_Moffat";
+   case MoffatA:       return "Function_Moffat10";
+   case Moffat8:       return "Function_Moffat8";
+   case Moffat6:       return "Function_Moffat6";
+   case Moffat4:       return "Function_Moffat4";
+   case Moffat25:      return "Function_Moffat25";
+   case Moffat15:      return "Function_Moffat15";
+   case Lorentzian:    return "Function_Lorentzian";
+   case VariableShape: return "Function_VariableShape";
    }
 }
 
@@ -445,6 +452,11 @@ int DPPSFFunction::ElementValue( size_type i ) const
 size_type DPPSFFunction::DefaultValueIndex() const
 {
    return size_type( Default );
+}
+
+bool DPPSFFunction::NeedsUnlocking() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -462,6 +474,11 @@ IsoString DPPSFCircular::Id() const
 bool DPPSFCircular::DefaultValue() const
 {
    return false;
+}
+
+bool DPPSFCircular::NeedsUnlocking() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -504,6 +521,33 @@ int DPPSFStatus::ElementValue( size_type i ) const
 size_type DPPSFStatus::DefaultValueIndex() const
 {
    return size_type( Default );
+}
+
+bool DPPSFStatus::NeedsUnlocking() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+DPPSFCelestial::DPPSFCelestial( MetaTable* T ) : MetaBoolean( T )
+{
+   TheDPPSFCelestialParameter = this;
+}
+
+IsoString DPPSFCelestial::Id() const
+{
+   return "celestial";
+}
+
+bool DPPSFCelestial::DefaultValue() const
+{
+   return false;
+}
+
+bool DPPSFCelestial::NeedsUnlocking() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -694,6 +738,60 @@ double DPPSFBeta::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+DPPSFFlux::DPPSFFlux( MetaTable* T ) : MetaDouble( T )
+{
+   TheDPPSFFluxParameter = this;
+}
+
+IsoString DPPSFFlux::Id() const
+{
+   return "flux";
+}
+
+int DPPSFFlux::Precision() const
+{
+   return 3;
+}
+
+bool DPPSFFlux::ScientificNotation() const
+{
+   return true;
+}
+
+double DPPSFFlux::DefaultValue() const
+{
+   return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+DPPSFMeanSignal::DPPSFMeanSignal( MetaTable* T ) : MetaDouble( T )
+{
+   TheDPPSFMeanSignalParameter = this;
+}
+
+IsoString DPPSFMeanSignal::Id() const
+{
+   return "meanSignal";
+}
+
+int DPPSFMeanSignal::Precision() const
+{
+   return 3;
+}
+
+bool DPPSFMeanSignal::ScientificNotation() const
+{
+   return true;
+}
+
+double DPPSFMeanSignal::DefaultValue() const
+{
+   return 0;
+}
+
+// ----------------------------------------------------------------------------
+
 DPPSFMAD::DPPSFMAD( MetaTable* T ) : MetaDouble( T )
 {
    TheDPPSFMADParameter = this;
@@ -717,23 +815,6 @@ bool DPPSFMAD::ScientificNotation() const
 double DPPSFMAD::DefaultValue() const
 {
    return 0;
-}
-
-// ----------------------------------------------------------------------------
-
-DPPSFCelestial::DPPSFCelestial( MetaTable* T ) : MetaBoolean( T )
-{
-   TheDPPSFCelestialParameter = this;
-}
-
-IsoString DPPSFCelestial::Id() const
-{
-   return "celestial";
-}
-
-bool DPPSFCelestial::DefaultValue() const
-{
-   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -969,6 +1050,104 @@ bool DPLorentzianPSF::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+DPVariableShapePSF::DPVariableShapePSF( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheDPVariableShapePSFParameter = this;
+}
+
+IsoString DPVariableShapePSF::Id() const
+{
+   return "variableShapePSF";
+}
+
+bool DPVariableShapePSF::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+DPAutoVariableShapePSF::DPAutoVariableShapePSF( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheDPAutoVariableShapePSFParameter = this;
+}
+
+IsoString DPAutoVariableShapePSF::Id() const
+{
+   return "autoVariableShapePSF";
+}
+
+bool DPAutoVariableShapePSF::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+DPBetaMin::DPBetaMin( MetaProcess* P ) : MetaFloat( P )
+{
+   TheDPBetaMinParameter = this;
+}
+
+IsoString DPBetaMin::Id() const
+{
+   return "betaMin";
+}
+
+int DPBetaMin::Precision() const
+{
+   return 2;
+}
+
+double DPBetaMin::DefaultValue() const
+{
+   return 1;
+}
+
+double DPBetaMin::MinimumValue() const
+{
+   return 0.5;
+}
+
+double DPBetaMin::MaximumValue() const
+{
+   return 2;
+}
+
+// ----------------------------------------------------------------------------
+
+DPBetaMax::DPBetaMax( MetaProcess* P ) : MetaFloat( P )
+{
+   TheDPBetaMaxParameter = this;
+}
+
+IsoString DPBetaMax::Id() const
+{
+   return "betaMax";
+}
+
+int DPBetaMax::Precision() const
+{
+   return 2;
+}
+
+double DPBetaMax::DefaultValue() const
+{
+   return 4;
+}
+
+double DPBetaMax::MinimumValue() const
+{
+   return 2;
+}
+
+double DPBetaMax::MaximumValue() const
+{
+   return 6;
+}
+
+// ----------------------------------------------------------------------------
+
 DPSignedAngles::DPSignedAngles( MetaProcess* P ) : MetaBoolean( P )
 {
    TheDPSignedAnglesParameter = this;
@@ -1117,7 +1296,7 @@ IsoString DPScaleMode::ElementId( size_type i ) const
    {
    default:
    case Pixels:           return "Scale_Pixels";
-   case StandardKeywords: return "Scale_StandardKeywords";
+   case StandardMetadata: return "Scale_StandardMetadata";
    case LiteralValue:     return "Scale_LiteralValue";
    case CustomKeyword:    return "Scale_CustomKeyword";
    }
@@ -1131,6 +1310,12 @@ int DPScaleMode::ElementValue( size_type i ) const
 size_type DPScaleMode::DefaultValueIndex() const
 {
    return size_type( Default );
+}
+
+IsoString DPScaleMode::ElementAliases() const
+{
+   // Compatibility with versions released before core 1.8.8-6.
+   return "Scale_StandardKeywords=Scale_StandardMetadata";
 }
 
 // ----------------------------------------------------------------------------
@@ -1267,4 +1452,4 @@ double DPBadStarFillColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF DynamicPSFParameters.cpp - Released 2020-07-31T19:33:39Z

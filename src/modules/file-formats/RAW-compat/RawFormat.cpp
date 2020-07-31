@@ -59,12 +59,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-RawFormat::RawFormat()
-{
-}
-
-// ----------------------------------------------------------------------------
-
 IsoString RawFormat::Name() const
 {
    return "RAW_compat";
@@ -140,13 +134,13 @@ String RawFormat::Implementation() const
    "<p>This implementation of digital camera raw format decoding uses LibRaw version 0.19.5.</p>"
 
    "<p>LibRaw library:<br/>"
-   "Copyright (c) 2008-2019 LibRaw LLC (info@libraw.org)<br/>"
+   "Copyright (c) 2008-2020 LibRaw LLC (info@libraw.org)<br/>"
    "The LibRaw library includes source code from:</p>"
 
    "<p>dcraw.c, Dave Coffin's raw photo decoder. Copyright (c) 1997-2016 by Dave Coffin</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019, Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
 
    "<p style=\"white-space:pre;\">"
 "\n-------------------------------------------------------------------------------"
@@ -266,9 +260,9 @@ String RawFormat::Implementation() const
 
 // ----------------------------------------------------------------------------
 
-String RawFormat::IconImageFile() const
+String RawFormat::IconImageSVGFile() const
 {
-   return ":/file-format/raw-format-icon.png";
+   return "@module_icons_dir/RAW.svg";
 }
 
 // ----------------------------------------------------------------------------

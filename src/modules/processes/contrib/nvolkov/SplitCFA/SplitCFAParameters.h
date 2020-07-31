@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAParameters.h - Released 2020-02-27T12:56:01Z
+// SplitCFAParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -59,8 +59,6 @@
 namespace pcl
 {
 
-// ----------------------------------------------------------------------------
-
 PCL_BEGIN_LOCAL
 
 // ----------------------------------------------------------------------------
@@ -68,129 +66,170 @@ PCL_BEGIN_LOCAL
 class SplitCFATargetFrames : public MetaTable
 {
 public:
+
    SplitCFATargetFrames( MetaProcess* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFATargetFrameEnabled : public MetaBoolean
 {
 public:
+
    SplitCFATargetFrameEnabled( MetaTable* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFATargetFramePath : public MetaString
 {
 public:
+
    SplitCFATargetFramePath( MetaTable* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFATargetFrameFolder : public MetaString
 {
 public:
+
    SplitCFATargetFrameFolder( MetaTable* );
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAOutputDir : public MetaString
 {
 public:
+
    SplitCFAOutputDir( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAOutputTree : public MetaBoolean
 {
 public:
+
    SplitCFAOutputTree( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAOutputSubDirCFA : public MetaBoolean
 {
 public:
+
    SplitCFAOutputSubDirCFA( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAPrefix : public MetaString
 {
 public:
+
    SplitCFAPrefix( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAPostfix : public MetaString
 {
 public:
+
    SplitCFAPostfix( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   String DefaultValue() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAOverwrite : public MetaBoolean
 {
 public:
+
    SplitCFAOverwrite( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAOutputViewId0 : public MetaString
 {
 public:
+
    SplitCFAOutputViewId0( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAOutputViewId1 : public MetaString
 {
 public:
+
    SplitCFAOutputViewId1( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAOutputViewId2 : public MetaString
 {
 public:
+
    SplitCFAOutputViewId2( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
+
+// ----------------------------------------------------------------------------
 
 class SplitCFAOutputViewId3 : public MetaString
 {
 public:
+
    SplitCFAOutputViewId3( MetaProcess* );
-   virtual IsoString Id() const;
-   virtual bool IsReadOnly() const;
+   IsoString Id() const override;
+   bool IsReadOnly() const override;
 };
 
+// ----------------------------------------------------------------------------
 
-extern SplitCFATargetFrames*       TheTargetFramesParameter;
+extern SplitCFATargetFrames* TheTargetFramesParameter;
 extern SplitCFATargetFrameEnabled* TheTargetFrameEnabledParameter;
-extern SplitCFATargetFramePath*    TheTargetFramePathParameter;
-extern SplitCFATargetFrameFolder*  TheTargetFrameFolderParameter;
+extern SplitCFATargetFramePath* TheTargetFramePathParameter;
+extern SplitCFATargetFrameFolder* TheTargetFrameFolderParameter;
 
-extern SplitCFAOutputDir*          TheOutputDirParameter;
-extern SplitCFAOutputTree*         TheOutputTreeParameter;
-extern SplitCFAOutputSubDirCFA*    TheOutputSubDirCFAParameter;
-extern SplitCFAPrefix*             ThePrefixParameter;
-extern SplitCFAPostfix*            ThePostfixParameter;
-extern SplitCFAOverwrite*          TheOverwriteParameter;
+extern SplitCFAOutputDir* TheOutputDirParameter;
+extern SplitCFAOutputTree* TheOutputTreeParameter;
+extern SplitCFAOutputSubDirCFA* TheOutputSubDirCFAParameter;
+extern SplitCFAPrefix* ThePrefixParameter;
+extern SplitCFAPostfix* ThePostfixParameter;
+extern SplitCFAOverwrite* TheOverwriteParameter;
 
-extern SplitCFAOutputViewId0*      TheSplitCFAOutputViewId0Parameter;
-extern SplitCFAOutputViewId1*      TheSplitCFAOutputViewId1Parameter;
-extern SplitCFAOutputViewId2*      TheSplitCFAOutputViewId2Parameter;
-extern SplitCFAOutputViewId3*      TheSplitCFAOutputViewId3Parameter;
+extern SplitCFAOutputViewId0* TheSplitCFAOutputViewId0Parameter;
+extern SplitCFAOutputViewId1* TheSplitCFAOutputViewId1Parameter;
+extern SplitCFAOutputViewId2* TheSplitCFAOutputViewId2Parameter;
+extern SplitCFAOutputViewId3* TheSplitCFAOutputViewId3Parameter;
 
 // ----------------------------------------------------------------------------
 
@@ -198,9 +237,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __SplitCFAParameters_h
+#endif // __SplitCFAParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAParameters.h - Released 2020-02-27T12:56:01Z
+// EOF SplitCFAParameters.h - Released 2020-07-31T19:33:39Z

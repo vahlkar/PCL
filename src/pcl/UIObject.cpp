@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/UIObject.cpp - Released 2020-02-27T12:55:33Z
+// pcl/UIObject.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -85,14 +85,16 @@ public:
    struct IndexItem
    {
       api_handle  handle;
-      size_type   count;
+      size_type   count = 0;
 
-      IndexItem( UIObject* object ) : handle( object->handle ), count( 0 )
+      IndexItem( UIObject* object )
+         : handle( object->handle )
       {
          Add( object );
       }
 
-      IndexItem( api_handle h, int ) : handle( h ), count( 0 )
+      IndexItem( api_handle h, int )
+         : handle( h )
       {
       }
 
@@ -290,13 +292,15 @@ void api_func UIEventDispatcher::HandleDestroyed( api_handle handle )
 
 // ----------------------------------------------------------------------------
 
-UIObject::UIObject( void* h ) : handle( h )
+UIObject::UIObject( void* h )
+   : handle( h )
 {
    if ( handle != nullptr )
       s_objects.Add( this );
 }
 
-UIObject::UIObject( const void* h ) : handle( const_cast<void*>( h ) )
+UIObject::UIObject( const void* h )
+   : handle( const_cast<void*>( h ) )
 {
    if ( handle != nullptr )
       s_objects.Add( this );
@@ -304,7 +308,8 @@ UIObject::UIObject( const void* h ) : handle( const_cast<void*>( h ) )
 
 // ----------------------------------------------------------------------------
 
-UIObject::UIObject( const UIObject& x ) : handle( x.handle )
+UIObject::UIObject( const UIObject& x )
+   : handle( x.handle )
 {
    if ( handle != nullptr )
    {
@@ -469,4 +474,4 @@ void UIObject::TransferHandle( void* newHandle )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/UIObject.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/UIObject.cpp - Released 2020-07-31T19:33:12Z

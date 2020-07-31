@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Control.h - Released 2020-02-27T12:55:23Z
+// pcl/Control.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -88,7 +88,7 @@ namespace pcl
  * <tr><td>FocusStyle::Tab</td>          <td>The control can be focused by pressing the tab key</td></tr>
  * <tr><td>FocusStyle::Click</td>        <td>The control can be focused by clicking on it with the mouse</td></tr>
  * <tr><td>FocusStyle::Wheel</td>        <td>The control can be focused with the mouse wheel</td></tr>
- * <tr><td>FocusStyle::TextListTab</td>  <td>Special mode reserved for Mac OS X</td></tr>
+ * <tr><td>FocusStyle::TextListTab</td>  <td>Special mode reserved for macOS</td></tr>
  * </table>
  */
 namespace FocusStyle
@@ -99,7 +99,7 @@ namespace FocusStyle
       Tab         = 0x01,  // Can focus control by pressing the tab key
       Click       = 0x02,  // Can focus control by mouse clicking
       Wheel       = 0x04,  // Can focus control with the mouse wheel
-      TextListTab = 0x08   // Mac OS X only
+      TextListTab = 0x08   // macOS only
    };
 }
 
@@ -1273,11 +1273,11 @@ public:
     * are 1.5 and 2.0 for high-density displays such as 4K and 5K monitors,
     * respectively, or 1.0 for normal 96 dpi monitors.
     *
-    * On OS X, this function normally returns 1.0 for Retina displays working
+    * On macOS, this function normally returns 1.0 for Retina displays working
     * in high-dpi modes, since the operating system performs the conversion
     * from logical to physical pixels automatically. The ResourcePixelRatio()
     * member function returns the actual ratio between physical and logical
-    * screen pixels on OS X.
+    * screen pixels on macOS.
     *
     * \ingroup ui_scaling_functions
     * \sa LogicalPixelsToPhysical(), PhysicalPixelsToLogical(),
@@ -1296,10 +1296,10 @@ public:
     * monitors, respectively, 2.0 for Retina displays, or 1.0 for normal 96 dpi
     * monitors.
     *
-    * On OS X with Retina monitors working in high-dpi modes, this function
+    * On macOS with Retina monitors working in high-dpi modes, this function
     * returns a value greater than one (typically 2.0), while
     * DisplayPixelRatio() normally returns one by default. This is because in
-    * high-dpi modes, OS X works in logical display coordinates to represent
+    * high-dpi modes, macOS works in logical display coordinates to represent
     * text, control sizes and distances. However, image resources must be
     * provided with pixel data in the physical screen resolution. On X11 and
     * Windows platforms, where no automatic display scaling is performed, this
@@ -1308,10 +1308,14 @@ public:
     * Portable code should use the value returned by this member function to
     * scale image resources drawn on controls, such as icons and bitmaps. The
     * ScaledResource() function can be used to select the appropriate file
-    * paths from PixInsight core resources.
+    * paths from PixInsight core resources. The LogicalPixelsToResource()
+    * function can be used to calculate scaled dimensions of graphical elements
+    * generated dynamically from scalable resources, e.g. with
+    * Bitmap::FromSVGFile() and similar routines.
     *
     * \ingroup ui_scaling_functions
-    * \sa ScaledResource(), DisplayPixelRatio()
+    * \sa LogicalPixelsToResource(), ResourcePixelsToLogical(),
+    * ScaledResource(), DisplayPixelRatio(),
     */
    double ResourcePixelRatio() const;
 
@@ -1460,7 +1464,8 @@ public:
     * converted to physical device pixels.
     *
     * \ingroup ui_scaling_functions
-    * \sa DisplayPixelRatio(), PhysicalPixelsToLogical()
+    * \sa DisplayPixelRatio(), PhysicalPixelsToLogical(),
+    * LogicalPixelsToResource()
     */
    int LogicalPixelsToPhysical( int size ) const
    {
@@ -1472,11 +1477,41 @@ public:
     * logical device-independent pixel units.
     *
     * \ingroup ui_scaling_functions
-    * \sa DisplayPixelRatio(), LogicalPixelsToPhysical()
+    * \sa DisplayPixelRatio(), LogicalPixelsToPhysical(),
+    * ResourcePixelsToLogical()
     */
    int PhysicalPixelsToLogical( int size ) const
    {
       return RoundInt( size/DisplayPixelRatio() );
+   }
+
+   /*!
+    * Returns the specified \a size in logical device-independent pixel units
+    * converted to resource pixel units.
+    *
+    * The returned value corresponds to physical display device pixels on all
+    * supported operating systems and desktop managers.
+    *
+    * \ingroup ui_scaling_functions
+    * \sa ResourcePixelRatio(), ResourcePixelsToLogical(),
+    * LogicalPixelsToPhysical()
+    */
+   int LogicalPixelsToResource( int size ) const
+   {
+      return RoundInt( ResourcePixelRatio()*size );
+   }
+
+   /*!
+    * Returns the specified \a size in resource pixel units converted to
+    * logical device-independent pixel units.
+    *
+    * \ingroup ui_scaling_functions
+    * \sa ResourcePixelRatio(), LogicalPixelsToResource(),
+    * PhysicalPixelsToLogical()
+    */
+   int ResourcePixelsToLogical( int size ) const
+   {
+      return RoundInt( size/ResourcePixelRatio() );
    }
 
    // -------------------------------------------------------------------------
@@ -1831,4 +1866,4 @@ int CanonicalControlHeightImplementation()
 #endif   // __PCL_Control_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Control.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Control.h - Released 2020-07-31T19:33:04Z

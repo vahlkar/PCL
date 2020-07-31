@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard BMP File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// BMPFormat.cpp - Released 2020-02-27T12:55:48Z
+// BMPFormat.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -65,10 +65,14 @@ IsoString BMPFormat::Name() const
    return "BMP";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList BMPFormat::FileExtensions() const
 {
    return StringList() << ".bmp";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList BMPFormat::MimeTypes() const
 {
@@ -85,15 +89,21 @@ IsoStringList BMPFormat::MimeTypes() const
                           << "application/x-win-bitmap";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 BMPFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String BMPFormat::Description() const
 {
    return "Windows Bitmap format (BMP).";
 }
+
+// ----------------------------------------------------------------------------
 
 String BMPFormat::Implementation() const
 {
@@ -104,37 +114,49 @@ String BMPFormat::Implementation() const
    "<p>Support for the Windows Bitmap format (BMP), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String BMPFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String BMPFormat::IconImageSVGFile() const
 {
-   return ":/file-format/bmp-format-icon.png";
+   return "@module_icons_dir/BMP.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool BMPFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool BMPFormat::CanWrite() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool BMPFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool BMPFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* BMPFormat::Create() const
 {
@@ -142,32 +164,43 @@ FileFormatImplementation* BMPFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString GIFFormat::Name() const
 {
    return "GIF";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList GIFFormat::FileExtensions() const
 {
    return StringList() << ".gif";
 }
 
+// ----------------------------------------------------------------------------
+
 IsoStringList GIFFormat::MimeTypes() const
 {
-   // RFC2045,RFC2046
+   // RFC2045, RFC2046
    return IsoStringList() << "image/gif";
 }
+
+// ----------------------------------------------------------------------------
 
 uint32 GIFFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String GIFFormat::Description() const
 {
    return "Graphics Interchange Format (GIF) - read-only support.";
 }
+
+// ----------------------------------------------------------------------------
 
 String GIFFormat::Implementation() const
 {
@@ -179,37 +212,49 @@ String GIFFormat::Implementation() const
    "<p>Read-only support for the Graphics Interchange Format (GIF), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String GIFFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String GIFFormat::IconImageSVGFile() const
 {
-   return ":/file-format/gif-format-icon.png";
+   return "@module_icons_dir/GIF.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool GIFFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool GIFFormat::CanWrite() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GIFFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool GIFFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* GIFFormat::Create() const
 {
@@ -217,31 +262,42 @@ FileFormatImplementation* GIFFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString ICOFormat::Name() const
 {
    return "ICO";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList ICOFormat::FileExtensions() const
 {
    return StringList() << ".ico";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList ICOFormat::MimeTypes() const
 {
    return IsoStringList() << "image/ico" << "image/x-icon" << "application/ico" << "application/x-ico";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 ICOFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String ICOFormat::Description() const
 {
    return "Windows Icon format (ICO).";
 }
+
+// ----------------------------------------------------------------------------
 
 String ICOFormat::Implementation() const
 {
@@ -253,37 +309,49 @@ String ICOFormat::Implementation() const
    "<p>Support for the Windows Icon format (ICO), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String ICOFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String ICOFormat::IconImageSVGFile() const
 {
-   return ":/file-format/ico-format-icon.png";
+   return "@module_icons_dir/ICO.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool ICOFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ICOFormat::CanWrite() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool ICOFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool ICOFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* ICOFormat::Create() const
 {
@@ -291,31 +359,42 @@ FileFormatImplementation* ICOFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString MNGFormat::Name() const
 {
    return "MNG";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList MNGFormat::FileExtensions() const
 {
    return StringList() << ".mng";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList MNGFormat::MimeTypes() const
 {
    return IsoStringList() << "image/mng" << "video/mng" << "video/x-mng";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 MNGFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String MNGFormat::Description() const
 {
    return "Multiple Network Graphics format (MNG) - read-only support.";
 }
+
+// ----------------------------------------------------------------------------
 
 String MNGFormat::Implementation() const
 {
@@ -327,37 +406,49 @@ String MNGFormat::Implementation() const
    "<p>Read-only support for the Multiple Network Graphics format (MNG), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String MNGFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String MNGFormat::IconImageSVGFile() const
 {
-   return ":/file-format/mng-format-icon.png";
+   return "@module_icons_dir/MNG.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool MNGFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool MNGFormat::CanWrite() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool MNGFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool MNGFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* MNGFormat::Create() const
 {
@@ -365,31 +456,42 @@ FileFormatImplementation* MNGFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString PBMFormat::Name() const
 {
    return "PBM";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList PBMFormat::FileExtensions() const
 {
    return StringList() << ".pbm";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList PBMFormat::MimeTypes() const
 {
    return IsoStringList() << "image/pbm" << "image/x-pbm" << "image/portable bitmap" << "image/x-portable-bitmap";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 PBMFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String PBMFormat::Description() const
 {
    return "Portable Bitmap format (PBM) - read-only support.";
 }
+
+// ----------------------------------------------------------------------------
 
 String PBMFormat::Implementation() const
 {
@@ -401,37 +503,49 @@ String PBMFormat::Implementation() const
    "<p>Read-only support for the Portable Bitmap format (PBM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String PBMFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String PBMFormat::IconImageSVGFile() const
 {
-   return ":/file-format/pbm-format-icon.png";
+   return "@module_icons_dir/PBM.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool PBMFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PBMFormat::CanWrite() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool PBMFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PBMFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* PBMFormat::Create() const
 {
@@ -439,31 +553,42 @@ FileFormatImplementation* PBMFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString PGMFormat::Name() const
 {
    return "PGM";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList PGMFormat::FileExtensions() const
 {
    return StringList() << ".pgm";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList PGMFormat::MimeTypes() const
 {
    return IsoStringList() << "image/pgm" << "image/x-pgm" << "image/portable graymap" << "image/x-portable-graymap";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 PGMFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String PGMFormat::Description() const
 {
    return "Portable Graymap format (PGM) - read-only support.";
 }
+
+// ----------------------------------------------------------------------------
 
 String PGMFormat::Implementation() const
 {
@@ -475,37 +600,49 @@ String PGMFormat::Implementation() const
    "<p>Read-only support for the Portable Graymap format (PGM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String PGMFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String PGMFormat::IconImageSVGFile() const
 {
-   return ":/file-format/pgm-format-icon.png";
+   return "@module_icons_dir/PGM.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool PGMFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PGMFormat::CanWrite() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool PGMFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PGMFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* PGMFormat::Create() const
 {
@@ -513,31 +650,42 @@ FileFormatImplementation* PGMFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString PNGFormat::Name() const
 {
    return "PNG";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList PNGFormat::FileExtensions() const
 {
    return StringList() << ".png";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList PNGFormat::MimeTypes() const
 {
    return IsoStringList() << "image/png" << "application/png" << "application/x-png";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 PNGFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String PNGFormat::Description() const
 {
    return "Portable Network Graphics format (PNG).";
 }
+
+// ----------------------------------------------------------------------------
 
 String PNGFormat::Implementation() const
 {
@@ -549,37 +697,49 @@ String PNGFormat::Implementation() const
    "<p>Basic support for the Portable Network Graphics format (PNG), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String PNGFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String PNGFormat::IconImageSVGFile() const
 {
-   return ":/file-format/png-format-icon.png";
+   return "@module_icons_dir/PNG.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool PNGFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PNGFormat::CanWrite() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool PNGFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PNGFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* PNGFormat::Create() const
 {
@@ -587,16 +747,21 @@ FileFormatImplementation* PNGFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString PPMFormat::Name() const
 {
    return "PPM";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList PPMFormat::FileExtensions() const
 {
    return StringList() << ".ppm";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList PPMFormat::MimeTypes() const
 {
@@ -608,15 +773,21 @@ IsoStringList PPMFormat::MimeTypes() const
                           << "application/x-ppm";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 PPMFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String PPMFormat::Description() const
 {
    return "Portable Pixmap format (PPM).";
 }
+
+// ----------------------------------------------------------------------------
 
 String PPMFormat::Implementation() const
 {
@@ -628,37 +799,49 @@ String PPMFormat::Implementation() const
    "<p>Support for the Portable Pixmap format (PPM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String PPMFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String PPMFormat::IconImageSVGFile() const
 {
-   return ":/file-format/ppm-format-icon.png";
+   return "@module_icons_dir/PPM.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool PPMFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PPMFormat::CanWrite() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool PPMFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool PPMFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* PPMFormat::Create() const
 {
@@ -666,31 +849,42 @@ FileFormatImplementation* PPMFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString XBMFormat::Name() const
 {
    return "XBM";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList XBMFormat::FileExtensions() const
 {
    return StringList() << ".xbm";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList XBMFormat::MimeTypes() const
 {
    return IsoStringList() << "image/xbm" << "image/x-xbitmap";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 XBMFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String XBMFormat::Description() const
 {
    return "X11 Bitmap format (XBM).";
 }
+
+// ----------------------------------------------------------------------------
 
 String XBMFormat::Implementation() const
 {
@@ -702,37 +896,49 @@ String XBMFormat::Implementation() const
    "<p>Support for the X11 Bitmap format (XBM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String XBMFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String XBMFormat::IconImageSVGFile() const
 {
-   return ":/file-format/xbm-format-icon.png";
+   return "@module_icons_dir/XBM.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool XBMFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool XBMFormat::CanWrite() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool XBMFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool XBMFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* XBMFormat::Create() const
 {
@@ -740,31 +946,42 @@ FileFormatImplementation* XBMFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString XPMFormat::Name() const
 {
    return "XPM";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList XPMFormat::FileExtensions() const
 {
    return StringList() << ".xpm";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList XPMFormat::MimeTypes() const
 {
    return IsoStringList() << "image/xpm" << "image/x-xpm" << "image/x-xpixmap";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 XPMFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String XPMFormat::Description() const
 {
    return "X11 Pixmap format (XPM).";
 }
+
+// ----------------------------------------------------------------------------
 
 String XPMFormat::Implementation() const
 {
@@ -776,37 +993,49 @@ String XPMFormat::Implementation() const
    "<p>Support for the X11 Pixmap format (XPM), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String XPMFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String XPMFormat::IconImageSVGFile() const
 {
-   return ":/file-format/xpm-format-icon.png";
+   return "@module_icons_dir/XPM.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool XPMFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool XPMFormat::CanWrite() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool XPMFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool XPMFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* XPMFormat::Create() const
 {
@@ -814,16 +1043,21 @@ FileFormatImplementation* XPMFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString TGAFormat::Name() const
 {
    return "TGA";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList TGAFormat::FileExtensions() const
 {
    return StringList() << ".tga" << ".tpic";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList TGAFormat::MimeTypes() const
 {
@@ -836,15 +1070,21 @@ IsoStringList TGAFormat::MimeTypes() const
                           << "application/x-targa";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 TGAFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String TGAFormat::Description() const
 {
-   return "Truevision TGA format (TARGA).";
+   return "Truevision TGA format (TARGA) - read-only support.";
 }
+
+// ----------------------------------------------------------------------------
 
 String TGAFormat::Implementation() const
 {
@@ -857,37 +1097,49 @@ String TGAFormat::Implementation() const
    "<p>RLE compressed TGA files are not supported by this reader. Only uncompressed images can be read.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String TGAFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String TGAFormat::IconImageSVGFile() const
 {
-   return ":/file-format/tga-format-icon.png";
+   return "@module_icons_dir/TGA.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool TGAFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool TGAFormat::CanWrite() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool TGAFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool TGAFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* TGAFormat::Create() const
 {
@@ -895,31 +1147,42 @@ FileFormatImplementation* TGAFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString WEBPFormat::Name() const
 {
    return "WEBP";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList WEBPFormat::FileExtensions() const
 {
    return StringList() << ".webp";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList WEBPFormat::MimeTypes() const
 {
    return IsoStringList() << "image/webp";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 WEBPFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String WEBPFormat::Description() const
 {
    return "WebP image format.";
 }
+
+// ----------------------------------------------------------------------------
 
 String WEBPFormat::Implementation() const
 {
@@ -931,37 +1194,49 @@ String WEBPFormat::Implementation() const
    "<p>Basic support for the WebP image format, based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String WEBPFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String WEBPFormat::IconImageSVGFile() const
 {
-   return ":/file-format/webp-format-icon.png";
+   return "@module_icons_dir/WEBP.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool WEBPFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool WEBPFormat::CanWrite() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool WEBPFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool WEBPFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* WEBPFormat::Create() const
 {
@@ -969,31 +1244,42 @@ FileFormatImplementation* WEBPFormat::Create() const
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IsoString SVGFormat::Name() const
 {
    return "SVG";
 }
 
+// ----------------------------------------------------------------------------
+
 StringList SVGFormat::FileExtensions() const
 {
    return StringList() << ".svg";
 }
+
+// ----------------------------------------------------------------------------
 
 IsoStringList SVGFormat::MimeTypes() const
 {
    return IsoStringList() << "image/svg" << "image/svg+xml";
 }
 
+// ----------------------------------------------------------------------------
+
 uint32 SVGFormat::Version() const
 {
    return 0x100;
 }
 
+// ----------------------------------------------------------------------------
+
 String SVGFormat::Description() const
 {
    return "Scalable Vector Graphics format (SVG) - read-only support.";
 }
+
+// ----------------------------------------------------------------------------
 
 String SVGFormat::Implementation() const
 {
@@ -1005,37 +1291,49 @@ String SVGFormat::Implementation() const
    "<p>Read-only support for the Scalable Vector Graphics format (SVG), based on the Qt5 library.</p>"
 
    "<p>Qt Library:<br/>"
-   "Copyright (C) 2019 The Qt Company Ltd and other contributors.</p>"
+   "Copyright (C) 2020 The Qt Company Ltd and other contributors.</p>"
 
    "<p>PixInsight Class Library (PCL):<br/>"
-   "Copyright (c) 2003-2019 Pleiades Astrophoto</p>"
+   "Copyright (c) 2003-2020 Pleiades Astrophoto</p>"
    "</html>";
 }
 
-String SVGFormat::IconImageFile() const
+// ----------------------------------------------------------------------------
+
+String SVGFormat::IconImageSVGFile() const
 {
-   return ":/file-format/svg-format-icon.png";
+   return "@module_icons_dir/SVG.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 bool SVGFormat::CanRead() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool SVGFormat::CanWrite() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 bool SVGFormat::CanStore8Bit() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool SVGFormat::CanStore16Bit() const
 {
    return false;
 }
+
+// ----------------------------------------------------------------------------
 
 FileFormatImplementation* SVGFormat::Create() const
 {
@@ -1047,4 +1345,4 @@ FileFormatImplementation* SVGFormat::Create() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BMPFormat.cpp - Released 2020-02-27T12:55:48Z
+// EOF BMPFormat.cpp - Released 2020-07-31T19:33:23Z

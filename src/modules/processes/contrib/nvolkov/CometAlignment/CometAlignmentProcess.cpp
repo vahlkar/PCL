@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentProcess.cpp - Released 2020-02-27T12:56:01Z
+// CometAlignmentProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -51,121 +51,113 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "CometAlignmentProcess.h"
-#include "CometAlignmentParameters.h"
 #include "CometAlignmentInstance.h"
 #include "CometAlignmentInterface.h"
+#include "CometAlignmentParameters.h"
+#include "CometAlignmentProcess.h"
 
 namespace pcl
 {
-#include "CometAlignmentIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
-CometAlignmentProcess* TheCometAlignmentProcess = 0;
+CometAlignmentProcess* TheCometAlignmentProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-//#include "CometAlignmentIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-CometAlignmentProcess::CometAlignmentProcess () : MetaProcess ()
+CometAlignmentProcess::CometAlignmentProcess()
 {
    TheCometAlignmentProcess = this;
 
-   // Instantiate process parameters
-   new CATargetFrames (this);
-
-   new CATargetFrameEnabled (TheTargetFrames);
-   new CATargetFramePath (TheTargetFrames);
-   new CATargetFrameDate (TheTargetFrames);
-   new CATargetFrameJDate (TheTargetFrames);
-   new CATargetFrameX (TheTargetFrames);
-   new CATargetFrameY (TheTargetFrames);
+   new CATargetFrames( this );
+   new CATargetFrameEnabled( TheTargetFrames );
+   new CATargetFramePath( TheTargetFrames );
+   new CATargetFrameDate( TheTargetFrames );
+   new CATargetFrameJDate( TheTargetFrames );
+   new CATargetFrameX( TheTargetFrames );
+   new CATargetFrameY( TheTargetFrames );
    new CADrizzlePath( TheTargetFrames );
-
    new CAInputHints( this );
    new CAOutputHints( this );
-   new CAOutputDir (this);
+   new CAOutputDir( this );
    new CAOutputExtension( this );
-   new CAPrefix (this);
-   new CAPostfix (this);
-   new CAOverwrite (this);
-
-   new CAReference (this);
-
-   new CASubtractFile (this);
-   new CASubtractMode (this);
-   new CAEnableLinearFit (this);
-   new CARejectLow (this);
-   new CARejectHigh (this);
-   new CANormalize (this);
-   new CADrzSaveSA (this);
-   new CADrzSaveCA (this);
-   new CAOperandIsDI (this);
-
-   new CAPixelInterpolation (this);
-   new CALinearClampingThreshold (this);
+   new CAPrefix( this );
+   new CAPostfix( this );
+   new CAOverwrite( this );
+   new CAReference( this );
+   new CASubtractFile( this );
+   new CASubtractMode( this );
+   new CAEnableLinearFit( this );
+   new CARejectLow( this );
+   new CARejectHigh( this );
+   new CANormalize( this );
+   new CADrzSaveSA( this );
+   new CADrzSaveCA( this );
+   new CAOperandIsDI( this );
+   new CAPixelInterpolation( this );
+   new CALinearClampingThreshold( this );
 }
 
 // ----------------------------------------------------------------------------
 
-IsoString CometAlignmentProcess::Id () const
+IsoString CometAlignmentProcess::Id() const
 {
    return "CometAlignment";
 }
 
 // ----------------------------------------------------------------------------
 
-IsoString CometAlignmentProcess::Category () const
+IsoString CometAlignmentProcess::Category() const
 {
    return "ImageRegistration";
 }
 
 // ----------------------------------------------------------------------------
 
-uint32 CometAlignmentProcess::Version () const
+uint32 CometAlignmentProcess::Version() const
 {
    return 0x100;
 }
 
 // ----------------------------------------------------------------------------
 
-String CometAlignmentProcess::Description () const
+String CometAlignmentProcess::Description() const
 {
    return "";
 }
 
-const char** CometAlignmentProcess::IconImageXPM() const
-{
-   return CometAlignmentIcon_XPM;
-}
 // ----------------------------------------------------------------------------
 
-ProcessInterface* CometAlignmentProcess::DefaultInterface () const
+String CometAlignmentProcess::IconImageSVGFile() const
+{
+   return "@module_icons_dir/CometAlignment.svg";
+}
+
+// ----------------------------------------------------------------------------
+
+ProcessInterface* CometAlignmentProcess::DefaultInterface() const
 {
    return TheCometAlignmentInterface;
 }
 
 // -------------------------------------------------------------------------
 
-ProcessImplementation* CometAlignmentProcess::Create () const
+ProcessImplementation* CometAlignmentProcess::Create() const
 {
-   return new CometAlignmentInstance (this);
+   return new CometAlignmentInstance( this );
 }
 
 // ----------------------------------------------------------------------------
 
-ProcessImplementation* CometAlignmentProcess::Clone (const ProcessImplementation& p) const
+ProcessImplementation* CometAlignmentProcess::Clone( const ProcessImplementation& p ) const
 {
-   const CometAlignmentInstance* instPtr = dynamic_cast<const CometAlignmentInstance*> (&p);
-   return (instPtr != 0) ? new CometAlignmentInstance (*instPtr) : 0;
+   const CometAlignmentInstance* instPtr = dynamic_cast<const CometAlignmentInstance*>( &p );
+   return (instPtr != nullptr) ? new CometAlignmentInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF CometAlignmentProcess.cpp - Released 2020-07-31T19:33:39Z

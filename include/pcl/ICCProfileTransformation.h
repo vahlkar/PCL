@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ICCProfileTransformation.h - Released 2020-02-27T12:55:23Z
+// pcl/ICCProfileTransformation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -82,7 +82,7 @@ namespace pcl
  *
  * %ICCProfileTransformation is a portable color transformation based on ICC
  * color profiles. This class is a high-level interface to the color management
- * functionality implemented in the PixInsight Core application.
+ * functionality implemented in the PixInsight core application.
  *
  * %ICCProfileTransformation implements simple profile-to-profile color
  * transformations, multiprofile transformations, and device proofing
@@ -118,22 +118,22 @@ public:
    /*!
     * Move constructor.
     */
-   ICCProfileTransformation( ICCProfileTransformation&& x ) :
-      ImageTransformation( x ),
-      ParallelProcess( x ),
-      m_transformation( x.m_transformation ),
-      m_profiles( std::move( x.m_profiles ) ),
-      m_intent( x.m_intent ),
-      m_proofingIntent( x.m_proofingIntent ),
-      m_blackPointCompensation( x.m_blackPointCompensation ),
-      m_forceFloatingPoint( x.m_forceFloatingPoint ),
-      m_highResolutionCLUT( x.m_highResolutionCLUT ),
-      m_lowResolutionCLUT( x.m_lowResolutionCLUT ),
-      m_proofingTransformation( x.m_proofingTransformation ),
-      m_gamutCheck( x.m_gamutCheck ),
-      m_srcRGB( x.m_srcRGB ),
-      m_dstRGB( x.m_dstRGB ),
-      m_floatingPoint( x.m_floatingPoint )
+   ICCProfileTransformation( ICCProfileTransformation&& x )
+      : ImageTransformation( x )
+      , ParallelProcess( x )
+      , m_transformation( x.m_transformation )
+      , m_profiles( std::move( x.m_profiles ) )
+      , m_intent( x.m_intent )
+      , m_proofingIntent( x.m_proofingIntent )
+      , m_blackPointCompensation( x.m_blackPointCompensation )
+      , m_forceFloatingPoint( x.m_forceFloatingPoint )
+      , m_highResolutionCLUT( x.m_highResolutionCLUT )
+      , m_lowResolutionCLUT( x.m_lowResolutionCLUT )
+      , m_proofingTransformation( x.m_proofingTransformation )
+      , m_gamutCheck( x.m_gamutCheck )
+      , m_srcRGB( x.m_srcRGB )
+      , m_dstRGB( x.m_dstRGB )
+      , m_floatingPoint( x.m_floatingPoint )
    {
       x.m_transformation = nullptr;
    }
@@ -413,7 +413,7 @@ public:
     * Returns the low-level handle that this %ICCProfileTransformation object
     * serves as a high-level interface to.
     *
-    * This function is intended for private use of the PixInsight Core
+    * This function is intended for private use of the PixInsight core
     * application; you normally shouldn't need to call it.
     */
    transformation_handle Handle() const
@@ -688,4 +688,4 @@ public:
 #endif   // __PCL_ICCProfileTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ICCProfileTransformation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ICCProfileTransformation.h - Released 2020-07-31T19:33:04Z

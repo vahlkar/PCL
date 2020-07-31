@@ -3,14 +3,13 @@
 	-lf2c -lm   (in that order)
 */
 
-#include <math.h>
 #include "cminpack.h"
-#define abs(x) ((x) >= 0 ? (x) : -(x))
-#define TRUE_ (1)
-#define FALSE_ (0)
+#include <math.h>
+#include "cminpackP.h"
 
-/* Subroutine */ void r1updt(int m, int n, double *s, int
-	ls, const double *u, double *v, double *w, int *sing)
+__cminpack_attr__
+void __cminpack_func__(r1updt)(int m, int n, real *s, int
+	ls, const real *u, real *v, real *w, int *sing)
 {
     /* Initialized data */
 
@@ -19,9 +18,9 @@
 
     /* Local variables */
     int i, j, l, jj, nm1;
-    double tan;
+    real tan;
     int nmj;
-    double cos, sin, tau, temp, giant, cotan;
+    real cos, sin, tau, temp, giant, cotan;
 
 /*     ********** */
 
@@ -96,12 +95,13 @@
     --u;
     --v;
     --s;
+    (void)ls;
 
     /* Function Body */
 
 /*     giant is the largest magnitude. */
 
-    giant = dpmpar(3);
+    giant = __cminpack_func__(dpmpar)(3);
 
 /*     initialize the diagonal element pointer. */
 
@@ -134,7 +134,7 @@
                     sin = p5 / sqrt(p25 + p25 * (cotan * cotan));
                     cos = sin * cotan;
                     tau = 1.;
-                    if (abs(cos) * giant > 1.) {
+                    if (fabs(cos) * giant > 1.) {
                         tau = 1. / cos;
                     }
                 } else {
@@ -232,5 +232,5 @@
 
 /*     last card of subroutine r1updt. */
 
-} /* r1updt_ */
+} /* __minpack_func__(r1updt) */
 

@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationParameters.h - Released 2020-02-27T12:56:01Z
+// AssistedColorCalibrationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -69,13 +69,11 @@ public:
 
    ACCRedCorrectionFactor( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ACCRedCorrectionFactor* TheACCRedCorrectionFactor;
@@ -88,13 +86,11 @@ public:
 
    ACCGreenCorrectionFactor( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ACCGreenCorrectionFactor* TheACCGreenCorrectionFactor;
@@ -107,13 +103,11 @@ public:
 
    ACCBlueCorrectionFactor( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ACCBlueCorrectionFactor* TheACCBlueCorrectionFactor;
@@ -126,9 +120,9 @@ public:
 
    ACCBackgroundReference( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String DefaultValue() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String DefaultValue() const override;
 };
 
 extern ACCBackgroundReference* TheACCBackgroundReference;
@@ -141,13 +135,11 @@ public:
 
    ACCHistogramShadows( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ACCHistogramShadows* TheACCHistogramShadows;
@@ -160,13 +152,11 @@ public:
 
    ACCHistogramHighlights( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ACCHistogramHighlights* TheACCHistogramHighlights;
@@ -179,13 +169,11 @@ public:
 
    ACCHistogramMidtones( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ACCHistogramMidtones* TheACCHistogramMidtones;
@@ -198,13 +186,11 @@ public:
 
    ACCSaturationBoost( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ACCSaturationBoost* TheACCSaturationBoost;
@@ -213,9 +199,9 @@ extern ACCSaturationBoost* TheACCSaturationBoost;
 
 PCL_END_LOCAL
 
-} // pcl
+} // namespace pcl
 
-#endif   // __AssistedColorCalibrationParameters_h
+#endif // __AssistedColorCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF AssistedColorCalibrationParameters.h - Released 2020-07-31T19:33:39Z

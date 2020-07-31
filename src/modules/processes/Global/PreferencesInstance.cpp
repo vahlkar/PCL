@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesInstance.cpp - Released 2020-02-27T12:56:01Z
+// PreferencesInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -61,16 +61,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-PreferencesInstance::PreferencesInstance( const MetaProcess* p ) :
-   ProcessImplementation( p )
+PreferencesInstance::PreferencesInstance( const MetaProcess* p )
+   : ProcessImplementation( p )
 {
    LoadDefaultSettings();
 }
 
 // ----------------------------------------------------------------------------
 
-PreferencesInstance::PreferencesInstance( const PreferencesInstance& x ) :
-   ProcessImplementation( x )
+PreferencesInstance::PreferencesInstance( const PreferencesInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -179,6 +179,7 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/OpenURLsWithInternalBrowser",          mainWindow.openURLsWithInternalBrowser );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/OpenResourcesOnNewWebBrowserWindows",  mainWindow.openResourcesOnNewWebBrowserWindows );
       PixInsightSettings::SetGlobalFlag    ( "MainWindow/PrivateWebBrowsingMode",               mainWindow.privateWebBrowsingMode );
+      PixInsightSettings::SetGlobalInteger ( "Workspace/IconGridSpacing",                       mainWindow.iconGridSpacing );
       PixInsightSettings::SetGlobalString  ( "MainWindow/WallpaperFile01",                      mainWindow.wallpaperFile01 );
       PixInsightSettings::SetGlobalString  ( "MainWindow/WallpaperFile02",                      mainWindow.wallpaperFile02 );
       PixInsightSettings::SetGlobalString  ( "MainWindow/WallpaperFile03",                      mainWindow.wallpaperFile03 );
@@ -416,6 +417,8 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return &mainWindow.openResourcesOnNewWebBrowserWindows;
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, privateWebBrowsingMode ) )
       return &mainWindow.privateWebBrowsingMode;
+   if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, iconGridSpacing ) )
+      return &mainWindow.iconGridSpacing;
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile01 ) )
       return mainWindow.wallpaperFile01.Begin();
    if ( p == METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile02 ) )
@@ -702,6 +705,7 @@ void PreferencesInstance::LoadDefaultSettings()
    mainWindow.openURLsWithInternalBrowser       =         METAPARAMETER_INSTANCE_ID( MainWindow, openURLsWithInternalBrowser       )->DefaultValue();
    mainWindow.openResourcesOnNewWebBrowserWindows =       METAPARAMETER_INSTANCE_ID( MainWindow, openResourcesOnNewWebBrowserWindows )->DefaultValue();
    mainWindow.privateWebBrowsingMode            =         METAPARAMETER_INSTANCE_ID( MainWindow, privateWebBrowsingMode            )->DefaultValue();
+   mainWindow.iconGridSpacing                   =  int32( METAPARAMETER_INSTANCE_ID( MainWindow, iconGridSpacing                   )->DefaultValue() );
    mainWindow.wallpaperFile01                   =         METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile01                   )->DefaultValue();
    mainWindow.wallpaperFile02                   =         METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile02                   )->DefaultValue();
    mainWindow.wallpaperFile03                   =         METAPARAMETER_INSTANCE_ID( MainWindow, wallpaperFile03                   )->DefaultValue();
@@ -859,6 +863,7 @@ void PreferencesInstance::LoadCurrentSettings()
    mainWindow.openURLsWithInternalBrowser       = PixInsightSettings::GlobalFlag    ( "MainWindow/OpenURLsWithInternalBrowser" );
    mainWindow.openResourcesOnNewWebBrowserWindows = PixInsightSettings::GlobalFlag  ( "MainWindow/OpenResourcesOnNewWebBrowserWindows" );
    mainWindow.privateWebBrowsingMode            = PixInsightSettings::GlobalFlag    ( "MainWindow/PrivateWebBrowsingMode" );
+   mainWindow.iconGridSpacing                   = PixInsightSettings::GlobalInteger ( "Workspace/IconGridSpacing" );
    mainWindow.wallpaperFile01                   = PixInsightSettings::GlobalString  ( "MainWindow/WallpaperFile01" );
    mainWindow.wallpaperFile02                   = PixInsightSettings::GlobalString  ( "MainWindow/WallpaperFile02" );
    mainWindow.wallpaperFile03                   = PixInsightSettings::GlobalString  ( "MainWindow/WallpaperFile03" );
@@ -1059,4 +1064,4 @@ String* PreferencesInstance::StringParameterFromMetaParameter( const MetaParamet
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF PreferencesInstance.cpp - Released 2020-07-31T19:33:39Z

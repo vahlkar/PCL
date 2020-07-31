@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// FastRotationParameters.h - Released 2020-02-27T12:56:01Z
+// FastRotationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -76,11 +76,11 @@ public:
 
    FRMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern FRMode* TheFRModeParameter;
@@ -98,4 +98,4 @@ PCL_END_LOCAL
 #endif   // __FastRotationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF FastRotationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF FastRotationParameters.h - Released 2020-07-31T19:33:39Z

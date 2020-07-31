@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:59.870Z
+# Generated on .... 2020-07-31T19:36:33.697Z
 # Project id ...... Image
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -46,7 +46,6 @@ SRC_FILES= \
 ../../NewImageInterface.cpp \
 ../../NewImageParameters.cpp \
 ../../NewImageProcess.cpp \
-../../PSF.cpp \
 ../../SampleFormatConversionInstance.cpp \
 ../../SampleFormatConversionInterface.cpp \
 ../../SampleFormatConversionParameters.cpp \
@@ -87,7 +86,6 @@ OBJ_FILES= \
 ./x64/Release/NewImageInterface.o \
 ./x64/Release/NewImageParameters.o \
 ./x64/Release/NewImageProcess.o \
-./x64/Release/PSF.o \
 ./x64/Release/SampleFormatConversionInstance.o \
 ./x64/Release/SampleFormatConversionInterface.o \
 ./x64/Release/SampleFormatConversionParameters.o \
@@ -128,7 +126,6 @@ DEP_FILES= \
 ./x64/Release/NewImageInterface.d \
 ./x64/Release/NewImageParameters.d \
 ./x64/Release/NewImageProcess.d \
-./x64/Release/PSF.d \
 ./x64/Release/SampleFormatConversionInstance.d \
 ./x64/Release/SampleFormatConversionInterface.d \
 ./x64/Release/SampleFormatConversionParameters.d \

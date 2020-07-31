@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchParameters.h - Released 2020-02-27T12:56:01Z
+// AdaptiveStretchParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,11 +68,11 @@ public:
 
    ASNoiseThreshold( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern ASNoiseThreshold* TheASNoiseThresholdParameter;
@@ -85,11 +85,11 @@ public:
 
    ASProtection( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern ASProtection* TheASProtectionParameter;
@@ -102,8 +102,8 @@ public:
 
    ASUseProtection( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ASUseProtection* TheASUseProtectionParameter;
@@ -116,11 +116,10 @@ public:
 
    ASMaxCurvePoints( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ASMaxCurvePoints* TheASMaxCurvePointsParameter;
@@ -133,8 +132,8 @@ public:
 
    ASUseROI( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ASUseROI* TheASUseROIParameter;
@@ -147,11 +146,10 @@ public:
 
    ASROIX0( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ASROIX0* TheASROIX0Parameter;
@@ -164,11 +162,10 @@ public:
 
    ASROIY0( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ASROIY0* TheASROIY0Parameter;
@@ -181,11 +178,10 @@ public:
 
    ASROIX1( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ASROIX1* TheASROIX1Parameter;
@@ -198,11 +194,10 @@ public:
 
    ASROIY1( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern ASROIY1* TheASROIY1Parameter;
@@ -216,4 +211,4 @@ PCL_END_LOCAL
 #endif   // __AdaptiveStretchParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchParameters.h - Released 2020-02-27T12:56:01Z
+// EOF AdaptiveStretchParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInstance.h - Released 2020-02-27T12:56:01Z
+// B3EInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -90,13 +90,13 @@ private:
       InputViewParameters& operator =( const InputViewParameters& ) = default;
 
       String      id;
-      double      center;
+      double      center = 0;
       pcl_bool    subtractBackground;
       String      backgroundReferenceViewId;
       float       backgroundLow;
       float       backgroundHigh;
       pcl_bool    backgroundUseROI;
-      Rect        backgroundROI;
+      Rect        backgroundROI = 0;
       pcl_bool    outputBackgroundReferenceMask;
    };
 
@@ -108,7 +108,7 @@ private:
    double      p_inputCenter1;
    double      p_inputCenter2;
    */
-   double      p_outputCenter;
+   double      p_outputCenter = 0;
    pcl_enum    p_intensityUnits;
    pcl_bool    p_syntheticImage;
    pcl_bool    p_thermalMap;
@@ -149,4 +149,4 @@ private:
 #endif   // __B3EInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF B3EInstance.h - Released 2020-02-27T12:56:01Z
+// EOF B3EInstance.h - Released 2020-07-31T19:33:39Z

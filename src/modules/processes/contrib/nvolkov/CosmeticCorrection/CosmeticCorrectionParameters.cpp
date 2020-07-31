@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionParameters.cpp - Released 2020-02-27T12:56:01Z
+// CosmeticCorrectionParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -53,49 +53,50 @@
 
 #include "CosmeticCorrectionParameters.h"
 
-
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-CCTargetFrames*         TheTargetFrames = 0;
-CCTargetFrameEnabled*   TheTargetFrameEnabled = 0;
-CCTargetFramePath*      TheTargetFramePath = 0;
+CCTargetFrames* TheTargetFrames = nullptr;
+CCTargetFrameEnabled* TheTargetFrameEnabled = nullptr;
+CCTargetFramePath* TheTargetFramePath = nullptr;
 
-CCOutputDir*            TheOutputDir = 0;
-CCOutputExtension*      TheOutputExtension = 0;
-CCPrefix*               ThePrefix = 0;
-CCPostfix*              ThePostfix = 0;
-CCOverwrite*            TheOverwrite = 0;
+CCOutputDir* TheOutputDir = nullptr;
+CCOutputExtension* TheOutputExtension = nullptr;
+CCPrefix* ThePrefix = nullptr;
+CCPostfix* ThePostfix = nullptr;
+CCOverwrite* TheOverwrite = nullptr;
 
-CCCFA*                  TheCFA = 0;
-CCAmount*               TheAmount = 0;
+CCCFA* TheCFA = nullptr;
+CCAmount* TheAmount = nullptr;
 
-CCUseMasterDark*        TheUseMasterDark = 0;
-CCMasterDarkPath*       TheMasterPath = 0;
-CCHotDarkCheck*         TheHotDarkCheck = 0 ;
-CCColdLevel*            TheColdLevel = 0;
-CCColdDarkCheck*        TheColdDarkCheck = 0;
-CCHotLevel*             TheHotLevel = 0;
+CCUseMasterDark* TheUseMasterDark = nullptr;
+CCMasterDarkPath* TheMasterPath = nullptr;
+CCHotDarkCheck* TheHotDarkCheck = nullptr;
+CCColdLevel* TheColdLevel = nullptr;
+CCColdDarkCheck* TheColdDarkCheck = nullptr;
+CCHotLevel* TheHotLevel = nullptr;
 
-CCUseAutoDetect*        TheUseAutoDetect = 0;
-CCHotAutoCheck*         TheHotAutoCheck = 0;
-CCHotAutoValue*         TheHotAutoValue = 0;
-CCColdAutoCheck*        TheColdAutoCheck = 0;
-CCColdAutoValue*        TheColdAutoValue = 0;
+CCUseAutoDetect* TheUseAutoDetect = nullptr;
+CCHotAutoCheck* TheHotAutoCheck = nullptr;
+CCHotAutoValue* TheHotAutoValue = nullptr;
+CCColdAutoCheck* TheColdAutoCheck = nullptr;
+CCColdAutoValue* TheColdAutoValue = nullptr;
 
-CCUseDefectList*        TheUseDefectList = 0;
-CCDefects*              TheDefects = 0;
-CCDefectEnabled*        TheDefectEnabled = 0;
-CCDefectIsRow*          TheDefectIsRow = 0;
-CCDefectAddress*        TheDefectAddress = 0;
-CCDefectIsRange*        TheDefectIsRange = 0;
-CCDefectBegin*          TheDefectBegin = 0;
-CCDefectEnd*            TheDefectEnd = 0;
+CCUseDefectList* TheUseDefectList = nullptr;
+CCDefects* TheDefects = nullptr;
+CCDefectEnabled* TheDefectEnabled = nullptr;
+CCDefectIsRow* TheDefectIsRow = nullptr;
+CCDefectAddress* TheDefectAddress = nullptr;
+CCDefectIsRange* TheDefectIsRange = nullptr;
+CCDefectBegin* TheDefectBegin = nullptr;
+CCDefectEnd* TheDefectEnd = nullptr;
 
 // ----------------------------------------------------------------------------
-CCTargetFrames::CCTargetFrames( MetaProcess* P ) : MetaTable( P )
+
+CCTargetFrames::CCTargetFrames( MetaProcess* P )
+   : MetaTable( P )
 {
    TheTargetFrames = this;
 }
@@ -106,7 +107,9 @@ IsoString CCTargetFrames::Id() const
 }
 
 // ----------------------------------------------------------------------------
-CCTargetFrameEnabled::CCTargetFrameEnabled( MetaTable* T ) : MetaBoolean( T )
+
+CCTargetFrameEnabled::CCTargetFrameEnabled( MetaTable* T )
+   : MetaBoolean( T )
 {
    TheTargetFrameEnabled = this;
 }
@@ -122,7 +125,9 @@ bool CCTargetFrameEnabled::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCTargetFramePath::CCTargetFramePath( MetaTable* T ) : MetaString( T )
+
+CCTargetFramePath::CCTargetFramePath( MetaTable* T )
+   : MetaString( T )
 {
    TheTargetFramePath = this;
 }
@@ -133,7 +138,9 @@ IsoString CCTargetFramePath::Id() const
 }
 
 // ----------------------------------------------------------------------------
-CCOutputDir::CCOutputDir( MetaProcess* P ) : MetaString( P )
+
+CCOutputDir::CCOutputDir( MetaProcess* P )
+   : MetaString( P )
 {
    TheOutputDir = this;
 }
@@ -144,7 +151,9 @@ IsoString CCOutputDir::Id() const
 }
 
 // ----------------------------------------------------------------------------
-CCOutputExtension::CCOutputExtension( MetaProcess* P ) : MetaString( P )
+
+CCOutputExtension::CCOutputExtension( MetaProcess* P )
+   : MetaString( P )
 {
    TheOutputExtension = this;
 }
@@ -160,7 +169,9 @@ String CCOutputExtension::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCPrefix::CCPrefix( MetaProcess* P ) : MetaString( P )
+
+CCPrefix::CCPrefix( MetaProcess* P )
+   : MetaString( P )
 {
    ThePrefix = this;
 }
@@ -176,7 +187,9 @@ String CCPrefix::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCPostfix::CCPostfix( MetaProcess* P ) : MetaString( P )
+
+CCPostfix::CCPostfix( MetaProcess* P )
+   : MetaString( P )
 {
    ThePostfix = this;
 }
@@ -192,7 +205,9 @@ String CCPostfix::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCOverwrite::CCOverwrite( MetaProcess* P ) : MetaBoolean( P )
+
+CCOverwrite::CCOverwrite( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheOverwrite = this;
 }
@@ -208,7 +223,9 @@ bool CCOverwrite::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCCFA::CCCFA( MetaProcess* P ) : MetaBoolean( P )
+
+CCCFA::CCCFA( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheCFA = this;
 }
@@ -224,7 +241,9 @@ bool CCCFA::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCAmount::CCAmount( MetaProcess* P ) : MetaFloat( P )
+
+CCAmount::CCAmount( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheAmount = this;
 }
@@ -260,7 +279,9 @@ double CCAmount::MaximumValue() const
 }
 
 // -----------------------------------------------------------Via Master Dark-----------------
-CCUseMasterDark::CCUseMasterDark( MetaProcess* P ) : MetaBoolean( P )
+
+CCUseMasterDark::CCUseMasterDark( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheUseMasterDark = this;
 }
@@ -274,8 +295,11 @@ bool CCUseMasterDark::DefaultValue() const
 {
    return false;
 }
+
 // ----------------------------------------------------------------------------
-CCMasterDarkPath::CCMasterDarkPath( MetaProcess* P ) : MetaString( P )
+
+CCMasterDarkPath::CCMasterDarkPath( MetaProcess* P )
+   : MetaString( P )
 {
    TheMasterPath = this;
 }
@@ -286,7 +310,9 @@ IsoString CCMasterDarkPath::Id() const
 }
 
 // ----------------------------------------------------------------------------
-CCHotDarkCheck::CCHotDarkCheck( MetaProcess* P ) : MetaBoolean( P )
+
+CCHotDarkCheck::CCHotDarkCheck( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheHotDarkCheck = this;
 }
@@ -302,7 +328,9 @@ bool CCHotDarkCheck::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCHotLevel::CCHotLevel( MetaProcess* P ) : MetaFloat( P )
+
+CCHotLevel::CCHotLevel( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheHotLevel = this;
 }
@@ -317,12 +345,10 @@ int CCHotLevel::Precision() const
    return 10;
 }
 
-
 double CCHotLevel::DefaultValue() const
 {
    return 1;
 }
-
 
 double CCHotLevel::MinimumValue() const
 {
@@ -335,7 +361,9 @@ double CCHotLevel::MaximumValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCColdDarkCheck::CCColdDarkCheck( MetaProcess* P ) : MetaBoolean( P )
+
+CCColdDarkCheck::CCColdDarkCheck( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheColdDarkCheck = this;
 }
@@ -351,7 +379,9 @@ bool CCColdDarkCheck::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCColdLevel::CCColdLevel( MetaProcess* P ) : MetaFloat( P )
+
+CCColdLevel::CCColdLevel( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheColdLevel = this;
 }
@@ -381,9 +411,10 @@ double CCColdLevel::MaximumValue() const
    return 1;
 }
 
-
 // -----------------------------------------------------------Via Auto Detect-----------------
-CCUseAutoDetect::CCUseAutoDetect( MetaProcess* P ) : MetaBoolean( P )
+
+CCUseAutoDetect::CCUseAutoDetect( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheUseAutoDetect = this;
 }
@@ -397,8 +428,11 @@ bool CCUseAutoDetect::DefaultValue() const
 {
    return false;
 }
+
 // ----------------------------------------------------------------------------
-CCHotAutoCheck::CCHotAutoCheck( MetaProcess* P ) : MetaBoolean( P )
+
+CCHotAutoCheck::CCHotAutoCheck( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheHotAutoCheck = this;
 }
@@ -414,7 +448,9 @@ bool CCHotAutoCheck::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCHotAutoValue::CCHotAutoValue( MetaProcess* P ) : MetaFloat( P )
+
+CCHotAutoValue::CCHotAutoValue( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheHotAutoValue = this;
 }
@@ -444,9 +480,10 @@ double CCHotAutoValue::MaximumValue() const
    return 50;
 }
 
-
 // ----------------------------------------------------------------------------
-CCColdAutoCheck::CCColdAutoCheck( MetaProcess* P ) : MetaBoolean( P )
+
+CCColdAutoCheck::CCColdAutoCheck( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheColdAutoCheck = this;
 }
@@ -462,7 +499,9 @@ bool CCColdAutoCheck::DefaultValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCColdAutoValue::CCColdAutoValue( MetaProcess* P ) : MetaFloat( P )
+
+CCColdAutoValue::CCColdAutoValue( MetaProcess* P )
+   : MetaFloat( P )
 {
    TheColdAutoValue = this;
 }
@@ -493,7 +532,9 @@ double CCColdAutoValue::MaximumValue() const
 }
 
 // ----------------------------------------------------------------------------
-CCUseDefectList::CCUseDefectList( MetaProcess* P ) : MetaBoolean( P )
+
+CCUseDefectList::CCUseDefectList( MetaProcess* P )
+   : MetaBoolean( P )
 {
    TheUseDefectList = this;
 }
@@ -502,8 +543,11 @@ IsoString CCUseDefectList::Id() const
 {
    return "useDefectList";
 }
+
 // ----------------------------------------------------------------------------
-CCDefects::CCDefects( MetaProcess* P ) : MetaTable( P )
+
+CCDefects::CCDefects( MetaProcess* P )
+   : MetaTable( P )
 {
    TheDefects = this;
 }
@@ -512,8 +556,11 @@ IsoString CCDefects::Id() const
 {
    return "defects";
 }
+
 // ----------------------------------------------------------------------------
-CCDefectEnabled::CCDefectEnabled( MetaTable* T ) : MetaBoolean( T )
+
+CCDefectEnabled::CCDefectEnabled( MetaTable* T )
+   : MetaBoolean( T )
 {
    TheDefectEnabled = this;
 }
@@ -522,8 +569,11 @@ IsoString CCDefectEnabled::Id() const
 {
    return "defectEnabled";
 }
+
 // ----------------------------------------------------------------------------
-CCDefectIsRow::CCDefectIsRow( MetaTable* T ) : MetaBoolean( T )
+
+CCDefectIsRow::CCDefectIsRow( MetaTable* T )
+   : MetaBoolean( T )
 {
    TheDefectIsRow = this;
 }
@@ -532,8 +582,11 @@ IsoString CCDefectIsRow::Id() const
 {
    return "defectIsRow";
 }
+
 // ----------------------------------------------------------------------------
-CCDefectAddress::CCDefectAddress( MetaTable* T ) : MetaUInt16( T )
+
+CCDefectAddress::CCDefectAddress( MetaTable* T )
+   : MetaUInt16( T )
 {
    TheDefectAddress = this;
 }
@@ -542,8 +595,11 @@ IsoString CCDefectAddress::Id() const
 {
    return "defectAddress";
 }
+
 // ----------------------------------------------------------------------------
-CCDefectIsRange::CCDefectIsRange( MetaTable* T ) : MetaBoolean( T )
+
+CCDefectIsRange::CCDefectIsRange( MetaTable* T )
+   : MetaBoolean( T )
 {
    TheDefectIsRange = this;
 }
@@ -552,8 +608,11 @@ IsoString CCDefectIsRange::Id() const
 {
    return "defectIsRange";
 }
+
 // ----------------------------------------------------------------------------
-CCDefectBegin::CCDefectBegin( MetaTable* T ) : MetaUInt16( T )
+
+CCDefectBegin::CCDefectBegin( MetaTable* T )
+   : MetaUInt16( T )
 {
    TheDefectBegin = this;
 }
@@ -562,8 +621,11 @@ IsoString CCDefectBegin::Id() const
 {
    return "defectBegin";
 }
+
 // ----------------------------------------------------------------------------
-CCDefectEnd::CCDefectEnd( MetaTable* T ) : MetaUInt16( T )
+
+CCDefectEnd::CCDefectEnd( MetaTable* T )
+   : MetaUInt16( T )
 {
    TheDefectEnd = this;
 }
@@ -575,7 +637,7 @@ IsoString CCDefectEnd::Id() const
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF CosmeticCorrectionParameters.cpp - Released 2020-07-31T19:33:39Z

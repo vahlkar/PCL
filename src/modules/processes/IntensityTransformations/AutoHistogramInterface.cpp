@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramInterface.cpp - Released 2020-02-27T12:56:01Z
+// AutoHistogramInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,15 +68,13 @@ AutoHistogramInterface* TheAutoHistogramInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "AutoHistogramIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-AutoHistogramInterface::AutoHistogramInterface() :
-   instance( TheAutoHistogramProcess )
+AutoHistogramInterface::AutoHistogramInterface()
+   : m_instance( TheAutoHistogramProcess )
 {
    TheAutoHistogramInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 AutoHistogramInterface::~AutoHistogramInterface()
 {
@@ -91,26 +89,36 @@ IsoString AutoHistogramInterface::Id() const
    return "AutoHistogram";
 }
 
+// ----------------------------------------------------------------------------
+
 MetaProcess* AutoHistogramInterface::Process() const
 {
    return TheAutoHistogramProcess;
 }
 
-const char** AutoHistogramInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String AutoHistogramInterface::IconImageSVGFile() const
 {
-   return AutoHistogramIcon_XPM;
+   return "@module_icons_dir/AutoHistogram.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 void AutoHistogramInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void AutoHistogramInterface::ResetInstance()
 {
    AutoHistogramInstance defaultInstance( TheAutoHistogramProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool AutoHistogramInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -125,10 +133,14 @@ bool AutoHistogramInterface::Launch( const MetaProcess& P, const ProcessImplemen
    return &P == TheAutoHistogramProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* AutoHistogramInterface::NewProcess() const
 {
-   return new AutoHistogramInstance( instance );
+   return new AutoHistogramInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool AutoHistogramInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -138,38 +150,46 @@ bool AutoHistogramInterface::ValidateProcess( const ProcessImplementation& p, St
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool AutoHistogramInterface::RequiresInstanceValidation() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool AutoHistogramInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool AutoHistogramInterface::WantsReadoutNotifications() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 void AutoHistogramInterface::UpdateReadout( const View& v, const DPoint&, double R, double G, double B, double /*A*/ )
 {
    if ( GUI != nullptr && IsVisible() && GUI->CaptureReadouts_CheckBox.IsChecked() )
    {
-      if ( instance.p_stretchTogether )
+      if ( m_instance.p_stretchTogether )
       {
          RGBColorSystem rgbws;
          v.Window().GetRGBWS( rgbws );
-         instance.p_targetMedian[0] = instance.p_targetMedian[1] = instance.p_targetMedian[2] = rgbws.Lightness( R, G, B );
+         m_instance.p_targetMedian[0] = m_instance.p_targetMedian[1] = m_instance.p_targetMedian[2] = rgbws.Lightness( R, G, B );
       }
       else
       {
-         instance.p_targetMedian[0] = R;
-         instance.p_targetMedian[1] = G;
-         instance.p_targetMedian[2] = B;
+         m_instance.p_targetMedian[0] = R;
+         m_instance.p_targetMedian[1] = G;
+         m_instance.p_targetMedian[2] = B;
       }
 
       UpdateControls();
@@ -180,48 +200,48 @@ void AutoHistogramInterface::UpdateReadout( const View& v, const DPoint&, double
 
 void AutoHistogramInterface::UpdateControls()
 {
-   GUI->ClipParameters_SectionBar.SetChecked( instance.p_clip );
+   GUI->ClipParameters_SectionBar.SetChecked( m_instance.p_clip );
 
-   GUI->ClipTogether_RadioButton.SetChecked( instance.p_clipTogether );
-   GUI->ClipSeparate_RadioButton.SetChecked( !instance.p_clipTogether );
+   GUI->ClipTogether_RadioButton.SetChecked( m_instance.p_clipTogether );
+   GUI->ClipSeparate_RadioButton.SetChecked( !m_instance.p_clipTogether );
 
-   GUI->ClipLowRK_NumericControl.label.SetText( instance.p_clipTogether ? "RGB/K:" : "R/K:" );
-   GUI->ClipLowRK_NumericControl.Enable( instance.p_clip );
-   GUI->ClipLowRK_NumericControl.SetValue( instance.p_clipLow[0] );
+   GUI->ClipLowRK_NumericControl.label.SetText( m_instance.p_clipTogether ? "RGB/K:" : "R/K:" );
+   GUI->ClipLowRK_NumericControl.Enable( m_instance.p_clip );
+   GUI->ClipLowRK_NumericControl.SetValue( m_instance.p_clipLow[0] );
 
-   GUI->ClipLowG_NumericControl.Enable( !instance.p_clipTogether && instance.p_clip );
-   GUI->ClipLowG_NumericControl.SetValue( instance.p_clipLow[1] );
+   GUI->ClipLowG_NumericControl.Enable( !m_instance.p_clipTogether && m_instance.p_clip );
+   GUI->ClipLowG_NumericControl.SetValue( m_instance.p_clipLow[1] );
 
-   GUI->ClipLowB_NumericControl.Enable( !instance.p_clipTogether && instance.p_clip );
-   GUI->ClipLowB_NumericControl.SetValue( instance.p_clipLow[2] );
+   GUI->ClipLowB_NumericControl.Enable( !m_instance.p_clipTogether && m_instance.p_clip );
+   GUI->ClipLowB_NumericControl.SetValue( m_instance.p_clipLow[2] );
 
-   GUI->ClipHighRK_NumericControl.label.SetText( instance.p_clipTogether ? "RGB/K:" : "R/K:" );
-   GUI->ClipHighRK_NumericControl.Enable( instance.p_clip );
-   GUI->ClipHighRK_NumericControl.SetValue( instance.p_clipHigh[0] );
+   GUI->ClipHighRK_NumericControl.label.SetText( m_instance.p_clipTogether ? "RGB/K:" : "R/K:" );
+   GUI->ClipHighRK_NumericControl.Enable( m_instance.p_clip );
+   GUI->ClipHighRK_NumericControl.SetValue( m_instance.p_clipHigh[0] );
 
-   GUI->ClipHighG_NumericControl.Enable( !instance.p_clipTogether && instance.p_clip );
-   GUI->ClipHighG_NumericControl.SetValue( instance.p_clipHigh[1] );
+   GUI->ClipHighG_NumericControl.Enable( !m_instance.p_clipTogether && m_instance.p_clip );
+   GUI->ClipHighG_NumericControl.SetValue( m_instance.p_clipHigh[1] );
 
-   GUI->ClipHighB_NumericControl.Enable( !instance.p_clipTogether && instance.p_clip );
-   GUI->ClipHighB_NumericControl.SetValue( instance.p_clipHigh[2] );
+   GUI->ClipHighB_NumericControl.Enable( !m_instance.p_clipTogether && m_instance.p_clip );
+   GUI->ClipHighB_NumericControl.SetValue( m_instance.p_clipHigh[2] );
 
-   GUI->StretchParameters_SectionBar.SetChecked( instance.p_stretch );
+   GUI->StretchParameters_SectionBar.SetChecked( m_instance.p_stretch );
 
-   GUI->StretchMethod_ComboBox.SetCurrentItem( instance.p_stretchMethod );
-   GUI->StretchMethod_ComboBox.Enable( instance.p_stretch );
+   GUI->StretchMethod_ComboBox.SetCurrentItem( m_instance.p_stretchMethod );
+   GUI->StretchMethod_ComboBox.Enable( m_instance.p_stretch );
 
-   GUI->StretchTogether_RadioButton.SetChecked( instance.p_stretchTogether );
-   GUI->StretchSeparate_RadioButton.SetChecked( !instance.p_stretchTogether );
+   GUI->StretchTogether_RadioButton.SetChecked( m_instance.p_stretchTogether );
+   GUI->StretchSeparate_RadioButton.SetChecked( !m_instance.p_stretchTogether );
 
-   GUI->TargetMedianRK_NumericControl.label.SetText( instance.p_stretchTogether ? "RGB/K:" : "R/K:" );
-   GUI->TargetMedianRK_NumericControl.Enable( instance.p_stretch );
-   GUI->TargetMedianRK_NumericControl.SetValue( instance.p_targetMedian[0] );
+   GUI->TargetMedianRK_NumericControl.label.SetText( m_instance.p_stretchTogether ? "RGB/K:" : "R/K:" );
+   GUI->TargetMedianRK_NumericControl.Enable( m_instance.p_stretch );
+   GUI->TargetMedianRK_NumericControl.SetValue( m_instance.p_targetMedian[0] );
 
-   GUI->TargetMedianG_NumericControl.Enable( !instance.p_stretchTogether && instance.p_stretch );
-   GUI->TargetMedianG_NumericControl.SetValue( instance.p_targetMedian[1] );
+   GUI->TargetMedianG_NumericControl.Enable( !m_instance.p_stretchTogether && m_instance.p_stretch );
+   GUI->TargetMedianG_NumericControl.SetValue( m_instance.p_targetMedian[1] );
 
-   GUI->TargetMedianB_NumericControl.Enable( !instance.p_stretchTogether && instance.p_stretch );
-   GUI->TargetMedianB_NumericControl.SetValue( instance.p_targetMedian[2] );
+   GUI->TargetMedianB_NumericControl.Enable( !m_instance.p_stretchTogether && m_instance.p_stretch );
+   GUI->TargetMedianB_NumericControl.SetValue( m_instance.p_targetMedian[2] );
 
    GUI->ColorSample_Control.Update();
 }
@@ -231,19 +251,19 @@ void AutoHistogramInterface::UpdateControls()
 void AutoHistogramInterface::__Click( Button& sender, bool checked )
 {
    if ( sender == GUI->StretchSeparate_RadioButton )
-      instance.p_stretchTogether = false;
+      m_instance.p_stretchTogether = false;
    else if ( sender == GUI->StretchTogether_RadioButton )
    {
-      instance.p_stretchTogether = true;
-      instance.p_targetMedian[1] = instance.p_targetMedian[2] = instance.p_targetMedian[0];
+      m_instance.p_stretchTogether = true;
+      m_instance.p_targetMedian[1] = m_instance.p_targetMedian[2] = m_instance.p_targetMedian[0];
    }
    else if ( sender == GUI->ClipSeparate_RadioButton )
-      instance.p_clipTogether = false;
+      m_instance.p_clipTogether = false;
    else if ( sender == GUI->ClipTogether_RadioButton )
    {
-      instance.p_clipTogether = true;
-      instance.p_clipLow[1] = instance.p_clipLow[2] = instance.p_clipLow[0];
-      instance.p_clipHigh[1] = instance.p_clipHigh[2] = instance.p_clipHigh[0];
+      m_instance.p_clipTogether = true;
+      m_instance.p_clipLow[1] = m_instance.p_clipLow[2] = m_instance.p_clipLow[0];
+      m_instance.p_clipHigh[1] = m_instance.p_clipHigh[2] = m_instance.p_clipHigh[0];
    }
    else if ( sender == GUI->SetToActiveImage_Button )
    {
@@ -252,69 +272,75 @@ void AutoHistogramInterface::__Click( Button& sender, bool checked )
       {
          View view = w.CurrentView();
 
-         instance.p_stretchTogether = !view.IsColor();
+         m_instance.p_stretchTogether = !view.IsColor();
 
          DVector median = view.ComputeOrFetchProperty( "Median" ).ToDVector();
          for ( int c = 0; c < median.Length(); ++c )
-            instance.p_targetMedian[c] = median[c];
+            m_instance.p_targetMedian[c] = median[c];
       }
    }
 
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void AutoHistogramInterface::__CheckSection( SectionBar& sender, bool checked )
 {
    if ( sender == GUI->ClipParameters_SectionBar )
-      instance.p_clip = checked;
+      m_instance.p_clip = checked;
    else if ( sender == GUI->StretchParameters_SectionBar )
-      instance.p_stretch = checked;
+      m_instance.p_stretch = checked;
 
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void AutoHistogramInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->StretchMethod_ComboBox )
-      instance.p_stretchMethod = itemIndex;
+      m_instance.p_stretchMethod = itemIndex;
 }
+
+// ----------------------------------------------------------------------------
 
 void AutoHistogramInterface::__ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->ClipLowRK_NumericControl )
    {
-      instance.p_clipLow[0] = value;
-      if ( instance.p_clipTogether )
+      m_instance.p_clipLow[0] = value;
+      if ( m_instance.p_clipTogether )
       {
-         instance.p_clipLow[1] = instance.p_clipLow[2] = value;
+         m_instance.p_clipLow[1] = m_instance.p_clipLow[2] = value;
          GUI->ClipLowG_NumericControl.SetValue( value );
          GUI->ClipLowB_NumericControl.SetValue( value );
       }
    }
    else if ( sender == GUI->ClipLowG_NumericControl )
-      instance.p_clipLow[1] = value;
+      m_instance.p_clipLow[1] = value;
    else if ( sender == GUI->ClipLowB_NumericControl )
-      instance.p_clipLow[2] = value;
+      m_instance.p_clipLow[2] = value;
    else if ( sender == GUI->ClipHighRK_NumericControl )
    {
-      instance.p_clipHigh[0] = value;
-      if ( instance.p_clipTogether )
+      m_instance.p_clipHigh[0] = value;
+      if ( m_instance.p_clipTogether )
       {
-         instance.p_clipHigh[1] = instance.p_clipHigh[2] = value;
+         m_instance.p_clipHigh[1] = m_instance.p_clipHigh[2] = value;
          GUI->ClipHighG_NumericControl.SetValue( value );
          GUI->ClipHighB_NumericControl.SetValue( value );
       }
    }
    else if ( sender == GUI->ClipHighG_NumericControl )
-      instance.p_clipHigh[1] = value;
+      m_instance.p_clipHigh[1] = value;
    else if ( sender == GUI->ClipHighB_NumericControl )
-      instance.p_clipHigh[2] = value;
+      m_instance.p_clipHigh[2] = value;
    else if ( sender == GUI->TargetMedianRK_NumericControl )
    {
-      instance.p_targetMedian[0] = value;
-      if ( instance.p_stretchTogether )
+      m_instance.p_targetMedian[0] = value;
+      if ( m_instance.p_stretchTogether )
       {
-         instance.p_targetMedian[1] = instance.p_targetMedian[2] = value;
+         m_instance.p_targetMedian[1] = m_instance.p_targetMedian[2] = value;
          GUI->TargetMedianG_NumericControl.SetValue( value );
          GUI->TargetMedianB_NumericControl.SetValue( value );
       }
@@ -322,15 +348,17 @@ void AutoHistogramInterface::__ValueUpdated( NumericEdit& sender, double value )
    }
    else if ( sender == GUI->TargetMedianG_NumericControl )
    {
-      instance.p_targetMedian[1] = value;
+      m_instance.p_targetMedian[1] = value;
       GUI->ColorSample_Control.Update();
    }
    else if ( sender == GUI->TargetMedianB_NumericControl )
    {
-      instance.p_targetMedian[2] = value;
+      m_instance.p_targetMedian[2] = value;
       GUI->ColorSample_Control.Update();
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void AutoHistogramInterface::__Paint( Control& sender, const Rect& /*updateRect*/ )
 {
@@ -340,14 +368,15 @@ void AutoHistogramInterface::__Paint( Control& sender, const Rect& /*updateRect*
    if ( sender == GUI->ColorSample_Control )
    {
       Graphics g( sender );
-      g.SetBrush( RGBAColor( float( instance.p_targetMedian[0] ),
-                             float( instance.p_targetMedian[1] ),
-                             float( instance.p_targetMedian[2] ) ) );
+      g.SetBrush( RGBAColor( float( m_instance.p_targetMedian[0] ),
+                             float( m_instance.p_targetMedian[1] ),
+                             float( m_instance.p_targetMedian[2] ) ) );
       g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
       g.DrawRect( sender.BoundsRect() );
    }
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 AutoHistogramInterface::GUIData::GUIData( AutoHistogramInterface& w )
@@ -568,11 +597,11 @@ AutoHistogramInterface::GUIData::GUIData( AutoHistogramInterface& w )
    Global_Sizer.Add( StretchParameters_Control );
 
    w.SetSizer( Global_Sizer );
+   w.EnsureLayoutUpdated();
+   w.AdjustToContents();
 
    ClipParameters_Control.Hide();
 
-   w.EnsureLayoutUpdated();
-   w.AdjustToContents();
    w.SetFixedSize();
 }
 
@@ -581,4 +610,4 @@ AutoHistogramInterface::GUIData::GUIData( AutoHistogramInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF AutoHistogramInterface.cpp - Released 2020-07-31T19:33:39Z

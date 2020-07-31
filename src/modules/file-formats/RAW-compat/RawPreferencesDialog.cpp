@@ -57,9 +57,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-RawPreferencesDialog::RawPreferencesDialog( RawPreferences& prf ) :
-   preferences( prf ),
-   savedPreferences( prf )
+RawPreferencesDialog::RawPreferencesDialog( RawPreferences& prf )
+   : preferences( prf )
+   , savedPreferences( prf )
 {
    pcl::Font fnt = Font();
    int labelWidth1 = fnt.Width( String( "FBDD noise reduction:" ) + 'M' );

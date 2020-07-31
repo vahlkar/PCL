@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInterface.h - Released 2020-02-27T12:56:01Z
+// DrizzleIntegrationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -80,7 +80,7 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
    void ResetInstance() override;
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
@@ -186,20 +186,20 @@ private:
    void UpdateIntegrationControls();
    void UpdateROIControls();
 
-   void __ValueUpdated( NumericEdit& sender, double value );
-   void __CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
-   void __NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
-   void __NodeSelectionUpdated( TreeBox& sender );
-   void __Click( Button& sender, bool checked );
-   void __ItemSelected( ComboBox& sender, int itemIndex );
-   void __EditCompleted( Edit& sender );
-   void __SpinValueUpdated( SpinBox& sender, int value );
-   void __ToggleSection( SectionBar& sender, Control& section, bool start );
-   void __CheckSection( SectionBar& sender, bool checked );
-   void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
-   void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
-   void __ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
-   void __ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
+   void e_ValueUpdated( NumericEdit& sender, double value );
+   void e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
+   void e_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
+   void e_NodeSelectionUpdated( TreeBox& sender );
+   void e_Click( Button& sender, bool checked );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_EditCompleted( Edit& sender );
+   void e_SpinValueUpdated( SpinBox& sender, int value );
+   void e_ToggleSection( SectionBar& sender, Control& section, bool start );
+   void e_CheckSection( SectionBar& sender, bool checked );
+   void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
+   void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
+   void e_ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView );
+   void e_ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers );
 
    String LocalNormalizationTargetName( const String& filePath );
    String DrizzleTargetName( const String& filePath );
@@ -220,4 +220,4 @@ PCL_END_LOCAL
 #endif   // __DrizzleIntegrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF DrizzleIntegrationInterface.h - Released 2020-07-31T19:33:39Z

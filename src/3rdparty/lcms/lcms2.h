@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------------
 //
 //  Little Color Management System
-//  Copyright (c) 1998-2017 Marti Maria Saguer
+//  Copyright (c) 1998-2020 Marti Maria Saguer
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
@@ -23,7 +23,7 @@
 //
 //---------------------------------------------------------------------------------
 //
-// Version 2.10alpha
+// Version 2.11
 //
 
 #ifndef _lcms2_H
@@ -61,7 +61,7 @@
 // Uncomment this for special windows mutex initialization (see lcms2_internal.h)
 // #define CMS_RELY_ON_WINDOWS_STATIC_MUTEX_INIT
 
-// Uncomment this to remove the "CMSREGISTER" storage class
+// Uncomment this to remove the "register" storage class
 #define CMS_NO_REGISTER_KEYWORD 1
 
 // ********** End of configuration toggles ******************************
@@ -152,7 +152,7 @@ typedef double               cmsFloat64Number;
 #endif
 
 // Handle "register" keyword
-#if defined(CMS_NO_REGISTER_KEYWORD) && !defined(CMS_DLL) && !defined(CMS_DLL_BUILD) 
+#if defined(CMS_NO_REGISTER_KEYWORD) && !defined(CMS_DLL) && !defined(CMS_DLL_BUILD)
 #  define CMSREGISTER
 #else
 #  define CMSREGISTER register
@@ -534,7 +534,7 @@ typedef enum {
     cmsSigNamedColorElemType            = 0x6E636C20,  // 'ncl '
     cmsSigLabV2toV4                     = 0x32203420,  // '2 4 '
     cmsSigLabV4toV2                     = 0x34203220,  // '4 2 '
-  
+
     // Identities
     cmsSigIdentityElemType              = 0x69646E20,  // 'idn '
 
@@ -542,7 +542,7 @@ typedef enum {
     cmsSigLab2FloatPCS                  = 0x64326C20,  // 'd2l '
     cmsSigFloatPCS2Lab                  = 0x6C326420,  // 'l2d '
     cmsSigXYZ2FloatPCS                  = 0x64327820,  // 'd2x '
-    cmsSigFloatPCS2XYZ                  = 0x78326420,  // 'x2d '  
+    cmsSigFloatPCS2XYZ                  = 0x78326420,  // 'x2d '
     cmsSigClipNegativesElemType         = 0x636c7020   // 'clp '
 
 } cmsStageSignature;
@@ -1039,7 +1039,7 @@ CMSAPI long int          CMSEXPORT cmsfilelength(FILE* f);
 typedef struct _cmsContext_struct* cmsContext;
 
 CMSAPI cmsContext       CMSEXPORT cmsCreateContext(void* Plugin, void* UserData);
-CMSAPI void             CMSEXPORT cmsDeleteContext(cmsContext ContexID);
+CMSAPI void             CMSEXPORT cmsDeleteContext(cmsContext ContextID);
 CMSAPI cmsContext       CMSEXPORT cmsDupContext(cmsContext ContextID, void* NewUserData);
 CMSAPI void*            CMSEXPORT cmsGetContextUserData(cmsContext ContextID);
 
@@ -1191,6 +1191,7 @@ CMSAPI cmsBool           CMSEXPORT cmsIsToneCurveMonotonic(const cmsToneCurve* t
 CMSAPI cmsBool           CMSEXPORT cmsIsToneCurveDescending(const cmsToneCurve* t);
 CMSAPI cmsInt32Number    CMSEXPORT cmsGetToneCurveParametricType(const cmsToneCurve* t);
 CMSAPI cmsFloat64Number  CMSEXPORT cmsEstimateGamma(const cmsToneCurve* t, cmsFloat64Number Precision);
+CMSAPI cmsFloat64Number* CMSEXPORT cmsGetToneCurveParams(const cmsToneCurve* t);
 
 // Tone curve tabular estimation
 CMSAPI cmsUInt32Number         CMSEXPORT cmsGetToneCurveEstimatedTableEntries(const cmsToneCurve* t);
@@ -1315,7 +1316,7 @@ CMSAPI cmsBool           CMSEXPORT cmsMLUtranslationsCodes(const cmsMLU* mlu,
                                                              cmsUInt32Number idx,
                                                              char LanguageCode[3],
                                                              char CountryCode[3]);
- 
+
 // Undercolorremoval & black generation -------------------------------------------------------------------------------------
 
 typedef struct {
@@ -1503,7 +1504,7 @@ CMSAPI int                      CMSEXPORT _cmsLCMScolorSpace(cmsColorSpaceSignat
 
 CMSAPI cmsUInt32Number   CMSEXPORT cmsChannelsOf(cmsColorSpaceSignature ColorSpace);
 
-// Build a suitable formatter for the colorspace of this profile. nBytes=1 means 8 bits, nBytes=2 means 16 bits. 
+// Build a suitable formatter for the colorspace of this profile. nBytes=1 means 8 bits, nBytes=2 means 16 bits.
 CMSAPI cmsUInt32Number   CMSEXPORT cmsFormatterForColorspaceOfProfile(cmsHPROFILE hProfile, cmsUInt32Number nBytes, cmsBool lIsFloat);
 CMSAPI cmsUInt32Number   CMSEXPORT cmsFormatterForPCSOfProfile(cmsHPROFILE hProfile, cmsUInt32Number nBytes, cmsBool lIsFloat);
 
@@ -1670,7 +1671,7 @@ CMSAPI cmsUInt32Number  CMSEXPORT cmsGetSupportedIntentsTHR(cmsContext ContextID
 // Specific to unbounded mode
 #define cmsFLAGS_NONEGATIVES              0x8000    // Prevent negative numbers in floating point transforms
 
-// Copy alpha channels when transforming           
+// Copy alpha channels when transforming
 #define cmsFLAGS_COPY_ALPHA               0x04000000 // Alpha channels are copied on cmsDoTransform()
 
 // Fine-tune control over number of gridpoints
@@ -1771,9 +1772,9 @@ CMSAPI void             CMSEXPORT cmsSetAlarmCodes(const cmsUInt16Number NewAlar
 CMSAPI void             CMSEXPORT cmsGetAlarmCodes(cmsUInt16Number NewAlarm[cmsMAXCHANNELS]);
 
 
-CMSAPI void             CMSEXPORT cmsSetAlarmCodesTHR(cmsContext ContextID, 
+CMSAPI void             CMSEXPORT cmsSetAlarmCodesTHR(cmsContext ContextID,
                                                           const cmsUInt16Number AlarmCodes[cmsMAXCHANNELS]);
-CMSAPI void             CMSEXPORT cmsGetAlarmCodesTHR(cmsContext ContextID, 
+CMSAPI void             CMSEXPORT cmsGetAlarmCodesTHR(cmsContext ContextID,
                                                           cmsUInt16Number AlarmCodes[cmsMAXCHANNELS]);
 
 

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Brush.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Brush.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -61,15 +61,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-Brush::Brush( RGBA color, style style ) :
-   UIObject( (*API->Brush->CreateBrush)( ModuleHandle(), color, style ) )
+Brush::Brush( RGBA color, style style )
+   : UIObject( (*API->Brush->CreateBrush)( ModuleHandle(), color, style ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateBrush" );
 }
 
-Brush::Brush( const Bitmap& pm ) :
-   UIObject( (*API->Brush->CreateBitmapBrush)( ModuleHandle(), pm.handle ) )
+Brush::Brush( const Bitmap& pm )
+   : UIObject( (*API->Brush->CreateBitmapBrush)( ModuleHandle(), pm.handle ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateBitmapBrush" );
@@ -159,26 +159,26 @@ GradientBrush::spread_mode GradientBrush::SpreadMode() const
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-LinearGradientBrush::LinearGradientBrush( double x1, double y1, double x2, double y2, const stop_list& stops, spread_mode spread ) :
-GradientBrush( (*API->Brush->CreateLinearGradientBrush)(
-                  ModuleHandle(), x1, y1, x2, y2, spread,
-                  reinterpret_cast<const api_gradient_stop*>( stops.Begin() ), stops.Length() ) )
+LinearGradientBrush::LinearGradientBrush( double x1, double y1, double x2, double y2, const stop_list& stops, spread_mode spread )
+   : GradientBrush( (*API->Brush->CreateLinearGradientBrush)( ModuleHandle(), x1, y1, x2, y2, spread,
+                                                              reinterpret_cast<const api_gradient_stop*>( stops.Begin() ),
+                                                              stops.Length() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateLinearGradientBrush" );
 }
 
-LinearGradientBrush::LinearGradientBrush( const DRect& r, const stop_list& stops, spread_mode spread ) :
-GradientBrush( (*API->Brush->CreateLinearGradientBrush)(
-                  ModuleHandle(), r.x0, r.y0, r.x1, r.y1, spread,
-                  reinterpret_cast<const api_gradient_stop*>( stops.Begin() ), stops.Length() ) )
+LinearGradientBrush::LinearGradientBrush( const DRect& r, const stop_list& stops, spread_mode spread )
+   : GradientBrush( (*API->Brush->CreateLinearGradientBrush)( ModuleHandle(), r.x0, r.y0, r.x1, r.y1, spread,
+                                                              reinterpret_cast<const api_gradient_stop*>( stops.Begin() ),
+                                                              stops.Length() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateLinearGradientBrush" );
 }
 
-LinearGradientBrush::LinearGradientBrush( const Rect& r, const stop_list& stops, spread_mode spread ) :
-GradientBrush( (void*)0 )
+LinearGradientBrush::LinearGradientBrush( const Rect& r, const stop_list& stops, spread_mode spread )
+   : GradientBrush( (void*)0 )
 {
    DRect d( r );
    void* h = (*API->Brush->CreateLinearGradientBrush)(
@@ -199,33 +199,35 @@ void LinearGradientBrush::GetParameters( double& x1, double& y1, double& x2, dou
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-RadialGradientBrush::RadialGradientBrush( double cx, double cy, double r, double fx, double fy, const stop_list& stops, spread_mode spread ) :
-GradientBrush( (*API->Brush->CreateRadialGradientBrush)(
-                  ModuleHandle(), cx, cy, r,
-                  (fx == uint32_max) ? cx : fx, (fy == uint32_max) ? cy : fy,
-                  spread, reinterpret_cast<const api_gradient_stop*>( stops.Begin() ), stops.Length() ) )
+RadialGradientBrush::RadialGradientBrush( double cx, double cy, double r, double fx, double fy, const stop_list& stops, spread_mode spread )
+   : GradientBrush( (*API->Brush->CreateRadialGradientBrush)( ModuleHandle(), cx, cy, r,
+                                                   (fx == uint32_max) ? cx : fx,
+                                                   (fy == uint32_max) ? cy : fy,
+                                                   spread,
+                                                   reinterpret_cast<const api_gradient_stop*>( stops.Begin() ),
+                                                   stops.Length() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateRadialGradientBrush" );
 }
 
-RadialGradientBrush::RadialGradientBrush( const DPoint& c, double r, const DPoint& f, const stop_list& stops, spread_mode spread ) :
-GradientBrush( (*API->Brush->CreateRadialGradientBrush)(
-                  ModuleHandle(), c.x, c.y, r,
-                  (f.x == uint32_max) ? c.x : f.x, (f.y == uint32_max) ? c.y : f.y,
-                  spread, reinterpret_cast<const api_gradient_stop*>( stops.Begin() ), stops.Length() ) )
+RadialGradientBrush::RadialGradientBrush( const DPoint& c, double r, const DPoint& f, const stop_list& stops, spread_mode spread )
+   : GradientBrush( (*API->Brush->CreateRadialGradientBrush)( ModuleHandle(), c.x, c.y, r,
+                                                   (f.x == uint32_max) ? c.x : f.x,
+                                                   (f.y == uint32_max) ? c.y : f.y,
+                                                   spread,
+                                                   reinterpret_cast<const api_gradient_stop*>( stops.Begin() ), stops.Length() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateRadialGradientBrush" );
 }
 
-RadialGradientBrush::RadialGradientBrush( const Point& c, double r, const Point& f, const stop_list& stops, spread_mode spread ) :
-GradientBrush( (void*)0 )
+RadialGradientBrush::RadialGradientBrush( const Point& c, double r, const Point& f, const stop_list& stops, spread_mode spread )
+   : GradientBrush( (void*)0 )
 {
    DPoint dc( c );
    DPoint df( f );
-   void* h = (*API->Brush->CreateRadialGradientBrush)(
-                  ModuleHandle(), dc.x, dc.y, r,
+   void* h = (*API->Brush->CreateRadialGradientBrush)( ModuleHandle(), dc.x, dc.y, r,
                   (df.x == uint32_max) ? dc.x : df.x, (df.y == uint32_max) ? dc.y : df.y,
                   spread, reinterpret_cast<const api_gradient_stop*>( stops.Begin() ), stops.Length() );
    if ( h == 0 )
@@ -243,24 +245,25 @@ void RadialGradientBrush::GetParameters( double& cx, double& cy, double& r, doub
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-ConicalGradientBrush::ConicalGradientBrush( double cx, double cy, double a, const stop_list& stops ) :
-GradientBrush( (*API->Brush->CreateConicalGradientBrush)( ModuleHandle(), cx, cy, a,
-                                 reinterpret_cast<const api_gradient_stop*>( stops.Begin() ), stops.Length() ) )
+ConicalGradientBrush::ConicalGradientBrush( double cx, double cy, double a, const stop_list& stops )
+   : GradientBrush( (*API->Brush->CreateConicalGradientBrush)( ModuleHandle(), cx, cy, a,
+                                                   reinterpret_cast<const api_gradient_stop*>( stops.Begin() ), stops.Length() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateConicalGradientBrush" );
 }
 
-ConicalGradientBrush::ConicalGradientBrush( const DPoint& c, double a, const stop_list& stops ) :
-GradientBrush( (*API->Brush->CreateConicalGradientBrush)( ModuleHandle(), c.x, c.y, a,
-                                 reinterpret_cast<const api_gradient_stop*>( stops.Begin() ), stops.Length() ) )
+ConicalGradientBrush::ConicalGradientBrush( const DPoint& c, double a, const stop_list& stops )
+   : GradientBrush( (*API->Brush->CreateConicalGradientBrush)( ModuleHandle(), c.x, c.y, a,
+                                                               reinterpret_cast<const api_gradient_stop*>( stops.Begin() ),
+                                                               stops.Length() ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateConicalGradientBrush" );
 }
 
-ConicalGradientBrush::ConicalGradientBrush( const Point& c, double a, const stop_list& stops ) :
-GradientBrush( (void*)0 )
+ConicalGradientBrush::ConicalGradientBrush( const Point& c, double a, const stop_list& stops )
+   : GradientBrush( (void*)0 )
 {
    DPoint dc( c );
    void* h = (*API->Brush->CreateConicalGradientBrush)( ModuleHandle(), dc.x, dc.y, a,
@@ -282,4 +285,4 @@ void ConicalGradientBrush::GetParameters( double& cx, double& cy, double& a ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Brush.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Brush.cpp - Released 2020-07-31T19:33:12Z

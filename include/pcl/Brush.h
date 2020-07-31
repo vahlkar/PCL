@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Brush.h - Released 2020-02-27T12:55:23Z
+// pcl/Brush.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -355,30 +355,28 @@ public:
     */
    struct Stop
    {
-      double position;  //!< Stop position in the [0,1] range, where 0 and 1 correspond, respectively, to the starting and end locations of the gradient area.
-      RGBA   color;     //!< Stop color encoded as a 32-bit AARRGGBB value.
+      double position = 0;       //!< Stop position in the [0,1] range, where 0 and 1 correspond, respectively, to the starting and end locations of the gradient area.
+      RGBA   color = 0xff000000; //!< Stop color encoded as a 32-bit AARRGGBB value.
 
       /*!
        * Constructs a default gradient stop.
        */
-      Stop() : position( 0 ), color( 0xFF000000 )
-      {
-      }
+      Stop() = default;
 
       /*!
        * Constructs a gradient stop at the specified position \a p with the
        * color \a c.
        */
-      Stop( double p, RGBA c ) : position( Range( p, 0.0, 1.0 ) ), color( c )
+      Stop( double p, RGBA c )
+         : position( Range( p, 0.0, 1.0 ) )
+         , color( c )
       {
       }
 
       /*!
        * Copy constructor.
        */
-      Stop( const Stop& x ) : position( x.position ), color( x.color )
-      {
-      }
+      Stop( const Stop& ) = default;
 
       /*!
        * Equality operator. Used to enforce ordering of gradient stop lists.
@@ -506,14 +504,16 @@ public:
     * Copy constructor. This object will reference the same server-side brush
     * as the specified instance \a b.
     */
-   LinearGradientBrush( const LinearGradientBrush& b ) : GradientBrush( b )
+   LinearGradientBrush( const LinearGradientBrush& b )
+      : GradientBrush( b )
    {
    }
 
    /*!
     * Move constructor.
     */
-   LinearGradientBrush( LinearGradientBrush&& x ) : GradientBrush( std::move( x ) )
+   LinearGradientBrush( LinearGradientBrush&& x )
+      : GradientBrush( std::move( x ) )
    {
    }
 
@@ -635,14 +635,16 @@ public:
     * Copy constructor. This object will reference the same server-side brush
     * as the specified instance \a b.
     */
-   RadialGradientBrush( const RadialGradientBrush& b ) : GradientBrush( b )
+   RadialGradientBrush( const RadialGradientBrush& b )
+      : GradientBrush( b )
    {
    }
 
    /*!
     * Move constructor.
     */
-   RadialGradientBrush( RadialGradientBrush&& x ) : GradientBrush( std::move( x ) )
+   RadialGradientBrush( RadialGradientBrush&& x )
+      : GradientBrush( std::move( x ) )
    {
    }
 
@@ -746,14 +748,16 @@ public:
     * Copy constructor. This object will reference the same server-side brush
     * as the specified instance \a b.
     */
-   ConicalGradientBrush( const ConicalGradientBrush& b ) : GradientBrush( b )
+   ConicalGradientBrush( const ConicalGradientBrush& b )
+      : GradientBrush( b )
    {
    }
 
    /*!
     * Move constructor.
     */
-   ConicalGradientBrush( ConicalGradientBrush&& x ) : GradientBrush( std::move( x ) )
+   ConicalGradientBrush( ConicalGradientBrush&& x )
+      : GradientBrush( std::move( x ) )
    {
    }
 
@@ -813,4 +817,4 @@ public:
 #endif   // __PCL_Brush_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Brush.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Brush.h - Released 2020-07-31T19:33:04Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInterface.h - Released 2020-02-27T12:56:01Z
+// DynamicPSFInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -93,25 +93,16 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
-
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
-
    bool IsDynamicInterface() const override;
-
    void ExitDynamicMode() override;
-
    void DynamicMouseEnter( View& ) override;
    void DynamicMouseLeave( View& ) override;
    void DynamicMouseMove( View&, const DPoint&, unsigned buttons, unsigned modifiers ) override;
@@ -119,10 +110,8 @@ public:
    void DynamicMouseRelease( View&, const DPoint&, int button, unsigned buttons, unsigned modifiers ) override;
    void DynamicMouseDoubleClick( View&, const DPoint&, unsigned buttons, unsigned modifiers ) override;
    bool DynamicKeyPress( View& v, int key, unsigned modifiers );
-
    bool RequiresDynamicUpdate( const View&, const DRect& ) const override;
    void DynamicPaint( const View&, VectorGraphics&, const DRect& ) const override;
-
    void SaveSettings() const override;
    void LoadSettings() override;
 
@@ -140,6 +129,8 @@ private:
          TreeBox           Data_TreeBox;
          HorizontalSizer   StarTools_Sizer;
             Label             StarInfo_Label;
+            ToolButton        EnlargeFont_ToolButton;
+            ToolButton        ShrinkFont_ToolButton;
             ToolButton        ExpandAll_ToolButton;
             ToolButton        CollapseAll_ToolButton;
             ToolButton        DeleteStar_ToolButton;
@@ -150,26 +141,33 @@ private:
             ToolButton        ExportPSF_ToolButton;
             ToolButton        AverageStars_ToolButton;
             ToolButton        ExportCSV_ToolButton;
-         SectionBar        PSFModelFunctions_SectionBar;
-         Control           PSFModelFunctions_Control;
-         HorizontalSizer   PSFModelFunctions_Sizer;
-            VerticalSizer     PSFModelFunctions1_Sizer;
-               CheckBox          AutoPSF_CheckBox;
-               CheckBox          Moffat6_CheckBox;
-               CheckBox          CircularPSF_CheckBox;
-            VerticalSizer     PSFModelFunctions2_Sizer;
-               CheckBox          Gaussian_CheckBox;
-               CheckBox          Moffat4_CheckBox;
-               CheckBox          SignedAngles_CheckBox;
-            VerticalSizer     PSFModelFunctions3_Sizer;
-               CheckBox          Moffat_CheckBox;
-               CheckBox          Moffat25_CheckBox;
-            VerticalSizer     PSFModelFunctions4_Sizer;
-               CheckBox          MoffatA_CheckBox;
-               CheckBox          Moffat15_CheckBox;
-            VerticalSizer     PSFModelFunctions5_Sizer;
-               CheckBox          Moffat8_CheckBox;
-               CheckBox          Lorentzian_CheckBox;
+         SectionBar        PSFModels_SectionBar;
+         Control           PSFModels_Control;
+            VerticalSizer     PSFModels_Sizer;
+               HorizontalSizer   PSFModelsTop_Sizer;
+                  VerticalSizer     PSFModels1_Sizer;
+                     CheckBox          AutoPSF_CheckBox;
+                     CheckBox          MoffatA_CheckBox;
+                     CheckBox          CircularPSF_CheckBox;
+                  VerticalSizer     PSFModels2_Sizer;
+                     CheckBox          Gaussian_CheckBox;
+                     CheckBox          Moffat8_CheckBox;
+                     CheckBox          SignedAngles_CheckBox;
+                  VerticalSizer     PSFModels3_Sizer;
+                     CheckBox          VariableShape_CheckBox;
+                     CheckBox          Moffat6_CheckBox;
+                  VerticalSizer     PSFModels4_Sizer;
+                     CheckBox          Moffat_CheckBox;
+                     CheckBox          Moffat4_CheckBox;
+                  VerticalSizer     PSFModels5_Sizer;
+                     CheckBox          Moffat25_CheckBox;
+                  VerticalSizer     PSFModels6_Sizer;
+                     CheckBox          Moffat15_CheckBox;
+                  VerticalSizer     PSFModels7_Sizer;
+                     CheckBox          Lorentzian_CheckBox;
+               HorizontalSizer   AutoVariableShapePSF_Sizer;
+                  CheckBox          AutoVariableShapePSF_CheckBox;
+
          SectionBar        StarDetectionParameters_SectionBar;
          Control           StarDetectionParameters_Control;
          VerticalSizer     StarDetectionParameters_Sizer;
@@ -196,9 +194,12 @@ private:
    void UpdateControls();
    void UpdateStarInfo();
    void UpdateScaleItems();
+   void UpdateStyleSheets();
 
    void RegenerateDataTree();
    void AdjustDataTreeColumns();
+
+   void SetPSFunction( PSFData::psf_function, bool );
 
    void __CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
    void __NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
@@ -227,6 +228,8 @@ private:
       SortByRotationAngle,
       SortByAbsRotationAngle,
       SortByShape,
+      SortByFlux,
+      SortByMeanSignal,
       SortByMAD
    };
 
@@ -240,8 +243,9 @@ private:
       Star*    star = nullptr; // star being fitted
       PSFNode* node = nullptr;
 
-      PSF( const PSFData& data, Star* s ) :
-         PSFData( data ), star( s )
+      PSF( const PSFData& data, Star* s )
+         : PSFData( data )
+         , star( s )
       {
       }
 
@@ -262,18 +266,21 @@ private:
       typedef DynamicPSFInterface::psf_list psf_list;
 
       PSFCollection* collection = nullptr; // the view to which this star pertains
-      psf_list       psfs;           // fitted PSFs
+      psf_list       psfs;                 // fitted PSFs
       StarNode*      node = nullptr;
       unsigned       uniqueId = 0;
       bool           selected = false;
 
-      Star( PSFCollection* c ) :
-         collection( c ), uniqueId( c->UniqueStarId() )
+      Star( PSFCollection* c )
+         : collection( c )
+         , uniqueId( c->UniqueStarId() )
       {
       }
 
-      Star( const StarData& data, PSFCollection* c ) :
-         StarData( data ), collection( c ), uniqueId( c->UniqueStarId() )
+      Star( const StarData& data, PSFCollection* c )
+         : StarData( data )
+         , collection( c )
+         , uniqueId( c->UniqueStarId() )
       {
       }
 
@@ -300,8 +307,8 @@ private:
       void Regenerate( float threshold, bool autoAperture, const PSFOptions& options );
       void Regenerate( const ImageVariant&, float threshold, bool autoAperture, const PSFOptions& options );
 
-      void Recalculate( float threshold, bool autoAperture );
-      void Recalculate( const ImageVariant&, float threshold, bool autoAperture );
+      void Recalculate( float threshold, bool autoAperture, const PSFOptions& options );
+      void Recalculate( const ImageVariant&, float threshold, bool autoAperture, const PSFOptions& options );
 
       void Update();
 
@@ -329,8 +336,9 @@ private:
       star_list          stars;
       PSFCollectionNode* node = nullptr;
 
-      PSFCollection( const IsoString& id, bool astrometry = true ) :
-         view( View::ViewById( id ) ), viewId( id )
+      PSFCollection( const IsoString& id, bool astrometry = true )
+         : view( View::ViewById( id ) )
+         , viewId( id )
       {
          if ( !view.IsNull() )
          {
@@ -341,13 +349,14 @@ private:
          }
       }
 
-      template <class S> PSFCollection( const S& id, bool astrometry = true ) :
-         PSFCollection( IsoString( id ), astrometry )
+      template <class S> PSFCollection( const S& id, bool astrometry = true )
+         : PSFCollection( IsoString( id ), astrometry )
       {
       }
 
-      PSFCollection( const View& v, bool astrometry = true ) :
-         view( v ), viewId( v.FullId() )
+      PSFCollection( const View& v, bool astrometry = true )
+         : view( v )
+         , viewId( v.FullId() )
       {
          if ( !view.IsNull() )
          {
@@ -373,8 +382,7 @@ private:
       }
 
       void Regenerate( float threshold, bool autoAperture, const PSFOptions& options );
-
-      void Recalculate( float threshold, bool autoAperture );
+      void Recalculate( float threshold, bool autoAperture, const PSFOptions& options );
 
       void Update();
       void Update( const Rect& );
@@ -409,10 +417,15 @@ private:
       {
       public:
 
-         StarThread( const ImageVariant& image, float threshold, bool autoAperture,
+         StarThread( const ImageVariant& image, float threshold, bool autoAperture, const PSFOptions& options,
                      star_list::iterator begin,
-                     star_list::iterator end ) :
-            m_image( image ), m_threshold( threshold ), m_autoAperture( autoAperture ), m_begin( begin ), m_end( end )
+                     star_list::iterator end )
+            : m_image( image )
+            , m_threshold( threshold )
+            , m_autoAperture( autoAperture )
+            , m_options( options )
+            , m_begin( begin )
+            , m_end( end )
          {
          }
 
@@ -421,6 +434,7 @@ private:
          const ImageVariant& m_image;
          float               m_threshold;
          bool                m_autoAperture;
+         PSFOptions          m_options;
          star_list::iterator m_begin;
          star_list::iterator m_end;
       };
@@ -431,8 +445,8 @@ private:
 
          RegenerateThread( const ImageVariant& image, float threshold, bool autoAperture, const PSFOptions& options,
                            star_list::iterator begin,
-                           star_list::iterator end ) :
-            StarThread( image, threshold, autoAperture, begin, end ), m_options( options )
+                           star_list::iterator end )
+            : StarThread( image, threshold, autoAperture, options, begin, end )
          {
          }
 
@@ -441,27 +455,23 @@ private:
             for ( star_list::iterator s = m_begin; s != m_end; ++s )
                s->Regenerate( m_image, m_threshold, m_autoAperture, m_options );
          }
-
-      private:
-
-         PSFOptions m_options;
       };
 
       class RecalculateThread : public StarThread
       {
       public:
 
-         RecalculateThread( const ImageVariant& image, float threshold, bool autoAperture,
+         RecalculateThread( const ImageVariant& image, float threshold, bool autoAperture, const PSFOptions& options,
                             star_list::iterator begin,
-                            star_list::iterator end ) :
-            StarThread( image, threshold, autoAperture, begin, end )
+                            star_list::iterator end )
+            : StarThread( image, threshold, autoAperture, options, begin, end )
          {
          }
 
          void Run() override
          {
             for ( star_list::iterator s = m_begin; s != m_end; ++s )
-               s->Recalculate( m_image, m_threshold, m_autoAperture );
+               s->Recalculate( m_image, m_threshold, m_autoAperture, m_options );
          }
       };
    };
@@ -470,6 +480,7 @@ private:
 
    psf_collection_list m_collections;
    star_list           m_selectedStars;
+   float               m_fontSize = 8;
 
    //
 
@@ -518,7 +529,6 @@ private:
    void TrackStar( const Star* );
 
    void Regenerate();
-
    void Recalculate();
 
    void ExportCSV( const String& filePath );
@@ -558,4 +568,4 @@ PCL_END_LOCAL
 #endif   // __DynamicPSFInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInterface.h - Released 2020-02-27T12:56:01Z
+// EOF DynamicPSFInterface.h - Released 2020-07-31T19:33:39Z

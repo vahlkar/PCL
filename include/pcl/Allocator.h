@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Allocator.h - Released 2020-02-27T12:55:23Z
+// pcl/Allocator.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -145,7 +145,8 @@ public:
    /*!
     * Constructs an %Allocator instance as a copy of other block allocator.
     */
-   Allocator( const A& a ) : A( a )
+   Allocator( const A& a )
+      : A( a )
    {
    }
 
@@ -405,4 +406,4 @@ inline void Destroy( long double**, long double** ) {}
 #endif  // __PCL_Allocator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Allocator.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Allocator.h - Released 2020-07-31T19:33:04Z

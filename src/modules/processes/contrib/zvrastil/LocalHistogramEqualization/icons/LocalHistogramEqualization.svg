@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="c" x1="173.6" x2="173.35" y1="47.266" y2="63.102" gradientTransform="matrix(1.2964 0 0 1.3601 -107.54 -57.928)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#c6c6c6" offset="0"/>
+<stop stop-color="#ddd" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="173.6" x2="173.74" y1="47.266" y2="63.701" gradientTransform="matrix(1.2964 0 0 1.3601 -70.612 -21.003)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#232323" offset="0"/>
+<stop stop-color="#141414" offset="1"/>
+</linearGradient>
+<radialGradient id="a" cx="75.595" cy="68.702" r="30.427" gradientTransform="matrix(1.9611 1.3574e-7 -1.4476e-7 2.0519 -12.445 -104.7)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#9cafff" offset="0"/>
+<stop stop-color="#425eff" offset="1"/>
+</radialGradient>
+<linearGradient id="d" x1="824.64" x2="824.64" y1="-119.29" y2="212.14" gradientTransform="matrix(.28162 0 0 .28162 -96.431 23.197)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#8b8b8b" offset="0"/>
+<stop stop-color="#fbfbfb" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-69.926 33.313)">
+<g transform="translate(1.8521 -1.8521)">
+<rect x="77.599" y="-21.936" width="116.42" height="116.42" fill="url(#a)" stroke="#000" stroke-linecap="square" stroke-width="6.35" style="paint-order:markers fill stroke"/>
+<path d="m135.81-12.449a48.721 48.721 0 0 0-48.721 48.721 48.721 48.721 0 0 0 48.721 48.721z" fill="#202020"/>
+<path d="m135.81-12.449v97.441a48.721 48.721 0 0 0 48.721-48.721 48.721 48.721 0 0 0-48.721-48.721z" fill="url(#d)"/>
+<circle cx="135.81" cy="36.272" r="46.669" fill="none" stroke="#42444c" stroke-linecap="square" stroke-width="4.2333"/>
+<circle cx="154.27" cy="54.735" r="11.087" fill="url(#b)" style="paint-order:markers fill stroke"/>
+<circle cx="117.34" cy="17.809" r="11.087" fill="url(#c)" style="paint-order:markers fill stroke"/>
+</g>
+</g>
+</svg>

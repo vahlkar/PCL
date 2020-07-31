@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationInstance.cpp - Released 2020-02-27T12:56:01Z
+// AnnotationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -66,29 +66,29 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-AnnotationInstance::AnnotationInstance( const MetaProcess* m ) :
-ProcessImplementation( m ),
-annotationText( TheAnnotationTextParameter->DefaultValue() ),
-annotationFont( TheAnnotationFontParameter->DefaultValue() ),
-annotationFontSize( TheAnnotationFontSizeParameter->DefaultValue() ),
-annotationFontBold( TheAnnotationFontBoldParameter->DefaultValue() ),
-annotationFontItalic( TheAnnotationFontItalicParameter->DefaultValue() ),
-annotationFontUnderline( TheAnnotationFontUnderlineParameter->DefaultValue() ),
-annotationFontShadow( TheAnnotationFontShadowParameter->DefaultValue() ),
-annotationColor( TheAnnotationColorParameter->DefaultValue() ),
-annotationPositionX( TheAnnotationPositionXParameter->DefaultValue() ),
-annotationPositionY( TheAnnotationPositionYParameter->DefaultValue() ),
-annotationShowLeader( TheAnnotationShowLeaderParameter->DefaultValue() ),
-annotationLeaderPositionX( TheAnnotationLeaderPositionXParameter->DefaultValue() ),
-annotationLeaderPositionY( TheAnnotationLeaderPositionYParameter->DefaultValue() ),
-annotationOpacity( TheAnnotationOpacityParameter->DefaultValue() )
+AnnotationInstance::AnnotationInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , annotationText( TheAnnotationTextParameter->DefaultValue() )
+   , annotationFont( TheAnnotationFontParameter->DefaultValue() )
+   , annotationFontSize( TheAnnotationFontSizeParameter->DefaultValue() )
+   , annotationFontBold( TheAnnotationFontBoldParameter->DefaultValue() )
+   , annotationFontItalic( TheAnnotationFontItalicParameter->DefaultValue() )
+   , annotationFontUnderline( TheAnnotationFontUnderlineParameter->DefaultValue() )
+   , annotationFontShadow( TheAnnotationFontShadowParameter->DefaultValue() )
+   , annotationColor( TheAnnotationColorParameter->DefaultValue() )
+   , annotationPositionX( TheAnnotationPositionXParameter->DefaultValue() )
+   , annotationPositionY( TheAnnotationPositionYParameter->DefaultValue() )
+   , annotationShowLeader( TheAnnotationShowLeaderParameter->DefaultValue() )
+   , annotationLeaderPositionX( TheAnnotationLeaderPositionXParameter->DefaultValue() )
+   , annotationLeaderPositionY( TheAnnotationLeaderPositionYParameter->DefaultValue() )
+   , annotationOpacity( TheAnnotationOpacityParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-AnnotationInstance::AnnotationInstance( const AnnotationInstance& x ) :
-ProcessImplementation( x )
+AnnotationInstance::AnnotationInstance( const AnnotationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -98,7 +98,7 @@ ProcessImplementation( x )
 void AnnotationInstance::Assign( const ProcessImplementation& p )
 {
    const AnnotationInstance* x = dynamic_cast<const AnnotationInstance*>( &p );
-   if ( x != 0 )
+   if ( x != nullptr )
    {
       annotationText = x->annotationText;
       annotationFont = x->annotationFont;
@@ -143,8 +143,7 @@ public:
       int relPosX = 0, relPosY = 0;
       Bitmap annotationBmp = AnnotationRenderer::CreateAnnotationBitmap( instance, relPosX, relPosY, false );
       // blend bitmap to the image
-      image.Blend( annotationBmp, Point( instance.annotationPositionX - relPosX,
-                                         instance.annotationPositionY - relPosY ) );
+      image.Blend( annotationBmp, Point( instance.annotationPositionX - relPosX, instance.annotationPositionY - relPosY ) );
    }
 };
 
@@ -164,17 +163,27 @@ bool AnnotationInstance::ExecuteOn( View& view )
    if ( !image.IsComplexSample() )
       if ( image.IsFloatSample() )
          switch ( image.BitsPerSample() )
-      {
-         case 32: AnnotationEngine::Apply( static_cast<pcl::Image&>( *image ), *this ); break;
-         case 64: AnnotationEngine::Apply( static_cast<pcl::DImage&>( *image ), *this ); break;
-      }
+         {
+         case 32:
+            AnnotationEngine::Apply( static_cast<pcl::Image&>( *image ), *this );
+            break;
+         case 64:
+            AnnotationEngine::Apply( static_cast<pcl::DImage&>( *image ), *this );
+            break;
+         }
       else
          switch ( image.BitsPerSample() )
-      {
-         case  8: AnnotationEngine::Apply( static_cast<pcl::UInt8Image&>( *image ), *this ); break;
-         case 16: AnnotationEngine::Apply( static_cast<pcl::UInt16Image&>( *image ), *this ); break;
-         case 32: AnnotationEngine::Apply( static_cast<pcl::UInt32Image&>( *image ), *this ); break;
-      }
+         {
+         case 8:
+            AnnotationEngine::Apply( static_cast<pcl::UInt8Image&>( *image ), *this );
+            break;
+         case 16:
+            AnnotationEngine::Apply( static_cast<pcl::UInt16Image&>( *image ), *this );
+            break;
+         case 32:
+            AnnotationEngine::Apply( static_cast<pcl::UInt32Image&>( *image ), *this );
+            break;
+         }
 
    return true;
 }
@@ -211,7 +220,8 @@ void* AnnotationInstance::LockParameter( const MetaParameter* p, size_type /*tab
       return &annotationLeaderPositionY;
    if ( p == TheAnnotationOpacityParameter )
       return &annotationOpacity;
-   return 0;
+
+   return nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -244,12 +254,13 @@ size_type AnnotationInstance::ParameterLength( const MetaParameter* p, size_type
       return annotationText.Length();
    if ( p == TheAnnotationFontParameter )
       return annotationFont.Length();
+
    return 0;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF AnnotationInstance.cpp - Released 2020-07-31T19:33:39Z

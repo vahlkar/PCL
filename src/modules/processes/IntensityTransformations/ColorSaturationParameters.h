@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationParameters.h - Released 2020-02-27T12:56:01Z
+// ColorSaturationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -73,10 +73,8 @@ public:
    HSCurvePointValue( MetaTable* );
 
    virtual IsoString Id() const = 0;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-
+   double MinimumValue() const override;
+   double MaximumValue() const override;
    virtual bool IsX() const = 0;
 };
 
@@ -88,8 +86,8 @@ class classId : public HSCurvePointValue                                   \
 public:                                                                    \
    classId( MetaTable* t ) : HSCurvePointValue( t )                        \
    { if ( The##classId##Parameter == 0 ) The##classId##Parameter = this; } \
-   virtual IsoString Id() const { return parId; }                          \
-   virtual bool IsX() const { return isX; }                                \
+   IsoString Id() const override { return parId; }                         \
+   bool IsX() const override { return isX; }                               \
 }
 
 DECLARE_HSCURVE_POINT_VALUE_PARAMETER( XHS, "x", true  );
@@ -107,13 +105,11 @@ public:
 
    HueShift( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern HueShift* TheHueShiftParameter;
@@ -127,4 +123,4 @@ PCL_END_LOCAL
 #endif   // __ColorSaturationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ColorSaturationParameters.h - Released 2020-07-31T19:33:39Z

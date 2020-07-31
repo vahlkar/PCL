@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsParameters.h - Released 2020-02-27T12:56:01Z
+// CreateAlphaChannelsParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -68,8 +68,8 @@ public:
 
    CAFromImage( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CAFromImage* TheCAFromImageParameter;
@@ -82,9 +82,9 @@ public:
 
    CASourceImageIdentifier( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;   // 0 = automatic
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;   // 0 = automatic
+   String AllowedCharacters() const override;
 };
 
 extern CASourceImageIdentifier* TheCASourceImageIdentifierParameter;
@@ -97,8 +97,8 @@ public:
 
    CAInvertSourceImage( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CAInvertSourceImage* TheCAInvertSourceImageParameter;
@@ -111,8 +111,8 @@ public:
 
    CACloseSourceImage( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CACloseSourceImage* TheCACloseSourceImageParameter;
@@ -125,11 +125,11 @@ public:
 
    CATransparency( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern CATransparency* TheCATransparencyParameter;
@@ -142,8 +142,8 @@ public:
 
    CAReplaceExistingChannels( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern CAReplaceExistingChannels* TheCAReplaceExistingChannelsParameter;
@@ -156,9 +156,9 @@ public:
 
    CAChannelCount( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
 };
 
 extern CAChannelCount* TheCAChannelCountParameter;
@@ -172,4 +172,4 @@ PCL_END_LOCAL
 #endif   // __CreateAlphaChannelsParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsParameters.h - Released 2020-02-27T12:56:01Z
+// EOF CreateAlphaChannelsParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ChannelMatchInstance.cpp - Released 2020-02-27T12:56:01Z
+// ChannelMatchInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -65,8 +65,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ChannelMatchInstance::ChannelMatchInstance( const MetaProcess* P ) :
-   ProcessImplementation( P )
+ChannelMatchInstance::ChannelMatchInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
 {
    for ( int i = 0; i < 3; ++i )
    {
@@ -78,8 +78,8 @@ ChannelMatchInstance::ChannelMatchInstance( const MetaProcess* P ) :
 
 // ----------------------------------------------------------------------------
 
-ChannelMatchInstance::ChannelMatchInstance( const ChannelMatchInstance& x ) :
-   ProcessImplementation( x )
+ChannelMatchInstance::ChannelMatchInstance( const ChannelMatchInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -298,4 +298,4 @@ size_type ChannelMatchInstance::ParameterLength( const MetaParameter* p, size_ty
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ChannelMatchInstance.cpp - Released 2020-07-31T19:33:39Z

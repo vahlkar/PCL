@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrInstance.h - Released 2020-02-27T12:56:01Z
+// GradientsHdrInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -31,11 +31,13 @@
 #ifndef __GradientsHdrInstance_h
 #define __GradientsHdrInstance_h
 
-#include <pcl/ProcessImplementation.h>
 #include <pcl/MetaParameter.h> // for pcl_bool, pcl_enum
+#include <pcl/ProcessImplementation.h>
 
 namespace pcl
 {
+
+// ----------------------------------------------------------------------------
 
 class GradientsHdrInstance : public ProcessImplementation
 {
@@ -44,23 +46,21 @@ public:
    GradientsHdrInstance( const MetaProcess* );
    GradientsHdrInstance( const GradientsHdrInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
-
-   virtual void* LockParameter( const MetaParameter*, size_type tableRow );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
    ///  use pow(10,expGradient) to map gradient values
-   double    expGradient;
+   double expGradient;
    /// relative log10(maximum) gradient value that is clampled
-   double    logMaxGradient;
+   double logMaxGradient;
    /// relative log10(minimum) gradient value that is clamped
-   double    logMinGradient;
+   double logMinGradient;
    /// rescale to range [0,1]? Otherwise rescale to original image range
    bool bRescale01;
    /// preserve relative proportions of RGB, otherwise just set luminance
@@ -74,10 +74,11 @@ private:
    friend class GradientsHdrInterface;
 };
 
+// ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __GradientsHdrInstance_h
+#endif // __GradientsHdrInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrInstance.h - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrInstance.h - Released 2020-07-31T19:33:39Z

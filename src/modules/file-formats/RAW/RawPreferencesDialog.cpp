@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard RAW File Format Module Version 1.5.3
+// Standard RAW File Format Module Version 1.5.4
 // ----------------------------------------------------------------------------
-// RawPreferencesDialog.cpp - Released 2020-02-27T12:55:48Z
+// RawPreferencesDialog.cpp - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -57,9 +57,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-RawPreferencesDialog::RawPreferencesDialog( RawPreferences& prf ) :
-   preferences( prf ),
-   savedPreferences( prf )
+RawPreferencesDialog::RawPreferencesDialog( RawPreferences& prf )
+   : preferences( prf )
+   , savedPreferences( prf )
 {
    pcl::Font fnt = Font();
    int labelWidth1 = fnt.Width( String( "FBDD noise reduction:" ) + 'M' );
@@ -632,4 +632,4 @@ void RawPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawPreferencesDialog.cpp - Released 2020-02-27T12:55:48Z
+// EOF RawPreferencesDialog.cpp - Released 2020-07-31T19:33:23Z

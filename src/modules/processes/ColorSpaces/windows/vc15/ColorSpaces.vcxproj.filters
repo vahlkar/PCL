@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:56.563Z
+# Generated on .... 2020-07-31T19:36:29.855Z
 # Project id ...... ColorSpaces
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>14d7b0fe-4c36-45e2-97ec-73ec8af85f15</UniqueIdentifier>
+      <UniqueIdentifier>72961759-2109-48bd-abf9-7810e2666c9c</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>d39aa467-5cef-4dfe-8955-92dc244ce5e0</UniqueIdentifier>
+      <UniqueIdentifier>efdadebd-8ba3-4873-9536-07c773a5fd69</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>d69d124d-a858-4dab-9991-bd57413ff0e3</UniqueIdentifier>
+      <UniqueIdentifier>84fb903a-c766-46b5-8a17-6246d31e430e</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -174,43 +174,37 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\ChannelCombinationIcon.png">
+    <None Include="..\..\icons\ChannelCombination.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ChannelExtractionIcon.png">
+    <None Include="..\..\icons\ChannelExtraction.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ConvertToGrayscaleActionIcon.png">
+    <None Include="..\..\icons\ConvertToGrayscale.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ConvertToGrayscaleIcon.png">
+    <None Include="..\..\icons\ConvertToRGBColor.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ConvertToRGBColorActionIcon.png">
+    <None Include="..\..\icons\ExtractBlueChannelAction.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ConvertToRGBColorIcon.png">
+    <None Include="..\..\icons\ExtractCIELAction.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ExtractBlueChannelActionIcon.png">
+    <None Include="..\..\icons\ExtractGreenChannelAction.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ExtractCIELActionIcon.png">
+    <None Include="..\..\icons\ExtractRedChannelAction.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ExtractGreenChannelActionIcon.png">
+    <None Include="..\..\icons\LRGBCombination.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\ExtractRedChannelActionIcon.png">
+    <None Include="..\..\icons\RGBWorkingSpace.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\LRGBCombinationIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\RGBWorkingSpaceIcon.png">
-        <Filter>Image Files</Filter>
-    </None>
-    <None Include="..\..\SplitRGBChannelsActionIcon.png">
+    <None Include="..\..\icons\SplitRGBChannelsAction.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

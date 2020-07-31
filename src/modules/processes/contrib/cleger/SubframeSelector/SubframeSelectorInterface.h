@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.h - Released 2020-02-27T12:56:01Z
+// SubframeSelectorInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -84,19 +84,13 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
-
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned&/*flags*/ ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
@@ -248,9 +242,6 @@ private:
    void ShowMeasurementsInterface() const;
    void HideMeasurementsInterface() const;
 
-   /*
-    * Event Handlers
-    */
    void e_ToggleSection( SectionBar& sender, Control& section, bool start );
    void e_SubframeImages_CurrentNodeUpdated( TreeBox& sender, TreeBox::Node& current, TreeBox::Node& oldCurrent );
    void e_SubframeImages_NodeActivated( TreeBox& sender, TreeBox::Node& node, int col );
@@ -285,4 +276,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.h - Released 2020-02-27T12:56:01Z
+// EOF SubframeSelectorInterface.h - Released 2020-07-31T19:33:39Z

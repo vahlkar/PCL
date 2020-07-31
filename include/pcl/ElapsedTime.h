@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ElapsedTime.h - Released 2020-02-27T12:55:23Z
+// pcl/ElapsedTime.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -102,7 +102,7 @@ namespace pcl
  * independent on any external time reference. The underlying implementation
  * uses monotonic clock services on Linux and FreeBSD (via clock_gettime()
  * system calls), performance counters on Windows, and Mach absolute time
- * system services on OS X.
+ * system services on macOS.
  *
  * Example of use:
  *
@@ -233,7 +233,7 @@ public:
 #ifdef __PCL_MACOSX
 
       /*
-       * OS X implementation based on Mach absolute time system services.
+       * macOS implementation based on Mach absolute time system services.
        *
        * https://developer.apple.com/library/mac/qa/qa1398/_index.html
        * http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
@@ -394,4 +394,4 @@ private:
 #endif   // __PCL_ElapsedTime_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ElapsedTime.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ElapsedTime.h - Released 2020-07-31T19:33:04Z

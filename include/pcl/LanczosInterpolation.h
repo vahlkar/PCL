@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/LanczosInterpolation.h - Released 2020-02-27T12:55:23Z
+// pcl/LanczosInterpolation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -194,12 +194,13 @@ public:
     *                float template specializations; false by default for other
     *                types.
     */
-   LanczosInterpolation( int n = 3, float clamp = __PCL_LANCZOS_CLAMPING_THRESHOLD, bool useLUT = Default::UseLUT( (T*)0 ) ) :
-      m_n( Max( 1, n ) ),
-      m_lut( useLUT ? PCL_InitializeLanczosRealLUT( m_n ) : nullptr ),
-      m_clamp( clamp >= 0 ), m_clampTh( Range( clamp, 0.0F, 1.0F ) ),
-      m_clampThInv( 1 - m_clampTh ),
-      m_Lx( 2*m_n )
+   LanczosInterpolation( int n = 3, float clamp = __PCL_LANCZOS_CLAMPING_THRESHOLD, bool useLUT = Default::UseLUT( (T*)0 ) )
+      : m_n( Max( 1, n ) )
+      , m_lut( useLUT ? PCL_InitializeLanczosRealLUT( m_n ) : nullptr )
+      , m_Lx( 2*m_n )
+      , m_clampTh( Range( clamp, 0.0F, 1.0F ) )
+      , m_clampThInv( 1 - m_clampTh )
+      , m_clamp( clamp >= 0 )
    {
       PCL_PRECONDITION( n >= 1 )
       PCL_PRECONDITION( clamp < 0 || 0 <= clamp && clamp <= 1 )
@@ -425,10 +426,10 @@ private:
 
            int      m_n;          // filter order
      const double** m_lut;        // precomputed function values
-           bool     m_clamp : 1;  // clamping enabled ?
+   mutable DVector  m_Lx;         // precalculated row of function values
            double   m_clampTh;    // clamping threshold in [0,1]
            double   m_clampThInv; // 1 - m_clampTh
-   mutable DVector  m_Lx;         // precalculated row of function values
+           bool     m_clamp;      // clamping enabled ?
 
    /*
     * Sinc function for x > 0
@@ -543,12 +544,13 @@ public:
     *                refer to the documentation for the
     *                SetClampingThreshold( float ) member function.
     */
-   LanczosLUTInterpolationBase( float clamp ) :
-      BidimensionalInterpolation<T>(),
-      m_lut( PCL_InitializeLanczosIntLUT( m_n ) ),
-      m_clamp( clamp >= 0 ), m_clampTh( Range( clamp, 0.0F, 1.0F ) ),
-      m_clampThInv( 1 - m_clampTh ),
-      m_Lx( 2*m_n ), m_Ly( 2*m_n )
+   LanczosLUTInterpolationBase( float clamp )
+      : m_lut( PCL_InitializeLanczosIntLUT( m_n ) )
+      , m_Lx( 2*m_n )
+      , m_Ly( 2*m_n )
+      , m_clampTh( Range( clamp, 0.0F, 1.0F ) )
+      , m_clampThInv( 1 - m_clampTh )
+      , m_clamp( clamp >= 0 )
    {
       PCL_PRECONDITION( m_n >= 1 )
       PCL_PRECONDITION( clamp < 0 || 0 <= clamp && clamp <= 1 )
@@ -730,10 +732,10 @@ public:
 private:
 
      const float*  m_lut;        // filter LUT
-           bool    m_clamp : 1;  // clamping enabled ?
+   mutable FVector m_Lx, m_Ly;   // precalculated function values
            double  m_clampTh;    // clamping threshold in [0,1]
            double  m_clampThInv; // 1 - m_clampTh
-   mutable FVector m_Lx, m_Ly;   // precalculated function values
+           bool    m_clamp;      // clamping enabled ?
 
    /*
     * Interpolate a row of pixels.
@@ -825,8 +827,8 @@ public:
     *                refer to the documentation for the
     *                SetClampingThreshold( float ) member function.
     */
-   Lanczos3LUTInterpolation( float clamp = __PCL_LANCZOS_CLAMPING_THRESHOLD ) :
-      LanczosLUTInterpolationBase<T,3>( clamp )
+   Lanczos3LUTInterpolation( float clamp = __PCL_LANCZOS_CLAMPING_THRESHOLD )
+      : LanczosLUTInterpolationBase<T,3>( clamp )
    {
       PCL_PRECONDITION( 0 <= clamp && clamp <= 1 )
    }
@@ -880,8 +882,8 @@ public:
     *                refer to the documentation for the
     *                SetClampingThreshold( float ) member function.
     */
-   Lanczos4LUTInterpolation( float clamp = __PCL_LANCZOS_CLAMPING_THRESHOLD ) :
-      LanczosLUTInterpolationBase<T,4>( clamp )
+   Lanczos4LUTInterpolation( float clamp = __PCL_LANCZOS_CLAMPING_THRESHOLD )
+      : LanczosLUTInterpolationBase<T,4>( clamp )
    {
       PCL_PRECONDITION( 0 <= clamp && clamp <= 1 )
    }
@@ -935,8 +937,8 @@ public:
     *                refer to the documentation for the
     *                SetClampingThreshold( float ) member function.
     */
-   Lanczos5LUTInterpolation( float clamp = __PCL_LANCZOS_CLAMPING_THRESHOLD ) :
-      LanczosLUTInterpolationBase<T,5>( clamp )
+   Lanczos5LUTInterpolation( float clamp = __PCL_LANCZOS_CLAMPING_THRESHOLD )
+      : LanczosLUTInterpolationBase<T,5>( clamp )
    {
       PCL_PRECONDITION( 0 <= clamp && clamp <= 1 )
    }
@@ -971,4 +973,4 @@ public:
 #endif   // __PCL_LanczosInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LanczosInterpolation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/LanczosInterpolation.h - Released 2020-07-31T19:33:04Z

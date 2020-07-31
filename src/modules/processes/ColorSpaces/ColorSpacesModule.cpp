@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ColorSpacesModule.cpp - Released 2020-02-27T12:56:01Z
+// ColorSpacesModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "ColorSpacesModule.h"
 #include "GrayscaleRGBProcesses.h"
@@ -83,6 +83,8 @@ ColorSpacesModule::ColorSpacesModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* ColorSpacesModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
@@ -92,42 +94,56 @@ const char* ColorSpacesModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ColorSpacesModule::Name() const
 {
    return "ColorSpaces";
 }
+
+// ----------------------------------------------------------------------------
 
 String ColorSpacesModule::Description() const
 {
    return "PixInsight Standard ColorSpaces Module";
 }
 
+// ----------------------------------------------------------------------------
+
 String ColorSpacesModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String ColorSpacesModule::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// ----------------------------------------------------------------------------
+
 String ColorSpacesModule::Copyright() const
 {
-   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String ColorSpacesModule::TradeMarks() const
 {
    return "PixInsight";
 }
 
+// ----------------------------------------------------------------------------
+
 String ColorSpacesModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "ColorSpaces-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "ColorSpaces-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -138,12 +154,16 @@ String ColorSpacesModule::OriginalFileName() const
 #endif
 }
 
+// ----------------------------------------------------------------------------
+
 void ColorSpacesModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
    year  = MODULE_RELEASE_YEAR;
    month = MODULE_RELEASE_MONTH;
    day   = MODULE_RELEASE_DAY;
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorSpacesModule::OnLoad()
 {
@@ -160,6 +180,8 @@ void ColorSpacesModule::OnLoad()
 
 } // pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::ColorSpacesModule;
@@ -167,18 +189,13 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
    if ( mode == pcl::InstallMode::FullInstall )
    {
       new pcl::ConvertToGrayscaleProcess;
-
       new pcl::ConvertToRGBColorProcess;
-
       new pcl::ChannelExtractionProcess;
       new pcl::ChannelExtractionInterface;
-
       new pcl::ChannelCombinationProcess;
       new pcl::ChannelCombinationInterface;
-
       new pcl::RGBWorkingSpaceProcess;
       new pcl::RGBWorkingSpaceInterface;
-
       new pcl::LRGBCombinationProcess;
       new pcl::LRGBCombinationInterface;
    }
@@ -187,4 +204,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ColorSpacesModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorSpacesModule.cpp - Released 2020-07-31T19:33:39Z

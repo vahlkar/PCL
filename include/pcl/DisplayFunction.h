@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/DisplayFunction.h - Released 2020-02-27T12:55:23Z
+// pcl/DisplayFunction.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -97,8 +97,8 @@ public:
    /*!
     * Default constructor. Constructs an identity display function.
     */
-   DisplayFunction() :
-      m_m( 4 ), m_s( 4 ), m_h( 4 ), m_l( 4 ), m_r( 4 )
+   DisplayFunction()
+      : m_m( 4 ), m_s( 4 ), m_h( 4 ), m_l( 4 ), m_r( 4 )
    {
       Reset();
    }
@@ -122,8 +122,8 @@ public:
     * HistogramTransformation class.
     */
    template <class V>
-   DisplayFunction( const V& m, const V& s, const V& h, const V& l = V(), const V& r = V() ) :
-      m_m( 4 ), m_s( 4 ), m_h( 4 ), m_l( 4 ), m_r( 4 )
+   DisplayFunction( const V& m, const V& s, const V& h, const V& l = V(), const V& r = V() )
+      : m_m( 4 ), m_s( 4 ), m_h( 4 ), m_l( 4 ), m_r( 4 )
    {
       Reset();
       for ( int i = 0; i < 4 && i < int( m.Length() ); ++i ) m_m[i] = Range( double( m[i] ), 0.0, 1.0 );
@@ -460,4 +460,4 @@ private:
 #endif   // __PCL_DisplayFunction_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/DisplayFunction.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/DisplayFunction.h - Released 2020-07-31T19:33:04Z

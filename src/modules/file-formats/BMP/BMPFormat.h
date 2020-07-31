@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard BMP File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// BMPFormat.h - Released 2020-02-27T12:55:48Z
+// BMPFormat.h - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -72,7 +72,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -94,7 +94,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -116,7 +116,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -138,7 +138,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -160,7 +160,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -182,7 +182,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -204,7 +204,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -226,7 +226,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -248,7 +248,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -270,7 +270,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -292,7 +292,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -314,7 +314,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -336,7 +336,7 @@ public:
    uint32 Version() const override;
    String Description() const override;
    String Implementation() const override;
-   String IconImageFile() const override;
+   String IconImageSVGFile() const override;
    bool CanRead() const override;
    bool CanWrite() const override;
    bool CanStore8Bit() const override;
@@ -351,4 +351,4 @@ public:
 #endif   // __BMPFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF BMPFormat.h - Released 2020-02-27T12:55:48Z
+// EOF BMPFormat.h - Released 2020-07-31T19:33:23Z

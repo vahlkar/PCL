@@ -1,27 +1,21 @@
-/* chkder.f -- translated by f2c (version 20020621).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
-#include <math.h>
 #include "cminpack.h"
+#include <math.h>
+#include "cminpackP.h"
 
 #define log10e 0.43429448190325182765
 #define factor 100.
 
 /* Table of constant values */
 
-/* Subroutine */ void chkder(int m, int n, const double *x, 
-	double *fvec, double *fjac, int ldfjac, double *xp, 
-	double *fvecp, int mode, double *err)
+__cminpack_attr__
+void __cminpack_func__(chkder)(int m, int n, const real *x, 
+	real *fvec, real *fjac, int ldfjac, real *xp, 
+	real *fvecp, int mode, real *err)
 {
-    /* System generated locals */
-    int fjac_dim1, fjac_offset;
-
     /* Local variables */
     int i, j;
-    double eps, epsf, temp, epsmch;
-    double epslog;
+    real eps, epsf, temp, epsmch;
+    real epslog;
 
 /*     ********** */
 
@@ -104,21 +98,10 @@
 /*     burton s. garbow, kenneth e. hillstrom, jorge j. more */
 
 /*     ********** */
-    /* Parameter adjustments */
-    --err;
-    --fvecp;
-    --fvec;
-    --xp;
-    --x;
-    fjac_dim1 = ldfjac;
-    fjac_offset = 1 + fjac_dim1 * 1;
-    fjac -= fjac_offset;
-
-    /* Function Body */
 
 /*     epsmch is the machine precision. */
 
-    epsmch = dpmpar(1);
+    epsmch = __cminpack_func__(dpmpar)(1);
 
     eps = sqrt(epsmch);
 
@@ -126,7 +109,7 @@
 
 /*        mode = 1. */
 
-        for (j = 1; j <= n; ++j) {
+        for (j = 0; j < n; ++j) {
             temp = eps * fabs(x[j]);
             if (temp == 0.) {
                 temp = eps;
@@ -140,19 +123,19 @@
 
     epsf = factor * epsmch;
     epslog = log10e * log(eps);
-    for (i = 1; i <= m; ++i) {
+    for (i = 0; i < m; ++i) {
 	err[i] = 0.;
     }
-    for (j = 1; j <= n; ++j) {
+    for (j = 0; j < n; ++j) {
 	temp = fabs(x[j]);
 	if (temp == 0.) {
 	    temp = 1.;
 	}
-	for (i = 1; i <= m; ++i) {
-	    err[i] += temp * fjac[i + j * fjac_dim1];
+	for (i = 0; i < m; ++i) {
+	    err[i] += temp * fjac[i + j * ldfjac];
 	}
     }
-    for (i = 1; i <= m; ++i) {
+    for (i = 0; i < m; ++i) {
 	temp = 1.;
 	if (fvec[i] != 0. && fvecp[i] != 0. &&
             fabs(fvecp[i] - fvec[i]) >= epsf * fabs(fvec[i]))

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Pen.cpp - Released 2020-02-27T12:55:33Z
+// pcl/Pen.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -61,8 +61,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-Pen::Pen( RGBA color, float width, Pen::style style, Pen::cap cap, Pen::join join ) :
-   UIObject( (*API->Pen->CreatePen)( ModuleHandle(), color, width, style, cap, join ) )
+Pen::Pen( RGBA color, float width, Pen::style style, Pen::cap cap, Pen::join join )
+   : UIObject( (*API->Pen->CreatePen)( ModuleHandle(), color, width, style, cap, join ) )
 {
    if ( handle == 0 )
       throw APIFunctionError( "CreatePen" );
@@ -185,4 +185,4 @@ void* Pen::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Pen.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/Pen.cpp - Released 2020-07-31T19:33:12Z

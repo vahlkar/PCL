@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ResampleParameters.h - Released 2020-02-27T12:56:01Z
+// ResampleParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -68,9 +68,9 @@ public:
 
    RSXSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
 };
 
 extern RSXSize* TheRSXSizeParameter;
@@ -83,9 +83,9 @@ public:
 
    RSYSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
 };
 
 extern RSYSize* TheRSYSizeParameter;
@@ -106,11 +106,11 @@ public:
 
    RSMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern RSMode* TheRSModeParameter;
@@ -129,11 +129,11 @@ public:
 
    RSAbsoluteMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern RSAbsoluteMode* TheRSAbsoluteModeParameter;
@@ -160,4 +160,4 @@ PCL_END_LOCAL
 #endif   // __ResampleParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ResampleParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ResampleParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// IntegrationCache.cpp - Released 2020-02-27T12:56:01Z
+// IntegrationCache.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -63,21 +63,52 @@ IntegrationCache* TheIntegrationCache = nullptr;
 
 // ----------------------------------------------------------------------------
 
+static bool GetTwoSidedEstimates( IntegrationFile::scale_estimates& v,
+                                  StringList::const_iterator& i, const StringList& s )
+{
+   if ( i == s.End() )
+      return false;
+   int n = i->ToInt();
+   if ( n < 0 || s.End() - i <= n )
+      return false;
+   ++i;
+   v = IntegrationFile::scale_estimates( n );
+   for ( int j = 0; j < n; ++j, ++i )
+   {
+      StringList tokens;
+      i->Break( tokens, ',' );
+      if ( tokens.Length() != 2 )
+         throw ParseError( "Parsing two-sided scale estimate: wrong number of components" );
+      v[j].low = tokens[0].ToDouble();
+      v[j].high = tokens[1].ToDouble();
+   }
+   return true;
+}
+
+static String TwoSidedEstimatesAsString( const IntegrationFile::scale_estimates& v )
+{
+   String s = String().Format( "\n%d", v.Length() );
+   for ( int i = 0; i < v.Length(); ++i )
+      s.AppendFormat( "\n%.8e,%.8e", v[i].low, v[i].high );
+   return s;
+}
+
+// ----------------------------------------------------------------------------
+
 void IntegrationCacheItem::AssignData( const FileDataCacheItem& item )
 {
 #define src static_cast<const IntegrationCacheItem&>( item )
    mean     = src.mean;
    median   = src.median;
-   stdDev   = src.stdDev;
    avgDev   = src.avgDev;
    mad      = src.mad;
    bwmv     = src.bwmv;
-   pbmv     = src.pbmv;
-   sn       = src.sn;
-   qn       = src.qn;
-   ikss     = src.ikss;
-   iksl     = src.iksl;
    noise    = src.noise;
+   ax       = src.ax;
+   ay       = src.ay;
+   am       = src.am;
+   as0      = src.as0;
+   as1      = src.as1;
    metadata = src.metadata;
 #undef src
 }
@@ -91,26 +122,24 @@ String IntegrationCacheItem::DataAsString() const
       tokens.Append( "mean" + VectorAsString( mean ) );
    if ( !median.IsEmpty() )
       tokens.Append( "median" + VectorAsString( median ) );
-   if ( !stdDev.IsEmpty() )
-      tokens.Append( "stdDev" + VectorAsString( stdDev ) );
    if ( !avgDev.IsEmpty() )
-      tokens.Append( "avgDev" + VectorAsString( avgDev ) );
+      tokens.Append( "avgDev" + TwoSidedEstimatesAsString( avgDev ) );
    if ( !mad.IsEmpty() )
-      tokens.Append( "mad" + VectorAsString( mad ) );
+      tokens.Append( "mad" + TwoSidedEstimatesAsString( mad ) );
    if ( !bwmv.IsEmpty() )
-      tokens.Append( "bwmv" + VectorAsString( bwmv ) );
-   if ( !pbmv.IsEmpty() )
-      tokens.Append( "pbmv" + VectorAsString( pbmv ) );
-   if ( !sn.IsEmpty() )
-      tokens.Append( "sn" + VectorAsString( sn ) );
-   if ( !qn.IsEmpty() )
-      tokens.Append( "qn" + VectorAsString( qn ) );
-   if ( !ikss.IsEmpty() )
-      tokens.Append( "ikss" + VectorAsString( ikss ) );
-   if ( !iksl.IsEmpty() )
-      tokens.Append( "iksl" + VectorAsString( iksl ) );
+      tokens.Append( "bwmv" + TwoSidedEstimatesAsString( bwmv ) );
    if ( !noise.IsEmpty() )
       tokens.Append( "noise" + VectorAsString( noise ) );
+   if ( !ax.IsEmpty() )
+      tokens.Append( "ax" + VectorAsString( ax ) );
+   if ( !ay.IsEmpty() )
+      tokens.Append( "ay" + VectorAsString( ay ) );
+   if ( !am.IsEmpty() )
+      tokens.Append( "am" + MultiVectorAsString( am ) );
+   if ( !as0.IsEmpty() )
+      tokens.Append( "as0" + MultiVectorAsString( as0 ) );
+   if ( !as1.IsEmpty() )
+      tokens.Append( "as1" + MultiVectorAsString( as1 ) );
    if ( !metadata.IsEmpty() )
       tokens.Append( "metadata\n" + metadata );
 
@@ -134,54 +163,49 @@ bool IntegrationCacheItem::GetDataFromTokens( const StringList& tokens )
          if ( !GetVector( median, ++i, tokens ) )
             return false;
       }
-      else if ( *i == "stdDev" )
-      {
-         if ( !GetVector( stdDev, ++i, tokens ) )
-            return false;
-      }
       else if ( *i == "avgDev" )
       {
-         if ( !GetVector( avgDev, ++i, tokens ) )
+         if ( !GetTwoSidedEstimates( avgDev, ++i, tokens ) )
             return false;
       }
       else if ( *i == "mad" )
       {
-         if ( !GetVector( mad, ++i, tokens ) )
+         if ( !GetTwoSidedEstimates( mad, ++i, tokens ) )
             return false;
       }
       else if ( *i == "bwmv" )
       {
-         if ( !GetVector( bwmv, ++i, tokens ) )
-            return false;
-      }
-      else if ( *i == "pbmv" )
-      {
-         if ( !GetVector( pbmv, ++i, tokens ) )
-            return false;
-      }
-      else if ( *i == "sn" )
-      {
-         if ( !GetVector( sn, ++i, tokens ) )
-            return false;
-      }
-      else if ( *i == "qn" )
-      {
-         if ( !GetVector( qn, ++i, tokens ) )
-            return false;
-      }
-      else if ( *i == "ikss" )
-      {
-         if ( !GetVector( ikss, ++i, tokens ) )
-            return false;
-      }
-      else if ( *i == "iksl" )
-      {
-         if ( !GetVector( iksl, ++i, tokens ) )
+         if ( !GetTwoSidedEstimates( bwmv, ++i, tokens ) )
             return false;
       }
       else if ( *i == "noise" )
       {
          if ( !GetVector( noise, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "ax" )
+      {
+         if ( !GetVector( ax, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "ay" )
+      {
+         if ( !GetVector( ay, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "am" )
+      {
+         if ( !GetMultiVector( am, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "as0" )
+      {
+         if ( !GetMultiVector( as0, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "as1" )
+      {
+         if ( !GetMultiVector( as1, ++i, tokens ) )
             return false;
       }
       else if ( *i == "metadata" )
@@ -200,7 +224,8 @@ bool IntegrationCacheItem::GetDataFromTokens( const StringList& tokens )
 
 // ----------------------------------------------------------------------------
 
-IntegrationCache::IntegrationCache() : FileDataCache( "/ImageIntegration/Cache" )
+IntegrationCache::IntegrationCache()
+   : FileDataCache( "/ImageIntegration/Cache" )
 {
    if ( TheIntegrationCache == nullptr )
       TheIntegrationCache = this;
@@ -220,4 +245,4 @@ IntegrationCache::~IntegrationCache()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationCache.cpp - Released 2020-02-27T12:56:01Z
+// EOF IntegrationCache.cpp - Released 2020-07-31T19:33:39Z

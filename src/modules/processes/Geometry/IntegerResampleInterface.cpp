@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// IntegerResampleInterface.cpp - Released 2020-02-27T12:56:01Z
+// IntegerResampleInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -65,21 +65,19 @@ IntegerResampleInterface* TheIntegerResampleInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "IntegerResampleIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 #define currentView  GUI->AllImages_ViewList.CurrentView()
 #define downsample   GUI->Downsample_RadioButton.IsChecked()
 #define upsample     GUI->Upsample_RadioButton.IsChecked()
 
 // ----------------------------------------------------------------------------
 
-IntegerResampleInterface::IntegerResampleInterface() :
-   instance( TheIntegerResampleProcess )
+IntegerResampleInterface::IntegerResampleInterface()
+   : m_instance( TheIntegerResampleProcess )
 {
    TheIntegerResampleInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 IntegerResampleInterface::~IntegerResampleInterface()
 {
@@ -87,30 +85,42 @@ IntegerResampleInterface::~IntegerResampleInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString IntegerResampleInterface::Id() const
 {
    return "IntegerResample";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* IntegerResampleInterface::Process() const
 {
    return TheIntegerResampleProcess;
 }
 
-const char** IntegerResampleInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String IntegerResampleInterface::IconImageSVGFile() const
 {
-   return IntegerResampleIcon_XPM;
+   return "@module_icons_dir/IntegerResample.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures IntegerResampleInterface::Features() const
 {
    return InterfaceFeature::Default | InterfaceFeature::TrackViewButton;
 }
 
+// ----------------------------------------------------------------------------
+
 void IntegerResampleInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentWindow();
+   m_instance.LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 void IntegerResampleInterface::TrackViewUpdated( bool active )
 {
@@ -125,11 +135,15 @@ void IntegerResampleInterface::TrackViewUpdated( bool active )
       }
 }
 
+// ----------------------------------------------------------------------------
+
 void IntegerResampleInterface::ResetInstance()
 {
    IntegerResampleInstance defaultInstance( TheIntegerResampleProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool IntegerResampleInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -145,10 +159,14 @@ bool IntegerResampleInterface::Launch( const MetaProcess& P, const ProcessImplem
    return &P == TheIntegerResampleProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* IntegerResampleInterface::NewProcess() const
 {
-   return new IntegerResampleInstance( instance );
+   return new IntegerResampleInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool IntegerResampleInterface::ValidateProcess( const ProcessImplementation& p, String& whyNot ) const
 {
@@ -158,25 +176,33 @@ bool IntegerResampleInterface::ValidateProcess( const ProcessImplementation& p, 
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool IntegerResampleInterface::RequiresInstanceValidation() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool IntegerResampleInterface::ImportProcess( const ProcessImplementation& p )
 {
    DeactivateTrackView();
    GUI->AllImages_ViewList.SelectView( View::Null() );
 
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool IntegerResampleInterface::WantsImageNotifications() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void IntegerResampleInterface::ImageUpdated( const View& v )
 {
@@ -187,6 +213,8 @@ void IntegerResampleInterface::ImageUpdated( const View& v )
          UpdateControls();
       }
 }
+
+// ----------------------------------------------------------------------------
 
 void IntegerResampleInterface::ImageFocused( const View& v )
 {
@@ -205,9 +233,9 @@ void IntegerResampleInterface::ImageFocused( const View& v )
             bool metric;
             w.GetResolution( xRes, yRes, metric );
 
-            instance.p_resolution.x = xRes;
-            instance.p_resolution.y = yRes;
-            instance.p_metric = metric;
+            m_instance.p_resolution.x = xRes;
+            m_instance.p_resolution.y = yRes;
+            m_instance.p_metric = metric;
 
             UpdateControls();
          }
@@ -217,29 +245,29 @@ void IntegerResampleInterface::ImageFocused( const View& v )
 
 void IntegerResampleInterface::UpdateControls()
 {
-   GUI->ResampleFactor_SpinBox.SetValue( Abs( instance.p_zoomFactor ) );
+   GUI->ResampleFactor_SpinBox.SetValue( Abs( m_instance.p_zoomFactor ) );
 
-   GUI->Downsample_RadioButton.SetChecked( instance.p_zoomFactor < 0 );
-   GUI->Upsample_RadioButton.SetChecked( instance.p_zoomFactor > 0 );
+   GUI->Downsample_RadioButton.SetChecked( m_instance.p_zoomFactor < 0 );
+   GUI->Upsample_RadioButton.SetChecked( m_instance.p_zoomFactor > 0 );
 
-   GUI->DownsampleMode_ComboBox.SetCurrentItem( instance.p_downsampleMode );
+   GUI->DownsampleMode_ComboBox.SetCurrentItem( m_instance.p_downsampleMode );
 
    int w = sourceWidth, h = sourceHeight;
-   instance.GetNewSizes( w, h );
+   m_instance.GetNewSizes( w, h );
 
    double wcm, hcm, win, hin;
 
-   if ( instance.p_metric )
+   if ( m_instance.p_metric )
    {
-      wcm = w/instance.p_resolution.x;
-      hcm = h/instance.p_resolution.y;
+      wcm = w/m_instance.p_resolution.x;
+      hcm = h/m_instance.p_resolution.y;
       win = wcm/2.54;
       hin = hcm/2.54;
    }
    else
    {
-      win = w/instance.p_resolution.x;
-      hin = h/instance.p_resolution.y;
+      win = w/m_instance.p_resolution.x;
+      hin = h/m_instance.p_resolution.y;
       wcm = win*2.54;
       hcm = hin*2.54;
    }
@@ -273,13 +301,13 @@ void IntegerResampleInterface::UpdateControls()
 
    GUI->SizeInfo_Label.SetText( info );
 
-   GUI->HorizontalResolution_NumericEdit.SetValue( instance.p_resolution.x );
-   GUI->VerticalResolution_NumericEdit.SetValue( instance.p_resolution.y );
+   GUI->HorizontalResolution_NumericEdit.SetValue( m_instance.p_resolution.x );
+   GUI->VerticalResolution_NumericEdit.SetValue( m_instance.p_resolution.y );
 
-   GUI->CentimeterUnits_RadioButton.SetChecked( instance.p_metric );
-   GUI->InchUnits_RadioButton.SetChecked( !instance.p_metric );
+   GUI->CentimeterUnits_RadioButton.SetChecked( m_instance.p_metric );
+   GUI->InchUnits_RadioButton.SetChecked( !m_instance.p_metric );
 
-   GUI->ForceResolution_CheckBox.SetChecked( instance.p_forceResolution );
+   GUI->ForceResolution_CheckBox.SetChecked( m_instance.p_forceResolution );
 }
 
 // ----------------------------------------------------------------------------
@@ -298,31 +326,39 @@ void IntegerResampleInterface::__ViewList_ViewSelected( ViewList& sender, View& 
       bool metric;
       w.GetResolution( xRes, yRes, metric );
 
-      instance.p_resolution.x = xRes;
-      instance.p_resolution.y = yRes;
-      instance.p_metric = metric;
+      m_instance.p_resolution.x = xRes;
+      m_instance.p_resolution.y = yRes;
+      m_instance.p_metric = metric;
    }
 
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void IntegerResampleInterface::__ResampleFactor_ValueUpdated( SpinBox& /*sender*/, int value )
 {
-   instance.p_zoomFactor = downsample ? -value : +value;
+   m_instance.p_zoomFactor = downsample ? -value : +value;
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void IntegerResampleInterface::__ResampleType_ButtonClick( Button& /*sender*/, bool checked )
 {
    if ( checked )
-      instance.p_zoomFactor = -instance.p_zoomFactor;
+      m_instance.p_zoomFactor = -m_instance.p_zoomFactor;
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void IntegerResampleInterface::__DownsampleMode_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
-   instance.p_downsampleMode = itemIndex;
+   m_instance.p_downsampleMode = itemIndex;
 }
+
+// ----------------------------------------------------------------------------
 
 void IntegerResampleInterface::__Width_ValueUpdated( NumericEdit& /*sender*/, double value )
 {
@@ -330,40 +366,52 @@ void IntegerResampleInterface::__Width_ValueUpdated( NumericEdit& /*sender*/, do
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void IntegerResampleInterface::__Height_ValueUpdated( NumericEdit& /*sender*/, double value )
 {
    sourceHeight = int( value );
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void IntegerResampleInterface::__Resolution_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->HorizontalResolution_NumericEdit )
-      instance.p_resolution.x = value;
+      m_instance.p_resolution.x = value;
    else if ( sender == GUI->VerticalResolution_NumericEdit )
-      instance.p_resolution.y = value;
+      m_instance.p_resolution.y = value;
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void IntegerResampleInterface::__Units_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->CentimeterUnits_RadioButton )
-      instance.p_metric = true;
+      m_instance.p_metric = true;
    else if ( sender == GUI->InchUnits_RadioButton )
-      instance.p_metric = false;
+      m_instance.p_metric = false;
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void IntegerResampleInterface::__ForceResolution_ButtonClick( Button& sender, bool checked )
 {
-   instance.p_forceResolution = checked;
+   m_instance.p_forceResolution = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void IntegerResampleInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->AllImages_ViewList )
       wantsView = view.IsMainView();
 }
+
+// ----------------------------------------------------------------------------
 
 void IntegerResampleInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -377,6 +425,7 @@ void IntegerResampleInterface::__ViewDrop( Control& sender, const Point& pos, co
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
 {
@@ -388,13 +437,13 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
    int ui4 = w.LogicalPixelsToPhysical( 4 );
    int ui6 = w.LogicalPixelsToPhysical( 6 );
 
-   // -------------------------------------------------------------------------
+   //
 
    AllImages_ViewList.OnViewSelected( (ViewList::view_event_handler)&IntegerResampleInterface::__ViewList_ViewSelected, w );
    AllImages_ViewList.OnViewDrag( (Control::view_drag_event_handler)&IntegerResampleInterface::__ViewDrag, w );
    AllImages_ViewList.OnViewDrop( (Control::view_drop_event_handler)&IntegerResampleInterface::__ViewDrop, w );
 
-   // -------------------------------------------------------------------------
+   //
 
    IntegerResample_SectionBar.SetTitle( "Integer Resample" );
    IntegerResample_SectionBar.SetSection( IntegerResample_Control );
@@ -441,7 +490,7 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
 
    IntegerResample_Control.SetSizer( IntegerResample_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Dimensions_SectionBar.SetTitle( "Dimensions" );
    Dimensions_SectionBar.SetSection( Dimensions_Control );
@@ -564,7 +613,7 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
 
    Dimensions_Control.SetSizer( Dimensions_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Resolution_SectionBar.SetTitle( "Resolution" );
    Resolution_SectionBar.SetSection( Resolution_Control );
@@ -610,7 +659,7 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
 
    Resolution_Control.SetSizer( Resolution_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
@@ -636,4 +685,4 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF IntegerResampleInterface.cpp - Released 2020-07-31T19:33:39Z

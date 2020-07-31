@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// IntegerResampleProcess.cpp - Released 2020-02-27T12:56:01Z
+// IntegerResampleProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -64,10 +64,6 @@ IntegerResampleProcess* TheIntegerResampleProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "IntegerResampleIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 IntegerResampleProcess::IntegerResampleProcess()
 {
    TheIntegerResampleProcess = this;
@@ -111,9 +107,9 @@ String IntegerResampleProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** IntegerResampleProcess::IconImageXPM() const
+String IntegerResampleProcess::IconImageSVGFile() const
 {
-   return IntegerResampleIcon_XPM;
+   return "@module_icons_dir/IntegerResample.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -143,4 +139,4 @@ ProcessImplementation* IntegerResampleProcess::Clone( const ProcessImplementatio
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF IntegerResampleProcess.cpp - Released 2020-07-31T19:33:39Z

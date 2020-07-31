@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageProcess.cpp - Released 2020-02-27T12:56:01Z
+// NewImageProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -69,15 +69,10 @@ NewImageProcess* TheNewImageProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "NewImageIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 NewImageProcess::NewImageProcess()
 {
    TheNewImageProcess = this;
 
-   // Instantiate process parameters
    new NewImageIdentifier( this );
    new NewImageWidth( this );
    new NewImageHeight( this );
@@ -87,6 +82,7 @@ NewImageProcess::NewImageProcess()
    new NewImageV0( this );
    new NewImageV1( this );
    new NewImageV2( this );
+   new NewImageVA( this );
 }
 
 // ----------------------------------------------------------------------------
@@ -134,9 +130,9 @@ String NewImageProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** NewImageProcess::IconImageXPM() const
+String NewImageProcess::IconImageSVGFile() const
 {
-   return NewImageIcon_XPM;
+   return "@module_icons_dir/NewImage.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -379,4 +375,4 @@ int NewImageProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF NewImageProcess.cpp - Released 2020-07-31T19:33:39Z

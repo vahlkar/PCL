@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/XMLReference.cpp - Released 2020-02-27T12:55:33Z
+// pcl/XMLReference.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -74,7 +74,9 @@ class EntityPredicate
 {
 public:
 
-   EntityPredicate( String::const_iterator i, String::const_iterator j ) : m_i( i ), m_j( j )
+   EntityPredicate( String::const_iterator i, String::const_iterator j )
+      : m_i( i )
+      , m_j( j )
    {
    }
 
@@ -2457,4 +2459,4 @@ String XML::ReferenceValue( String::const_iterator i, String::const_iterator j )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XMLReference.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/XMLReference.cpp - Released 2020-07-31T19:33:12Z

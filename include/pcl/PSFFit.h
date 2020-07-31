@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.h - Released 2020-02-27T12:55:23Z
+// pcl/PSFFit.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -89,7 +89,7 @@ namespace PSFunction
    enum value_type
    {
       Invalid  = -1, // Represents an invalid or unsupported PSF type
-      Gaussian,      // Gaussian PSF
+      Gaussian = 0,  // Gaussian PSF
       Moffat,        // Moffat PSF with a fitted beta parameter
       MoffatA,       // Moffat PSF with fixed beta=10
       Moffat8,       // Moffat PSF with fixed beta=8
@@ -127,8 +127,8 @@ namespace PSFFitStatus
 {
    enum value_type
    {
-      Invalid  = -1,
-      NotFitted,
+      Invalid   = -1,
+      NotFitted = 0,
       FittedOk,
       BadParameters,
       NoSolution,
@@ -159,16 +159,19 @@ struct PSFData
    psf_function   function = PSFunction::Invalid;   //!< Point spread function type (PSFunction namespace).
    bool           circular = false;                 //!< Circular or elliptical PSF.
    psf_fit_status status = PSFFitStatus::NotFitted; //!< Status code (PSFFitStatus namespace).
-   double         B = 0;     //!< Local background estimate in pixel value units.
-   double         A = 0;     //!< Function amplitude (or estimated maximum) in pixel value units.
-   DPoint         c0 = 0.0;  //!< Centroid position in image coordinates.
-   DPoint         q0 = 0.0;  //!< Centroid equatorial coordinates, when celestial=true.
-   bool           celestial = false; //!< True iff celestial coordinates are available.
-   double         sx = 0;    //!< Function width in pixels on the X axis, sx >= sy.
-   double         sy = 0;    //!< Function width in pixels on the Y axis, sx >= sy.
-   double         theta = 0; //!< Rotation angle of the sx axis in degrees, in the [0,180) range.
-   double         beta = 0;  //!< Moffat beta or shape parameter (dimensionless).
-   double         mad = 0;   //!< Goodness of fit estimate. A robust, normalized mean absolute deviation of the fitted function with respect to image pixel values over the fitting region.
+   bool           celestial = false;   //!< True iff equatorial coordinates are available.
+   double         B = 0;      //!< Local background estimate in pixel value units.
+   double         A = 0;      //!< Function amplitude (or estimated maximum) in pixel value units.
+   DPoint         c0 = 0.0;   //!< Centroid position in image coordinates.
+   DPoint         q0 = 0.0;   //!< Centroid equatorial coordinates, when celestial=true.
+   double         sx = 0;     //!< Function width in pixels on the X axis, sx >= sy.
+   double         sy = 0;     //!< Function width in pixels on the Y axis, sx >= sy.
+   double         theta = 0;  //!< Rotation angle of the sx axis in degrees, in the [0,180) range.
+   double         beta = 0;   //!< Moffat beta or shape parameter (dimensionless).
+   double         flux = 0;   //!< Total flux above the local background, measured on source image pixels.
+   double         meanSignal = 0; //!< Estimated mean signal over the fitting region.
+   double         mad = 0;    /*!< Goodness of fit estimate. A robust, normalized mean absolute difference between
+                                   the estimated PSF and the sample of source image pixels over the fitting region. */
 
    /*!
     * Default constructor.
@@ -209,41 +212,12 @@ struct PSFData
     * Returns the name of the fitted PSF function. See the PSFunction namespace
     * for supported functions.
     */
-   String FunctionToString() const
-   {
-      switch ( function )
-      {
-      case PSFunction::Gaussian:      return "Gaussian";
-      case PSFunction::Moffat:        return "Moffat";
-      case PSFunction::MoffatA:       return "Moffat10";
-      case PSFunction::Moffat8:       return "Moffat8";
-      case PSFunction::Moffat6:       return "Moffat6";
-      case PSFunction::Moffat4:       return "Moffat4";
-      case PSFunction::Moffat25:      return "Moffat25";
-      case PSFunction::Moffat15:      return "Moffat15";
-      case PSFunction::Lorentzian:    return "Lorentzian";
-      case PSFunction::VariableShape: return "VariableShape";
-      default:                        return "Unknown"; // ?!
-      }
-   }
+   String FunctionName() const;
 
    /*!
     * Returns a string with a brief description of the current fitting status.
     */
-   String StatusToString() const
-   {
-      switch ( status )
-      {
-      case PSFFitStatus::NotFitted:          return "Not fitted";
-      case PSFFitStatus::FittedOk:           return "Fitted Ok";
-      case PSFFitStatus::BadParameters:      return "Bad parameters";
-      case PSFFitStatus::NoSolution:         return "No solution";
-      case PSFFitStatus::NoConvergence:      return "No convergence";
-      case PSFFitStatus::InaccurateSolution: return "Inaccurate solution";
-      default:
-      case PSFFitStatus::UnknownError:       return "Unknown error";
-      }
-   }
+   String StatusText() const;
 
    /*!
     * Returns the full width at half maximum (FWHM) on the X axis in pixels.
@@ -387,6 +361,21 @@ public:
     * \param circular         Whether to fit a circular or an elliptical PSF.
     *                         Elliptical functions are fitted by default.
     *
+    * \param betaMin,betaMax  The range of shape parameter values when
+    *                         \a function is PSFunction::VariableShape; ignored
+    *       for other point spread functions. When the values of these
+    *       parameters are such that \a betaMin &lt; \a betaMax, an optimal
+    *       value of the beta (shape) PSF parameter will be searched for
+    *       iteratively within the specified range. The shape parameter will be
+    *       optimized for minimization of the absolute difference between the
+    *       estimated PSF and the sample of source image pixels. When
+    *       \a betaMin &ge; \a betaMax, the shape parameter will stay constant
+    *       and equal to the specified \a betaMin value during the entire PSF
+    *       fitting process, and the rest of PSF parameters will be estimated
+    *       accordingly. The valid range of beta parameter values is [1.0,6.0].
+    *       Values outside this range may lead to numerically unstable PSF
+    *       fitting processes.
+    *
     * The implementation of the Levenberg-Marquadt algorithm used internally by
     * this function is extremely sensitive to the specified \a center and
     * \a rect parameters. These starting parameters should always be
@@ -399,7 +388,8 @@ public:
     */
    PSFFit( const ImageVariant& image,
            const DPoint& center, const DRect& rect,
-           psf_function function = PSFunction::Gaussian, bool circular = false );
+           psf_function function = PSFunction::Gaussian, bool circular = false,
+           double betaMin = 1.0, double betaMax = 4.0 );
 
    /*!
     * Copy constructor.
@@ -432,9 +422,9 @@ public:
 
 private:
 
-   Matrix S; // matrix of sampled data
+   Matrix S; // matrix of sampled pixel data
    Vector P; // vector of function parameters
-   mutable double beta0;
+   mutable double m_beta;
 
    Vector GoodnessOfFit( psf_function, bool circular ) const;
 
@@ -448,4 +438,4 @@ private:
 #endif   // __PCL_PSFFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/PSFFit.h - Released 2020-07-31T19:33:04Z

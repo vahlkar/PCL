@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/JPLEphemeris.cpp - Released 2020-02-27T12:55:33Z
+// pcl/JPLEphemeris.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -99,12 +99,8 @@ static double FortranLiteralToDouble( IsoString& s )
    return s.ToDouble();
 }
 
-JPLEphemeris::JPLEphemeris( const String& filePath ) :
-   m_ephStartJD( 0 ),
-   m_ephEndJD( 0 ),
-   m_blockIndex( JPLEphemerisItem::NumberOfNativeItems ),
-   m_startJD( 0 ),
-   m_endJD( 0 )
+JPLEphemeris::JPLEphemeris( const String& filePath )
+   : m_blockIndex( JPLEphemerisItem::NumberOfNativeItems )
 {
    IsoStringList lines = File::ReadLines( filePath, ReadTextOption::RemoveEmptyLines|ReadTextOption::TrimSpaces );
    for ( IsoStringList::const_iterator i = lines.Begin(); i != lines.End(); )
@@ -437,4 +433,4 @@ IsoString JPLEphemeris::Summary() const
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/JPLEphemeris.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/JPLEphemeris.cpp - Released 2020-07-31T19:33:12Z

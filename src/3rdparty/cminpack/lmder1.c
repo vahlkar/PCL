@@ -1,24 +1,18 @@
-/* lmder1.f -- translated by f2c (version 20020621).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "cminpack.h"
+#include "cminpackP.h"
 
-/* Subroutine */ int lmder1(minpack_funcder_mn fcn, void *p, int m, int n, double *x,
-	double *fvec, double *fjac, int ldfjac, double tol,
-	int *ipvt, double *wa, int lwa)
+__cminpack_attr__
+int __cminpack_func__(lmder1)(__cminpack_decl_fcnder_mn__ void *p, int m, int n, real *x, 
+	real *fvec, real *fjac, int ldfjac, real tol, 
+	int *ipvt, real *wa, int lwa)
 {
     /* Initialized data */
 
-    const double factor = 100.;
-
-    /* System generated locals */
-    int fjac_dim1, fjac_offset;
+    const real factor = 100.;
 
     /* Local variables */
     int mode, nfev, njev;
-    double ftol, gtol, xtol;
+    real ftol, gtol, xtol;
     int maxfev, nprint;
     int info;
 
@@ -143,16 +137,6 @@
 /*     burton s. garbow, kenneth e. hillstrom, jorge j. more */
 
 /*     ********** */
-    /* Parameter adjustments */
-    --fvec;
-    --ipvt;
-    --x;
-    fjac_dim1 = ldfjac;
-    fjac_offset = 1 + fjac_dim1 * 1;
-    fjac -= fjac_offset;
-    --wa;
-
-    /* Function Body */
 
 /*     check the input parameters for errors. */
 
@@ -168,10 +152,10 @@
     gtol = 0.;
     mode = 1;
     nprint = 0;
-    info = lmder(fcn, p, m, n, &x[1], &fvec[1], &fjac[fjac_offset], ldfjac,
-	    ftol, xtol, gtol, maxfev, &wa[1], mode, factor, nprint,
-	    &nfev, &njev, &ipvt[1], &wa[n + 1], &wa[(n << 1) + 1], &
-	    wa[n * 3 + 1], &wa[(n << 2) + 1], &wa[n * 5 + 1]);
+    info = __cminpack_func__(lmder)(__cminpack_param_fcnder_mn__ p, m, n, x, fvec, fjac, ldfjac,
+	    ftol, xtol, gtol, maxfev, wa, mode, factor, nprint, 
+	    &nfev, &njev, ipvt, &wa[n], &wa[(n << 1)], &
+	    wa[n * 3], &wa[(n << 2)], &wa[n * 5]);
     if (info == 8) {
 	info = 4;
     }

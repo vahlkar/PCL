@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Compression.h - Released 2020-02-27T12:55:23Z
+// pcl/Compression.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -596,7 +596,7 @@ protected:
  * This class implements the deflate lossless compression algorithm in the
  * standard zlib format. This is the default PixInsight/XISF compression codec.
  *
- * The underlying implementation in the PixInsight Core application is the
+ * The underlying implementation in the PixInsight core application is the
  * well-known zlib library written by Jean-Loup Gailly and Mark Adler.
  *
  * \b References
@@ -669,7 +669,7 @@ private:
  * LZ4 is a lossless data compression algorithm focused on compression and
  * decompression speed.
  *
- * The underlying implementation in the PixInsight Core application is the
+ * The underlying implementation in the PixInsight core application is the
  * reference implementation by Yann Collet, which has been released under a New
  * BSD license.
  *
@@ -740,7 +740,7 @@ private:
  * LZ4 is a lossless data compression algorithm focused on compression and
  * decompression speed.
  *
- * The underlying implementation in the PixInsight Core application is the
+ * The underlying implementation in the PixInsight core application is the
  * reference implementation by Yann Collet, which has been released under a New
  * BSD license.
  *
@@ -806,4 +806,4 @@ private:
 #endif   // __PCL_Compression_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Compression.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Compression.h - Released 2020-07-31T19:33:04Z

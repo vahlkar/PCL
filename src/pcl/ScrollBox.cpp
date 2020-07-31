@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ScrollBox.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ScrollBox.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -59,9 +59,9 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ScrollBox::ScrollBox( Control& parent ) :
-   Frame( (*API->ScrollBox->CreateScrollBox)( ModuleHandle(), this, parent.handle, 0/*flags*/ ) ),
-   m_viewport( nullptr )
+ScrollBox::ScrollBox( Control& parent )
+   : Frame( (*API->ScrollBox->CreateScrollBox)( ModuleHandle(), this, parent.handle, 0/*flags*/ ) )
+   , m_viewport( nullptr )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateScrollBox" );
@@ -71,9 +71,9 @@ ScrollBox::ScrollBox( Control& parent ) :
       throw APIFunctionError( "CreateScrollBoxViewport" );
 }
 
-ScrollBox::ScrollBox( void* h ) :
-   Frame( h ),
-   m_viewport( nullptr )
+ScrollBox::ScrollBox( void* h )
+   : Frame( h )
+   , m_viewport( nullptr )
 {
    if ( !IsNull() )
    {
@@ -83,9 +83,9 @@ ScrollBox::ScrollBox( void* h ) :
    }
 }
 
-ScrollBox::ScrollBox( void* h, void* hV ) :
-   Frame( h ),
-   m_viewport( hV )
+ScrollBox::ScrollBox( void* h, void* hV )
+   : Frame( h )
+   , m_viewport( hV )
 {
 }
 
@@ -347,4 +347,4 @@ void ScrollBox::OnVerticalScrollRangeUpdated( range_event_handler f, Control& re
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ScrollBox.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ScrollBox.cpp - Released 2020-07-31T19:33:12Z

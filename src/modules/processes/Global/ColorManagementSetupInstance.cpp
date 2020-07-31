@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInstance.cpp - Released 2020-02-27T12:56:01Z
+// ColorManagementSetupInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -61,20 +61,20 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ColorManagementSetupInstance::ColorManagementSetupInstance( const MetaProcess* p ) :
-   ProcessImplementation( p ),
-   enabled( TheCMSEnabledParameter->DefaultValue() ),
-   defaultRenderingIntent( CMSRenderingIntent::DefaultForScreen ),
-   onProfileMismatch( CMSOnProfileMismatch::Default ),
-   onMissingProfile( CMSOnMissingProfile::Default ),
-   defaultEmbedProfilesInRGBImages( TheCMSDefaultEmbedProfilesInRGBImagesParameter->DefaultValue() ),
-   defaultEmbedProfilesInGrayscaleImages( TheCMSDefaultEmbedProfilesInGrayscaleImagesParameter->DefaultValue() ),
-   useLowResolutionCLUTs( TheCMSUseLowResolutionCLUTsParameter->DefaultValue() ),
-   proofingIntent( CMSRenderingIntent::DefaultForProofing ),
-   useProofingBPC( TheCMSUseProofingBPCParameter->DefaultValue() ),
-   defaultProofingEnabled( TheCMSDefaultProofingEnabledParameter->DefaultValue() ),
-   defaultGamutCheckEnabled( TheCMSDefaultGamutCheckEnabledParameter->DefaultValue() ),
-   gamutWarningColor( TheCMSGamutWarningColorParameter->DefaultValue() )
+ColorManagementSetupInstance::ColorManagementSetupInstance( const MetaProcess* p )
+   : ProcessImplementation( p )
+   , enabled( TheCMSEnabledParameter->DefaultValue() )
+   , defaultRenderingIntent( CMSRenderingIntent::DefaultForScreen )
+   , onProfileMismatch( CMSOnProfileMismatch::Default )
+   , onMissingProfile( CMSOnMissingProfile::Default )
+   , defaultEmbedProfilesInRGBImages( TheCMSDefaultEmbedProfilesInRGBImagesParameter->DefaultValue() )
+   , defaultEmbedProfilesInGrayscaleImages( TheCMSDefaultEmbedProfilesInGrayscaleImagesParameter->DefaultValue() )
+   , useLowResolutionCLUTs( TheCMSUseLowResolutionCLUTsParameter->DefaultValue() )
+   , proofingIntent( CMSRenderingIntent::DefaultForProofing )
+   , useProofingBPC( TheCMSUseProofingBPCParameter->DefaultValue() )
+   , defaultProofingEnabled( TheCMSDefaultProofingEnabledParameter->DefaultValue() )
+   , defaultGamutCheckEnabled( TheCMSDefaultGamutCheckEnabledParameter->DefaultValue() )
+   , gamutWarningColor( TheCMSGamutWarningColorParameter->DefaultValue() )
 {
    /*
     * N.B.: We cannot call PixInsightSettings::GlobalString() if the module has
@@ -104,8 +104,8 @@ ColorManagementSetupInstance::ColorManagementSetupInstance( const MetaProcess* p
 
 // ----------------------------------------------------------------------------
 
-ColorManagementSetupInstance::ColorManagementSetupInstance( const ColorManagementSetupInstance& x ) :
-   ProcessImplementation( x )
+ColorManagementSetupInstance::ColorManagementSetupInstance( const ColorManagementSetupInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -365,4 +365,4 @@ void ColorManagementSetupInstance::LoadCurrentSettings()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorManagementSetupInstance.cpp - Released 2020-07-31T19:33:39Z

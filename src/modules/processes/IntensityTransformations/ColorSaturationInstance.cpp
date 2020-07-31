@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInstance.cpp - Released 2020-02-27T12:56:01Z
+// ColorSaturationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -70,16 +70,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ColorSaturationInstance::ColorSaturationInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   hueShift( 0 )
+ColorSaturationInstance::ColorSaturationInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-ColorSaturationInstance::ColorSaturationInstance( const ColorSaturationInstance& x ) :
-   ProcessImplementation( x )
+ColorSaturationInstance::ColorSaturationInstance( const ColorSaturationInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -202,8 +201,8 @@ private:
 
    struct ThreadData : public AbstractImage::ThreadData
    {
-      ThreadData( const AbstractImage& image, size_type count ) :
-         AbstractImage::ThreadData( image, count )
+      ThreadData( const AbstractImage& image, size_type count )
+         : AbstractImage::ThreadData( image, count )
       {
       }
 
@@ -218,11 +217,12 @@ private:
       ColorSaturationThread( const ColorSaturationInstance& instance,
                              const ThreadData& data,
                              GenericImage<P>& image,
-                             size_type start, size_type end ) :
-         m_instance( instance ),
-         m_data( data ),
-         m_image( image ),
-         m_start( start ), m_end( end )
+                             size_type start, size_type end )
+         : m_instance( instance )
+         , m_data( data )
+         , m_image( image )
+         , m_start( start )
+         , m_end( end )
       {
       }
 
@@ -367,4 +367,4 @@ size_type ColorSaturationInstance::ParameterLength( const MetaParameter* /*p*/, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorSaturationInstance.cpp - Released 2020-07-31T19:33:39Z

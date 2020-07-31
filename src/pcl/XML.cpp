@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/XML.cpp - Released 2020-02-27T12:55:33Z
+// pcl/XML.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -701,15 +701,15 @@ void XMLDocument::Clear()
 
 struct XMLTag
 {
-   String                 name;        // the tag name
-   String                 parameters;  // tag contents after the name, trimmed
-   bool                   start : 1;   // true if this is a start-tag
-   bool                   end   : 1;   // true if this is a start-tag or empty element
-   bool                   PI    : 1;   // true if this is a processing instructions tag
-   String::const_iterator next;        // after the end-tag delimiter
+   String                 name;          // the tag name
+   String                 parameters;    // tag contents after the name, trimmed
+   String::const_iterator next;          // after the end-tag delimiter
+   bool                   start = false; // true if this is a start-tag
+   bool                   end = false;   // true if this is a start-tag or empty element
+   bool                   PI = false;    // true if this is a processing instructions tag
 
-   XMLTag( const String& s, String::const_iterator i ) :
-      name(), parameters(), start( false ), end( false ), PI( false ), next( i )
+   XMLTag( const String& s, String::const_iterator i )
+      : next( i )
    {
       try
       {
@@ -1044,4 +1044,4 @@ void XMLDocument::Parse( const String& text )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XML.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/XML.cpp - Released 2020-07-31T19:33:12Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// ImageCalibrationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -78,14 +78,14 @@ public:
    ImageCalibrationInstance( const MetaProcess* );
    ImageCalibrationInstance( const ImageCalibrationInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual bool CanExecuteOn( const View&, String& whyNot ) const;
-   virtual bool IsHistoryUpdater( const View& v ) const;
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-   virtual void* LockParameter( const MetaParameter*, size_type /*tableRow*/ );
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, String& whyNot ) const override;
+   bool IsHistoryUpdater( const View& v ) const override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type /*tableRow*/ ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
    struct OverscanRegions
    {
@@ -93,15 +93,14 @@ public:
       Rect     sourceRect; // source overscan region
       Rect     targetRect; // image region to be corrected
 
-      OverscanRegions( const Rect& rs = Rect( 0 ), const Rect& rt = Rect( 0 ), bool enable = false ) :
-      enabled( enable ), sourceRect( rs ), targetRect( rt )
+      OverscanRegions( const Rect& rs = Rect( 0 ), const Rect& rt = Rect( 0 ), bool enable = false )
+         : enabled( enable )
+         , sourceRect( rs )
+         , targetRect( rt )
       {
       }
 
-      OverscanRegions( const OverscanRegions& x ) :
-      enabled( x.enabled ), sourceRect( x.sourceRect ), targetRect( x.targetRect )
-      {
-      }
+      OverscanRegions( const OverscanRegions& ) = default;
 
       bool IsValid() const
       {
@@ -118,19 +117,12 @@ public:
 
    struct Overscan
    {
-      pcl_bool        enabled;       // whether overscan correction is globally enabled
-      OverscanRegions overscan[ 4 ]; // four overscan source and target regions
-      Rect            imageRect;     // image region (i.e. the cropping rectangle)
+      pcl_bool        enabled = false; // whether overscan correction is globally enabled
+      OverscanRegions overscan[ 4 ];   // four overscan source and target regions
+      Rect            imageRect = 0;   // image region (i.e. the cropping rectangle)
 
-      Overscan() : enabled( false ), imageRect( 0 )
-      {
-      }
-
-      Overscan( const Overscan& x ) : enabled( x.enabled ), imageRect( x.imageRect )
-      {
-         for ( int i = 0; i < 4; ++i )
-            overscan[i] = x.overscan[i];
-      }
+      Overscan() = default;
+      Overscan( const Overscan& ) = default;
 
       bool IsValid() const
       {
@@ -162,16 +154,15 @@ private:
 
    struct ImageItem
    {
-      pcl_bool enabled; // if disabled, skip (ignore) this image
-      String   path;    // absolute file path
+      pcl_bool enabled = true; // if disabled, skip (ignore) this image
+      String   path;           // absolute file path
 
-      ImageItem( const String& p = String() ) : enabled( true ), path( p )
+      ImageItem( const String& p = String() )
+         : path( p )
       {
       }
 
-      ImageItem( const ImageItem& x ) : enabled( x.enabled ), path( x.path )
-      {
-      }
+      ImageItem( const ImageItem& ) = default;
 
       bool IsValid() const
       {
@@ -182,51 +173,59 @@ private:
    typedef Array<ImageItem>  image_list;
 
    // The set of target frames to be calibrated
-   image_list      targetFrames;
+   image_list      p_targetFrames;
+
+   // CFA parameters
+   pcl_bool        p_cfaData;
+   pcl_enum        p_cfaPattern;
 
    // Format hints
-   String          inputHints;      // e.g.: "raw cfa"
-   String          outputHints;     // e.g.: "bottom-up"
+   String          p_inputHints;    // e.g.: "raw cfa"
+   String          p_outputHints;   // e.g.: "bottom-up"
 
    // Subtractive pedestal
-   int32           pedestal;        // in 16-bit DN
-   pcl_enum        pedestalMode;    // literal | default keyword | custom keyword
-   String          pedestalKeyword;
+   int32           p_pedestal;      // in 16-bit DN
+   pcl_enum        p_pedestalMode;  // literal | default keyword | custom keyword
+   String          p_pedestalKeyword;
 
    // Overscan source and target regions
-   Overscan        overscan;
+   Overscan        p_overscan;
 
    // Master bias, dark and flat frames
-   ImageItem       masterBias;
-   ImageItem       masterDark;
-   ImageItem       masterFlat;
+   ImageItem       p_masterBias;
+   ImageItem       p_masterDark;
+   ImageItem       p_masterFlat;
 
    // Calibration options
-   pcl_bool        calibrateBias;   // apply master bias frame calibration (overscan)
-   pcl_bool        calibrateDark;   // apply master dark frame calibration (overscan+bias)
-   pcl_bool        calibrateFlat;   // apply master flat frame calibration (overscan+bias+dark)
+   pcl_bool        p_calibrateBias;   // apply master bias frame calibration (overscan)
+   pcl_bool        p_calibrateDark;   // apply master dark frame calibration (overscan+bias)
+   pcl_bool        p_calibrateFlat;   // apply master flat frame calibration (overscan+bias+dark)
 
    // Dark frame optimization
-   pcl_bool        optimizeDarks;   // perform dark frame optimizations
-   float           darkOptimizationThreshold;   // ### DEPRECATED
-   float           darkOptimizationLow;    // lower bound for dark frame optimization in sigma units
-   int32           darkOptimizationWindow; // size in px of the central region for dark optimization
-   pcl_enum        darkCFADetectionMode;   // detect/force/ignore CFA in the master dark image
+   pcl_bool        p_optimizeDarks;   // perform dark frame optimizations
+   float           p_darkOptimizationThreshold;   // ### DEPRECATED
+   float           p_darkOptimizationLow;    // lower bound for dark frame optimization in sigma units
+   int32           p_darkOptimizationWindow; // size in px of the central region for dark optimization
+   pcl_enum        p_darkCFADetectionMode;   // ### DEPRECATED
+
+   // Flat frame calibration options
+   pcl_bool        p_separateCFAFlatScalingFactors;
+   float           p_flatScaleClippingFactor;
 
    // Noise estimates
-   pcl_bool        evaluateNoise;   // perform MRS noise evaluation
-   pcl_enum        noiseEvaluationAlgorithm;
+   pcl_bool        p_evaluateNoise;   // perform MRS noise evaluation
+   pcl_enum        p_noiseEvaluationAlgorithm;
 
    // Output files
-   String          outputDirectory;
-   String          outputExtension;
-   String          outputPrefix;
-   String          outputPostfix;
-   pcl_enum        outputSampleFormat;
-   int32           outputPedestal;  // additive in 16-bit DN to ensure positivity
-   pcl_bool        overwriteExistingFiles;
-   pcl_enum        onError;
-   pcl_bool        noGUIMessages;   // ### DEPRECATED
+   String          p_outputDirectory;
+   String          p_outputExtension;
+   String          p_outputPrefix;
+   String          p_outputPostfix;
+   pcl_enum        p_outputSampleFormat;
+   int32           p_outputPedestal;  // additive in 16-bit DN to ensure positivity
+   pcl_bool        p_overwriteExistingFiles;
+   pcl_enum        p_onError;
+   pcl_bool        p_noGUIMessages;   // ### DEPRECATED
 
    // Read-only output properties
    struct OutputData
@@ -237,13 +236,13 @@ private:
       FVector    noiseFractions = FVector( 0.0F, 3 );
       StringList noiseAlgorithms = StringList( size_type( 3 ) );
    };
-   Array<OutputData> output;
+   Array<OutputData> o_output;
 
    // -------------------------------------------------------------------------
 
    // Working geometry validation
-   Rect geometry,             // uncalibrated, including overscan regions
-        calibratedGeometry;   // calibrated, with overscan regions trimmed
+   Rect m_geometry;             // uncalibrated, including overscan regions
+   Rect m_calibratedGeometry;   // calibrated, with overscan regions trimmed
    void ValidateImageGeometry( const Image*, bool uncalibrated = true );
 
    // Group source overscan regions with identical target regions
@@ -254,13 +253,16 @@ private:
    void SubtractPedestal( Image*, FileFormatInstance& );
 
    // Read a master calibration frame
-   Image* LoadCalibrationFrame( const String& filePath, bool willCalibrate, bool* hasCFA = 0 );
+   Image* LoadCalibrationFrame( const String& filePath, bool willCalibrate, IsoString* cfaPattern = nullptr );
 
    // Read a target frame file
    thread_list LoadTargetFrame( const String& filePath, const CalibrationThreadData& );
 
    // Write a calibrated image file
    void WriteCalibratedImage( const CalibrationThread* );
+
+   // CFA pattern identification
+   IsoString CFAPatternFromTarget( FileFormatInstance& ) const;
 
    friend class CalibrationThread;
    friend class ImageCalibrationInterface;
@@ -273,4 +275,4 @@ private:
 #endif   // __ImageCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF ImageCalibrationInstance.h - Released 2020-07-31T19:33:39Z

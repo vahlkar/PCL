@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:57:09.946Z
+# Generated on .... 2020-07-31T19:36:47.630Z
 # Project id ...... AssistedColorCalibration
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>477c1ba8-f986-4f10-b804-fae27c44f4a4</UniqueIdentifier>
+      <UniqueIdentifier>9da86844-bfa8-4401-8070-55ceb3a21526</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>0d1b0368-c85b-4f4e-99f9-aaf5aed40b82</UniqueIdentifier>
+      <UniqueIdentifier>3db6e492-311f-4d7e-ac36-1ce6832e41b1</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>083be1f9-44b7-4329-be70-ba03827221bf</UniqueIdentifier>
+      <UniqueIdentifier>afadbf23-a319-41b3-8b64-dc35bff5ad31</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -60,7 +60,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\AssistedColorCalibrationIcon.png">
+    <None Include="..\..\icons\AssistedColorCalibration.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

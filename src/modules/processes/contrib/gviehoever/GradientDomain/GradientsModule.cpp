@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsModule.cpp - Released 2020-02-27T12:56:01Z
+// GradientsModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -35,18 +35,16 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
-#include "GradientsModule.h"
-#include "GradientsHdrProcess.h"
-#include "GradientsHdrInterface.h"
-
-#include "GradientsMergeMosaicProcess.h"
-#include "GradientsMergeMosaicInterface.h"
-
-#include "GradientsHdrCompositionProcess.h"
 #include "GradientsHdrCompositionInterface.h"
+#include "GradientsHdrCompositionProcess.h"
+#include "GradientsHdrInterface.h"
+#include "GradientsHdrProcess.h"
+#include "GradientsMergeMosaicInterface.h"
+#include "GradientsMergeMosaicProcess.h"
+#include "GradientsModule.h"
 
 namespace pcl
 {
@@ -57,44 +55,60 @@ GradientsModule::GradientsModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* GradientsModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
-                              MODULE_VERSION_MINOR,
-                              MODULE_VERSION_REVISION,
-                              MODULE_VERSION_BUILD,
-                              MODULE_VERSION_LANGUAGE );
+      MODULE_VERSION_MINOR,
+      MODULE_VERSION_REVISION,
+      MODULE_VERSION_BUILD,
+      MODULE_VERSION_LANGUAGE );
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString GradientsModule::Name() const
 {
    return "GradientDomain";
 }
 
+// ----------------------------------------------------------------------------
+
 String GradientsModule::Description() const
 {
-   return "Gradient Domain Operations Module"; // Replace with your own description
+   return "Gradient Domain Operations Module";
 }
+
+// ----------------------------------------------------------------------------
 
 String GradientsModule::Company() const
 {
-   return "Georg Viehoever";
+   return String();
 }
+
+// ----------------------------------------------------------------------------
 
 String GradientsModule::Author() const
 {
    return "Georg Viehoever";
 }
 
+// ----------------------------------------------------------------------------
+
 String GradientsModule::Copyright() const
 {
-   return "Copyright (c) Georg Viehoever, 2011-2012. Licensed under LGPL 2.1";
+   return "Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1";
 }
+
+// ----------------------------------------------------------------------------
 
 String GradientsModule::TradeMarks() const
 {
-   return "";
+   return "PixInsight";
 }
+
+// ----------------------------------------------------------------------------
 
 String GradientsModule::OriginalFileName() const
 {
@@ -112,14 +126,20 @@ String GradientsModule::OriginalFileName() const
 #endif
 }
 
+// ----------------------------------------------------------------------------
+
 void GradientsModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
-   year  = MODULE_RELEASE_YEAR;
+   year = MODULE_RELEASE_YEAR;
    month = MODULE_RELEASE_MONTH;
-   day   = MODULE_RELEASE_DAY;
+   day = MODULE_RELEASE_DAY;
 }
 
-} // pcl
+// ----------------------------------------------------------------------------
+
+} // namespace pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -141,4 +161,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GradientsModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF GradientsModule.cpp - Released 2020-07-31T19:33:39Z

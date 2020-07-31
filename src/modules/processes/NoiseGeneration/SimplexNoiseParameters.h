@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseParameters.h - Released 2020-02-27T12:56:01Z
+// SimplexNoiseParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -68,11 +68,11 @@ public:
 
    SNAmount( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern SNAmount* TheSNAmountParameter;
@@ -85,10 +85,10 @@ public:
 
    SNScale( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern SNScale* TheSNScaleParameter;
@@ -101,10 +101,10 @@ public:
 
    SNOffsetX( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern SNOffsetX* TheSNOffsetXParameter;
@@ -117,10 +117,10 @@ public:
 
    SNOffsetY( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern SNOffsetY* TheSNOffsetYParameter;
@@ -151,10 +151,10 @@ public:
 
    SNOperator( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
 };
 
 extern SNOperator* TheSNOperatorParameter;
@@ -168,4 +168,4 @@ PCL_END_LOCAL
 #endif   // __SimplexNoiseParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseParameters.h - Released 2020-02-27T12:56:01Z
+// EOF SimplexNoiseParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// MorphologicalTransformationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -62,192 +62,179 @@ PCL_BEGIN_LOCAL
 
 // ----------------------------------------------------------------------------
 
-class MorphologicalOp : public MetaEnumeration
+class MTOperator : public MetaEnumeration
 {
 public:
 
    enum { Erosion, Dilation, Opening, Closing, Median, Selection, Midpoint,
           NumberOfMorphologicalOps, Default = Erosion };
 
-   MorphologicalOp( MetaProcess* );
+   MTOperator( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
-extern MorphologicalOp* TheMorphologicalOpParameter;
+extern MTOperator* TheMTOperatorParameter;
 
 // ----------------------------------------------------------------------------
 
-class InterlacingDistance : public MetaUInt32
+class MTInterlacingDistance : public MetaUInt32
 {
 public:
 
-   InterlacingDistance( MetaProcess* );
+   MTInterlacingDistance( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
-extern InterlacingDistance* TheInterlacingDistanceParameter;
+extern MTInterlacingDistance* TheMTInterlacingDistanceParameter;
 
 // ----------------------------------------------------------------------------
 
-class LowThreshold : public MetaDouble
+class MTLowThreshold : public MetaDouble
 {
 public:
 
-   LowThreshold( MetaProcess* );
+   MTLowThreshold( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
-extern LowThreshold* TheLowThresholdParameter;
+extern MTLowThreshold* TheMTLowThresholdParameter;
 
 // ----------------------------------------------------------------------------
 
-class HighThreshold : public MetaDouble
+class MTHighThreshold : public MetaDouble
 {
 public:
 
-   HighThreshold( MetaProcess* );
+   MTHighThreshold( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
-extern HighThreshold* TheHighThresholdParameter;
+extern MTHighThreshold* TheMTHighThresholdParameter;
 
 // ----------------------------------------------------------------------------
 
-class NumberOfIterations : public MetaUInt32
+class MTNumberOfIterations : public MetaUInt32
 {
 public:
 
-   NumberOfIterations( MetaProcess* );
+   MTNumberOfIterations( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
-extern NumberOfIterations* TheNumberOfIterationsParameter;
+extern MTNumberOfIterations* TheMTNumberOfIterationsParameter;
 
 // ----------------------------------------------------------------------------
 
-class Amount : public MetaFloat
+class MTAmount : public MetaFloat
 {
 public:
 
-   Amount( MetaProcess* );
+   MTAmount( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
-extern Amount* TheAmountParameter;
+extern MTAmount* TheMTAmountParameter;
 
 // ----------------------------------------------------------------------------
 
-class SelectionPoint : public MetaFloat
+class MTSelectionPoint : public MetaFloat
 {
 public:
 
-   SelectionPoint( MetaProcess* );
+   MTSelectionPoint( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
-extern SelectionPoint* TheSelectionPointParameter;
+extern MTSelectionPoint* TheMTSelectionPointParameter;
 
 // ----------------------------------------------------------------------------
 
-class StructureName : public MetaString
+class MTStructureName : public MetaString
 {
 public:
 
-   StructureName( MetaProcess* );
+   MTStructureName( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
-extern StructureName* TheStructureNameParameter;
+extern MTStructureName* TheMTStructureNameParameter;
 
 // ----------------------------------------------------------------------------
 
-class StructureSize : public MetaUInt32
+class MTStructureSize : public MetaUInt32
 {
 public:
 
-   StructureSize( MetaProcess* );
+   MTStructureSize( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
-extern StructureSize* TheStructureSizeParameter;
+extern MTStructureSize* TheMTStructureSizeParameter;
 
 // ----------------------------------------------------------------------------
 
-class StructureWayTable : public MetaTable
+class MTStructureWayTable : public MetaTable
 {
 public:
 
-   StructureWayTable( MetaProcess* );
+   MTStructureWayTable( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type MinLength() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
 };
 
-extern StructureWayTable* TheStructureWayTableParameter;
+extern MTStructureWayTable* TheMTStructureWayTableParameter;
 
 // ----------------------------------------------------------------------------
 
-class StructureWayMask : public MetaBlock
+class MTStructureWayMask : public MetaBlock
 {
 public:
 
-   StructureWayMask( MetaTable* );
+   MTStructureWayMask( MetaTable* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
-extern StructureWayMask* TheStructureWayMaskParameter;
+extern MTStructureWayMask* TheMTStructureWayMaskParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -258,4 +245,4 @@ PCL_END_LOCAL
 #endif   // __MorphologicalTransformationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF MorphologicalTransformationParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationModule.h - Released 2020-02-27T12:56:01Z
+// NoOperationModule.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -66,15 +66,15 @@ public:
 
    NoOperationModule();
 
-   virtual const char* Version() const;
-   virtual IsoString Name() const;
-   virtual String Description() const;
-   virtual String Company() const;
-   virtual String Author() const;
-   virtual String Copyright() const;
-   virtual String TradeMarks() const;
-   virtual String OriginalFileName() const;
-   virtual void GetReleaseDate( int& year, int& month, int& day ) const;
+   const char* Version() const override;
+   IsoString Name() const override;
+   String Description() const override;
+   String Company() const override;
+   String Author() const override;
+   String Copyright() const override;
+   String TradeMarks() const override;
+   String OriginalFileName() const override;
+   void GetReleaseDate( int& year, int& month, int& day ) const override;
 };
 
 // ----------------------------------------------------------------------------
@@ -84,4 +84,4 @@ public:
 #endif   // __NoOperationModule_h
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationModule.h - Released 2020-02-27T12:56:01Z
+// EOF NoOperationModule.h - Released 2020-07-31T19:33:39Z

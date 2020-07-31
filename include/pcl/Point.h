@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Point.h - Released 2020-02-27T12:55:23Z
+// pcl/Point.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -128,8 +128,9 @@ public:
     * with numeric conversion semantics.
     */
    template <typename T1>
-   constexpr GenericPoint( T1 xPos, T1 yPos ) :
-      x( component( xPos ) ), y( component( yPos ) )
+   constexpr GenericPoint( T1 xPos, T1 yPos )
+      : x( component( xPos ) )
+      , y( component( yPos ) )
    {
       PCL_ASSERT_POINT_SIZE();
    }
@@ -138,7 +139,8 @@ public:
     * Constructs a %GenericPoint instance with both point coordinates equal to
     * the specified scalar \a d.
     */
-   constexpr GenericPoint( component d ) : GenericPoint( d, d )
+   constexpr GenericPoint( component d )
+      : GenericPoint( d, d )
    {
       PCL_ASSERT_POINT_SIZE();
    }
@@ -192,15 +194,15 @@ public:
     * of another point \a p with different template argument.
     */
    template <typename T1>
-   GenericPoint( const GenericPoint<T1>& p ) :
-      GenericPoint( component( p.x ), component( p.y ) )
+   GenericPoint( const GenericPoint<T1>& p )
+      : GenericPoint( component( p.x ), component( p.y ) )
    {
       PCL_ASSERT_POINT_SIZE();
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericPoint( const QPoint& p ) :
-      GenericPoint( component( p.x() ), component( p.y() ) )
+   GenericPoint( const QPoint& p )
+      : GenericPoint( component( p.x() ), component( p.y() ) )
    {
       PCL_ASSERT_POINT_SIZE();
    }
@@ -1479,4 +1481,4 @@ typedef F64Point                    DPoint;
 #endif  // __PCL_Point_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Point.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Point.h - Released 2020-07-31T19:33:04Z

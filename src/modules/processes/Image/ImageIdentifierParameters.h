@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierParameters.h - Released 2020-02-27T12:56:01Z
+// ImageIdentifierParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -68,9 +68,9 @@ public:
 
    ImageIdentifier( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
-   virtual String AllowedCharacters() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
+   String AllowedCharacters() const override;
 };
 
 extern ImageIdentifier* TheImageIdentifierParameter;
@@ -84,4 +84,4 @@ PCL_END_LOCAL
 #endif   // __ImageIdentifierParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ImageIdentifierParameters.h - Released 2020-07-31T19:33:39Z

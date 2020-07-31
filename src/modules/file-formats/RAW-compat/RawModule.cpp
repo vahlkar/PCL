@@ -150,6 +150,8 @@ void RawModule::GetReleaseDate( int& year, int& month, int& day ) const
 
 } // pcl
 
+// -------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::RawModule;

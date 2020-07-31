@@ -2,15 +2,15 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// FileDataCache.h - Released 2020-02-27T12:56:01Z
+// FileDataCache.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
-// Copyright (c) 2017-2018 Cameron Leger
+// Copyright (c) 2017-2020 Cameron Leger
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -169,11 +169,9 @@ class PCL_CLASS FileDataCache
 {
 public:
 
-   FileDataCache( const IsoString& key, int days = 30 ) :
-      m_cache(),
-      m_keyPrefix( key.Trimmed() ),
-      m_durationDays( Max( 0, days ) ),
-      m_enabled( true )
+   FileDataCache( const IsoString& key, int days = 30 )
+      : m_keyPrefix( key.Trimmed() )
+      , m_durationDays( Max( 0, days ) )
    {
       PCL_PRECONDITION( !m_keyPrefix.IsEmpty() )
       if ( m_keyPrefix.IsEmpty() )
@@ -247,7 +245,7 @@ private:
            cache_index m_cache;
            IsoString   m_keyPrefix;
            int         m_durationDays; // <= 0 -> never expires
-           bool        m_enabled;
+           bool        m_enabled = true;
 };
 
 // ----------------------------------------------------------------------------
@@ -257,4 +255,4 @@ private:
 #endif   // __FileDataCache_h
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCache.h - Released 2020-02-27T12:56:01Z
+// EOF FileDataCache.h - Released 2020-07-31T19:33:39Z

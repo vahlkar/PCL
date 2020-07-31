@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// Structure.h - Released 2020-02-27T12:56:01Z
+// Structure.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -71,9 +71,18 @@ public:
    typedef Array<ByteArray>   structure_mask_list;
 
    Structure( int nw = 1, int sz = 3, const String& nm = String() );
-   Structure( const Structure& );
-   Structure( File& );
-   Structure( const IsoString& key );
+
+   Structure( const Structure& ) = default;
+
+   Structure( File& file )
+   {
+      Read( file );
+   }
+
+   Structure( const IsoString& key )
+   {
+      Load( key );
+   }
 
    String Name() const
    {
@@ -216,14 +225,13 @@ public:
 private:
 
    String              name;
-   uint32              size;
+   uint32              size = 0;
    structure_mask_list mask;
 
    friend class MorphologicalTransformationInstance;
    friend class MorphologicalTransformationInterface;
 };
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 class StructureCollection
@@ -239,9 +247,7 @@ public:
       {
       }
 
-      IndexNode( const IndexNode& x ) : name( x.name ), index( x.index )
-      {
-      }
+      IndexNode( const IndexNode& ) = default;
 
       bool operator ==( const IndexNode& n ) const
       {
@@ -259,11 +265,7 @@ public:
 
    static const size_type notFound = ~size_type( 0 );
 
-   // -------------------------------------------------------------------------
-
-   StructureCollection() : path(), collection(), index()
-   {
-   }
+   StructureCollection() = default;
 
    virtual ~StructureCollection()
    {
@@ -363,4 +365,4 @@ private:
 #endif   // __Structure_h
 
 // ----------------------------------------------------------------------------
-// EOF Structure.h - Released 2020-02-27T12:56:01Z
+// EOF Structure.h - Released 2020-07-31T19:33:39Z

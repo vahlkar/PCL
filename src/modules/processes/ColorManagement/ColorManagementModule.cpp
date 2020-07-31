@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ColorManagementModule.cpp - Released 2020-02-27T12:56:01Z
+// ColorManagementModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "AssignICCProfileInterface.h"
 #include "AssignICCProfileProcess.h"
@@ -75,6 +75,8 @@ ColorManagementModule::ColorManagementModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* ColorManagementModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
@@ -84,42 +86,56 @@ const char* ColorManagementModule::Version() const
                               MODULE_VERSION_LANGUAGE );
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString ColorManagementModule::Name() const
 {
    return "ColorManagement";
 }
+
+// ----------------------------------------------------------------------------
 
 String ColorManagementModule::Description() const
 {
    return "PixInsight Standard ColorManagement Process Module";
 }
 
+// ----------------------------------------------------------------------------
+
 String ColorManagementModule::Company() const
 {
    return "Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String ColorManagementModule::Author() const
 {
    return "Juan Conejero, PTeam";
 }
 
+// ----------------------------------------------------------------------------
+
 String ColorManagementModule::Copyright() const
 {
-   return "Copyright (c) 2005-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2005-2020 Pleiades Astrophoto";
 }
+
+// ----------------------------------------------------------------------------
 
 String ColorManagementModule::TradeMarks() const
 {
    return "PixInsight";
 }
 
+// ----------------------------------------------------------------------------
+
 String ColorManagementModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "ColorManagement-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "ColorManagement-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -129,6 +145,8 @@ String ColorManagementModule::OriginalFileName() const
    return "ColorManagement-pxm.dll";
 #endif
 }
+
+// ----------------------------------------------------------------------------
 
 void ColorManagementModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
@@ -140,6 +158,8 @@ void ColorManagementModule::GetReleaseDate( int& year, int& month, int& day ) co
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -157,4 +177,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorManagementModule.cpp - Released 2020-07-31T19:33:39Z

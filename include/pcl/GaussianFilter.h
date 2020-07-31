@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/GaussianFilter.h - Released 2020-02-27T12:55:23Z
+// pcl/GaussianFilter.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -102,19 +102,14 @@ public:
     * Constructs an empty %GaussianFilter object with default functional
     * parameters: sigma=2, epsilon=0.01, rho=1, theta=0.
     */
-   GaussianFilter() :
-      KernelFilter(),
-      m_sigma( 2 ), m_rho( 1 ), m_theta( 0 ), m_epsilon( 0.01F )
-   {
-   }
+   GaussianFilter() = default;
 
    /*!
     * Constructs a %GaussianFilter object given the standard deviation
     * \a sigma > 0 and truncation error \a epsilon > 0. Assigns an optional
     * \a name to the new filter object.
     */
-   GaussianFilter( float sigma, float epsilon = 0.01, const String& name = String() ) :
-      KernelFilter()
+   GaussianFilter( float sigma, float epsilon = 0.01, const String& name = String() )
    {
       Initialize( sigma, epsilon, 1, 0 );
       Rename( name );
@@ -126,8 +121,7 @@ public:
     * 0 <= \a rho <= 1, and rotation angle 0 <= \a theta <= PI in radians.
     * Assigns an optional \a name to the new filter object.
     */
-   GaussianFilter( float sigma, float epsilon, float rho, float theta = 0, const String& name = String() ) :
-      KernelFilter()
+   GaussianFilter( float sigma, float epsilon, float rho, float theta = 0, const String& name = String() )
    {
       Initialize( sigma, epsilon, rho, theta );
       Rename( name );
@@ -138,8 +132,7 @@ public:
     * and truncation error \a epsilon > 0. Assigns an optional \a name to the
     * new filter object.
     */
-   GaussianFilter( int n, float epsilon = 0.01, const String& name = String() ) :
-      KernelFilter()
+   GaussianFilter( int n, float epsilon = 0.01, const String& name = String() )
    {
       Initialize( n, epsilon, 1, 0 );
       Rename( name );
@@ -151,8 +144,7 @@ public:
     * rotation angle 0 <= \a theta <= PI in radians. Assigns an optional
     * \a name to the new filter object.
     */
-   GaussianFilter( int n, float epsilon, float rho, float theta = 0, const String& name = String() ) :
-      KernelFilter()
+   GaussianFilter( int n, float epsilon, float rho, float theta = 0, const String& name = String() )
    {
       Initialize( n, epsilon, rho, theta );
       Rename( name );
@@ -161,20 +153,12 @@ public:
    /*!
     * Copy constructor.
     */
-   GaussianFilter( const GaussianFilter& x ) :
-      KernelFilter( x ),
-      m_sigma( x.m_sigma ), m_rho( x.m_rho ), m_theta( x.m_theta ), m_epsilon( x.m_epsilon )
-   {
-   }
+   GaussianFilter( const GaussianFilter& ) = default;
 
    /*!
     * Move constructor.
     */
-   GaussianFilter( GaussianFilter&& x ) :
-      KernelFilter( std::move( x ) ),
-      m_sigma( x.m_sigma ), m_rho( x.m_rho ), m_theta( x.m_theta ), m_epsilon( x.m_epsilon )
-   {
-   }
+   GaussianFilter( GaussianFilter&& ) = default;
 
    /*!
     */
@@ -427,10 +411,10 @@ public:
 
 private:
 
-   float m_sigma;   // standard deviation, horizontal axis
-   float m_rho;     // vertical:horizontal axes ratio
-   float m_theta;   // rotation angle in radians, [0,+pi]
-   float m_epsilon; // maximum truncation error in sigma units
+   float m_sigma = 2;       // standard deviation, horizontal axis
+   float m_rho = 1;         // vertical:horizontal axes ratio
+   float m_theta = 0;       // rotation angle in radians, [0,+pi]
+   float m_epsilon = 0.01F; // maximum truncation error in sigma units
 
    void Initialize( float s, float e, float r, float a )
    {
@@ -511,4 +495,4 @@ private:
 #endif   // __PCL_GaussianFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GaussianFilter.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/GaussianFilter.h - Released 2020-07-31T19:33:04Z

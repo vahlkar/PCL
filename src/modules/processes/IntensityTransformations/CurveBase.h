@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurveBase.h - Released 2020-02-27T12:56:01Z
+// CurveBase.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -73,13 +73,7 @@ public:
 
    typedef UnidimensionalInterpolation<double>  interpolator;
 
-   CurveBase() :
-      x(),
-      y(),
-      type( CurveType::Default )
-   {
-   }
-
+   CurveBase() = default;
    CurveBase( const CurveBase& ) = default;
    CurveBase& operator =( const CurveBase& ) = default;
 
@@ -179,7 +173,7 @@ protected:
 
    input_list  x;
    output_list y;
-   int32       type;
+   int32       type = CurveType::Default;
 
    virtual void Initialize() = 0;
 
@@ -194,4 +188,4 @@ protected:
 #endif   // __CurveBase_h
 
 // ----------------------------------------------------------------------------
-// EOF CurveBase.h - Released 2020-02-27T12:56:01Z
+// EOF CurveBase.h - Released 2020-07-31T19:33:39Z

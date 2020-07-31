@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionModule.cpp - Released 2020-02-27T12:56:01Z
+// CosmeticCorrectionModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -58,12 +58,12 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "CosmeticCorrectionModule.h"
-#include "CosmeticCorrectionProcess.h"
 #include "CosmeticCorrectionInterface.h"
+#include "CosmeticCorrectionProcess.h"
 
 namespace pcl
 {
@@ -74,44 +74,60 @@ CosmeticCorrectionModule::CosmeticCorrectionModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* CosmeticCorrectionModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
-                              MODULE_VERSION_MINOR,
-                              MODULE_VERSION_REVISION,
-                              MODULE_VERSION_BUILD,
-                              MODULE_VERSION_LANGUAGE );
+      MODULE_VERSION_MINOR,
+      MODULE_VERSION_REVISION,
+      MODULE_VERSION_BUILD,
+      MODULE_VERSION_LANGUAGE );
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString CosmeticCorrectionModule::Name() const
 {
    return "CosmeticCorrection";
 }
 
+// ----------------------------------------------------------------------------
+
 String CosmeticCorrectionModule::Description() const
 {
    return "CosmeticCorrection module";
 }
 
+// ----------------------------------------------------------------------------
+
 String CosmeticCorrectionModule::Company() const
 {
-   return "";
+   return String();
 }
+
+// ----------------------------------------------------------------------------
 
 String CosmeticCorrectionModule::Author() const
 {
-   return "Nikolay Volkov";
+   return "Nikolay Volkov (PTeam)";
 }
+
+// ----------------------------------------------------------------------------
 
 String CosmeticCorrectionModule::Copyright() const
 {
-   return "Copyright (c) 2011-2018 Nikolay Volkov";
+   return "Copyright (c) 2011-2020 Nikolay Volkov";
 }
+
+// ----------------------------------------------------------------------------
 
 String CosmeticCorrectionModule::TradeMarks() const
 {
    return "PixInsight";
 }
+
+// ----------------------------------------------------------------------------
 
 String CosmeticCorrectionModule::OriginalFileName() const
 {
@@ -129,16 +145,20 @@ String CosmeticCorrectionModule::OriginalFileName() const
 #endif
 }
 
+// ----------------------------------------------------------------------------
+
 void CosmeticCorrectionModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
-   year  = MODULE_RELEASE_YEAR;
+   year = MODULE_RELEASE_YEAR;
    month = MODULE_RELEASE_MONTH;
-   day   = MODULE_RELEASE_DAY;
+   day = MODULE_RELEASE_DAY;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -154,4 +174,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF CosmeticCorrectionModule.cpp - Released 2020-07-31T19:33:39Z

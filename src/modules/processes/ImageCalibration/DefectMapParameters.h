@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.4.1
+// Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// DefectMapParameters.h - Released 2020-02-27T12:56:01Z
+// DefectMapParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -66,8 +66,8 @@ public:
 
    DMPMapId( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type MinLength() const;
+   IsoString Id() const override;
+   size_type MinLength() const override;
 };
 
 extern DMPMapId* TheDMPMapIdParameter;
@@ -88,12 +88,11 @@ public:
 
    DMPOperation( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern DMPOperation* TheDMPOperationParameter;
@@ -113,12 +112,11 @@ public:
 
    DMPStructure( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern DMPStructure* TheDMPStructureParameter;
@@ -131,9 +129,8 @@ public:
 
    DMPIsCFA( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern DMPIsCFA* TheDMPIsCFAParameter;
@@ -145,4 +142,4 @@ extern DMPIsCFA* TheDMPIsCFAParameter;
 #endif   // __DefectMapParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapParameters.h - Released 2020-02-27T12:56:01Z
+// EOF DefectMapParameters.h - Released 2020-07-31T19:33:39Z

@@ -1,9 +1,41 @@
+/* Header file for cminpack, by Frederic Devernay.
+   The documentation for all functions can be found in the file
+   minpack-documentation.txt from the distribution, or in the source
+   code of each function. */
+
 #ifndef __CMINPACK_H__
 #define __CMINPACK_H__
 
 /* ### BEGIN CUSTOM CODE --------------------------------------------------- */
 #define CMINPACK_NO_DLL 1
 /* ### END CUSTOM CODE ----------------------------------------------------- */
+
+
+/* The default floating-point type is "double" for C/C++ and "float" for CUDA,
+   but you can change this by defining one of the following symbols when
+   compiling the library, and before including cminpack.h when using it:
+   __cminpack_long_double__ for long double (requires compiler support)
+   __cminpack_double__ for double
+   __cminpack_float__ for float
+   __cminpack_half__ for half from the OpenEXR library (in this case, you must
+                     compile cminpack with a C++ compiler)
+*/
+#ifdef __cminpack_long_double__
+#define __cminpack_real__ long double
+#endif
+
+#ifdef __cminpack_double__
+#define __cminpack_real__ double
+#endif
+
+#ifdef __cminpack_float__
+#define __cminpack_real__ float
+#endif
+
+#ifdef __cminpack_half__
+#include <OpenEXR/half.h>
+#define __cminpack_real__ half
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +74,66 @@ building a DLL on windows.
  #define CMINPACK_EXPORT
 #endif
 
+#if defined(__CUDA_ARCH__) || defined(__CUDACC__)
+#define __cminpack_attr__ __device__
+#ifndef __cminpack_real__
+#define __cminpack_float__
+#define __cminpack_real__ float
+#endif
+#define __cminpack_type_fcn_nn__        __cminpack_attr__ int fcn_nn
+#define __cminpack_type_fcnder_nn__     __cminpack_attr__ int fcnder_nn
+#define __cminpack_type_fcn_mn__        __cminpack_attr__ int fcn_mn
+#define __cminpack_type_fcnder_mn__     __cminpack_attr__ int fcnder_mn
+#define __cminpack_type_fcnderstr_mn__  __cminpack_attr__ int fcnderstr_mn
+#define __cminpack_decl_fcn_nn__
+#define __cminpack_decl_fcnder_nn__
+#define __cminpack_decl_fcn_mn__
+#define __cminpack_decl_fcnder_mn__
+#define __cminpack_decl_fcnderstr_mn__
+#define __cminpack_param_fcn_nn__
+#define __cminpack_param_fcnder_nn__
+#define __cminpack_param_fcn_mn__
+#define __cminpack_param_fcnder_mn__
+#define __cminpack_param_fcnderstr_mn__
+#else
+#define __cminpack_attr__
+#ifndef __cminpack_real__
+#define __cminpack_double__
+#define __cminpack_real__ double
+#endif
+#define __cminpack_type_fcn_nn__        typedef int (*cminpack_func_nn)
+#define __cminpack_type_fcnder_nn__     typedef int (*cminpack_funcder_nn)
+#define __cminpack_type_fcn_mn__        typedef int (*cminpack_func_mn)
+#define __cminpack_type_fcnder_mn__     typedef int (*cminpack_funcder_mn)
+#define __cminpack_type_fcnderstr_mn__  typedef int (*cminpack_funcderstr_mn)
+#define __cminpack_decl_fcn_nn__        cminpack_func_nn fcn_nn,
+#define __cminpack_decl_fcnder_nn__     cminpack_funcder_nn fcnder_nn,
+#define __cminpack_decl_fcn_mn__        cminpack_func_mn fcn_mn,
+#define __cminpack_decl_fcnder_mn__     cminpack_funcder_mn fcnder_mn,
+#define __cminpack_decl_fcnderstr_mn__  cminpack_funcderstr_mn fcnderstr_mn,
+#define __cminpack_param_fcn_nn__       fcn_nn,
+#define __cminpack_param_fcnder_nn__    fcnder_nn,
+#define __cminpack_param_fcn_mn__       fcn_mn,
+#define __cminpack_param_fcnder_mn__    fcnder_mn,
+#define __cminpack_param_fcnderstr_mn__ fcnderstr_mn,
+#endif
+
+#ifdef __cminpack_double__
+#define __cminpack_func__(func) func
+#endif
+
+#ifdef __cminpack_long_double__
+#define __cminpack_func__(func) ld ## func
+#endif
+
+#ifdef __cminpack_float__
+#define __cminpack_func__(func) s ## func
+#endif
+
+#ifdef __cminpack_half__
+#define __cminpack_func__(func) h ## func
+#endif
+
 /* Declarations for minpack */
 
 /* Function types: */
@@ -56,7 +148,7 @@ building a DLL on windows.
 /*         calculate the functions at x and */
 /*         return this vector in fvec. */
 /* return a negative value to terminate hybrd1/hybrd */
-typedef int (*minpack_func_nn)(void *p, int n, const double *x, double *fvec, int iflag );
+__cminpack_type_fcn_nn__(void *p, int n, const __cminpack_real__ *x, __cminpack_real__ *fvec, int iflag );
 
 /* for hybrj1 and hybrj */
 /*         if iflag = 1 calculate the functions at x and */
@@ -64,14 +156,17 @@ typedef int (*minpack_func_nn)(void *p, int n, const double *x, double *fvec, in
 /*         if iflag = 2 calculate the jacobian at x and */
 /*         return this matrix in fjac. do not alter fvec. */
 /* return a negative value to terminate hybrj1/hybrj */
-typedef int (*minpack_funcder_nn)(void *p, int n, const double *x, double *fvec, double *fjac,
+__cminpack_type_fcnder_nn__(void *p, int n, const __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ *fjac,
                                   int ldfjac, int iflag );
 
 /* for lmdif1 and lmdif */
 /*         calculate the functions at x and */
 /*         return this vector in fvec. */
+/*         if iflag = 1 the result is used to compute the residuals. */
+/*         if iflag = 2 the result is used to compute the Jacobian by finite differences. */
+/*         Jacobian computation requires exactly n function calls with iflag = 2. */
 /* return a negative value to terminate lmdif1/lmdif */
-typedef int (*minpack_func_mn)(void *p, int m, int n, const double *x, double *fvec,
+__cminpack_type_fcn_mn__(void *p, int m, int n, const __cminpack_real__ *x, __cminpack_real__ *fvec,
                                int iflag );
 
 /* for lmder1 and lmder */
@@ -80,8 +175,8 @@ typedef int (*minpack_func_mn)(void *p, int m, int n, const double *x, double *f
 /*         if iflag = 2 calculate the jacobian at x and */
 /*         return this matrix in fjac. do not alter fvec. */
 /* return a negative value to terminate lmder1/lmder */
-typedef int (*minpack_funcder_mn)(void *p, int m, int n, const double *x, double *fvec,
-                                  double *fjac, int ldfjac, int iflag );
+__cminpack_type_fcnder_mn__(void *p, int m, int n, const __cminpack_real__ *x, __cminpack_real__ *fvec,
+                                  __cminpack_real__ *fjac, int ldfjac, int iflag );
 
 /* for lmstr1 and lmstr */
 /*         if iflag = 1 calculate the functions at x and */
@@ -89,8 +184,8 @@ typedef int (*minpack_funcder_mn)(void *p, int m, int n, const double *x, double
 /*         if iflag = i calculate the (i-1)-st row of the */
 /*         jacobian at x and return this vector in fjrow. */
 /* return a negative value to terminate lmstr1/lmstr */
-typedef int (*minpack_funcderstr_mn)(void *p, int m, int n, const double *x, double *fvec,
-                                     double *fjrow, int iflag );
+__cminpack_type_fcnderstr_mn__(void *p, int m, int n, const __cminpack_real__ *x, __cminpack_real__ *fvec,
+                                     __cminpack_real__ *fjrow, int iflag );
 
 
 
@@ -107,121 +202,137 @@ typedef int (*minpack_funcderstr_mn)(void *p, int m, int n, const double *x, dou
 /* find a zero of a system of N nonlinear functions in N variables by
    a modification of the Powell hybrid method (Jacobian calculated by
    a forward-difference approximation) */
-int CMINPACK_EXPORT hybrd1 ( minpack_func_nn fcn,
-	       void *p, int n, double *x, double *fvec, double tol,
-	       double *wa, int lwa );
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(hybrd1)( __cminpack_decl_fcn_nn__
+	       void *p, int n, __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ tol,
+	       __cminpack_real__ *wa, int lwa );
 
 /* find a zero of a system of N nonlinear functions in N variables by
    a modification of the Powell hybrid method (Jacobian calculated by
    a forward-difference approximation, more general). */
-int CMINPACK_EXPORT hybrd ( minpack_func_nn fcn,
-	      void *p, int n, double *x, double *fvec, double xtol, int maxfev,
-	      int ml, int mu, double epsfcn, double *diag, int mode,
-	      double factor, int nprint, int *nfev,
-	      double *fjac, int ldfjac, double *r, int lr, double *qtf,
-	      double *wa1, double *wa2, double *wa3, double *wa4);
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(hybrd)( __cminpack_decl_fcn_nn__
+	      void *p, int n, __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ xtol, int maxfev,
+	      int ml, int mu, __cminpack_real__ epsfcn, __cminpack_real__ *diag, int mode,
+	      __cminpack_real__ factor, int nprint, int *nfev,
+	      __cminpack_real__ *fjac, int ldfjac, __cminpack_real__ *r, int lr, __cminpack_real__ *qtf,
+	      __cminpack_real__ *wa1, __cminpack_real__ *wa2, __cminpack_real__ *wa3, __cminpack_real__ *wa4);
 
 /* find a zero of a system of N nonlinear functions in N variables by
    a modification of the Powell hybrid method (user-supplied Jacobian) */
-int CMINPACK_EXPORT hybrj1 ( minpack_funcder_nn fcn, void *p, int n, double *x,
-	       double *fvec, double *fjac, int ldfjac, double tol,
-	       double *wa, int lwa );
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(hybrj1)( __cminpack_decl_fcnder_nn__ void *p, int n, __cminpack_real__ *x,
+	       __cminpack_real__ *fvec, __cminpack_real__ *fjac, int ldfjac, __cminpack_real__ tol,
+	       __cminpack_real__ *wa, int lwa );
 
 /* find a zero of a system of N nonlinear functions in N variables by
    a modification of the Powell hybrid method (user-supplied Jacobian,
    more general) */
-int CMINPACK_EXPORT hybrj ( minpack_funcder_nn fcn, void *p, int n, double *x,
-	      double *fvec, double *fjac, int ldfjac, double xtol,
-	      int maxfev, double *diag, int mode, double factor,
-	      int nprint, int *nfev, int *njev, double *r,
-	      int lr, double *qtf, double *wa1, double *wa2,
-	      double *wa3, double *wa4 );
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(hybrj)( __cminpack_decl_fcnder_nn__ void *p, int n, __cminpack_real__ *x,
+	      __cminpack_real__ *fvec, __cminpack_real__ *fjac, int ldfjac, __cminpack_real__ xtol,
+	      int maxfev, __cminpack_real__ *diag, int mode, __cminpack_real__ factor,
+	      int nprint, int *nfev, int *njev, __cminpack_real__ *r,
+	      int lr, __cminpack_real__ *qtf, __cminpack_real__ *wa1, __cminpack_real__ *wa2,
+	      __cminpack_real__ *wa3, __cminpack_real__ *wa4 );
 
 /* minimize the sum of the squares of nonlinear functions in N
    variables by a modification of the Levenberg-Marquardt algorithm
    (Jacobian calculated by a forward-difference approximation) */
-int CMINPACK_EXPORT lmdif1 ( minpack_func_mn fcn,
-	       void *p, int m, int n, double *x, double *fvec, double tol,
-	       int *iwa, double *wa, int lwa );
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(lmdif1)( __cminpack_decl_fcn_mn__
+	       void *p, int m, int n, __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ tol,
+	       int *iwa, __cminpack_real__ *wa, int lwa );
 
 /* minimize the sum of the squares of nonlinear functions in N
    variables by a modification of the Levenberg-Marquardt algorithm
    (Jacobian calculated by a forward-difference approximation, more
    general) */
-int CMINPACK_EXPORT lmdif ( minpack_func_mn fcn,
-	      void *p, int m, int n, double *x, double *fvec, double ftol,
-	      double xtol, double gtol, int maxfev, double epsfcn,
-	      double *diag, int mode, double factor, int nprint,
-	      int *nfev, double *fjac, int ldfjac, int *ipvt,
-	      double *qtf, double *wa1, double *wa2, double *wa3,
-	      double *wa4 );
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(lmdif)( __cminpack_decl_fcn_mn__
+	      void *p, int m, int n, __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ ftol,
+	      __cminpack_real__ xtol, __cminpack_real__ gtol, int maxfev, __cminpack_real__ epsfcn,
+	      __cminpack_real__ *diag, int mode, __cminpack_real__ factor, int nprint,
+	      int *nfev, __cminpack_real__ *fjac, int ldfjac, int *ipvt,
+	      __cminpack_real__ *qtf, __cminpack_real__ *wa1, __cminpack_real__ *wa2, __cminpack_real__ *wa3,
+	      __cminpack_real__ *wa4 );
 
 /* minimize the sum of the squares of nonlinear functions in N
    variables by a modification of the Levenberg-Marquardt algorithm
    (user-supplied Jacobian) */
-int CMINPACK_EXPORT lmder1 ( minpack_funcder_mn fcn,
-	       void *p, int m, int n, double *x, double *fvec, double *fjac,
-	       int ldfjac, double tol, int *ipvt,
-	       double *wa, int lwa );
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(lmder1)( __cminpack_decl_fcnder_mn__
+	       void *p, int m, int n, __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ *fjac,
+	       int ldfjac, __cminpack_real__ tol, int *ipvt,
+	       __cminpack_real__ *wa, int lwa );
 
 /* minimize the sum of the squares of nonlinear functions in N
    variables by a modification of the Levenberg-Marquardt algorithm
    (user-supplied Jacobian, more general) */
-int CMINPACK_EXPORT lmder ( minpack_funcder_mn fcn,
-	      void *p, int m, int n, double *x, double *fvec, double *fjac,
-	      int ldfjac, double ftol, double xtol, double gtol,
-	      int maxfev, double *diag, int mode, double factor,
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(lmder)( __cminpack_decl_fcnder_mn__
+	      void *p, int m, int n, __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ *fjac,
+	      int ldfjac, __cminpack_real__ ftol, __cminpack_real__ xtol, __cminpack_real__ gtol,
+	      int maxfev, __cminpack_real__ *diag, int mode, __cminpack_real__ factor,
 	      int nprint, int *nfev, int *njev, int *ipvt,
-	      double *qtf, double *wa1, double *wa2, double *wa3,
-	      double *wa4 );
+	      __cminpack_real__ *qtf, __cminpack_real__ *wa1, __cminpack_real__ *wa2, __cminpack_real__ *wa3,
+	      __cminpack_real__ *wa4 );
 
 /* minimize the sum of the squares of nonlinear functions in N
    variables by a modification of the Levenberg-Marquardt algorithm
    (user-supplied Jacobian, minimal storage) */
-int CMINPACK_EXPORT lmstr1 ( minpack_funcderstr_mn fcn, void *p, int m, int n,
-	       double *x, double *fvec, double *fjac, int ldfjac,
-	       double tol, int *ipvt, double *wa, int lwa );
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(lmstr1)( __cminpack_decl_fcnderstr_mn__ void *p, int m, int n,
+	       __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ *fjac, int ldfjac,
+	       __cminpack_real__ tol, int *ipvt, __cminpack_real__ *wa, int lwa );
 
 /* minimize the sum of the squares of nonlinear functions in N
    variables by a modification of the Levenberg-Marquardt algorithm
    (user-supplied Jacobian, minimal storage, more general) */
-int CMINPACK_EXPORT lmstr (  minpack_funcderstr_mn fcn, void *p, int m,
-	      int n, double *x, double *fvec, double *fjac,
-	      int ldfjac, double ftol, double xtol, double gtol,
-	      int maxfev, double *diag, int mode, double factor,
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(lmstr)(  __cminpack_decl_fcnderstr_mn__ void *p, int m,
+	      int n, __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ *fjac,
+	      int ldfjac, __cminpack_real__ ftol, __cminpack_real__ xtol, __cminpack_real__ gtol,
+	      int maxfev, __cminpack_real__ *diag, int mode, __cminpack_real__ factor,
 	      int nprint, int *nfev, int *njev, int *ipvt,
-	      double *qtf, double *wa1, double *wa2, double *wa3,
-	      double *wa4 );
+	      __cminpack_real__ *qtf, __cminpack_real__ *wa1, __cminpack_real__ *wa2, __cminpack_real__ *wa3,
+	      __cminpack_real__ *wa4 );
 
-void CMINPACK_EXPORT chkder ( int m, int n, const double *x, double *fvec, double *fjac,
-	       int ldfjac, double *xp, double *fvecp, int mode,
-	       double *err  );
+__cminpack_attr__
+void CMINPACK_EXPORT __cminpack_func__(chkder)( int m, int n, const __cminpack_real__ *x, __cminpack_real__ *fvec, __cminpack_real__ *fjac,
+	       int ldfjac, __cminpack_real__ *xp, __cminpack_real__ *fvecp, int mode,
+	       __cminpack_real__ *err  );
 
-double CMINPACK_EXPORT dpmpar ( int i );
+__cminpack_attr__
+__cminpack_real__ CMINPACK_EXPORT __cminpack_func__(dpmpar)( int i );
 
-double CMINPACK_EXPORT enorm ( int n, const double *x );
+__cminpack_attr__
+__cminpack_real__ CMINPACK_EXPORT __cminpack_func__(enorm)( int n, const __cminpack_real__ *x );
 
 /* compute a forward-difference approximation to the m by n jacobian
    matrix associated with a specified problem of m functions in n
    variables. */
-int CMINPACK_EXPORT fdjac2(minpack_func_mn fcn,
-	     void *p, int m, int n, double *x, const double *fvec, double *fjac,
-	     int ldfjac, double epsfcn, double *wa);
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(fdjac2)(__cminpack_decl_fcn_mn__
+	     void *p, int m, int n, __cminpack_real__ *x, const __cminpack_real__ *fvec, __cminpack_real__ *fjac,
+	     int ldfjac, __cminpack_real__ epsfcn, __cminpack_real__ *wa);
 
 /* compute a forward-difference approximation to the n by n jacobian
    matrix associated with a specified problem of n functions in n
    variables. if the jacobian has a banded form, then function
    evaluations are saved by only approximating the nonzero terms. */
-int CMINPACK_EXPORT fdjac1(minpack_func_nn fcn,
-	     void *p, int n, double *x, const double *fvec, double *fjac, int ldfjac,
-	     int ml, int mu, double epsfcn, double *wa1,
-	     double *wa2);
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(fdjac1)(__cminpack_decl_fcn_nn__
+	     void *p, int n, __cminpack_real__ *x, const __cminpack_real__ *fvec, __cminpack_real__ *fjac, int ldfjac,
+	     int ml, int mu, __cminpack_real__ epsfcn, __cminpack_real__ *wa1,
+	     __cminpack_real__ *wa2);
 
 /* compute inverse(JtJ) after a run of lmdif or lmder. The covariance matrix is obtained
    by scaling the result by enorm(y)**2/(m-n). If JtJ is singular and k = rank(J), the
    pseudo-inverse is computed, and the result has to be scaled by enorm(y)**2/(m-k). */
-void CMINPACK_EXPORT covar(int n, double *r, int ldr,
-           const int *ipvt, double tol, double *wa);
+__cminpack_attr__
+void CMINPACK_EXPORT __cminpack_func__(covar)(int n, __cminpack_real__ *r, int ldr,
+           const int *ipvt, __cminpack_real__ tol, __cminpack_real__ *wa);
 
 /* covar1 estimates the variance-covariance matrix:
    C = sigma**2 (JtJ)**+
@@ -230,32 +341,41 @@ void CMINPACK_EXPORT covar(int n, double *r, int ldr,
    where fsumsq is the residual sum of squares and k is the rank of J.
    The function returns 0 if J has full rank, else the rank of J.
 */
-int CMINPACK_EXPORT covar1(int m, int n, double fsumsq, double *r, int ldr,
-                           const int *ipvt, double tol, double *wa);
+__cminpack_attr__
+int CMINPACK_EXPORT __cminpack_func__(covar1)(int m, int n, __cminpack_real__ fsumsq, __cminpack_real__ *r, int ldr,
+                           const int *ipvt, __cminpack_real__ tol, __cminpack_real__ *wa);
 
 /* internal MINPACK subroutines */
-void dogleg(int n, const double *r, int lr,
-             const double *diag, const double *qtb, double delta, double *x,
-             double *wa1, double *wa2);
-void qrfac(int m, int n, double *a, int
-            lda, int pivot, int *ipvt, int lipvt, double *rdiag,
-            double *acnorm, double *wa);
-void qrsolv(int n, double *r, int ldr,
-             const int *ipvt, const double *diag, const double *qtb, double *x,
-             double *sdiag, double *wa);
-void qform(int m, int n, double *q, int
-            ldq, double *wa);
-void r1updt(int m, int n, double *s, int
-             ls, const double *u, double *v, double *w, int *sing);
-void r1mpyq(int m, int n, double *a, int
-             lda, const double *v, const double *w);
-void lmpar(int n, double *r, int ldr,
-            const int *ipvt, const double *diag, const double *qtb, double delta,
-            double *par, double *x, double *sdiag, double *wa1,
-            double *wa2);
-void rwupdt(int n, double *r, int ldr,
-             const double *w, double *b, double *alpha, double *cos,
-             double *sin);
+__cminpack_attr__
+void __cminpack_func__(dogleg)(int n, const __cminpack_real__ *r, int lr,
+             const __cminpack_real__ *diag, const __cminpack_real__ *qtb, __cminpack_real__ delta, __cminpack_real__ *x,
+             __cminpack_real__ *wa1, __cminpack_real__ *wa2);
+__cminpack_attr__
+void __cminpack_func__(qrfac)(int m, int n, __cminpack_real__ *a, int
+            lda, int pivot, int *ipvt, int lipvt, __cminpack_real__ *rdiag,
+            __cminpack_real__ *acnorm, __cminpack_real__ *wa);
+__cminpack_attr__
+void __cminpack_func__(qrsolv)(int n, __cminpack_real__ *r, int ldr,
+             const int *ipvt, const __cminpack_real__ *diag, const __cminpack_real__ *qtb, __cminpack_real__ *x,
+             __cminpack_real__ *sdiag, __cminpack_real__ *wa);
+__cminpack_attr__
+void __cminpack_func__(qform)(int m, int n, __cminpack_real__ *q, int
+            ldq, __cminpack_real__ *wa);
+__cminpack_attr__
+void __cminpack_func__(r1updt)(int m, int n, __cminpack_real__ *s, int
+             ls, const __cminpack_real__ *u, __cminpack_real__ *v, __cminpack_real__ *w, int *sing);
+__cminpack_attr__
+void __cminpack_func__(r1mpyq)(int m, int n, __cminpack_real__ *a, int
+             lda, const __cminpack_real__ *v, const __cminpack_real__ *w);
+__cminpack_attr__
+void __cminpack_func__(lmpar)(int n, __cminpack_real__ *r, int ldr,
+            const int *ipvt, const __cminpack_real__ *diag, const __cminpack_real__ *qtb, __cminpack_real__ delta,
+            __cminpack_real__ *par, __cminpack_real__ *x, __cminpack_real__ *sdiag, __cminpack_real__ *wa1,
+            __cminpack_real__ *wa2);
+__cminpack_attr__
+void __cminpack_func__(rwupdt)(int n, __cminpack_real__ *r, int ldr,
+             const __cminpack_real__ *w, __cminpack_real__ *b, __cminpack_real__ *alpha, __cminpack_real__ *cos,
+             __cminpack_real__ *sin);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

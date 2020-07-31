@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ProcessImplementation.cpp - Released 2020-02-27T12:55:33Z
+// pcl/ProcessImplementation.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -72,11 +72,13 @@ static void MandatoryError( const IsoString& procId, const char* funcName )
 
 // ----------------------------------------------------------------------------
 
-ProcessImplementation::ProcessImplementation( const MetaProcess* m ) : meta( m )
+ProcessImplementation::ProcessImplementation( const MetaProcess* m )
+   : meta( m )
 {
 }
 
-ProcessImplementation::ProcessImplementation( const ProcessImplementation& x ) : meta( x.meta )
+ProcessImplementation::ProcessImplementation( const ProcessImplementation& x )
+   : meta( x.meta )
 {
 }
 
@@ -234,4 +236,4 @@ void ProcessImplementation::LaunchOn( ImageWindow& w ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessImplementation.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/ProcessImplementation.cpp - Released 2020-07-31T19:33:12Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// GlobalModule.h - Released 2020-02-27T12:56:01Z
+// GlobalModule.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -66,17 +66,16 @@ public:
 
    GlobalModule();
 
-   virtual const char* Version() const;
-   virtual IsoString Name() const;
-   virtual String Description() const;
-   virtual String Company() const;
-   virtual String Author() const;
-   virtual String Copyright() const;
-   virtual String TradeMarks() const;
-   virtual String OriginalFileName() const;
-   virtual void GetReleaseDate( int& year, int& month, int& day ) const;
-
-   virtual void OnLoad();
+   const char* Version() const override;
+   IsoString Name() const override;
+   String Description() const override;
+   String Company() const override;
+   String Author() const override;
+   String Copyright() const override;
+   String TradeMarks() const override;
+   String OriginalFileName() const override;
+   void GetReleaseDate( int& year, int& month, int& day ) const override;
+   void OnLoad() override;
 };
 
 // ----------------------------------------------------------------------------
@@ -86,4 +85,4 @@ public:
 #endif   // __GlobalModule_h
 
 // ----------------------------------------------------------------------------
-// EOF GlobalModule.h - Released 2020-02-27T12:56:01Z
+// EOF GlobalModule.h - Released 2020-07-31T19:33:39Z

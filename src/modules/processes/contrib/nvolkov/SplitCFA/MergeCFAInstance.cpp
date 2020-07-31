@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAInstance.cpp - Released 2020-02-27T12:56:01Z
+// MergeCFAInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,28 +54,31 @@
 #include "MergeCFAInstance.h"
 #include "MergeCFAParameters.h"
 
-#include <pcl/AutoViewLock.h>
 #include <pcl/AutoPointer.h>
+#include <pcl/AutoViewLock.h>
 #include <pcl/Console.h>
 #include <pcl/StdStatus.h>
 #include <pcl/View.h>
 
-namespace pcl {
+namespace pcl
+{
 
 // ----------------------------------------------------------------------------
 
-MergeCFAInstance::MergeCFAInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_viewId( 4 ),
-   o_outputViewId()
+MergeCFAInstance::MergeCFAInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
 {
 }
 
-MergeCFAInstance::MergeCFAInstance( const MergeCFAInstance& x ) :
-   ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+MergeCFAInstance::MergeCFAInstance( const MergeCFAInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
+
+// ----------------------------------------------------------------------------
 
 void MergeCFAInstance::Assign( const ProcessImplementation& p )
 {
@@ -87,16 +90,22 @@ void MergeCFAInstance::Assign( const ProcessImplementation& p )
    }
 }
 
+// ----------------------------------------------------------------------------
+
 bool MergeCFAInstance::CanExecuteOn( const View&, pcl::String& whyNot ) const
 {
    whyNot = "MergeCFA can only be executed in the global context.";
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool MergeCFAInstance::CanExecuteGlobal( String& whyNot ) const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 View MergeCFAInstance::GetView( int n )
 {
@@ -131,6 +140,8 @@ View MergeCFAInstance::GetView( int n )
    return w.MainView();
 }
 
+// ----------------------------------------------------------------------------
+
 template <class P>
 static void MergeCFAImage( GenericImage<P>& outputImage,
                            const GenericImage<P>& inputImage0,
@@ -143,14 +154,16 @@ static void MergeCFAImage( GenericImage<P>& outputImage,
       {
          for ( int sX = 0, tX = 0; tX < outputImage.Width(); tX += 2, ++sX )
          {
-            outputImage( tX,   tY,   c ) = inputImage0( sX, sY, c );
-            outputImage( tX,   tY+1, c ) = inputImage1( sX, sY, c );
-            outputImage( tX+1, tY,   c ) = inputImage2( sX, sY, c );
-            outputImage( tX+1, tY+1, c ) = inputImage3( sX, sY, c );
+            outputImage( tX, tY, c ) = inputImage0( sX, sY, c );
+            outputImage( tX, tY + 1, c ) = inputImage1( sX, sY, c );
+            outputImage( tX + 1, tY, c ) = inputImage2( sX, sY, c );
+            outputImage( tX + 1, tY + 1, c ) = inputImage3( sX, sY, c );
          }
-         outputImage.Status() += outputImage.Width()/2;
+         outputImage.Status() += outputImage.Width() / 2;
       }
 }
+
+// ----------------------------------------------------------------------------
 
 bool MergeCFAInstance::ExecuteGlobal()
 {
@@ -160,7 +173,7 @@ bool MergeCFAInstance::ExecuteGlobal()
    for ( int i = 0; i < 4; ++i )
       sourceView << GetView( i );
 
-   ImageWindow outputWindow( m_width*2, m_height*2, m_numberOfChannels, m_bitsPerSample, m_isFloatSample, m_isColor, true );
+   ImageWindow outputWindow( m_width * 2, m_height * 2, m_numberOfChannels, m_bitsPerSample, m_isFloatSample, m_isColor, true );
    if ( outputWindow.IsNull() )
       throw Error( "MergeCFA: Unable to create target image." );
    View outputView = outputWindow.MainView();
@@ -168,7 +181,7 @@ bool MergeCFAInstance::ExecuteGlobal()
    try
    {
       volatile AutoViewLock outputLock( outputView );
-      Array<AutoPointer<AutoViewWriteLock> > sourceViewLock;
+      Array<AutoPointer<AutoViewWriteLock>> sourceViewLock;
       sourceViewLock << new AutoViewWriteLock( sourceView[0] );
       for ( int i = 1; i < 4; ++i )
          if ( sourceView[i].CanWrite() ) // allow the same view selected for several input channels
@@ -181,29 +194,39 @@ bool MergeCFAInstance::ExecuteGlobal()
 
       StandardStatus status;
       outputImage.SetStatusCallback( &status );
-      outputImage.Status().Initialize( "Merging CFA components", outputImage.NumberOfSamples()/4 );
+      outputImage.Status().Initialize( "Merging CFA components", outputImage.NumberOfSamples() / 4 );
 
       Console().EnableAbort();
 
-#define MERGE_CFA_IMAGE( I )                                \
-   MergeCFAImage( static_cast<I&>( *outputImage ),          \
-                  static_cast<const I&>( *inputImage[0] ),  \
-                  static_cast<const I&>( *inputImage[1] ),  \
-                  static_cast<const I&>( *inputImage[2] ),  \
-                  static_cast<const I&>( *inputImage[3] ) )
+#define MERGE_CFA_IMAGE( I )                       \
+   MergeCFAImage( static_cast<I&>( *outputImage ), \
+      static_cast<const I&>( *inputImage[0] ),     \
+      static_cast<const I&>( *inputImage[1] ),     \
+      static_cast<const I&>( *inputImage[2] ),     \
+      static_cast<const I&>( *inputImage[3] ) )
 
       if ( outputImage.IsFloatSample() )
          switch ( outputImage.BitsPerSample() )
          {
-         case 32: MERGE_CFA_IMAGE( Image ); break;
-         case 64: MERGE_CFA_IMAGE( DImage ); break;
+         case 32:
+            MERGE_CFA_IMAGE( Image );
+            break;
+         case 64:
+            MERGE_CFA_IMAGE( DImage );
+            break;
          }
       else
          switch ( outputImage.BitsPerSample() )
          {
-         case  8: MERGE_CFA_IMAGE( UInt8Image ); break;
-         case 16: MERGE_CFA_IMAGE( UInt16Image ); break;
-         case 32: MERGE_CFA_IMAGE( UInt32Image ); break;
+         case 8:
+            MERGE_CFA_IMAGE( UInt8Image );
+            break;
+         case 16:
+            MERGE_CFA_IMAGE( UInt16Image );
+            break;
+         case 32:
+            MERGE_CFA_IMAGE( UInt32Image );
+            break;
          }
 
 #undef MERGE_CFA_IMAGE
@@ -222,6 +245,8 @@ bool MergeCFAInstance::ExecuteGlobal()
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void* MergeCFAInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
    if ( p == TheMergeCFASourceImage0Parameter )
@@ -234,8 +259,11 @@ void* MergeCFAInstance::LockParameter( const MetaParameter* p, size_type /*table
       return p_viewId[3].Begin();
    if ( p == TheMergeCFAOutputViewIdParameter )
       return o_outputViewId.Begin();
+
    return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool MergeCFAInstance::AllocateParameter( size_type length, const MetaParameter* p, size_type /*tableRow*/ )
 {
@@ -259,6 +287,8 @@ bool MergeCFAInstance::AllocateParameter( size_type length, const MetaParameter*
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 size_type MergeCFAInstance::ParameterLength( const MetaParameter* p, size_type /*tableRow*/ ) const
 {
    if ( p == TheMergeCFASourceImage0Parameter )
@@ -271,12 +301,13 @@ size_type MergeCFAInstance::ParameterLength( const MetaParameter* p, size_type /
       return p_viewId[3].Length();
    if ( p == TheMergeCFAOutputViewIdParameter )
       return o_outputViewId.Length();
+
    return 0;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF MergeCFAInstance.cpp - Released 2020-07-31T19:33:39Z

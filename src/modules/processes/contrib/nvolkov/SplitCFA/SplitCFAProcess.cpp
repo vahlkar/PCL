@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAProcess.cpp - Released 2020-02-27T12:56:01Z
+// SplitCFAProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -65,27 +65,20 @@ SplitCFAProcess* TheSplitCFAProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-//#include "SplitCFAIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 SplitCFAProcess::SplitCFAProcess()
 {
    TheSplitCFAProcess = this;
 
-   // Instantiate process parameters
    new SplitCFATargetFrames( this );
    new SplitCFATargetFrameEnabled( TheTargetFramesParameter );
    new SplitCFATargetFramePath( TheTargetFramesParameter );
    new SplitCFATargetFrameFolder( TheTargetFramesParameter );
-
    new SplitCFAOutputTree( this );
    new SplitCFAOutputSubDirCFA( this );
    new SplitCFAOutputDir( this );
    new SplitCFAPrefix( this );
    new SplitCFAPostfix( this );
    new SplitCFAOverwrite( this );
-
    new SplitCFAOutputViewId0( this );
    new SplitCFAOutputViewId1( this );
    new SplitCFAOutputViewId2( this );
@@ -117,10 +110,16 @@ uint32 SplitCFAProcess::Version() const
 
 String SplitCFAProcess::Description() const
 {
-   return
-   "<html>"
-   "<p>Extracts 4 ( [ R ] [ G ] [ G ] [ B ] ) subimages from Bayer CFA to 4 files( names [ 0 ] [ 1 ] [ 2 ] [ 3 ] ).</p>"
-   "</html>";
+   return "<html>"
+          "<p>Extracts 4 ([R][G][G][B]) subimages from a Bayer CFA to 4 files (names [0][1][2][3]).</p>"
+          "</html>";
+}
+
+// ----------------------------------------------------------------------------
+
+String SplitCFAProcess::IconImageSVGFile() const
+{
+   return "@module_icons_dir/SplitCFA.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -147,7 +146,7 @@ ProcessImplementation* SplitCFAProcess::Clone( const ProcessImplementation& p ) 
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF SplitCFAProcess.cpp - Released 2020-07-31T19:33:39Z

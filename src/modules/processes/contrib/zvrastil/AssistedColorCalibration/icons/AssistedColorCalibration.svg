@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<linearGradient id="e">
+<stop stop-color="#fefefe" offset="0"/>
+<stop stop-color="#bababa" offset="1"/>
+</linearGradient>
+<radialGradient id="d" cx="98.417" cy="70.971" r="4.6302" gradientTransform="matrix(2.8891 2.7162 -1.872 1.9911 -21.545 -380.51)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f4f4f4" offset="0"/>
+<stop stop-color="#020202" offset="1"/>
+</radialGradient>
+<radialGradient id="c" cx="101.3" cy="70.97" r="11.717" gradientTransform="matrix(1.9731 -3.0669e-7 3.5633e-7 2.1982 -62.575 -119.96)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#a27e5f" offset="1"/>
+</radialGradient>
+<radialGradient id="b" cx="96.028" cy="65.998" r="2.6458" gradientTransform="matrix(2.7317 6.5264 -2.3364 .97795 21.778 -664.94)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#e0e0e0" stop-opacity="0" offset="0"/>
+<stop stop-color="#fff" stop-opacity=".21901" offset="1"/>
+</radialGradient>
+<radialGradient id="a" cx="101.3" cy="70.97" r="31.75" gradientTransform="matrix(1.913 0 0 1.913 -56.128 -101.35)" gradientUnits="userSpaceOnUse" xlink:href="#e"/>
+</defs>
+<g transform="translate(-69.926 33.313)">
+<g transform="translate(-1.2322e-6)">
+<rect x="76.92" y="-26.319" width="121.48" height="121.48" fill="url(#a)" style="paint-order:fill markers stroke"/>
+<rect x="79.451" y="-23.788" width="116.42" height="116.42" fill="url(#a)" stroke="#0a0a0a" stroke-linecap="round" stroke-width="6.35" style="paint-order:fill markers stroke"/>
+<circle cx="137.66" cy="9.112" r="25.308" fill="#f00" style="paint-order:fill markers stroke"/>
+<circle cx="162.97" cy="59.728" r="25.308" fill="#00f" style="paint-order:fill markers stroke"/>
+<circle cx="112.35" cy="59.728" r="25.308" fill="#0f0" style="paint-order:fill markers stroke"/>
+<path d="m93.719 37.572s10.123-24.347 43.747-24.66c33.623-0.31263 44.108 25.002 44.108 25.002s-9.4001 20.55-44.47 20.55c-35.07 0-43.385-20.892-43.385-20.892z" fill="#fff" fill-rule="evenodd" stroke="#7a471a" stroke-width="2.6458"/>
+<ellipse cx="137.3" cy="36.047" rx="22.777" ry="22.777" fill="url(#c)" style="paint-order:fill markers stroke"/>
+<ellipse cx="137.84" cy="35.685" rx="12.654" ry="12.654" fill="url(#d)" style="paint-order:fill markers stroke"/>
+<path d="m93.719 37.572s10.123-24.347 43.747-24.66c33.623-0.31263 44.108 25.002 44.108 25.002s-9.4001 20.55-44.47 20.55c-35.07 0-43.385-20.892-43.385-20.892z" fill="none" stroke="#7a471a" stroke-width="2.6458"/>
+<circle cx="132.44" cy="28.633" r="6.3398" fill="url(#b)" style="paint-order:fill markers stroke"/>
+</g>
+</g>
+</svg>

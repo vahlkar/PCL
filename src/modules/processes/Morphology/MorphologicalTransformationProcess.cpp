@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationProcess.cpp - Released 2020-02-27T12:56:01Z
+// MorphologicalTransformationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -60,11 +60,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-MorphologicalTransformationProcess* TheMorphologicalTransformationProcess = 0;
-
-// ----------------------------------------------------------------------------
-
-#include "MorphologicalTransformationIcon.xpm"
+MorphologicalTransformationProcess* TheMorphologicalTransformationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -72,19 +68,17 @@ MorphologicalTransformationProcess::MorphologicalTransformationProcess()
 {
    TheMorphologicalTransformationProcess = this;
 
-   // Instantiate process parameters
-
-   new MorphologicalOp( this );
-   new InterlacingDistance( this );
-   new LowThreshold( this );
-   new HighThreshold( this );
-   new NumberOfIterations( this );
-   new Amount( this );
-   new SelectionPoint( this );
-   new StructureName( this );
-   new StructureSize( this );
-   new StructureWayTable( this );
-   new StructureWayMask( TheStructureWayTableParameter );
+   new MTOperator( this );
+   new MTInterlacingDistance( this );
+   new MTLowThreshold( this );
+   new MTHighThreshold( this );
+   new MTNumberOfIterations( this );
+   new MTAmount( this );
+   new MTSelectionPoint( this );
+   new MTStructureName( this );
+   new MTStructureSize( this );
+   new MTStructureWayTable( this );
+   new MTStructureWayMask( TheMTStructureWayTableParameter );
 }
 
 // ----------------------------------------------------------------------------
@@ -117,9 +111,9 @@ String MorphologicalTransformationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** MorphologicalTransformationProcess::IconImageXPM() const
+String MorphologicalTransformationProcess::IconImageSVGFile() const
 {
-   return MorphologicalTransformationIcon_XPM;
+   return "@module_icons_dir/MorphologicalTransformation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -141,7 +135,7 @@ ProcessImplementation* MorphologicalTransformationProcess::Create() const
 ProcessImplementation* MorphologicalTransformationProcess::Clone( const ProcessImplementation& p ) const
 {
    const MorphologicalTransformationInstance* instPtr = dynamic_cast<const MorphologicalTransformationInstance*>( &p );
-   return (instPtr != 0) ? new MorphologicalTransformationInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new MorphologicalTransformationInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -149,4 +143,4 @@ ProcessImplementation* MorphologicalTransformationProcess::Clone( const ProcessI
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF MorphologicalTransformationProcess.cpp - Released 2020-07-31T19:33:39Z

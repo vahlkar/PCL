@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.115
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.118
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-11-29T09:40:28.548Z
+# Generated on .... 2020-07-31T19:36:17.479Z
 # Project id ...... RFC6234
 # Project type .... StaticLibrary
 # Platform ........ FreeBSD/g++
@@ -69,6 +69,6 @@ post-build:
 	cp $(OBJ_DIR)/libRFC6234-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.c
-	clang -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver1 -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver2 -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

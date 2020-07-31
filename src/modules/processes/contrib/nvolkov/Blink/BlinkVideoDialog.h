@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkVideoDialog.h - Released 2020-02-27T12:56:01Z
+// BlinkVideoDialog.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -106,12 +106,12 @@ private:
          PushButton        Run_PushButton;
          PushButton        Cancel_PushButton;
 
-   BlinkInterface*   m_parent;       // the parent interface
-   ExternalProcess   m_videoEncoder; // the external video encoder process
-   int               m_frameCount;   // file counter in the output sequence
-   StringList        m_framesDone;   // already generated video frames in a given format ?
-   String            m_command;      // command executed
-   IsoString         m_timestamp;    // time of execution
+   BlinkInterface*   m_parent = nullptr; // the parent interface
+   ExternalProcess   m_videoEncoder;     // the external video encoder process
+   int               m_frameCount = 0;   // file counter in the output sequence
+   StringList        m_framesDone;       // already generated video frames in a given format ?
+   String            m_command;          // command executed
+   IsoString         m_timestamp;        // time of execution
 
    void  DisableGUI( bool disable = true );
    void  EnableGUI( bool enable = true ) { DisableGUI( !enable ); }
@@ -140,4 +140,4 @@ private:
 #endif   // __BlinkVideoDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkVideoDialog.h - Released 2020-02-27T12:56:01Z
+// EOF BlinkVideoDialog.h - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/JPLEphemeris.h - Released 2020-02-27T12:55:23Z
+// pcl/JPLEphemeris.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -515,16 +515,16 @@ private:
 
    typedef MultiVector              block_list;
 
-   double        m_ephStartJD;   // ephemeris start time
-   double        m_ephEndJD;     // ephemeris end time
-   int           m_blockDelta;   // block time span in days
-   constant_list m_constants;    // integration constants
-   block_index   m_blockIndex;   // coefficients block index
-   block_list    m_blocks;       // coefficients blocks
-   double        m_startJD;      // start time of the first coefficients block
-   double        m_endJD;        // end time of the last coefficients block
-   double        m_km2au;        // astronomical unit in kilometers
-   double        m_emb2Earth;    // scale factor for translation Earth-Moon barycenter -> Earth
+   double        m_ephStartJD = 0;  // ephemeris start time
+   double        m_ephEndJD = 0;    // ephemeris end time
+   int           m_blockDelta = 0;  // block time span in days
+   constant_list m_constants;       // integration constants
+   block_index   m_blockIndex;      // coefficients block index
+   block_list    m_blocks;          // coefficients blocks
+   double        m_startJD = 0;     // start time of the first coefficients block
+   double        m_endJD = 0;       // end time of the last coefficients block
+   double        m_km2au = 0;       // astronomical unit in kilometers
+   double        m_emb2Earth = 0;   // scale factor for translation Earth-Moon barycenter -> Earth
 
    /*!
     * \internal
@@ -608,4 +608,4 @@ private:
 #endif  // __PCL_JPLEphemeris_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/JPLEphemeris.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/JPLEphemeris.h - Released 2020-07-31T19:33:04Z

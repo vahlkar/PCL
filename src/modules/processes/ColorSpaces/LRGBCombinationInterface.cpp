@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// LRGBCombinationInterface.cpp - Released 2020-02-27T12:56:01Z
+// LRGBCombinationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -70,15 +70,13 @@ LRGBCombinationInterface* TheLRGBCombinationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "LRGBCombinationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-LRGBCombinationInterface::LRGBCombinationInterface() :
-   instance( TheLRGBCombinationProcess )
+LRGBCombinationInterface::LRGBCombinationInterface()
+   : m_instance( TheLRGBCombinationProcess )
 {
    TheLRGBCombinationInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 LRGBCombinationInterface::~LRGBCombinationInterface()
 {
@@ -86,36 +84,50 @@ LRGBCombinationInterface::~LRGBCombinationInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString LRGBCombinationInterface::Id() const
 {
    return "LRGBCombination";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* LRGBCombinationInterface::Process() const
 {
    return TheLRGBCombinationProcess;
 }
 
-const char** LRGBCombinationInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String LRGBCombinationInterface::IconImageSVGFile() const
 {
-   return LRGBCombinationIcon_XPM;
+   return "@module_icons_dir/LRGBCombination.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures LRGBCombinationInterface::Features() const
 {
    return InterfaceFeature::Default | InterfaceFeature::ApplyGlobalButton;
 }
 
+// ----------------------------------------------------------------------------
+
 void LRGBCombinationInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentView();
+   m_instance.LaunchOnCurrentView();
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::ResetInstance()
 {
    LRGBCombinationInstance defaultInstance( TheLRGBCombinationProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool LRGBCombinationInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -130,10 +142,14 @@ bool LRGBCombinationInterface::Launch( const MetaProcess& P, const ProcessImplem
    return &P == TheLRGBCombinationProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* LRGBCombinationInterface::NewProcess() const
 {
-   return new LRGBCombinationInstance( instance );
+   return new LRGBCombinationInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool LRGBCombinationInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -143,92 +159,80 @@ bool LRGBCombinationInterface::ValidateProcess( const ProcessImplementation& p, 
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool LRGBCombinationInterface::RequiresInstanceValidation() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool LRGBCombinationInterface::ImportProcess( const ProcessImplementation& p )
 {
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
 
 // ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::UpdateControls()
 {
-   bool isL = instance.channelEnabled[3];
-   bool isR = instance.channelEnabled[0];
-   bool isG = instance.channelEnabled[1];
-   bool isB = instance.channelEnabled[2];
-
-   //
+   bool isL = m_instance.channelEnabled[3];
+   bool isR = m_instance.channelEnabled[0];
+   bool isG = m_instance.channelEnabled[1];
+   bool isB = m_instance.channelEnabled[2];
 
    GUI->L_CheckBox.SetChecked( isL );
 
-   GUI->L_Edit.SetText( instance.channelId[3].IsEmpty() ? AUTO_ID : instance.channelId[3] );
+   GUI->L_Edit.SetText( m_instance.channelId[3].IsEmpty() ? AUTO_ID : m_instance.channelId[3] );
    GUI->L_Edit.Enable( isL );
 
    GUI->L_ToolButton.Enable( isL );
 
-   //
-
    GUI->R_CheckBox.SetChecked( isR );
 
-   GUI->R_Edit.SetText( instance.channelId[0].IsEmpty() ? AUTO_ID : instance.channelId[0] );
+   GUI->R_Edit.SetText( m_instance.channelId[0].IsEmpty() ? AUTO_ID : m_instance.channelId[0] );
    GUI->R_Edit.Enable( isR );
 
    GUI->R_ToolButton.Enable( isR );
 
-   //
-
    GUI->G_CheckBox.SetChecked( isG );
 
-   GUI->G_Edit.SetText( instance.channelId[1].IsEmpty() ? AUTO_ID : instance.channelId[1] );
+   GUI->G_Edit.SetText( m_instance.channelId[1].IsEmpty() ? AUTO_ID : m_instance.channelId[1] );
    GUI->G_Edit.Enable( isG );
 
    GUI->G_ToolButton.Enable( isG );
 
-   //
-
    GUI->B_CheckBox.SetChecked( isB );
 
-   GUI->B_Edit.SetText( instance.channelId[2].IsEmpty() ? AUTO_ID : instance.channelId[2] );
+   GUI->B_Edit.SetText( m_instance.channelId[2].IsEmpty() ? AUTO_ID : m_instance.channelId[2] );
    GUI->B_Edit.Enable( isB );
 
    GUI->B_ToolButton.Enable( isB );
 
-   //
+   GUI->L_Weight_NumericControl.SetValue( m_instance.channelWeight[3] );
 
-   GUI->L_Weight_NumericControl.SetValue( instance.channelWeight[3] );
+   GUI->R_Weight_NumericControl.SetValue( m_instance.channelWeight[0] );
 
-   GUI->R_Weight_NumericControl.SetValue( instance.channelWeight[0] );
+   GUI->G_Weight_NumericControl.SetValue( m_instance.channelWeight[1] );
 
-   GUI->G_Weight_NumericControl.SetValue( instance.channelWeight[1] );
+   GUI->B_Weight_NumericControl.SetValue( m_instance.channelWeight[2] );
 
-   GUI->B_Weight_NumericControl.SetValue( instance.channelWeight[2] );
+   GUI->ClipHighlights_CheckBox.SetChecked( m_instance.clipHighlights );
 
-   GUI->ClipHighlights_CheckBox.SetChecked( instance.clipHighlights );
+   GUI->LuminanceMTF_NumericControl.SetValue( m_instance.luminanceMTF );
 
-   //
+   GUI->SaturationMTF_NumericControl.SetValue( m_instance.saturationMTF );
 
-   GUI->LuminanceMTF_NumericControl.SetValue( instance.luminanceMTF );
+   GUI->NoiseReduction_SectionBar.SetChecked( m_instance.noiseReduction );
 
-   GUI->SaturationMTF_NumericControl.SetValue( instance.saturationMTF );
+   GUI->LayersRemoved_SpinBox.SetValue( m_instance.numberOfRemovedWaveletLayers );
 
-   //
-
-   GUI->NoiseReduction_SectionBar.SetChecked( instance.noiseReduction );
-
-   GUI->LayersRemoved_SpinBox.SetValue( instance.numberOfRemovedWaveletLayers );
-
-   GUI->LayersProtected_SpinBox.SetValue( instance.numberOfProtectedWaveletLayers );
+   GUI->LayersProtected_SpinBox.SetValue( m_instance.numberOfProtectedWaveletLayers );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__Channel_Click( Button& sender, bool checked )
@@ -249,16 +253,18 @@ void LRGBCombinationInterface::__Channel_Click( Button& sender, bool checked )
    for ( int j = 0; j < 4; ++j )
    {
       if ( j == i )
-         instance.channelEnabled[i] = checked;
-      if ( instance.channelEnabled[j] )
+         m_instance.channelEnabled[i] = checked;
+      if ( m_instance.channelEnabled[j] )
          ++n;
    }
    if ( n == 0 )
       for ( int j = 0; j < 4; ++j )
-         instance.channelEnabled[j] = true;
+         m_instance.channelEnabled[j] = true;
 
    UpdateControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__ChannelId_GetFocus( Control& sender )
 {
@@ -267,6 +273,8 @@ void LRGBCombinationInterface::__ChannelId_GetFocus( Control& sender )
       if ( e->Text() == AUTO_ID )
          e->Clear();
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__ChannelId_EditCompleted( Edit& sender )
 {
@@ -290,16 +298,18 @@ void LRGBCombinationInterface::__ChannelId_EditCompleted( Edit& sender )
       if ( !id.IsEmpty() && id != AUTO_ID && !id.IsValidIdentifier() )
          throw Error( "Invalid identifier: " + id );
 
-      instance.channelId[i] = (id != AUTO_ID) ? id : String();
-      sender.SetText( instance.channelId[i].IsEmpty() ? AUTO_ID : instance.channelId[i] );
+      m_instance.channelId[i] = (id != AUTO_ID) ? id : String();
+      sender.SetText( m_instance.channelId[i].IsEmpty() ? AUTO_ID : m_instance.channelId[i] );
       return;
    }
    ERROR_CLEANUP(
-      sender.SetText( instance.channelId[i] );
+      sender.SetText( m_instance.channelId[i] );
       sender.SelectAll();
       sender.Focus()
    )
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__Channel_SelectSource_Click( Button& sender, bool /*checked*/ )
 {
@@ -337,64 +347,78 @@ void LRGBCombinationInterface::__Channel_SelectSource_Click( Button& sender, boo
    ChannelSourceSelectionDialog dlg( suffix, description );
    if ( dlg.Execute() == StdDialogCode::Ok )
    {
-      instance.channelId[i] = dlg.SourceId();
+      m_instance.channelId[i] = dlg.SourceId();
       UpdateControls();
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void LRGBCombinationInterface::__Channel_Weight_ValueUpdated( NumericEdit& sender, double value )
 {
         if ( sender == GUI->L_Weight_NumericControl )
-      instance.channelWeight[3] = value;
+      m_instance.channelWeight[3] = value;
    else if ( sender == GUI->R_Weight_NumericControl )
-      instance.channelWeight[0] = value;
+      m_instance.channelWeight[0] = value;
    else if ( sender == GUI->G_Weight_NumericControl )
-      instance.channelWeight[1] = value;
+      m_instance.channelWeight[1] = value;
    else if ( sender == GUI->B_Weight_NumericControl )
-      instance.channelWeight[2] = value;
+      m_instance.channelWeight[2] = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__ClipHighlights_Click( Button& /*sender*/, bool checked )
 {
-   instance.clipHighlights = checked;
+   m_instance.clipHighlights = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__MTF_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->LuminanceMTF_NumericControl )
-      instance.luminanceMTF = value;
+      m_instance.luminanceMTF = value;
    else if ( sender == GUI->SaturationMTF_NumericControl )
-      instance.saturationMTF = value;
+      m_instance.saturationMTF = value;
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__NoiseReduction_Check( SectionBar& /*sender*/, bool checked )
 {
-   instance.noiseReduction = checked;
+   m_instance.noiseReduction = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__NoiseReduction_ValueUpdated( SpinBox& sender, int value )
 {
    if ( sender == GUI->LayersRemoved_SpinBox )
    {
-      instance.numberOfRemovedWaveletLayers = value;
+      m_instance.numberOfRemovedWaveletLayers = value;
 
-      if ( instance.numberOfProtectedWaveletLayers >= instance.numberOfRemovedWaveletLayers )
-         GUI->LayersProtected_SpinBox.SetValue( instance.numberOfProtectedWaveletLayers = instance.numberOfRemovedWaveletLayers - 1 );
+      if ( m_instance.numberOfProtectedWaveletLayers >= m_instance.numberOfRemovedWaveletLayers )
+         GUI->LayersProtected_SpinBox.SetValue( m_instance.numberOfProtectedWaveletLayers = m_instance.numberOfRemovedWaveletLayers - 1 );
    }
    else if ( sender == GUI->LayersProtected_SpinBox )
    {
-      instance.numberOfProtectedWaveletLayers = value;
+      m_instance.numberOfProtectedWaveletLayers = value;
 
-      if ( instance.numberOfProtectedWaveletLayers >= instance.numberOfRemovedWaveletLayers )
-         GUI->LayersRemoved_SpinBox.SetValue( instance.numberOfRemovedWaveletLayers = instance.numberOfProtectedWaveletLayers + 1 );
+      if ( m_instance.numberOfProtectedWaveletLayers >= m_instance.numberOfRemovedWaveletLayers )
+         GUI->LayersRemoved_SpinBox.SetValue( m_instance.numberOfRemovedWaveletLayers = m_instance.numberOfProtectedWaveletLayers + 1 );
    }
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->L_Edit || sender == GUI->R_Edit || sender == GUI->G_Edit || sender == GUI->B_Edit )
       wantsView = view.IsMainView() && !view.IsColor();
 }
+
+// ----------------------------------------------------------------------------
 
 void LRGBCombinationInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -413,7 +437,7 @@ void LRGBCombinationInterface::__ViewDrop( Control& sender, const Point& pos, co
          else
             return;
 
-         instance.channelId[i] = view.Id();
+         m_instance.channelId[i] = view.Id();
          UpdateControls();
       }
 }
@@ -718,4 +742,4 @@ LRGBCombinationInterface::GUIData::GUIData( LRGBCombinationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF LRGBCombinationInterface.cpp - Released 2020-07-31T19:33:39Z

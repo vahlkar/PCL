@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2020-02-27T12:55:23Z
+// pcl/APIInterface.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0166
+#define PCL_API_Version 0x0168
 
 extern "C"
 {
@@ -257,10 +257,12 @@ struct api_context ProcessDefinitionContext
    void        (api_func* SetProcessAliasIdentifiers)( const char* );
    void        (api_func* SetProcessDescription)( const char16_type* );
    void        (api_func* SetProcessScriptComment)( const char16_type* );
-   void        (api_func* SetProcessIconImage)( const char** xpm ); // ### deprecated
-   void        (api_func* SetProcessIconImageFile)( const char16_type* imgFileName ); // ### deprecated
-   void        (api_func* SetProcessIconSmallImage)( const char** xpm ); // ### deprecated
-   void        (api_func* SetProcessIconSmallImageFile)( const char16_type* imgFileName ); // ### deprecated
+   void        (api_func* SetProcessIconSVG)( const char* );
+   void        (api_func* SetProcessIconSVGFile)( const char16_type* );
+   void        (api_func* SetProcessIconImage)( const char** ); // ### deprecated
+   void        (api_func* SetProcessIconImageFile)( const char16_type* ); // ### deprecated
+   void        (api_func* SetProcessIconSmallImage)( const char** ); // ### deprecated
+   void        (api_func* SetProcessIconSmallImageFile)( const char16_type* ); // ### deprecated
 
    void        (api_func* SetProcessClassInitializationRoutine)( pcl::process_class_initialization_routine );
    void        (api_func* SetProcessCreationRoutine)( pcl::process_creation_routine );
@@ -300,6 +302,11 @@ struct api_context ProcessDefinitionContext
    void        (api_func* SetProcessPostReadingRoutine)( pcl::process_post_reading_routine );
    void        (api_func* SetProcessPreWritingRoutine)( pcl::process_pre_writing_routine );
    void        (api_func* SetProcessPostWritingRoutine)( pcl::process_post_writing_routine );
+
+   void        (api_func* SetProcessIPCStartRoutine)( pcl::process_ipc_notification_routine );
+   void        (api_func* SetProcessIPCStopRoutine)( pcl::process_ipc_notification_routine );
+   void        (api_func* SetProcessIPCSetParametersRoutine)( pcl::process_ipc_notification_routine );
+   void        (api_func* SetProcessIPCGetStatusRoutine)( pcl::process_ipc_status_routine );
 
    void        (api_func* BeginParameterDefinition)( meta_parameter_handle, const char* parId, uint32 parType );
    api_bool    (api_func* GetParameterBeingDefined)( char*, size_type* );
@@ -347,10 +354,12 @@ struct api_context InterfaceDefinitionContext
    void           (api_func* SetInterfaceVersion)( uint32 );
    void           (api_func* SetInterfaceAliasIdentifiers)( const char* );
    void           (api_func* SetInterfaceDescription)( const char16_type* );
-   void           (api_func* SetInterfaceIconImage)( const char** xpm ); // ### deprecated
-   void           (api_func* SetInterfaceIconImageFile)( const char16_type* imgFileName ); // ### deprecated
-   void           (api_func* SetInterfaceIconSmallImage)( const char** xpm ); // ### deprecated
-   void           (api_func* SetInterfaceIconSmallImageFile)( const char16_type* imgFileName ); // ### deprecated
+   void           (api_func* SetInterfaceIconSVG)( const char* );
+   void           (api_func* SetInterfaceIconSVGFile)( const char16_type* );
+   void           (api_func* SetInterfaceIconImage)( const char** ); // ### deprecated
+   void           (api_func* SetInterfaceIconImageFile)( const char16_type* ); // ### deprecated
+   void           (api_func* SetInterfaceIconSmallImage)( const char** ); // ### deprecated
+   void           (api_func* SetInterfaceIconSmallImageFile)( const char16_type* ); // ### deprecated
 
    void           (api_func* SetInterfaceFeatures)( uint32, uint32 );
 
@@ -454,10 +463,12 @@ struct api_context FileFormatDefinitionContext
    void           (api_func* SetFileFormatVersion)( uint32 );
    void           (api_func* SetFileFormatDescription)( const char16_type* );
    void           (api_func* SetFileFormatImplementation)( const char16_type* );
-   void           (api_func* SetFileFormatIconImage)( const char** xpm ); // ### deprecated
-   void           (api_func* SetFileFormatIconImageFile)( const char16_type* imgFileName ); // ### deprecated
-   void           (api_func* SetFileFormatIconSmallImage)( const char** xpm ); // ### deprecated
-   void           (api_func* SetFileFormatIconSmallImageFile)( const char16_type* imgFileName ); // ### deprecated
+   void           (api_func* SetFileFormatIconSVG)( const char* );
+   void           (api_func* SetFileFormatIconSVGFile)( const char16_type* );
+   void           (api_func* SetFileFormatIconImage)( const char** ); // ### deprecated
+   void           (api_func* SetFileFormatIconImageFile)( const char16_type* ); // ### deprecated
+   void           (api_func* SetFileFormatIconSmallImage)( const char** ); // ### deprecated
+   void           (api_func* SetFileFormatIconSmallImageFile)( const char16_type* ); // ### deprecated
    void           (api_func* SetFileFormatCaps)( const api_format_capabilities* );
 
    void           (api_func* SetFileFormatCreationRoutine)( pcl::format_creation_routine );
@@ -841,6 +852,15 @@ struct api_context UIContext
 
 struct api_context ActionContext
 {
+   action_handle  (api_func* CreateActionSVG)( api_handle, api_handle client,
+                                                   const char16_type* menuItem, const char16_type* toolBar,
+                                                   const char* svgIcon,
+                                                   uint32 flags );
+   action_handle  (api_func* CreateActionSVGFile)( api_handle, api_handle client,
+                                                   const char16_type* menuItem, const char16_type* toolBar,
+                                                   const char16_type* svgIconPath,
+                                                   uint32 flags );
+   // ### deprecated
    action_handle  (api_func* CreateAction)( api_handle, api_handle client,
                                             const char16_type* menuItem, const char16_type* toolBar,
                                             const_bitmap_handle icon,
@@ -857,6 +877,9 @@ struct api_context ActionContext
    void           (api_func* SetActionToolTip)( action_handle, const char16_type* );
 
    bitmap_handle  (api_func* GetActionIcon)( const_action_handle );
+   void           (api_func* SetActionIconSVG)( action_handle, const char* );
+   void           (api_func* SetActionIconSVGFile)( action_handle, const char16_type* );
+   // ### deprecated
    void           (api_func* SetActionIcon)( action_handle, const_bitmap_handle );
 
    void           (api_func* GetActionAccelerator)( const_action_handle, int32* keyModifiers, int32* keyCode );
@@ -1733,6 +1756,8 @@ struct api_context BitmapContext
    bitmap_handle  (api_func* CreateEmptyBitmap)( api_handle );
    bitmap_handle  (api_func* CloneBitmap)( api_handle, const_bitmap_handle );
    bitmap_handle  (api_func* CloneBitmapRect)( api_handle, const_bitmap_handle, int32, int32, int32, int32 );
+   bitmap_handle  (api_func* CreateBitmapFromSVG)( api_handle, const char*, int32, int32, uint32 flags );
+   bitmap_handle  (api_func* CreateBitmapFromSVGFile)( api_handle, const char16_type*, int32, int32, uint32 flags );
 
    int32          (api_func* GetBitmapFormat)( bitmap_handle );
    void           (api_func* SetBitmapFormat)( bitmap_handle, int32 );
@@ -3018,4 +3043,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/APIInterface.h - Released 2020-07-31T19:33:04Z

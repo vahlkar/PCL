@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerInterface.cpp - Released 2020-02-27T12:56:01Z
+// DebayerInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -76,12 +76,8 @@ DebayerInterface* TheDebayerInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "DebayerIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-DebayerInterface::DebayerInterface() :
-   m_instance( TheDebayerProcess )
+DebayerInterface::DebayerInterface()
+   : m_instance( TheDebayerProcess )
 {
    TheDebayerInterface = this;
 }
@@ -110,9 +106,9 @@ MetaProcess* DebayerInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** DebayerInterface::IconImageXPM() const
+String DebayerInterface::IconImageSVGFile() const
 {
-   return Pixmap;
+   return "@module_icons_dir/Debayer.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -186,7 +182,6 @@ bool DebayerInterface::ImportProcess( const ProcessImplementation& p )
    return true;
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 void DebayerInterface::UpdateControls()
@@ -320,7 +315,6 @@ void DebayerInterface::LoadSettings()
    Settings::Read ( KEY_NOISEEVALALG,   m_instance.p_noiseEvaluationAlgorithm );
 }
 
-// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 static size_type TreeInsertionIndex( const TreeBox& tree )
@@ -914,4 +908,4 @@ DebayerInterface::GUIData::GUIData( DebayerInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF DebayerInterface.cpp - Released 2020-07-31T19:33:39Z

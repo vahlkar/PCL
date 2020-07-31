@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.h - Released 2020-02-27T12:55:23Z
+// pcl/ImageWindow.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -219,18 +219,20 @@ namespace TransparencyMode
  * retrieve a history state of an image, e.g. for undo and redo operations.
  *
  * <table border="1" cellpadding="4" cellspacing="0">
- * <tr><td>UndoFlag::DefaultMode</td>          <td>Save pixel data, astrometric solution and previews.</td></tr>
- * <tr><td>UndoFlag::PixelData</td>            <td>Save pixel data.</td></tr>
- * <tr><td>UndoFlag::RGBWS</td>                <td>RGB Working Space data.</td></tr>
- * <tr><td>UndoFlag::ICCProfile</td>           <td>ICC profile.</td></tr>
- * <tr><td>UndoFlag::Keywords</td>             <td>%FITS keywords.</td></tr>
- * <tr><td>UndoFlag::FormatData</td>           <td>Format-specific data.</td></tr>
- * <tr><td>UndoFlag::ImageId</td>              <td>%Image identifier.</td></tr>
- * <tr><td>UndoFlag::Resolution</td>           <td>%Image resolution.</td></tr>
- * <tr><td>UndoFlag::AstrometricSolution</td>  <td>Save existing astrometric solution.</td></tr>
- * <tr><td>UndoFlag::All</td>                  <td>Save all data items.</td></tr>
- * <tr><td>UndoFlag::ExcludePreviews</td>      <td>Don't save state of previews.</td></tr>
- * <tr><td>UndoFlag::ExcludeMaskRelations</td> <td>Don't save masking dependencies.</td></tr>
+ * <tr><td>UndoFlag::DefaultMode</td>             <td>Save pixel data, astrometric solution and previews.</td></tr>
+ * <tr><td>UndoFlag::PixelData</td>               <td>Save pixel data.</td></tr>
+ * <tr><td>UndoFlag::RGBWS</td>                   <td>Save RGB Working Space data.</td></tr>
+ * <tr><td>UndoFlag::ICCProfile</td>              <td>Save ICC profile.</td></tr>
+ * <tr><td>UndoFlag::Keywords</td>                <td>Save %FITS keywords.</td></tr>
+ * <tr><td>UndoFlag::FormatData</td>              <td>Save Format-specific data.</td></tr>
+ * <tr><td>UndoFlag::ImageId</td>                 <td>Save image identifier.</td></tr>
+ * <tr><td>UndoFlag::Resolution</td>              <td>Save image resolution data.</td></tr>
+ * <tr><td>UndoFlag::AstrometricSolution</td>     <td>Save existing astrometric solution.</td></tr>
+ * <tr><td>UndoFlag::All</td>                     <td>Save all data items.</td></tr>
+ * <tr><td>UndoFlag::DeletePropertiesOnEntry</td> <td>Unconditionally destroy/delete non-permanent view properties before execution.</td></tr>
+ * <tr><td>UndoFlag::DeletePropertiesOnExit</td>  <td>Unconditionally destroy/delete non-permanent view properties after execution.</td></tr>
+ * <tr><td>UndoFlag::ExcludePreviews</td>         <td>Don't save state of previews.</td></tr>
+ * <tr><td>UndoFlag::ExcludeMaskRelations</td>    <td>Don't save masking dependencies.</td></tr>
  * </table>
  */
 namespace UndoFlag
@@ -240,19 +242,21 @@ namespace UndoFlag
     */
    enum mask_type
    {
-      DefaultMode          = 0x00000000,  // Save pixel data, astrometric solution and previews
-      PixelData            = 0x00000001,  // Save pixel data
-      RGBWS                = 0x00000002,  // RGB Working Space data
-      ICCProfile           = 0x00000004,  // ICC profile
-      Keywords             = 0x00000008,  // %FITS keywords
-      //Metadata             = 0x00000010,  // ### DEPRECATED - Keep unused for now, for compatibility with existing projects
-      FormatData           = 0x00000020,  // Format-specific data
-      ImageId              = 0x00000040,  // %Image identifier
-      Resolution           = 0x00000080,  // %Image resolution
-      AstrometricSolution  = 0x00000100,  // Save the current astrometric solution
-      All                  = 0x000FFFFF,  // Save all data items
-      ExcludePreviews      = 0x80000000,  // Don't save state of previews
-      ExcludeMaskRelations = 0x40000000   // Don't save masking dependencies
+      DefaultMode             = 0x00000000,  // Save pixel data, astrometric solution and previews
+      PixelData               = 0x00000001,  // Save pixel data
+      RGBWS                   = 0x00000002,  // RGB Working Space data
+      ICCProfile              = 0x00000004,  // ICC profile
+      Keywords                = 0x00000008,  // %FITS keywords
+    //Metadata                = 0x00000010,  // ### DEPRECATED - Keep unused for now, for compatibility with existing projects
+      FormatData              = 0x00000020,  // Format-specific data
+      ImageId                 = 0x00000040,  // %Image identifier
+      Resolution              = 0x00000080,  // %Image resolution
+      AstrometricSolution     = 0x00000100,  // Save the current astrometric solution
+      All                     = 0x000FFFFF,  // Save all data items
+      DeletePropertiesOnEntry = 0x01000000,  // Destroy/delete non-permanent view properties before execution
+      DeletePropertiesOnExit  = 0x02000000,  // Destroy/delete non-permanent view properties after execution
+      ExcludePreviews         = 0x80000000,  // Don't save state of previews
+      ExcludeMaskRelations    = 0x40000000   // Don't save masking dependencies
    };
 }
 
@@ -374,8 +378,11 @@ public:
    ImageWindow( int width, int height, int numberOfChannels,
                 int bitsPerSample, bool floatSample, bool color,
                 bool initialProcessing,
-                const IsoString::ustring_base& id ) :
-      ImageWindow( width, height, numberOfChannels, bitsPerSample, floatSample, color, initialProcessing, IsoString( id ) )
+                const IsoString::ustring_base& id )
+      : ImageWindow( width, height, numberOfChannels,
+                     bitsPerSample, floatSample, color,
+                     initialProcessing,
+                     IsoString( id ) )
    {
    }
 
@@ -390,14 +397,16 @@ public:
     * completely interchangeable; their behaviors are exactly identical since
     * they refer to the same server-side object.
     */
-   ImageWindow( const ImageWindow& w ) : UIObject( w )
+   ImageWindow( const ImageWindow& w )
+      : UIObject( w )
    {
    }
 
    /*!
     * Move constructor.
     */
-   ImageWindow( ImageWindow&& x ) : UIObject( std::move( x ) )
+   ImageWindow( ImageWindow&& x )
+      : UIObject( std::move( x ) )
    {
    }
 
@@ -2906,4 +2915,4 @@ private:
 #endif   // __PCL_ImageWindow_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ImageWindow.h - Released 2020-07-31T19:33:04Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/XISFWriter.cpp - Released 2020-02-27T12:55:33Z
+// pcl/XISFWriter.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -79,21 +79,20 @@ struct XISFOutputBlock
    block_checksum    checksumAlgorithm = XISFChecksum::None;
    ByteArray         checksum;
 
-   XISFOutputBlock() :
-      attachmentPos( UniqueAttachmentToken() )
+   XISFOutputBlock()
+      : attachmentPos( UniqueAttachmentToken() )
    {
    }
 
-   XISFOutputBlock( const ByteArray& src ) :
-      attachmentPos( UniqueAttachmentToken() ),
-      data( src )
+   XISFOutputBlock( const ByteArray& src )
+      : attachmentPos( UniqueAttachmentToken() )
+      , data( src )
    {
    }
 
-   XISFOutputBlock( const void* src, size_type size ) :
-      attachmentPos( UniqueAttachmentToken() ),
-      data( reinterpret_cast<const uint8*>( src ),
-            reinterpret_cast<const uint8*>( src ) + size )
+   XISFOutputBlock( const void* src, size_type size )
+      : attachmentPos( UniqueAttachmentToken() )
+      , data( reinterpret_cast<const uint8*>( src ), reinterpret_cast<const uint8*>( src ) + size )
    {
    }
 
@@ -279,8 +278,9 @@ struct XISFOutputProperty
    XISFOutputProperty() = default;
    XISFOutputProperty( const XISFOutputProperty& ) = default;
 
-   XISFOutputProperty( const IsoString& a_id, const Variant& a_value = Variant() ) :
-   id( a_id ), value( a_value )
+   XISFOutputProperty( const IsoString& a_id, const Variant& a_value = Variant() )
+      : id( a_id )
+      , value( a_value )
    {
    }
 
@@ -1817,4 +1817,4 @@ void XISFWriter::CheckClosedStream( const char* memberFunction ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFWriter.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/XISFWriter.cpp - Released 2020-07-31T19:33:12Z

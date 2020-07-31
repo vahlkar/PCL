@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ReferenceCounter.h - Released 2020-02-27T12:55:23Z
+// pcl/ReferenceCounter.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -105,9 +105,7 @@ public:
     * initialized to one, which means that only one object (the caller) is
     * referencing the data associated with this object.
     */
-   ReferenceCounter() : m_count( 1 )
-   {
-   }
+   ReferenceCounter() = default;
 
    /*!
     * Destroys a %ReferenceCounter object.
@@ -125,7 +123,8 @@ public:
     * This constructor exists and is not disabled to allow reference-counted
     * data structures to have copy constructors.
     */
-   ReferenceCounter( const ReferenceCounter& ) : ReferenceCounter()
+   ReferenceCounter( const ReferenceCounter& )
+      : ReferenceCounter()
    {
    }
 
@@ -219,7 +218,7 @@ public:
 
 private:
 
-   mutable AtomicInt m_count;
+   mutable AtomicInt m_count = 1;
 };
 
 // ----------------------------------------------------------------------------
@@ -229,4 +228,4 @@ private:
 #endif  // __PCL_ReferenceCounter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReferenceCounter.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/ReferenceCounter.h - Released 2020-07-31T19:33:04Z

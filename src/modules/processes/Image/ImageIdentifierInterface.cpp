@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierInterface.cpp - Released 2020-02-27T12:56:01Z
+// ImageIdentifierInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -64,12 +64,8 @@ ImageIdentifierInterface* TheImageIdentifierInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ImageIdentifierIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-ImageIdentifierInterface::ImageIdentifierInterface() :
-   instance( TheImageIdentifierProcess )
+ImageIdentifierInterface::ImageIdentifierInterface()
+   : instance( TheImageIdentifierProcess )
 {
    TheImageIdentifierInterface = this;
 }
@@ -98,9 +94,9 @@ MetaProcess* ImageIdentifierInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** ImageIdentifierInterface::IconImageXPM() const
+String ImageIdentifierInterface::IconImageSVGFile() const
 {
-   return ImageIdentifierIcon_XPM;
+   return "@module_icons_dir/ImageIdentifier.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -196,11 +192,15 @@ void ImageIdentifierInterface::__EditCompleted( Edit& sender )
       )
 }
 
+// ----------------------------------------------------------------------------
+
 void ImageIdentifierInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->Identifier_Edit )
       wantsView = view.IsMainView();
 }
+
+// ----------------------------------------------------------------------------
 
 void ImageIdentifierInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -212,6 +212,7 @@ void ImageIdentifierInterface::__ViewDrop( Control& sender, const Point& pos, co
       }
 }
 
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 ImageIdentifierInterface::GUIData::GUIData( ImageIdentifierInterface& w )
@@ -242,4 +243,4 @@ ImageIdentifierInterface::GUIData::GUIData( ImageIdentifierInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF ImageIdentifierInterface.cpp - Released 2020-07-31T19:33:39Z

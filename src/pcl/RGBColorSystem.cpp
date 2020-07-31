@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/RGBColorSystem.cpp - Released 2020-02-27T12:55:33Z
+// pcl/RGBColorSystem.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -246,16 +246,20 @@ static Vector InverseMatrix( const Vector& M )
 // ----------------------------------------------------------------------------
 
 RGBColorSystem::Data::Data( float a_gamma, bool a_issRGB,
-                            const FVector& a_x, const FVector& a_y, const FVector& a_Y ) :
-   gamma( a_gamma ), issRGB( a_issRGB ), isLinear( !issRGB && gamma == 1 ),
-   x( a_x ), y( a_y ), Y( a_Y )
+                            const FVector& a_x, const FVector& a_y, const FVector& a_Y )
+   : gamma( a_gamma )
+   , issRGB( a_issRGB )
+   , isLinear( !issRGB && gamma == 1 )
+   , x( a_x )
+   , y( a_y )
+   , Y( a_Y )
 {
    Initialize();
 }
 
 RGBColorSystem::Data::Data( float a_gamma, bool a_issRGB,
-                            const float* a_x, const float* a_y, const float* a_Y ) :
-   Data( a_gamma, a_issRGB, FVector( a_x, 3 ), FVector( a_y, 3 ), FVector( a_Y, 3 ) )
+                            const float* a_x, const float* a_y, const float* a_Y )
+   : Data( a_gamma, a_issRGB, FVector( a_x, 3 ), FVector( a_y, 3 ), FVector( a_Y, 3 ) )
 {
 }
 
@@ -466,4 +470,4 @@ void RGBColorSystem::Data::Initialize()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RGBColorSystem.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/RGBColorSystem.cpp - Released 2020-07-31T19:33:12Z

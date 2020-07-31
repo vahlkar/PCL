@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentModule.cpp - Released 2020-02-27T12:56:01Z
+// CometAlignmentModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -55,15 +55,15 @@
 #define MODULE_VERSION_MINOR     2
 #define MODULE_VERSION_REVISION  6
 #define MODULE_VERSION_BUILD     0
-#define MODULE_VERSION_LANGUAGE  eng
+#define MODULE_VERSION_LANGUAGE eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "CometAlignmentModule.h"
-#include "CometAlignmentProcess.h"
 #include "CometAlignmentInterface.h"
+#include "CometAlignmentProcess.h"
 
 namespace pcl
 {
@@ -74,51 +74,67 @@ CometAlignmentModule::CometAlignmentModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* CometAlignmentModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
-                              MODULE_VERSION_MINOR,
-                              MODULE_VERSION_REVISION,
-                              MODULE_VERSION_BUILD,
-                              MODULE_VERSION_LANGUAGE );
+      MODULE_VERSION_MINOR,
+      MODULE_VERSION_REVISION,
+      MODULE_VERSION_BUILD,
+      MODULE_VERSION_LANGUAGE );
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString CometAlignmentModule::Name() const
 {
    return "CometAlignment";
 }
 
+// ----------------------------------------------------------------------------
+
 String CometAlignmentModule::Description() const
 {
-   return "CometAlignment module";
+   return "PixInsight CometAlignment module";
 }
+
+// ----------------------------------------------------------------------------
 
 String CometAlignmentModule::Company() const
 {
-   return "";
+   return String();
 }
+
+// ----------------------------------------------------------------------------
 
 String CometAlignmentModule::Author() const
 {
-   return "Nikolay Volkov";
+   return "Nikolay Volkov (PTeam)";
 }
+
+// ----------------------------------------------------------------------------
 
 String CometAlignmentModule::Copyright() const
 {
-   return "Copyright (c) 2012-2018 Nikolay Volkov";
+   return "Copyright (c) 2012-2020 Nikolay Volkov";
 }
+
+// ----------------------------------------------------------------------------
 
 String CometAlignmentModule::TradeMarks() const
 {
    return "PixInsight";
 }
 
+// ----------------------------------------------------------------------------
+
 String CometAlignmentModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "CometAlignment-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "CometAlignment-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -129,17 +145,20 @@ String CometAlignmentModule::OriginalFileName() const
 #endif
 }
 
+// ----------------------------------------------------------------------------
+
 void CometAlignmentModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
-   year  = MODULE_RELEASE_YEAR;
+   year = MODULE_RELEASE_YEAR;
    month = MODULE_RELEASE_MONTH;
-   day   = MODULE_RELEASE_DAY;
+   day = MODULE_RELEASE_DAY;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -155,4 +174,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF CometAlignmentModule.cpp - Released 2020-07-31T19:33:39Z

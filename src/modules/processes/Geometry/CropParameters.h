@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// CropParameters.h - Released 2020-02-27T12:56:01Z
+// CropParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -68,8 +68,8 @@ public:
 
    CRLeftMargin( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
+   IsoString Id() const override;
+   int Precision() const override;
 };
 
 extern CRLeftMargin* TheCRLeftMarginParameter;
@@ -82,8 +82,8 @@ public:
 
    CRTopMargin( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
+   IsoString Id() const override;
+   int Precision() const override;
 };
 
 extern CRTopMargin* TheCRTopMarginParameter;
@@ -96,8 +96,8 @@ public:
 
    CRRightMargin( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
+   IsoString Id() const override;
+   int Precision() const override;
 };
 
 extern CRRightMargin* TheCRRightMarginParameter;
@@ -110,8 +110,8 @@ public:
 
    CRBottomMargin( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual int Precision() const;
+   IsoString Id() const override;
+   int Precision() const override;
 };
 
 extern CRBottomMargin* TheCRBottomMarginParameter;
@@ -131,11 +131,11 @@ public:
 
    CRMode( MetaProcess* );
 
-   virtual IsoString Id() const;
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern CRMode* TheCRModeParameter;
@@ -163,4 +163,4 @@ PCL_END_LOCAL
 #endif   // __CropParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CropParameters.h - Released 2020-02-27T12:56:01Z
+// EOF CropParameters.h - Released 2020-07-31T19:33:39Z

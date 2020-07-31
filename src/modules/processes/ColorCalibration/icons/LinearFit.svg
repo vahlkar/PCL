@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<radialGradient id="a" cx="1026.9" cy="533.74" r="185" gradientTransform="matrix(.31464 0 0 .31464 -236.9 63.947)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#bababa" offset="1"/>
+</radialGradient>
+<linearGradient id="b" x1="-505.43" x2="-90.024" y1="510.84" y2="510.84" gradientTransform="matrix(.23603 0 0 .23603 156.47 111.31)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f00" offset="0"/>
+<stop stop-color="#0f0" offset=".5"/>
+<stop stop-color="#00f" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(0 -161.53)">
+<g transform="translate(-18.464 -2.6177)">
+<rect x="27.989" y="173.68" width="116.42" height="116.42" fill="url(#a)" stroke="#000" stroke-width="6.35"/>
+<path d="m46.614 271.47 79.167-79.167" fill="none" stroke="url(#b)" stroke-linecap="round" stroke-width="26.458"/>
+</g>
+</g>
+</svg>

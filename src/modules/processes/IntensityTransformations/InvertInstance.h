@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertInstance.h - Released 2020-02-27T12:56:01Z
+// InvertInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -67,10 +67,10 @@ public:
    InvertInstance( const MetaProcess* );
    InvertInstance( const InvertInstance& );
 
-   virtual void Assign( const ProcessImplementation& );
-   virtual UndoFlags UndoMode( const View& ) const;
-   virtual bool CanExecuteOn( const View&, pcl::String& whyNot ) const;
-   virtual bool ExecuteOn( View& );
+   void Assign( const ProcessImplementation& ) override;
+   UndoFlags UndoMode( const View& ) const override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool ExecuteOn( View& ) override;
 };
 
 // ----------------------------------------------------------------------------
@@ -80,4 +80,4 @@ public:
 #endif   // __InvertInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF InvertInstance.h - Released 2020-02-27T12:56:01Z
+// EOF InvertInstance.h - Released 2020-07-31T19:33:39Z

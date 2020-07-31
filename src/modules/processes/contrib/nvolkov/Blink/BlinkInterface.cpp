@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// BlinkInterface.cpp - Released 2020-02-27T12:56:01Z
+// BlinkInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
-// Copyright (c) 2011-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -82,12 +82,6 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "BlinkIcon.xpm"
-#include "ScreenTransferFunctionIcon.xpm"
-#include "HistogramTransformationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 static int PreviewSize = 202;
 
 // ----------------------------------------------------------------------------
@@ -153,12 +147,12 @@ BlinkInterface::FileData::FileData( FileFormatInstance& file,
                                     blink_image* image,
                                     const ImageDescription& description,
                                     const String& path,
-                                    bool realPixelData ) :
-   m_filePath( path ),
-   m_image( image ),
-   m_options( description.options ),
-   m_info( description.info ),
-   m_isRealPixelData( realPixelData )
+                                    bool realPixelData )
+   : m_filePath( path )
+   , m_image( image )
+   , m_options( description.options )
+   , m_info( description.info )
+   , m_isRealPixelData( realPixelData )
 {
    m_format = new FileFormat( file.Format() );
 
@@ -650,9 +644,9 @@ MetaProcess* BlinkInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** BlinkInterface::IconImageXPM() const
+String BlinkInterface::IconImageSVGFile() const
 {
-   return BlinkIcon_XPM;
+   return "@module_icons_dir/Blink.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -785,7 +779,12 @@ void BlinkInterface::ImageDeleted( const View& view )
 
 void BlinkInterface::Init()
 {
-   Disable();  // disable GUI during initialization
+   // Disable all controls during heavy interface updates.
+   // ### N.B. Simply calling Disable()/Enable() here (the obvious way of doing
+   // this) seems to trigger several Qt bugs as of Qt 5.15.0. Doing the same
+   // for both child controls is 100% stable.
+   GUI->CentralPanel_Control.Disable();
+   GUI->RightPanel_Control.Disable();
 
    bool noFiles = m_blink.m_filesData.IsEmpty(); // noFiles = disabled = no files
 
@@ -823,7 +822,8 @@ void BlinkInterface::Init()
 
    GeneratePreview();
 
-   Enable();
+   GUI->CentralPanel_Control.Enable();
+   GUI->RightPanel_Control.Enable();
 }
 
 // ----------------------------------------------------------------------------
@@ -1925,9 +1925,9 @@ void BlinkInterface::ResetFilesTreeBox()
 
 BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 {
-   /*
-    * Central panel elements
-    */
+   int ri22 = w.LogicalPixelsToResource( 22 );
+
+   //
 
    const char* scrollControlToolTip =
    "<p>1. Use the mouse wheel to zoom in/out.<br/>"
@@ -1944,13 +1944,13 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    Preview_ScrollBox.Viewport().OnMouseMove( (Control::mouse_event_handler)&BlinkInterface::__ScrollControl_MouseMove, w );
 
    AutoSTF_Button.SetCheckable();
-   AutoSTF_Button.SetIcon( Bitmap( ScreenTransferFunctionIcon_XPM ) );
+   AutoSTF_Button.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/../IntensityTransformations/ScreenTransferFunction.svg", ri22, ri22 ) );
    AutoSTF_Button.SetScaledFixedSize( 28, 28 );
    AutoSTF_Button.SetToolTip( "<p>Compute AutoSTF for the curent image, then apply the computed STF to all images.</p>" );
    AutoSTF_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__Brightness_Click, w );
 
    AutoHT_Button.SetCheckable();
-   AutoHT_Button.SetIcon( Bitmap( HistogramTransformationIcon_XPM ) );
+   AutoHT_Button.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/../IntensityTransformations/HistogramTransformation.svg", ri22, ri22 ) );
    AutoHT_Button.SetScaledFixedSize( 28, 28 );
    AutoHT_Button.SetToolTip( "<p>Apply an automatic histogram transformation to all images</p>" );
    AutoHT_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__Brightness_Click, w );
@@ -1986,9 +1986,7 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    ShowTreeBox_Button.SetToolTip( "Hide file panel" );
    ShowTreeBox_Button.OnClick( (Button::click_event_handler)&BlinkInterface::__FilePanelHideButton_Click, w );
 
-   /*
-    * Left panel elements
-    */
+   //
 
    const char* filesTreeBoxToolTip =
    "<p>1. Only checked images are used for blinking.<br/>"
@@ -2063,9 +2061,7 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    CropToVideo_button.SetToolTip( "<p>Crop and create video.</p>");
    CropToVideo_button.OnClick( (Button::click_event_handler)&BlinkInterface::__FileButton_Click, w );
 
-   /*
-    * Sizers central panel
-    */
+   //
 
    STF_Sizer.SetSpacing( 4 );
    STF_Sizer.Add( AutoHT_Button );
@@ -2074,10 +2070,10 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    STF_Sizer.Add( RGBLinked_Button );
    STF_Sizer.AddStretch();
 
-   Preview_sizer.SetSpacing( 4 );
-   Preview_sizer.AddStretch();
-   Preview_sizer.Add( Preview_ScrollBox );
-   Preview_sizer.Add( STF_Sizer );
+   Preview_Sizer.SetSpacing( 4 );
+   Preview_Sizer.AddStretch();
+   Preview_Sizer.Add( Preview_ScrollBox );
+   Preview_Sizer.Add( STF_Sizer );
 
    ActionControl_Sizer.AddStretch();
    ActionControl_Sizer.Add( PreviousImage_Button );
@@ -2089,14 +2085,14 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    ActionControl_Sizer.Add( ShowTreeBox_Button );
    ActionControl_Sizer.AddSpacing( 6+1 ); // align ShowTreeBox_Button with RGBLinked_Button
 
-   CentralPanel_sizer.SetSpacing( 4 );
-   CentralPanel_sizer.Add( Preview_sizer );
-   CentralPanel_sizer.Add( ActionControl_Sizer );
-   CentralPanel_sizer.AddStretch();
+   CentralPanel_Sizer.SetSpacing( 4 );
+   CentralPanel_Sizer.Add( Preview_Sizer );
+   CentralPanel_Sizer.Add( ActionControl_Sizer );
+   CentralPanel_Sizer.AddStretch();
 
-   /*
-    * Sizers right panel
-    */
+   CentralPanel_Control.SetSizer( CentralPanel_Sizer );
+
+   //
 
    FilesControl_Sizer.SetSpacing( 4 );
    FilesControl_Sizer.Add( FileAdd_Button );
@@ -2109,15 +2105,17 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
    FilesControl_Sizer.Add( CropToVideo_button );
    FilesControl_Sizer.AddStretch();
 
-   RightPanel_sizer.SetSpacing( 4 );
-   RightPanel_sizer.Add( Files_TreeBox, 100 );
-   RightPanel_sizer.Add( FilesControl_Sizer );
+   RightPanel_Sizer.SetSpacing( 4 );
+   RightPanel_Sizer.Add( Files_TreeBox, 100 );
+   RightPanel_Sizer.Add( FilesControl_Sizer );
 
-   RightPanel_Control.SetSizer( RightPanel_sizer );
+   RightPanel_Control.SetSizer( RightPanel_Sizer );
+
+   //
 
    Global_Sizer.SetMargin( 4 );
    Global_Sizer.SetSpacing( 4 );
-   Global_Sizer.Add( CentralPanel_sizer );
+   Global_Sizer.Add( CentralPanel_Control );
    Global_Sizer.Add( RightPanel_Control, 100 );
 
    w.SetSizer( Global_Sizer );
@@ -2151,4 +2149,4 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF BlinkInterface.cpp - Released 2020-07-31T19:33:39Z

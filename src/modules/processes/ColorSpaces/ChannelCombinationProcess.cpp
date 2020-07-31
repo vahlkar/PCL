@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ChannelCombinationProcess.cpp - Released 2020-02-27T12:56:01Z
+// ChannelCombinationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -64,15 +64,10 @@ ChannelCombinationProcess* TheChannelCombinationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ChannelCombinationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 ChannelCombinationProcess::ChannelCombinationProcess()
 {
    TheChannelCombinationProcess = this;
 
-   // Instantiate process parameters
    TheColorSpaceIdCombinationParameter = new ColorSpaceId( this );
    TheChannelTableCombinationParameter = new ChannelTable( this );
    TheChannelEnabledCombinationParameter = new ChannelEnabled( TheChannelTableCombinationParameter );
@@ -102,9 +97,9 @@ String ChannelCombinationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ChannelCombinationProcess::IconImageXPM() const
+String ChannelCombinationProcess::IconImageSVGFile() const
 {
-   return ChannelCombinationIcon_XPM;
+   return "@module_icons_dir/ChannelCombination.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -141,4 +136,4 @@ bool ChannelCombinationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ChannelCombinationProcess.cpp - Released 2020-07-31T19:33:39Z

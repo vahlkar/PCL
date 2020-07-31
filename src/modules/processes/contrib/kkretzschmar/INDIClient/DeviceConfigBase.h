@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// DeviceConfigBase.h - Released 2020-02-27T12:56:01Z
+// DeviceConfigBase.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -94,4 +94,4 @@ protected:
 #endif // __DeviceConfigBase_h
 
 // ----------------------------------------------------------------------------
-// EOF DeviceConfigBase.h - Released 2020-02-27T12:56:01Z
+// EOF DeviceConfigBase.h - Released 2020-07-31T19:33:39Z

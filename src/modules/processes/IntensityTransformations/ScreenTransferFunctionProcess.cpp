@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionProcess.cpp - Released 2020-02-27T12:56:01Z
+// ScreenTransferFunctionProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -69,15 +69,10 @@ ScreenTransferFunctionProcess* TheScreenTransferFunctionProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ScreenTransferFunctionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 ScreenTransferFunctionProcess::ScreenTransferFunctionProcess()
 {
    TheScreenTransferFunctionProcess = this;
 
-   // Instantiate process parameters
    new STFSet( this );
    new STFShadowsClipping( TheSTFSetParameter );
    new STFHighlightsClipping( TheSTFSetParameter );
@@ -139,9 +134,9 @@ String ScreenTransferFunctionProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ScreenTransferFunctionProcess::IconImageXPM() const
+String ScreenTransferFunctionProcess::IconImageSVGFile() const
 {
-   return ScreenTransferFunctionIcon_XPM;
+   return "@module_icons_dir/ScreenTransferFunction.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -446,4 +441,4 @@ int ScreenTransferFunctionProcess::ProcessCommandLine( const StringList& argv ) 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ScreenTransferFunctionProcess.cpp - Released 2020-07-31T19:33:39Z

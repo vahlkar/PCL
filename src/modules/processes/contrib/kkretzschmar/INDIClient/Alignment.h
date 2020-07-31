@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.0
 // ----------------------------------------------------------------------------
-// Alignment.h - Released 2020-02-27T12:56:01Z
+// Alignment.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -121,9 +121,9 @@ public:
 
    AlignmentModel() = default;
 
-   AlignmentModel( bool modelEachPierSide, const char* modelName ) :
-      m_modelEachPierSide( modelEachPierSide ),
-      m_modelName( modelName )
+   AlignmentModel( bool modelEachPierSide, const char* modelName )
+      : m_modelEachPierSide( modelEachPierSide )
+      , m_modelName( modelName )
    {
    }
 
@@ -243,10 +243,10 @@ public:
       m_pointingModelEast = new Vector( .0, m_numOfModelParameters );
    }
 
-   GeneralAnalyticalPointingModel( double siteLatitudeDeg, uint32_t modelConfig, bool modelEachPierSide ) :
-      AlignmentModel( modelEachPierSide, modelName ),
-      m_siteLatitude( Rad( siteLatitudeDeg ) ),
-      m_modelConfig( modelConfig )
+   GeneralAnalyticalPointingModel( double siteLatitudeDeg, uint32_t modelConfig, bool modelEachPierSide )
+      : AlignmentModel( modelEachPierSide, modelName )
+      , m_siteLatitude( Rad( siteLatitudeDeg ) )
+      , m_modelConfig( modelConfig )
    {
       m_pointingModelWest = new Vector( .0, m_numOfModelParameters );
       m_pointingModelEast = new Vector( .0, m_numOfModelParameters );
@@ -295,4 +295,4 @@ private:
 #endif // __Alignment_h
 
 // ----------------------------------------------------------------------------
-// EOF Alignment.h - Released 2020-02-27T12:56:01Z
+// EOF Alignment.h - Released 2020-07-31T19:33:39Z

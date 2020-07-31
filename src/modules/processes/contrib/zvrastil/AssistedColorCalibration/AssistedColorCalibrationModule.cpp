@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationModule.cpp - Released 2020-02-27T12:56:01Z
+// AssistedColorCalibrationModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
-// Copyright (c) 2010-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2010-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -55,15 +55,15 @@
 #define MODULE_VERSION_MINOR     0
 #define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
-#define MODULE_VERSION_LANGUAGE  eng
+#define MODULE_VERSION_LANGUAGE eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
+#include "AssistedColorCalibrationInterface.h"
 #include "AssistedColorCalibrationModule.h"
 #include "AssistedColorCalibrationProcess.h"
-#include "AssistedColorCalibrationInterface.h"
 
 namespace pcl
 {
@@ -74,44 +74,60 @@ AssistedColorCalibrationModule::AssistedColorCalibrationModule()
 {
 }
 
+// ----------------------------------------------------------------------------
+
 const char* AssistedColorCalibrationModule::Version() const
 {
    return PCL_MODULE_VERSION( MODULE_VERSION_MAJOR,
-                              MODULE_VERSION_MINOR,
-                              MODULE_VERSION_REVISION,
-                              MODULE_VERSION_BUILD,
-                              MODULE_VERSION_LANGUAGE );
+      MODULE_VERSION_MINOR,
+      MODULE_VERSION_REVISION,
+      MODULE_VERSION_BUILD,
+      MODULE_VERSION_LANGUAGE );
 }
+
+// ----------------------------------------------------------------------------
 
 IsoString AssistedColorCalibrationModule::Name() const
 {
    return "AssistedColorCalibration";
 }
 
+// ----------------------------------------------------------------------------
+
 String AssistedColorCalibrationModule::Description() const
 {
    return "AssistedColorCalibration Process Module"; // Replace with your own description
 }
 
+// ----------------------------------------------------------------------------
+
 String AssistedColorCalibrationModule::Company() const
 {
-   return "";
+   return String();
 }
+
+// ----------------------------------------------------------------------------
 
 String AssistedColorCalibrationModule::Author() const
 {
-   return "Zbynek Vrastil";
+   return "Zbynek Vrastil (PTeam)";
 }
+
+// ----------------------------------------------------------------------------
 
 String AssistedColorCalibrationModule::Copyright() const
 {
-   return "Copyright (c) 2010-2018 Zbynek Vrastil";
+   return "Copyright (c) 2010-2020 Zbynek Vrastil";
 }
+
+// ----------------------------------------------------------------------------
 
 String AssistedColorCalibrationModule::TradeMarks() const
 {
-   return "";
+   return "PixInsight";
 }
+
+// ----------------------------------------------------------------------------
 
 String AssistedColorCalibrationModule::OriginalFileName() const
 {
@@ -129,16 +145,20 @@ String AssistedColorCalibrationModule::OriginalFileName() const
 #endif
 }
 
+// ----------------------------------------------------------------------------
+
 void AssistedColorCalibrationModule::GetReleaseDate( int& year, int& month, int& day ) const
 {
-   year  = MODULE_RELEASE_YEAR;
+   year = MODULE_RELEASE_YEAR;
    month = MODULE_RELEASE_MONTH;
-   day   = MODULE_RELEASE_DAY;
+   day = MODULE_RELEASE_DAY;
 }
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
+
+// ----------------------------------------------------------------------------
 
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
@@ -154,4 +174,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF AssistedColorCalibrationModule.cpp - Released 2020-07-31T19:33:39Z

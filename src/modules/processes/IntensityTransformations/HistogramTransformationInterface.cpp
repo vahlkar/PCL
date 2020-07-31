@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationInterface.cpp - Released 2020-02-27T12:56:01Z
+// HistogramTransformationInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -78,19 +78,6 @@ HistogramTransformationInterface* TheHistogramTransformationInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "HistogramTransformationIcon.xpm"
-#include "raw_rgb.xpm"
-#include "lock_output.xpm"
-#include "show_curve.xpm"
-#include "show_grid.xpm"
-#include "reject_saturated.xpm"
-#include "auto_zero_shadows.xpm"
-#include "auto_zero_highlights.xpm"
-#include "auto_clip_shadows.xpm"
-#include "auto_clip_highlights.xpm"
-
-// ----------------------------------------------------------------------------
-
 static int s_plotResolutions[] = { 64, 128, 256, 512, 1024, 4096, 16384, 65536, 100, 1000, 10000 };
 
 static const char* s_plotResolutionItems[] =
@@ -112,16 +99,8 @@ static const int s_maxZoom = 999;
 
 // ----------------------------------------------------------------------------
 
-HistogramTransformationInterface::HistogramTransformationInterface() :
-   m_instance( TheHistogramTransformationProcess ),
-   m_shadowsCount( uint64( 0 ), 5 ),
-   m_highlightsCount( uint64( 0 ), 5 ),
-   m_inputReadouts( 0.0, 5 ),
-   m_outputReadouts( 0.0, 5 ),
-   m_inputBitmap( Bitmap::Null() ),
-   m_outputBitmap( Bitmap::Null() ),
-   m_slidersBitmap( Bitmap::Null() ),
-   m_channelColors( 5 )
+HistogramTransformationInterface::HistogramTransformationInterface()
+   : m_instance( TheHistogramTransformationProcess )
 {
    TheHistogramTransformationInterface = this;
 
@@ -130,9 +109,6 @@ HistogramTransformationInterface::HistogramTransformationInterface() :
    m_channelColors[2] = RGBAColor( 0x00, 0xA0, 0xFF );
    m_channelColors[3] = RGBAColor( 0xE0, 0xE0, 0xE0 );
    m_channelColors[4] = RGBAColor( 0xFF, 0xFF, 0xFF );
-   m_gridColor0       = RGBAColor( 0x50, 0x50, 0x50 );
-   m_gridColor1       = RGBAColor( 0x37, 0x37, 0x37 );
-   m_backgroundColor  = RGBAColor( 0x00, 0x00, 0x00 );
 }
 
 // ----------------------------------------------------------------------------
@@ -159,9 +135,9 @@ MetaProcess* HistogramTransformationInterface::Process() const
 
 // ----------------------------------------------------------------------------
 
-const char** HistogramTransformationInterface::IconImageXPM() const
+String HistogramTransformationInterface::IconImageSVGFile() const
 {
-   return HistogramTransformationIcon_XPM;
+   return "@module_icons_dir/HistogramTransformation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -332,8 +308,8 @@ bool HistogramTransformationInterface::RequiresRealTimePreviewUpdate( const UInt
 
 // ----------------------------------------------------------------------------
 
-HistogramTransformationInterface::RealTimeThread::RealTimeThread() :
-   m_instance( TheHistogramTransformationProcess )
+HistogramTransformationInterface::RealTimeThread::RealTimeThread()
+   : m_instance( TheHistogramTransformationProcess )
 {
 }
 
@@ -2698,7 +2674,7 @@ void HistogramTransformationInterface::__UpdateRealTimePreview_Timer( Timer& sen
 
 HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInterface& w )
 {
-   int ui16 = w.LogicalPixelsToPhysical( 16 );
+   int ri16 = w.LogicalPixelsToResource( 16 );
    int ui32 = w.LogicalPixelsToPhysical( 32 );
    pcl::Font font = w.Font();
    int labelWidth = font.Width( "High range:" ) + font.Width( 'T' );
@@ -2858,35 +2834,35 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
    GraphStyle_ComboBox.SetToolTip( "Graph style" );
    GraphStyle_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&HistogramTransformationInterface::__GraphStyle_ItemSelected, w );
 
-   RejectSaturated_ToolButton.SetIcon( Bitmap( reject_saturated_XPM ).ScaledToSize( ui16, ui16 ) );
+   RejectSaturated_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/reject_saturated.svg", ri16, ri16 ) );
    RejectSaturated_ToolButton.SetScaledFixedSize( 20, 20 );
    RejectSaturated_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    RejectSaturated_ToolButton.SetToolTip( "Reject saturated pixels for histogram representations" );
    RejectSaturated_ToolButton.SetCheckable();
    RejectSaturated_ToolButton.OnClick( (ToolButton::click_event_handler)&HistogramTransformationInterface::__RejectSaturated_ButtonClick, w );
 
-   ShowRawRGB_ToolButton.SetIcon( Bitmap( raw_rgb_XPM ).ScaledToSize( ui16, ui16 ) );
+   ShowRawRGB_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/raw_rgb.svg", ri16, ri16 ) );
    ShowRawRGB_ToolButton.SetScaledFixedSize( 20, 20 );
    ShowRawRGB_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ShowRawRGB_ToolButton.SetToolTip( "Show raw RGB histograms" );
    ShowRawRGB_ToolButton.SetCheckable();
    ShowRawRGB_ToolButton.OnClick( (ToolButton::click_event_handler)&HistogramTransformationInterface::__ShowRawRGB_ButtonClick, w );
 
-   LockOutput_ToolButton.SetIcon( Bitmap( lock_output_XPM ).ScaledToSize( ui16, ui16 ) );
+   LockOutput_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/lock_output.svg", ri16, ri16 ) );
    LockOutput_ToolButton.SetScaledFixedSize( 20, 20 );
    LockOutput_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    LockOutput_ToolButton.SetToolTip( "Lock output histogram channel" );
    LockOutput_ToolButton.SetCheckable();
    LockOutput_ToolButton.OnClick( (ToolButton::click_event_handler)&HistogramTransformationInterface::__LockOutput_ButtonClick, w );
 
-   ShowCurve_ToolButton.SetIcon( Bitmap( show_curve_XPM ).ScaledToSize( ui16, ui16 ) );
+   ShowCurve_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/show_curve.svg", ri16, ri16 ) );
    ShowCurve_ToolButton.SetScaledFixedSize( 20, 20 );
    ShowCurve_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ShowCurve_ToolButton.SetToolTip( "Show MTF curve" );
    ShowCurve_ToolButton.SetCheckable();
    ShowCurve_ToolButton.OnClick( (ToolButton::click_event_handler)&HistogramTransformationInterface::__ShowCurve_ButtonClick, w );
 
-   ShowGrid_ToolButton.SetIcon( Bitmap( show_grid_XPM ).ScaledToSize( ui16, ui16 ) );
+   ShowGrid_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/show_grid.svg", ri16, ri16 ) );
    ShowGrid_ToolButton.SetScaledFixedSize( 20, 20 );
    ShowGrid_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ShowGrid_ToolButton.SetToolTip( "Show grids" );
@@ -3006,13 +2982,13 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
    ShadowsClippingCount_Label.SetStyle( FrameStyle::Sunken );
    ShadowsClippingCount_Label.SetFixedHeight( CanonicalControlHeight( Edit ) );
 
-   ShadowsClippingAutoZero_ToolButton.SetIcon( Bitmap( auto_zero_shadows_XPM ).ScaledToSize( ui16, ui16 ) );
+   ShadowsClippingAutoZero_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/auto_zero_shadows.svg", ri16, ri16 ) );
    ShadowsClippingAutoZero_ToolButton.SetScaledFixedSize( 20, 20 );
    ShadowsClippingAutoZero_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ShadowsClippingAutoZero_ToolButton.SetToolTip( "Auto zero shadows" );
    ShadowsClippingAutoZero_ToolButton.OnClick( (ToolButton::click_event_handler)&HistogramTransformationInterface::__AutoZero_ButtonClick, w );
 
-   ShadowsClippingAutoClip_ToolButton.SetIcon( Bitmap( auto_clip_shadows_XPM ).ScaledToSize( ui16, ui16 ) );
+   ShadowsClippingAutoClip_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/auto_clip_shadows.svg", ri16, ri16 ) );
    ShadowsClippingAutoClip_ToolButton.SetScaledFixedSize( 20, 20 );
    ShadowsClippingAutoClip_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    //ShadowsClippingAutoClip_ToolButton.SetToolTip( "Auto Clip Shadows" );
@@ -3046,13 +3022,13 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
    HighlightsClippingCount_Label.SetStyle( FrameStyle::Sunken );
    HighlightsClippingCount_Label.SetFixedHeight( CanonicalControlHeight( Edit ) );
 
-   HighlightsClippingAutoZero_ToolButton.SetIcon( Bitmap( auto_zero_highlights_XPM ).ScaledToSize( ui16, ui16 ) );
+   HighlightsClippingAutoZero_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/auto_zero_highlights.svg", ri16, ri16 ) );
    HighlightsClippingAutoZero_ToolButton.SetScaledFixedSize( 20, 20 );
    HighlightsClippingAutoZero_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    HighlightsClippingAutoZero_ToolButton.SetToolTip( "Auto zero highlights" );
    HighlightsClippingAutoZero_ToolButton.OnClick( (ToolButton::click_event_handler)&HistogramTransformationInterface::__AutoZero_ButtonClick, w );
 
-   HighlightsClippingAutoClip_ToolButton.SetIcon( Bitmap( auto_clip_highlights_XPM ).ScaledToSize( ui16, ui16 ) );
+   HighlightsClippingAutoClip_ToolButton.SetIcon( Bitmap::FromSVGFile( "@module_icons_dir/auto_clip_highlights.svg", ri16, ri16 ) );
    HighlightsClippingAutoClip_ToolButton.SetScaledFixedSize( 20, 20 );
    HighlightsClippingAutoClip_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    //HighlightsClippingAutoClip_ToolButton.SetToolTip( "Auto Clip Highlights" );
@@ -3191,4 +3167,4 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF HistogramTransformationInterface.cpp - Released 2020-07-31T19:33:39Z

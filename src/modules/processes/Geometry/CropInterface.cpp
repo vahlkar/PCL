@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// CropInterface.cpp - Released 2020-02-27T12:56:01Z
+// CropInterface.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -66,19 +66,17 @@ CropInterface* TheCropInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "CropIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 #define currentView  GUI->AllImages_ViewList.CurrentView()
 
 // ----------------------------------------------------------------------------
 
-CropInterface::CropInterface() :
-   instance( TheCropProcess )
+CropInterface::CropInterface()
+   : m_instance( TheCropProcess )
 {
    TheCropInterface = this;
 }
+
+// ----------------------------------------------------------------------------
 
 CropInterface::~CropInterface()
 {
@@ -86,30 +84,42 @@ CropInterface::~CropInterface()
       delete GUI, GUI = nullptr;
 }
 
+// ----------------------------------------------------------------------------
+
 IsoString CropInterface::Id() const
 {
    return "Crop";
 }
+
+// ----------------------------------------------------------------------------
 
 MetaProcess* CropInterface::Process() const
 {
    return TheCropProcess;
 }
 
-const char** CropInterface::IconImageXPM() const
+// ----------------------------------------------------------------------------
+
+String CropInterface::IconImageSVGFile() const
 {
-   return CropIcon_XPM;
+   return "@module_icons_dir/Crop.svg";
 }
+
+// ----------------------------------------------------------------------------
 
 InterfaceFeatures CropInterface::Features() const
 {
    return InterfaceFeature::Default | InterfaceFeature::TrackViewButton;
 }
 
+// ----------------------------------------------------------------------------
+
 void CropInterface::ApplyInstance() const
 {
-   instance.LaunchOnCurrentWindow();
+   m_instance.LaunchOnCurrentWindow();
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::TrackViewUpdated( bool active )
 {
@@ -124,11 +134,15 @@ void CropInterface::TrackViewUpdated( bool active )
       }
 }
 
+// ----------------------------------------------------------------------------
+
 void CropInterface::ResetInstance()
 {
    CropInstance defaultInstance( TheCropProcess );
    ImportProcess( defaultInstance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool CropInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
@@ -144,10 +158,14 @@ bool CropInterface::Launch( const MetaProcess& P, const ProcessImplementation*, 
    return &P == TheCropProcess;
 }
 
+// ----------------------------------------------------------------------------
+
 ProcessImplementation* CropInterface::NewProcess() const
 {
-   return new CropInstance( instance );
+   return new CropInstance( m_instance );
 }
+
+// ----------------------------------------------------------------------------
 
 bool CropInterface::ValidateProcess( const ProcessImplementation& p, pcl::String& whyNot ) const
 {
@@ -157,24 +175,32 @@ bool CropInterface::ValidateProcess( const ProcessImplementation& p, pcl::String
    return false;
 }
 
+// ----------------------------------------------------------------------------
+
 bool CropInterface::RequiresInstanceValidation() const
 {
    return true;
 }
 
+// ----------------------------------------------------------------------------
+
 bool CropInterface::ImportProcess( const ProcessImplementation& p )
 {
    DeactivateTrackView();
    GUI->AllImages_ViewList.SelectView( View::Null() );
-   instance.Assign( p );
+   m_instance.Assign( p );
    UpdateControls();
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 bool CropInterface::WantsImageNotifications() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::ImageUpdated( const View& v )
 {
@@ -185,6 +211,8 @@ void CropInterface::ImageUpdated( const View& v )
          UpdateControls();
       }
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::ImageFocused( const View& v )
 {
@@ -203,18 +231,22 @@ void CropInterface::ImageFocused( const View& v )
             bool metric;
             w.GetResolution( xRes, yRes, metric );
 
-            instance.p_resolution.x = xRes;
-            instance.p_resolution.y = yRes;
-            instance.p_metric = metric;
+            m_instance.p_resolution.x = xRes;
+            m_instance.p_resolution.y = yRes;
+            m_instance.p_metric = metric;
 
             UpdateControls();
          }
 }
 
+// ----------------------------------------------------------------------------
+
 bool CropInterface::WantsReadoutNotifications() const
 {
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::UpdateReadout( const View&, const DPoint&, double R, double G, double B, double /*A*/ )
 {
@@ -222,9 +254,9 @@ void CropInterface::UpdateReadout( const View&, const DPoint&, double R, double 
       if ( IsVisible() )
          if ( GUI->FillColor_SectionBar.Section().IsVisible() )
          {
-            instance.p_fillColor[0] = R;
-            instance.p_fillColor[1] = G;
-            instance.p_fillColor[2] = B;
+            m_instance.p_fillColor[0] = R;
+            m_instance.p_fillColor[1] = G;
+            m_instance.p_fillColor[2] = B;
             UpdateFillColorControls();
          }
 }
@@ -240,20 +272,20 @@ void CropInterface::UpdateControls()
 
 void CropInterface::UpdateAnchors()
 {
-   if ( instance.p_margins.y0 == 0 )
+   if ( m_instance.p_margins.y0 == 0 )
    {
-      if ( instance.p_margins.y1 == 0 )
+      if ( m_instance.p_margins.y1 == 0 )
       {
-         if ( instance.p_margins.x0 == 0 )
+         if ( m_instance.p_margins.x0 == 0 )
          {
-            if ( instance.p_margins.x1 == 0 )
+            if ( m_instance.p_margins.x1 == 0 )
                anchor = 4;
             else
                anchor = 3;
          }
          else
          {
-            if ( instance.p_margins.x1 == 0 )
+            if ( m_instance.p_margins.x1 == 0 )
                anchor = 5;
             else
                anchor = 4;
@@ -261,16 +293,16 @@ void CropInterface::UpdateAnchors()
       }
       else
       {
-         if ( instance.p_margins.x0 == 0 )
+         if ( m_instance.p_margins.x0 == 0 )
          {
-            if ( instance.p_margins.x1 == 0 )
+            if ( m_instance.p_margins.x1 == 0 )
                anchor = 1;
             else
                anchor = 0;
          }
          else
          {
-            if ( instance.p_margins.x1 == 0 )
+            if ( m_instance.p_margins.x1 == 0 )
                anchor = 2;
             else
                anchor = 1;
@@ -279,18 +311,18 @@ void CropInterface::UpdateAnchors()
    }
    else
    {
-      if ( instance.p_margins.y1 == 0 )
+      if ( m_instance.p_margins.y1 == 0 )
       {
-         if ( instance.p_margins.x0 == 0 )
+         if ( m_instance.p_margins.x0 == 0 )
          {
-            if ( instance.p_margins.x1 == 0 )
+            if ( m_instance.p_margins.x1 == 0 )
                anchor = 7;
             else
                anchor = 6;
          }
          else
          {
-            if ( instance.p_margins.x1 == 0 )
+            if ( m_instance.p_margins.x1 == 0 )
                anchor = 8;
             else
                anchor = 7;
@@ -298,16 +330,16 @@ void CropInterface::UpdateAnchors()
       }
       else
       {
-         if ( instance.p_margins.x0 == 0 )
+         if ( m_instance.p_margins.x0 == 0 )
          {
-            if ( instance.p_margins.x1 == 0 )
+            if ( m_instance.p_margins.x1 == 0 )
                anchor = 4;
             else
                anchor = 3;
          }
          else
          {
-            if ( instance.p_margins.x1 == 0 )
+            if ( m_instance.p_margins.x1 == 0 )
                anchor = 5;
             else
                anchor = 4;
@@ -319,109 +351,111 @@ void CropInterface::UpdateAnchors()
    {
    case 0:
       GUI->TL_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->TM_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
+      GUI->TM_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
       GUI->TR_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->ML_ToolButton.SetIcon( (instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
-      GUI->MM_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->BR_Bitmap : GUI->TL_Bitmap );
+      GUI->ML_ToolButton.SetIcon( (m_instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
+      GUI->MM_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->BR_Bitmap : GUI->TL_Bitmap );
       GUI->MR_ToolButton.SetIcon( Bitmap::Null() );
       GUI->BL_ToolButton.SetIcon( Bitmap::Null() );
       GUI->BM_ToolButton.SetIcon( Bitmap::Null() );
       GUI->BR_ToolButton.SetIcon( Bitmap::Null() );
       break;
    case 1:
-      GUI->TL_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
+      GUI->TL_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
       GUI->TM_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->TR_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
-      GUI->ML_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->BL_Bitmap : GUI->TR_Bitmap );
-      GUI->MM_ToolButton.SetIcon( (instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
-      GUI->MR_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->BR_Bitmap : GUI->TL_Bitmap );
+      GUI->TR_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
+      GUI->ML_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->BL_Bitmap : GUI->TR_Bitmap );
+      GUI->MM_ToolButton.SetIcon( (m_instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
+      GUI->MR_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->BR_Bitmap : GUI->TL_Bitmap );
       GUI->BL_ToolButton.SetIcon( Bitmap::Null() );
       GUI->BM_ToolButton.SetIcon( Bitmap::Null() );
       GUI->BR_ToolButton.SetIcon( Bitmap::Null() );
       break;
    case 2:
       GUI->TL_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->TM_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
+      GUI->TM_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
       GUI->TR_ToolButton.SetIcon( Bitmap::Null() );
       GUI->ML_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->MM_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->BL_Bitmap : GUI->TR_Bitmap );
-      GUI->MR_ToolButton.SetIcon( (instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
+      GUI->MM_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->BL_Bitmap : GUI->TR_Bitmap );
+      GUI->MR_ToolButton.SetIcon( (m_instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
       GUI->BL_ToolButton.SetIcon( Bitmap::Null() );
       GUI->BM_ToolButton.SetIcon( Bitmap::Null() );
       GUI->BR_ToolButton.SetIcon( Bitmap::Null() );
       break;
    case 3:
-      GUI->TL_ToolButton.SetIcon( (instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
-      GUI->TM_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->TR_Bitmap : GUI->BL_Bitmap );
+      GUI->TL_ToolButton.SetIcon( (m_instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
+      GUI->TM_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->TR_Bitmap : GUI->BL_Bitmap );
       GUI->TR_ToolButton.SetIcon( Bitmap::Null() );
       GUI->ML_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->MM_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
+      GUI->MM_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
       GUI->MR_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->BL_ToolButton.SetIcon( (instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
-      GUI->BM_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->BR_Bitmap : GUI->TL_Bitmap );
+      GUI->BL_ToolButton.SetIcon( (m_instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
+      GUI->BM_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->BR_Bitmap : GUI->TL_Bitmap );
       GUI->BR_ToolButton.SetIcon( Bitmap::Null() );
       break;
    case 4:
-      GUI->TL_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->TL_Bitmap : GUI->BR_Bitmap );
-      GUI->TM_ToolButton.SetIcon( (instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
-      GUI->TR_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->TR_Bitmap : GUI->BL_Bitmap );
-      GUI->ML_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
+      GUI->TL_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->TL_Bitmap : GUI->BR_Bitmap );
+      GUI->TM_ToolButton.SetIcon( (m_instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
+      GUI->TR_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->TR_Bitmap : GUI->BL_Bitmap );
+      GUI->ML_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
       GUI->MM_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->MR_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
-      GUI->BL_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->BL_Bitmap : GUI->TR_Bitmap );
-      GUI->BM_ToolButton.SetIcon( (instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
-      GUI->BR_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->BR_Bitmap : GUI->TL_Bitmap );
+      GUI->MR_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
+      GUI->BL_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->BL_Bitmap : GUI->TR_Bitmap );
+      GUI->BM_ToolButton.SetIcon( (m_instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
+      GUI->BR_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->BR_Bitmap : GUI->TL_Bitmap );
       break;
    case 5:
       GUI->TL_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->TM_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->TL_Bitmap : GUI->BR_Bitmap );
-      GUI->TR_ToolButton.SetIcon( (instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
+      GUI->TM_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->TL_Bitmap : GUI->BR_Bitmap );
+      GUI->TR_ToolButton.SetIcon( (m_instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
       GUI->ML_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->MM_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
+      GUI->MM_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
       GUI->MR_ToolButton.SetIcon( Bitmap::Null() );
       GUI->BL_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->BM_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->BL_Bitmap : GUI->TR_Bitmap );
-      GUI->BR_ToolButton.SetIcon( (instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
+      GUI->BM_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->BL_Bitmap : GUI->TR_Bitmap );
+      GUI->BR_ToolButton.SetIcon( (m_instance.p_margins.y1 >= 0) ? GUI->B_Bitmap : GUI->T_Bitmap );
       break;
    case 6:
       GUI->TL_ToolButton.SetIcon( Bitmap::Null() );
       GUI->TM_ToolButton.SetIcon( Bitmap::Null() );
       GUI->TR_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->ML_ToolButton.SetIcon( (instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
-      GUI->MM_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->TR_Bitmap : GUI->BL_Bitmap );
+      GUI->ML_ToolButton.SetIcon( (m_instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
+      GUI->MM_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->TR_Bitmap : GUI->BL_Bitmap );
       GUI->MR_ToolButton.SetIcon( Bitmap::Null() );
       GUI->BL_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->BM_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
+      GUI->BM_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
       GUI->BR_ToolButton.SetIcon( Bitmap::Null() );
       break;
    case 7:
       GUI->TL_ToolButton.SetIcon( Bitmap::Null() );
       GUI->TM_ToolButton.SetIcon( Bitmap::Null() );
       GUI->TR_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->ML_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->TL_Bitmap : GUI->BR_Bitmap );
-      GUI->MM_ToolButton.SetIcon( (instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
-      GUI->MR_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->TR_Bitmap : GUI->BL_Bitmap );
-      GUI->BL_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
+      GUI->ML_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->TL_Bitmap : GUI->BR_Bitmap );
+      GUI->MM_ToolButton.SetIcon( (m_instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
+      GUI->MR_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->TR_Bitmap : GUI->BL_Bitmap );
+      GUI->BL_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
       GUI->BM_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->BR_ToolButton.SetIcon( (instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
+      GUI->BR_ToolButton.SetIcon( (m_instance.p_margins.x1 >= 0) ? GUI->R_Bitmap : GUI->L_Bitmap );
       break;
    case 8:
       GUI->TL_ToolButton.SetIcon( Bitmap::Null() );
       GUI->TM_ToolButton.SetIcon( Bitmap::Null() );
       GUI->TR_ToolButton.SetIcon( Bitmap::Null() );
       GUI->ML_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->MM_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->TL_Bitmap : GUI->BR_Bitmap );
-      GUI->MR_ToolButton.SetIcon( (instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
+      GUI->MM_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->TL_Bitmap : GUI->BR_Bitmap );
+      GUI->MR_ToolButton.SetIcon( (m_instance.p_margins.y0 >= 0) ? GUI->T_Bitmap : GUI->B_Bitmap );
       GUI->BL_ToolButton.SetIcon( Bitmap::Null() );
-      GUI->BM_ToolButton.SetIcon( (instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
+      GUI->BM_ToolButton.SetIcon( (m_instance.p_margins.x0 >= 0) ? GUI->L_Bitmap : GUI->R_Bitmap );
       GUI->BR_ToolButton.SetIcon( Bitmap::Null() );
       break;
    }
 }
 
+// ----------------------------------------------------------------------------
+
 void CropInterface::UpdateNumericControls()
 {
-   if ( instance.p_mode == CRMode::AbsolutePixels )
+   if ( m_instance.p_mode == CRMode::AbsolutePixels )
    {
       GUI->LeftMargin_NumericEdit.SetInteger();
       GUI->TopMargin_NumericEdit.SetInteger();
@@ -435,34 +469,34 @@ void CropInterface::UpdateNumericControls()
       GUI->RightMargin_NumericEdit.SetReal();
       GUI->BottomMargin_NumericEdit.SetReal();
 
-      int p = (instance.p_mode == CRMode::RelativeMargins) ? 6 : 4;
+      int p = (m_instance.p_mode == CRMode::RelativeMargins) ? 6 : 4;
       GUI->LeftMargin_NumericEdit.SetPrecision( p );
       GUI->TopMargin_NumericEdit.SetPrecision( p );
       GUI->RightMargin_NumericEdit.SetPrecision( p );
       GUI->BottomMargin_NumericEdit.SetPrecision( p );
    }
 
-   GUI->LeftMargin_NumericEdit.SetValue( instance.p_margins.x0 );
-   GUI->TopMargin_NumericEdit.SetValue( instance.p_margins.y0 );
-   GUI->RightMargin_NumericEdit.SetValue( instance.p_margins.x1 );
-   GUI->BottomMargin_NumericEdit.SetValue( instance.p_margins.y1 );
+   GUI->LeftMargin_NumericEdit.SetValue( m_instance.p_margins.x0 );
+   GUI->TopMargin_NumericEdit.SetValue( m_instance.p_margins.y0 );
+   GUI->RightMargin_NumericEdit.SetValue( m_instance.p_margins.x1 );
+   GUI->BottomMargin_NumericEdit.SetValue( m_instance.p_margins.y1 );
 
    int w = sourceWidth, h = sourceHeight;
-   instance.GetNewSizes( w, h );
+   m_instance.GetNewSizes( w, h );
 
    double wcm, hcm, win, hin;
 
-   if ( instance.p_metric )
+   if ( m_instance.p_metric )
    {
-      wcm = w/instance.p_resolution.x;
-      hcm = h/instance.p_resolution.y;
+      wcm = w/m_instance.p_resolution.x;
+      hcm = h/m_instance.p_resolution.y;
       win = wcm/2.54;
       hin = hcm/2.54;
    }
    else
    {
-      win = w/instance.p_resolution.x;
-      hin = h/instance.p_resolution.y;
+      win = w/m_instance.p_resolution.x;
+      hin = h/m_instance.p_resolution.y;
       wcm = win*2.54;
       hcm = hin*2.54;
    }
@@ -504,23 +538,25 @@ void CropInterface::UpdateNumericControls()
 
    GUI->SizeInfo_Label.SetText( info );
 
-   GUI->HorizontalResolution_NumericEdit.SetValue( instance.p_resolution.x );
-   GUI->VerticalResolution_NumericEdit.SetValue( instance.p_resolution.y );
+   GUI->HorizontalResolution_NumericEdit.SetValue( m_instance.p_resolution.x );
+   GUI->VerticalResolution_NumericEdit.SetValue( m_instance.p_resolution.y );
 
-   GUI->CentimeterUnits_RadioButton.SetChecked( instance.p_metric );
-   GUI->InchUnits_RadioButton.SetChecked( !instance.p_metric );
+   GUI->CentimeterUnits_RadioButton.SetChecked( m_instance.p_metric );
+   GUI->InchUnits_RadioButton.SetChecked( !m_instance.p_metric );
 
-   GUI->ForceResolution_CheckBox.SetChecked( instance.p_forceResolution );
+   GUI->ForceResolution_CheckBox.SetChecked( m_instance.p_forceResolution );
 
-   GUI->CropMode_ComboBox.SetCurrentItem( instance.p_mode );
+   GUI->CropMode_ComboBox.SetCurrentItem( m_instance.p_mode );
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::UpdateFillColorControls()
 {
-   GUI->Red_NumericControl.SetValue( instance.p_fillColor[0] );
-   GUI->Green_NumericControl.SetValue( instance.p_fillColor[1] );
-   GUI->Blue_NumericControl.SetValue( instance.p_fillColor[2] );
-   GUI->Alpha_NumericControl.SetValue( instance.p_fillColor[3] );
+   GUI->Red_NumericControl.SetValue( m_instance.p_fillColor[0] );
+   GUI->Green_NumericControl.SetValue( m_instance.p_fillColor[1] );
+   GUI->Blue_NumericControl.SetValue( m_instance.p_fillColor[2] );
+   GUI->Alpha_NumericControl.SetValue( m_instance.p_fillColor[3] );
    GUI->ColorSample_Control.Update();
 }
 
@@ -538,82 +574,88 @@ void CropInterface::__ViewList_ViewSelected( ViewList& sender, View& )
       bool metric;
       w.GetResolution( xRes, yRes, metric );
 
-      instance.p_resolution.x = xRes;
-      instance.p_resolution.y = yRes;
-      instance.p_metric = metric;
+      m_instance.p_resolution.x = xRes;
+      m_instance.p_resolution.y = yRes;
+      m_instance.p_metric = metric;
    }
 
    UpdateControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void CropInterface::__Margin_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->LeftMargin_NumericEdit )
-      instance.p_margins.x0 = value;
+      m_instance.p_margins.x0 = value;
    else if ( sender == GUI->TopMargin_NumericEdit )
-      instance.p_margins.y0 = value;
+      m_instance.p_margins.y0 = value;
    else if ( sender == GUI->RightMargin_NumericEdit )
-      instance.p_margins.x1 = value;
+      m_instance.p_margins.x1 = value;
    else if ( sender == GUI->BottomMargin_NumericEdit )
-      instance.p_margins.y1 = value;
+      m_instance.p_margins.y1 = value;
 
    UpdateNumericControls();
    UpdateAnchors();
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::__Anchor_ButtonClick( Button& sender, bool checked )
 {
    if ( sender == GUI->TL_ToolButton || sender == GUI->ML_ToolButton || sender == GUI->BL_ToolButton )
    {
-      instance.p_margins.x1 += instance.p_margins.x0;
-      instance.p_margins.x0 = 0;
+      m_instance.p_margins.x1 += m_instance.p_margins.x0;
+      m_instance.p_margins.x0 = 0;
    }
 
    if ( sender == GUI->TR_ToolButton || sender == GUI->MR_ToolButton || sender == GUI->BR_ToolButton )
    {
-      instance.p_margins.x0 += instance.p_margins.x1;
-      instance.p_margins.x1 = 0;
+      m_instance.p_margins.x0 += m_instance.p_margins.x1;
+      m_instance.p_margins.x1 = 0;
    }
 
    if ( sender == GUI->TM_ToolButton || sender == GUI->MM_ToolButton || sender == GUI->BM_ToolButton )
    {
-      if ( instance.p_mode == CRMode::AbsolutePixels )
+      if ( m_instance.p_mode == CRMode::AbsolutePixels )
       {
-         int px = int( instance.p_margins.x0 + instance.p_margins.x1 );
-         instance.p_margins.x0 = px >> 1;
-         instance.p_margins.x1 = px - (px >> 1);
+         int px = int( m_instance.p_margins.x0 + m_instance.p_margins.x1 );
+         m_instance.p_margins.x0 = px >> 1;
+         m_instance.p_margins.x1 = px - (px >> 1);
       }
       else
-         instance.p_margins.x0 = instance.p_margins.x1 = 0.5*(instance.p_margins.x0 + instance.p_margins.x1);
+         m_instance.p_margins.x0 = m_instance.p_margins.x1 = 0.5*(m_instance.p_margins.x0 + m_instance.p_margins.x1);
    }
 
    if ( sender == GUI->TL_ToolButton || sender == GUI->TM_ToolButton || sender == GUI->TR_ToolButton )
    {
-      instance.p_margins.y1 += instance.p_margins.y0;
-      instance.p_margins.y0 = 0;
+      m_instance.p_margins.y1 += m_instance.p_margins.y0;
+      m_instance.p_margins.y0 = 0;
    }
 
    if ( sender == GUI->BL_ToolButton || sender == GUI->BM_ToolButton || sender == GUI->BR_ToolButton )
    {
-      instance.p_margins.y0 += instance.p_margins.y1;
-      instance.p_margins.y1 = 0;
+      m_instance.p_margins.y0 += m_instance.p_margins.y1;
+      m_instance.p_margins.y1 = 0;
    }
 
    if ( sender == GUI->ML_ToolButton || sender == GUI->MM_ToolButton || sender == GUI->MR_ToolButton )
    {
-      if ( instance.p_mode == CRMode::AbsolutePixels )
+      if ( m_instance.p_mode == CRMode::AbsolutePixels )
       {
-         int px = int( instance.p_margins.y0 + instance.p_margins.y1 );
-         instance.p_margins.y0 = px >> 1;
-         instance.p_margins.y1 = px - (px >> 1);
+         int px = int( m_instance.p_margins.y0 + m_instance.p_margins.y1 );
+         m_instance.p_margins.y0 = px >> 1;
+         m_instance.p_margins.y1 = px - (px >> 1);
       }
       else
-         instance.p_margins.y0 = instance.p_margins.y1 = 0.5*(instance.p_margins.y0 + instance.p_margins.y1);
+         m_instance.p_margins.y0 = m_instance.p_margins.y1 = 0.5*(m_instance.p_margins.y0 + m_instance.p_margins.y1);
    }
 
    UpdateNumericControls();
    UpdateAnchors();
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::__Width_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -630,16 +672,16 @@ void CropInterface::__Width_ValueUpdated( NumericEdit& sender, double value )
       else if ( sender == GUI->TargetWidthCentimeters_NumericEdit )
       {
          double u = value;
-         if ( !instance.p_metric )
+         if ( !m_instance.p_metric )
             u /= 2.54;
-         dx = RoundI( u*instance.p_resolution.x );
+         dx = RoundI( u*m_instance.p_resolution.x );
       }
       else if ( sender == GUI->TargetWidthInches_NumericEdit )
       {
          double u = value;
-         if ( instance.p_metric )
+         if ( m_instance.p_metric )
             u *= 2.54;
-         dx = RoundI( u*instance.p_resolution.x );
+         dx = RoundI( u*m_instance.p_resolution.x );
       }
       else
          return; // ??
@@ -670,33 +712,33 @@ void CropInterface::__Width_ValueUpdated( NumericEdit& sender, double value )
          break;
       }
 
-      switch ( instance.p_mode )
+      switch ( m_instance.p_mode )
       {
       default:
       case CRMode::RelativeMargins:
-         instance.p_margins.x0 = double( dl )/sourceWidth;
-         instance.p_margins.x1 = double( dr )/sourceWidth;
+         m_instance.p_margins.x0 = double( dl )/sourceWidth;
+         m_instance.p_margins.x1 = double( dr )/sourceWidth;
          break;
       case CRMode::AbsolutePixels:
-         instance.p_margins.x0 = dl;
-         instance.p_margins.x1 = dr;
+         m_instance.p_margins.x0 = dl;
+         m_instance.p_margins.x1 = dr;
          break;
       case CRMode::AbsoluteCentimeters:
-         instance.p_margins.x0 = dl/instance.p_resolution.x;
-         instance.p_margins.x1 = dr/instance.p_resolution.x;
-         if ( !instance.p_metric )
+         m_instance.p_margins.x0 = dl/m_instance.p_resolution.x;
+         m_instance.p_margins.x1 = dr/m_instance.p_resolution.x;
+         if ( !m_instance.p_metric )
          {
-            instance.p_margins.x0 *= 2.54;
-            instance.p_margins.x1 *= 2.54;
+            m_instance.p_margins.x0 *= 2.54;
+            m_instance.p_margins.x1 *= 2.54;
          }
          break;
       case CRMode::AbsoluteInches:
-         instance.p_margins.x0 = dl/instance.p_resolution.x;
-         instance.p_margins.x1 = dr/instance.p_resolution.x;
-         if ( instance.p_metric )
+         m_instance.p_margins.x0 = dl/m_instance.p_resolution.x;
+         m_instance.p_margins.x1 = dr/m_instance.p_resolution.x;
+         if ( m_instance.p_metric )
          {
-            instance.p_margins.x0 /= 2.54;
-            instance.p_margins.x1 /= 2.54;
+            m_instance.p_margins.x0 /= 2.54;
+            m_instance.p_margins.x1 /= 2.54;
          }
          break;
       }
@@ -704,6 +746,8 @@ void CropInterface::__Width_ValueUpdated( NumericEdit& sender, double value )
 
    UpdateNumericControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::__Height_ValueUpdated( NumericEdit& sender, double value )
 {
@@ -720,16 +764,16 @@ void CropInterface::__Height_ValueUpdated( NumericEdit& sender, double value )
       else if ( sender == GUI->TargetHeightCentimeters_NumericEdit )
       {
          double u = value;
-         if ( !instance.p_metric )
+         if ( !m_instance.p_metric )
             u /= 2.54;
-         dy = RoundI( u*instance.p_resolution.y );
+         dy = RoundI( u*m_instance.p_resolution.y );
       }
       else if ( sender == GUI->TargetHeightInches_NumericEdit )
       {
          double u = value;
-         if ( instance.p_metric )
+         if ( m_instance.p_metric )
             u *= 2.54;
-         dy = RoundI( u*instance.p_resolution.y );
+         dy = RoundI( u*m_instance.p_resolution.y );
       }
       else
          return; // ??
@@ -760,33 +804,33 @@ void CropInterface::__Height_ValueUpdated( NumericEdit& sender, double value )
          break;
       }
 
-      switch ( instance.p_mode )
+      switch ( m_instance.p_mode )
       {
       default:
       case CRMode::RelativeMargins:
-         instance.p_margins.y0 = double( dt )/sourceHeight;
-         instance.p_margins.y1 = double( db )/sourceHeight;
+         m_instance.p_margins.y0 = double( dt )/sourceHeight;
+         m_instance.p_margins.y1 = double( db )/sourceHeight;
          break;
       case CRMode::AbsolutePixels:
-         instance.p_margins.y0 = dt;
-         instance.p_margins.y1 = db;
+         m_instance.p_margins.y0 = dt;
+         m_instance.p_margins.y1 = db;
          break;
       case CRMode::AbsoluteCentimeters:
-         instance.p_margins.y0 = dt/instance.p_resolution.y;
-         instance.p_margins.y1 = db/instance.p_resolution.y;
-         if ( !instance.p_metric )
+         m_instance.p_margins.y0 = dt/m_instance.p_resolution.y;
+         m_instance.p_margins.y1 = db/m_instance.p_resolution.y;
+         if ( !m_instance.p_metric )
          {
-            instance.p_margins.y0 *= 2.54;
-            instance.p_margins.y1 *= 2.54;
+            m_instance.p_margins.y0 *= 2.54;
+            m_instance.p_margins.y1 *= 2.54;
          }
          break;
       case CRMode::AbsoluteInches:
-         instance.p_margins.y0 = dt/instance.p_resolution.y;
-         instance.p_margins.y1 = db/instance.p_resolution.y;
-         if ( instance.p_metric )
+         m_instance.p_margins.y0 = dt/m_instance.p_resolution.y;
+         m_instance.p_margins.y1 = db/m_instance.p_resolution.y;
+         if ( m_instance.p_metric )
          {
-            instance.p_margins.y0 /= 2.54;
-            instance.p_margins.y1 /= 2.54;
+            m_instance.p_margins.y0 /= 2.54;
+            m_instance.p_margins.y1 /= 2.54;
          }
          break;
       }
@@ -795,34 +839,42 @@ void CropInterface::__Height_ValueUpdated( NumericEdit& sender, double value )
    UpdateNumericControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void CropInterface::__Resolution_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->HorizontalResolution_NumericEdit )
-      instance.p_resolution.x = value;
+      m_instance.p_resolution.x = value;
    else if ( sender == GUI->VerticalResolution_NumericEdit )
-      instance.p_resolution.y = value;
+      m_instance.p_resolution.y = value;
    UpdateNumericControls();
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::__Units_ButtonClick( Button& sender, bool /*checked*/ )
 {
    if ( sender == GUI->CentimeterUnits_RadioButton )
-      instance.p_metric = true;
+      m_instance.p_metric = true;
    else if ( sender == GUI->InchUnits_RadioButton )
-      instance.p_metric = false;
+      m_instance.p_metric = false;
    UpdateNumericControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void CropInterface::__ForceResolution_ButtonClick( Button& /*sender*/, bool checked )
 {
-   instance.p_forceResolution = checked;
+   m_instance.p_forceResolution = checked;
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::__Mode_ItemSelected( ComboBox& /*sender*/, int itemIndex )
 {
-   DRect dpx = instance.p_margins;
+   DRect dpx = m_instance.p_margins;
 
-   switch ( instance.p_mode )
+   switch ( m_instance.p_mode )
    {
    default:
    case CRMode::RelativeMargins:
@@ -834,54 +886,54 @@ void CropInterface::__Mode_ItemSelected( ComboBox& /*sender*/, int itemIndex )
    case CRMode::AbsolutePixels:
       break;
    case CRMode::AbsoluteCentimeters:
-      dpx.x0 *= instance.p_resolution.x;
-      dpx.y0 *= instance.p_resolution.y;
-      dpx.x1 *= instance.p_resolution.x;
-      dpx.y1 *= instance.p_resolution.y;
-      if ( !instance.p_metric )
+      dpx.x0 *= m_instance.p_resolution.x;
+      dpx.y0 *= m_instance.p_resolution.y;
+      dpx.x1 *= m_instance.p_resolution.x;
+      dpx.y1 *= m_instance.p_resolution.y;
+      if ( !m_instance.p_metric )
          dpx *= 2.54;
       break;
    case CRMode::AbsoluteInches:
-      dpx.x0 *= instance.p_resolution.x;
-      dpx.y0 *= instance.p_resolution.y;
-      dpx.x1 *= instance.p_resolution.x;
-      dpx.y1 *= instance.p_resolution.y;
-      if ( instance.p_metric )
+      dpx.x0 *= m_instance.p_resolution.x;
+      dpx.y0 *= m_instance.p_resolution.y;
+      dpx.x1 *= m_instance.p_resolution.x;
+      dpx.y1 *= m_instance.p_resolution.y;
+      if ( m_instance.p_metric )
          dpx /= 2.54;
       break;
    }
 
-   instance.p_mode = itemIndex;
+   m_instance.p_mode = itemIndex;
 
-   switch ( instance.p_mode )
+   switch ( m_instance.p_mode )
    {
    default:
    case CRMode::RelativeMargins:
-      instance.p_margins.x0 = dpx.x0/sourceWidth;
-      instance.p_margins.y0 = dpx.y0/sourceHeight;
-      instance.p_margins.x1 = dpx.x1/sourceWidth;
-      instance.p_margins.y1 = dpx.y1/sourceHeight;
+      m_instance.p_margins.x0 = dpx.x0/sourceWidth;
+      m_instance.p_margins.y0 = dpx.y0/sourceHeight;
+      m_instance.p_margins.x1 = dpx.x1/sourceWidth;
+      m_instance.p_margins.y1 = dpx.y1/sourceHeight;
       break;
    case CRMode::AbsolutePixels:
-      instance.p_margins.x0 = RoundI( dpx.x0 );
-      instance.p_margins.y0 = RoundI( dpx.y0 );
-      instance.p_margins.x1 = RoundI( dpx.x1 );
-      instance.p_margins.y1 = RoundI( dpx.y1 );
+      m_instance.p_margins.x0 = RoundI( dpx.x0 );
+      m_instance.p_margins.y0 = RoundI( dpx.y0 );
+      m_instance.p_margins.x1 = RoundI( dpx.x1 );
+      m_instance.p_margins.y1 = RoundI( dpx.y1 );
       break;
    case CRMode::AbsoluteCentimeters:
-      instance.p_margins.x0 = dpx.x0/instance.p_resolution.x;
-      instance.p_margins.y0 = dpx.y0/instance.p_resolution.y;
-      instance.p_margins.x1 = dpx.x1/instance.p_resolution.x;
-      instance.p_margins.y1 = dpx.y1/instance.p_resolution.y;
-      if ( !instance.p_metric )
+      m_instance.p_margins.x0 = dpx.x0/m_instance.p_resolution.x;
+      m_instance.p_margins.y0 = dpx.y0/m_instance.p_resolution.y;
+      m_instance.p_margins.x1 = dpx.x1/m_instance.p_resolution.x;
+      m_instance.p_margins.y1 = dpx.y1/m_instance.p_resolution.y;
+      if ( !m_instance.p_metric )
          dpx *= 2.54;
       break;
    case CRMode::AbsoluteInches:
-      instance.p_margins.x0 = dpx.x0/instance.p_resolution.x;
-      instance.p_margins.y0 = dpx.y0/instance.p_resolution.y;
-      instance.p_margins.x1 = dpx.x1/instance.p_resolution.x;
-      instance.p_margins.y1 = dpx.y1/instance.p_resolution.y;
-      if ( instance.p_metric )
+      m_instance.p_margins.x0 = dpx.x0/m_instance.p_resolution.x;
+      m_instance.p_margins.y0 = dpx.y0/m_instance.p_resolution.y;
+      m_instance.p_margins.x1 = dpx.x1/m_instance.p_resolution.x;
+      m_instance.p_margins.y1 = dpx.y1/m_instance.p_resolution.y;
+      if ( m_instance.p_metric )
          dpx /= 2.54;
       break;
    }
@@ -889,28 +941,32 @@ void CropInterface::__Mode_ItemSelected( ComboBox& /*sender*/, int itemIndex )
    UpdateNumericControls();
 }
 
+// ----------------------------------------------------------------------------
+
 void CropInterface::__FilColor_ValueUpdated( NumericEdit& sender, double value )
 {
    if ( sender == GUI->Red_NumericControl )
-      instance.p_fillColor[0] = value;
+      m_instance.p_fillColor[0] = value;
    else if ( sender == GUI->Green_NumericControl )
-      instance.p_fillColor[1] = value;
+      m_instance.p_fillColor[1] = value;
    else if ( sender == GUI->Blue_NumericControl )
-      instance.p_fillColor[2] = value;
+      m_instance.p_fillColor[2] = value;
    else if ( sender == GUI->Alpha_NumericControl )
-      instance.p_fillColor[3] = value;
+      m_instance.p_fillColor[3] = value;
 
    GUI->ColorSample_Control.Update();
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::__ColorSample_Paint( Control& sender, const Rect& updateRect )
 {
    Graphics g( sender );
 
-   RGBA color = RGBAColor( float( instance.p_fillColor[0] ),
-                           float( instance.p_fillColor[1] ),
-                           float( instance.p_fillColor[2] ),
-                           float( instance.p_fillColor[3] ) );
+   RGBA color = RGBAColor( float( m_instance.p_fillColor[0] ),
+                           float( m_instance.p_fillColor[1] ),
+                           float( m_instance.p_fillColor[2] ),
+                           float( m_instance.p_fillColor[3] ) );
 
    if ( Alpha( color ) != 0 )
    {
@@ -924,11 +980,15 @@ void CropInterface::__ColorSample_Paint( Control& sender, const Rect& updateRect
    g.DrawRect( sender.BoundsRect() );
 }
 
+// ----------------------------------------------------------------------------
+
 void CropInterface::__ViewDrag( Control& sender, const Point& pos, const View& view, unsigned modifiers, bool& wantsView )
 {
    if ( sender == GUI->AllImages_ViewList )
       wantsView = view.IsMainView();
 }
+
+// ----------------------------------------------------------------------------
 
 void CropInterface::__ViewDrop( Control& sender, const Point& pos, const View& view, unsigned modifiers )
 {
@@ -942,16 +1002,17 @@ void CropInterface::__ViewDrop( Control& sender, const Point& pos, const View& v
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-CropInterface::GUIData::GUIData( CropInterface& w ) :
-   L_Bitmap(  w.ScaledResource( ":/icons/move-left.png" ) ),
-   R_Bitmap(  w.ScaledResource( ":/icons/move-right.png" ) ),
-   T_Bitmap(  w.ScaledResource( ":/icons/move-up.png" ) ),
-   B_Bitmap(  w.ScaledResource( ":/icons/move-down.png" ) ),
-   TL_Bitmap( w.ScaledResource( ":/icons/move-left-up.png" ) ),
-   TR_Bitmap( w.ScaledResource( ":/icons/move-right-up.png" ) ),
-   BL_Bitmap( w.ScaledResource( ":/icons/move-left-down.png" ) ),
-   BR_Bitmap( w.ScaledResource( ":/icons/move-right-down.png" ) )
+CropInterface::GUIData::GUIData( CropInterface& w )
+   : L_Bitmap(  w.ScaledResource( ":/icons/move-left.png" ) )
+   , R_Bitmap(  w.ScaledResource( ":/icons/move-right.png" ) )
+   , T_Bitmap(  w.ScaledResource( ":/icons/move-up.png" ) )
+   , B_Bitmap(  w.ScaledResource( ":/icons/move-down.png" ) )
+   , TL_Bitmap( w.ScaledResource( ":/icons/move-left-up.png" ) )
+   , TR_Bitmap( w.ScaledResource( ":/icons/move-right-up.png" ) )
+   , BL_Bitmap( w.ScaledResource( ":/icons/move-left-down.png" ) )
+   , BR_Bitmap( w.ScaledResource( ":/icons/move-right-down.png" ) )
 {
    pcl::Font fnt = w.Font();
    int labelWidth1 = fnt.Width( String( "Height:" ) + 'M' );
@@ -960,13 +1021,9 @@ CropInterface::GUIData::GUIData( CropInterface& w ) :
    int ui4 = w.LogicalPixelsToPhysical( 4 );
    int ui6 = w.LogicalPixelsToPhysical( 6 );
 
-   // -------------------------------------------------------------------------
-
    AllImages_ViewList.OnViewSelected( (ViewList::view_event_handler)&CropInterface::__ViewList_ViewSelected, w );
    AllImages_ViewList.OnViewDrag( (Control::view_drag_event_handler)&CropInterface::__ViewDrag, w );
    AllImages_ViewList.OnViewDrop( (Control::view_drop_event_handler)&CropInterface::__ViewDrop, w );
-
-   // -------------------------------------------------------------------------
 
    CropMargins_SectionBar.SetTitle( "Margins/Anchors" );
    CropMargins_SectionBar.SetSection( CropMargins_Control );
@@ -1068,7 +1125,7 @@ CropInterface::GUIData::GUIData( CropInterface& w ) :
 
    CropMargins_Control.SetSizer( CropMargins_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Dimensions_SectionBar.SetTitle( "Dimensions" );
    Dimensions_SectionBar.SetSection( Dimensions_Control );
@@ -1214,7 +1271,7 @@ CropInterface::GUIData::GUIData( CropInterface& w ) :
 
    Dimensions_Control.SetSizer( Dimensions_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Resolution_SectionBar.SetTitle( "Resolution" );
    Resolution_SectionBar.SetSection( Resolution_Control );
@@ -1260,7 +1317,7 @@ CropInterface::GUIData::GUIData( CropInterface& w ) :
 
    Resolution_Control.SetSizer( Resolution_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Mode_SectionBar.SetTitle( "Process Mode" );
    Mode_SectionBar.SetSection( Mode_Control );
@@ -1282,7 +1339,7 @@ CropInterface::GUIData::GUIData( CropInterface& w ) :
 
    Mode_Control.SetSizer( Mode_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    FillColor_SectionBar.SetTitle( "Fill Color" );
    FillColor_SectionBar.SetSection( FillColor_Control );
@@ -1331,7 +1388,7 @@ CropInterface::GUIData::GUIData( CropInterface& w ) :
 
    FillColor_Control.SetSizer( FillColor_Sizer );
 
-   // -------------------------------------------------------------------------
+   //
 
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
@@ -1364,4 +1421,4 @@ CropInterface::GUIData::GUIData( CropInterface& w ) :
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropInterface.cpp - Released 2020-02-27T12:56:01Z
+// EOF CropInterface.cpp - Released 2020-07-31T19:33:39Z

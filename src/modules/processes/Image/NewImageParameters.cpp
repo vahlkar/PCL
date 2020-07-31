@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageParameters.cpp - Released 2020-02-27T12:56:01Z
+// NewImageParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -57,16 +57,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-NewImageIdentifier*        TheNewImageIdentifierParameter = 0;
-NewImageWidth*             TheNewImageWidthParameter = 0;
-NewImageHeight*            TheNewImageHeightParameter = 0;
-NewImageNumberOfChannels*  TheNewImageNumberOfChannelsParameter = 0;
-NewImageColorSpace*        TheNewImageColorSpaceParameter = 0;
-NewImageSampleFormat*      TheNewImageSampleFormatParameter = 0;
-NewImageV0*                TheNewImageV0Parameter = 0;
-NewImageV1*                TheNewImageV1Parameter = 0;
-NewImageV2*                TheNewImageV2Parameter = 0;
-NewImageVA*                TheNewImageVAParameter = 0;
+NewImageIdentifier*       TheNewImageIdentifierParameter = nullptr;
+NewImageWidth*            TheNewImageWidthParameter = nullptr;
+NewImageHeight*           TheNewImageHeightParameter = nullptr;
+NewImageNumberOfChannels* TheNewImageNumberOfChannelsParameter = nullptr;
+NewImageColorSpace*       TheNewImageColorSpaceParameter = nullptr;
+NewImageSampleFormat*     TheNewImageSampleFormatParameter = nullptr;
+NewImageV0*               TheNewImageV0Parameter = nullptr;
+NewImageV1*               TheNewImageV1Parameter = nullptr;
+NewImageV2*               TheNewImageV2Parameter = nullptr;
+NewImageVA*               TheNewImageVAParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -104,7 +104,7 @@ IsoString NewImageWidth::Id() const
 
 double NewImageWidth::DefaultValue() const
 {
-   return 256;
+   return 1024;
 }
 
 double NewImageWidth::MinimumValue() const
@@ -126,7 +126,7 @@ IsoString NewImageHeight::Id() const
 
 double NewImageHeight::DefaultValue() const
 {
-   return 256;
+   return 1024;
 }
 
 double NewImageHeight::MinimumValue() const
@@ -148,7 +148,7 @@ IsoString NewImageNumberOfChannels::Id() const
 
 double NewImageNumberOfChannels::DefaultValue() const
 {
-   return 3;
+   return 1; // ### N.B. This value has to be coherent with NewImageColorSpace::Default
 }
 
 double NewImageNumberOfChannels::MinimumValue() const
@@ -158,7 +158,7 @@ double NewImageNumberOfChannels::MinimumValue() const
 
 double NewImageNumberOfChannels::MaximumValue() const
 {
-   return 256;
+   return 1024;
 }
 
 // ----------------------------------------------------------------------------
@@ -183,8 +183,8 @@ IsoString NewImageColorSpace::ElementId( size_type i ) const
    switch ( i )
    {
    default:
-   case RGB:   return "RGB";
-   case Gray:  return "Grayscale";
+   case RGB:  return "RGB";
+   case Gray: return "Grayscale";
    }
 }
 
@@ -219,12 +219,12 @@ IsoString NewImageSampleFormat::ElementId( size_type i ) const
 {
    switch ( i )
    {
-   case I8:    return "i8";
-   case I16:   return "i16";
-   case I32:   return "i32";
+   case I8:  return "i8";
+   case I16: return "i16";
+   case I32: return "i32";
    default:
-   case F32:   return "f32";
-   case F64:   return "f64";
+   case F32: return "f32";
+   case F64: return "f64";
    }
 }
 
@@ -371,4 +371,4 @@ double NewImageVA::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF NewImageParameters.cpp - Released 2020-07-31T19:33:39Z

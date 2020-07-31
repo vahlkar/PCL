@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionDialog.cpp - Released 2020-02-27T12:56:01Z
+// ConvolutionDialog.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -58,216 +58,214 @@
 
 namespace pcl
 {
-   static int tableRow = 0;
-   static String evenBgColor, oddBgColor;
 
-   static void UpdateTableColors()
+// ----------------------------------------------------------------------------
+
+static int tableRow = 0;
+static String evenBgColor, oddBgColor;
+
+static void UpdateTableColors()
+{
+   RGBA bg = TextBox().CanvasColor();
+   double r = Red( bg )/255.0;
+   double g = Green( bg )/255.0;
+   double b = Blue( bg )/255.0;
+   double h, s, v;
+   RGBColorSystem::RGBToHSV( h, s, v, r, g, b );
+   v *= .95;
+   RGBColorSystem::HSVToRGB( r, g, b, h, s, v );
+   evenBgColor = RGBColorToHexString( RGBAColor( float( r ), float( g ), float( b ) ) );
+   v *= .92;
+   RGBColorSystem::HSVToRGB( r, g, b, h, s, v );
+   oddBgColor = RGBColorToHexString( RGBAColor( float( r ), float( g ), float( b ) ) );
+}
+
+static String TD( const String& data )
+{
+   return "<td style=\"padding:0.2em;\"><p style=\"margin-left:0.3em; margin-right:0.3em;\">" + data + "</p></td>";
+}
+
+static String TR( const StringList& cols )
+{
+   String tr( "<tr style=\"background:" + ((tableRow & 1) ? oddBgColor : evenBgColor) + "\">" );
+   for ( StringList::const_iterator i = cols.Begin(); i != cols.End(); ++i )
+      tr += TD( *i );
+   tr += "</tr>";
+   ++tableRow;
+   return tr;
+}
+
+// ----------------------------------------------------------------------------
+
+ConvolutionFilterCodeDialog::ConvolutionFilterCodeDialog( String mode, const Filter& a_filter ) : m_filter( a_filter )
+{
+   FilterCode_TextBox.SetScaledMinSize( 700, 300 );
+   FilterCode_TextBox.OnCaretPositionUpdated( (TextBox::caret_event_handler)&ConvolutionFilterCodeDialog::__TextBox_CaretPosition, *this );
+
+   if ( mode == "Edit" )
    {
-      RGBA bg = TextBox().CanvasColor();
-      double r = Red( bg )/255.0;
-      double g = Green( bg )/255.0;
-      double b = Blue( bg )/255.0;
-      double h, s, v;
-      RGBColorSystem::RGBToHSV( h, s, v, r, g, b );
-      v *= .95;
-      RGBColorSystem::HSVToRGB( r, g, b, h, s, v );
-      evenBgColor = RGBColorToHexString( RGBAColor( float( r ), float( g ), float( b ) ) );
-      v *= .92;
-      RGBColorSystem::HSVToRGB( r, g, b, h, s, v );
-      oddBgColor = RGBColorToHexString( RGBAColor( float( r ), float( g ), float( b ) ) );
+      FilterCode_TextBox.SetReadWrite();
+      FilterCode_TextBox.SetText( m_filter.ToSource() );
    }
 
-   static String TD( const String& data )
-   {
-      return "<td style=\"padding:0.2em;\"><p style=\"margin-left:0.3em; margin-right:0.3em;\">" + data + "</p></td>";
-   }
+   tableRow = 0;
+   String html( "<html style=\"white-space:pre;text-align:right;\">"
+                "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" );
 
-   static String TR( const StringList& cols )
-   {
-      String tr( "<tr style=\"background:" + ((tableRow & 1) ? oddBgColor : evenBgColor) + "\">" );
-      for ( StringList::const_iterator i = cols.Begin(); i != cols.End(); ++i )
-         tr += TD( *i );
-      tr += "</tr>";
-      ++tableRow;
-      return tr;
-   }
+   StringList cols;
+   UpdateTableColors();
 
-   ConvolutionFilterCodeDialog::ConvolutionFilterCodeDialog( String mode, const Filter& a_filter ) : filter( a_filter )
+   if ( mode == "View" )
    {
-      // ### TextBox
-      FilterCode_TextBox.SetScaledMinSize( 700, 300 );
-      FilterCode_TextBox.OnCaretPositionUpdated( (TextBox::caret_event_handler)&ConvolutionFilterCodeDialog::__TextBox_CaretPosition, *this );
-
-      if ( mode == "Edit" )
+      FilterCode_TextBox.SetReadOnly();
+      if ( m_filter.IsSeparable() )
       {
-         FilterCode_TextBox.SetReadWrite();
-         FilterCode_TextBox.SetText( filter.ToSource() );
+         SeparableFilter fs( m_filter.Separable() );
+         float element;
+
+         // Rows
+         for ( int i = 0; i < fs.Size(); ++i )
+         {
+            // Cols
+            for ( int j = 0; j < fs.Size(); ++j )
+            {
+               // Separable filter coefficients
+               element = Round( fs.ColFilter()[i] * fs.RowFilter()[j], 6 );
+               cols.Add( String().Format( "%10.6f", element ) );
+
+
+            }
+            html += TR( cols );
+            cols.Clear();
+         }
+      }
+      else
+      {
+         KernelFilter k( m_filter.Kernel() );
+
+         for ( int i = 0; i < k.Size(); ++i )
+         {
+            for ( int j = 0; j < k.Size(); ++j )
+            {
+               float element = Round( k.Coefficients()[i][j], 6 );
+               cols.Add( String().Format( "%10.6f", element ) );
+            }
+            html += TR( cols );
+            cols.Clear();
+         }
       }
 
-      tableRow = 0;
-      String s;
-      String html( "<html style=\"white-space:pre;text-align:right;\">"
-                     "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" );
-
-      StringList cols;
+      html += "</table></html>";
+      FilterCode_TextBox.SetText( html );
       UpdateTableColors();
-
-      if ( mode == "View" )
-      {
-         FilterCode_TextBox.SetReadOnly();
-         if ( filter.IsSeparable() )
-         {
-            SeparableFilter fs( filter.Separable() );
-            float element;
-
-            // Rows
-            for ( int i = 0; i < fs.Size(); ++i )
-            {
-               // Cols
-               for ( int j = 0; j < fs.Size(); ++j )
-               {
-                  // Calculus of each coefficient of the separable filter
-                  element = Round( fs.ColFilter()[i] * fs.RowFilter()[j], 6 );
-                  cols.Add( String().Format( "%10.6f", element ) );
-
-
-               }
-               html += TR( cols );
-               cols.Clear();
-            }
-         }
-         else
-         {
-            KernelFilter k( filter.Kernel() );
-
-            for ( int i = 0; i < k.Size(); ++i )
-            {
-               for ( int j = 0; j < k.Size(); ++j )
-               {
-                  float element = Round( k.Coefficients()[i][j], 6 );
-                  // The elements of the KernelFilter can be accessed directly God thanks and the [] operator.
-                  cols.Add( String().Format( "%10.6f", element ) );
-               }
-               html += TR( cols );
-               cols.Clear();
-            }
-         }
-         html += "</table></html>";
-         // We got it!! we set the TextBox text by passing the composed String s.
-         FilterCode_TextBox.SetText( html );
-         UpdateTableColors();
-      }
-
-      if ( mode == "View" )
-         LineCol_Label.Hide();
-      else
-         LineCol_Label.Show();
-
-      LineCol_Sizer.SetSpacing( 4 );
-      LineCol_Sizer.Add( LineCol_Label );
-      LineCol_Sizer.AddStretch();
-
-      // ### Save PushButton
-      Save_PushButton.SetText( "Save" );
-      Save_PushButton.SetCursor( StdCursor::Checkmark );
-      Save_PushButton.OnClick( (Button::click_event_handler)&ConvolutionFilterCodeDialog::__Button_Click, *this );
-      if ( mode == "View" )
-         Save_PushButton.Hide();
-      else
-         Save_PushButton.SetDefault();
-
-      if ( mode == "View" )
-      {
-         Cancel_PushButton.SetText( "Close" );
-         Cancel_PushButton.SetCursor( StdCursor::Checkmark );
-         Cancel_PushButton.SetDefault();
-      }
-      else
-      {
-         Cancel_PushButton.SetText( "Cancel" );
-         Cancel_PushButton.SetCursor( StdCursor::Crossmark );
-      }
-      Cancel_PushButton.OnClick( (Button::click_event_handler)&ConvolutionFilterCodeDialog::__Button_Click, *this );
-
-      DialogButtons_Sizer.SetSpacing( 8 );
-      DialogButtons_Sizer.AddStretch();
-      DialogButtons_Sizer.Add( Save_PushButton );
-      DialogButtons_Sizer.Add( Cancel_PushButton );
-      DialogButtons_Sizer.AddStretch();
-
-      Global_Sizer.SetMargin( 4 );
-      Global_Sizer.SetSpacing( 4 );
-      Global_Sizer.Add( FilterCode_TextBox );
-      Global_Sizer.Add( LineCol_Sizer );
-      Global_Sizer.Add( DialogButtons_Sizer );
-
-      SetSizer( Global_Sizer );
-      EnableUserResizing();
-      AdjustToContents();
-      BringToFront();
-      //SetFixedSize();
-
-      if ( mode == "View" )
-         SetWindowTitle( '\"' + filter.Name() + '\"' + " filter elements" );
-      else if ( mode == "Edit" )
-         SetWindowTitle( '\"' + filter.Name() + '\"' + " edit" );
-      else if ( mode == "New" )
-         SetWindowTitle( "New filter" );
-      else
-         throw Error( "Internal error: Invalid dialog operation mode in ConvolutionFilterCodeDialog" );
    }
 
-   void ConvolutionFilterCodeDialog::__Button_Click( Button& sender, bool checked )
+   if ( mode == "View" )
+      LineCol_Label.Hide();
+   else
+      LineCol_Label.Show();
+
+   LineCol_Sizer.SetSpacing( 4 );
+   LineCol_Sizer.Add( LineCol_Label );
+   LineCol_Sizer.AddStretch();
+
+   Save_PushButton.SetText( "Save" );
+   Save_PushButton.SetCursor( StdCursor::Checkmark );
+   Save_PushButton.OnClick( (Button::click_event_handler)&ConvolutionFilterCodeDialog::__Button_Click, *this );
+   if ( mode == "View" )
+      Save_PushButton.Hide();
+   else
+      Save_PushButton.SetDefault();
+
+   if ( mode == "View" )
    {
-      if ( sender == Cancel_PushButton )
-      {
-         Cancel();
-      }
-      else if ( sender == Save_PushButton )
-      {
-         try
-         {
-            IsoString sourceCode = FilterCode_TextBox.Text().ToUTF8().Trimmed();
-            if ( sourceCode.IsEmpty() )
-               throw Error( "Empty filter source code" );
-            filter = Filter::FromSource( sourceCode );
-            if ( !filter.IsValid() )
-               throw Error( "invalid filter" );
-            Ok();
-            return;
-         }
-         ERROR_HANDLER
-         FilterCode_TextBox.Focus();
-      }
+      Cancel_PushButton.SetText( "Close" );
+      Cancel_PushButton.SetCursor( StdCursor::Checkmark );
+      Cancel_PushButton.SetDefault();
    }
-
-   void ConvolutionFilterCodeDialog::__TextBox_CaretPosition( TextBox& sender, int oldPos, int newPos )
+   else
    {
-      if ( sender == FilterCode_TextBox )
+      Cancel_PushButton.SetText( "Cancel" );
+      Cancel_PushButton.SetCursor( StdCursor::Crossmark );
+   }
+   Cancel_PushButton.OnClick( (Button::click_event_handler)&ConvolutionFilterCodeDialog::__Button_Click, *this );
+
+   DialogButtons_Sizer.SetSpacing( 8 );
+   DialogButtons_Sizer.AddStretch();
+   DialogButtons_Sizer.Add( Save_PushButton );
+   DialogButtons_Sizer.Add( Cancel_PushButton );
+   DialogButtons_Sizer.AddStretch();
+
+   Global_Sizer.SetMargin( 4 );
+   Global_Sizer.SetSpacing( 4 );
+   Global_Sizer.Add( FilterCode_TextBox );
+   Global_Sizer.Add( LineCol_Sizer );
+   Global_Sizer.Add( DialogButtons_Sizer );
+
+   SetSizer( Global_Sizer );
+   EnableUserResizing();
+   AdjustToContents();
+   BringToFront();
+   //SetFixedSize();
+
+   if ( mode == "View" )
+      SetWindowTitle( '\"' + m_filter.Name() + '\"' + " filter elements" );
+   else if ( mode == "Edit" )
+      SetWindowTitle( '\"' + m_filter.Name() + '\"' + " edit" );
+   else if ( mode == "New" )
+      SetWindowTitle( "New filter" );
+   else
+      throw Error( "Internal error: Invalid dialog operation mode in ConvolutionFilterCodeDialog" );
+}
+
+// ----------------------------------------------------------------------------
+
+void ConvolutionFilterCodeDialog::__Button_Click( Button& sender, bool checked )
+{
+   if ( sender == Cancel_PushButton )
+   {
+      Cancel();
+   }
+   else if ( sender == Save_PushButton )
+   {
+      try
       {
-         String t = FilterCode_TextBox.Text();
+         IsoString sourceCode = FilterCode_TextBox.Text().ToUTF8().Trimmed();
+         if ( sourceCode.IsEmpty() )
+            throw Error( "Empty filter source code" );
+         m_filter = Filter::FromSource( sourceCode );
+         if ( !m_filter.IsValid() )
+            throw Error( "invalid filter" );
+         Ok();
+         return;
+      }
+      ERROR_HANDLER
+      FilterCode_TextBox.Focus();
+   }
+}
 
-         line = 1;
-         column = 1;
+// ----------------------------------------------------------------------------
 
-         for ( String::iterator i = t.Begin(); i < t.At( newPos ); i++ )
+void ConvolutionFilterCodeDialog::__TextBox_CaretPosition( TextBox& sender, int oldPos, int newPos )
+{
+   if ( sender == FilterCode_TextBox )
+   {
+      String t = FilterCode_TextBox.Text();
+      int line = 1, col = 1;
+      for ( String::iterator i = t.Begin(); i < t.At( newPos ); ++i, ++col )
+         if( *i == '\n')
          {
-            if( *i == '\n')
-            {
-               ++line;
-               column = 0;
-            }
-
-            ++column;
+            ++line;
+            col = 0;
          }
 
-         LineCol_Label.SetText( String().Format( "Line: %d Col: %d", line , column ) );
-      }
+      LineCol_Label.SetText( String().Format( "Line: %d Col: %d", line, col ) );
    }
+}
 
-   // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionDialog.cpp - Released 2020-02-27T12:56:01Z
+// EOF ConvolutionDialog.cpp - Released 2020-07-31T19:33:39Z

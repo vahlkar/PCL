@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SeparableMedianFilter.cpp - Released 2020-02-27T12:55:33Z
+// pcl/SeparableMedianFilter.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -115,8 +115,10 @@ private:
    {
    public:
 
-      Thread( AbstractImage::ThreadData& data, GenericImage<P>& image, const SeparableMedianFilter& filter ) :
-      pcl::Thread(), m_image( image ), m_filter( filter ), m_data( data )
+      Thread( AbstractImage::ThreadData& data, GenericImage<P>& image, const SeparableMedianFilter& filter )
+         : m_image( image )
+         , m_filter( filter )
+         , m_data( data )
       {
       }
 
@@ -227,8 +229,10 @@ private:
    public:
 
       SeparableMedianFilterRowThread( AbstractImage::ThreadData& data, GenericImage<P>& image,
-                                      const SeparableMedianFilter& filter, int firstRow, int endRow ) :
-         Thread<P>( data, image, filter ), m_firstRow( firstRow ), m_endRow( endRow )
+                                      const SeparableMedianFilter& filter, int firstRow, int endRow )
+         : Thread<P>( data, image, filter )
+         , m_firstRow( firstRow )
+         , m_endRow( endRow )
       {
       }
 
@@ -264,8 +268,10 @@ private:
    public:
 
       SeparableMedianFilterColThread( AbstractImage::ThreadData& data, GenericImage<P>& image,
-                                      const SeparableMedianFilter& filter, int startCol, int endCol ) :
-         Thread<P>( data, image, filter ), m_firstCol( startCol ), m_endCol( endCol )
+                                      const SeparableMedianFilter& filter, int startCol, int endCol )
+         : Thread<P>( data, image, filter )
+         , m_firstCol( startCol )
+         , m_endCol( endCol )
       {
       }
 
@@ -339,4 +345,4 @@ void SeparableMedianFilter::Apply( UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableMedianFilter.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/SeparableMedianFilter.cpp - Released 2020-07-31T19:33:12Z

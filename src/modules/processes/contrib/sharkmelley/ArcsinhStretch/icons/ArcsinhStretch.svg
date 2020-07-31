@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="a" x1="12.027" x2="70.235" y1="86.124" y2="27.916" gradientTransform="matrix(7.9714,0,0,7.9714,-71.87,-198.53)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0405ff" offset="0"/>
+<stop stop-color="#9fc9ff" offset="1"/>
+</linearGradient>
+</defs>
+<rect x="24" y="24" width="464" height="464" fill="url(#a)"/>
+<path d="m139.13 45.09v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m222.62 45.09v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m306.11 45.09v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m389.6 45.09v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m466.91 122.14-421.82 0.26631" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m466.91 205.89h-421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m466.91 289.38h-421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m466.91 372.87h-421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m466.91 456.36h-421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m55.64 45.09v421.82" fill="none" stroke="#acacac" stroke-width="22"/>
+<path d="m72.225 360.99c73.721-12.59 154.98-34.5 185.35-104.78 30.672-70.98 94.481-86.536 182.2-105.19" fill="none" stroke="#00fda9" stroke-linecap="round" stroke-linejoin="round" stroke-width="40"/>
+</svg>

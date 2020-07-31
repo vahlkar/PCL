@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// ColorCalibrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// ColorCalibrationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -57,31 +57,31 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-CCWhiteReferenceViewId*          TheCCWhiteReferenceViewIdParameter = 0;
-CCWhiteLow*                      TheCCWhiteLowParameter = 0;
-CCWhiteHigh*                     TheCCWhiteHighParameter = 0;
-CCWhiteUseROI*                   TheCCWhiteUseROIParameter = 0;
-CCWhiteROIX0*                    TheCCWhiteROIX0Parameter = 0;
-CCWhiteROIY0*                    TheCCWhiteROIY0Parameter = 0;
-CCWhiteROIX1*                    TheCCWhiteROIX1Parameter = 0;
-CCWhiteROIY1*                    TheCCWhiteROIY1Parameter = 0;
-CCStructureDetection*            TheCCStructureDetectionParameter = 0;
-CCStructureLayers*               TheCCStructureLayersParameter = 0;
-CCNoiseLayers*                   TheCCNoiseLayersParameter = 0;
-CCManualWhiteBalance*            TheCCManualWhiteBalanceParameter = 0;
-CCManualRedFactor*               TheCCManualRedFactorParameter = 0;
-CCManualGreenFactor*             TheCCManualGreenFactorParameter = 0;
-CCManualBlueFactor*              TheCCManualBlueFactorParameter = 0;
-CCBackgroundReferenceViewId*     TheCCBackgroundReferenceViewIdParameter = 0;
-CCBackgroundLow*                 TheCCBackgroundLowParameter = 0;
-CCBackgroundHigh*                TheCCBackgroundHighParameter = 0;
-CCBackgroundUseROI*              TheCCBackgroundUseROIParameter = 0;
-CCBackgroundROIX0*               TheCCBackgroundROIX0Parameter = 0;
-CCBackgroundROIY0*               TheCCBackgroundROIY0Parameter = 0;
-CCBackgroundROIX1*               TheCCBackgroundROIX1Parameter = 0;
-CCBackgroundROIY1*               TheCCBackgroundROIY1Parameter = 0;
-CCOutputWhiteReferenceMask*      TheCCOutputWhiteReferenceMaskParameter = 0;
-CCOutputBackgroundReferenceMask* TheCCOutputBackgroundReferenceMaskParameter = 0;
+CCWhiteReferenceViewId*          TheCCWhiteReferenceViewIdParameter = nullptr;
+CCWhiteLow*                      TheCCWhiteLowParameter = nullptr;
+CCWhiteHigh*                     TheCCWhiteHighParameter = nullptr;
+CCWhiteUseROI*                   TheCCWhiteUseROIParameter = nullptr;
+CCWhiteROIX0*                    TheCCWhiteROIX0Parameter = nullptr;
+CCWhiteROIY0*                    TheCCWhiteROIY0Parameter = nullptr;
+CCWhiteROIX1*                    TheCCWhiteROIX1Parameter = nullptr;
+CCWhiteROIY1*                    TheCCWhiteROIY1Parameter = nullptr;
+CCStructureDetection*            TheCCStructureDetectionParameter = nullptr;
+CCStructureLayers*               TheCCStructureLayersParameter = nullptr;
+CCNoiseLayers*                   TheCCNoiseLayersParameter = nullptr;
+CCManualWhiteBalance*            TheCCManualWhiteBalanceParameter = nullptr;
+CCManualRedFactor*               TheCCManualRedFactorParameter = nullptr;
+CCManualGreenFactor*             TheCCManualGreenFactorParameter = nullptr;
+CCManualBlueFactor*              TheCCManualBlueFactorParameter = nullptr;
+CCBackgroundReferenceViewId*     TheCCBackgroundReferenceViewIdParameter = nullptr;
+CCBackgroundLow*                 TheCCBackgroundLowParameter = nullptr;
+CCBackgroundHigh*                TheCCBackgroundHighParameter = nullptr;
+CCBackgroundUseROI*              TheCCBackgroundUseROIParameter = nullptr;
+CCBackgroundROIX0*               TheCCBackgroundROIX0Parameter = nullptr;
+CCBackgroundROIY0*               TheCCBackgroundROIY0Parameter = nullptr;
+CCBackgroundROIX1*               TheCCBackgroundROIX1Parameter = nullptr;
+CCBackgroundROIY1*               TheCCBackgroundROIY1Parameter = nullptr;
+CCOutputWhiteReferenceMask*      TheCCOutputWhiteReferenceMaskParameter = nullptr;
+CCOutputBackgroundReferenceMask* TheCCOutputBackgroundReferenceMaskParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -708,4 +708,4 @@ bool CCOutputBackgroundReferenceMask::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF ColorCalibrationParameters.cpp - Released 2020-07-31T19:33:39Z

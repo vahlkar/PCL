@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrInstance.cpp - Released 2020-02-27T12:56:01Z
+// GradientsHdrInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,7 @@
 #include <pcl/View.h>
 
 #include "GradientsHdrCompression.h" // this contains the real magic...
-#include "RgbPreserve.h" //color preserving intensity transform
+#include "RgbPreserve.h"             //color preserving intensity transform
 
 namespace pcl
 {
@@ -47,33 +47,39 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 GradientsHdrInstance::GradientsHdrInstance( const MetaProcess* m )
- :ProcessImplementation( m )
- ,expGradient( TheGradientsHdrParameterExpGradient->DefaultValue() )
- ,logMaxGradient( TheGradientsHdrParameterLogMaxGradient->DefaultValue() )
- ,logMinGradient( TheGradientsHdrParameterLogMinGradient->DefaultValue() )
- ,bRescale01(TheGradientsHdrParameterRescale01->DefaultValue())
- ,bPreserveColor(TheGradientsHdrParameterPreserveColor->DefaultValue())
+   : ProcessImplementation( m )
+   , expGradient( TheGradientsHdrParameterExpGradient->DefaultValue() )
+   , logMaxGradient( TheGradientsHdrParameterLogMaxGradient->DefaultValue() )
+   , logMinGradient( TheGradientsHdrParameterLogMinGradient->DefaultValue() )
+   , bRescale01( TheGradientsHdrParameterRescale01->DefaultValue() )
+   , bPreserveColor( TheGradientsHdrParameterPreserveColor->DefaultValue() )
 {
 }
 
-GradientsHdrInstance::GradientsHdrInstance( const GradientsHdrInstance& x ) :
-ProcessImplementation( x )
+// ----------------------------------------------------------------------------
+
+GradientsHdrInstance::GradientsHdrInstance( const GradientsHdrInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
 
+// ----------------------------------------------------------------------------
+
 void GradientsHdrInstance::Assign( const ProcessImplementation& p )
 {
    const GradientsHdrInstance* x = dynamic_cast<const GradientsHdrInstance*>( &p );
-   if ( x != 0 )
+   if ( x != nullptr )
    {
-     expGradient = x->expGradient;
-     logMaxGradient = x->logMaxGradient;
-     logMinGradient = x->logMinGradient;
-     bRescale01= x->bRescale01;
-     bPreserveColor= x->bPreserveColor;
+      expGradient = x->expGradient;
+      logMaxGradient = x->logMaxGradient;
+      logMinGradient = x->logMinGradient;
+      bRescale01 = x->bRescale01;
+      bPreserveColor = x->bPreserveColor;
    }
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsHdrInstance::CanExecuteOn( const View& view, pcl::String& whyNot ) const
 {
@@ -83,74 +89,89 @@ bool GradientsHdrInstance::CanExecuteOn( const View& view, pcl::String& whyNot )
       return false;
    }
 
-   if (expGradient<0.0) {
-     whyNot = "GradientsHdrCompression requires that expGradient>=0.0";
-     return false;
+   if ( expGradient < 0.0 )
+   {
+      whyNot = "GradientsHdrCompression requires that expGradient>=0.0";
+      return false;
    }
-   if (logMaxGradient<=logMinGradient) {
-     whyNot = "GradientsHdrCompression requires that logMaxGradient> logMinGradient";
-     return false;
+   if ( logMaxGradient <= logMinGradient )
+   {
+      whyNot = "GradientsHdrCompression requires that logMaxGradient> logMinGradient";
+      return false;
    }
    return true;
 }
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 class GradientsHdrEngine
 {
 public:
 
-  /// takes any kind of image, and applies gradient hdr compression to its luminance.
-  /// @param zoomlevel is the factor by which width/height have been divided compared
-  /// to the original image
-  template <class P>
-  static void Apply( GenericImage<P>& img, const GradientsHdrInstance& instance)
-  {
-    // clamp this value to 0 if it is very small
-    double minGradient=0.0;
-    const double minRange=TheGradientsHdrParameterLogMinGradient->MaximumValue()-TheGradientsHdrParameterLogMinGradient->MinimumValue();
-    if (instance.logMinGradient>TheGradientsHdrParameterLogMinGradient->MinimumValue()+0.05*minRange) {
-      minGradient=std::pow(10.0,instance.logMinGradient);
-    }
-    GradientsHdrCompression::imageType_t lumImage;
-    // we need to extract luminance, and convert to float. Also works for greyscale images
-    img.GetLightness(lumImage);
-    // do the work
-    GradientsHdrCompression gradients;
-    gradients.hdrCompressionSetImage(lumImage);
-    GradientsHdrCompression::imageType_t resImage;
-    gradients.hdrCompression(std::pow(10.0,instance.logMaxGradient),
-			     minGradient,
-			     instance.expGradient,
-			     instance.bRescale01,
-			     resImage);
-
-    if(img.NumberOfNominalChannels()>1) {
-      if (instance.bPreserveColor) {
-	RgbPreserve rgbPreserve;
-	RgbPreserve::imageType_t transformedImage(img);
-	rgbPreserve.rgbTransformation(lumImage,resImage,transformedImage);
-	img.Assign(transformedImage);
-
-      } else {
-	// Note: if this strongly stretches the image, we loose a lot of color here
-	img.SetLightness(resImage);
+   /// takes any kind of image, and applies gradient hdr compression to its luminance.
+   /// @param zoomlevel is the factor by which width/height have been divided compared
+   /// to the original image
+   template <class P>
+   static void Apply( GenericImage<P>& img, const GradientsHdrInstance& instance )
+   {
+      // clamp this value to 0 if it is very small
+      double minGradient = 0.0;
+      const double minRange = TheGradientsHdrParameterLogMinGradient->MaximumValue() - TheGradientsHdrParameterLogMinGradient->MinimumValue();
+      if ( instance.logMinGradient > TheGradientsHdrParameterLogMinGradient->MinimumValue() + 0.05 * minRange )
+      {
+         minGradient = std::pow( 10.0, instance.logMinGradient );
       }
-      // we need to insert the luminance into the original image
-    }else{
-	// unfortunately SetLightness() does not work for grayscale targets.
-	// Therefore this is the result
-      img.Assign(resImage);
-    }
-  }
+      GradientsHdrCompression::imageType_t lumImage;
+      // we need to extract luminance, and convert to float. Also works for greyscale images
+      img.GetLightness( lumImage );
+      // do the work
+      GradientsHdrCompression gradients;
+      gradients.hdrCompressionSetImage( lumImage );
+      GradientsHdrCompression::imageType_t resImage;
+      gradients.hdrCompression( std::pow( 10.0, instance.logMaxGradient ),
+         minGradient,
+         instance.expGradient,
+         instance.bRescale01,
+         resImage );
+
+      if ( img.NumberOfNominalChannels() > 1 )
+      {
+         if ( instance.bPreserveColor )
+         {
+            RgbPreserve rgbPreserve;
+            RgbPreserve::imageType_t transformedImage( img );
+            rgbPreserve.rgbTransformation( lumImage, resImage, transformedImage );
+            img.Assign( transformedImage );
+         }
+         else
+         {
+            // Note: if this strongly stretches the image, we loose a lot of color here
+            img.SetLightness( resImage );
+         }
+         // we need to insert the luminance into the original image
+      }
+      else
+      {
+         // unfortunately SetLightness() does not work for grayscale targets.
+         // Therefore this is the result
+         img.Assign( resImage );
+      }
+   }
 };
+
+// ----------------------------------------------------------------------------
 
 void GradientsHdrInstance::ApplyClip16( UInt16Image& img, int zoom )
 {
-  // zoomlevel is the negative factor by which the original image dimensions
-  // have been reduced. Example: Zoomlevel -3: imageWidth=orgWidth/3.
-  // luckily, the parameters of GradientsHdrEngine::Apply() are independent of the
-  // zoom level.
-  GradientsHdrEngine::Apply(img, *this);
+   // zoomlevel is the negative factor by which the original image dimensions
+   // have been reduced. Example: Zoomlevel -3: imageWidth=orgWidth/3.
+   // luckily, the parameters of GradientsHdrEngine::Apply() are independent of the
+   // zoom level.
+   GradientsHdrEngine::Apply( img, *this );
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsHdrInstance::ExecuteOn( View& view )
 {
@@ -177,7 +198,7 @@ bool GradientsHdrInstance::ExecuteOn( View& view )
       else
          switch ( image.BitsPerSample() )
          {
-         case  8:
+         case 8:
             GradientsHdrEngine::Apply( static_cast<pcl::UInt8Image&>( *image ), *this );
             break;
          case 16:
@@ -190,6 +211,8 @@ bool GradientsHdrInstance::ExecuteOn( View& view )
 
    return true;
 }
+
+// ----------------------------------------------------------------------------
 
 void* GradientsHdrInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
@@ -204,13 +227,17 @@ void* GradientsHdrInstance::LockParameter( const MetaParameter* p, size_type /*t
    if ( p == TheGradientsHdrParameterPreserveColor )
       return &bPreserveColor;
 
-   return 0;
+   return nullptr;
 }
+
+// ----------------------------------------------------------------------------
 
 bool GradientsHdrInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
-  return false;
+   return false;
 }
+
+// ----------------------------------------------------------------------------
 
 size_type GradientsHdrInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
@@ -219,7 +246,7 @@ size_type GradientsHdrInstance::ParameterLength( const MetaParameter* p, size_ty
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF GradientsHdrInstance.cpp - Released 2020-07-31T19:33:39Z

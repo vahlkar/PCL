@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="d" x1="49.704" x2="92.982" y1="182.47" y2="225.94" gradientTransform="matrix(2.1091 0 0 2.1091 -50.757 -225.17)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f26c2b" offset="0"/>
+<stop stop-color="#fac7af" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="22.538" x2="61.421" y1="172.6" y2="211.77" gradientTransform="matrix(2.1091 0 0 2.1091 -2.1287 -213.21)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#9fabfd" offset="0"/>
+<stop stop-color="#6060ff" offset=".54357"/>
+<stop stop-color="#1212ff" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-9.0714 -87.45)">
+<g transform="translate(-7.1627 -34.793)">
+<rect x="22.584" y="128.59" width="122.77" height="122.77" fill="url(#d)"/>
+<circle cx="83.967" cy="189.98" r="55.803" fill="url(#c)"/>
+<circle cx="83.967" cy="140.31" r="11.719" fill="#f6f600"/>
+<circle cx="83.967" cy="239.64" r="11.719" fill="#f6f600"/>
+<circle cx="133.63" cy="189.98" r="11.719" fill="#f6f600"/>
+<circle cx="34.303" cy="189.98" r="11.719" fill="#f6f600"/>
+</g>
+</g>
+</svg>

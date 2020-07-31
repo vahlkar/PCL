@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Dialog.h - Released 2020-02-27T12:55:23Z
+// pcl/Dialog.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -128,7 +128,7 @@ public:
     * has exited and the dialog has been closed. During the event loop, the
     * dialog behaves as an <em>application modal window:</em> Only the dialog
     * window allows user interaction while the rest of the GUI is blocked in
-    * the PixInsight Core application. To exit the modal event loop, the Ok()
+    * the PixInsight core application. To exit the modal event loop, the Ok()
     * and Cancel() member functions can be used to return the standard dialog
     * exit codes StdDialogCode::Ok and StdDialogCode::Cancel, respectively.
     *
@@ -151,7 +151,7 @@ public:
     * This function opens the dialog window and returns immediately, allowing
     * normal execution to continue without entering a separate event loop. As
     * happens with Dialog::Execute(), this member function creates a modal
-    * dialog that blocks the rest of the PixInsight Core application for GUI
+    * dialog that blocks the rest of the PixInsight core application for GUI
     * user interaction. The essential difference between both member functions
     * is that Open() does not enter a new event loop. Typically, this function
     * is used to provide feedback to the user during long procedures, as well
@@ -306,4 +306,4 @@ private:
 #endif   // __PCL_Dialog_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Dialog.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/Dialog.h - Released 2020-07-31T19:33:04Z

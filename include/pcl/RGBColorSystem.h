@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/RGBColorSystem.h - Released 2020-02-27T12:55:23Z
+// pcl/RGBColorSystem.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -119,7 +119,8 @@ public:
     * This constructor increments the reference counter of the source RGB
     * working space data.
     */
-   RGBColorSystem() : m_data( RGBColorSystem::sRGB.m_data )
+   RGBColorSystem()
+      : m_data( RGBColorSystem::sRGB.m_data )
    {
       if ( m_data != nullptr )
          m_data->Attach();
@@ -133,7 +134,8 @@ public:
     * This constructor increments the reference counter of the source RGB
     * working space data.
     */
-   RGBColorSystem( const RGBColorSystem& s ) : m_data( s.m_data )
+   RGBColorSystem( const RGBColorSystem& s )
+      : m_data( s.m_data )
    {
       m_data->Attach();
    }
@@ -1225,8 +1227,8 @@ protected:
    struct Data : public ReferenceCounter
    {
       float gamma, gammaInv;  // gamma, 1/gamma
-      bool issRGB   : 1; // true if sRGB gamma function is being used
-      bool isLinear : 1; // true if gamma=1.0 and is not sRGB, for optimization
+      bool issRGB;   // true if sRGB gamma function is being used
+      bool isLinear; // true if gamma=1.0 and is not sRGB, for optimization
 
       /*
        * Chromaticity coordinates w.r.t. the D50 reference white
@@ -1582,4 +1584,4 @@ public:
 #endif   // __PCL_RGBColorSystem_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/RGBColorSystem.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/RGBColorSystem.h - Released 2020-07-31T19:33:04Z

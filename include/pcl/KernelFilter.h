@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/KernelFilter.h - Released 2020-02-27T12:55:23Z
+// pcl/KernelFilter.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -103,8 +103,8 @@ public:
    /*!
     * Constructs an empty %KernelFilter object with optional \a name.
     */
-   KernelFilter( const String& name = String() ) :
-      filterName( name )
+   KernelFilter( const String& name = String() )
+      : filterName( name )
    {
    }
 
@@ -116,9 +116,9 @@ public:
     * A %KernelFilter object must be initialized with either a zero size
     * (which yields an empty filter), or an odd size >= 3.
     */
-   KernelFilter( int n, const String& name = String() ) :
-      coefficients( PCL_VALID_KERNEL_SIZE( n ), PCL_VALID_KERNEL_SIZE( n ) ),
-      filterName( name )
+   KernelFilter( int n, const String& name = String() )
+      : coefficients( PCL_VALID_KERNEL_SIZE( n ), PCL_VALID_KERNEL_SIZE( n ) )
+      , filterName( name )
    {
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
@@ -129,9 +129,9 @@ public:
     * element value \a x, and optional \a name.
     */
    template <typename T>
-   KernelFilter( int n, const T& x, const String& name = String() ) :
-      coefficients( x, PCL_VALID_KERNEL_SIZE( n ), PCL_VALID_KERNEL_SIZE( n ) ),
-      filterName( name )
+   KernelFilter( int n, const T& x, const String& name = String() )
+      : coefficients( x, PCL_VALID_KERNEL_SIZE( n ), PCL_VALID_KERNEL_SIZE( n ) )
+      , filterName( name )
    {
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
@@ -141,9 +141,9 @@ public:
     * Constructs a %KernelFilter object with the specified filter coefficient
     * matrix \a F and optional \a name.
     */
-   KernelFilter( const coefficient_matrix& F, const String& name = String() ) :
-      coefficients( F ),
-      filterName( name )
+   KernelFilter( const coefficient_matrix& F, const String& name = String() )
+      : coefficients( F )
+      , filterName( name )
    {
    }
 
@@ -153,9 +153,9 @@ public:
     * static array \a k.
     */
    template <typename T>
-   KernelFilter( const T* k, int n, const String& name = String() ) :
-      coefficients( k, PCL_VALID_KERNEL_SIZE( n ), PCL_VALID_KERNEL_SIZE( n ) ),
-      filterName( name )
+   KernelFilter( const T* k, int n, const String& name = String() )
+      : coefficients( k, PCL_VALID_KERNEL_SIZE( n ), PCL_VALID_KERNEL_SIZE( n ) )
+      , filterName( name )
    {
       PCL_PRECONDITION( n == 0 || n >= 3 )
       PCL_PRECONDITION( n == 0 || (n & 1) )
@@ -578,4 +578,4 @@ protected:
 #endif   // __PCL_KernelFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/KernelFilter.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/KernelFilter.h - Released 2020-07-31T19:33:04Z

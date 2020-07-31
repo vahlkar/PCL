@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MetaParameter.cpp - Released 2020-02-27T12:55:33Z
+// pcl/MetaParameter.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -61,7 +61,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-MetaParameter::MetaParameter( MetaProcess* p ) : MetaObject( p )
+MetaParameter::MetaParameter( MetaProcess* p )
+   : MetaObject( p )
 {
    if ( p == nullptr )
       throw Error( "MetaParameter: Illegal null MetaProcess parent pointer" );
@@ -69,7 +70,8 @@ MetaParameter::MetaParameter( MetaProcess* p ) : MetaObject( p )
 
 // ----------------------------------------------------------------------------
 
-MetaParameter::MetaParameter( MetaTable* t ) : MetaObject( t )
+MetaParameter::MetaParameter( MetaTable* t )
+   : MetaObject( t )
 {
    if ( t == nullptr )
       throw Error( "MetaParameter: Illegal null MetaTable parent pointer" );
@@ -87,7 +89,8 @@ const MetaParameter* MetaTable::operator[]( size_type i ) const
 
 // ----------------------------------------------------------------------------
 
-MetaTable::MetaTable( MetaTable* t ) : MetaVariableLengthParameter( t )
+MetaTable::MetaTable( MetaTable* t )
+   : MetaVariableLengthParameter( t )
 {
    throw Error( "MetaTable: Nested tables not allowed" );
 }
@@ -436,4 +439,4 @@ uint32 MetaBlock::APIParType() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaParameter.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/MetaParameter.cpp - Released 2020-07-31T19:33:12Z

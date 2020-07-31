@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAInstance.h - Released 2020-02-27T12:56:01Z
+// MergeCFAInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,8 +54,8 @@
 #ifndef __MergeCFAInstance_h
 #define __MergeCFAInstance_h
 
-#include <pcl/ProcessImplementation.h>
 #include <pcl/ImageWindow.h>
+#include <pcl/ProcessImplementation.h>
 
 namespace pcl
 {
@@ -69,19 +69,18 @@ public:
    MergeCFAInstance( const MetaProcess* );
    MergeCFAInstance( const MergeCFAInstance& );
 
-   virtual void Assign(const ProcessImplementation&);
-   virtual bool CanExecuteOn(const View&, pcl::String& whyNot) const;
-   virtual bool CanExecuteGlobal( String& whyNot ) const;
-   virtual bool ExecuteGlobal();
-
-   virtual void* LockParameter(const MetaParameter*, size_type tableRow);
-   virtual bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow );
-   virtual size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const;
+   void Assign( const ProcessImplementation& ) override;
+   bool CanExecuteOn( const View&, pcl::String& whyNot ) const override;
+   bool CanExecuteGlobal( String& whyNot ) const override;
+   bool ExecuteGlobal() override;
+   void* LockParameter( const MetaParameter*, size_type tableRow ) override;
+   bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
+   size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
 private:
 
-   StringList p_viewId;
-   String     o_outputViewId;
+   StringList p_viewId = StringList( size_type( 4 ) );
+   String o_outputViewId;
 
    int m_width, m_height, m_bitsPerSample, m_numberOfChannels;
    bool m_isFloatSample, m_isColor;
@@ -94,9 +93,9 @@ private:
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __MergeCFAInstance_h
+#endif // __MergeCFAInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAInstance.h - Released 2020-02-27T12:56:01Z
+// EOF MergeCFAInstance.h - Released 2020-07-31T19:33:39Z

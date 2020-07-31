@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.1
 // ----------------------------------------------------------------------------
-// ChannelExtractionProcess.cpp - Released 2020-02-27T12:56:01Z
+// ChannelExtractionProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -64,15 +64,10 @@ ChannelExtractionProcess*  TheChannelExtractionProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
-#include "ChannelExtractionIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
 ChannelExtractionProcess::ChannelExtractionProcess()
 {
    TheChannelExtractionProcess = this;
 
-   // Instantiate process parameters
    TheColorSpaceIdExtractionParameter = new ColorSpaceId( this );
    TheChannelTableExtractionParameter = new ChannelTable( this );
    TheChannelEnabledExtractionParameter = new ChannelEnabled( TheChannelTableExtractionParameter );
@@ -103,9 +98,9 @@ String ChannelExtractionProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ChannelExtractionProcess::IconImageXPM() const
+String ChannelExtractionProcess::IconImageSVGFile() const
 {
-   return ChannelExtractionIcon_XPM;
+   return "@module_icons_dir/ChannelExtraction.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -142,4 +137,4 @@ bool ChannelExtractionProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ChannelExtractionProcess.cpp - Released 2020-07-31T19:33:39Z

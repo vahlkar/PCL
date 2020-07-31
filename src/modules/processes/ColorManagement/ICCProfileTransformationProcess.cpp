@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationProcess.cpp - Released 2020-02-27T12:56:01Z
+// ICCProfileTransformationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -66,11 +66,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-ICCProfileTransformationProcess* TheICCProfileTransformationProcess = 0;
-
-// ----------------------------------------------------------------------------
-
-#include "ICCProfileTransformationIcon.xpm"
+ICCProfileTransformationProcess* TheICCProfileTransformationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -78,7 +74,6 @@ ICCProfileTransformationProcess::ICCProfileTransformationProcess()
 {
    TheICCProfileTransformationProcess = this;
 
-   // Instantiate process parameters
    new ICCTTargetProfile( this );
    new ICCTToDefaultProfile( this );
    new ICCTRenderingIntent( this );
@@ -116,9 +111,9 @@ String ICCProfileTransformationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** ICCProfileTransformationProcess::IconImageXPM() const
+String ICCProfileTransformationProcess::IconImageSVGFile() const
 {
-   return ICCProfileTransformationIcon_XPM;
+   return "@module_icons_dir/ICCProfileTransformation.svg";
 }
 
 // ----------------------------------------------------------------------------
@@ -140,7 +135,7 @@ ProcessImplementation* ICCProfileTransformationProcess::Create() const
 ProcessImplementation* ICCProfileTransformationProcess::Clone( const ProcessImplementation& p ) const
 {
    const ICCProfileTransformationInstance* instPtr = dynamic_cast<const ICCProfileTransformationInstance*>( &p );
-   return (instPtr != 0) ? new ICCProfileTransformationInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new ICCProfileTransformationInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -232,9 +227,9 @@ int ICCProfileTransformationProcess::ProcessCommandLine( const StringList& argv 
       {
          if ( arg.Id() == "profile" )
          {
-            instance.targetProfile = arg.StringValue();
-            instance.targetProfile.Trim();
-            if ( instance.targetProfile.IsEmpty() )
+            instance.p_targetProfile = arg.StringValue();
+            instance.p_targetProfile.Trim();
+            if ( instance.p_targetProfile.IsEmpty() )
                throw Error( "Empty profile identifier: " + arg.Token() );
          }
          else if ( arg.Id() == "filename" )
@@ -244,7 +239,7 @@ int ICCProfileTransformationProcess::ProcessCommandLine( const StringList& argv 
             if ( filename.IsEmpty() )
                throw Error( "Empty file name: " + arg.Token() );
 
-            instance.targetProfile.Clear();
+            instance.p_targetProfile.Clear();
 
             StringList dirs = ICCProfile::ProfileDirectories();
             for ( StringList::const_iterator i = dirs.Begin(); i != dirs.End(); ++i )
@@ -255,25 +250,25 @@ int ICCProfileTransformationProcess::ProcessCommandLine( const StringList& argv 
                   ICCProfile icc( path );
                   if ( icc.IsProfile() )
                   {
-                     instance.targetProfile = icc.Description();
+                     instance.p_targetProfile = icc.Description();
                      break;
                   }
                }
             }
 
-            if ( instance.targetProfile.IsEmpty() )
+            if ( instance.p_targetProfile.IsEmpty() )
                throw Error( "The specified file name does not correspond to a valid ICC profile: " + filename );
          }
          else if ( arg.Id() == "rendering-intent" )
          {
             if ( arg.StringValue() == "perceptual" )
-               instance.renderingIntent = ICCTRenderingIntent::Perceptual;
+               instance.p_renderingIntent = ICCTRenderingIntent::Perceptual;
             else if ( arg.StringValue() == "saturation" )
-               instance.renderingIntent = ICCTRenderingIntent::Saturation;
+               instance.p_renderingIntent = ICCTRenderingIntent::Saturation;
             else if ( arg.StringValue() == "relative" || arg.StringValue() == "relative-colorimetric" )
-               instance.renderingIntent = ICCTRenderingIntent::RelativeColorimetric;
+               instance.p_renderingIntent = ICCTRenderingIntent::RelativeColorimetric;
             else if ( arg.StringValue() == "absolute" || arg.StringValue() == "absolute-colorimetric" )
-               instance.renderingIntent = ICCTRenderingIntent::AbsoluteColorimetric;
+               instance.p_renderingIntent = ICCTRenderingIntent::AbsoluteColorimetric;
             else
                throw Error( "Invalid rendering intent: " + arg.Token() );
          }
@@ -283,22 +278,22 @@ int ICCProfileTransformationProcess::ProcessCommandLine( const StringList& argv 
       else if ( arg.IsSwitch() )
       {
          if ( arg.Id() == "to-default-profile" )
-            instance.toDefaultProfile = arg.SwitchState();
+            instance.p_toDefaultProfile = arg.SwitchState();
          else if ( arg.Id() == "black-point-compensation" )
-            instance.useBlackPointCompensation = arg.SwitchState();
+            instance.p_useBlackPointCompensation = arg.SwitchState();
          else if ( arg.Id() == "floating-point-transform" )
-            instance.useFloatingPointTransformation = arg.SwitchState();
+            instance.p_useFloatingPointTransformation = arg.SwitchState();
          else
             throw Error( "Unknown switch argument: " + arg.Token() );
       }
       else if ( arg.IsLiteral() )
       {
          if ( arg.Id() == "to-default-profile" )
-            instance.toDefaultProfile = true;
+            instance.p_toDefaultProfile = true;
          else if ( arg.Id() == "black-point-compensation" )
-            instance.useBlackPointCompensation = true;
+            instance.p_useBlackPointCompensation = true;
          else if ( arg.Id() == "floating-point-transform" )
-            instance.useFloatingPointTransformation = true;
+            instance.p_useFloatingPointTransformation = true;
          else if ( arg.Id() == "-interface" )
             launchInterface = true;
          else if ( arg.Id() == "-help" )
@@ -346,4 +341,4 @@ int ICCProfileTransformationProcess::ProcessCommandLine( const StringList& argv 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF ICCProfileTransformationProcess.cpp - Released 2020-07-31T19:33:39Z

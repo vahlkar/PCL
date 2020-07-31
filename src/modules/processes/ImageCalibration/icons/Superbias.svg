@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="a" x1="42.711" x2="100.92" y1="59.631" y2="59.631" gradientTransform="matrix(2.0952 0 0 2.0952 116.13 -16.862)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f5f774" offset="0"/>
+<stop stop-color="#f8fa98" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-135.29 -71.086)">
+<g transform="translate(-63.577 30.74)" stroke-width="6.35">
+<rect x="208.39" y="49.871" width="116.42" height="116.42" fill="url(#a)" stroke="#000" stroke-linecap="square" style="paint-order:markers fill stroke"/>
+<path d="m220.26 51.455v113.25" fill="none" stroke="#dba80c"/>
+<path d="m240.74 52.179v113.25" fill="none" stroke="#e0c05f"/>
+<path d="m309.2 51.62v113.25" fill="none" stroke="#ab8d30"/>
+<path d="m296.95 51.62v113.25" fill="none" stroke="#dba80c"/>
+<path d="m291.35 51.9v113.25" fill="none" stroke="#a7955e"/>
+<path d="m269.51 52.18v113.25" fill="none" stroke="#e3be4e"/>
+<path d="m252.43 51.9v113.25" fill="none" stroke="#93710a"/>
+<rect x="208.39" y="49.871" width="116.42" height="116.42" fill="none" stroke="#000" stroke-linecap="square" style="paint-order:markers fill stroke"/>
+</g>
+</g>
+</svg>

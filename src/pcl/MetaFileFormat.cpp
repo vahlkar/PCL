@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MetaFileFormat.cpp - Released 2020-02-27T12:55:33Z
+// pcl/MetaFileFormat.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -146,7 +146,8 @@ static void MandatoryError( const IsoString& formatName, const char* funcName )
 
 // ----------------------------------------------------------------------------
 
-MetaFileFormat::MetaFileFormat() : MetaObject( Module )
+MetaFileFormat::MetaFileFormat()
+   : MetaObject( Module )
 {
    if ( Module == nullptr )
       throw Error( "MetaFileFormat: Module not initialized - illegal MetaFileFormat instantiation." );
@@ -1691,22 +1692,40 @@ void MetaFileFormat::PerformAPIDefinitions() const
          (*API->FileFormatDefinition->SetFileFormatImplementation)( impl.c_str() );
    }
 
-   if ( IconImageXPM() != nullptr )
-      (*API->FileFormatDefinition->SetFileFormatIconImage)( IconImageXPM() );
-   else
    {
-      String path = IconImageFile();
-      if ( !path.IsEmpty() )
-         (*API->FileFormatDefinition->SetFileFormatIconImageFile)( path.c_str() );
-   }
+      IsoString svg = IconImageSVG();
+      if ( !svg.IsEmpty() )
+         (*API->FileFormatDefinition->SetFileFormatIconSVG)( svg.c_str() );
+      else
+      {
+         String filePath = IconImageSVGFile();
+         if ( !filePath.IsEmpty() )
+            (*API->FileFormatDefinition->SetFileFormatIconSVGFile)( filePath.c_str() );
+         else
+         {
+            // ### DEPRECATED - File format icon images in raster bitmap formats.
 
-   if ( SmallIconImageXPM() != nullptr )
-      (*API->FileFormatDefinition->SetFileFormatIconSmallImage)( SmallIconImageXPM() );
-   else
-   {
-      String path = SmallIconImageFile();
-      if ( !path.IsEmpty() )
-         (*API->FileFormatDefinition->SetFileFormatIconSmallImageFile)( path.c_str() );
+            const char** xpm = IconImageXPM();
+            if ( xpm != nullptr )
+               (*API->FileFormatDefinition->SetFileFormatIconImage)( xpm );
+            else
+            {
+               String path = IconImageFile();
+               if ( !path.IsEmpty() )
+                  (*API->FileFormatDefinition->SetFileFormatIconImageFile)( path.c_str() );
+            }
+
+            xpm = SmallIconImageXPM();
+            if ( xpm != nullptr )
+               (*API->FileFormatDefinition->SetFileFormatIconSmallImage)( xpm );
+            else
+            {
+               String path = SmallIconImageFile();
+               if ( !path.IsEmpty() )
+                  (*API->FileFormatDefinition->SetFileFormatIconSmallImageFile)( path.c_str() );
+            }
+         }
+      }
    }
 
    api_format_capabilities caps;
@@ -1837,4 +1856,4 @@ void MetaFileFormat::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaFileFormat.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/MetaFileFormat.cpp - Released 2020-07-31T19:33:12Z

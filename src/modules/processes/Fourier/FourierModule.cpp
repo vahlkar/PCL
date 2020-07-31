@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierModule.cpp - Released 2020-02-27T12:56:01Z
+// FourierModule.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     2
-#define MODULE_RELEASE_DAY       27
+#define MODULE_RELEASE_MONTH     7
+#define MODULE_RELEASE_DAY       31
 
 #include "FourierModule.h"
 #include "FourierTransformProcess.h"
@@ -111,14 +111,14 @@ String FourierModule::Company() const
 
 String FourierModule::Author() const
 {
-   return "Carlos Milovic F., PTeam / Juan Conejero, PTeam";
+   return "Juan Conejero, PTeam / Carlos Milovic F., PTeam";
 }
 
 // ----------------------------------------------------------------------------
 
 String FourierModule::Copyright() const
 {
-   return "Copyright (c) 2011-2019 Pleiades Astrophoto";
+   return "Copyright (c) 2011-2020 Pleiades Astrophoto";
 }
 
 // ----------------------------------------------------------------------------
@@ -132,10 +132,10 @@ String FourierModule::TradeMarks() const
 
 String FourierModule::OriginalFileName() const
 {
-#ifdef __PCL_LINUX
+#ifdef __PCL_FREEBSD
    return "Fourier-pxm.so";
 #endif
-#ifdef __PCL_FREEBSD
+#ifdef __PCL_LINUX
    return "Fourier-pxm.so";
 #endif
 #ifdef __PCL_MACOSX
@@ -159,6 +159,8 @@ void FourierModule::GetReleaseDate( int& year, int& month, int& day ) const
 
 } // pcl
 
+// ----------------------------------------------------------------------------
+
 PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 {
    new pcl::FourierModule;
@@ -175,4 +177,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF FourierModule.cpp - Released 2020-02-27T12:56:01Z
+// EOF FourierModule.cpp - Released 2020-07-31T19:33:39Z

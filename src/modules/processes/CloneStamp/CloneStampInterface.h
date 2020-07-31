@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampInterface.h - Released 2020-02-27T12:56:01Z
+// CloneStampInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -82,7 +82,7 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
    void Execute() override;
    void Cancel() override;
@@ -110,8 +110,6 @@ public:
    void MaskEnabled( const View& v ) override;
    void MaskDisabled( const View& v ) override;
 
-   // -------------------------------------------------------------------------
-
    typedef CloneStampInstance::ClonerData       ClonerData;
    typedef CloneStampInstance::BrushData        BrushData;
    typedef CloneStampInstance::cloner_sequence  cloner_sequence;
@@ -119,7 +117,7 @@ public:
    struct ViewRef
    {
       View  view;
-      int   refCount;
+      int   refCount = 0;
 
       ViewRef( View& );
       ViewRef( const View&, int );
@@ -142,9 +140,9 @@ public:
    {
       ViewRef*        source = nullptr;
       BrushData       brush;
-      Point           delta;
+      Point           delta = 0;
       cloner_sequence cloner;
-      Rect            bounds = Rect( 0 );
+      Rect            bounds = 0;
 
       ClonerAction( View&, const BrushData&, const Point& );
       ClonerAction( const ClonerAction& );
@@ -161,8 +159,8 @@ private:
    View*     sourceView = nullptr;
 
    BrushData brush;                    // current brush parameters
-   DPoint    delta = DPoint( 0 );      // current target - source offset
-   DPoint    targetPos = DPoint( 0 );  // current target position
+   DPoint    delta = 0.0;              // current target - source offset
+   DPoint    targetPos = 0.0;          // current target position
 
    bool      initialized;              // a source point has been selected for the 1st time
    bool      selectingSource = true;   // selecting a source view/point
@@ -173,7 +171,7 @@ private:
    bool      dragging = false;         // dragging the mouse
    bool      imageChanged = false;     // the image has been changed during the current action
 
-   Rect      regenRect = Rect( 0 );
+   Rect      regenRect = 0;
 
    uint32    color;       // drawing color, cloner
    uint32    boundsColor; // drawing color, action boundaries
@@ -291,4 +289,4 @@ PCL_END_LOCAL
 #endif   // __CloneStampInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampInterface.h - Released 2020-02-27T12:56:01Z
+// EOF CloneStampInterface.h - Released 2020-07-31T19:33:39Z

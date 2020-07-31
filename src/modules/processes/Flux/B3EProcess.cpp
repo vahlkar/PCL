@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EProcess.cpp - Released 2020-02-27T12:56:01Z
+// B3EProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -62,10 +62,6 @@
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-#include "B3EIcon.xpm"
 
 // ----------------------------------------------------------------------------
 
@@ -140,23 +136,23 @@ uint32 B3EProcess::Version() const
 
 String B3EProcess::Description() const
 {
-   return
-
-   "";
+   return "";
 }
 
 // ----------------------------------------------------------------------------
 
-const char** B3EProcess::IconImageXPM() const
+String B3EProcess::IconImageSVGFile() const
 {
-   return B3EIcon_XPM;
+   return "@module_icons_dir/B3E.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* B3EProcess::DefaultInterface() const
 {
    return TheB3EInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* B3EProcess::Create() const
@@ -280,4 +276,4 @@ int B3EProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF B3EProcess.cpp - Released 2020-07-31T19:33:39Z

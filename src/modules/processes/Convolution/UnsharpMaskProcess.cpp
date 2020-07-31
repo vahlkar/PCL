@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskProcess.cpp - Released 2020-02-27T12:56:01Z
+// UnsharpMaskProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -65,11 +65,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "UnsharpMaskIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-UnsharpMaskProcess* TheUnsharpMaskProcess = 0;
+UnsharpMaskProcess* TheUnsharpMaskProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -77,7 +73,6 @@ UnsharpMaskProcess::UnsharpMaskProcess()
 {
    TheUnsharpMaskProcess = this;
 
-   // Instantiate process parameters
    new USMSigma( this );
    new USMAmount( this );
    new USMUseLuminance( this );
@@ -120,16 +115,18 @@ String UnsharpMaskProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** UnsharpMaskProcess::IconImageXPM() const
+String UnsharpMaskProcess::IconImageSVGFile() const
 {
-   return UnsharpMaskIcon_XPM;
+   return "@module_icons_dir/UnsharpMask.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* UnsharpMaskProcess::DefaultInterface() const
 {
    return TheUnsharpMaskInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* UnsharpMaskProcess::Create() const
@@ -142,7 +139,7 @@ ProcessImplementation* UnsharpMaskProcess::Create() const
 ProcessImplementation* UnsharpMaskProcess::Clone( const ProcessImplementation& p ) const
 {
    const UnsharpMaskInstance* instPtr = dynamic_cast<const UnsharpMaskInstance*>( &p );
-   return (instPtr != 0) ? new UnsharpMaskInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new UnsharpMaskInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -358,4 +355,4 @@ int UnsharpMaskProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF UnsharpMaskProcess.cpp - Released 2020-07-31T19:33:39Z

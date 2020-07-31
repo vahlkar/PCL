@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeParameters.h - Released 2020-02-27T12:56:01Z
+// BinarizeParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -68,13 +68,11 @@ public:
 
    BinarizeLevelR( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern BinarizeLevelR* TheBinarizeLevelRParameter;
@@ -87,13 +85,11 @@ public:
 
    BinarizeLevelG( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern BinarizeLevelG* TheBinarizeLevelGParameter;
@@ -106,13 +102,11 @@ public:
 
    BinarizeLevelB( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual int Precision() const;
-
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual double DefaultValue() const;
+   IsoString Id() const override;
+   int Precision() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   double DefaultValue() const override;
 };
 
 extern BinarizeLevelB* TheBinarizeLevelBParameter;
@@ -125,9 +119,8 @@ public:
 
    BinarizeIsGlobal( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern BinarizeIsGlobal* TheBinarizeIsGlobalParameter;
@@ -141,4 +134,4 @@ PCL_END_LOCAL
 #endif   // __BinarizeParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeParameters.h - Released 2020-02-27T12:56:01Z
+// EOF BinarizeParameters.h - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// LinearFitInstance.cpp - Released 2020-02-27T12:56:01Z
+// LinearFitInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -67,17 +67,17 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-LinearFitInstance::LinearFitInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_rejectLow( TheLFRejectLowParameter->DefaultValue() ),
-   p_rejectHigh( TheLFRejectHighParameter->DefaultValue() )
+LinearFitInstance::LinearFitInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_rejectLow( TheLFRejectLowParameter->DefaultValue() )
+   , p_rejectHigh( TheLFRejectHighParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-LinearFitInstance::LinearFitInstance( const LinearFitInstance& x ) :
-   ProcessImplementation( x )
+LinearFitInstance::LinearFitInstance( const LinearFitInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -403,4 +403,4 @@ size_type LinearFitInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF LinearFitInstance.cpp - Released 2020-07-31T19:33:39Z

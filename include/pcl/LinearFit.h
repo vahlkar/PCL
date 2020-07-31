@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/LinearFit.h - Released 2020-02-27T12:55:23Z
+// pcl/LinearFit.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -178,10 +178,10 @@ public:
     * When n < 2, this constructor throws an Error exception.
     */
    template <typename T>
-   LinearFit( const T* x, const T* y, size_type n, StatusMonitor* status = 0 )
+   LinearFit( const T* x, const T* y, size_type n, StatusMonitor* status = nullptr )
    {
       if ( n < 2 )
-         throw Error( "At least two data points are required in LinearFit::LinearFit()" );
+         throw Error( "LinearFit::LinearFit(): Less than two data points specified." );
 
       if ( n == 2 )
       {
@@ -217,11 +217,11 @@ public:
     * When n < 2, this constructor throws an Error exception.
     */
    template <class C>
-   LinearFit( const C& x, const C& y, StatusMonitor* status = 0 )
+   LinearFit( const C& x, const C& y, StatusMonitor* status = nullptr )
    {
       size_type n = Min( x.Length(), y.Length() );
       if ( n < 2 )
-         throw Error( "At least two data points are required in LinearFit::LinearFit()" );
+         throw Error( "LinearFit::LinearFit(): Less than two data points specified." );
 
       if ( n == 2 )
       {
@@ -248,4 +248,4 @@ private:
 #endif   // __LinearFit_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LinearFit.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/LinearFit.h - Released 2020-07-31T19:33:04Z

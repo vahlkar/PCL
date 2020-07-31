@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationParameters.h - Released 2020-02-27T12:56:01Z
+// LocalHistogramEqualizationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
-// Copyright (c) 2011-2018 Zbynek Vrastil
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2011-2020 Zbynek Vrastil
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -69,11 +69,10 @@ public:
 
    LHERadius( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
 };
 
 extern LHERadius* TheLHERadiusParameter;
@@ -84,22 +83,24 @@ class LHEHistogramBins : public MetaEnumeration
 {
 public:
 
-   enum { Bit8,
-          Bit10,
-          Bit12,
-          //Bit14,
-          //Bit16,
-          NumberOfItems,
-          Default = Bit8 };
+   enum
+   {
+      Bit8,
+      Bit10,
+      Bit12,
+      //Bit14,
+      //Bit16,
+      NumberOfItems,
+      Default = Bit8
+   };
 
    LHEHistogramBins( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern LHEHistogramBins* TheLHEHistogramBinsParameter;
@@ -112,12 +113,11 @@ public:
 
    LHESlopeLimit( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual int Precision() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   int Precision() const override;
 };
 
 extern LHESlopeLimit* TheLHESlopeLimitParameter;
@@ -130,12 +130,11 @@ public:
 
    LHEAmount( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual double DefaultValue() const;
-   virtual double MinimumValue() const;
-   virtual double MaximumValue() const;
-   virtual int Precision() const;
+   IsoString Id() const override;
+   double DefaultValue() const override;
+   double MinimumValue() const override;
+   double MaximumValue() const override;
+   int Precision() const override;
 };
 
 extern LHEAmount* TheLHEAmountParameter;
@@ -148,9 +147,8 @@ public:
 
    LHECircularKernel( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern LHECircularKernel* TheLHECircularKernelParameter;
@@ -159,9 +157,9 @@ extern LHECircularKernel* TheLHECircularKernelParameter;
 
 PCL_END_LOCAL
 
-} // pcl
+} // namespace pcl
 
-#endif   // __LocalHistogramEqualizationParameters_h
+#endif // __LocalHistogramEqualizationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF LocalHistogramEqualizationParameters.h - Released 2020-07-31T19:33:39Z

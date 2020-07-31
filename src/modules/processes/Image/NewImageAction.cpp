@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageAction.cpp - Released 2020-02-27T12:56:01Z
+// NewImageAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -64,14 +64,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-NewImageAction::NewImageAction() :
-   Action( "Image > New",
-      Bitmap( Control::Null().ScaledResource( ":/toolbar/image-new.png" ) ),
-      (PixInsightSettings::GlobalInteger( "MainWindow/LogicalScreenWidth" ) > 1920) ? "> Image" : "" )
+NewImageAction::NewImageAction()
+   : Action( "Image > New",
+             "@module_icons_dir/NewImage.svg",
+             (PixInsightSettings::GlobalInteger( "MainWindow/LogicalScreenWidth" ) > 1920) ? "> Image" : "" )
 {
    SetToolTip( "New Image" );
    SetAccelerator( pcl::KeyModifier::Control, pcl::KeyCode::N );
 }
+
+// ----------------------------------------------------------------------------
 
 void NewImageAction::Execute()
 {
@@ -85,4 +87,4 @@ void NewImageAction::Execute()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF NewImageAction.cpp - Released 2020-07-31T19:33:39Z

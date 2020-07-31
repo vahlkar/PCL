@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:54.755Z
+# Generated on .... 2020-07-31T19:36:27.640Z
 # Project id ...... XISF
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,10 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>3013c1da-f903-41ef-add8-7f7086a0eb11</UniqueIdentifier>
+      <UniqueIdentifier>17b6ce30-c2a0-4b1b-8503-11e10bd79a51</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>0073c3d2-adca-4b78-8fd6-b213ae4e9cf3</UniqueIdentifier>
+      <UniqueIdentifier>fdf7d4e9-08e1-4dc3-b51c-4ec4b753011d</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>628a3260-0aaf-4796-8133-c97d5d32bec5</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,5 +58,16 @@
     <ClInclude Include="..\..\XISFPreferencesDialog.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\XISB.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\XISF.svg">
+        <Filter>Image Files</Filter>
+    </None>
+    <None Include="..\..\icons\XISH.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

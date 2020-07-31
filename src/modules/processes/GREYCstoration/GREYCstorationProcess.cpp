@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GREYCstoration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GREYCstorationProcess.cpp - Released 2020-02-27T12:56:01Z
+// GREYCstorationProcess.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GREYCstoration PixInsight module.
 //
@@ -80,11 +80,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-#include "GREYCstorationIcon.xpm"
-
-// ----------------------------------------------------------------------------
-
-GREYCstorationProcess* TheGREYCstorationProcess = 0;
+GREYCstorationProcess* TheGREYCstorationProcess = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -92,7 +88,6 @@ GREYCstorationProcess::GREYCstorationProcess()
 {
    TheGREYCstorationProcess = this;
 
-   // Instantiate process parameters
    new GREYCsAmplitude( this );
    new GREYCsIterations( this );
    new GREYCsSharpness( this );
@@ -155,16 +150,18 @@ String GREYCstorationProcess::Description() const
 
 // ----------------------------------------------------------------------------
 
-const char** GREYCstorationProcess::IconImageXPM() const
+String GREYCstorationProcess::IconImageSVGFile() const
 {
-   return GREYCstorationIcon_XPM;
+   return "@module_icons_dir/GREYCstoration.svg";
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessInterface* GREYCstorationProcess::DefaultInterface() const
 {
    return TheGREYCstorationInterface;
 }
+
 // ----------------------------------------------------------------------------
 
 ProcessImplementation* GREYCstorationProcess::Create() const
@@ -177,7 +174,7 @@ ProcessImplementation* GREYCstorationProcess::Create() const
 ProcessImplementation* GREYCstorationProcess::Clone( const ProcessImplementation& p ) const
 {
    const GREYCstorationInstance* instPtr = dynamic_cast<const GREYCstorationInstance*>( &p );
-   return (instPtr != 0) ? new GREYCstorationInstance( *instPtr ) : 0;
+   return (instPtr != nullptr) ? new GREYCstorationInstance( *instPtr ) : nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -403,4 +400,4 @@ int GREYCstorationProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GREYCstorationProcess.cpp - Released 2020-02-27T12:56:01Z
+// EOF GREYCstorationProcess.cpp - Released 2020-07-31T19:33:39Z

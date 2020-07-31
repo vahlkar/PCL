@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/TreeBox.cpp - Released 2020-02-27T12:55:33Z
+// pcl/TreeBox.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -60,8 +60,8 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-TreeBox::TreeBox( Control& parent ) :
-   ScrollBox( nullptr )
+TreeBox::TreeBox( Control& parent )
+   : ScrollBox( nullptr )
 {
    TransferHandle( (*API->TreeBox->CreateTreeBox)( ModuleHandle(), this, parent.handle, 0/*flags*/ ) );
    if ( IsNull() )
@@ -72,8 +72,8 @@ TreeBox::TreeBox( Control& parent ) :
       throw APIFunctionError( "CreateTreeBoxViewport" );
 }
 
-TreeBox::TreeBox( void* h ) :
-   ScrollBox( nullptr )
+TreeBox::TreeBox( void* h )
+   : ScrollBox( nullptr )
 {
    TransferHandle( h );
    if ( !IsNull() )
@@ -557,15 +557,15 @@ void TreeBox::EnableNodeDragging( bool enable )
 // TreeBox::Node Implementation
 // ----------------------------------------------------------------------------
 
-TreeBox::Node::Node() :
-   UIObject( (*API->TreeBox->CreateTreeBoxNode)( ModuleHandle(), this ) )
+TreeBox::Node::Node()
+   : UIObject( (*API->TreeBox->CreateTreeBoxNode)( ModuleHandle(), this ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateTreeBoxNode" );
 }
 
-TreeBox::Node::Node( TreeBox::Node& parent, int index ) :
-   UIObject( (*API->TreeBox->CreateTreeBoxNode)( ModuleHandle(), this ) )
+TreeBox::Node::Node( TreeBox::Node& parent, int index )
+   : UIObject( (*API->TreeBox->CreateTreeBoxNode)( ModuleHandle(), this ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateTreeBoxNode" );
@@ -573,8 +573,8 @@ TreeBox::Node::Node( TreeBox::Node& parent, int index ) :
       parent.Insert( index, this );
 }
 
-TreeBox::Node::Node( TreeBox& parentTree, int index ) :
-   UIObject( (*API->TreeBox->CreateTreeBoxNode)( ModuleHandle(), this ) )
+TreeBox::Node::Node( TreeBox& parentTree, int index )
+   : UIObject( (*API->TreeBox->CreateTreeBoxNode)( ModuleHandle(), this ) )
 {
    if ( IsNull() )
       throw APIFunctionError( "CreateTreeBoxNode" );
@@ -1108,4 +1108,4 @@ void TreeBox::OnNodeSelectionUpdated( tree_event_handler f, Control& receiver )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TreeBox.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/TreeBox.cpp - Released 2020-07-31T19:33:12Z

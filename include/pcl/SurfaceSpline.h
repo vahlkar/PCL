@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.h - Released 2020-02-27T12:55:23Z
+// pcl/SurfaceSpline.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -85,7 +85,7 @@ namespace pcl
  * Default maximum spline length for a non-recursive spline in a recursive
  * spline quadtree node.
  */
-#define __PCL_RSSPLINE_DEFAULT_SPLINE_MAX_LENGTH      1500
+#define __PCL_RSSPLINE_DEFAULT_SPLINE_MAX_LENGTH      1600
 
 /*
  * Whether to allow extrapolation outside the interpolation region for
@@ -610,8 +610,8 @@ protected:
       scalar x, y, z;
       weight w;
 
-      NodeData( scalar a_x, scalar a_y, scalar a_z, weight a_w ) :
-         x( a_x ), y( a_y ), z( a_z ), w( a_w )
+      NodeData( scalar a_x, scalar a_y, scalar a_z, weight a_w )
+         : x( a_x ), y( a_y ), z( a_z ), w( a_w )
       {
       }
 
@@ -997,7 +997,7 @@ private:
  * This recursive scheme is appropriate for large-scale problems, where single
  * thin plate splines can be impractical because their generation has O(n^3)
  * time complexity. An instance of %RecursivePointSurfaceSpline can be built
- * with an unlimited number of interpolation points.
+ * with an unlimited number of arbitrarily distributed interpolation points.
  *
  * \sa PointSurfaceSpline, SurfaceSpline
  */
@@ -1067,13 +1067,13 @@ public:
     */
    template <class weight_vector = FVector>
    RecursivePointSurfaceSpline( const point_list& P1, const point_list& P2,
-                       float smoothness = 0,
-                       int order = 2,
-                       const weight_vector& W = weight_vector(),
-                       bool allowExtrapolation = __PCL_RSSPLINE_DEFAULT_ALLOW_EXTRAPOLATION,
-                       int maxSplineLength = __PCL_RSSPLINE_DEFAULT_SPLINE_MAX_LENGTH,
-                       int bucketCapacity = __PCL_RSSPLINE_DEFAULT_TREE_BUCKET_CAPACITY,
-                       bool verbose = true )
+                                float smoothness = 0,
+                                int order = 2,
+                                const weight_vector& W = weight_vector(),
+                                bool allowExtrapolation = __PCL_RSSPLINE_DEFAULT_ALLOW_EXTRAPOLATION,
+                                int maxSplineLength = __PCL_RSSPLINE_DEFAULT_SPLINE_MAX_LENGTH,
+                                int bucketCapacity = __PCL_RSSPLINE_DEFAULT_TREE_BUCKET_CAPACITY,
+                                bool verbose = true )
    {
       Initialize( P1, P2, smoothness, W, order, allowExtrapolation, maxSplineLength, bucketCapacity, verbose );
    }
@@ -1228,10 +1228,10 @@ public:
             else if ( p1.y > rect.y1 )
                rect.y1 = p1.y;
          }
-//          if ( rect.Width() < rect.Height() )
-//             rect.InflateBy( (rect.Height() - rect.Width())/2, search_coordinate( 0 ) );
-//          else
-//             rect.InflateBy( search_coordinate( 0 ), (rect.Width() - rect.Height())/2 );
+         if ( rect.Width() < rect.Height() )
+            rect.InflateBy( (rect.Height() - rect.Width())/2, search_coordinate( 0 ) );
+         else
+            rect.InflateBy( search_coordinate( 0 ), (rect.Width() - rect.Height())/2 );
 
          m_tree.Build( rect, data, bucketCapacity );
 
@@ -1241,38 +1241,41 @@ public:
             {
                point_list P1, P2;
                Array<float> PW;
-               for ( const auto& p : points )
+               for ( const auto& n : points )
                {
-                  P1 << p.position;
-                  P2 << p.value;
+                  P1 << n.position;
+                  P2 << n.value;
                   if ( weighted )
-                     PW << p.weight;
+                     PW << n.weight;
                }
 
-               double w = TruncInt( 1.5*rect.Width() );
-               double h = TruncInt( 1.5*rect.Height() );
-               node_list Q = node_list()
-                  << m_tree.Search( rect.MovedBy(  -w,   -h ) )  // NW
-                  << m_tree.Search( rect.MovedBy( 0.0,   -h ) )  // N
-                  << m_tree.Search( rect.MovedBy(  +w,   -h ) )  // NE
-                  << m_tree.Search( rect.MovedBy(  -w,  0.0 ) )  // W
-                  << m_tree.Search( rect.MovedBy(  +w,  0.0 ) )  // E
-                  << m_tree.Search( rect.MovedBy(  -w,   +h ) )  // SW
-                  << m_tree.Search( rect.MovedBy( 0.0,   +h ) )  // S
-                  << m_tree.Search( rect.MovedBy(  +w,   +h ) ); // SE
-               point_list Q1, Q2;
-               Array<float> QW;
-               for ( const auto& q : Q )
+               search_coordinate d = TruncInt( 1.5*Max( rect.Width(), rect.Height() ) );
+               node_list n[8];
+               n[0] = m_tree.Search( search_rectangle( rect.x0 - d, rect.y0 - d, rect.x0,     rect.y0     ) );
+               n[1] = m_tree.Search( search_rectangle( rect.x0,     rect.y0 - d, rect.x1,     rect.y0     ) );
+               n[2] = m_tree.Search( search_rectangle( rect.x1,     rect.y0 - d, rect.x1 + d, rect.y0     ) );
+               n[3] = m_tree.Search( search_rectangle( rect.x0 - d, rect.y0,     rect.x0,     rect.y1     ) );
+               n[4] = m_tree.Search( search_rectangle( rect.x1,     rect.y0,     rect.x1 + d, rect.y1     ) );
+               n[5] = m_tree.Search( search_rectangle( rect.x0 - d, rect.y1,     rect.x0,     rect.y1 + d ) );
+               n[6] = m_tree.Search( search_rectangle( rect.x0,     rect.y1,     rect.x1,     rect.y1 + d ) );
+               n[7] = m_tree.Search( search_rectangle( rect.x1,     rect.y1,     rect.x1 + d, rect.y1 + d ) );
+               point c = rect.Center();
+               for ( int i = 0; i < 8; ++i )
                {
-                  Q1 << q.position;
-                  Q2 << q.value;
-                  if ( weighted )
-                     QW << q.weight;
+                  node_list& N = n[i];
+                  N.Sort(
+                     [&]( const auto& a, const auto& b )
+                     {
+                        return a.position.SquaredDistanceTo( c ) < b.position.SquaredDistanceTo( c );
+                     } );
+                  for ( int j = 0, l = Min( int( N.Length() ), (maxSplineLength - bucketCapacity) >> 3 ); j < l; ++j )
+                  {
+                     P1 << N[j].position;
+                     P2 << N[j].value;
+                     if ( weighted )
+                        PW << N[j].weight;
+                  }
                }
-               P1 << Q1;
-               P2 << Q2;
-               if ( weighted )
-                  PW << QW;
 
                subsplineData << SubsplineData( P1, P2, PW, D );
             } );
@@ -1508,13 +1511,16 @@ private:
       point position, value;
       float weight;
 
-      Node( const point& p, const point& v ) :
-         position( p ), value( v )
+      Node( const point& p, const point& v )
+         : position( p )
+         , value( v )
       {
       }
 
-      Node( const point& p, const point& v, float w ) :
-         position( p ), value( v ), weight( w )
+      Node( const point& p, const point& v, float w )
+         : position( p )
+         , value( v )
+         , weight( w )
       {
       }
 
@@ -1531,11 +1537,11 @@ private:
       }
    };
 
-   typedef QuadTree<Node>                    tree;
-   typedef typename tree::point_list         node_list;
-   typedef typename tree::rectangle          search_rectangle;
-   typedef typename tree::coordinate         search_coordinate;
-   typedef GenericPoint<search_coordinate>   search_point;
+   typedef QuadTree<Node>                  tree;
+   typedef typename tree::point_list       node_list;
+   typedef typename tree::rectangle        search_rectangle;
+   typedef typename tree::coordinate       search_coordinate;
+   typedef GenericPoint<search_coordinate> search_point;
 
    tree             m_tree;   // the tree of subsplines
    spline           m_spline; // final point spline if there is no further recursion
@@ -1554,8 +1560,11 @@ private:
       Array<float>   PW;
       mutable void** nodeData;
 
-      SubsplineData( const point_list& p1, const point_list& p2, const Array<float>& pw, void*& nd ) :
-         P1( p1 ), P2( p2 ), PW( pw ), nodeData( &nd )
+      SubsplineData( const point_list& p1, const point_list& p2, const Array<float>& pw, void*& nd )
+         : P1( p1 )
+         , P2( p2 )
+         , PW( pw )
+         , nodeData( &nd )
       {
       }
    };
@@ -1571,16 +1580,16 @@ private:
                                  bool allowExtrapolation,
                                  int maxSplineLength,
                                  int bucketCapacity,
-                                 int startIndex, int endIndex ) :
-         m_data( data ),
-         m_subsplineData( subsplineData ),
-         m_smoothness( smoothness ),
-         m_order( order ),
-         m_allowExtrapolation( allowExtrapolation ),
-         m_maxSplineLength( maxSplineLength ),
-         m_bucketCapacity( bucketCapacity ),
-         m_startIndex( startIndex ),
-         m_endIndex( endIndex )
+                                 int startIndex, int endIndex )
+         : m_data( data )
+         , m_subsplineData( subsplineData )
+         , m_smoothness( smoothness )
+         , m_order( order )
+         , m_allowExtrapolation( allowExtrapolation )
+         , m_maxSplineLength( maxSplineLength )
+         , m_bucketCapacity( bucketCapacity )
+         , m_startIndex( startIndex )
+         , m_endIndex( endIndex )
       {
       }
 
@@ -1634,4 +1643,4 @@ private:
 #endif   // __PCL_SurfaceSpline_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/SurfaceSpline.h - Released 2020-07-31T19:33:04Z

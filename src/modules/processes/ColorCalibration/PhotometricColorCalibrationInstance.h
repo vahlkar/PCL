@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.2
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// PhotometricColorCalibrationInstance.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -150,7 +150,7 @@ private:
    float    p_backgroundLow;
    float    p_backgroundHigh;
    pcl_bool p_backgroundUseROI; // use a region of interest; entire image otherwise
-   Rect     p_backgroundROI;
+   Rect     p_backgroundROI = 0;
 
    friend class PhotometricColorCalibrationInterface;
    friend class PhotometricColorCalibrationProcess;
@@ -163,4 +163,4 @@ private:
 #endif   // __PhotometricColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.h - Released 2020-02-27T12:56:01Z
+// EOF PhotometricColorCalibrationInstance.h - Released 2020-07-31T19:33:39Z

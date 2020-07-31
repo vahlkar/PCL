@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// ICCProfileTransformationParameters.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -69,7 +69,7 @@ public:
 
    ICCTTargetProfile( MetaProcess* );
 
-   virtual IsoString Id() const;
+   IsoString Id() const override;
 };
 
 extern ICCTTargetProfile* TheICCTTargetProfileParameter;
@@ -82,9 +82,8 @@ public:
 
    ICCTToDefaultProfile( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICCTToDefaultProfile* TheICCTToDefaultProfileParameter;
@@ -104,12 +103,11 @@ public:
 
    ICCTRenderingIntent( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual size_type NumberOfElements() const;
-   virtual IsoString ElementId( size_type ) const;
-   virtual int ElementValue( size_type ) const;
-   virtual size_type DefaultValueIndex() const;
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
 };
 
 extern ICCTRenderingIntent* TheICCTRenderingIntentParameter;
@@ -122,9 +120,8 @@ public:
 
    ICCTUseBlackPointCompensation( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICCTUseBlackPointCompensation* TheICCTUseBlackPointCompensationParameter;
@@ -137,9 +134,8 @@ public:
 
    ICCTUseFloatingPointTransformation( MetaProcess* );
 
-   virtual IsoString Id() const;
-
-   virtual bool DefaultValue() const;
+   IsoString Id() const override;
+   bool DefaultValue() const override;
 };
 
 extern ICCTUseFloatingPointTransformation* TheICCTUseFloatingPointTransformationParameter;
@@ -153,4 +149,4 @@ PCL_END_LOCAL
 #endif   // __ICCProfileTransformationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationParameters.h - Released 2020-02-27T12:56:01Z
+// EOF ICCProfileTransformationParameters.h - Released 2020-07-31T19:33:39Z

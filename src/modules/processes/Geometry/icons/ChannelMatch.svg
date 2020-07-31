@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="d" x1="43.486" x2="69.479" y1="92.144" y2="118.14" gradientTransform="translate(-76.289 32.745)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f00" offset="0"/>
+<stop stop-color="#f00" stop-opacity=".42032" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="-37.21" x2="26.29" y1="113.76" y2="177.26" gradientTransform="matrix(1.9333 0 0 1.9333 69.41 -206.02)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#050505" offset="0"/>
+<stop stop-color="#acacac" offset="1"/>
+</linearGradient>
+<linearGradient id="b" x1="-21.335" x2="5.1236" y1="134.92" y2="161.38" gradientTransform="matrix(2.1091 0 0 2.1091 75.95 -237.17)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0f0" offset="0"/>
+<stop stop-color="#0f0" stop-opacity=".5127" offset="1"/>
+</linearGradient>
+<linearGradient id="a" x1="-9.4285" x2="17.03" y1="146.83" y2="173.29" gradientTransform="matrix(2.1091 0 0 2.1091 75.95 -237.17)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00f" offset="0"/>
+<stop stop-color="#00f" stop-opacity=".28406" offset="1"/>
+</linearGradient>
+</defs>
+<g transform="translate(-32.507 20.074)">
+<text x="25.055799" y="22.134125" fill="#000000" font-family="Pristina" font-size="5.9531px" letter-spacing="0px" stroke-width=".26458px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><tspan x="25.055799" y="27.401245" stroke-width=".26458px"/></text>
+<flowRoot transform="scale(.26458)" fill="#000000" font-family="Pristina" font-size="22.5px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="104.59" y="65.282" width="120.14" height="48.056"/></flowRegion><flowPara/></flowRoot>
+<flowRoot transform="scale(.26458)" fill="#000000" font-family="Pristina" font-size="22.5px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="104.59" y="42.667" width="127.21" height="33.922"/></flowRegion><flowPara/></flowRoot>
+<flowRoot fill="#000000" font-family="Pristina" font-size="22.5px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="29.682" y="68.109" width="199.29" height="38.162"/></flowRegion><flowPara/></flowRoot>
+<g transform="translate(41.386 -27.636)">
+<rect x="-2.529" y="13.911" width="122.77" height="122.77" fill="url(#c)"/>
+<g transform="translate(.45807 .45807)">
+<rect x="56.064" y="72.505" width="55.803" height="55.803" fill="url(#a)" opacity=".81" stroke="#00f" stroke-width="4.2333"/>
+<rect x="30.953" y="47.393" width="55.803" height="55.803" fill="url(#b)" stroke="#0f0" stroke-width="4.2333"/>
+<rect transform="matrix(1.9674 0 0 1.9674 69.464 -224.35)" x="-32.803" y="124.89" width="26.458" height="26.458" fill="url(#d)" stroke="#f00" stroke-width="2.1517"/>
+</g>
+</g>
+</g>
+</svg>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.117
+# PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-02-27T12:56:58.369Z
+# Generated on .... 2020-07-31T19:36:31.958Z
 # Project id ...... Fourier
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>7075fe7e-23c9-450a-bd89-d8c9904f285a</UniqueIdentifier>
+      <UniqueIdentifier>d8a71bfc-ad36-42d5-9ebd-bf072e25d699</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>c62a0531-f715-467d-ab4a-c63b9fbd5c92</UniqueIdentifier>
+      <UniqueIdentifier>7bffecac-af01-44d1-a5b8-7f7c241d2919</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>5bf386f9-ac1b-4987-b7e7-6e3940579402</UniqueIdentifier>
+      <UniqueIdentifier>e0414cbd-d8bb-4e45-97eb-a5906caa5398</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -84,10 +84,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\FourierTransformIcon.png">
+    <None Include="..\..\icons\FourierTransform.svg">
         <Filter>Image Files</Filter>
     </None>
-    <None Include="..\..\InverseFourierTransformIcon.png">
+    <None Include="..\..\icons\InverseFourierTransform.svg">
         <Filter>Image Files</Filter>
     </None>
   </ItemGroup>

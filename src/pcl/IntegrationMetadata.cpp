@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/IntegrationMetadata.cpp - Released 2020-02-27T12:55:33Z
+// pcl/IntegrationMetadata.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -115,6 +115,10 @@ IntegrationMetadata::IntegrationMetadata( const PropertyArray& properties, const
             latObs = p.Value().ToDouble();
          else if ( p.Id() == "Observation:Location:Elevation" )
             altObs = p.Value().ToDouble();
+         else if ( p.Id() == "PCL:CFASourcePatternName" )
+            cfaPatternName = p.Value().ToIsoString();
+         else if ( p.Id() == "PCL:CFASourcePattern" )
+            cfaPattern = p.Value().ToIsoString();
       }
       catch ( Exception& x )
       {
@@ -235,6 +239,12 @@ IntegrationMetadata::IntegrationMetadata( const PropertyArray& properties, const
          }
          else if ( !altObs.IsDefined() && k.name == "OBSGEO-H" )
             altObs = value.ToDouble();
+         else if ( !cfaPattern.IsDefined() && k.name == "BAYERPAT" )
+            cfaPattern = value.Uppercase();
+         else if ( k.name == "XBAYROFF" )
+            cfaXOffset = TruncInt( value.ToDouble() );
+         else if ( k.name == "YBAYROFF" )
+            cfaYOffset = TruncInt( value.ToDouble() );
       }
       catch ( Exception& x )
       {
@@ -367,6 +377,14 @@ IntegrationMetadata::IntegrationMetadata( const String& serialization )
                frameType = tokens[1];
             else if ( tokens[0] == "filterName" )
                filterName = tokens[1];
+            else if ( tokens[0] == "cfaPatternName" )
+               cfaPatternName = IsoString( tokens[1] );
+            else if ( tokens[0] == "cfaPattern" )
+               cfaPattern = IsoString( tokens[1] );
+            else if ( tokens[0] == "cfaXOffset" )
+               cfaXOffset = tokens[1].ToInt();
+            else if ( tokens[0] == "cfaYOffset" )
+               cfaYOffset = tokens[1].ToInt();
             else if ( tokens[0] == "pedestal" )
                pedestal = tokens[1].ToDouble();
             else if ( tokens[0] == "expTime" )
@@ -434,12 +452,16 @@ String IntegrationMetadata::Serialize() const
    if ( !IsValid() )
       return String();
 
-   return String()   <<                  "version"         << TokenSeparator << "1.1"
+   return String()   <<                  "version"         << TokenSeparator << __PCL_INTEGRATION_METADATA_VERSION
                      << ItemSeparator << "author"          << TokenSeparator << author.ToString()
                      << ItemSeparator << "observer"        << TokenSeparator << observer.ToString()
                      << ItemSeparator << "instrumentName"  << TokenSeparator << instrumentName.ToString()
                      << ItemSeparator << "frameType"       << TokenSeparator << frameType.ToString()
                      << ItemSeparator << "filterName"      << TokenSeparator << filterName.ToString()
+                     << ItemSeparator << "cfaPatternName"  << TokenSeparator << cfaPatternName.ToString()
+                     << ItemSeparator << "cfaPattern"      << TokenSeparator << cfaPattern.ToString()
+                     << ItemSeparator << "cfaXOffset"      << TokenSeparator << cfaXOffset.ToString()
+                     << ItemSeparator << "cfaYOffset"      << TokenSeparator << cfaYOffset.ToString()
                      << ItemSeparator << "pedestal"        << TokenSeparator << pedestal.ToString()
                      << ItemSeparator << "expTime"         << TokenSeparator << expTime.ToString()
                      << ItemSeparator << "sensorTemp"      << TokenSeparator << sensorTemp.ToString()
@@ -510,6 +532,38 @@ void IntegrationMetadata::UpdatePropertiesAndKeywords( PropertyArray& properties
       keywords << FITSHeaderKeyword( "FILTER",
                                      filterName().SingleQuoted(),
                                      "Name of filter" );
+   }
+
+   if ( cfaPatternName.IsConsistentlyDefined( "PCL:CFASourcePatternName" ) )
+      properties << Property( "PCL:CFASourcePatternName", cfaPatternName() );
+
+   if ( cfaPattern.IsConsistentlyDefined( "PCL:CFASourcePattern (BAYERPAT keyword)" ) )
+   {
+      if ( cfaPattern().Length() == 4 )
+      {
+         // For Bayer CFA patterns, a PCL:CFASourcePattern XISF property is
+         // incompatible with XBAYROFF/YBAYROFF FITS keywords.
+         if ( !cfaXOffset.IsDefined() )
+            if ( !cfaYOffset.IsDefined() )
+               properties << Property( "PCL:CFASourcePattern", cfaPattern() );
+
+         keywords << FITSHeaderKeyword( "BAYERPAT",
+                                        cfaPattern().SingleQuoted(),
+                                        "Bayer CFA pattern" );
+         if ( cfaXOffset.IsConsistentlyDefined( "XBAYROFF keyword" ) )
+            keywords << FITSHeaderKeyword( "XBAYROFF",
+                                           IsoString( cfaXOffset() ),
+                                          "Bayer CFA X-offset" );
+         if ( cfaYOffset.IsConsistentlyDefined( "YBAYROFF keyword" ) )
+            keywords << FITSHeaderKeyword( "YBAYROFF",
+                                           IsoString( cfaYOffset() ),
+                                          "Bayer CFA Y-offset" );
+      }
+      else
+      {
+         // X-Trans CFA
+         properties << Property( "PCL:CFASourcePattern", cfaPattern() );
+      }
    }
 
    if ( pedestal.IsConsistentlyDefined( "PEDESTAL keyword" ) )
@@ -718,6 +772,10 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
             summary.instrumentName   = metadata.instrumentName;
             summary.frameType        = metadata.frameType;
             summary.filterName       = metadata.filterName;
+            summary.cfaPatternName   = metadata.cfaPatternName;
+            summary.cfaPattern       = metadata.cfaPattern;
+            summary.cfaXOffset       = metadata.cfaXOffset;
+            summary.cfaYOffset       = metadata.cfaYOffset;
             summary.pedestal         = metadata.pedestal;
             summary.expTime         += metadata.expTime;
             summary.sensorTemp       = metadata.sensorTemp;
@@ -835,4 +893,4 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegrationMetadata.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/IntegrationMetadata.cpp - Released 2020-07-31T19:33:12Z

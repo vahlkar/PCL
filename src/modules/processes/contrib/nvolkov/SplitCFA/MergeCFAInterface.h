@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAInterface.h - Released 2020-02-27T12:56:01Z
+// MergeCFAInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
-// Copyright (c) 2013-2018 Nikolay Volkov
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2013-2020 Nikolay Volkov
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -54,18 +54,16 @@
 #ifndef __MergeCFAInterface_h
 #define __MergeCFAInterface_h
 
-#include <pcl/ProcessInterface.h>
-#include <pcl/ViewList.h>
 #include <pcl/Label.h>
+#include <pcl/ProcessInterface.h>
 #include <pcl/Sizer.h>
+#include <pcl/ViewList.h>
 
 #include "MergeCFAInstance.h"
 
 namespace pcl
 {
 
-// ----------------------------------------------------------------------------
-// MergeCFAInterface
 // ----------------------------------------------------------------------------
 
 class MergeCFAInterface : public ProcessInterface
@@ -75,24 +73,16 @@ public:
    MergeCFAInterface();
    virtual ~MergeCFAInterface();
 
-   virtual IsoString Id() const;
-   virtual MetaProcess* Process() const;
-   virtual const char** IconImageXPM() const;
-
-   virtual InterfaceFeatures Features() const;
-
-   //virtual void ApplyInstance() const;
-   virtual void ResetInstance();
-
-   virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-   virtual ProcessImplementation* NewProcess() const;
-
-   virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-   virtual bool RequiresInstanceValidation() const;
-
-   virtual bool ImportProcess( const ProcessImplementation& );
-
+   IsoString Id() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
 private:
 
@@ -102,27 +92,25 @@ private:
    {
       GUIData( MergeCFAInterface& );
 
-      VerticalSizer     Global_Sizer;
-         Label             CFA_Label;
-         HorizontalSizer   MergeCFA0_Sizer;
-            Label             CFA0_Label;
-            ViewList          CFA0_ViewList;
-         HorizontalSizer   MergeCFA1_Sizer;
-            Label             CFA1_Label;
-            ViewList          CFA1_ViewList;
-         HorizontalSizer   MergeCFA2_Sizer;
-            Label             CFA2_Label;
-            ViewList          CFA2_ViewList;
-         HorizontalSizer   MergeCFA3_Sizer;
-            Label             CFA3_Label;
-            ViewList          CFA3_ViewList;
+      VerticalSizer Global_Sizer;
+      Label CFA_Label;
+      HorizontalSizer MergeCFA0_Sizer;
+      Label CFA0_Label;
+      ViewList CFA0_ViewList;
+      HorizontalSizer MergeCFA1_Sizer;
+      Label CFA1_Label;
+      ViewList CFA1_ViewList;
+      HorizontalSizer MergeCFA2_Sizer;
+      Label CFA2_Label;
+      ViewList CFA2_ViewList;
+      HorizontalSizer MergeCFA3_Sizer;
+      Label CFA3_Label;
+      ViewList CFA3_ViewList;
    };
 
-   GUIData* GUI;
+   GUIData* GUI = nullptr;
 
    void UpdateControls();
-
-   // Event Handlers
 
    void __ViewList_ViewSelected( ViewList& sender, View& view );
 
@@ -137,9 +125,9 @@ PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
-} // pcl
+} // namespace pcl
 
-#endif   // __MergeCFAInterface_h
+#endif // __MergeCFAInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAInterface.h - Released 2020-02-27T12:56:01Z
+// EOF MergeCFAInterface.h - Released 2020-07-31T19:33:39Z

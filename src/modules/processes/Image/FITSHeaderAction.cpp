@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderAction.cpp - Released 2020-02-27T12:56:01Z
+// FITSHeaderAction.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -63,12 +63,15 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-
-FITSHeaderAction::FITSHeaderAction() :
-   Action( "File > FITS Header", Bitmap( ":/icons/table.png" ), "File" )
+FITSHeaderAction::FITSHeaderAction()
+   : Action( "File > FITS Header",
+             "@module_icons_dir/FITSHeader.svg",
+             "File" )
 {
    SetToolTip( "FITS Header" );
 }
+
+// ----------------------------------------------------------------------------
 
 void FITSHeaderAction::Execute()
 {
@@ -77,6 +80,8 @@ void FITSHeaderAction::Execute()
 
    TheFITSHeaderInterface->SelectImage( ImageWindow::ActiveWindow() );
 }
+
+// ----------------------------------------------------------------------------
 
 bool FITSHeaderAction::IsEnabled( ActionInfo info ) const
 {
@@ -88,4 +93,4 @@ bool FITSHeaderAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderAction.cpp - Released 2020-02-27T12:56:01Z
+// EOF FITSHeaderAction.cpp - Released 2020-07-31T19:33:39Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/MetaModule.cpp - Released 2020-02-27T12:55:33Z
+// pcl/MetaModule.cpp - Released 2020-07-31T19:33:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,6 +49,28 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#ifdef __PCL_WINDOWS
+# include <windows.h>
+#else
+# include <unistd.h>
+#endif
+
+#if defined( __PCL_MACOSX ) || defined( __PCL_FREEBSD )
+# include <sys/types.h>
+# include <sys/param.h>
+# include <sys/sysctl.h>
+#endif
+
+#ifdef __PCL_MACOSX
+# include <mach/mach_host.h>
+# include <mach/mach_port.h>
+#endif
+
+#ifdef __PCL_LINUX
+# include <pcl/ExternalProcess.h>
+# include <pcl/Thread.h>
+#endif
+
 #include <pcl/ErrorHandler.h>
 #include <pcl/MetaModule.h>
 #include <pcl/ProcessInterface.h>
@@ -66,8 +88,8 @@ MetaModule* Module = nullptr;
 
 // ----------------------------------------------------------------------------
 
-MetaModule::MetaModule() :
-   MetaObject( nullptr )
+MetaModule::MetaModule()
+   : MetaObject( nullptr )
 {
    if ( Module != nullptr )
       throw Error( "MetaModule: Module redefinition not allowed" );
@@ -183,6 +205,129 @@ IsoString MetaModule::ReadableVersion() const
 
 // ----------------------------------------------------------------------------
 
+bool MetaModule::GetPhysicalMemoryStatus( size_type& totalBytes, size_type& availableBytes ) const
+{
+#ifdef __PCL_FREEBSD
+
+   totalBytes = availableBytes = 0;
+   int mib[ 2 ] = { CTL_HW, HW_PHYSMEM };
+   size_t size = sizeof( totalBytes );
+   if ( sysctl( mib, 2, &totalBytes, &size, 0, 0 ) == 0 )
+   {
+      mib[1] = HW_USERMEM;
+      size = sizeof( availableBytes );
+      if ( sysctl( mib, 2, &availableBytes, &size, 0, 0 ) == 0 )
+         return totalBytes > 0 && availableBytes > 0;
+   }
+   return false;
+
+#endif
+
+#ifdef __PCL_LINUX
+
+   ExternalProcess P;
+   for ( int try_ = 0;; )
+   {
+      P.Start( "cat", StringList() << "/proc/meminfo" );
+      if ( P.WaitForStarted() )
+         if ( P.WaitForFinished() )
+            if ( !P.HasCrashed() )
+               if ( P.ExitCode() == 0 )
+                  break;
+      if ( ++try_ == 3 )
+         return false;
+      Sleep( 500 );
+   }
+
+   IsoString info = IsoString( P.StandardOutput() );
+   if ( info.IsEmpty() )
+      return false;
+
+   unsigned long memTotalkB = 0, memAvailablekB = 0, memFreekB = 0, cachedkB = 0;
+   IsoStringList lines;
+   info.Break( lines, '\n', true/*trim*/ );
+   for ( const IsoString& line : lines )
+      if ( line.StartsWithIC( "MemTotal" ) )
+      {
+         if ( ::sscanf( line.c_str(), "%*s %lu %*s", &memTotalkB ) != 1 )
+            return false;
+      }
+      else if ( line.StartsWithIC( "MemAvailable" ) )
+      {
+         // Current kernel versions provide a MemAvailable item since 2014:
+         // https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=34e431b0ae398fc54ea69ff85ec700722c9da773
+         if ( ::sscanf( line.c_str(), "%*s %lu %*s", &memAvailablekB ) != 1 )
+            return false;
+         if ( memTotalkB > 0 )
+            break;
+      }
+      else if ( line.StartsWithIC( "MemFree" ) )
+      {
+         if ( ::sscanf( line.c_str(), "%*s %lu %*s", &memFreekB ) != 1 )
+            return false;
+      }
+      else if ( line.StartsWithIC( "Cached" ) )
+      {
+         if ( ::sscanf( line.c_str(), "%*s %lu %*s", &cachedkB ) != 1 )
+            return false;
+      }
+
+   totalBytes = memTotalkB * 1024;
+
+   // On old kernels/distros (e.g. RHEL 6.x), try to guess an approximate value
+   // as 'free' + 'cached', which is wrong but should be pessimistic i.e. safe.
+   if ( memAvailablekB == 0 )
+      memAvailablekB = memFreekB + cachedkB;
+   availableBytes = memAvailablekB * 1024;
+
+   return totalBytes > 0 && availableBytes > 0;
+
+#endif // __PCL_LINUX
+
+#ifdef __PCL_MACOSX
+
+   totalBytes = 0;
+   int mib[ 2 ] = { CTL_HW, HW_PHYSMEM };
+   size_t size = sizeof( totalBytes );
+   if ( sysctl( mib, 2, &totalBytes, &size, 0, 0 ) == 0 )
+   {
+      mach_port_t host = mach_host_self();
+      kern_return_t kret;
+# ifdef HOST_VM_INFO64
+      struct vm_statistics64 vm_stat;
+      natural_t count = HOST_VM_INFO64_COUNT;
+      kret = host_statistics64( host, HOST_VM_INFO64, (host_info64_t)&vm_stat, &count );
+# else
+      struct vm_statistics	vm_stat;
+      natural_t count = HOST_VM_INFO_COUNT;
+      kret = host_statistics( host, HOST_VM_INFO, (host_info_t)&vm_stat, &count );
+# endif
+      if ( kret != KERN_SUCCESS )
+         return false;
+      availableBytes = size_type( vm_stat.free_count + vm_stat.active_count + vm_stat.inactive_count )
+                     * size_type( sysconf( _SC_PAGESIZE ) );
+      mach_port_deallocate( mach_task_self(), host );
+      return totalBytes > 0 && availableBytes > 0;
+   }
+
+   return false;
+
+#endif // __PCL_MACOSX
+
+#ifdef __PCL_WINDOWS
+
+   MEMORYSTATUSEX m;
+   m.dwLength = sizeof( m );
+   GlobalMemoryStatusEx( &m );
+   totalBytes = size_type( m.ullTotalPhys );
+   availableBytes = size_type( m.ullAvailPhys );
+   return totalBytes > 0 && availableBytes > 0;
+
+#endif
+}
+
+// ----------------------------------------------------------------------------
+
 void MetaModule::LoadResource( const String& filePath, const String& rootPath )
 {
    if ( (*API->Module->LoadResource)( ModuleHandle(), filePath.c_str(), rootPath.c_str() ) == api_false )
@@ -294,4 +439,4 @@ void MetaModule::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaModule.cpp - Released 2020-02-27T12:55:33Z
+// EOF pcl/MetaModule.cpp - Released 2020-07-31T19:33:12Z

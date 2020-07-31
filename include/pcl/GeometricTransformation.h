@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/GeometricTransformation.h - Released 2020-02-27T12:55:23Z
+// pcl/GeometricTransformation.h - Released 2020-07-31T19:33:04Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -139,8 +139,8 @@ public:
     * as long as this object exists, or until this object is associated with a
     * different pixel interpolation.
     */
-   InterpolatingGeometricTransformation( PixelInterpolation& p ) :
-      m_interpolation( &p )
+   InterpolatingGeometricTransformation( PixelInterpolation& p )
+      : m_interpolation( &p )
    {
       PCL_CHECK( m_interpolation != nullptr )
    }
@@ -158,8 +158,10 @@ public:
    /*!
     * Move constructor.
     */
-   InterpolatingGeometricTransformation( InterpolatingGeometricTransformation&& x ) :
-      GeometricTransformation( x ), m_interpolation( x.m_interpolation ), m_unclipped( x.m_unclipped )
+   InterpolatingGeometricTransformation( InterpolatingGeometricTransformation&& x )
+      : GeometricTransformation( x )
+      , m_interpolation( x.m_interpolation )
+      , m_unclipped( x.m_unclipped )
    {
       x.m_interpolation = nullptr;
    }
@@ -272,4 +274,4 @@ protected:
 #endif   // __PCL_GeometricTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GeometricTransformation.h - Released 2020-02-27T12:55:23Z
+// EOF pcl/GeometricTransformation.h - Released 2020-07-31T19:33:04Z

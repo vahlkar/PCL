@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.22.0
+// Standard ImageIntegration Process Module Version 1.25.0
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// DrizzleIntegrationParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -184,6 +184,15 @@ DZInputHints::DZInputHints( MetaProcess* P ) : MetaString( P )
 IsoString DZInputHints::Id() const
 {
    return "inputHints";
+}
+
+String DZInputHints::DefaultValue() const
+{
+   // Input format hints:
+   // * XISF: fits-keywords normalize
+   // * RAW: raw cfa
+   // * FITS: signed-is-physical
+   return "fits-keywords normalize raw cfa signed-is-physical";
 }
 
 // ----------------------------------------------------------------------------
@@ -1415,4 +1424,4 @@ bool DZImageOutputData::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF DrizzleIntegrationParameters.cpp - Released 2020-07-31T19:33:39Z

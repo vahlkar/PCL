@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// MorphologicalTransformationInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -63,32 +63,25 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-MorphologicalTransformationInstance::MorphologicalTransformationInstance( const MetaProcess* P ) :
-   ProcessImplementation( P ),
-   morphologicalOperator( TheMorphologicalOpParameter->Default ),
-   interlacingDistance( uint32( TheInterlacingDistanceParameter->DefaultValue() ) ),
-   lowThreshold( TheLowThresholdParameter->DefaultValue() ),
-   highThreshold( TheHighThresholdParameter->DefaultValue() ),
-   numberOfIterations( uint32( TheNumberOfIterationsParameter->DefaultValue() ) ),
-   amount( TheAmountParameter->DefaultValue() ),
-   selectionPoint( TheSelectionPointParameter->DefaultValue() ),
-   structure( 1, unsigned( TheStructureSizeParameter->DefaultValue() ), TheStructureNameParameter->DefaultValue() )
+MorphologicalTransformationInstance::MorphologicalTransformationInstance( const MetaProcess* P )
+   : ProcessImplementation( P )
+   , morphologicalOperator( TheMTOperatorParameter->Default )
+   , interlacingDistance( uint32( TheMTInterlacingDistanceParameter->DefaultValue() ) )
+   , lowThreshold( TheMTLowThresholdParameter->DefaultValue() )
+   , highThreshold( TheMTHighThresholdParameter->DefaultValue() )
+   , numberOfIterations( uint32( TheMTNumberOfIterationsParameter->DefaultValue() ) )
+   , amount( TheMTAmountParameter->DefaultValue() )
+   , selectionPoint( TheMTSelectionPointParameter->DefaultValue() )
+   , structure( 1, unsigned( TheMTStructureSizeParameter->DefaultValue() ), TheMTStructureNameParameter->DefaultValue() )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-MorphologicalTransformationInstance::MorphologicalTransformationInstance( const MorphologicalTransformationInstance& x ) :
-   ProcessImplementation( x ),
-   morphologicalOperator( x.morphologicalOperator ),
-   interlacingDistance( x.interlacingDistance ),
-   lowThreshold( x.lowThreshold ),
-   highThreshold( x.highThreshold ),
-   numberOfIterations( x.numberOfIterations ),
-   amount( x.amount ),
-   selectionPoint( x.selectionPoint ),
-   structure( x.structure )
+MorphologicalTransformationInstance::MorphologicalTransformationInstance( const MorphologicalTransformationInstance& x )
+   : ProcessImplementation( x )
 {
+   Assign( x );
 }
 
 // ----------------------------------------------------------------------------
@@ -160,23 +153,20 @@ private:
    {
    public:
 
-      MTEngineStructure( const MorphologicalTransformationInstance& instance ) :
-      StructuringElement( instance.GetStructure().Size(), instance.GetStructure().NumberOfWays() ),
-      structure( instance.GetStructure() )
+      MTEngineStructure( const MorphologicalTransformationInstance& instance )
+         : StructuringElement( instance.GetStructure().Size(), instance.GetStructure().NumberOfWays() )
+         , structure( instance.GetStructure() )
       {
       }
 
-      MTEngineStructure( const MTEngineStructure& x ) :
-      StructuringElement( x ), structure( x.structure )
-      {
-      }
+      MTEngineStructure( const MTEngineStructure& ) = default;
 
-      virtual StructuringElement* Clone() const
+      StructuringElement* Clone() const override
       {
          return new MTEngineStructure( *this );
       }
 
-      virtual bool ElementExists( int i, int j, int k ) const // row, col, way
+      bool ElementExists( int i, int j, int k ) const override // row, col, way
       {
          return structure.Element( k, j, i );
       }
@@ -193,17 +183,17 @@ private:
 
       switch ( instance.Operator() )
       {
-      case MorphologicalOp::Closing:
-      case MorphologicalOp::Erosion:   O[0].SetPointer( new ErosionFilter ); break;
+      case MTOperator::Closing:
+      case MTOperator::Erosion:   O[0].SetPointer( new ErosionFilter ); break;
 
-      case MorphologicalOp::Opening:
-      case MorphologicalOp::Dilation:  O[0].SetPointer( new DilationFilter ); break;
+      case MTOperator::Opening:
+      case MTOperator::Dilation:  O[0].SetPointer( new DilationFilter ); break;
 
-      case MorphologicalOp::Median:    O[0].SetPointer( new MedianFilter ); break;
+      case MTOperator::Median:    O[0].SetPointer( new MedianFilter ); break;
 
-      case MorphologicalOp::Selection: O[0].SetPointer( new SelectionFilter( instance.SelectionPoint() ) ); break;
+      case MTOperator::Selection: O[0].SetPointer( new SelectionFilter( instance.SelectionPoint() ) ); break;
 
-      case MorphologicalOp::Midpoint:  O[0].SetPointer( new MidpointFilter ); break;
+      case MTOperator::Midpoint:  O[0].SetPointer( new MidpointFilter ); break;
 
       default: // ?!
          return;
@@ -211,21 +201,21 @@ private:
 
       switch ( instance.Operator() )
       {
-      case MorphologicalOp::Closing:   O[1].SetPointer( new DilationFilter ); break;
-      case MorphologicalOp::Opening:   O[1].SetPointer( new ErosionFilter ); break;
+      case MTOperator::Closing:   O[1].SetPointer( new DilationFilter ); break;
+      case MTOperator::Opening:   O[1].SetPointer( new ErosionFilter ); break;
       }
 
       String operatorName;
 
       switch ( instance.Operator() )
       {
-      case MorphologicalOp::Closing:   operatorName = "Closing"; break;
-      case MorphologicalOp::Erosion:   operatorName = "Erosion"; break;
-      case MorphologicalOp::Opening:   operatorName = "Opening"; break;
-      case MorphologicalOp::Dilation:  operatorName = "Dilation"; break;
-      case MorphologicalOp::Median:    operatorName = "Median"; break;
-      case MorphologicalOp::Selection: operatorName = "Selection"; break;
-      case MorphologicalOp::Midpoint:  operatorName = "Midpoint"; break;
+      case MTOperator::Closing:   operatorName = "Closing"; break;
+      case MTOperator::Erosion:   operatorName = "Erosion"; break;
+      case MTOperator::Opening:   operatorName = "Opening"; break;
+      case MTOperator::Dilation:  operatorName = "Dilation"; break;
+      case MTOperator::Median:    operatorName = "Median"; break;
+      case MTOperator::Selection: operatorName = "Selection"; break;
+      case MTOperator::Midpoint:  operatorName = "Midpoint"; break;
       }
 
       MTEngineStructure S( instance );
@@ -300,25 +290,25 @@ bool MorphologicalTransformationInstance::ExecuteOn( View& view )
 
 void* MorphologicalTransformationInstance::LockParameter( const MetaParameter* p, size_type tableRow )
 {
-   if ( p == TheMorphologicalOpParameter )
+   if ( p == TheMTOperatorParameter )
       return &morphologicalOperator;
-   if ( p == TheInterlacingDistanceParameter )
+   if ( p == TheMTInterlacingDistanceParameter )
       return &interlacingDistance;
-   if ( p == TheLowThresholdParameter )
+   if ( p == TheMTLowThresholdParameter )
       return &lowThreshold;
-   if ( p == TheHighThresholdParameter )
+   if ( p == TheMTHighThresholdParameter )
       return &highThreshold;
-   if ( p == TheNumberOfIterationsParameter )
+   if ( p == TheMTNumberOfIterationsParameter )
       return &numberOfIterations;
-   if ( p == TheAmountParameter )
+   if ( p == TheMTAmountParameter )
       return &amount;
-   if ( p == TheSelectionPointParameter )
+   if ( p == TheMTSelectionPointParameter )
       return &selectionPoint;
-   if ( p == TheStructureNameParameter )
+   if ( p == TheMTStructureNameParameter )
       return structure.name.Begin();
-   if ( p == TheStructureSizeParameter )
+   if ( p == TheMTStructureSizeParameter )
       return &structure.size;
-   if ( p == TheStructureWayMaskParameter )
+   if ( p == TheMTStructureWayMaskParameter )
       return structure.mask[tableRow].Begin();
    return nullptr;
 }
@@ -327,19 +317,19 @@ void* MorphologicalTransformationInstance::LockParameter( const MetaParameter* p
 
 bool MorphologicalTransformationInstance::AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow )
 {
-   if ( p == TheStructureNameParameter )
+   if ( p == TheMTStructureNameParameter )
    {
       structure.name.Clear();
       if ( sizeOrLength > 0 )
          structure.name.SetLength( sizeOrLength );
    }
-   else if ( p == TheStructureWayTableParameter )
+   else if ( p == TheMTStructureWayTableParameter )
    {
       structure.mask.Clear();
       if ( sizeOrLength > 0 )
          structure.mask.Add( ByteArray(), sizeOrLength );
    }
-   else if ( p == TheStructureWayMaskParameter )
+   else if ( p == TheMTStructureWayMaskParameter )
    {
       structure.mask[tableRow].Clear();
       if ( sizeOrLength > 0 )
@@ -355,11 +345,11 @@ bool MorphologicalTransformationInstance::AllocateParameter( size_type sizeOrLen
 
 size_type MorphologicalTransformationInstance::ParameterLength( const MetaParameter* p, size_type tableRow ) const
 {
-   if ( p == TheStructureNameParameter )
+   if ( p == TheMTStructureNameParameter )
       return structure.name.Length();
-   if ( p == TheStructureWayTableParameter )
+   if ( p == TheMTStructureWayTableParameter )
       return structure.mask.Length();
-   if ( p == TheStructureWayMaskParameter )
+   if ( p == TheMTStructureWayMaskParameter )
       return structure.mask[tableRow].Length();
    return 0;
 }
@@ -369,4 +359,4 @@ size_type MorphologicalTransformationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF MorphologicalTransformationInstance.cpp - Released 2020-07-31T19:33:39Z

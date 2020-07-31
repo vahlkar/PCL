@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInterface.h - Released 2020-02-27T12:56:01Z
+// ColorSaturationInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -82,25 +82,18 @@ public:
 
    IsoString Id() const override;
    MetaProcess* Process() const override;
-   const char** IconImageXPM() const override;
-
+   String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
    void ApplyInstance() const override;
    void RealTimePreviewUpdated( bool active ) override;
    void ResetInstance() override;
-
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ ) override;
-
    ProcessImplementation* NewProcess() const override;
-
    bool ValidateProcess( const ProcessImplementation&, pcl::String& whyNot ) const override;
    bool RequiresInstanceValidation() const override;
-
    bool ImportProcess( const ProcessImplementation& ) override;
-
    bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const override;
    bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const override;
-
    bool WantsReadoutNotifications() const override;
    void BeginReadout( const View& v ) override;
    void UpdateReadout( const View& v, const DPoint& p, double R, double G, double B, double A ) override;
@@ -108,7 +101,7 @@ public:
 
 private:
 
-   ColorSaturationInstance instance;
+   ColorSaturationInstance m_instance;
 
    class RealTimeThread : public Thread
    {
@@ -172,51 +165,51 @@ private:
    GUIData* GUI = nullptr;
 
    /*
-    * Workflow
+    * Workbench
     */
    enum working_mode { EditMode, SelectMode, DeleteMode, ZoomInMode, ZoomOutMode, PanMode, NoMode = -1 };
 
-   working_mode   m_mode;
-   working_mode   m_savedMode;      // for temporary keyboard mode switch
+   working_mode   m_mode            = EditMode;
+   working_mode   m_savedMode       = NoMode; // for temporary keyboard mode switch
 
-   size_type      m_currentPoint;   // point index
+   size_type      m_currentPoint    = 0;     // point index
 
-   bool           m_readoutActive;
-   double         m_readouts[ 4 ];  // 0=R 1=G 2=B 3=Alpha
+   bool           m_readoutActive   = false;
+   double         m_readouts[ 4 ]   = {};    // 0=R 1=G 2=B 3=Alpha
    RGBColorSystem m_readoutRGBWS;
 
-   int            m_zoomX;
-   int            m_zoomY;
-   int            m_scale;
+   int            m_zoomX           = 1;
+   int            m_zoomY           = 1;
+   int            m_scale           = 1;
 
-   int            m_wheelSteps;     // accumulated 1/8-degree wheel steps
+   int            m_wheelSteps      = 0;     // accumulated 1/8-degree wheel steps
 
-   bool           m_showGrid;       // draw coordinate grids
+   bool           m_showGrid        = true;  // draw coordinate grids
 
-   int            m_panning;        // panning the viewport?
-   Point          m_panOrigin;
+   int            m_panning         = 0;     // panning the viewport?
+   Point          m_panOrigin       = 0;
 
-   bool           m_cursorVisible;
-   bool           m_dragging;       // dragging a curve point?
-   Point          m_cursorPos;      // cursor position in viewport crds.
-   DPoint         m_curvePos;       // cursor position in normalized crds.
+   bool           m_cursorVisible   = false;
+   bool           m_dragging        = false; // dragging a curve point?
+   Point          m_cursorPos       = -1;    // cursor position in viewport crds.
+   DPoint         m_curvePos        = 0;     // cursor position in normalized crds.
 
-   Bitmap         m_viewportBitmap; // screen bitmap
-   bool           m_viewportDirty : 1;
+   Bitmap         m_viewportBitmap  = Bitmap::Null();
+   bool           m_viewportDirty   = true;
 
    HSCurve        m_storedCurve;
 
-   RGBA           m_channelColor;
-   RGBA           m_gridColor0;
-   RGBA           m_gridColor1;
-   RGBA           m_gridColor2;
-   RGBA           m_backgroundColor;
+   RGBA           m_channelColor    = RGBAColor( 0xFF, 0xFF, 0x00 );
+   RGBA           m_gridColor0      = RGBAColor( 0x50, 0x50, 0x50 );
+   RGBA           m_gridColor1      = RGBAColor( 0x37, 0x37, 0x37 );
+   RGBA           m_gridColor2      = RGBAColor( 0x60, 0x60, 0x60 );
+   RGBA           m_backgroundColor = RGBAColor( 0x00, 0x00, 0x00 );
 
-   int            m_minCurveWidth; // these are constants currently, but who knows...
-   int            m_minCurveHeight;
-   int            m_scaleSize;
+   int            m_minCurveWidth   = 300;   // these are constants currently, but who knows...
+   int            m_minCurveHeight  = 300;
+   int            m_scaleSize       = 8;
 
-   bool           m_settingUp : 1; // true during viewport transitional states (e.g. resizing)
+   bool           m_settingUp       = false; // true during viewport transitional states (e.g. resizing)
 
    /*
     * Auxiliary Functions
@@ -241,17 +234,17 @@ private:
 
    double CurrentInputValue() const
    {
-      return instance.C.X( CurrentPoint() );
+      return m_instance.C.X( CurrentPoint() );
    }
 
    double CurrentOutputValue() const
    {
-      return instance.C.Y( CurrentPoint() );
+      return m_instance.C.Y( CurrentPoint() );
    }
 
    double& CurrentOutputValue()
    {
-      return instance.C.Y( CurrentPoint() );
+      return m_instance.C.Y( CurrentPoint() );
    }
 
    /*
@@ -368,4 +361,4 @@ PCL_END_LOCAL
 #endif   // __ColorSaturationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInterface.h - Released 2020-02-27T12:56:01Z
+// EOF ColorSaturationInterface.h - Released 2020-07-31T19:33:39Z

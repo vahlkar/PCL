@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFF.h - Released 2020-02-27T12:55:48Z
+// TIFF.h - Released 2020-07-31T19:33:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -167,14 +167,14 @@ public:
    {
    public:
 
-      Error( const String& filePath, const String& message ) :
-         File::Error( filePath, message )
+      Error( const String& filePath, const String& message )
+         : File::Error( filePath, message )
       {
       }
 
       Error( const TIFF::Error& x ) = default;
 
-      virtual String ExceptionClass() const
+      String ExceptionClass() const override
       {
          return "PCL TIFF Format Support";
       }
@@ -352,4 +352,4 @@ private:
 #endif   // __PCL_TIFF_h
 
 // ----------------------------------------------------------------------------
-// EOF TIFF.h - Released 2020-02-27T12:55:48Z
+// EOF TIFF.h - Released 2020-07-31T19:33:23Z

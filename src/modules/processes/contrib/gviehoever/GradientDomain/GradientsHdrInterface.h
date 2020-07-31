@@ -2,16 +2,16 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrInterface.h - Released 2020-02-27T12:56:01Z
+// GradientsHdrInterface.h - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
-// Copyright (c) Georg Viehoever, 2011-2018. Licensed under LGPL 2.1
-// Copyright (c) 2003-2018 Pleiades Astrophoto S.L.
+// Copyright (c) Georg Viehoever, 2011-2020. Licensed under LGPL 2.1
+// Copyright (c) 2003-2020 Pleiades Astrophoto S.L.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -33,10 +33,10 @@
 
 #include <pcl/ProcessInterface.h>
 
-#include <pcl/Sizer.h>
+#include <pcl/CheckBox.h>
 #include <pcl/Label.h>
 #include <pcl/NumericControl.h>
-#include <pcl/CheckBox.h>
+#include <pcl/Sizer.h>
 #include <pcl/Timer.h>
 
 #include "GradientsHdrInstance.h"
@@ -44,85 +44,77 @@
 namespace pcl
 {
 
+// ----------------------------------------------------------------------------
 
-  class GradientsHdrInterface : public ProcessInterface
-  {
-  public:
+class GradientsHdrInterface : public ProcessInterface
+{
+public:
 
-    GradientsHdrInterface();
-    virtual ~GradientsHdrInterface();
+   GradientsHdrInterface();
+   virtual ~GradientsHdrInterface();
 
-    virtual IsoString Id() const;
-    virtual IsoString Aliases() const;
-    virtual MetaProcess* Process() const;
-    virtual const char** IconImageXPM() const;
-    virtual InterfaceFeatures Features() const;
+   IsoString Id() const override;
+   IsoString Aliases() const override;
+   MetaProcess* Process() const override;
+   String IconImageSVGFile() const override;
+   InterfaceFeatures Features() const override;
+   void RealTimePreviewUpdated( bool active ) override;
+   bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const override;
+   bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const override;
+   void ApplyInstance() const override;
+   void ResetInstance() override;
+   bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags ) override;
+   ProcessImplementation* NewProcess() const override;
+   bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const override;
+   bool RequiresInstanceValidation() const override;
+   bool ImportProcess( const ProcessImplementation& ) override;
 
-    virtual void RealTimePreviewUpdated( bool active );
-    virtual bool RequiresRealTimePreviewUpdate( const UInt16Image&, const View&, const Rect&, int zoomLevel ) const;
-    virtual bool GenerateRealTimePreview( UInt16Image&, const View&, const Rect&, int zoomLevel, String& info ) const;
+private:
 
-    virtual void ApplyInstance() const;
-    virtual void ResetInstance();
+   GradientsHdrInstance instance;
 
-    virtual bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ );
-
-    virtual ProcessImplementation* NewProcess() const;
-
-    virtual bool ValidateProcess( const ProcessImplementation&, String& whyNot ) const;
-    virtual bool RequiresInstanceValidation() const;
-
-    virtual bool ImportProcess( const ProcessImplementation& );
-
-  private:
-
-    GradientsHdrInstance instance;
-
-    struct GUIData
-    {
+   struct GUIData
+   {
       GUIData( GradientsHdrInterface& );
 
-      VerticalSizer     global_Sizer;
-      NumericControl    logMaxGradient_NumericControl;
-      NumericControl    logMinGradient_NumericControl;
-      NumericControl    expGradient_NumericControl;
-      HorizontalSizer   rescale01_Sizer;
-      Label             rescale01_Label;
-      CheckBox           rescale01_CheckBox;
-      Label              preserveColor_Label;
-      CheckBox           preserveColor_CheckBox;
+      VerticalSizer global_Sizer;
+      NumericControl logMaxGradient_NumericControl;
+      NumericControl logMinGradient_NumericControl;
+      NumericControl expGradient_NumericControl;
+      HorizontalSizer rescale01_Sizer;
+      Label rescale01_Label;
+      CheckBox rescale01_CheckBox;
+      Label preserveColor_Label;
+      CheckBox preserveColor_CheckBox;
       Timer UpdateRealTime_Timer;
-    };
+   };
 
-    GUIData* GUI;
+   GUIData* GUI = nullptr;
 
-    void UpdateControls();
-    void UpdateRealTimePreview();
+   void UpdateControls();
+   void UpdateRealTimePreview();
 
-    // Event Handlers
+   void __expGradientUpdated( NumericEdit& sender, double value );
+   void __logMaxGradientUpdated( NumericEdit& sender, double value );
+   void __logMinGradientUpdated( NumericEdit& sender, double value );
+   void __rescale01Clicked( Button& sender, bool value );
+   void __preserveColorClicked( Button& sender, bool value );
+   void __UpdateRealTime_Timer( Timer& );
 
-    void __expGradientUpdated( NumericEdit& sender, double value );
-    void __logMaxGradientUpdated( NumericEdit& sender, double value );
-    void __logMinGradientUpdated( NumericEdit& sender, double value );
-    void __rescale01Clicked( Button& sender, bool value );
-    void __preserveColorClicked( Button& sender, bool value );
-    void __UpdateRealTime_Timer( Timer& );
-
-
-    friend struct GUIData;
-  };
-
-  // ----------------------------------------------------------------------------
-
-  PCL_BEGIN_LOCAL
-    extern GradientsHdrInterface* TheGradientsHdrInterface;
-  PCL_END_LOCAL
-
-    // ----------------------------------------------------------------------------
-
-    } // pcl
-
-#endif   // __GradientsHdrInterface_h
+   friend struct GUIData;
+};
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrInterface.h - Released 2020-02-27T12:56:01Z
+
+PCL_BEGIN_LOCAL
+extern GradientsHdrInterface* TheGradientsHdrInterface;
+PCL_END_LOCAL
+
+// ----------------------------------------------------------------------------
+
+} // namespace pcl
+
+#endif // __GradientsHdrInterface_h
+
+// ----------------------------------------------------------------------------
+// EOF GradientsHdrInterface.h - Released 2020-07-31T19:33:39Z

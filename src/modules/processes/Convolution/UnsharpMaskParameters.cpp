@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskParameters.cpp - Released 2020-02-27T12:56:01Z
+// UnsharpMaskParameters.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -57,16 +57,16 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-USMSigma*               TheUSMSigmaParameter = 0;
-USMAmount*              TheUSMAmountParameter = 0;
-USMUseLuminance*        TheUSMUseLuminanceParameter = 0;
-USMLinear*              TheUSMLinearParameter = 0;
-USMDeringing*           TheUSMDeringingParameter = 0;
-USMDeringingDark*       TheUSMDeringingDarkParameter = 0;
-USMDeringingBright*     TheUSMDeringingBrightParameter = 0;
-USMOutputDeringingMaps* TheUSMOutputDeringingMapsParameter = 0;
-USMRangeLow*            TheUSMRangeLowParameter = 0;
-USMRangeHigh*           TheUSMRangeHighParameter = 0;
+USMSigma*               TheUSMSigmaParameter = nullptr;
+USMAmount*              TheUSMAmountParameter = nullptr;
+USMUseLuminance*        TheUSMUseLuminanceParameter = nullptr;
+USMLinear*              TheUSMLinearParameter = nullptr;
+USMDeringing*           TheUSMDeringingParameter = nullptr;
+USMDeringingDark*       TheUSMDeringingDarkParameter = nullptr;
+USMDeringingBright*     TheUSMDeringingBrightParameter = nullptr;
+USMOutputDeringingMaps* TheUSMOutputDeringingMapsParameter = nullptr;
+USMRangeLow*            TheUSMRangeLowParameter = nullptr;
+USMRangeHigh*           TheUSMRangeHighParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -333,4 +333,4 @@ double USMRangeHigh::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskParameters.cpp - Released 2020-02-27T12:56:01Z
+// EOF UnsharpMaskParameters.cpp - Released 2020-07-31T19:33:39Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.1.20
+// /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// MaskedStretchInstance.cpp - Released 2020-02-27T12:56:01Z
+// MaskedStretchInstance.cpp - Released 2020-07-31T19:33:39Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -65,24 +65,23 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-MaskedStretchInstance::MaskedStretchInstance( const MetaProcess* m ) :
-   ProcessImplementation( m ),
-   p_targetBackground( TheMSTargetBackgroundParameter->DefaultValue() ),
-   p_numberOfIterations( TheMSNumberOfIterationsParameter->DefaultValue() ),
-   p_clippingFraction( TheMSClippingFractionParameter->DefaultValue() ),
-   p_backgroundReferenceViewId(),
-   p_backgroundLow( TheMSBackgroundLowParameter->DefaultValue() ),
-   p_backgroundHigh( TheMSBackgroundHighParameter->DefaultValue() ),
-   p_useROI( TheMSUseROIParameter->DefaultValue() ),
-   p_roi( 0 ),
-   p_maskType( MSMaskType::Default )
+MaskedStretchInstance::MaskedStretchInstance( const MetaProcess* m )
+   : ProcessImplementation( m )
+   , p_targetBackground( TheMSTargetBackgroundParameter->DefaultValue() )
+   , p_numberOfIterations( TheMSNumberOfIterationsParameter->DefaultValue() )
+   , p_clippingFraction( TheMSClippingFractionParameter->DefaultValue() )
+   , p_backgroundReferenceViewId()
+   , p_backgroundLow( TheMSBackgroundLowParameter->DefaultValue() )
+   , p_backgroundHigh( TheMSBackgroundHighParameter->DefaultValue() )
+   , p_useROI( TheMSUseROIParameter->DefaultValue() )
+   , p_maskType( MSMaskType::Default )
 {
 }
 
 // ----------------------------------------------------------------------------
 
-MaskedStretchInstance::MaskedStretchInstance( const MaskedStretchInstance& x ) :
-   ProcessImplementation( x )
+MaskedStretchInstance::MaskedStretchInstance( const MaskedStretchInstance& x )
+   : ProcessImplementation( x )
 {
    Assign( x );
 }
@@ -168,7 +167,7 @@ __outOfRange:
       }
    }
 
-   return B.IsEmpty() ? 0.0 : pcl::Median( B.Begin(), B.End() );
+   return pcl::Median( B.Begin(), B.End() );
 }
 
 static double InitialBackground( const ImageVariant& image, double low, double high, double clip )
@@ -255,12 +254,13 @@ private:
                            const AbstractImage::ThreadData& data,
                            GenericImage<P>& image,
                            const DVector& m,
-                           size_type start, size_type end ) :
-         m_instance( instance ),
-         m_data( data ),
-         m_image( image ),
-         m_m( m ),
-         m_start( start ), m_end( end )
+                           size_type start, size_type end )
+         : m_instance( instance )
+         , m_data( data )
+         , m_image( image )
+         , m_m( m )
+         , m_start( start )
+         , m_end( end )
       {
       }
 
@@ -495,4 +495,4 @@ size_type MaskedStretchInstance::ParameterLength( const MetaParameter* p, size_t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchInstance.cpp - Released 2020-02-27T12:56:01Z
+// EOF MaskedStretchInstance.cpp - Released 2020-07-31T19:33:39Z
