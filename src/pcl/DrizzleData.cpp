@@ -84,6 +84,10 @@ void DrizzleData::ClearIntegrationData()
    m_metadata.Clear();
    m_pedestal = 0;
    m_location = m_referenceLocation = m_scale = m_unitScale = m_weight = m_unitWeight = Vector();
+   m_adaptiveCoordinates.Clear();
+   m_adaptiveLocation.Clear();
+   m_referenceAdaptiveLocation.Clear();
+   m_adaptiveScale.Clear();
    m_rejectionLowCount = m_rejectionHighCount = UI64Vector();
    m_rejectionMap.FreeData();
    m_rejectLowData = m_rejectHighData = rejection_data();
@@ -162,14 +166,14 @@ XMLDocument* DrizzleData::Serialize() const
                                  << XMLAttribute( "order", String( m_localDistortionOrder ) )
                                  << XMLAttribute( "regularization", String( m_localDistortionRegularization ) )
                                  << XMLAttribute( "extrapolation", String( m_localDistortionExtrapolation ) ) );
-         SerializeDistortionPoints( new XMLElement( *element, "ReferencePoints" ), m_LP1 );
-         SerializeDistortionPoints( new XMLElement( *element, "TargetDisplacements" ), m_LD2 );
+         SerializePoints( new XMLElement( *element, "ReferencePoints" ), m_LP1 );
+         SerializePoints( new XMLElement( *element, "TargetDisplacements" ), m_LD2 );
          if ( !m_LW.IsEmpty() )
             SerializeDistortionWeights( new XMLElement( *element, "PointWeights" ), m_LW );
          if ( !m_LP2.IsEmpty() && !m_LD1.IsEmpty() )
          {
-            SerializeDistortionPoints( new XMLElement( *element, "TargetPoints" ), m_LP2 );
-            SerializeDistortionPoints( new XMLElement( *element, "ReferenceDisplacements" ), m_LD1 );
+            SerializePoints( new XMLElement( *element, "TargetPoints" ), m_LP2 );
+            SerializePoints( new XMLElement( *element, "ReferenceDisplacements" ), m_LD1 );
          }
       }
    }
@@ -191,6 +195,31 @@ XMLDocument* DrizzleData::Serialize() const
          *(new XMLElement( *root, "Weights" )) << new XMLText( String().ToCommaSeparated( m_weight ) );
       if ( !m_rejectionMap.IsEmpty() )
          SerializeRejectionMap( new XMLElement( *root, "RejectionMap" ) );
+   }
+
+   if ( HasAdaptiveNormalizationData() )
+   {
+      XMLElement* element = new XMLElement( *root, "AdaptiveNormalization" );
+      Array<double> x, y;
+      for ( const DPoint& p : m_adaptiveCoordinates )
+      {
+         x << p.x;
+         y << p.y;
+      }
+      *(new XMLElement( *element, "XCoordinates" )) << new XMLText( String().ToCommaSeparated( x ) );
+      *(new XMLElement( *element, "YCoordinates" )) << new XMLText( String().ToCommaSeparated( y ) );
+      StringList list;
+      for ( const Vector& v : m_adaptiveLocation )
+         list << String().ToCommaSeparated( v );
+      *(new XMLElement( *element, "LocationEstimates" )) << new XMLText( String().ToSeparated( list, ';' ) );
+      list.Clear();
+      for ( const Vector& v : m_referenceAdaptiveLocation )
+         list << String().ToCommaSeparated( v );
+      *(new XMLElement( *element, "ReferenceLocation" )) << new XMLText( String().ToSeparated( list, ';' ) );
+      list.Clear();
+      for ( const Vector& v : m_adaptiveScale )
+         list << String().ToCommaSeparated( v );
+      *(new XMLElement( *element, "ScaleFactors" )) << new XMLText( String().ToSeparated( list, ';' ) );
    }
 
    return xml.Release();
@@ -281,6 +310,18 @@ static Vector ParseListOfRealValues( const XMLElement& element, size_type minCou
 {
    IsoString text = IsoString( element.Text().Trimmed() );
    return ParseListOfRealValues( text, 0, text.Length(), minCount, maxCount );
+}
+
+static MultiVector ParseListsOfRealValues( const XMLElement& element, size_type minCount = 0, size_type maxCount = ~size_type( 0 ) )
+{
+   MultiVector m;
+   IsoString text = IsoString( element.Text().Trimmed() );
+   IsoStringList lists;
+   text.Break( lists, ';', true/*trim*/ );
+   for ( IsoString& list : lists )
+      if ( !list.IsEmpty() )
+         m << ParseListOfRealValues( list, 0, list.Length(), minCount, maxCount );
+   return m;
 }
 
 static IVector ParseListOfIntegerValues( IsoString& text, size_type start, size_type end, size_type minCount = 0, size_type maxCount = ~size_type( 0 ) )
@@ -509,15 +550,15 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
                }
                const XMLElement& element = static_cast<const XMLElement&>( node );
                if ( element.Name() == "ReferencePoints" )
-                  m_LP1 = ParseDistortionPoints( element );
+                  m_LP1 = ParsePoints( element );
                else if ( element.Name() == "TargetDisplacements" )
-                  m_LD2 = ParseDistortionPoints( element );
+                  m_LD2 = ParsePoints( element );
                else if ( element.Name() == "PointWeights" )
                   m_LW = ParseDistortionWeights( element );
                else if ( element.Name() == "TargetPoints" )
-                  m_LP2 = ParseDistortionPoints( element );
+                  m_LP2 = ParsePoints( element );
                else if ( element.Name() == "ReferenceDisplacements" )
-                  m_LD1 = ParseDistortionPoints( element );
+                  m_LD1 = ParsePoints( element );
                else
                   WarnOnUnknownChildElement( element, "LocalDistortionModel" );
             }
@@ -582,6 +623,54 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
          {
             if ( !ignoreIntegrationData )
                ParseRejectionMap( element );
+         }
+         else if ( element.Name() == "AdaptiveNormalization" )
+         {
+            if ( !ignoreIntegrationData )
+            {
+               DVector x, y;
+               for ( const XMLNode& node : element )
+               {
+                  if ( !node.IsElement() )
+                  {
+                     WarnOnUnexpectedChildNode( node, "AdaptiveNormalization" );
+                     continue;
+                  }
+                  const XMLElement& element = static_cast<const XMLElement&>( node );
+                  if ( element.Name() == "XCoordinates" )
+                     x = ParseListOfRealValues( element, 1 );
+                  else if ( element.Name() == "YCoordinates" )
+                     y = ParseListOfRealValues( element, 1 );
+                  else if ( element.Name() == "LocationEstimates" )
+                     m_adaptiveLocation = ParseListsOfRealValues( element, 1 );
+                  else if ( element.Name() == "ReferenceLocation" )
+                     m_referenceAdaptiveLocation = ParseListsOfRealValues( element, 1 );
+                  else if ( element.Name() == "ScaleFactors" )
+                     m_adaptiveScale = ParseListsOfRealValues( element, 1 );
+                  else
+                     WarnOnUnknownChildElement( element, "AdaptiveNormalization" );
+               }
+
+               if ( x.Length() < 3 || x.Length() != y.Length() )
+                  throw Error( "Missing or incongruent adaptive normalization coordinates." );
+               if ( m_adaptiveLocation.IsEmpty() )
+                  throw Error( "Missing adaptive normalization location estimates." );
+               if ( m_referenceAdaptiveLocation.IsEmpty() )
+                  throw Error( "Missing adaptive normalization reference location estimates." );
+               if ( m_adaptiveScale.IsEmpty() )
+                  throw Error( "Missing adaptive normalization scale factors." );
+               if ( m_adaptiveLocation.Length() != m_referenceAdaptiveLocation.Length()
+                  || m_adaptiveLocation.Length() != m_adaptiveScale.Length() )
+                  throw Error( "Incongruent adaptive normalization data." );
+               for ( size_type i = 0; i < m_adaptiveLocation.Length(); ++i )
+                  if ( m_adaptiveLocation[i].Length() != x.Length()
+                     || m_referenceAdaptiveLocation[i].Length() != x.Length()
+                     || m_adaptiveScale[i].Length() != x.Length() )
+                     throw Error( "Invalid adaptive normalization vector lengths." );
+
+               for ( int i = 0; i < x.Length(); ++i )
+                  m_adaptiveCoordinates << DPoint( x[i], y[i] );
+            }
          }
          else if ( element.Name() == "CreationTime" )
          {
@@ -661,6 +750,10 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
                   ++m_rejectionLowCount[j];
             }
       }
+
+      if ( !m_adaptiveLocation.IsEmpty() )
+         if ( int( m_adaptiveLocation.Length() ) != m_location.Length() )
+            throw Error( "Incongruent adaptive normalization data." );
    }
 
    if ( m_Sx.IsValid() )
@@ -863,22 +956,22 @@ void DrizzleData::SerializeSpline( XMLElement* root, const DrizzleData::spline& 
 
 // ----------------------------------------------------------------------------
 
-DrizzleData::distortion_vector DrizzleData::ParseDistortionPoints( const XMLElement& root )
+DrizzleData::point_list DrizzleData::ParsePoints( const XMLElement& root )
 {
    ByteArray pointData = ParseMaybeCompressedData( root );
-   if ( pointData.Size() % sizeof( distortion_vector::item_type ) )
-      throw Error( "Parsing distortion points vector from " + root.Name() + " element: Invalid data length." );
+   if ( pointData.Size() % sizeof( point_list::item_type ) )
+      throw Error( "Parsing points list from " + root.Name() + " element: Invalid data length." );
 
-   distortion_vector D( pointData.Size()/sizeof( distortion_vector::item_type ) );
+   point_list D( pointData.Size()/sizeof( point_list::item_type ) );
    ::memcpy( D.Begin(), pointData.Begin(), pointData.Size() );
    return D;
 }
 
 // ----------------------------------------------------------------------------
 
-void DrizzleData::SerializeDistortionPoints( XMLElement* root, const distortion_vector& points ) const
+void DrizzleData::SerializePoints( XMLElement* root, const point_list& points ) const
 {
-   SerializeMaybeCompressedData( root, points.Begin(), points.Size(), sizeof( distortion_vector::item_type::component ) );
+   SerializeMaybeCompressedData( root, points.Begin(), points.Size(), sizeof( point_list::item_type::component ) );
 }
 
 // ----------------------------------------------------------------------------
