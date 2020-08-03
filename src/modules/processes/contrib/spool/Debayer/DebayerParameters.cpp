@@ -350,6 +350,7 @@ IsoString DebayerTargetImage::Id() const
 
 // ----------------------------------------------------------------------------
 
+// ### DEPRECATED
 DebayerNoGUIMessages::DebayerNoGUIMessages( MetaProcess* P ) : MetaBoolean( P )
 {
    TheDebayerNoGUIMessagesParameter = this;
@@ -362,7 +363,7 @@ IsoString DebayerNoGUIMessages::Id() const
 
 bool DebayerNoGUIMessages::DefaultValue() const
 {
-   return false;
+   return true;
 }
 
 // ----------------------------------------------------------------------------
