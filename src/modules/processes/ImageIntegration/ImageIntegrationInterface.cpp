@@ -1400,13 +1400,15 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
       "<p><b>Local normalization</b> applies per-pixel linear normalization functions previously calculated and stored "
       "in XNML files (.xnml file name suffix) by the LocalNormalization process. To apply this option, existing XNML "
-      "files must be associated with input integration files.</p>"
+      "files must be associated with input integration files. This option should normally be used when local normalization "
+      "is also used for pixel rejection.</p>"
 
       "<p><b>Adaptive normalization</b> applies per-pixel additive/scaling normalization functions, computed by surface "
       "spline interpolation from matrices of location and two-sided scale estimates calculated for each integrated image. "
-      "This algorithm is an alternative to local normalization that does not require auxiliary files.</p>"
+      "This algorithm is an alternative to local normalization that does not require auxiliary files. See also the "
+      "information provided for adaptive rejection normalization.</p>"
 
-      "<p>Additive normalization with scaling is the default option.</p>";
+      "<p>The default option is additive normalization with scaling.</p>";
 
    Normalization_Label.SetText( "Normalization:" );
    Normalization_Label.SetFixedWidth( labelWidth1 );
@@ -1839,7 +1841,9 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "spline interpolation from matrices of location and two-sided scale estimates calculated for each integrated image. "
       "This algorithm is an alternative to local normalization that does not require auxiliary files. Adaptive "
       "normalization is intended to solve the same problems described for local normalization: data with strong local "
-      "variations, especially strong gradients of varying orientations and intensities.</p>";
+      "variations, especially strong gradients of varying orientations and intensities. Although local normalization is "
+      "much more accurate and can be necessary to solve difficult problems, adaptive normalization is much easier to use "
+      "and works well in most practical cases.</p>";
 
    RejectionNormalization_Label.SetText( "Normalization:" );
    RejectionNormalization_Label.SetFixedWidth( labelWidth1 );

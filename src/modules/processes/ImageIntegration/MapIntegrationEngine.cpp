@@ -60,11 +60,15 @@ namespace pcl
 
 MapIntegrationEngine::MapIntegrationEngine( const ImageIntegrationInstance& instance, StatusMonitor& monitor,
                                             const DVector& zeroOffset, DVector& location, const scale_estimates& scale,
-                                            int channel, int y0, int numberOfRows,
+                                            int channel, int startRow, int numberOfRows,
                                             float* result32, double* result64 )
    : IntegrationEngineBase( instance, monitor )
    , m_d( zeroOffset ), m_m( location ), m_s( scale )
-   , m_channel( channel ), m_y0( y0 ), m_numberOfRows( numberOfRows )
+   , m_startRow( startRow )
+   , m_numberOfRows( numberOfRows )
+   , m_x0( instance.p_useROI ? instance.p_roi.x0 : 0 )
+   , m_y0( startRow + (instance.p_useROI ? instance.p_roi.y0 : 0) )
+   , m_channel( channel )
    , m_result32( result32 ), m_result64( result64 )
 {
    Array<size_type> L = Thread::OptimalThreadLoads( m_numberOfRows );
@@ -110,17 +114,17 @@ void MapIntegrationEngine::IntegrationThread::Run()
    else
       result32 = E.m_result32 + size_type( m_firstStack )*size_type( IntegrationFile::Width() );
 
-   for ( int k = m_firstStack, y = E.m_y0+k; k < m_endStack; ++k, ++y )
+   for ( int k = m_firstStack; k < m_endStack; ++k )
    {
-      for ( int x = 0; x < IntegrationFile::Width(); ++x )
+      for ( int j = 0; j < IntegrationFile::Width(); ++j )
       {
          int n = 0;
          DVector stack( IntegrationFile::NumberOfFiles() );
          IVector index( IntegrationFile::NumberOfFiles() );
          for ( int i = 0; i < IntegrationFile::NumberOfFiles(); ++i )
-            if ( IntegrationFile::FileByIndex( i ).RejectionMap()( x, y, E.m_channel ) == 0 )
+            if ( IntegrationFile::FileByIndex( i ).RejectionMap()( j, E.m_startRow+k, E.m_channel ) == 0 )
             {
-               stack[n] = IntegrationFile::FileByIndex( i )[k][x];
+               stack[n] = IntegrationFile::FileByIndex( i )[k][j];
                index[n] = i;
                ++n;
             }
@@ -134,7 +138,7 @@ void MapIntegrationEngine::IntegrationThread::Run()
              */
             for ( int i = 0; i < IntegrationFile::NumberOfFiles(); ++i )
             {
-               stack[i] = IntegrationFile::FileByIndex( i )[k][x];
+               stack[i] = IntegrationFile::FileByIndex( i )[k][j];
                index[i] = i;
             }
             thisCombination = IICombination::Median;
@@ -170,11 +174,13 @@ void MapIntegrationEngine::IntegrationThread::Run()
                stack[i] = (stack[i] / m[index[i]])*double( s[index[i]] ) * m[0];
             break;
          case IINormalization::LocalNormalization:
-            for ( int i = 0; i < n; ++i )
+            for ( int i = 0, x = E.m_x0+j, y = E.m_y0+k; i < n; ++i )
                stack[i] = IntegrationFile::FileByIndex( index[i] ).Normalize( stack[i], x, y, E.m_channel );
             break;
          case IINormalization::AdaptiveNormalization:
             {
+               int x = E.m_x0 + j;
+               int y = E.m_y0 + k;
                const AdaptiveNormalizationData& a0 = IntegrationFile::FileByIndex( 0 ).AdaptiveNormalization();
                double m0 = a0.Location( x, y, E.m_channel );
                double s00 = a0.ScaleLow( x, y, E.m_channel );

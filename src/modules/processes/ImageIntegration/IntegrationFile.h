@@ -444,7 +444,7 @@ private:
 
    void ResetCacheableData();
    void AddToCache( const String& path ) const;
-   bool GetFromCache( const String& path );
+   int GetFromCache( const String& path );
 };
 
 // ----------------------------------------------------------------------------

@@ -58,6 +58,7 @@
 #include <pcl/Mutex.h>
 #include <pcl/ReferenceSortedArray.h>
 #include <pcl/StringList.h>
+#include <pcl/TimePoint.h>
 
 namespace pcl
 {
@@ -68,19 +69,19 @@ class PCL_CLASS FileDataCacheItem
 {
 public:
 
-   String   path;     // full file path
-   unsigned lastUsed; // date of last usage, JD.0
-   FileTime time;     // cached file time
+   String    path;     // full file path
+   TimePoint time;     // cached file time
+   TimePoint lastUsed; // when this cache item was last used
 
    virtual ~FileDataCacheItem()
    {
    }
 
-   void Assign( const FileDataCacheItem& i )
+   void Assign( const FileDataCacheItem& item )
    {
-      path     = i.path;
-      lastUsed = i.lastUsed;
-      time     = i.time;
+      path     = item.path;
+      time     = item.time;
+      lastUsed = item.lastUsed;
    }
 
    bool operator ==( const FileDataCacheItem& i ) const
@@ -95,30 +96,18 @@ public:
 
    bool ModifiedSince( FileTime t ) const
    {
-      if ( time.year != t.year )
-         return time.year < t.year;
-      if ( time.month != t.month )
-         return time.month < t.month;
-      if ( time.day != t.day )
-         return time.day < t.day;
-      if ( time.hour != t.hour )
-         return time.hour < t.hour;
-      if ( time.minute != t.minute )
-         return time.minute < t.minute;
-      if ( time.second != t.second )
-         return time.second < t.second;
-#if 0
       /*
        * File time milliseconds are available on Windows, but they are
        * unreliable and generate wrong cache invalidations.
        */
-      if ( time.milliseconds != t.milliseconds )
-         return time.milliseconds < t.milliseconds;
-#endif
-      return false;
+      t.milliseconds = 0;
+      return time < TimePoint( t );
    }
 
-   unsigned DaysSinceLastUsed() const;
+   double DaysSinceLastUsed() const
+   {
+      return TimePoint::Now() - lastUsed;
+   }
 
 protected:
 
@@ -126,7 +115,7 @@ protected:
    {
    }
 
-   virtual String DataAsString() const
+   virtual String DataToString() const
    {
       return String();
    }
@@ -141,26 +130,23 @@ protected:
       return true;
    }
 
-   // Utility auxiliary routines
-   static String VectorAsString( const DVector& );
+   // Auxiliary utility routines
+   static String VectorToString( const DVector& );
    static bool GetVector( DVector&, StringList::const_iterator&, const StringList& );
-   static String MultiVectorAsString( const DMultiVector& );
+   static String MultiVectorToString( const DMultiVector& );
    static bool GetMultiVector( DMultiVector&, StringList::const_iterator&, const StringList& );
 
-   // Fake ctor. for searching items
+   // Special ctor. for searching items
    FileDataCacheItem( const String& p = String() ) : path( p )
    {
    }
 
    // Copy ctor.
-   FileDataCacheItem( const FileDataCacheItem& item )
-   {
-      (void)operator =( item );
-   }
+   FileDataCacheItem( const FileDataCacheItem& ) = default;
 
 private:
 
-   String AsString() const;
+   String ToString() const;
    bool FromString( const String& s );
 
    bool Load( const IsoString& keyPrefix, int index );
@@ -189,12 +175,12 @@ public:
 
    virtual int Version() const
    {
-      return 1;
+      return 2;
    }
 
    virtual int MinSupportedVersion() const
    {
-      return 1;
+      return 2;
    }
 
    bool IsEnabled() const

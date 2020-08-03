@@ -67,7 +67,9 @@ IntegrationRejectionEngine::IntegrationRejectionEngine( const ImageIntegrationIn
    : IntegrationEngineBase( instance, monitor )
    , m_R( stacks ), m_N( counts ), m_M( slopes )
    , m_m( location ), m_s( scale ), m_q( flux )
-   , m_y0( startRow ), m_channel( channel )
+   , m_x0( instance.p_useROI ? instance.p_roi.x0 : 0 )
+   , m_y0( startRow + (instance.p_useROI ? instance.p_roi.y0 : 0) )
+   , m_channel( channel )
 {
    Array<size_type> L = Thread::OptimalThreadLoads( m_R.Length() );
 
@@ -224,9 +226,10 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
    RejectionMatrix* R = E.m_R.ComponentPtr( m_firstStack );
 
    /*
-    * ### N.B.: Normalizations marked with ### can yield negative pixel values.
-    * If this happens, we must raise all pixels to remove negative values,
-    * since all rejection routines expect positive data.
+    * ### N.B.: All rejection normalizations except EqualizeFluxes can yield
+    * negative pixel values. If this happens, we must raise all pixels by
+    * adding a constant pedestal, since all rejection routines expect positive
+    * data. Note that statistical scale is invariant to this transformation.
     */
 
    for ( int k = m_firstStack; k < m_endStack; ++k, ++R )
@@ -236,15 +239,15 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
       case IIRejectionNormalization::Scale:
          {
             /*
-             * Scale + zero offset normalization. ###
+             * Scale + zero offset normalization.
              */
             const DVector& m = E.m_m;
             const scale_estimates& s = E.m_s;
 
             float rmin = 0;
-            for ( int x = 0; x < R->Rows(); ++x )
+            for ( int j = 0; j < R->Rows(); ++j )
             {
-               RejectionDataItem* r = R->RowPtr( x ) + 1;
+               RejectionDataItem* r = R->RowPtr( j ) + 1;
                for ( int i = 1; i < R->Columns(); ++i, ++r )
                   if ( !r->IsRejected() )
                   {
@@ -255,9 +258,9 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
             }
 
             if ( rmin < 0 )
-               for ( int x = 0; x < R->Rows(); ++x )
+               for ( int j = 0; j < R->Rows(); ++j )
                {
-                  RejectionDataItem* r = R->RowPtr( x );
+                  RejectionDataItem* r = R->RowPtr( j );
                   for ( int i = 0; i < R->Columns(); ++i, ++r )
                      if ( !r->IsRejected() )
                         r->value -= rmin;
@@ -272,9 +275,9 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
              */
             const DVector& q = E.m_q;
 
-            for ( int x = 0; x < R->Rows(); ++x )
+            for ( int j = 0; j < R->Rows(); ++j )
             {
-               RejectionDataItem* r = R->RowPtr( x ) + 1;
+               RejectionDataItem* r = R->RowPtr( j ) + 1;
                for ( int i = 1; i < R->Columns(); ++i, ++r )
                   if ( !r->IsRejected() )
                      r->value *= q[i];
@@ -285,12 +288,12 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
       case IIRejectionNormalization::LocalRejectionNormalization:
          {
             /*
-             * Local normalization via XNML data. ###
+             * Local normalization via XNML data.
              */
             float rmin = 0;
-            for ( int x = 0, y = E.m_y0+k; x < R->Rows(); ++x )
+            for ( int j = 0, x = E.m_x0, y = E.m_y0+k; j < R->Rows(); ++j, ++x )
             {
-               RejectionDataItem* r = R->RowPtr( x );
+               RejectionDataItem* r = R->RowPtr( j );
                for ( int i = 0; i < R->Columns(); ++i, ++r )
                   if ( !r->IsRejected() )
                   {
@@ -301,9 +304,9 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
             }
 
             if ( rmin < 0 )
-               for ( int x = 0; x < R->Rows(); ++x )
+               for ( int j = 0; j < R->Rows(); ++j )
                {
-                  RejectionDataItem* r = R->RowPtr( x );
+                  RejectionDataItem* r = R->RowPtr( j );
                   for ( int i = 0; i < R->Columns(); ++i, ++r )
                      if ( !r->IsRejected() )
                         r->value -= rmin;
@@ -314,16 +317,16 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
       case IIRejectionNormalization::AdaptiveRejectionNormalization:
          {
             /*
-             * Adaptive scale + zero offset normalization. ###
+             * Adaptive scale + zero offset normalization.
              */
             const AdaptiveNormalizationData& a0 = IntegrationFile::FileByIndex( 0 ).AdaptiveNormalization();
             float rmin = 0;
-            for ( int x = 0, y = E.m_y0+k; x < R->Rows(); ++x )
+            for ( int j = 0, x = E.m_x0, y = E.m_y0+k; j < R->Rows(); ++j, ++x )
             {
                double m0 = a0.Location( x, y, E.m_channel );
                double s00 = a0.ScaleLow( x, y, E.m_channel );
                double s10 = a0.ScaleHigh( x, y, E.m_channel );
-               RejectionDataItem* r = R->RowPtr( x );
+               RejectionDataItem* r = R->RowPtr( j );
                for ( int i = 0; i < R->Columns(); ++i, ++r )
                   if ( !r->IsRejected() )
                   {
@@ -338,9 +341,9 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
             }
 
             if ( rmin < 0 )
-               for ( int x = 0; x < R->Rows(); ++x )
+               for ( int j = 0; j < R->Rows(); ++j )
                {
-                  RejectionDataItem* r = R->RowPtr( x );
+                  RejectionDataItem* r = R->RowPtr( j );
                   for ( int i = 0; i < R->Columns(); ++i, ++r )
                      if ( !r->IsRejected() )
                         r->value -= rmin;
@@ -534,7 +537,7 @@ void IntegrationRejectionEngine::WinsorizedSigmaClipRejectionThread::Run()
          for ( int it = 0; ; ++it )
          {
             double mean, sigma;
-            RejectionWinsorization( mean, sigma, r, n, (it > 0) ? 0 : I.p_winsorizationCutoff );
+            RejectionWinsorization( mean, sigma, r, n, (it > 0) ? .0F : I.p_winsorizationCutoff );
             if ( 1 + sigma == 1 )
                break;
 

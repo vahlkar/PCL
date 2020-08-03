@@ -523,7 +523,8 @@ private:
    const DVector&         m_m;       // rejection normalization: location
    const scale_estimates& m_s;       //                        : scale
    const DVector&         m_q;       //                        : flux
-         int              m_y0;      // local normalization: starting vertical coordinate
+         int              m_x0;      // local normalization: starting horizontal coordinate (ROI)
+         int              m_y0;      //                    : starting vertical coordinate
          int              m_channel; //                    : current component
 
          thread_list      rangeThreads, normalizeThreads, rejectThreads;

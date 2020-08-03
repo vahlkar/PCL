@@ -100,9 +100,11 @@ private:
    const DVector&         m_d;        // normalization: zero offset
    const DVector&         m_m;        //              : location
    const scale_estimates& m_s;        //              : scale
-         int              m_channel;  // current component
-         int              m_y0;       // first pixel row in the integrated image
+         int              m_startRow;
          int              m_numberOfRows;
+         int              m_x0;       // local normalization: starting horizontal coordinate (ROI)
+         int              m_y0;       //                    : starting vertical coordinate
+         int              m_channel;  // local normalization, image weighting: current component
          float*           m_result32;
          double*          m_result64;
          thread_list      m_threads;

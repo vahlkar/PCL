@@ -1578,7 +1578,7 @@ void DrizzleIntegrationEngine::Perform()
                if ( m_instance.p_enableLocalDistortion )
                   if ( m_decoder.HasLocalDistortionModel() )
                   {
-                     DrizzleData::distortion_vector LP1, LD2, LP2, LD1;
+                     DrizzleData::point_list LP1, LD2, LP2, LD1;
                      DrizzleData::weight_vector LW;
                      int order;
                      float regularization;

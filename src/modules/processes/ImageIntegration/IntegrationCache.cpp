@@ -85,7 +85,7 @@ static bool GetTwoSidedEstimates( IntegrationFile::scale_estimates& v,
    return true;
 }
 
-static String TwoSidedEstimatesAsString( const IntegrationFile::scale_estimates& v )
+static String TwoSidedEstimatesToString( const IntegrationFile::scale_estimates& v )
 {
    String s = String().Format( "\n%d", v.Length() );
    for ( int i = 0; i < v.Length(); ++i )
@@ -98,48 +98,60 @@ static String TwoSidedEstimatesAsString( const IntegrationFile::scale_estimates&
 void IntegrationCacheItem::AssignData( const FileDataCacheItem& item )
 {
 #define src static_cast<const IntegrationCacheItem&>( item )
-   mean     = src.mean;
-   median   = src.median;
-   avgDev   = src.avgDev;
-   mad      = src.mad;
-   bwmv     = src.bwmv;
-   noise    = src.noise;
-   ax       = src.ax;
-   ay       = src.ay;
-   am       = src.am;
-   as0      = src.as0;
-   as1      = src.as1;
+   mean       = src.mean;
+   median     = src.median;
+   avgDev     = src.avgDev;
+   mad        = src.mad;
+   bwmv       = src.bwmv;
+   noise      = src.noise;
+   ax         = src.ax;
+   ay         = src.ay;
+   am         = src.am;
+   as0_avgDev = src.as0_avgDev;
+   as1_avgDev = src.as1_avgDev;
+   as0_mad    = src.as0_mad;
+   as1_mad    = src.as1_mad;
+   as0_bwmv   = src.as0_bwmv;
+   as1_bwmv   = src.as1_bwmv;
    metadata = src.metadata;
 #undef src
 }
 
 // ----------------------------------------------------------------------------
 
-String IntegrationCacheItem::DataAsString() const
+String IntegrationCacheItem::DataToString() const
 {
    StringList tokens;
    if ( !mean.IsEmpty() )
-      tokens.Append( "mean" + VectorAsString( mean ) );
+      tokens.Append( "mean" + VectorToString( mean ) );
    if ( !median.IsEmpty() )
-      tokens.Append( "median" + VectorAsString( median ) );
+      tokens.Append( "median" + VectorToString( median ) );
    if ( !avgDev.IsEmpty() )
-      tokens.Append( "avgDev" + TwoSidedEstimatesAsString( avgDev ) );
+      tokens.Append( "avgDev" + TwoSidedEstimatesToString( avgDev ) );
    if ( !mad.IsEmpty() )
-      tokens.Append( "mad" + TwoSidedEstimatesAsString( mad ) );
+      tokens.Append( "mad" + TwoSidedEstimatesToString( mad ) );
    if ( !bwmv.IsEmpty() )
-      tokens.Append( "bwmv" + TwoSidedEstimatesAsString( bwmv ) );
+      tokens.Append( "bwmv" + TwoSidedEstimatesToString( bwmv ) );
    if ( !noise.IsEmpty() )
-      tokens.Append( "noise" + VectorAsString( noise ) );
+      tokens.Append( "noise" + VectorToString( noise ) );
    if ( !ax.IsEmpty() )
-      tokens.Append( "ax" + VectorAsString( ax ) );
+      tokens.Append( "ax" + VectorToString( ax ) );
    if ( !ay.IsEmpty() )
-      tokens.Append( "ay" + VectorAsString( ay ) );
+      tokens.Append( "ay" + VectorToString( ay ) );
    if ( !am.IsEmpty() )
-      tokens.Append( "am" + MultiVectorAsString( am ) );
-   if ( !as0.IsEmpty() )
-      tokens.Append( "as0" + MultiVectorAsString( as0 ) );
-   if ( !as1.IsEmpty() )
-      tokens.Append( "as1" + MultiVectorAsString( as1 ) );
+      tokens.Append( "am" + MultiVectorToString( am ) );
+   if ( !as0_avgDev.IsEmpty() )
+      tokens.Append( "as0_avgDev" + MultiVectorToString( as0_avgDev ) );
+   if ( !as1_avgDev.IsEmpty() )
+      tokens.Append( "as1_avgDev" + MultiVectorToString( as1_avgDev ) );
+   if ( !as0_mad.IsEmpty() )
+      tokens.Append( "as0_mad" + MultiVectorToString( as0_mad ) );
+   if ( !as1_mad.IsEmpty() )
+      tokens.Append( "as1_mad" + MultiVectorToString( as1_mad ) );
+   if ( !as0_bwmv.IsEmpty() )
+      tokens.Append( "as0_bwmv" + MultiVectorToString( as0_bwmv ) );
+   if ( !as1_bwmv.IsEmpty() )
+      tokens.Append( "as1_bwmv" + MultiVectorToString( as1_bwmv ) );
    if ( !metadata.IsEmpty() )
       tokens.Append( "metadata\n" + metadata );
 
@@ -198,14 +210,34 @@ bool IntegrationCacheItem::GetDataFromTokens( const StringList& tokens )
          if ( !GetMultiVector( am, ++i, tokens ) )
             return false;
       }
-      else if ( *i == "as0" )
+      else if ( *i == "as0_avgDev" )
       {
-         if ( !GetMultiVector( as0, ++i, tokens ) )
+         if ( !GetMultiVector( as0_avgDev, ++i, tokens ) )
             return false;
       }
-      else if ( *i == "as1" )
+      else if ( *i == "as1_avgDev" )
       {
-         if ( !GetMultiVector( as1, ++i, tokens ) )
+         if ( !GetMultiVector( as1_avgDev, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "as0_mad" )
+      {
+         if ( !GetMultiVector( as0_mad, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "as1_mad" )
+      {
+         if ( !GetMultiVector( as1_mad, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "as0_bwmv" )
+      {
+         if ( !GetMultiVector( as0_bwmv, ++i, tokens ) )
+            return false;
+      }
+      else if ( *i == "as1_bwmv" )
+      {
+         if ( !GetMultiVector( as1_bwmv, ++i, tokens ) )
             return false;
       }
       else if ( *i == "metadata" )

@@ -67,18 +67,22 @@ public:
 
    typedef IntegrationFile::scale_estimates  scale_estimates;
 
-   DVector         mean;     // mean pixel values
-   DVector         median;   // location estimates
-   scale_estimates avgDev;   // two-sided AvgDev scale estimates
-   scale_estimates mad;      // two-sided MAD scale estimates
-   scale_estimates bwmv;     // two-sided BWMV scale estimates
-   DVector         noise;    // noise stdDev estimates
-   DVector         ax;       // adaptive normalization: sample X-coordinates
-   DVector         ay;       // adaptive normalization: sample Y-coordinates
-   DMultiVector    am;       // adaptive normalization: location estimates
-   DMultiVector    as0;      // adaptive normalization: low scale estimates
-   DMultiVector    as1;      // adaptive normalization: high scale estimates
-   String          metadata; // image metadata
+   DVector         mean;        // mean pixel values
+   DVector         median;      // location estimates
+   scale_estimates avgDev;      // two-sided AvgDev scale estimates
+   scale_estimates mad;         // two-sided MAD scale estimates
+   scale_estimates bwmv;        // two-sided BWMV scale estimates
+   DVector         noise;       // noise stdDev estimates
+   DVector         ax;          // adaptive normalization: sample X-coordinates
+   DVector         ay;          // adaptive normalization: sample Y-coordinates
+   DMultiVector    am;          // adaptive normalization: location estimates
+   DMultiVector    as0_avgDev;  // adaptive normalization: low scale estimates (AvgDev)
+   DMultiVector    as1_avgDev;  // adaptive normalization: high scale estimates (AvgDev)
+   DMultiVector    as0_mad;     // adaptive normalization: low scale estimates (MAD)
+   DMultiVector    as1_mad;     // adaptive normalization: high scale estimates (MAD)
+   DMultiVector    as0_bwmv;    // adaptive normalization: low scale estimates (BWMV)
+   DMultiVector    as1_bwmv;    // adaptive normalization: high scale estimates (BWMV)
+   String          metadata;    // image metadata
 
    IntegrationCacheItem( const String& path = String() )
       : FileDataCacheItem( path )
@@ -92,7 +96,7 @@ public:
 private:
 
    void AssignData( const FileDataCacheItem& item ) override;
-   String DataAsString() const override;
+   String DataToString() const override;
    bool GetDataFromTokens( const StringList& tokens ) override;
 };
 

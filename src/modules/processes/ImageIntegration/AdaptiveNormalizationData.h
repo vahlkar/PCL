@@ -53,9 +53,9 @@
 #ifndef __AdaptiveNormalizationData_h
 #define __AdaptiveNormalizationData_h
 
+#include <pcl/GridInterpolation.h>
 #include <pcl/Image.h>
 #include <pcl/MultiVector.h>
-#include <pcl/SurfaceSpline.h>
 
 namespace pcl
 {
@@ -69,15 +69,12 @@ public:
    AdaptiveNormalizationData() = default;
    AdaptiveNormalizationData( const AdaptiveNormalizationData& ) = default;
 
-   AdaptiveNormalizationData( const Image& image, int nx = 4, int ny = 4 );
+   AdaptiveNormalizationData( const Image& image, int estimator, int nx = 4, int ny = 4 );
 
-   AdaptiveNormalizationData( const DVector& x, const DVector& y,
+   AdaptiveNormalizationData( int width, int height, const DVector& x, const DVector& y,
                               const DMultiVector& m, const DMultiVector& s0, const DMultiVector& s1 );
 
-   bool IsValid() const
-   {
-      return !m_x.IsEmpty();
-   }
+   bool IsValid() const;
 
    double Location( double x, double y, int c = 0 ) const
    {
@@ -96,17 +93,21 @@ public:
 
 private:
 
-   typedef SurfaceSpline<double>       local_interpolation;
+   typedef GridInterpolation           local_interpolation;
    typedef Array<local_interpolation>  local_interpolators;
 
-   DVector             m_x;
-   DVector             m_y;
-   DMultiVector        m_m;
-   DMultiVector        m_s0;
-   DMultiVector        m_s1;
-   local_interpolators m_location;
-   local_interpolators m_scaleLow;
-   local_interpolators m_scaleHigh;
+   int                 m_width = -1;  // reference width in px
+   int                 m_height = -1; // reference height in px
+   DVector             m_x;           // node X coordinates
+   DVector             m_y;           // node Y coordinates
+   DMultiVector        m_m;           // location estimates
+   DMultiVector        m_s0;          // low scale estimates
+   DMultiVector        m_s1;          // high scale estimates
+   local_interpolators m_location;    // location interpolation
+   local_interpolators m_scaleLow;    // low scale interpolation
+   local_interpolators m_scaleHigh;   // high scale interpolation
+
+   void InitInterpolations();
 
    friend class IntegrationFile;
 };

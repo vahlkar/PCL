@@ -66,7 +66,9 @@ IntegrationEngine::IntegrationEngine( const ImageIntegrationInstance& instance, 
    : IntegrationEngineBase( instance, monitor )
    , m_R( stacks ), m_N( counts )
    , m_d( zeroOffset ), m_m( location ), m_s( scale )
-   , m_y0( startRow ), m_channel( channel )
+   , m_x0( instance.p_useROI ? instance.p_roi.x0 : 0 )
+   , m_y0( startRow + (instance.p_useROI ? instance.p_roi.y0 : 0) )
+   , m_channel( channel )
    , m_result32( result32 ), m_result64( result64 )
 {
    Array<size_type> L = Thread::OptimalThreadLoads( m_R.Length() );
@@ -118,10 +120,10 @@ void IntegrationEngine::IntegrationThread::Run()
    {
       const IVector& N = E.m_N[k];
 
-      for ( int x = 0; x < R->Rows(); ++x )
+      for ( int j = 0; j < R->Rows(); ++j )
       {
-         RejectionDataItem* r = R->DataPtr()[x];
-         int n = N[x];
+         RejectionDataItem* r = R->DataPtr()[j];
+         int n = N[j];
          double f;
 
          pcl_enum thisCombination = I.p_combination;
@@ -164,11 +166,12 @@ void IntegrationEngine::IntegrationThread::Run()
                r[i].raw = (double( r[i].raw ) / m[r[i].index])*double( s[r[i].index] ) * m[0];
             break;
          case IINormalization::LocalNormalization:
-            for ( int i = 0, y = E.m_y0+k; i < n; ++i )
+            for ( int i = 0, x = E.m_x0+j, y = E.m_y0+k; i < n; ++i )
                r[i].raw = IntegrationFile::FileByIndex( r[i].index ).Normalize( r[i].raw, x, y, E.m_channel );
             break;
          case IINormalization::AdaptiveNormalization:
             {
+               int x = E.m_x0 + j;
                int y = E.m_y0 + k;
                const AdaptiveNormalizationData& a0 = IntegrationFile::FileByIndex( 0 ).AdaptiveNormalization();
                double m0 = a0.Location( x, y, E.m_channel );

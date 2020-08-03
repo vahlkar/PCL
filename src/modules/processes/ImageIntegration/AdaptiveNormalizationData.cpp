@@ -51,13 +51,16 @@
 // ----------------------------------------------------------------------------
 
 #include "AdaptiveNormalizationData.h"
+#include "ImageIntegrationParameters.h"
+
+#include <pcl/SurfaceSpline.h>
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int nx, int ny )
+AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int estimator, int nx, int ny )
 {
    nx = Range( nx, 2, 16 );
    ny = Range( ny, 2, 16 );
@@ -68,6 +71,9 @@ AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int nx
 
    image.ResetSelections();
    image.SetRangeClipping( 1.0/65535, 1 - 1.0/65535 );
+
+   m_width = image.Width();
+   m_height = image.Height();
 
    m_x = DVector( n );
    m_y = DVector( n );
@@ -93,7 +99,28 @@ AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int nx
                m_y[k] = 0.5*(r.y0 + r.y1);
             }
             m[k] = image.Median();
-            TwoSidedEstimate s2 = image.TwoSidedMAD( m[k] );
+            TwoSidedEstimate s2;
+            switch ( estimator )
+            {
+            case IIWeightScale::AvgDev:
+               s2 = image.TwoSidedAvgDev( m[k] );
+               break;
+            case IIWeightScale::MAD:
+               s2 = image.TwoSidedMAD( m[k] );
+               if ( 1 + s2.low == 1 || 1 + s2.high == 1 )
+                  s2.low = s2.high = image.MAD( m[k] );
+               break;
+            default:
+            case IIWeightScale::BWMV:
+               {
+                  s2 = image.TwoSidedMAD( m[k] );
+                  if ( 1 + s2.low == 1 || 1 + s2.high == 1 )
+                     s2.low = s2.high = image.MAD( m[k] );
+                  s2 = Sqrt( image.TwoSidedBiweightMidvariance( m[k], s2 ) );
+               }
+               break;
+            }
+
             if ( !s2.IsValid() )
                throw Error( String().Format( "AdaptiveNormalizationData: Zero or insignificant signal detected "
                                              "(x0=%d y0=%d x1=%d y1=%d c=%d)", r.x0, r.y0, r.x1, r.y1, c ) );
@@ -105,48 +132,82 @@ AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int nx
       m_m << m;
       m_s0 << s0;
       m_s1 << s1;
-
-      local_interpolation M, S0, S1;
-      M.Initialize( m_x.Begin(), m_y.Begin(), m.Begin(), n );
-      S0.Initialize( m_x.Begin(), m_y.Begin(), s0.Begin(), n );
-      S1.Initialize( m_x.Begin(), m_y.Begin(), s1.Begin(), n );
-
-      m_location << M;
-      m_scaleLow << S0;
-      m_scaleHigh << S1;
    }
 
    image.ResetSelections();
+
+   InitInterpolations();
 }
 
 // ----------------------------------------------------------------------------
 
-AdaptiveNormalizationData::AdaptiveNormalizationData( const DVector& x, const DVector& y,
+AdaptiveNormalizationData::AdaptiveNormalizationData( int width, int height,
+                                                      const DVector& x, const DVector& y,
                                                       const DMultiVector& m, const DMultiVector& s0, const DMultiVector& s1 )
-   : m_x( x )
+   : m_width( width )
+   , m_height( height )
+   , m_x( x )
    , m_y( y )
    , m_m( m )
    , m_s0( s0 )
    , m_s1( s1 )
 {
+   if ( m_width <= 0 || m_height <= 0 )
+      throw Error( "AdaptiveNormalizationData: Invalid image dimensions." );
    if ( m_x.Length() != m_y.Length() || m_x.Length() < 4 )
       throw Error( "AdaptiveNormalizationData: Invalid coordinate vectors." );
    if ( m_m.Length() != m_s0.Length() || m_m.Length() != m_s1.Length() || m_m.IsEmpty() )
       throw Error( "AdaptiveNormalizationData: Invalid sample vectors." );
-
    for ( size_type i = 0; i < m_m.Length(); ++i )
-   {
       if ( m_m[i].Length() != m_x.Length() || m_s0[i].Length() != m_x.Length() || m_s1[i].Length() != m_x.Length() )
          throw Error( "AdaptiveNormalizationData: Invalid spline vectors." );
 
-      local_interpolation M, S0, S1;
+   InitInterpolations();
+}
+
+// ----------------------------------------------------------------------------
+
+bool AdaptiveNormalizationData::IsValid() const
+{
+   if ( m_width > 0 )
+      if ( m_height > 0 )
+         if ( m_x.Length() >= 4 )
+            if ( m_x.Length() == m_y.Length() )
+               if ( !m_m.IsEmpty() )
+                  if ( m_m.Length() == m_s0.Length() )
+                     if ( m_m.Length() == m_s1.Length() )
+                     {
+                        for ( size_type i = 0; i < m_m.Length(); ++i )
+                           if ( m_m[i].Length() != m_x.Length() || m_s0[i].Length() != m_x.Length() || m_s1[i].Length() != m_x.Length() )
+                              return false;
+                        return true;
+                     }
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+void AdaptiveNormalizationData::InitInterpolations()
+{
+   m_location.Clear();
+   m_scaleLow.Clear();
+   m_scaleHigh.Clear();
+
+   for ( size_type i = 0; i < m_m.Length(); ++i )
+   {
+      SurfaceSpline<double> M, S0, S1;
       M.Initialize( m_x.Begin(), m_y.Begin(), m_m[i].Begin(), m_x.Length() );
       S0.Initialize( m_x.Begin(), m_y.Begin(), m_s0[i].Begin(), m_x.Length() );
       S1.Initialize( m_x.Begin(), m_y.Begin(), m_s1[i].Begin(), m_x.Length() );
 
-      m_location << M;
-      m_scaleLow << S0;
-      m_scaleHigh << S1;
+      local_interpolation GM, GS0, GS1;
+      GM.Initialize( Rect( m_width, m_height ), 64, M, false/*verbose*/ );
+      GS0.Initialize( Rect( m_width, m_height ), 64, S0, false/*verbose*/ );
+      GS1.Initialize( Rect( m_width, m_height ), 64, S1, false/*verbose*/ );
+
+      m_location << GM;
+      m_scaleLow << GS0;
+      m_scaleHigh << GS1;
    }
 }
 

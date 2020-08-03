@@ -58,8 +58,6 @@
 #include <pcl/Math.h>
 #include <pcl/Settings.h>
 
-#include <time.h>
-
 namespace pcl
 {
 
@@ -122,12 +120,11 @@ void FileDataCache::Add( const FileDataCacheItem& item )
          m_cache << newItem;
          i = m_cache.Search( newItem );
       }
-
       FileDataCacheItem& newItem = *m_cache.MutableIterator( i );
-      time_t t0 = ::time( 0 );
-      const tm* t = ::gmtime( &t0 );
-      newItem.lastUsed = unsigned( ComplexTimeToJD( t->tm_year+1900, t->tm_mon+1, t->tm_mday ) );
-      newItem.time = info.LastModified();
+      FileTime t = info.LastModified();
+      t.milliseconds = 0; // prevent wrong cache invalidations on Windows
+      newItem.time = t;
+      newItem.lastUsed = TimePoint::Now();
       newItem.AssignData( item );
    }
 }
@@ -191,7 +188,7 @@ void FileDataCache::Load()
                   if ( !item->Load( m_keyPrefix, i ) )
                      break;
 
-                  if ( m_durationDays > 0 && item->DaysSinceLastUsed() > unsigned( m_durationDays ) )
+                  if ( m_durationDays > 0 && item->DaysSinceLastUsed() > m_durationDays )
                      item.Destroy();
                   else
                      m_cache << item.Release();
@@ -200,7 +197,7 @@ void FileDataCache::Load()
             catch ( ... )
             {
                m_cache.Destroy();
-               throw Error( "FileDataCache::Load(): Corrupted cache data" );
+               throw Error( "FileDataCache::Load(): Corrupted cache data." );
             }
          }
 }
@@ -235,16 +232,7 @@ void FileDataCache::Purge() const
 
 // ----------------------------------------------------------------------------
 
-unsigned FileDataCacheItem::DaysSinceLastUsed() const
-{
-   time_t t0 = ::time( 0 );
-   const tm* t = ::gmtime( &t0 );
-   return unsigned( ComplexTimeToJD( t->tm_year+1900, t->tm_mon+1, t->tm_mday ) ) - lastUsed;
-}
-
-// ----------------------------------------------------------------------------
-
-String FileDataCacheItem::VectorAsString( const DVector& v )
+String FileDataCacheItem::VectorToString( const DVector& v )
 {
    String s = String().Format( "\n%d", v.Length() );
    for ( int i = 0; i < v.Length(); ++i )
@@ -270,11 +258,11 @@ bool FileDataCacheItem::GetVector( DVector& v, StringList::const_iterator& i, co
 
 // ----------------------------------------------------------------------------
 
-String FileDataCacheItem::MultiVectorAsString( const DMultiVector& m )
+String FileDataCacheItem::MultiVectorToString( const DMultiVector& m )
 {
    String s = String().Format( "\n%u", m.Length() );
    for ( const DVector& v : m )
-      s.Append( VectorAsString( v ) );
+      s.Append( VectorToString( v ) );
    return s;
 }
 
@@ -300,19 +288,15 @@ bool FileDataCacheItem::GetMultiVector( DMultiVector& m, StringList::const_itera
 
 // ----------------------------------------------------------------------------
 
-String FileDataCacheItem::AsString() const
+String FileDataCacheItem::ToString() const
 {
-   String s( "path\n" + path );
-   s.AppendFormat( "\nlastUsed\n%u\ntime\n%u\n%u",
-                   lastUsed,
-                   unsigned( ComplexTimeToJD( time.year, time.month, time.day ) ),
-                   ((time.hour*60 + time.minute)*60 + time.second)*1000 + time.milliseconds );
-   String data = DataAsString();
+   String s = String()
+      << "path\n" << path
+      << "\ntime\n" << time.ToString( 3/*timeItems*/, 0/*precision*/, 0/*tz*/, false/*timeZone*/ )
+      << "\nlastUsed\n" << lastUsed.ToString( 3/*timeItems*/, 0/*precision*/, 0/*tz*/, false/*timeZone*/ );
+   String data = DataToString();
    if ( !data.IsEmpty() )
-   {
-      s.Append( "\ndata\n" );
-      s.Append( data );
-   }
+      s << "\ndata\n" << data;
    return s;
 }
 
@@ -321,8 +305,7 @@ String FileDataCacheItem::AsString() const
 bool FileDataCacheItem::FromString( const String& s )
 {
    path.Clear();
-   lastUsed = 0;
-   time.year = 0;
+   time = lastUsed = TimePoint();
 
    StringList tokens;
    s.Break( tokens, char16_type( '\n' ) );
@@ -334,44 +317,29 @@ bool FileDataCacheItem::FromString( const String& s )
          if ( ++i == tokens.End() )
             return false;
          path = i->Trimmed();
-         ++i;
+      }
+      else if ( *i == "time" )
+      {
+         if ( ++i == tokens.End() )
+            return false;
+         time = TimePoint( *i );
       }
       else if ( *i == "lastUsed" )
       {
          if ( ++i == tokens.End() )
             return false;
-         lastUsed = i->ToUInt();
-         ++i;
-      }
-      else if ( *i == "time" )
-      {
-         if ( tokens.End() - i < 3 )
-            return false;
-         int y, m, d; double f;
-         JDToComplexTime( y, m, d, f, i[1].ToUInt()+0.5 );
-         unsigned t = i[2].ToUInt();
-         time.year = y;
-         time.month = m;
-         time.day = d;
-         time.milliseconds = t - 86399000;
-         time.hour = TruncI( (t = TruncI( t/1000.0 ))/3600.0 );
-         time.minute = TruncI( (t -= time.hour*3600)/60.0 );
-         time.second = t - time.minute*60;
-         i += 3;
+         lastUsed = TimePoint( *i );
       }
       else if ( *i == "data" )
       {
          if ( !GetDataFromTokens( tokens ) )
             return false;
-         ++i;
       }
-      else
-      {
-         ++i;
-      }
+
+      ++i;
    }
 
-   return !path.IsEmpty() && lastUsed > 0 && time.year > 0 && ValidateData();
+   return !path.IsEmpty() && time.IsValid() && lastUsed.IsValid() && time <= lastUsed && ValidateData();
 }
 
 // ----------------------------------------------------------------------------
@@ -390,7 +358,7 @@ bool FileDataCacheItem::Load( const IsoString& keyPrefix, int index )
 
 void FileDataCacheItem::Save( const IsoString& keyPrefix, int index ) const
 {
-   Settings::Write( keyPrefix + IsoString().Format( "%08d", index+1 ), AsString() );
+   Settings::Write( keyPrefix + IsoString().Format( "%08d", index+1 ), ToString() );
 }
 
 // ----------------------------------------------------------------------------

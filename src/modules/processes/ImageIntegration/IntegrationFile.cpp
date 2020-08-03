@@ -351,8 +351,11 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
    m_metadata              = IntegrationMetadata();
 
    if ( instance.p_useCache )
-      if ( GetFromCache( path ) )
-         console.NoteLn( "<end><cbr>* Retrieved data from file cache." );
+   {
+      int n = GetFromCache( path );
+      if ( n > 0 )
+         console.NoteLn( String().Format( "<end><cbr>* Retrieved %d data item(s) from file cache.", n ) );
+   }
 
    if ( !m_metadata.IsValid() )
    {
@@ -424,7 +427,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
    bool doMAD      = m_mad.IsEmpty()            && (instance.p_weightScale == IIWeightScale::MAD || doBWMV);
    bool doMedian   = m_median.IsEmpty()         && (needMedian || doAvgDev || doMAD || doBWMV) ;
    bool doNoise    = m_noiseEstimates.IsEmpty() && needNoise;
-   bool doAdaptive = !m_adaptiveNormalization.IsValid() && needAdaptive;
+   bool doAdaptive = needAdaptive && !m_adaptiveNormalization.IsValid();
 
    SpinStatus spin;
 
@@ -473,7 +476,11 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
          if ( doAvgDev )
             m_avgDev[c] = m_image->TwoSidedAvgDev( m_median[c] );
          if ( doMAD )
+         {
             m_mad[c] = m_image->TwoSidedMAD( m_median[c] );
+            if ( 1 + m_mad[c].low == 1 || 1 + m_mad[c].high == 1 )
+               m_mad[c].low = m_mad[c].high = m_image->MAD( m_median[c] );
+         }
          if ( doBWMV )
             m_bwmv[c] = Sqrt( m_image->TwoSidedBiweightMidvariance( m_median[c], m_mad[c] ) );
       }
@@ -485,7 +492,8 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
    {
       try
       {
-         m_adaptiveNormalization = AdaptiveNormalizationData( *m_image, instance.p_adaptiveNX, instance.p_adaptiveNY );
+         m_adaptiveNormalization = AdaptiveNormalizationData( *m_image, instance.p_weightScale,
+                                                              instance.p_adaptiveNX, instance.p_adaptiveNY );
       }
       catch ( Error& x )
       {
@@ -505,16 +513,19 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
 
    m_locationEstimates = m_median;
 
-   switch ( instance.p_weightScale )
+   if ( needScale )
    {
-   case IIWeightScale::AvgDev: m_scaleEstimates = m_avgDev; break;
-   case IIWeightScale::MAD:    m_scaleEstimates = m_mad; break;
-   default:
-   case IIWeightScale::BWMV:   m_scaleEstimates = m_bwmv; break;
+      switch ( instance.p_weightScale )
+      {
+      case IIWeightScale::AvgDev: m_scaleEstimates = m_avgDev; break;
+      case IIWeightScale::MAD:    m_scaleEstimates = m_mad; break;
+      default:
+      case IIWeightScale::BWMV:   m_scaleEstimates = m_bwmv; break;
+      }
+      for ( int c = 0; c < s_numberOfChannels; ++c )
+         if ( !m_scaleEstimates[c].IsValid() )
+            throw Error( path + ": Zero or insignificant signal detected (channel " + String( c ) + ")" );
    }
-   for ( int c = 0; c < s_numberOfChannels; ++c )
-      if ( !m_scaleEstimates[c].IsValid() )
-         throw Error( path + ": Zero or insignificant signal detected (channel " + String( c ) + ")" );
 
    if ( doNoise )
    {
@@ -575,7 +586,8 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
       m_weights = DVector( s_numberOfChannels );
 
       /*
-       * Image weighting only makes sense for average combination.
+       * Image weighting only makes sense for average combination. It is also
+       * required for generation of drizzle integration data files.
        */
       if ( instance.p_generateDrizzleData || instance.p_combination == IICombination::Average )
       {
@@ -736,12 +748,32 @@ void IntegrationFile::ToDrizzleData( DrizzleData& drz ) const
          }
       drz.SetMetadata( metadata.Serialize() );
    }
+
    drz.SetLocation( m_locationEstimates );
    drz.SetReferenceLocation( s_files[0]->m_locationEstimates );
    drz.SetScale( ScalarScaleFactors() );
    drz.SetWeight( m_weights/s_files[0]->m_weights );
+
    if ( !m_rejectionMap.IsEmpty() )
       drz.SetRejectionMap( m_rejectionMap );
+
+   if ( m_adaptiveNormalization.IsValid() )
+   {
+      Array<DPoint> points;
+      for ( int i = 0; i < m_adaptiveNormalization.m_x.Length(); ++i )
+         points << DPoint( m_adaptiveNormalization.m_x[i], m_adaptiveNormalization.m_y[i] );
+      drz.SetAdaptiveNormalizationCoordinates( points );
+      drz.SetAdaptiveNormalizationLocation( m_adaptiveNormalization.m_m );
+      drz.SetReferenceAdaptiveNormalizationLocation( s_files[0]->m_adaptiveNormalization.m_m );
+      DMultiVector s;
+      for ( int i = 0; i < s_numberOfChannels; ++i )
+      {
+         DVector s0 = s_files[0]->m_adaptiveNormalization.m_s0[i]/m_adaptiveNormalization.m_s0[i];
+         DVector s1 = s_files[0]->m_adaptiveNormalization.m_s1[i]/m_adaptiveNormalization.m_s1[i];
+         s << (s0 + s1)/2;
+      }
+      drz.SetAdaptiveNormalizationScale( s );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -796,64 +828,117 @@ void IntegrationFile::ResetCacheableData()
 void IntegrationFile::AddToCache( const String& path ) const
 {
    IntegrationCacheItem item( path );
-   item.mean     = m_mean;
-   item.median   = m_median;
-   item.avgDev   = m_avgDev;
-   item.mad      = m_mad;
-   item.bwmv     = m_bwmv;
-   item.noise    = m_noiseEstimates;
-   item.ax       = m_adaptiveNormalization.m_x;
-   item.ay       = m_adaptiveNormalization.m_y;
-   item.am       = m_adaptiveNormalization.m_m;
-   item.as0      = m_adaptiveNormalization.m_s0;
-   item.as1      = m_adaptiveNormalization.m_s1;
+
+   item.mean   = m_mean;
+   item.median = m_median;
+   item.avgDev = m_avgDev;
+   item.mad    = m_mad;
+   item.bwmv   = m_bwmv;
+   item.noise  = m_noiseEstimates;
+
+   if ( m_adaptiveNormalization.IsValid() )
+   {
+      item.ax = m_adaptiveNormalization.m_x;
+      item.ay = m_adaptiveNormalization.m_y;
+      item.am = m_adaptiveNormalization.m_m;
+
+      switch ( m_instance->p_weightScale )
+      {
+      case IIWeightScale::AvgDev:
+         item.as0_avgDev = m_adaptiveNormalization.m_s0;
+         item.as1_avgDev = m_adaptiveNormalization.m_s1;
+         break;
+      case IIWeightScale::MAD:
+         item.as0_mad = m_adaptiveNormalization.m_s0;
+         item.as1_mad = m_adaptiveNormalization.m_s1;
+         break;
+      default:
+      case IIWeightScale::BWMV:
+         item.as0_bwmv = m_adaptiveNormalization.m_s0;
+         item.as1_bwmv = m_adaptiveNormalization.m_s1;
+         break;
+      }
+   }
+
    item.metadata = m_metadata.Serialize();
+
    TheIntegrationCache->Add( item );
 }
 
 // ----------------------------------------------------------------------------
 
-bool IntegrationFile::GetFromCache( const String& path )
+int IntegrationFile::GetFromCache( const String& path )
 {
    ResetCacheableData();
 
+   int n = 0;
    IntegrationCacheItem item;
-   if ( !TheIntegrationCache->Get( item, path ) )
-      return false;
+   if ( TheIntegrationCache->Get( item, path ) )
+   {
+      if ( item.mean.Length() == s_numberOfChannels )
+         m_mean = item.mean, ++n;
 
-   m_mean           = item.mean;
-   m_median         = item.median;
-   m_avgDev         = item.avgDev;
-   m_mad            = item.mad;
-   m_bwmv           = item.bwmv;
-   m_noiseEstimates = item.noise;
-   m_metadata       = IntegrationMetadata( item.metadata );
-   if ( !item.ax.IsEmpty() )
-      if ( item.ax.Length() == m_instance->p_adaptiveNX )
-         if ( item.ay.Length() == m_instance->p_adaptiveNY )
-         {
-            try
-            {
-               m_adaptiveNormalization = AdaptiveNormalizationData( item.ax, item.ay, item.am, item.as0, item.as1 );
-            }
-            catch ( Error& x )
-            {
-               throw Error( path + ": " + x.Message() );
-            }
-            catch ( ... )
-            {
-               throw;
-            }
-         }
+      if ( item.median.Length() == s_numberOfChannels )
+         m_median = item.median, ++n;
 
-   return
-   (m_mean.IsEmpty()           || m_mean.Length()           == s_numberOfChannels) &&
-   (m_median.IsEmpty()         || m_median.Length()         == s_numberOfChannels) &&
-   (m_avgDev.IsEmpty()         || m_avgDev.Length()         == s_numberOfChannels) &&
-   (m_mad.IsEmpty()            || m_mad.Length()            == s_numberOfChannels) &&
-   (m_bwmv.IsEmpty()           || m_bwmv.Length()           == s_numberOfChannels) &&
-   (m_noiseEstimates.IsEmpty() || m_noiseEstimates.Length() == s_numberOfChannels) &&
-   (item.am.IsEmpty()          || int( item.am.Length() )   == s_numberOfChannels);
+      if ( item.avgDev.Length() == s_numberOfChannels )
+         m_avgDev = item.avgDev, ++n;
+
+      if ( item.mad.Length() == s_numberOfChannels )
+         m_mad = item.mad, ++n;
+
+      if ( item.bwmv.Length() == s_numberOfChannels )
+         m_bwmv = item.bwmv, ++n;
+
+      if ( item.noise.Length() == s_numberOfChannels )
+         m_noiseEstimates = item.noise, ++n;
+
+      if ( !item.metadata.IsEmpty() )
+         m_metadata = IntegrationMetadata( item.metadata ), ++n;
+
+      if ( item.ax.Length() == m_instance->p_adaptiveNX * m_instance->p_adaptiveNY )
+         if ( item.ay.Length() == m_instance->p_adaptiveNX * m_instance->p_adaptiveNY )
+            if ( int( item.am.Length() ) == s_numberOfChannels )
+            {
+               DMultiVector as0, as1;
+               switch ( m_instance->p_weightScale )
+               {
+               case IIWeightScale::AvgDev:
+                  as0 = item.as0_avgDev;
+                  as1 = item.as1_avgDev;
+                  break;
+               case IIWeightScale::MAD:
+                  as0 = item.as0_mad;
+                  as1 = item.as1_mad;
+                  break;
+               default:
+               case IIWeightScale::BWMV:
+                  as0 = item.as0_bwmv;
+                  as1 = item.as1_bwmv;
+                  break;
+               }
+
+               if ( int( as0.Length() ) == s_numberOfChannels )
+                  if ( int( as1.Length() ) == s_numberOfChannels )
+                  {
+                     try
+                     {
+                        m_adaptiveNormalization = AdaptiveNormalizationData( s_width, s_height, item.ax, item.ay, item.am, as0, as1 );
+                        ++n;
+                     }
+                     catch ( Error& x )
+                     {
+                        throw Error( path + ": " + x.Message() );
+                     }
+                     catch ( ... )
+                     {
+                        throw;
+                     }
+                  }
+            }
+   }
+
+   return n;
 }
 
 // ----------------------------------------------------------------------------

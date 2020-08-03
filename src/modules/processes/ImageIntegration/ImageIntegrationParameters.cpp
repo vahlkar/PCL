@@ -412,7 +412,7 @@ IsoString IIAdaptiveNX::Id() const
 
 double IIAdaptiveNX::DefaultValue() const
 {
-   return 4;
+   return 8;
 }
 
 double IIAdaptiveNX::MinimumValue() const
@@ -422,7 +422,7 @@ double IIAdaptiveNX::MinimumValue() const
 
 double IIAdaptiveNX::MaximumValue() const
 {
-   return 16;
+   return 50;
 }
 
 // ----------------------------------------------------------------------------
@@ -439,7 +439,7 @@ IsoString IIAdaptiveNY::Id() const
 
 double IIAdaptiveNY::DefaultValue() const
 {
-   return 4;
+   return 8;
 }
 
 double IIAdaptiveNY::MinimumValue() const
@@ -449,7 +449,7 @@ double IIAdaptiveNY::MinimumValue() const
 
 double IIAdaptiveNY::MaximumValue() const
 {
-   return 16;
+   return 50;
 }
 
 // ----------------------------------------------------------------------------

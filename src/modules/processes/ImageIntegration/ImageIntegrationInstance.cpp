@@ -862,7 +862,10 @@ bool ImageIntegrationInstance::ExecuteGlobal()
             {
                result->SelectChannel( c );
                location[c] = result.Median();
-               scale[c] = Sqrt( result.TwoSidedBiweightMidvariance( location[c], result.TwoSidedMAD( location[c] ) ) );
+               TwoSidedEstimate mad = result.TwoSidedMAD( location[c] );
+               if ( 1 + mad.low == 1 || 1 + mad.high == 1 )
+                  mad.low = mad.high = result.MAD( location[c] );
+               scale[c] = Sqrt( result.TwoSidedBiweightMidvariance( location[c], mad ) );
             }
 
             result->Status().Complete();
@@ -1134,7 +1137,7 @@ bool ImageIntegrationInstance::ExecuteGlobal()
          if ( p_useROI )
          {
             console.WarningLn( "** Warning: Drizzle data files cannot be updated with an active ROI. "
-                               "Integrate the entire image to update drizzle data files." );
+                               "Please integrate the entire image to update drizzle data files." );
          }
          else
          {
