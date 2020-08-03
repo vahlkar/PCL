@@ -1246,6 +1246,7 @@ size_type ICOnError::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
+// ### DEPRECATED
 ICNoGUIMessages::ICNoGUIMessages( MetaProcess* p ) : MetaBoolean( p )
 {
    TheICNoGUIMessagesParameter = this;

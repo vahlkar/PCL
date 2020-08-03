@@ -530,6 +530,7 @@ size_type LNPlotNormalizationFunctions::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
+// ### DEPRECATED
 LNNoGUIMessages::LNNoGUIMessages( MetaProcess* P ) : MetaBoolean( P )
 {
    TheLNNoGUIMessagesParameter = this;
@@ -542,7 +543,7 @@ IsoString LNNoGUIMessages::Id() const
 
 bool LNNoGUIMessages::DefaultValue() const
 {
-   return false;
+   return true;
 }
 
 // ----------------------------------------------------------------------------

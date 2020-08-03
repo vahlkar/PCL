@@ -664,6 +664,7 @@ bool DZClosePreviousImages::DefaultValue() const
 
 // ----------------------------------------------------------------------------
 
+// ### DEPRECATED
 DZNoGUIMessages::DZNoGUIMessages( MetaProcess* p ) : MetaBoolean( p )
 {
    TheDZNoGUIMessagesParameter = this;
