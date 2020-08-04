@@ -111,7 +111,7 @@ const float __5x5B3Spline_kj[] =
 
 ImageCalibrationInstance::ImageCalibrationInstance( const MetaProcess* m )
    : ProcessImplementation( m )
-   , p_cfaData( TheICCFADataParameter->DefaultValue() )
+   , p_enableCFA( TheICEnableCFAParameter->DefaultValue() )
    , p_cfaPattern( ICCFAPattern::Default )
    , p_inputHints( TheICInputHintsParameter->DefaultValue() )
    , p_outputHints( TheICOutputHintsParameter->DefaultValue() )
@@ -157,7 +157,7 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
    if ( x != nullptr )
    {
       p_targetFrames                  = x->p_targetFrames;
-      p_cfaData                       = x->p_cfaData;
+      p_enableCFA                       = x->p_enableCFA;
       p_cfaPattern                    = x->p_cfaPattern;
       p_inputHints                    = x->p_inputHints;
       p_outputHints                   = x->p_outputHints;
@@ -1685,11 +1685,11 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
     */
    switch ( p_outputSampleFormat )
    {
-   case ICOutputSampleFormat::I16 : options.bitsPerSample = 16; options.ieeefpSampleFormat = false; break;
-   case ICOutputSampleFormat::I32 : options.bitsPerSample = 32; options.ieeefpSampleFormat = false; break;
+   case ICOutputSampleFormat::I16: options.bitsPerSample = 16; options.ieeefpSampleFormat = false; break;
+   case ICOutputSampleFormat::I32: options.bitsPerSample = 32; options.ieeefpSampleFormat = false; break;
    default:
-   case ICOutputSampleFormat::F32 : options.bitsPerSample = 32; options.ieeefpSampleFormat = true;  break;
-   case ICOutputSampleFormat::F64 : options.bitsPerSample = 64; options.ieeefpSampleFormat = true;  break;
+   case ICOutputSampleFormat::F32: options.bitsPerSample = 32; options.ieeefpSampleFormat = true;  break;
+   case ICOutputSampleFormat::F64: options.bitsPerSample = 64; options.ieeefpSampleFormat = true;  break;
    }
 
    outputFile.SetOptions( options );
@@ -1704,15 +1704,15 @@ void ImageCalibrationInstance::WriteCalibratedImage( const CalibrationThread* t 
    if ( options.ieeefpSampleFormat )
       switch ( options.bitsPerSample )
       {
-      case 32 : canStore = outputFormat.CanStoreFloat(); break;
-      case 64 : canStore = outputFormat.CanStoreDouble(); break;
+      case 32: canStore = outputFormat.CanStoreFloat(); break;
+      case 64: canStore = outputFormat.CanStoreDouble(); break;
       }
    else
       switch ( options.bitsPerSample )
       {
-      case 16 : canStore = outputFormat.CanStore16Bit(); break;
-      case 32 : canStore = outputFormat.CanStore32Bit(); break;
-      case 64 : canStore = outputFormat.CanStore64Bit(); break;
+      case 16: canStore = outputFormat.CanStore16Bit(); break;
+      case 32: canStore = outputFormat.CanStore32Bit(); break;
+      case 64: canStore = outputFormat.CanStore64Bit(); break;
       }
 
    if ( !canStore )
@@ -2018,17 +2018,18 @@ bool ImageCalibrationInstance::ExecuteGlobal()
       if ( p_masterDark.enabled )
       {
          console.NoteLn( "<end><cbr><br>* Loading master dark frame: <raw>" + p_masterDark.path + "</raw>" );
-         dark = LoadCalibrationFrame( p_masterDark.path, p_calibrateDark, &darkCFAPattern );
+         dark = LoadCalibrationFrame( p_masterDark.path, p_calibrateDark, p_enableCFA ? &darkCFAPattern : nullptr );
       }
 
       if ( p_masterFlat.enabled )
       {
          console.NoteLn( "<end><cbr><br>* Loading master flat frame: <raw>" + p_masterFlat.path + "</raw>" );
-         flat = LoadCalibrationFrame( p_masterFlat.path, p_calibrateFlat, &flatCFAPattern );
+         flat = LoadCalibrationFrame( p_masterFlat.path, p_calibrateFlat, p_enableCFA ? &flatCFAPattern : nullptr );
+         if ( p_enableCFA )
+            if ( p_masterDark.enabled )
+               if ( darkCFAPattern != flatCFAPattern )
+                  throw Error( "Mismatched CFA patterns between the master dark and flat frames: '" + darkCFAPattern + "', '" + flatCFAPattern + "'" );
       }
-
-      if ( darkCFAPattern != flatCFAPattern )
-         throw Error( "Mismatched CFA patterns between the master dark and flat frames: '" + darkCFAPattern + "' != '" + flatCFAPattern + "'" );
 
       Module->ProcessEvents();
 
@@ -2569,8 +2570,8 @@ void* ImageCalibrationInstance::LockParameter( const MetaParameter* p, size_type
    if ( p == TheICTargetFramePathParameter )
       return p_targetFrames[tableRow].path.Begin();
 
-   if ( p == TheICCFADataParameter )
-      return &p_cfaData;
+   if ( p == TheICEnableCFAParameter )
+      return &p_enableCFA;
    if ( p == TheICCFAPatternParameter )
       return &p_cfaPattern;
 

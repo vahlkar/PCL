@@ -63,7 +63,7 @@ ICTargetFrames*                  TheICTargetFramesParameter = nullptr;
 ICTargetFrameEnabled*            TheICTargetFrameEnabledParameter = nullptr;
 ICTargetFramePath*               TheICTargetFramePathParameter = nullptr;
 
-ICCFAData*                       TheICCFADataParameter = nullptr;
+ICEnableCFA*                       TheICEnableCFAParameter = nullptr;
 ICCFAPattern*                    TheICCFAPatternParameter = nullptr;
 
 ICInputHints*                    TheICInputHintsParameter = nullptr;
@@ -187,19 +187,19 @@ IsoString ICTargetFramePath::Id() const
 
 // ----------------------------------------------------------------------------
 
-ICCFAData::ICCFAData( MetaProcess* P ) : MetaBoolean( P )
+ICEnableCFA::ICEnableCFA( MetaProcess* P ) : MetaBoolean( P )
 {
-   TheICCFADataParameter = this;
+   TheICEnableCFAParameter = this;
 }
 
-IsoString ICCFAData::Id() const
+IsoString ICEnableCFA::Id() const
 {
-   return "cfaData";
+   return "enableCFA";
 }
 
-bool ICCFAData::DefaultValue() const
+bool ICEnableCFA::DefaultValue() const
 {
-   return false;
+   return true;
 }
 
 // ----------------------------------------------------------------------------

@@ -176,7 +176,7 @@ private:
    image_list      p_targetFrames;
 
    // CFA parameters
-   pcl_bool        p_cfaData;
+   pcl_bool        p_enableCFA;
    pcl_enum        p_cfaPattern;
 
    // Format hints
@@ -197,16 +197,16 @@ private:
    ImageItem       p_masterFlat;
 
    // Calibration options
-   pcl_bool        p_calibrateBias;   // apply master bias frame calibration (overscan)
-   pcl_bool        p_calibrateDark;   // apply master dark frame calibration (overscan+bias)
-   pcl_bool        p_calibrateFlat;   // apply master flat frame calibration (overscan+bias+dark)
+   pcl_bool        p_calibrateBias; // apply master bias frame calibration (overscan)
+   pcl_bool        p_calibrateDark; // apply master dark frame calibration (overscan+bias)
+   pcl_bool        p_calibrateFlat; // apply master flat frame calibration (overscan+bias+dark)
 
    // Dark frame optimization
-   pcl_bool        p_optimizeDarks;   // perform dark frame optimizations
-   float           p_darkOptimizationThreshold;   // ### DEPRECATED
-   float           p_darkOptimizationLow;    // lower bound for dark frame optimization in sigma units
-   int32           p_darkOptimizationWindow; // size in px of the central region for dark optimization
-   pcl_enum        p_darkCFADetectionMode;   // ### DEPRECATED
+   pcl_bool        p_optimizeDarks;             // perform dark frame optimizations
+   float           p_darkOptimizationThreshold; // ### DEPRECATED
+   float           p_darkOptimizationLow;       // lower bound for dark frame optimization in sigma units
+   int32           p_darkOptimizationWindow;    // size in px of the central region for dark optimization
+   pcl_enum        p_darkCFADetectionMode;      // ### DEPRECATED
 
    // Flat frame calibration options
    pcl_bool        p_separateCFAFlatScalingFactors;

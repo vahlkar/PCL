@@ -114,8 +114,8 @@ private:
             PushButton        Clear_PushButton;
             CheckBox          FullPaths_CheckBox;
 
-      HorizontalSizer   CFAData_Sizer;
-         CheckBox          CFAData_CheckBox;
+      HorizontalSizer   DetectCFA_Sizer;
+         CheckBox          DetectCFA_CheckBox;
       HorizontalSizer   CFAPattern_Sizer;
          Label             CFAPattern_Label;
          ComboBox          CFAPattern_ComboBox;

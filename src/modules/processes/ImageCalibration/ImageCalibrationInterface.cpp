@@ -271,12 +271,12 @@ void ImageCalibrationInterface::UpdateImageSelectionButtons()
 
 void ImageCalibrationInterface::UpdateCFAControls()
 {
-   GUI->CFAData_CheckBox.SetChecked( m_instance.p_cfaData );
+   GUI->DetectCFA_CheckBox.SetChecked( m_instance.p_enableCFA );
 
-   GUI->CFAPattern_Label.Enable( m_instance.p_cfaData );
+   GUI->CFAPattern_Label.Enable( m_instance.p_enableCFA );
 
    GUI->CFAPattern_ComboBox.SetCurrentItem( m_instance.p_cfaPattern );
-   GUI->CFAPattern_ComboBox.Enable( m_instance.p_cfaData );
+   GUI->CFAPattern_ComboBox.Enable( m_instance.p_enableCFA );
 }
 
 // ----------------------------------------------------------------------------
@@ -363,7 +363,7 @@ void ImageCalibrationInterface::UpdateMasterFrameControls()
    GUI->CalibrateMasterFlat_CheckBox.SetChecked( m_instance.p_calibrateFlat );
 
    GUI->SeparateCFAFlatScalingFactors_CheckBox.SetChecked( m_instance.p_separateCFAFlatScalingFactors );
-   GUI->SeparateCFAFlatScalingFactors_CheckBox.Enable( m_instance.p_cfaData );
+   GUI->SeparateCFAFlatScalingFactors_CheckBox.Enable( m_instance.p_enableCFA );
 
    GUI->FlatScaleClippingFactor_NumericControl.SetValue( m_instance.p_flatScaleClippingFactor );
 }
@@ -594,9 +594,9 @@ void ImageCalibrationInterface::e_Click( Button& sender, bool checked )
       UpdateTargetImagesList();
       UpdateImageSelectionButtons();
    }
-   else if ( sender == GUI->CFAData_CheckBox )
+   else if ( sender == GUI->DetectCFA_CheckBox )
    {
-      m_instance.p_cfaData = checked;
+      m_instance.p_enableCFA = checked;
       UpdateCFAControls();
       UpdateMasterFrameControls();
    }
@@ -1028,25 +1028,27 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
 
    //
 
-   CFAData_CheckBox.SetText( "CFA data" );
-   CFAData_CheckBox.SetToolTip( "<p>Enable this option if the data set has been acquired with a digital camera that "
-      "generates images mosaiced with a Color Filter Array (CFA). Bayer and X-Trans CFAs are supported. When this "
-      "option is selected, the CFA pattern can be selected with the <i>CFA mosaic pattern</i> parameter. You normally "
-      "should leave that parameter with its default Auto selection, which should detect the correct pattern "
-      "automatically under normal conditions.</p>" );
-   CFAData_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
+   DetectCFA_CheckBox.SetText( "Enable CFA" );
+   DetectCFA_CheckBox.SetToolTip( "<p>Enable this option to support data acquired with digital cameras that generate "
+      "images mosaiced with a Color Filter Array (CFA). Bayer and X-Trans CFAs are supported. When this option is "
+      "selected, the CFA pattern can be selected with the <i>CFA mosaic pattern</i> parameter. You normally should "
+      "leave that parameter with its default Auto selection, which should detect the correct pattern automatically "
+      "under normal working conditions.</p>" );
+   DetectCFA_CheckBox.OnClick( (Button::click_event_handler)&ImageCalibrationInterface::e_Click, w );
 
-   CFAData_Sizer.SetSpacing( 4 );
-   CFAData_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   CFAData_Sizer.Add( CFAData_CheckBox );
-   CFAData_Sizer.AddStretch();
+   DetectCFA_Sizer.SetSpacing( 4 );
+   DetectCFA_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   DetectCFA_Sizer.Add( DetectCFA_CheckBox );
+   DetectCFA_Sizer.AddStretch();
 
    const char* patternToolTip =
       "<p>Select the CFA pattern of the camera (such as a DSLR or OSC camera) used to acquire the calibration master "
       "and target frames.</p>"
-      "<p>The Auto option requires view properties available in the master and target frame files. Under normal working "
-      "conditions, these properties are either generated automatically by the RAW format support module and stored in "
-      "XISF files, or available as FITS header keywords in the case of raw OSC frames.</p>"
+      "<p>The Auto option uses view properties that can be available in the master and target frame files. Under "
+      "normal working conditions, these properties are either generated automatically by the RAW format support module "
+      "and stored in XISF files, or available as FITS header keywords in the case of raw OSC frames.</p>"
+      "<p>For non-CFA data acquired with monochrome CCD or CMOS cameras, the Auto option is the correct selection "
+      "because in these cases the process will detect no CFA pattern automatically.</p>"
       "<p>For images acquired with X-Trans sensors this parameter is ignored and CFA patterns are always extracted "
       "from existing image properties.</p>";
 
@@ -2052,7 +2054,7 @@ ImageCalibrationInterface::GUIData::GUIData( ImageCalibrationInterface& w )
    Global_Sizer.SetSpacing( 6 );
    Global_Sizer.Add( TargetImages_SectionBar );
    Global_Sizer.Add( TargetImages_Control );
-   Global_Sizer.Add( CFAData_Sizer );
+   Global_Sizer.Add( DetectCFA_Sizer );
    Global_Sizer.Add( CFAPattern_Sizer );
    Global_Sizer.Add( FormatHints_SectionBar );
    Global_Sizer.Add( FormatHints_Control );

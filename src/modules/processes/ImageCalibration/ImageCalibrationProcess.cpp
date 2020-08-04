@@ -72,7 +72,7 @@ ImageCalibrationProcess::ImageCalibrationProcess()
    new ICTargetFrames( this );
    new ICTargetFrameEnabled( TheICTargetFramesParameter );
    new ICTargetFramePath( TheICTargetFramesParameter );
-   new ICCFAData( this );
+   new ICEnableCFA( this );
    new ICCFAPattern( this );
    new ICInputHints( this );
    new ICOutputHints( this );

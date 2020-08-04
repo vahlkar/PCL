@@ -102,17 +102,17 @@ extern ICTargetFramePath* TheICTargetFramePathParameter;
 
 // ----------------------------------------------------------------------------
 
-class ICCFAData : public MetaBoolean
+class ICEnableCFA : public MetaBoolean
 {
 public:
 
-   ICCFAData( MetaProcess* );
+   ICEnableCFA( MetaProcess* );
 
    IsoString Id() const override;
    bool DefaultValue() const override;
 };
 
-extern ICCFAData* TheICCFADataParameter;
+extern ICEnableCFA* TheICEnableCFAParameter;
 
 // ----------------------------------------------------------------------------
 
