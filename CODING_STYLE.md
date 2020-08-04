@@ -1,10 +1,12 @@
-PixInsight Class Library - Coding Style Guidelines
+# PixInsight Class Library - Coding Style Guidelines
+
+Version 0.6 - 2020 August 4<br/>
+
 --------------------------------------------------
 
-Version 0.5 - 2018 November 2<br/>
+[[_TOC_]]
 
 --------------------------------------------------
-
 
 ### 1. Indentation
 
@@ -88,10 +90,10 @@ Version 0.5 - 2018 November 2<br/>
 
    1.6. Try to align and indent line comments to improve readability.
 
-      DoSomething();          // these comments
-      x = DoFoo();            // are aligned and indented
-      if ( x == 0 )           // for improved...
-         PerformBarAction();  //    ...readability
+      DoSomething();         // these comments
+      x = DoFoo();           // are aligned and indented
+      if ( x == 0 )          // for improved...
+         PerformBarAction(); //    ...readability
 
       DoSomething(); // these comments
       x = Foo(); // are not aligned
@@ -618,9 +620,26 @@ Version 0.5 - 2018 November 2<br/>
          ...
 
 
-### 7. Virtual Member Functions
+### 7. Classes
 
-   7.1. Always use the 'override' specifier for declarations of reimplemented virtual member functions.
+   7.1. In member initializer lists of C++ class constructor definitions, each initializer of a base class or nonstatic member should be indented on a separate line, with the colon or comma preceding the initializer on that line, separated from the base class or member name with one space.
+
+      class Foo : public Baz
+      {
+      public:
+
+         Foo( int x, float* y, const char* z )
+            : Baz( x )
+            , m_y( y )
+            , m_z( z )
+         {
+            ...
+         }
+
+         ...
+      };
+
+   7.2. Always use the 'override' specifier for declarations of reimplemented virtual member functions.
 
       class Base
       {
