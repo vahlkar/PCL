@@ -372,7 +372,7 @@ public:
     */
    const normalization_matrices& Scale() const
    {
-      return m_B;
+      return m_A;
    }
 
    /*!
