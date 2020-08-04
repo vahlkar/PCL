@@ -86,8 +86,10 @@ void DrizzleData::ClearIntegrationData()
    m_location = m_referenceLocation = m_scale = m_unitScale = m_weight = m_unitWeight = Vector();
    m_adaptiveCoordinates.Clear();
    m_adaptiveLocation.Clear();
-   m_referenceAdaptiveLocation.Clear();
-   m_adaptiveScale.Clear();
+   m_adaptiveScaleLow.Clear();
+   m_adaptiveScaleHigh.Clear();
+   m_adaptiveZeroOffsetLow.Clear();
+   m_adaptiveZeroOffsetHigh.Clear();
    m_rejectionLowCount = m_rejectionHighCount = UI64Vector();
    m_rejectionMap.FreeData();
    m_rejectLowData = m_rejectHighData = rejection_data();
@@ -213,13 +215,21 @@ XMLDocument* DrizzleData::Serialize() const
          list << String().ToCommaSeparated( v );
       *(new XMLElement( *element, "LocationEstimates" )) << new XMLText( String().ToSeparated( list, ';' ) );
       list.Clear();
-      for ( const Vector& v : m_referenceAdaptiveLocation )
+      for ( const Vector& v : m_adaptiveScaleLow )
          list << String().ToCommaSeparated( v );
-      *(new XMLElement( *element, "ReferenceLocation" )) << new XMLText( String().ToSeparated( list, ';' ) );
+      *(new XMLElement( *element, "LowScaleFactors" )) << new XMLText( String().ToSeparated( list, ';' ) );
       list.Clear();
-      for ( const Vector& v : m_adaptiveScale )
+      for ( const Vector& v : m_adaptiveScaleHigh )
          list << String().ToCommaSeparated( v );
-      *(new XMLElement( *element, "ScaleFactors" )) << new XMLText( String().ToSeparated( list, ';' ) );
+      *(new XMLElement( *element, "HighScaleFactors" )) << new XMLText( String().ToSeparated( list, ';' ) );
+      list.Clear();
+      for ( const Vector& v : m_adaptiveZeroOffsetLow )
+         list << String().ToCommaSeparated( v );
+      *(new XMLElement( *element, "LowZeroOffsetCoefficients" )) << new XMLText( String().ToSeparated( list, ';' ) );
+      list.Clear();
+      for ( const Vector& v : m_adaptiveZeroOffsetHigh )
+         list << String().ToCommaSeparated( v );
+      *(new XMLElement( *element, "HighZeroOffsetCoefficients" )) << new XMLText( String().ToSeparated( list, ';' ) );
    }
 
    return xml.Release();
@@ -643,10 +653,14 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
                      y = ParseListOfRealValues( element, 1 );
                   else if ( element.Name() == "LocationEstimates" )
                      m_adaptiveLocation = ParseListsOfRealValues( element, 1 );
-                  else if ( element.Name() == "ReferenceLocation" )
-                     m_referenceAdaptiveLocation = ParseListsOfRealValues( element, 1 );
-                  else if ( element.Name() == "ScaleFactors" )
-                     m_adaptiveScale = ParseListsOfRealValues( element, 1 );
+                  else if ( element.Name() == "LowScaleFactors" )
+                     m_adaptiveScaleLow = ParseListsOfRealValues( element, 1 );
+                  else if ( element.Name() == "HighScaleFactors" )
+                     m_adaptiveScaleHigh = ParseListsOfRealValues( element, 1 );
+                  else if ( element.Name() == "LowZeroOffsetCoefficients" )
+                     m_adaptiveZeroOffsetLow = ParseListsOfRealValues( element, 1 );
+                  else if ( element.Name() == "HighZeroOffsetCoefficients" )
+                     m_adaptiveZeroOffsetHigh = ParseListsOfRealValues( element, 1 );
                   else
                      WarnOnUnknownChildElement( element, "AdaptiveNormalization" );
                }
@@ -655,17 +669,26 @@ void DrizzleData::Parse( const XMLElement& root, bool ignoreIntegrationData )
                   throw Error( "Missing or incongruent adaptive normalization coordinates." );
                if ( m_adaptiveLocation.IsEmpty() )
                   throw Error( "Missing adaptive normalization location estimates." );
-               if ( m_referenceAdaptiveLocation.IsEmpty() )
-                  throw Error( "Missing adaptive normalization reference location estimates." );
-               if ( m_adaptiveScale.IsEmpty() )
-                  throw Error( "Missing adaptive normalization scale factors." );
-               if ( m_adaptiveLocation.Length() != m_referenceAdaptiveLocation.Length()
-                  || m_adaptiveLocation.Length() != m_adaptiveScale.Length() )
+               if ( m_adaptiveScaleLow.IsEmpty() )
+                  throw Error( "Missing low adaptive normalization scale factors." );
+               if ( m_adaptiveScaleHigh.IsEmpty() )
+                  throw Error( "Missing high adaptive normalization scale factors." );
+               if ( m_adaptiveZeroOffsetLow.IsEmpty() )
+                  throw Error( "Missing low adaptive normalization zero offset coefficients." );
+               if ( m_adaptiveZeroOffsetHigh.IsEmpty() )
+                  throw Error( "Missing high adaptive normalization zero offset coefficients." );
+
+               if (  m_adaptiveLocation.Length() != m_adaptiveScaleLow.Length()
+                  || m_adaptiveLocation.Length() != m_adaptiveScaleHigh.Length()
+                  || m_adaptiveLocation.Length() != m_adaptiveZeroOffsetHigh.Length()
+                  || m_adaptiveLocation.Length() != m_adaptiveZeroOffsetHigh.Length() )
                   throw Error( "Incongruent adaptive normalization data." );
                for ( size_type i = 0; i < m_adaptiveLocation.Length(); ++i )
-                  if ( m_adaptiveLocation[i].Length() != x.Length()
-                     || m_referenceAdaptiveLocation[i].Length() != x.Length()
-                     || m_adaptiveScale[i].Length() != x.Length() )
+                  if (  m_adaptiveLocation[i].Length() != x.Length()
+                     || m_adaptiveScaleLow[i].Length() != x.Length()
+                     || m_adaptiveScaleHigh[i].Length() != x.Length()
+                     || m_adaptiveZeroOffsetLow[i].Length() != x.Length()
+                     || m_adaptiveZeroOffsetHigh[i].Length() != x.Length() )
                      throw Error( "Invalid adaptive normalization vector lengths." );
 
                for ( int i = 0; i < x.Length(); ++i )
