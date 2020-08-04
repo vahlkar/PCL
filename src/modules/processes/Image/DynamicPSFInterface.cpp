@@ -434,10 +434,8 @@ public:
    {
       SetIcon( 0, ParentTree().ScaledResource( collection->view.IsNull() ? ":/icons/error.png" :
                         (collection->view.IsPreview() ? ":/browser/preview.png" : ":/browser/main-view.png") ) );
-
       SetText( 0, collection->ViewId() );
       SetAlignment( 0, TextAlign::Left|TextAlign::VertCenter );
-
       if ( collection->view.IsNull() )
          SetToolTip( 0, "No such view: " + collection->ViewId() );
    }
@@ -468,13 +466,14 @@ public:
 
    void Update() override
    {
-      SetIcon( 0, ParentTree().ScaledResource( *star ? ":/icons/star.png" : ":/icons/error.png" ) );
+      int sz = ParentTree().Font().Height();
+      SetIcon( 0, *star ? Bitmap::FromSVGFile( ":/shapes/star7.svg", sz, sz )
+                        : Bitmap( ParentTree().ScaledResource( ":/icons/error.png" ) ) );
       if ( !*star )
          SetToolTip( 0, star->StatusText() );
-
-      SetText( 0, String().Format( "%5d", star->uniqueId ) );
+      SetText( 0, String().Format( "%3d", star->uniqueId ) );
       SetText( 1, String().Format( "%d", star->channel ) );
-      SetAlignment( 0, TextAlign::Right|TextAlign::VertCenter );
+      SetAlignment( 0, TextAlign::Left|TextAlign::VertCenter );
       SetAlignment( 1, TextAlign::Right|TextAlign::VertCenter );
       // TODO: show also barycenter and selection coordinates?
    }
@@ -504,10 +503,11 @@ public:
 
    void Update() override
    {
-      SetIcon( 0, ParentTree().ScaledResource( *psf ? ":/bullets/bullet-ball.png" : ":/icons/error.png" ) );
+      int sz = RoundInt( 0.8 * ParentTree().Font().Ascent() );
+      SetIcon( 0, *psf ? Bitmap::FromSVGFile( ":/shapes/circle.svg", sz, sz )
+                       : Bitmap( ParentTree().ScaledResource( ":/icons/error.png" ) ) );
       if ( !*psf )
          SetToolTip( 0, psf->StatusText() );
-
       SetText( 0, psf->FunctionName() );
       SetAlignment( 0, TextAlign::Left|TextAlign::VertCenter );
 
@@ -2844,7 +2844,10 @@ DynamicPSFInterface::GUIData::GUIData( DynamicPSFInterface& w )
    PSFModels_SectionBar.OnToggleSection( (SectionBar::section_event_handler)&DynamicPSFInterface::__ToggleSection, w );
 
    AutoPSF_CheckBox.SetText( "Auto" );
-   AutoPSF_CheckBox.SetToolTip( "<p>Find the Gaussian or Moffat PSF model function that best approximates actual image data.</p>" );
+   AutoPSF_CheckBox.SetToolTip( "<p>Find the PSF model function that best approximates actual image data.</p>"
+      "<p>Only Gaussian and Moffat model functions are used by default. If you enable the <i>Automatic VarShape fits</i> "
+      "option, variable shape model functions will also be fitted and selected when they minimize residuals among "
+      "PSF models and sampled image data.</p>" );
    AutoPSF_CheckBox.SetChecked();
    AutoPSF_CheckBox.OnClick( (ToolButton::click_event_handler)&DynamicPSFInterface::__Click, w );
 
