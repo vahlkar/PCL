@@ -793,6 +793,53 @@ void IntegrationRejectionEngine::LinearFitRejectionThread::Run()
 // ----------------------------------------------------------------------------
 
 /*
+ * ESD critical value cache.
+ */
+struct ESDLambdaCache
+{
+public:
+
+   ESDLambdaCache( double alpha )
+      : m_alpha( alpha )
+   {
+   }
+
+   PCL_HOT_FUNCTION double operator()( int n, int c )
+   {
+      cache_impl::const_iterator i = m_cache.Search( Item{ n, c, 0 } );
+      if ( i != m_cache.End() )
+         return i->lambda;
+      double l = IntegrationRejectionEngine::ESDLambda( n, c, m_alpha );
+      m_cache << Item{ n, c, l };
+      return l;
+   }
+
+private:
+
+   struct Item
+   {
+      int    n; // total items
+      int    c; // rejected items
+      double lambda;
+
+      bool operator ==( const Item& i ) const
+      {
+         return n == i.n && c == i.c;
+      }
+
+      bool operator <( const Item& i ) const
+      {
+         return (n != i.n) ? n < i.n : c < i.c;
+      }
+   };
+
+   typedef SortedArray<Item>  cache_impl;
+
+   double     m_alpha; // significance level
+   cache_impl m_cache;
+};
+
+/*
  * ESD test statistic data.
  */
 struct ESDT
@@ -809,6 +856,8 @@ struct ESDT
 void IntegrationRejectionEngine::ESDRejectionThread::Run()
 {
    INIT_THREAD_MONITOR()
+
+   ESDLambdaCache lambdaCache( I.p_esdAlpha );
 
    RejectionMatrix* R = E.m_R.ComponentPtr( m_firstStack );
    IVector* N = E.m_N.ComponentPtr( m_firstStack );
@@ -871,7 +920,7 @@ void IntegrationRejectionEngine::ESDRejectionThread::Run()
 
          int nc;
          for ( nc = 0; nc < k; ++nc )
-            if ( T[nc].x < ESDLambda( n, nc, I.p_esdAlpha ) )
+            if ( T[nc].x < lambdaCache( n, nc ) /*ESDLambda( n, nc, I.p_esdAlpha )*/ )
                break;
 
          if ( nc > 0 )
