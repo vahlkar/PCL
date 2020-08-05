@@ -358,6 +358,80 @@ private:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
+class AdaptiveNormalizationInterpolation
+{
+public:
+
+   AdaptiveNormalizationInterpolation() = default;
+
+   void Initialize( int width, int height, const Array<DPoint>& points,
+                    const DMultiVector& location,
+                    const DMultiVector& scaleLow, const DMultiVector& scaleHigh,
+                    const DMultiVector& zeroOffsetLow, const DMultiVector& zeroOffsetHigh )
+   {
+      Clear();
+
+      Array<double> x, y;
+      for ( const DPoint& p : points )
+      {
+         x << p.x;
+         y << p.y;
+      }
+
+      for ( size_type i = 0; i < location.Length(); ++i )
+      {
+         SurfaceSpline<double> M, S0, S1, Z0, Z1;
+         M.Initialize( x.Begin(), y.Begin(), location[i].Begin(), x.Length() );
+         S0.Initialize( x.Begin(), y.Begin(), scaleLow[i].Begin(), x.Length() );
+         S1.Initialize( x.Begin(), y.Begin(), scaleHigh[i].Begin(), x.Length() );
+         Z0.Initialize( x.Begin(), y.Begin(), zeroOffsetLow[i].Begin(), x.Length() );
+         Z1.Initialize( x.Begin(), y.Begin(), zeroOffsetHigh[i].Begin(), x.Length() );
+
+         GridInterpolation GM, GS0, GS1, GZ0, GZ1;
+         GM.Initialize( Rect( width, height ), 64, M, false/*verbose*/ );
+         GS0.Initialize( Rect( width, height ), 64, S0, false/*verbose*/ );
+         GS1.Initialize( Rect( width, height ), 64, S1, false/*verbose*/ );
+         GZ0.Initialize( Rect( width, height ), 64, Z0, false/*verbose*/ );
+         GZ1.Initialize( Rect( width, height ), 64, Z1, false/*verbose*/ );
+
+         m_m << GM;
+         m_s0 << GS0;
+         m_s1 << GS1;
+         m_z0 << GZ0;
+         m_z1 << GZ1;
+      }
+   }
+
+   void Clear()
+   {
+      m_m.Clear();
+      m_s0.Clear();
+      m_s1.Clear();
+      m_z0.Clear();
+      m_z1.Clear();
+   }
+
+   double operator()( double z, int x, int y, int c = 0 ) const
+   {
+      return (z <= m_m[c]( x, y )) ? m_s0[c]( x, y )*z + m_z0[c]( x, y )
+                                   : m_s1[c]( x, y )*z + m_z1[c]( x, y );
+   }
+
+private:
+
+   typedef GridInterpolation     interpolation;
+   typedef Array<interpolation>  interpolators;
+
+   interpolators m_m;
+   interpolators m_s0;
+   interpolators m_s1;
+   interpolators m_z0;
+   interpolators m_z1;
+};
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
 DrizzleIntegrationInstance::DrizzleIntegrationInstance( const MetaProcess* m )
    : ProcessImplementation( m )
    , p_inputHints( TheDZInputHintsParameter->DefaultValue() )
@@ -373,6 +447,7 @@ DrizzleIntegrationInstance::DrizzleIntegrationInstance( const MetaProcess* m )
    , p_enableSurfaceSplines( TheDZEnableSurfaceSplinesParameter->DefaultValue() )
    , p_enableLocalDistortion( TheDZEnableLocalDistortionParameter->DefaultValue() )
    , p_enableLocalNormalization( TheDZEnableLocalNormalizationParameter->DefaultValue() )
+   , p_enableAdaptiveNormalization( TheDZEnableAdaptiveNormalizationParameter->DefaultValue() )
    , p_useROI( TheDZUseROIParameter->DefaultValue() )
    , p_closePreviousImages( TheDZClosePreviousImagesParameter->DefaultValue() )
    , p_noGUIMessages( TheDZNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
@@ -395,27 +470,28 @@ void DrizzleIntegrationInstance::Assign( const ProcessImplementation& p )
    const DrizzleIntegrationInstance* x = dynamic_cast<const DrizzleIntegrationInstance*>( &p );
    if ( x != nullptr )
    {
-      p_inputData                = x->p_inputData;
-      p_inputHints               = x->p_inputHints;
-      p_inputDirectory           = x->p_inputDirectory;
-      p_scale                    = x->p_scale;
-      p_dropShrink               = x->p_dropShrink;
-      p_kernelFunction           = x->p_kernelFunction;
-      p_kernelGridSize           = x->p_kernelGridSize;
-      p_origin                   = x->p_origin;
-      p_enableCFA                = x->p_enableCFA;
-      p_cfaPattern               = x->p_cfaPattern;
-      p_enableRejection          = x->p_enableRejection;
-      p_enableImageWeighting     = x->p_enableImageWeighting;
-      p_enableSurfaceSplines     = x->p_enableSurfaceSplines;
-      p_enableLocalDistortion    = x->p_enableLocalDistortion;
-      p_enableLocalNormalization = x->p_enableLocalNormalization;
-      p_useROI                   = x->p_useROI;
-      p_roi                      = x->p_roi;
-      p_closePreviousImages      = x->p_closePreviousImages;
-      p_noGUIMessages            = x->p_noGUIMessages;
-      p_onError                  = x->p_onError;
-      o_output                   = x->o_output;
+      p_inputData                   = x->p_inputData;
+      p_inputHints                  = x->p_inputHints;
+      p_inputDirectory              = x->p_inputDirectory;
+      p_scale                       = x->p_scale;
+      p_dropShrink                  = x->p_dropShrink;
+      p_kernelFunction              = x->p_kernelFunction;
+      p_kernelGridSize              = x->p_kernelGridSize;
+      p_origin                      = x->p_origin;
+      p_enableCFA                   = x->p_enableCFA;
+      p_cfaPattern                  = x->p_cfaPattern;
+      p_enableRejection             = x->p_enableRejection;
+      p_enableImageWeighting        = x->p_enableImageWeighting;
+      p_enableSurfaceSplines        = x->p_enableSurfaceSplines;
+      p_enableLocalDistortion       = x->p_enableLocalDistortion;
+      p_enableLocalNormalization    = x->p_enableLocalNormalization;
+      p_enableAdaptiveNormalization = x->p_enableAdaptiveNormalization;
+      p_useROI                      = x->p_useROI;
+      p_roi                         = x->p_roi;
+      p_closePreviousImages         = x->p_closePreviousImages;
+      p_noGUIMessages               = x->p_noGUIMessages;
+      p_onError                     = x->p_onError;
+      o_output                      = x->o_output;
    }
 }
 
@@ -465,6 +541,9 @@ public:
       m_decoder.Clear();
       m_localNormalization.Clear();
       m_hasLocalNormalization = false;
+      m_adaptiveNormalization.Clear();
+      m_hasAdaptiveNormalization = false;
+      m_normalizationFunction = &DrizzleIntegrationEngine::NormalizeScaleAndZeroOffset;
       m_referenceWidth = m_referenceHeight = m_width = m_height = m_numberOfChannels = 0;
       m_pixelSize = 0;
    }
@@ -476,17 +555,22 @@ private:
    typedef PointGridInterpolation                        grid_interpolation;
    typedef RecursivePointSurfaceSpline<DPoint>           local_distortion_model;
 
-   DrizzleIntegrationInstance& m_instance;
-   DrizzleData                 m_decoder;              // current drizzle data
-   LocalNormalizationData      m_localNormalization;   // optional local normalization data
-   bool                        m_hasLocalNormalization = false;
-   int                         m_referenceWidth        = 0;
-   int                         m_referenceHeight       = 0;
-   Point                       m_origin                = 0; // output ROI origin
-   int                         m_width                 = 0; // output ROI dimensions in pixels
-   int                         m_height                = 0;
-   int                         m_numberOfChannels      = 0;
-   double                      m_pixelSize             = 0; // in reference pixel units
+   typedef double (DrizzleIntegrationEngine::*normalization_function_ptr)( double, const Point&, int ) const;
+
+   DrizzleIntegrationInstance&        m_instance;
+   DrizzleData                        m_decoder;               // current drizzle data
+   LocalNormalizationData             m_localNormalization;    // optional local normalization data
+   bool                               m_hasLocalNormalization = false;
+   AdaptiveNormalizationInterpolation m_adaptiveNormalization; // optional adaptive normalization
+   bool                               m_hasAdaptiveNormalization = false;
+   normalization_function_ptr         m_normalizationFunction = nullptr;
+   int                                m_referenceWidth   = 0;
+   int                                m_referenceHeight  = 0;
+   Point                              m_origin           = 0;  // output ROI origin
+   int                                m_width            = 0;  // output ROI dimensions in pixels
+   int                                m_height           = 0;
+   int                                m_numberOfChannels = 0;
+   double                             m_pixelSize        = 0;  // in reference pixel units
 
    struct ThreadData : public AbstractImage::ThreadData
    {
@@ -1232,8 +1316,27 @@ private:
     */
    double Normalize( double z, const Point& p, int c ) const
    {
-      return m_hasLocalNormalization ? m_localNormalization( z, p.x, p.y, c ) :
-                                       (z - Location( c ))*Scale( c ) + ReferenceLocation( c );
+      return (this->*m_normalizationFunction)( z, p, c );
+   }
+
+   double NormalizeLocal( double z, const Point& p, int c ) const
+   {
+      return m_localNormalization( z, p.x, p.y, c );
+   }
+
+   double NormalizeAdaptive( double z, const Point& p, int c ) const
+   {
+      return m_adaptiveNormalization( z, p.x, p.y, c );
+   }
+
+   double NormalizeScaleAndZeroOffset( double z, const Point&, int c ) const
+   {
+      return (z - Location( c ))*Scale( c ) + ReferenceLocation( c );
+   }
+
+   double NormalizeNone( double z, const Point&, int ) const
+   {
+      return z;
    }
 
    ImageWindow CreateImageWindow( const IsoString& id ) const
@@ -1443,6 +1546,37 @@ void DrizzleIntegrationEngine::Perform()
             if ( m_instance.p_enableLocalNormalization )
                if ( !m_hasLocalNormalization )
                   console.WarningLn( "** Warning: Local normalization data not available." );
+            if ( m_hasLocalNormalization )
+               m_normalizationFunction = &DrizzleIntegrationEngine::NormalizeLocal;
+
+            if ( m_instance.p_enableAdaptiveNormalization )
+               if ( !m_hasLocalNormalization )
+                  if ( m_decoder.HasAdaptiveNormalizationData() )
+                  {
+                     try
+                     {
+                        MultiVector s0, s1;
+                        m_decoder.GetAdaptiveNormalizationScaleVectors( s0, s1 );
+                        MultiVector z0, z1;
+                        m_decoder.GetAdaptiveNormalizationZeroOffsetVectors( z0, z1 );
+                        m_adaptiveNormalization.Initialize( m_referenceWidth, m_referenceHeight,
+                                                            m_decoder.AdaptiveNormalizationCoordinates(),
+                                                            m_decoder.AdaptiveNormalizationLocationVectors(),
+                                                            s0, s1, z0, z1 );
+                        m_hasAdaptiveNormalization = true;
+                        m_normalizationFunction = &DrizzleIntegrationEngine::NormalizeAdaptive;
+                     }
+                     catch ( Exception& x )
+                     {
+                        throw Error( item.path + ": " + x.Message() );
+                     }
+                     catch ( ... )
+                     {
+                        throw;
+                     }
+                  }
+                  else
+                     console.WarningLn( "** Warning: Adaptive normalization data not available." );
 
             String filePath;
             CFAIndex cfaIndex;
@@ -1748,10 +1882,6 @@ void DrizzleIntegrationEngine::Perform()
                                      "DrizzleIntegration.kernelFunction: " + TheDZKernelFunctionParameter->ElementId( m_instance.p_kernelFunction ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      IsoString().Format( "DrizzleIntegration.kernelGridSize: %d", m_instance.p_kernelGridSize ) )
-//                << FITSHeaderKeyword( "HISTORY", IsoString(),
-//                                      IsoString().Format( "DrizzleIntegration.originX: %.2f", m_instance.p_origin.x ) )
-//                << FITSHeaderKeyword( "HISTORY", IsoString(),
-//                                      IsoString().Format( "DrizzleIntegration.originY: %.2f", m_instance.p_origin.y ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      "DrizzleIntegration.enableCFA: " + IsoString( bool( m_instance.p_enableCFA ) ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
@@ -1766,6 +1896,11 @@ void DrizzleIntegrationEngine::Perform()
                                      "DrizzleIntegration.enableLocalDistortion: " + IsoString( bool( m_instance.p_enableLocalDistortion ) ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      "DrizzleIntegration.enableLocalNormalization: " + IsoString( bool( m_instance.p_enableLocalNormalization ) ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                     "DrizzleIntegration.enableAdaptiveNormalization: " + IsoString( bool( m_instance.p_enableAdaptiveNormalization ) ) )
+               << FITSHeaderKeyword( "HISTORY", IsoString(),
+                                     "DrizzleIntegration.outputNormalization: "
+                                     + IsoString( m_hasLocalNormalization ? "local" : (m_hasAdaptiveNormalization ? "adaptive" : "scale+zeroOffset") ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
                                      IsoString().Format( "DrizzleIntegration.referenceDimensions: width=%d, height=%d", m_referenceWidth, m_referenceHeight ) )
                << FITSHeaderKeyword( "HISTORY", IsoString(),
@@ -1884,6 +2019,8 @@ void* DrizzleIntegrationInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_enableLocalDistortion;
    if ( p == TheDZEnableLocalNormalizationParameter )
       return &p_enableLocalNormalization;
+   if ( p == TheDZEnableAdaptiveNormalizationParameter )
+      return &p_enableAdaptiveNormalization;
    if ( p == TheDZUseROIParameter )
       return &p_useROI;
    if ( p == TheDZROIX0Parameter )

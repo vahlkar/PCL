@@ -57,69 +57,70 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-DZInputData*                  TheDZInputDataParameter = nullptr;
-DZItemEnabled*                TheDZItemEnabledParameter = nullptr;
-DZItemPath*                   TheDZItemPathParameter = nullptr;
-DZLocalNormalizationDataPath* TheDZLocalNormalizationDataPathParameter = nullptr;
-DZInputHints*                 TheDZInputHintsParameter = nullptr;
-DZInputDirectory*             TheDZInputDirectoryParameter = nullptr;
-DZScale*                      TheDZScaleParameter = nullptr;
-DZDropShrink*                 TheDZDropShrinkParameter = nullptr;
-DZKernelFunction*             TheDZKernelFunctionParameter = nullptr;
-DZKernelGridSize*             TheDZKernelGridSizeParameter = nullptr;
-DZOriginX*                    TheDZOriginXParameter = nullptr;
-DZOriginY*                    TheDZOriginYParameter = nullptr;
-DZEnableCFA*                  TheDZEnableCFAParameter = nullptr;
-DZCFAPattern*                 TheDZCFAPatternParameter = nullptr;
-DZEnableRejection*            TheDZEnableRejectionParameter = nullptr;
-DZEnableImageWeighting*       TheDZEnableImageWeightingParameter = nullptr;
-DZEnableSurfaceSplines*       TheDZEnableSurfaceSplinesParameter = nullptr;
-DZEnableLocalDistortion*      TheDZEnableLocalDistortionParameter = nullptr;
-DZEnableLocalNormalization*   TheDZEnableLocalNormalizationParameter = nullptr;
-DZUseROI*                     TheDZUseROIParameter = nullptr;
-DZROIX0*                      TheDZROIX0Parameter = nullptr;
-DZROIY0*                      TheDZROIY0Parameter = nullptr;
-DZROIX1*                      TheDZROIX1Parameter = nullptr;
-DZROIY1*                      TheDZROIY1Parameter = nullptr;
-DZClosePreviousImages*        TheDZClosePreviousImagesParameter = nullptr;
-DZNoGUIMessages*              TheDZNoGUIMessagesParameter = nullptr;
-DZOnError*                    TheDZOnErrorParameter = nullptr;
+DZInputData*                   TheDZInputDataParameter = nullptr;
+DZItemEnabled*                 TheDZItemEnabledParameter = nullptr;
+DZItemPath*                    TheDZItemPathParameter = nullptr;
+DZLocalNormalizationDataPath*  TheDZLocalNormalizationDataPathParameter = nullptr;
+DZInputHints*                  TheDZInputHintsParameter = nullptr;
+DZInputDirectory*              TheDZInputDirectoryParameter = nullptr;
+DZScale*                       TheDZScaleParameter = nullptr;
+DZDropShrink*                  TheDZDropShrinkParameter = nullptr;
+DZKernelFunction*              TheDZKernelFunctionParameter = nullptr;
+DZKernelGridSize*              TheDZKernelGridSizeParameter = nullptr;
+DZOriginX*                     TheDZOriginXParameter = nullptr;
+DZOriginY*                     TheDZOriginYParameter = nullptr;
+DZEnableCFA*                   TheDZEnableCFAParameter = nullptr;
+DZCFAPattern*                  TheDZCFAPatternParameter = nullptr;
+DZEnableRejection*             TheDZEnableRejectionParameter = nullptr;
+DZEnableImageWeighting*        TheDZEnableImageWeightingParameter = nullptr;
+DZEnableSurfaceSplines*        TheDZEnableSurfaceSplinesParameter = nullptr;
+DZEnableLocalDistortion*       TheDZEnableLocalDistortionParameter = nullptr;
+DZEnableLocalNormalization*    TheDZEnableLocalNormalizationParameter = nullptr;
+DZEnableAdaptiveNormalization* TheDZEnableAdaptiveNormalizationParameter = nullptr;
+DZUseROI*                      TheDZUseROIParameter = nullptr;
+DZROIX0*                       TheDZROIX0Parameter = nullptr;
+DZROIY0*                       TheDZROIY0Parameter = nullptr;
+DZROIX1*                       TheDZROIX1Parameter = nullptr;
+DZROIY1*                       TheDZROIY1Parameter = nullptr;
+DZClosePreviousImages*         TheDZClosePreviousImagesParameter = nullptr;
+DZNoGUIMessages*               TheDZNoGUIMessagesParameter = nullptr;
+DZOnError*                     TheDZOnErrorParameter = nullptr;
 
-DZIntegrationImageId*         TheDZIntegrationImageIdParameter = nullptr;
-DZWeightImageId*              TheDZWeightImageIdParameter = nullptr;
-DZNumberOfChannels*           TheDZNumberOfChannelsParameter = nullptr;
-DZOutputPixels*               TheDZOutputPixelsParameter = nullptr;
-DZIntegratedPixels*           TheDZIntegratedPixelsParameter = nullptr;
-DZOutputRangeLow*             TheDZOutputRangeLowParameter = nullptr;
-DZOutputRangeHigh*            TheDZOutputRangeHighParameter = nullptr;
-DZTotalRejectedLowRK*         TheDZTotalRejectedLowRKParameter = nullptr;
-DZTotalRejectedLowG*          TheDZTotalRejectedLowGParameter = nullptr;
-DZTotalRejectedLowB*          TheDZTotalRejectedLowBParameter = nullptr;
-DZTotalRejectedHighRK*        TheDZTotalRejectedHighRKParameter = nullptr;
-DZTotalRejectedHighG*         TheDZTotalRejectedHighGParameter = nullptr;
-DZTotalRejectedHighB*         TheDZTotalRejectedHighBParameter = nullptr;
-DZOutputData*                 TheDZOutputDataParameter = nullptr;
-DZImageData*                  TheDZImageDataParameter = nullptr;
-DZImageFilePath*              TheDZImageFilePathParameter = nullptr;
-DZImageWeightRK*              TheDZImageWeightRKParameter = nullptr;
-DZImageWeightG*               TheDZImageWeightGParameter = nullptr;
-DZImageWeightB*               TheDZImageWeightBParameter = nullptr;
-DZImageLocationRK*            TheDZImageLocationRKParameter = nullptr;
-DZImageLocationG*             TheDZImageLocationGParameter = nullptr;
-DZImageLocationB*             TheDZImageLocationBParameter = nullptr;
-DZImageReferenceLocationRK*   TheDZImageReferenceLocationRKParameter = nullptr;
-DZImageReferenceLocationG*    TheDZImageReferenceLocationGParameter = nullptr;
-DZImageReferenceLocationB*    TheDZImageReferenceLocationBParameter = nullptr;
-DZImageScaleRK*               TheDZImageScaleRKParameter = nullptr;
-DZImageScaleG*                TheDZImageScaleGParameter = nullptr;
-DZImageScaleB*                TheDZImageScaleBParameter = nullptr;
-DZImageRejectedLowRK*         TheDZImageRejectedLowRKParameter = nullptr;
-DZImageRejectedLowG*          TheDZImageRejectedLowGParameter = nullptr;
-DZImageRejectedLowB*          TheDZImageRejectedLowBParameter = nullptr;
-DZImageRejectedHighRK*        TheDZImageRejectedHighRKParameter = nullptr;
-DZImageRejectedHighG*         TheDZImageRejectedHighGParameter = nullptr;
-DZImageRejectedHighB*         TheDZImageRejectedHighBParameter = nullptr;
-DZImageOutputData*            TheDZImageOutputDataParameter = nullptr;
+DZIntegrationImageId*          TheDZIntegrationImageIdParameter = nullptr;
+DZWeightImageId*               TheDZWeightImageIdParameter = nullptr;
+DZNumberOfChannels*            TheDZNumberOfChannelsParameter = nullptr;
+DZOutputPixels*                TheDZOutputPixelsParameter = nullptr;
+DZIntegratedPixels*            TheDZIntegratedPixelsParameter = nullptr;
+DZOutputRangeLow*              TheDZOutputRangeLowParameter = nullptr;
+DZOutputRangeHigh*             TheDZOutputRangeHighParameter = nullptr;
+DZTotalRejectedLowRK*          TheDZTotalRejectedLowRKParameter = nullptr;
+DZTotalRejectedLowG*           TheDZTotalRejectedLowGParameter = nullptr;
+DZTotalRejectedLowB*           TheDZTotalRejectedLowBParameter = nullptr;
+DZTotalRejectedHighRK*         TheDZTotalRejectedHighRKParameter = nullptr;
+DZTotalRejectedHighG*          TheDZTotalRejectedHighGParameter = nullptr;
+DZTotalRejectedHighB*          TheDZTotalRejectedHighBParameter = nullptr;
+DZOutputData*                  TheDZOutputDataParameter = nullptr;
+DZImageData*                   TheDZImageDataParameter = nullptr;
+DZImageFilePath*               TheDZImageFilePathParameter = nullptr;
+DZImageWeightRK*               TheDZImageWeightRKParameter = nullptr;
+DZImageWeightG*                TheDZImageWeightGParameter = nullptr;
+DZImageWeightB*                TheDZImageWeightBParameter = nullptr;
+DZImageLocationRK*             TheDZImageLocationRKParameter = nullptr;
+DZImageLocationG*              TheDZImageLocationGParameter = nullptr;
+DZImageLocationB*              TheDZImageLocationBParameter = nullptr;
+DZImageReferenceLocationRK*    TheDZImageReferenceLocationRKParameter = nullptr;
+DZImageReferenceLocationG*     TheDZImageReferenceLocationGParameter = nullptr;
+DZImageReferenceLocationB*     TheDZImageReferenceLocationBParameter = nullptr;
+DZImageScaleRK*                TheDZImageScaleRKParameter = nullptr;
+DZImageScaleG*                 TheDZImageScaleGParameter = nullptr;
+DZImageScaleB*                 TheDZImageScaleBParameter = nullptr;
+DZImageRejectedLowRK*          TheDZImageRejectedLowRKParameter = nullptr;
+DZImageRejectedLowG*           TheDZImageRejectedLowGParameter = nullptr;
+DZImageRejectedLowB*           TheDZImageRejectedLowBParameter = nullptr;
+DZImageRejectedHighRK*         TheDZImageRejectedHighRKParameter = nullptr;
+DZImageRejectedHighG*          TheDZImageRejectedHighGParameter = nullptr;
+DZImageRejectedHighB*          TheDZImageRejectedHighBParameter = nullptr;
+DZImageOutputData*             TheDZImageOutputDataParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -516,6 +517,23 @@ IsoString DZEnableLocalNormalization::Id() const
 }
 
 bool DZEnableLocalNormalization::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+DZEnableAdaptiveNormalization::DZEnableAdaptiveNormalization( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheDZEnableAdaptiveNormalizationParameter = this;
+}
+
+IsoString DZEnableAdaptiveNormalization::Id() const
+{
+   return "enableAdaptiveNormalization";
+}
+
+bool DZEnableAdaptiveNormalization::DefaultValue() const
 {
    return false;
 }

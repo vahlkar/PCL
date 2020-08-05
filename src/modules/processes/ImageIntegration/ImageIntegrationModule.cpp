@@ -51,14 +51,14 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     25
-#define MODULE_VERSION_REVISION  0
+#define MODULE_VERSION_MINOR     2
+#define MODULE_VERSION_REVISION  27
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     7
-#define MODULE_RELEASE_DAY       31
+#define MODULE_RELEASE_MONTH     8
+#define MODULE_RELEASE_DAY       5
 
 #include "DrizzleIntegrationInstance.h"
 #include "DrizzleIntegrationInterface.h"

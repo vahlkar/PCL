@@ -155,6 +155,8 @@ private:
             CheckBox          EnableLocalDistortion_CheckBox;
          HorizontalSizer   EnableLocalNormalization_Sizer;
             CheckBox          EnableLocalNormalization_CheckBox;
+         HorizontalSizer   EnableAdaptiveNormalization_Sizer;
+            CheckBox          EnableAdaptiveNormalization_CheckBox;
          HorizontalSizer   ClosePreviousImages_Sizer;
             CheckBox          ClosePreviousImages_CheckBox;
 

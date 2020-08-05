@@ -315,6 +315,7 @@ void DrizzleIntegrationInterface::UpdateIntegrationControls()
    GUI->EnableSurfaceSplines_CheckBox.SetChecked( m_instance.p_enableSurfaceSplines );
    GUI->EnableLocalDistortion_CheckBox.SetChecked( m_instance.p_enableLocalDistortion );
    GUI->EnableLocalNormalization_CheckBox.SetChecked( m_instance.p_enableLocalNormalization );
+   GUI->EnableAdaptiveNormalization_CheckBox.SetChecked( m_instance.p_enableAdaptiveNormalization );
    GUI->ClosePreviousImages_CheckBox.SetChecked( m_instance.p_closePreviousImages );
 
    bool integrated = DZKernelFunction::IsIntegratedKernel( m_instance.p_kernelFunction );
@@ -602,6 +603,10 @@ void DrizzleIntegrationInterface::e_Click( Button& sender, bool checked )
    else if ( sender == GUI->EnableLocalNormalization_CheckBox )
    {
       m_instance.p_enableLocalNormalization = checked;
+   }
+   else if ( sender == GUI->EnableAdaptiveNormalization_CheckBox )
+   {
+      m_instance.p_enableAdaptiveNormalization = checked;
    }
    else if ( sender == GUI->ClosePreviousImages_CheckBox )
    {
@@ -1133,6 +1138,18 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    EnableLocalNormalization_Sizer.Add( EnableLocalNormalization_CheckBox );
    EnableLocalNormalization_Sizer.AddStretch();
 
+   EnableAdaptiveNormalization_CheckBox.SetText( "Enable adaptive normalization" );
+   EnableAdaptiveNormalization_CheckBox.SetToolTip( "<p>For input drizzle files that provide adaptive normalization data, "
+      "apply adaptive normalization for output instead of the default scale + zero offset global normalization.</p>"
+      "<p>Note: Local normalization always has precedence over adaptive normalization, so this option will be ignored "
+      "for drizzle files that have been associated with local normalization data files (.xnml) if the <i>Enable local "
+      "normalization</i> option has been selected.</p>" );
+   EnableAdaptiveNormalization_CheckBox.OnClick( (Button::click_event_handler)&DrizzleIntegrationInterface::e_Click, w );
+
+   EnableAdaptiveNormalization_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   EnableAdaptiveNormalization_Sizer.Add( EnableAdaptiveNormalization_CheckBox );
+   EnableAdaptiveNormalization_Sizer.AddStretch();
+
    ClosePreviousImages_CheckBox.SetText( "Close previous images" );
    ClosePreviousImages_CheckBox.SetToolTip( "<p>Select this option to close existing drizzle integration and weight images "
       "before running a new integration process. This is useful to avoid accumulation of multiple results on the workspace, "
@@ -1155,6 +1172,7 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    Integration_Sizer.Add( EnableSurfaceSplines_Sizer );
    Integration_Sizer.Add( EnableLocalDistortion_Sizer );
    Integration_Sizer.Add( EnableLocalNormalization_Sizer );
+   Integration_Sizer.Add( EnableAdaptiveNormalization_Sizer );
    Integration_Sizer.Add( ClosePreviousImages_Sizer );
 
    Integration_Control.SetSizer( Integration_Sizer );

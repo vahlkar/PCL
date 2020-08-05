@@ -759,20 +759,42 @@ void IntegrationFile::ToDrizzleData( DrizzleData& drz ) const
 
    if ( m_adaptiveNormalization.IsValid() )
    {
-      Array<DPoint> points;
+      DrizzleData::point_list points;
       for ( int i = 0; i < m_adaptiveNormalization.m_x.Length(); ++i )
          points << DPoint( m_adaptiveNormalization.m_x[i], m_adaptiveNormalization.m_y[i] );
       drz.SetAdaptiveNormalizationCoordinates( points );
-      drz.SetAdaptiveNormalizationLocation( m_adaptiveNormalization.m_m );
-      drz.SetReferenceAdaptiveNormalizationLocation( s_files[0]->m_adaptiveNormalization.m_m );
-      DMultiVector s;
+
+      drz.SetAdaptiveNormalizationLocationVectors( m_adaptiveNormalization.m_m );
+
+      DMultiVector s0, s1;
       for ( int i = 0; i < s_numberOfChannels; ++i )
       {
-         DVector s0 = s_files[0]->m_adaptiveNormalization.m_s0[i]/m_adaptiveNormalization.m_s0[i];
-         DVector s1 = s_files[0]->m_adaptiveNormalization.m_s1[i]/m_adaptiveNormalization.m_s1[i];
-         s << (s0 + s1)/2;
+         s0 << s_files[0]->m_adaptiveNormalization.m_s0[i]/m_adaptiveNormalization.m_s0[i];
+         s1 << s_files[0]->m_adaptiveNormalization.m_s1[i]/m_adaptiveNormalization.m_s1[i];
       }
-      drz.SetAdaptiveNormalizationScale( s );
+      drz.SetAdaptiveNormalizationScaleVectors( s0, s1 );
+
+      DMultiVector z0, z1;
+      for ( int i = 0; i < s_numberOfChannels; ++i )
+      {
+         /*
+          * ### N.B. We need component wise vector multiplication here. If we
+          * use the following:
+          *
+          * z0 << s_files[0]->m_adaptiveNormalization.m_m[i] - m_adaptiveNormalization.m_m[i] * s0[i];
+          * z1 << s_files[0]->m_adaptiveNormalization.m_m[i] - m_adaptiveNormalization.m_m[i] * s1[i];
+          *
+          * we'd be applying dot vector multiplication, which would yield
+          * completely wrong results. See the definition of:
+          *
+          * T operator *( const GenericVector<T>&, const GenericVector<T>& )
+          */
+         s0[i] *= m_adaptiveNormalization.m_m[i];
+         s1[i] *= m_adaptiveNormalization.m_m[i];
+         z0 << s_files[0]->m_adaptiveNormalization.m_m[i] - s0[i];
+         z1 << s_files[0]->m_adaptiveNormalization.m_m[i] - s1[i];
+      }
+      drz.SetAdaptiveNormalizationZeroOffsetVectors( z0, z1 );
    }
 }
 

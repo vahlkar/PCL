@@ -87,6 +87,7 @@ DrizzleIntegrationProcess::DrizzleIntegrationProcess()
    new DZEnableSurfaceSplines( this );
    new DZEnableLocalDistortion( this );
    new DZEnableLocalNormalization( this );
+   new DZEnableAdaptiveNormalization( this );
    new DZUseROI( this );
    new DZROIX0( this );
    new DZROIY0( this );

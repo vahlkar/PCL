@@ -69,7 +69,7 @@ public:
    AdaptiveNormalizationData() = default;
    AdaptiveNormalizationData( const AdaptiveNormalizationData& ) = default;
 
-   AdaptiveNormalizationData( const Image& image, int estimator, int nx = 4, int ny = 4 );
+   AdaptiveNormalizationData( const Image& image, int scaleEstimator, int nx = 4, int ny = 4 );
 
    AdaptiveNormalizationData( int width, int height, const DVector& x, const DVector& y,
                               const DMultiVector& m, const DMultiVector& s0, const DMultiVector& s1 );
@@ -91,21 +91,23 @@ public:
       return m_scaleHigh[c]( x, y );
    }
 
+   void Clear();
+
 private:
 
-   typedef GridInterpolation           local_interpolation;
-   typedef Array<local_interpolation>  local_interpolators;
+   typedef GridInterpolation     interpolation;
+   typedef Array<interpolation>  interpolators;
 
-   int                 m_width = -1;  // reference width in px
-   int                 m_height = -1; // reference height in px
-   DVector             m_x;           // node X coordinates
-   DVector             m_y;           // node Y coordinates
-   DMultiVector        m_m;           // location estimates
-   DMultiVector        m_s0;          // low scale estimates
-   DMultiVector        m_s1;          // high scale estimates
-   local_interpolators m_location;    // location interpolation
-   local_interpolators m_scaleLow;    // low scale interpolation
-   local_interpolators m_scaleHigh;   // high scale interpolation
+   int           m_width = -1;  // reference width
+   int           m_height = -1; // reference height
+   DVector       m_x;           // node X coordinates
+   DVector       m_y;           // node Y coordinates
+   DMultiVector  m_m;           // location estimates
+   DMultiVector  m_s0;          // low scale estimates
+   DMultiVector  m_s1;          // high scale estimates
+   interpolators m_location;    // location interpolation
+   interpolators m_scaleLow;    // low scale interpolation
+   interpolators m_scaleHigh;   // high scale interpolation
 
    void InitInterpolations();
 

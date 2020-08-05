@@ -60,7 +60,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int estimator, int nx, int ny )
+AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int scaleEstimator, int nx, int ny )
 {
    nx = Range( nx, 2, 16 );
    ny = Range( ny, 2, 16 );
@@ -100,7 +100,7 @@ AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int es
             }
             m[k] = image.Median();
             TwoSidedEstimate s2;
-            switch ( estimator )
+            switch ( scaleEstimator )
             {
             case IIWeightScale::AvgDev:
                s2 = image.TwoSidedAvgDev( m[k] );
@@ -187,6 +187,21 @@ bool AdaptiveNormalizationData::IsValid() const
 
 // ----------------------------------------------------------------------------
 
+void AdaptiveNormalizationData::Clear()
+{
+   m_width = m_height = -1;
+   m_x.Clear();
+   m_y.Clear();
+   m_m.Clear();
+   m_s0.Clear();
+   m_s1.Clear();
+   m_location.Clear();
+   m_scaleLow.Clear();
+   m_scaleHigh.Clear();
+}
+
+// ----------------------------------------------------------------------------
+
 void AdaptiveNormalizationData::InitInterpolations()
 {
    m_location.Clear();
@@ -200,7 +215,7 @@ void AdaptiveNormalizationData::InitInterpolations()
       S0.Initialize( m_x.Begin(), m_y.Begin(), m_s0[i].Begin(), m_x.Length() );
       S1.Initialize( m_x.Begin(), m_y.Begin(), m_s1[i].Begin(), m_x.Length() );
 
-      local_interpolation GM, GS0, GS1;
+      interpolation GM, GS0, GS1;
       GM.Initialize( Rect( m_width, m_height ), 64, M, false/*verbose*/ );
       GS0.Initialize( Rect( m_width, m_height ), 64, S0, false/*verbose*/ );
       GS1.Initialize( Rect( m_width, m_height ), 64, S1, false/*verbose*/ );

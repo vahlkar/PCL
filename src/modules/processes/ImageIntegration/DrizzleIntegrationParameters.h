@@ -357,6 +357,20 @@ extern DZEnableLocalNormalization* TheDZEnableLocalNormalizationParameter;
 
 // ----------------------------------------------------------------------------
 
+class DZEnableAdaptiveNormalization : public MetaBoolean
+{
+public:
+
+   DZEnableAdaptiveNormalization( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DZEnableAdaptiveNormalization* TheDZEnableAdaptiveNormalizationParameter;
+
+// ----------------------------------------------------------------------------
+
 class DZUseROI : public MetaBoolean
 {
 public:

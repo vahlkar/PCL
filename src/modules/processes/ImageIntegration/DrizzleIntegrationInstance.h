@@ -103,26 +103,27 @@ private:
 
    typedef Array<DataItem>  input_data_list;
 
-   input_data_list p_inputData;                // input .drz files
-   String          p_inputHints;               // input format hints
-   String          p_inputDirectory;           // if nonempty, replace dirs in .drz files
-   float           p_scale;                    // input_pixel_size/output_pixel_size
-   float           p_dropShrink;               // pixel shrink factor
-   pcl_enum        p_kernelFunction;           // drop kernel function (square, circular, Gaussian, VariableShape...)
-   int32           p_kernelGridSize;           // grid size for double integration of kernel functions
-   FPoint          p_origin;                   // ### DEPRECATED origin of image registration coordinates in reference image pixels
-   pcl_bool        p_enableCFA;                // work with monochrome input CFA frames to integrate an RGB color image
-   String          p_cfaPattern;               // the CFA pattern, such as "RGGB", "GRBG", etc.
-   pcl_bool        p_enableRejection;          // enable pixel rejection
-   pcl_bool        p_enableImageWeighting;     // enable image weights
-   pcl_bool        p_enableSurfaceSplines;     // enable registration with surface splines
-   pcl_bool        p_enableLocalDistortion;    // enable registration with local distortion corrections
-   pcl_bool        p_enableLocalNormalization; // enable local normalization for output
-   pcl_bool        p_useROI;                   // use a region of interest
-   Rect            p_roi = Rect( 0 );          // region of interest
-   pcl_bool        p_closePreviousImages;      // close existing integration and weight images before running
-   pcl_bool        p_noGUIMessages;            // ### DEPRECATED
-   pcl_enum        p_onError;                  // error policy
+   input_data_list p_inputData;                   // input .drz files
+   String          p_inputHints;                  // input format hints
+   String          p_inputDirectory;              // if nonempty, replace dirs in .drz files
+   float           p_scale;                       // input_pixel_size/output_pixel_size
+   float           p_dropShrink;                  // pixel shrink factor
+   pcl_enum        p_kernelFunction;              // drop kernel function (square, circular, Gaussian, VariableShape...)
+   int32           p_kernelGridSize;              // grid size for double integration of kernel functions
+   FPoint          p_origin;                      // ### DEPRECATED origin of image registration coordinates in reference image pixels
+   pcl_bool        p_enableCFA;                   // work with monochrome input CFA frames to integrate an RGB color image
+   String          p_cfaPattern;                  // the CFA pattern, such as "RGGB", "GRBG", etc.
+   pcl_bool        p_enableRejection;             // enable pixel rejection
+   pcl_bool        p_enableImageWeighting;        // enable image weights
+   pcl_bool        p_enableSurfaceSplines;        // enable registration with surface splines
+   pcl_bool        p_enableLocalDistortion;       // enable registration with local distortion corrections
+   pcl_bool        p_enableLocalNormalization;    // enable local normalization for output
+   pcl_bool        p_enableAdaptiveNormalization; // enable adaptive normalization for output
+   pcl_bool        p_useROI;                      // use a region of interest
+   Rect            p_roi = 0;                     // region of interest
+   pcl_bool        p_closePreviousImages;         // close existing integration and weight images before running
+   pcl_bool        p_noGUIMessages;               // ### DEPRECATED
+   pcl_enum        p_onError;                     // error policy
 
    /*
     * Read-only output properties.
