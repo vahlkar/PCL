@@ -1862,7 +1862,7 @@ public:
     * For a mutable filter sample iterator, the class template argument F must
     * provide a function call operator of the form:
     *
-    * <tt>bool F::operator()( sample& v ) const</tt>
+    * \code bool F::operator()( sample& v ) const \endcode
     *
     * which returns true if the passed pixel sample value \a v is valid in the
     * context of the filter iterator. The filter iterator stores a private
@@ -2252,7 +2252,7 @@ public:
     * For an immutable filter sample iterator, the class template argument F
     * must provide a function call operator of the form:
     *
-    * <tt>bool F::operator()( const sample& v ) const</tt>
+    * \code bool F::operator()( const sample& v ) const \endcode
     *
     * which returns true if the passed pixel sample value \a v is valid in the
     * context of the filter iterator. The filter iterator stores a private
@@ -4671,7 +4671,7 @@ public:
     * For a mutable filter pixel iterator, the class template argument F must
     * provide a function call operator of the form:
     *
-    * <tt>bool F::operator()( const GenericVector\<sample*\>& f ) const</tt>
+    * \code bool F::operator()( const GenericVector\<sample*\>& f ) const \endcode
     *
     * Each component of the passed vector \a f is a pointer to a pixel sample
     * in the corresponding channel of the iterated image. The function call
@@ -5003,7 +5003,7 @@ public:
     * For an immutable filter pixel iterator, the class template argument F
     * must provide a function call operator of the form:
     *
-    * <tt>bool F::operator()( const GenericVector\<const sample*\>& f ) const</tt>
+    * \code bool F::operator()( const GenericVector\<const sample*\>& f ) const \endcode
     *
     * Each component of the passed vector \a f is a pointer to a constant pixel
     * sample in the corresponding channel of the iterated image. The function
@@ -14266,7 +14266,9 @@ __madNextSide:
     *
     * The intensity component I of an RGB pixel is given by:
     *
-    * <tt>I = (Max(R,G,B) + Min(R,G,B))/2</tt>
+    * <pre>
+    * I = (Max(R,G,B) + Min(R,G,B))/2
+    * </pre>
     *
     * where R, G and B are the red, green and blue components of the RGB pixel,
     * respectively.

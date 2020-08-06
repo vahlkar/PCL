@@ -113,12 +113,14 @@ namespace pcl
  *
  * The returned value can be one of:
  *
- *  0 : No SSE instructions supported \n
- *  1 : SSE instructions set supported \n
- *  2 : SSE2 instructions set supported \n
- *  3 : SSE3 instructions set supported \n
- * 41 : SSE4.1 instructions set supported \n
+ * <pre>
+ *  0 : No SSE instructions supported
+ *  1 : SSE instructions set supported
+ *  2 : SSE2 instructions set supported
+ *  3 : SSE3 instructions set supported
+ * 41 : SSE4.1 instructions set supported
  * 42 : SSE4.2 instructions set supported
+ * </pre>
  *
  * \ingroup hw_identification_functions
  */
@@ -201,9 +203,12 @@ inline bool IsNaN( float x )
  * number is an \e infinity.
  *
  * This function returns:
+ *
+ * <pre>
  * +1 if \a x is <em>positive infinity</em>.
  * -1 if \a x is <em>negative infinity</em>.
  *  0 if \a x is either NaN or a finite value.
+ * </pre>
  *
  * \ingroup fpclassification_functions
  * \sa IsFinite( float ), IsNaN( float )
@@ -257,9 +262,12 @@ inline bool IsNaN( double x )
  * number is an \e infinity.
  *
  * This function returns:
+ *
+ * <pre>
  * +1 if \a x is <em>positive infinity</em>.
  * -1 if \a x is <em>negative infinity</em>.
  *  0 if \a x is either NaN or a finite value.
+ * </pre>
  *
  * \ingroup fpclassification_functions
  * \sa IsFinite( double ), IsNaN( double )
@@ -625,7 +633,7 @@ template <typename T> inline void Frexp( T x, T& m, int& p )
 // ----------------------------------------------------------------------------
 
 /*!
- * Haversine function.
+ * Haversine function:
  *
  * <tt>Hav( x ) = (1 - Cos( x ))/2</tt>
  *
@@ -862,7 +870,9 @@ template <typename T> inline constexpr T Mod( T x, T y )
  * Horner's algorithm to evaluate the polynomial function with the specified
  * array \a c of \a n + 1 coefficients:
  *
- * <tt>y = c[0] + c[1]*x + c[2]*x**2 + ... + c[n]*x**n</tt>
+ * <pre>
+ * y = c[0] + c[1]*x + c[2]*x**2 + ... + c[n]*x**n
+ * </pre>
  *
  * The array \a c of coefficients must provide contiguous storage for at least
  * \a n + 1 values of type T. The degree \a n must be >= 0; otherwise this
@@ -885,7 +895,9 @@ template <typename T, typename C> inline T Poly( T x, C c, int n )
 /*!
  * Horner's algorithm to evaluate the polynomial function:
  *
- * <tt>y = c[0] + c[1]*x + c[2]*x**2 + ... + c[n]*x**n</tt>
+ * <pre>
+ * y = c[0] + c[1]*x + c[2]*x**2 + ... + c[n]*x**n
+ * </pre>
  *
  * The specified coefficients initializer list \a c must not be empty;
  * otherwise this function invokes undefined behavior.
@@ -903,9 +915,11 @@ template <typename T> inline T Poly( T x, std::initializer_list<T> c )
 /*!
  * Sign function:
  *
- * \li -1 if x < 0
- * \li 0 if x == 0
- * \li +1 if x > 0
+ * <pre>
+ * -1 if x &le; 0
+ *  0 if x = 0
+ * +1 if x &ge; 0
+ * </pre>
  *
  * \ingroup mathematical_functions
  */
@@ -919,9 +933,11 @@ template <typename T> inline constexpr int Sign( T x )
 /*!
  * Sign character:
  *
- * \li '-' if x < 0
- * \li ' ' if x == 0
- * \li '+' if x > 0
+ * <pre>
+ * '-' if x &le; 0
+ * ' ' if x = 0
+ * '+' if x &ge; 0
+ * </pre>
  *
  * \ingroup mathematical_functions
  */
@@ -1199,11 +1215,11 @@ template <typename T> inline int64 TruncI64( T x )
  *
  * When you know some of the arguments in advance, faster alternatives are:
  *
- * \li Use Pow10I<T>()( y ) when x == 10 and y is an integer
- * \li Use PowI( x, y ) when x != 10 and y is an integer
- * \li Use Pow10( y ) when x == 10 and y is not an integer
+ * \li Use <tt>Pow10I\<T\>()( y )</tt> when x == 10 and y is an integer
+ * \li Use <tt>PowI( x, y )</tt> when x != 10 and y is an integer
+ * \li Use <tt>Pow10( y )</tt> when x == 10 and y is not an integer
  *
- * Otherwise, you can also use: Pow2( y*Log2( x ) )
+ * Otherwise, you can also use: <tt>Pow2( y*Log2( x ) )</tt>
  *
  * \ingroup mathematical_functions
  */
@@ -1429,18 +1445,22 @@ inline long double Round( long double x )
  * This function follows the Banker's rounding rule: a perfect half is always
  * rounded to the nearest even digit. Some examples:
  *
+ * <pre>
  * RoundInt( 0.5 ) -> 0
  * RoundInt( 1.5 ) -> 2
  * RoundInt( 2.5 ) -> 2
  * RoundInt( 3.5 ) -> 4
+ * </pre>
  *
  * By contrast, arithmetic rounding rounds a perfect half to the nearest digit,
  * either odd or even. For example:
  *
+ * <pre>
  * RoundIntArithmetic( 0.5 ) -> 1
  * RoundIntArithmetic( 1.5 ) -> 2
  * RoundIntArithmetic( 2.5 ) -> 3
  * RoundIntArithmetic( 3.5 ) -> 4
+ * </pre>
  *
  * Banker's rounding (also known as Gaussian rounding) is statistically more
  * accurate than the usual arithmetic rounding, but it causes aliasing problems
@@ -1521,10 +1541,12 @@ template <typename T> inline int RoundIntBanker( T x )
  * Arithmetic rounding rounds a perfect half to the nearest digit, either odd
  * or even. For example:
  *
+ * <pre>
  * RoundIntArithmetic( 0.5 ) -> 1
  * RoundIntArithmetic( 1.5 ) -> 2
  * RoundIntArithmetic( 2.5 ) -> 3
  * RoundIntArithmetic( 3.5 ) -> 4
+ * </pre>
  *
  * See the RoundInt() function for more information on rounding rules.
  *
@@ -1616,10 +1638,12 @@ inline int64 RoundI64( double x )
  * Arithmetic rounding rounds a perfect half to the nearest digit, either odd
  * or even. For example:
  *
+ * <pre>
  * RoundIntArithmetic( 0.5 ) -> 1
  * RoundIntArithmetic( 1.5 ) -> 2
  * RoundIntArithmetic( 2.5 ) -> 3
  * RoundIntArithmetic( 3.5 ) -> 4
+ * </pre>
  *
  * See the RoundInt() function for more information on rounding rules.
  *
@@ -1767,7 +1791,7 @@ template <typename T> inline constexpr T ArcTanh( T x )
 // ----------------------------------------------------------------------------
 
 /*!
- * Inverse haversine (archaversine) function.
+ * Inverse haversine (archaversine) function:
  *
  * <tt>ArcHav( x ) = 2*ArcSin( Sqrt( x ) )</tt>
  *
@@ -1996,7 +2020,9 @@ inline void Rotate( T& x, T& y, T1 a, T2 xc, T2 yc )
  * Computes the norm of the elements in the sequence [i,j). For any real p > 0,
  * the norm N is given by:
  *
+ * <pre>
  * N = sum( abs( x )^p )^(1/p)
+ * </pre>
  *
  * for all x in [i,j).
  *
@@ -2058,24 +2084,24 @@ template <typename T> inline double Norm( const T* i, const T* j )
  * date and a day fraction, providing the result by its separate integer and
  * fractional parts.
  *
- * \param jdi     On output, the integer part of the resulting JD.
+ * \param[out] jdi   On output, the integer part of the resulting JD.
  *
- * \param jdf     On output, the fractional part of the resulting JD.
+ * \param[out] jdf   On output, the fractional part of the resulting JD.
  *
- * \param year    The year of the date. Positive and negative years are
- *                supported. Years are counted arithmetically: the year zero is
- *                the year before the year +1, that is, what historians call
- *                the year 1 B.C.
+ * \param year       The year of the date. Positive and negative years are
+ *                   supported. Years are counted arithmetically: the year zero
+ *                   is the year before the year +1, that is, what historians
+ *                   call the year 1 B.C.
  *
- * \param month   The month of the date. Usually in the [1,12] range but can be
- *                any integer number.
+ * \param month      The month of the date. Usually in the [1,12] range but can
+ *                   be any integer number.
  *
- * \param day     The day of the date. Usually in the [1,31] range but can be
- *                any integer number.
+ * \param day        The day of the date. Usually in the [1,31] range but can
+ *                   be any integer number.
  *
- * \param dayf    The day fraction. The default value is zero, which computes
- *                the JD at zero hours. Usually in the [0,1) range but can be
- *                any real number.
+ * \param dayf       The day fraction. The default value is zero, which
+ *                   computes the JD at zero hours. Usually in the [0,1) range
+ *                   but can be any real number.
  *
  * This routine, as well as JDToComplexTime(), implement modified versions of
  * the original algorithms due to Jean Meeus. Our modifications allow for
@@ -2214,15 +2240,19 @@ inline void JDToComplexTime( int& year, int& month, int& day, double& dayf, doub
  * Conversion of a decimal scalar \a d to the equivalent sexagesimal decimal
  * components \a sign, \a s1, \a s2 and \a s3, such that:
  *
+ * <pre>
  * d = sign * (s1 + (s2 + s3/60)/60)
+ * </pre>
  *
  * with the following constraints:
  *
- * sign = -1 iff d &lt; 0 \n
- * sign = +1 iff d &ge; 0 \n
- * 0 &le; s1 \n
- * 0 &le; s2 &lt; 60 \n
- * 0 &le; s3 &lt; 60 \n
+ * <pre>
+ * sign = -1 iff d &lt; 0
+ * sign = +1 iff d &ge; 0
+ * 0 &le; s1
+ * 0 &le; s2 &lt; 60
+ * 0 &le; s3 &lt; 60
+ * </pre>
  *
  * \ingroup mathematical_functions
  */
@@ -2242,7 +2272,9 @@ inline void DecimalToSexagesimal( int& sign, S1& s1, S2& s2, S3& s3, const D& d 
  * Conversion of the sexagesimal decimal components \a sign, \a s1, \a s2 and
  * \a s3 to their equivalent decimal scalar. The returned value is equal to:
  *
+ * <pre>
  * ((sign < 0) ? -1 : +1)*(Abs( s1 ) + (s2 + s3/60)/60);
+ * </pre>
  *
  * \ingroup mathematical_functions
  */
@@ -2879,7 +2911,7 @@ double PCL_FUNC OrderStatistic( const long double* i, const long double* j, dist
  * is unnecessary. The following type conversion operator must be publicly
  * defined for the type T:
  *
- * \code T::operator double() const; \endcode
+ * <\code> T::operator double() const; \endcode
  *
  * The quick selection algorithm is used to find the k-th element in the
  * ordered sequence.
@@ -3581,7 +3613,9 @@ template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* i, const T* 
 /*!
  * Returns the Sn scale estimator of Rousseeuw and Croux for a sequence [x,xn):
  *
+ * <pre>
  * Sn = c * low_median( high_median( |x_i - x_j| ) )
+ * </pre>
  *
  * where low_median() is the order statistic of rank (n + 1)/2, and
  * high_median() is the order statistic of rank n/2 + 1. n >= 2 is the number
@@ -3829,7 +3863,9 @@ inline double __pcl_whimed__( double* a, distance_type* iw, distance_type n,
 /*!
  * Returns the Qn scale estimator of Rousseeuw and Croux for a sequence [x,xn):
  *
+ * <pre>
  * Qn = c * first_quartile( |x_i - x_j| : i < j )
+ * </pre>
  *
  * where first_quartile() is the order statistic of rank (n + 1)/4. n >= 2 is
  * the number of elements in the sequence: n = xn - x.
@@ -4215,8 +4251,10 @@ double BendMidvariance( const T* x, const T* xn, double center, double beta = 0.
  * This implementation is adapted from original code by Lewis Van Winkle,
  * released under zlib license:
  *
+ * <pre>
  * https://codeplea.com/incomplete-beta-function-c
  * https://github.com/codeplea/incbeta
+ * </pre>
  *
  * Copyright (c) 2016, 2017 Lewis Van Winkle
  *
@@ -4294,21 +4332,27 @@ inline double IncompleteBeta( double a, double b, double x, double eps = 1.0e-8 
  *
  * Returns a 64-bit hash value computed from the input data block.
  *
+ * <pre>
  * Test vector: "The quick brown fox jumps over the lazy dog"
  * Hash64 checksum = 9a11f5e9468d7425
  *
  * Test vector: "" (empty string)\n
  * Hash64 checksum = ef46db3751d8e999
+ * </pre>
  *
  * This function implements the xxHash algorithm by Yann Collet. Our code is an
  * adaptation of the original code by the author:
  *
+ * <pre>
  * https://github.com/Cyan4973/xxHash
+ * </pre>
  *
- * Copyright (C) 2012-2014, Yann Collet.
+ * Copyright (C) 2012-2014, Yann Collet. \n
  * The original code has been released under the BSD 2-Clause License:
  *
+ * <pre>
  * http://www.opensource.org/licenses/bsd-license.php
+ * </pre>
  *
  * \ingroup hash_functions
  */
@@ -4442,21 +4486,27 @@ inline uint64 Hash64( const void* data, size_type size, uint64 seed = 0 )
  *
  * Returns a 32-bit hash value computed from the input data block.
  *
+ * <pre>
  * Test vector: "The quick brown fox jumps over the lazy dog"\n
  * Hash32 checksum = 752cd1b8
  *
  * Test vector: "" (empty string)\n
  * Hash32 checksum = 2cc5d05
+ * </pre>
  *
  * This function implements the xxHash algorithm by Yann Collet. Our code is an
  * adaptation of the original code by the author:
  *
+ * <pre>
  * https://github.com/Cyan4973/xxHash
+ * </pre>
  *
- * Copyright (C) 2012-2014, Yann Collet.
+ * Copyright (C) 2012-2014, Yann Collet. \n
  * The original code has been released under the BSD 2-Clause License:
  *
+ * <pre>
  * http://www.opensource.org/licenses/bsd-license.php
+ * </pre>
  *
  * \ingroup hash_functions
  */

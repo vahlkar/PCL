@@ -81,7 +81,7 @@ class PCL_CLASS XMLElement;
  * chain of subtasks on the PixInsight/PCL platform:
  *
  * \li 1. Demosaicing. Only required if the input data set has been mosaiced
- * with a color filter array, such as a Bayer filter.
+ * with a color filter array (CFA), such as a Bayer or X-Trans filter.
  *
  * \li 2. Image registration. Generates image alignment information in the form
  * of alignment matrices (projective transformations) and/or two-dimensional
@@ -281,8 +281,8 @@ public:
     * corresponding to the drizzle source image represented by this instance.
     *
     * The file identified by this function stores the input image of the image
-    * demosaicing (e.g., de-Bayering) task. This file can be used as input for
-    * a Bayer drizzle integration task.
+    * demosaicing task. This file can be used as input for a CFA drizzle
+    * integration task.
     *
     * \sa SetCFASourceFilePath(), CFASourcePattern()
     */
@@ -343,7 +343,7 @@ public:
     *
     * \note This file <em>should not</em> be used as input for drizzle
     * integration, since it has already been registered and interpolated. Use
-    * SourceFilePath() or CFASourceFilePath() as input for drizzle or Bayer
+    * SourceFilePath() or CFASourceFilePath() as input for drizzle or CFA
     * drizzle, respectively.
     *
     * \sa SetAlignmentTargetFilePath()
@@ -544,40 +544,43 @@ public:
    /*!
     * Stores a copy of the local distortion model in the specified arrays.
     *
-    * \param P1   Reference to an array of points where the function will store
-    *             a copy of the reference image coordinates of the local
-    *             distortion model.
+    * \param[out] P1    Reference to an array of points where the function will
+    *                   store a copy of the reference image coordinates of the
+    *                   local distortion model.
     *
-    * \param D2   Reference to an array of points where the function will store
-    *             a copy of the set of pixels displacements of the local
-    *             distortion model.
+    * \param[out] D2    Reference to an array of points where the function will
+    *                   store a copy of the set of pixels displacements of the
+    *                   local distortion model.
     *
-    * \param P2   Reference to an array of points where the function will store
-    *             a copy of the reference image coordinates of the inverse
-    *             local distortion model.
+    * \param[out] P2    Reference to an array of points where the function will
+    *                   store a copy of the reference image coordinates of the
+    *                   inverse local distortion model.
     *
-    * \param D1   Reference to an array of points where the function will store
-    *             a copy of the set of pixels displacements of the inverse
-    *             local distortion model.
+    * \param[out] D1    Reference to an array of points where the function will
+    *                   store a copy of the set of pixels displacements of the
+    *                   inverse local distortion model.
     *
-    * \param W    Reference to an array of scalars where the function will
-    *             store a copy of the set of statistical weights associated
-    *             with the local distortion model. This array can be empty if
-    *             the local distortion model is unweighted.
+    * \param[out] W     Reference to an array of scalars where the function
+    *                   will store a copy of the set of statistical weights
+    *                   associated with the local distortion model. This array
+    *                   can be empty if the local distortion model is
+    *                   unweighted.
     *
-    * \param order   Reference to a variable that will be assigned the
-    *             derivability order for surface interpolation generation.
-    *             Normally this is a surface spline derivative order.
+    * \param order      Reference to a variable that will be assigned the
+    *                   derivability order for surface interpolation
+    *                   generation. Normally this is a surface spline
+    *                   derivative order.
     *
     * \param regularization   Reference to a variable that will be assigned the
-    *             recommended regularization factor for surface interpolation
-    *             generation. Normally this is a thin plate spline smoothness
-    *             factor.
+    *                   recommended regularization factor for surface
+    *                   interpolation generation. Normally this is a thin plate
+    *                   spline smoothness factor.
     *
     * \param extrapolate   Reference to a variable that will be assigned true
-    *             if the local distortion model has to be extrapolated over the
-    *             entire reference image; false if the model can only be
-    *             interpolated within the containing rectangle of the set \a P.
+    *                   if the local distortion model has to be extrapolated
+    *                   over the entire reference image; false if the model can
+    *                   only be interpolated within the containing rectangle of
+    *                   the set \a P.
     *
     * If this instance does not transport a valid local distortion model, the
     * specified arrays \a P1, \a D2, \a P2 and \a D1 will be empty after
@@ -782,7 +785,7 @@ public:
     * regular integration task.
     *
     * \sa SetScale(), Location(), ReferenceLocation(),
-    * AdaptiveNormalizationScaleLow(), AdaptiveNormalizationScaleHigh()
+    * GetAdaptiveNormalizationScaleVectors()
     */
    const DVector& Scale() const
    {
@@ -798,7 +801,7 @@ public:
     * image represented by this instance. This function is reserved for image
     * integration tasks involved in drizzle integration processes.
     *
-    * \sa Scale(), SetLocation(), SetAdaptiveNormalizationScale()
+    * \sa Scale(), SetLocation(), SetAdaptiveNormalizationScaleVectors()
     */
    void SetScale( const DVector& v )
    {
@@ -870,19 +873,21 @@ public:
     * Provides the vectors of per-channel adaptive scale factors for the
     * drizzle source image represented by this instance.
     *
-    * \param sLow    Reference to a multivector where a copy of the set of low
-    *                adaptive scale factor vectors will be stored.
+    * \param[out] sLow     Reference to a multivector where a copy of the
+    *                      current set of low adaptive scale factor vectors
+    *                      will be stored.
     *
-    * \param sHigh   Reference to a multivector where a copy of the set of high
-    *                adaptive scale factor vectors will be stored.
+    * \param[out] sHigh    Reference to a multivector where a copy of the
+    *                      current set of high adaptive scale factor vectors
+    *                      will be stored.
     *
     * For a channel index c and position vector i on a given input drizzle
     * integration image, the adaptive normalization function is given by:
     *
-    * <tt>
-    * v'(c,i) = v(c,i) * (a*U(S0(c,i)) + (1-a)*U(S1(c,i))) \n
+    * <pre>
+    * v'(c,i) = v(c,i) * (a*U(S0(c,i)) + (1-a)*U(S1(c,i)))
     *                  + (a*U(Z0(c,i)) + (1-a)*U(Z1(c,i)))
-    * </tt>
+    * </pre>
     *
     * where:
     *
@@ -895,10 +900,10 @@ public:
     * v' is the resulting normalized pixel value,\n
     * a is an indicator function given by:
     *
-    * <tt>
-    * a = 1   if v(c,i) &le; U(L(c,i)) \n
+    * <pre>
+    * a = 1   if v(c,i) &le; U(L(c,i))
     * a = 0   if v(c,i) > U(L(c,i))
-    * </tt>
+    * </pre>
     *
     * and L is a matrix of adaptive location estimates.
     *
@@ -934,11 +939,13 @@ public:
     * Provides the vectors of per-channel adaptive zero offset coefficients for
     * the drizzle source image represented by this instance.
     *
-    * \param mLow    Reference to a multivector where a copy of the set of low
-    *                adaptive zero offset coefficient vectors will be stored.
+    * \param[out] mLow     Reference to a multivector where a copy of the
+    *                      current set of low adaptive zero offset coefficient
+    *                      vectors will be stored.
     *
-    * \param mHigh   Reference to a multivector where a copy of the set of high
-    *                adaptive zero offset coefficient vectors will be stored.
+    * \param[out] mHigh    Reference to a multivector where a copy of the
+    *                      current set of high adaptive zero offset coefficient
+    *                      vectors will be stored.
     *
     * See GetAdaptiveNormalizationScaleVectors() for a complete description of
     * the output adaptive normalization procedure.

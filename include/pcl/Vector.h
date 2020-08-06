@@ -1466,7 +1466,9 @@ public:
    /*!
     * Returns the Sn scale estimator of Rousseeuw and Croux:
     *
+    * <pre>
     * Sn = c * low_median( high_median( |x_i - x_j| ) )
+    * </pre>
     *
     * where low_median() is the order statistic of rank (n + 1)/2, and
     * high_median() is the order statistic of rank n/2 + 1.
@@ -1493,7 +1495,9 @@ public:
    /*!
     * Returns the Qn scale estimator of Rousseeuw and Croux:
     *
+    * <pre>
     * Qn = c * first_quartile( |x_i - x_j| : i < j )
+    * </pre>
     *
     * where first_quartile() is the order statistic of rank (n + 1)/4.
     *

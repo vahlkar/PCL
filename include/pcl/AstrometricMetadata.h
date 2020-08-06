@@ -314,7 +314,7 @@ public:
    }
 
 #ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
-   // Implemented in /core/Components/ImageWindow.cpp
+   // Implemented in /core/Components/ImageWindow/ImageWindow.cpp
    void Write( pi::ImageWindow* window, bool notify = true ) const;
 #else
    /*!
@@ -571,15 +571,16 @@ public:
    /*!
     * Transformation from image coordinates to celestial coordinates.
     *
-    * \param pRD  Reference to a point where the output equatorial spherical
-    *             coordinates will be stored, expressed in degrees. \a pRD.x
-    *             will be the right ascension and \a pRD.y the declination.
-    *             Output right ascensions are constrained to the [0,360)
-    *             range. Output declinations are in the range [-90,+90].
+    * \param[out] pRD   Reference to a point where the output equatorial
+    *                   spherical coordinates will be stored, expressed in
+    *                   degrees. \a pRD.x will be the right ascension and
+    *                   \a pRD.y the declination. Output right ascensions are
+    *                   constrained to the [0,360) range. Output declinations
+    *                   are in the range [-90,+90].
     *
-    * \param pI   Input image coordinates in pixels. The specified location can
-    *             legally lie outside of the image bounds defined by
-    *             [0,0]-[Width(),Height()].
+    * \param pI         Input image coordinates in pixels. The specified
+    *                   location can legally lie outside the image bounds
+    *                   defined by [0,0]-[Width(),Height()].
     *
     * Returns true iff the specified point \a pI can be projected on the
     * celestial sphere using this astrometric solution.
@@ -606,15 +607,16 @@ public:
     * Transformation from image coordinates to celestial coordinates, without
     * enforcing a valid range of right ascensions.
     *
-    * \param pRD  Reference to a point where the output equatorial spherical
-    *             coordinates will be stored, expressed in degrees. \a pRD.x
-    *             will be the right ascension and \a pRD.y the declination.
-    *             Output right ascensions are \e not constrained to the [0,360)
-    *             range. Output declinations are in the range [-90,+90].
+    * \param[out] pRD   Reference to a point where the output equatorial
+    *                   spherical coordinates will be stored, expressed in
+    *                   degrees. \a pRD.x will be the right ascension and
+    *                   \a pRD.y the declination. Output right ascensions are
+    *                   \e not constrained to the [0,360) range. Output
+    *                   declinations are in the range [-90,+90].
     *
-    * \param pI   Input image coordinates in pixels. The specified location can
-    *             legally lie outside of the image bounds defined by
-    *             [0,0]-[Width(),Height()].
+    * \param pI         Input image coordinates in pixels. The specified
+    *                   location can legally lie outside the image bounds
+    *                   defined by [0,0]-[Width(),Height()].
     *
     * Returns true iff the specified point \a pI can be projected on the
     * celestial sphere using this astrometric solution.
@@ -637,11 +639,12 @@ public:
    /*!
     * Transformation from celestial coordinates to image coordinates.
     *
-    * \param pI   Reference to a point where the output image coordinates will
-    *             be stored.
+    * \param[out] pI    Reference to a point where the output image coordinates
+    *                   will be stored.
     *
-    * \param pRD  Input equatorial spherical coordinates expressed in degrees.
-    *             \a pRD.x is the right ascension and \a pRD.y is declination.
+    * \param pRD        Input equatorial spherical coordinates expressed in
+    *                   degrees. \a pRD.x is the right ascension and \a pRD.y
+    *                   is declination.
     *
     * Returns true iff the specified celestial coordinates can be reprojected
     * on the image coordinate system. Note that the output image coordinates
@@ -688,18 +691,20 @@ public:
     * The following standard XISF properties will be extracted from the
     * specified \a properties array, if available:
     *
-    * \c Observation:Center:RA \n
-    * \c Observation:Center:Dec \n
-    * \c Observation:Equinox \n
-    * \c Observation:Time:Start \n
-    * \c Observation:Time:End \n
-    * \c Observation:Location:Longitude \n
-    * \c Observation:Location:Latitude \n
-    * \c Observation:Location:Elevation \n
-    * \c Instrument:Telescope:FocalLength \n
-    * \c Instrument:Sensor:XPixelSize \n
+    * <pre>
+    * Observation:Center:RA
+    * Observation:Center:Dec
+    * Observation:Equinox
+    * Observation:Time:Start
+    * Observation:Time:End
+    * Observation:Location:Longitude
+    * Observation:Location:Latitude
+    * Observation:Location:Elevation
+    * Instrument:Telescope:FocalLength
+    * Instrument:Sensor:XPixelSize
+    * </pre>
     *
-    * XISF properties will take precedence over equivalent FITS keywords.
+    * %XISF properties will take precedence over equivalent %FITS keywords.
     *
     * If the specified \a controlPoints array contains a valid serialization of
     * spline control points, the astrometric solution will use a high-precision
@@ -726,23 +731,25 @@ public:
     * observational keywords, as well as some customary nonstandard keywords,
     * included for compatibility with third-party applications:
     *
-    * \c RA \n
-    * \c OBJCTRA \n
-    * \c DEC \n
-    * \c OBJCTDEC \n
-    * \c DATE-OBS \n
-    * \c DATE-END \n
-    * \c OBSGEO-L \n
-    * \c LONG-OBS \n
-    * \c OBSGEO-B \n
-    * \c LAT-OBS \n
-    * \c OBSGEO-H \n
-    * \c ALT-OBS \n
-    * \c EQUINOX \n
-    * \c FOCALLEN \n
-    * \c XPIXSZ \n
-    * \c YPIXSZ \n
-    * \c PIXSIZE \n
+    * <pre>
+    * RA
+    * OBJCTRA
+    * DEC
+    * OBJCTDEC
+    * DATE-OBS
+    * DATE-END
+    * OBSGEO-L
+    * LONG-OBS
+    * OBSGEO-B
+    * LAT-OBS
+    * OBSGEO-H
+    * ALT-OBS
+    * EQUINOX
+    * FOCALLEN
+    * XPIXSZ
+    * YPIXSZ
+    * PIXSIZE
+    * </pre>
     *
     * Keywords are updated when the corresponding metadata items are available.
     */
@@ -752,32 +759,36 @@ public:
     * Updates the specified \a keywords array with the set of standard WCS FITS
     * header keywords:
     *
-    * \c EQUINOX \n
-    * \c CTYPE1 \n
-    * \c CTYPE2 \n
-    * \c CRVAL1 \n
-    * \c CRVAL2 \n
-    * \c CRPIX1 \n
-    * \c CRPIX2 \n
-    * \c CD1_1 \n
-    * \c CD1_2 \n
-    * \c CD2_1 \n
-    * \c CD2_2 \n
-    * \c CDELT1 \n
-    * \c CDELT2 \n
-    * \c CROTA1 \n
-    * \c CROTA2 \n
-    * \c PV1_1 \n
-    * \c PV1_2 \n
-    * \c PV1_3 \n
-    * \c LONPOLE \n
-    * \c PV1_4 \n
-    * \c LATPOLE \n
+    * <pre>
+    * EQUINOX
+    * CTYPE1
+    * CTYPE2
+    * CRVAL1
+    * CRVAL2
+    * CRPIX1
+    * CRPIX2
+    * CD1_1
+    * CD1_2
+    * CD2_1
+    * CD2_2
+    * CDELT1
+    * CDELT2
+    * CROTA1
+    * CROTA2
+    * PV1_1
+    * PV1_2
+    * PV1_3
+    * LONPOLE
+    * PV1_4
+    * LATPOLE
+    * </pre>
     *
     * In addition, a custom nonstandard keyword is also generated to signal the
     * availability of a spline-based astrometric solution:
     *
-    * \c REFSPLIN \n
+    * <pre>
+    * REFSPLIN
+    * </pre>
     */
    void UpdateWCSKeywords( FITSKeywordArray& keywords ) const;
 
@@ -787,73 +798,83 @@ public:
     *
     * The following standard XISF properties will be created or redefined:
     *
-    * \c Instrument:Telescope:FocalLength \n
-    * \c Instrument:Sensor:XPixelSize \n
-    * \c Instrument:Sensor:YPixelSize \n
-    * \c Observation:Center:RA \n
-    * \c Observation:Center:Dec \n
-    * \c Observation:CelestialReferenceSystem \n
-    * \c Observation:Equinox \n
+    * <pre>
+    * Instrument:Telescope:FocalLength
+    * Instrument:Sensor:XPixelSize
+    * Instrument:Sensor:YPixelSize
+    * Observation:Center:RA
+    * Observation:Center:Dec
+    * Observation:CelestialReferenceSystem
+    * Observation:Equinox
+    * </pre>
     *
     * The following properties can be removed if the transformation is valid,
     * since the default coordinate reference point is the geometric center of
     * the image, which is used to calculate the values of the standard
     * \c Observation:Center:RA and \c Observation:Center:Dec properties:
     *
-    * \c Observation:Center:X \n
-    * \c Observation:Center:Y \n
+    * <pre>
+    * Observation:Center:X
+    * Observation:Center:Y
+    * </pre>
     *
     * The following properties will be created or redefined if the
     * corresponding metadata items are available, or removed otherwise:
     *
-    * \c Observation:Time:Start \n
-    * \c Observation:Time:End \n
-    * \c Observation:Location:Longitude \n
-    * \c Observation:Location:Latitude \n
-    * \c Observation:Location:Elevation \n
+    * <pre>
+    * Observation:Time:Start
+    * Observation:Time:End
+    * Observation:Location:Longitude
+    * Observation:Location:Latitude
+    * Observation:Location:Elevation
+    * </pre>
     *
     * In addition, the following nonstandard property, used by platform image
     * plate solving scripts, will be created, redefined, or removed:
     *
-    * \c Transformation_ImageToProjection
+    * <pre>
+    * Transformation_ImageToProjection
+    * </pre>
     */
    void UpdateProperties( PropertyArray& properties ) const;
 
    /*!
     * Removes astrometry-related FITS header keywords from the specified
     * \a keywords array. This includes some basic instrumental and
-    * observational keywords, as well as standard WCS keywords:
+    * observational keywords, as well as the following keywords:
     *
-    * \c RA \n
-    * \c OBJCTRA \n
-    * \c DEC \n
-    * \c OBJCTDEC \n
-    * \c FOCALLEN \n
-    * \c XPIXSZ \n
-    * \c YPIXSZ \n
-    * \c PIXSIZE \n
-    * \c EQUINOX \n
-    * \c CTYPE1 \n
-    * \c CTYPE2 \n
-    * \c CRVAL1 \n
-    * \c CRVAL2 \n
-    * \c CRPIX1 \n
-    * \c CRPIX2 \n
-    * \c CD1_1 \n
-    * \c CD1_2 \n
-    * \c CD2_1 \n
-    * \c CD2_2 \n
-    * \c CDELT1 \n
-    * \c CDELT2 \n
-    * \c CROTA1 \n
-    * \c CROTA2 \n
-    * \c PV1_1 \n
-    * \c PV1_2 \n
-    * \c PV1_3 \n
-    * \c LONPOLE \n
-    * \c PV1_4 \n
-    * \c LATPOLE \n
-    * \c REFSPLIN \n
+    * <pre>
+    * RA
+    * OBJCTRA
+    * DEC
+    * OBJCTDEC
+    * FOCALLEN
+    * XPIXSZ
+    * YPIXSZ
+    * PIXSIZE
+    * EQUINOX
+    * CTYPE1
+    * CTYPE2
+    * CRVAL1
+    * CRVAL2
+    * CRPIX1
+    * CRPIX2
+    * CD1_1
+    * CD1_2
+    * CD2_1
+    * CD2_2
+    * CDELT1
+    * CDELT2
+    * CROTA1
+    * CROTA2
+    * PV1_1
+    * PV1_2
+    * PV1_3
+    * LONPOLE
+    * PV1_4
+    * LATPOLE
+    * REFSPLIN
+    * </pre>
     */
    static void RemoveKeywords( FITSKeywordArray& keywords );
 
@@ -862,15 +883,17 @@ public:
     * \a properties array. This includes some basic instrumental and
     * observational XISF properties:
     *
-    * \c Instrument:Telescope:FocalLength \n
-    * \c Instrument:Sensor:XPixelSize \n
-    * \c Instrument:Sensor:YPixelSize \n
-    * \c Observation:Center:RA \n
-    * \c Observation:Center:Dec \n
-    * \c Observation:Center:X \n
-    * \c Observation:Center:Y \n
-    * \c Observation:CelestialReferenceSystem \n
-    * \c Observation:Equinox \n
+    * <pre>
+    * Instrument:Telescope:FocalLength
+    * Instrument:Sensor:XPixelSize
+    * Instrument:Sensor:YPixelSize
+    * Observation:Center:RA
+    * Observation:Center:Dec
+    * Observation:Center:X
+    * Observation:Center:Y
+    * Observation:CelestialReferenceSystem
+    * Observation:Equinox
+    * </pre>
     *
     * In addition, the following nonstandard property, used by platform image
     * plate solving scripts, will be removed:

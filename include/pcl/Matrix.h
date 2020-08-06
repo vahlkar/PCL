@@ -1459,11 +1459,11 @@ public:
     * as seen looking towards the origin from positive x. The applied
     * transformation can be represented by the matrix:
     *
-    * \verbatim
+    * <pre>
     * 1     0        0
     * 0   +cphi   +sphi
     * 0   -sphi   +cphi
-    * \endverbatim
+    * </pre>
     *
     * If this matrix has dimensions different from 3 rows and 3 columns, this
     * function invokes undefined behavior. For the sake of performance, this
@@ -1539,11 +1539,11 @@ public:
     * as seen looking towards the origin from positive y. The applied
     * transformation can be represented by the matrix:
     *
-    * \verbatim
+    * <pre>
     * +cphi  0  -sphi
     *   0    1    0
     * +sphi  0  +cphi
-    * \endverbatim
+    * </pre>
     *
     * If this matrix has dimensions different from 3 rows and 3 columns, this
     * function invokes undefined behavior. For the sake of performance, this
@@ -1619,11 +1619,11 @@ public:
     * as seen looking towards the origin from positive z. The applied
     * transformation can be represented by the matrix:
     *
-    * \verbatim
+    * <pre>
     * +cphi  +sphi  0
     * -sphi  +cphi  0
     *   0      0    1
-    * \endverbatim
+    * </pre>
     *
     * If this matrix has dimensions different from 3 rows and 3 columns, this
     * function invokes undefined behavior. For the sake of performance, this
@@ -2388,7 +2388,9 @@ public:
    /*!
     * Returns the Sn scale estimator of Rousseeuw and Croux:
     *
+    * <pre>
     * Sn = c * low_median( high_median( |x_i - x_j| ) )
+    * </pre>
     *
     * where low_median() is the order statistic of rank (n + 1)/2, and
     * high_median() is the order statistic of rank n/2 + 1.
@@ -2415,7 +2417,9 @@ public:
    /*!
     * Returns the Qn scale estimator of Rousseeuw and Croux:
     *
+    * <pre>
     * Qn = c * first_quartile( |x_i - x_j| : i < j )
+    * </pre>
     *
     * where first_quartile() is the order statistic of rank (n + 1)/4.
     *
