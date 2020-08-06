@@ -804,13 +804,23 @@ public:
    {
    }
 
-   PCL_HOT_FUNCTION double operator()( int n, int c )
+   PCL_HOT_FUNCTION float operator()( int n, int c )
    {
-      cache_impl::const_iterator i = m_cache.Search( Item{ n, c, 0 } );
-      if ( i != m_cache.End() )
-         return i->lambda;
-      double l = IntegrationRejectionEngine::ESDLambda( n, c, m_alpha );
-      m_cache << Item{ n, c, l };
+      uint32 key = Key( n, c );
+      if ( m_cache.Length() > 8 )
+      {
+         cache_impl::const_iterator i = BinarySearch( m_cache.Begin(), m_cache.End(), key );
+         if ( i != m_cache.End() )
+            return i->lambda;
+      }
+      else
+      {
+         for ( const Item& item : m_cache )
+            if ( item.key == key )
+               return item.lambda;
+      }
+      float l = float( IntegrationRejectionEngine::ESDLambda( n, c, m_alpha ) );
+      m_cache << Item{ key, l };
       return l;
    }
 
@@ -818,20 +828,29 @@ private:
 
    struct Item
    {
-      int    n; // total items
-      int    c; // rejected items
-      double lambda;
+      uint32 key;
+      float  lambda;
 
-      bool operator ==( const Item& i ) const
+      friend bool operator <( const Item& i, const Item& j )
       {
-         return n == i.n && c == i.c;
+         return i.key < j.key;
       }
 
-      bool operator <( const Item& i ) const
+      friend bool operator <( const Item& i, uint32 k )
       {
-         return (n != i.n) ? n < i.n : c < i.c;
+         return i.key < k;
+      }
+
+      friend bool operator <( uint32 k, const Item& i )
+      {
+         return k < i.key;
       }
    };
+
+   static uint32 Key( int n, int c )
+   {
+      return (uint32( n ) << 16) | uint32( c );
+   }
 
    typedef SortedArray<Item>  cache_impl;
 
