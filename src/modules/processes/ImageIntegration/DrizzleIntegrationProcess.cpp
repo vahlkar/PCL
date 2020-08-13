@@ -94,6 +94,7 @@ DrizzleIntegrationProcess::DrizzleIntegrationProcess()
    new DZROIX1( this );
    new DZROIY1( this );
    new DZClosePreviousImages( this );
+   new DZTruncateOnOutOfRange( this );
    new DZNoGUIMessages( this );
    new DZOnError( this );
 

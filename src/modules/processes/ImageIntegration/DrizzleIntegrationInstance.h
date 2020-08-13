@@ -122,6 +122,7 @@ private:
    pcl_bool        p_useROI;                      // use a region of interest
    Rect            p_roi = 0;                     // region of interest
    pcl_bool        p_closePreviousImages;         // close existing integration and weight images before running
+   pcl_bool        p_truncateOnOutOfRange;        // if the output image is out of [0,1], truncate instead of rescaling
    pcl_bool        p_noGUIMessages;               // ### DEPRECATED
    pcl_enum        p_onError;                     // error policy
 

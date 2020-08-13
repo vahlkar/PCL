@@ -83,6 +83,7 @@ DZROIY0*                       TheDZROIY0Parameter = nullptr;
 DZROIX1*                       TheDZROIX1Parameter = nullptr;
 DZROIY1*                       TheDZROIY1Parameter = nullptr;
 DZClosePreviousImages*         TheDZClosePreviousImagesParameter = nullptr;
+DZTruncateOnOutOfRange*        TheDZTruncateOnOutOfRangeParameter = nullptr;
 DZNoGUIMessages*               TheDZNoGUIMessagesParameter = nullptr;
 DZOnError*                     TheDZOnErrorParameter = nullptr;
 
@@ -676,6 +677,23 @@ IsoString DZClosePreviousImages::Id() const
 }
 
 bool DZClosePreviousImages::DefaultValue() const
+{
+   return false;
+}
+
+// ----------------------------------------------------------------------------
+
+DZTruncateOnOutOfRange::DZTruncateOnOutOfRange( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheDZTruncateOnOutOfRangeParameter = this;
+}
+
+IsoString DZTruncateOnOutOfRange::Id() const
+{
+   return "truncateOnOutOfRange";
+}
+
+bool DZTruncateOnOutOfRange::DefaultValue() const
 {
    return false;
 }

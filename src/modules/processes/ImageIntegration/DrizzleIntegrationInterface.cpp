@@ -316,6 +316,7 @@ void DrizzleIntegrationInterface::UpdateIntegrationControls()
    GUI->EnableLocalDistortion_CheckBox.SetChecked( m_instance.p_enableLocalDistortion );
    GUI->EnableLocalNormalization_CheckBox.SetChecked( m_instance.p_enableLocalNormalization );
    GUI->EnableAdaptiveNormalization_CheckBox.SetChecked( m_instance.p_enableAdaptiveNormalization );
+   GUI->TruncateOnOutOfRange_CheckBox.SetChecked( m_instance.p_truncateOnOutOfRange );
    GUI->ClosePreviousImages_CheckBox.SetChecked( m_instance.p_closePreviousImages );
 
    bool integrated = DZKernelFunction::IsIntegratedKernel( m_instance.p_kernelFunction );
@@ -607,6 +608,10 @@ void DrizzleIntegrationInterface::e_Click( Button& sender, bool checked )
    else if ( sender == GUI->EnableAdaptiveNormalization_CheckBox )
    {
       m_instance.p_enableAdaptiveNormalization = checked;
+   }
+   else if ( sender == GUI->TruncateOnOutOfRange_CheckBox )
+   {
+      m_instance.p_truncateOnOutOfRange = checked;
    }
    else if ( sender == GUI->ClosePreviousImages_CheckBox )
    {
@@ -996,10 +1001,10 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
 
    const char* kernelFunctionToolTip = "<p>Drizzle drop kernel function. This parameter defines the shape of an input "
       "drop as a two-dimensional surface function. Square and circular kernels are applied by computing the area of the "
-      "intersection between each drop and the projected output pixel. Gaussian and VariableShape kernels are applied by "
+      "intersection between each drop and the projected output pixel. Gaussian and variable shape kernels are applied by "
       "computing the double integral of the surface function over the intersection between the drop and the projected output "
       "pixel on the XY plane. Square kernels are used by default.</p>"
-      "<p>Gaussian and VariableShape drizzle kernels (the latter providing finer control on function profiles) can be used "
+      "<p>Gaussian and variable shape drizzle kernels (the latter providing finer control on function profiles) can be used "
       "to improve resolution of the integrated image. However, these functions tend to require much more and much better "
       "dithered data than the standard square and circular kernels to achieve optimal results.</p>";
 
@@ -1011,12 +1016,12 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    KernelFunction_ComboBox.AddItem( "Square" );
    KernelFunction_ComboBox.AddItem( "Circular" );
    KernelFunction_ComboBox.AddItem( "Gaussian" );
-   KernelFunction_ComboBox.AddItem( "VariableShape, k = 1" );
-   KernelFunction_ComboBox.AddItem( "VariableShape, k = 1.5" );
-   KernelFunction_ComboBox.AddItem( "VariableShape, k = 3" );
-   KernelFunction_ComboBox.AddItem( "VariableShape, k = 4" );
-   KernelFunction_ComboBox.AddItem( "VariableShape, k = 5" );
-   KernelFunction_ComboBox.AddItem( "VariableShape, k = 6" );
+   KernelFunction_ComboBox.AddItem( u"VarShape, \x03b2 = 1" );
+   KernelFunction_ComboBox.AddItem( u"VarShape, \x03b2 = 1.5" );
+   KernelFunction_ComboBox.AddItem( u"VarShape, \x03b2 = 3" );
+   KernelFunction_ComboBox.AddItem( u"VarShape, \x03b2 = 4" );
+   KernelFunction_ComboBox.AddItem( u"VarShape, \x03b2 = 5" );
+   KernelFunction_ComboBox.AddItem( u"VarShape, \x03b2 = 6" );
 
    KernelFunction_ComboBox.SetToolTip( kernelFunctionToolTip );
    KernelFunction_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&DrizzleIntegrationInterface::e_ItemSelected, w );
@@ -1026,7 +1031,7 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    KernelFunction_Sizer.Add( KernelFunction_ComboBox );
    KernelFunction_Sizer.AddStretch();
 
-   const char* gridSizeToolTip = "<p>When Gaussian and VariableShape drizzle kernel functions are used, this parameter defines "
+   const char* gridSizeToolTip = "<p>When Gaussian and variable shape drizzle kernel functions are used, this parameter defines "
       "the number of discrete function values computed to approximate the double integral of the kernel surface function. More "
       "function evaluations improve the accuracy of numerical integration at the cost of more computational work. The default "
       "value of this parameter is 16, meaning that 16*16=256 function values are computed to integrate drizzle kernel functions.</p>";
@@ -1150,6 +1155,22 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    EnableAdaptiveNormalization_Sizer.Add( EnableAdaptiveNormalization_CheckBox );
    EnableAdaptiveNormalization_Sizer.AddStretch();
 
+   TruncateOnOutOfRange_CheckBox.SetText( "Truncate on out-of-range" );
+   TruncateOnOutOfRange_CheckBox.SetToolTip( "<p>If the output integrated image has saturated pixel samples out of "
+      "the nominal [0,1] range, truncate them instead of rescaling the whole image.</p>"
+      "<p>No out-of-range values should occur after integration of a well-calibrated data set under normal conditions. "
+      "However, sometimes saturated pixels may lead to out-of-range values after output normalization, depending on "
+      "the frame selected as integration reference.</p>"
+      "<p>When this happens, the best option for integration of light or science frames is a linear rescaling, which "
+      "preserves all of the integrated data. However, in some cases altering all pixel values is not admissible, so a "
+      "rescaling operation is not applicable. In such cases truncation is the only option available to preserve the "
+      "correct illumination profile in the integrated result.</p>" );
+   TruncateOnOutOfRange_CheckBox.OnClick( (Button::click_event_handler)&DrizzleIntegrationInterface::e_Click, w );
+
+   TruncateOnOutOfRange_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   TruncateOnOutOfRange_Sizer.Add( TruncateOnOutOfRange_CheckBox );
+   TruncateOnOutOfRange_Sizer.AddStretch();
+
    ClosePreviousImages_CheckBox.SetText( "Close previous images" );
    ClosePreviousImages_CheckBox.SetToolTip( "<p>Select this option to close existing drizzle integration and weight images "
       "before running a new integration process. This is useful to avoid accumulation of multiple results on the workspace, "
@@ -1173,6 +1194,7 @@ DrizzleIntegrationInterface::GUIData::GUIData( DrizzleIntegrationInterface& w )
    Integration_Sizer.Add( EnableLocalDistortion_Sizer );
    Integration_Sizer.Add( EnableLocalNormalization_Sizer );
    Integration_Sizer.Add( EnableAdaptiveNormalization_Sizer );
+   Integration_Sizer.Add( TruncateOnOutOfRange_Sizer );
    Integration_Sizer.Add( ClosePreviousImages_Sizer );
 
    Integration_Control.SetSizer( Integration_Sizer );

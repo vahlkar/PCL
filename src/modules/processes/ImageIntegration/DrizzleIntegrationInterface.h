@@ -157,6 +157,8 @@ private:
             CheckBox          EnableLocalNormalization_CheckBox;
          HorizontalSizer   EnableAdaptiveNormalization_Sizer;
             CheckBox          EnableAdaptiveNormalization_CheckBox;
+         HorizontalSizer   TruncateOnOutOfRange_Sizer;
+            CheckBox          TruncateOnOutOfRange_CheckBox;
          HorizontalSizer   ClosePreviousImages_Sizer;
             CheckBox          ClosePreviousImages_CheckBox;
 

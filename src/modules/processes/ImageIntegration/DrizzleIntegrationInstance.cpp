@@ -450,6 +450,7 @@ DrizzleIntegrationInstance::DrizzleIntegrationInstance( const MetaProcess* m )
    , p_enableAdaptiveNormalization( TheDZEnableAdaptiveNormalizationParameter->DefaultValue() )
    , p_useROI( TheDZUseROIParameter->DefaultValue() )
    , p_closePreviousImages( TheDZClosePreviousImagesParameter->DefaultValue() )
+   , p_truncateOnOutOfRange( TheDZTruncateOnOutOfRangeParameter->DefaultValue() )
    , p_noGUIMessages( TheDZNoGUIMessagesParameter->DefaultValue() ) // ### DEPRECATED
    , p_onError( DZOnError::Default )
 {
@@ -489,6 +490,7 @@ void DrizzleIntegrationInstance::Assign( const ProcessImplementation& p )
       p_useROI                      = x->p_useROI;
       p_roi                         = x->p_roi;
       p_closePreviousImages         = x->p_closePreviousImages;
+      p_truncateOnOutOfRange        = x->p_truncateOnOutOfRange;
       p_noGUIMessages               = x->p_noGUIMessages;
       p_onError                     = x->p_onError;
       o_output                      = x->o_output;
@@ -1403,11 +1405,40 @@ private:
       m_instance.o_output.outputRangeLow = rmin;
       m_instance.o_output.outputRangeHigh = rmax;
 
-      if ( rmax > 1 )
+      if ( rmin < 0 || rmax > 1 )
       {
-         Console().NoteLn( "<end><cbr><br>* Normalizing output image. Integration range: "
-                           + String().Format( "[%.8e,%.8e]", rmin, rmax ) );
-         result /= rmax;
+         Console().NoteLn( "<end><cbr><br>* "
+            + String( m_instance.p_truncateOnOutOfRange ? "Truncating" : ((rmin < 0) ? "Rescaling" : "Normalizing") )
+            + " output image. Integration range: "
+            + String().Format( "[%.8e,%.8e]", rmin, rmax ) );
+
+         if ( m_instance.p_truncateOnOutOfRange )
+         {
+            /*
+             * Truncate to [0,1]
+             *
+             * x' = max( 0, min( x, 1 ) )
+             */
+            result.Truncate();
+         }
+         else if ( rmin < 0 )
+         {
+            /*
+             * Rescale to [0,1], including an additive term:
+             *
+             * x' = (x - low)/(high - low)
+             */
+            result.Rescale();
+         }
+         else
+         {
+            /*
+             * Normalize to [0,1], purely multiplicative:
+             *
+             * x' = x/high
+             */
+            result /= rmax;
+         }
       }
    }
 };
@@ -2033,6 +2064,8 @@ void* DrizzleIntegrationInstance::LockParameter( const MetaParameter* p, size_ty
       return &p_roi.y1;
    if ( p == TheDZClosePreviousImagesParameter )
       return &p_closePreviousImages;
+   if ( p == TheDZTruncateOnOutOfRangeParameter )
+      return &p_truncateOnOutOfRange;
    if ( p == TheDZNoGUIMessagesParameter )
       return &p_noGUIMessages; // ### DEPRECATED
    if ( p == TheDZOnErrorParameter )

@@ -1591,10 +1591,10 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    SubtractPedestals_Sizer.AddStretch();
 
    TruncateOnOutOfRange_CheckBox.SetText( "Truncate on out-of-range" );
-   TruncateOnOutOfRange_CheckBox.SetToolTip( "<p>If the output integrated image has saturated pixel samples "
-      "out of the nominal [0,1] range, truncate them instead of rescaling the whole image.</p>"
-      "<p>No out-of-range values should occur after integration of a well-calibrated data set. However, with improperly "
-      "calibrated data, saturated pixels may lead to out-of-range values after output normalization, depending on "
+   TruncateOnOutOfRange_CheckBox.SetToolTip( "<p>If the output integrated image has saturated pixel samples out of "
+      "the nominal [0,1] range, truncate them instead of rescaling the whole image.</p>"
+      "<p>No out-of-range values should occur after integration of a well-calibrated data set under normal conditions. "
+      "However, sometimes saturated pixels may lead to out-of-range values after output normalization, depending on "
       "the frame selected as integration reference.</p>"
       "<p>When this happens, the best option for integration of light or science frames is a linear rescaling, which "
       "preserves all of the integrated data. However, in some cases altering all pixel values is not admissible, so a "

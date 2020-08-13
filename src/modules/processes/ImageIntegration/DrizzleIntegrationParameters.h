@@ -463,6 +463,20 @@ extern DZClosePreviousImages* TheDZClosePreviousImagesParameter;
 
 // ----------------------------------------------------------------------------
 
+class DZTruncateOnOutOfRange : public MetaBoolean
+{
+public:
+
+   DZTruncateOnOutOfRange( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern DZTruncateOnOutOfRange* TheDZTruncateOnOutOfRangeParameter;
+
+// ----------------------------------------------------------------------------
+
 class DZNoGUIMessages : public MetaBoolean
 {
 public:
