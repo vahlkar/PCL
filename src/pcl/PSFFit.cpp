@@ -798,6 +798,23 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
    }
 
    /*
+    * First sanity check.
+    */
+   if ( psf )
+      if (  !IsFinite( P[0] )                                  // B
+         || !IsFinite( P[1] ) || 1 + P[1] == 1 || P[1] < 0     // A
+         || !IsFinite( P[2] )                                  // x0
+         || !IsFinite( P[3] )                                  // y0
+         || !IsFinite( P[4] ) || 1 + P[4] == 1                 // sx
+         || !circular && (!IsFinite( P[5] ) || 1 + P[5] == 1)  // sy
+         || !circular && !IsFinite( P[6] )                     // theta
+         || function != PSFunction::Gaussian && (!IsFinite( P[ibeta] ) || 1 + P[ibeta] == 1 || P[ibeta] < 0) )
+      {
+         psf = PSFData();
+         psf.status = PSFFitStatus::Invalid;
+      }
+
+   /*
     * For Moffat functions with a variable beta parameter and variable shape
     * functions, a bad fit can go wildly unstable on this parameter, so we have
     * to impose a reasonable maximum value.
@@ -928,10 +945,11 @@ PSFFit::PSFFit( const ImageVariant& image, const DPoint& pos, const DRect& rect,
        * Normalize mean absolute deviation with respect to the estimated mean
        * signal value.
        */
-      psf.mad /= psf.meanSignal;
+      if ( 1 + psf.meanSignal != 1 )
+         psf.mad /= psf.meanSignal;
+      else
+         psf.status = PSFFitStatus::Invalid;
    }
-   else
-      psf = PSFData();
 }
 
 // ----------------------------------------------------------------------------
@@ -1149,6 +1167,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
 #undef beta
    }
 
+#undef B
 #undef A
 #undef x0
 #undef y0
@@ -1160,15 +1179,13 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
     * The fourth component of the returned vector is the estimated mean signal
     * value.
     */
-   R[3] = flux / zsum;
+   R[3] = (1 + zsum != 1) ? flux/zsum : 0.0;
 
    /*
     * The third component of the returned vector is the total flux above the
     * local background level, measured from source pixel data.
     */
    R[2] = flux;
-
-#undef B
 
    /*
     * The second component of the returned vector is the average absolute
