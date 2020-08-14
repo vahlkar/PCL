@@ -3,31 +3,41 @@
 
 #include <pcl/MetaProcess.h>
 
-namespace pcl {
-    class StarNetProcess : public MetaProcess {
-    public:
-       StarNetProcess();
+namespace pcl
+{
 
-       virtual IsoString Id() const;
-       virtual IsoString Category() const;
+// ----------------------------------------------------------------------------
 
-       virtual uint32 Version() const;
+class StarNetProcess : public MetaProcess
+{
+public:
 
-       virtual String Description() const;
+   StarNetProcess();
 
-       virtual const char** IconImageXPM() const;
+   IsoString Id() const override;
+   IsoString Category() const override;
+   uint32 Version() const override;
+   String Description() const override;
+   String IconImageSVGFile() const override;
+   ProcessInterface* DefaultInterface() const override;
+   ProcessImplementation* Create() const override;
+   ProcessImplementation* Clone( const ProcessImplementation& ) const override;
 
-       virtual ProcessInterface* DefaultInterface() const;
+   void SetRGBWeightsFilePath( const String& );
+   const String& RGBWeightsFilePath();
 
-       virtual ProcessImplementation* Create() const;
-       virtual ProcessImplementation* Clone(const ProcessImplementation&) const;
+   void SetGrayscaleWeightsFilePath( const String& );
+   const String& GrayscaleWeightsFilePath();
+};
 
-       virtual bool CanProcessCommandLines() const;
-       virtual int ProcessCommandLine(const StringList&) const;
-    };
+// ----------------------------------------------------------------------------
 
-    PCL_BEGIN_LOCAL
-    extern StarNetProcess* TheStarNetProcess;
-    PCL_END_LOCAL
-}
-#endif
+PCL_BEGIN_LOCAL
+extern StarNetProcess* TheStarNetProcess;
+PCL_END_LOCAL
+
+// ----------------------------------------------------------------------------
+
+} // pcl
+
+#endif   // __StarNetProcess_h

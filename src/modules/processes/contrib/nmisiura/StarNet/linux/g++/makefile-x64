@@ -1,15 +1,12 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.112
-# Copyright (C) 2009-2019 Pleiades Astrophoto
+# PixInsight Makefile Generator Script v1.118
+# Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2019-08-14T16:20:20.765Z
+# Generated on .... 2020-08-14T18:27:13.744Z
 # Project id ...... StarNet
 # Project type .... Module
 # Platform ........ Linux/g++
 # Configuration ... Release/x64
-# --------------------------------------------------------------------
-# Additional include search directories:
-# $PCLSRCDIR/3rdparty/tensorflow
 # --------------------------------------------------------------------
 # Additional libraries:
 # tensorflow
@@ -30,8 +27,7 @@ SRC_FILES= \
 ../../StarNetInterface.cpp \
 ../../StarNetModule.cpp \
 ../../StarNetParameters.cpp \
-../../StarNetProcess.cpp \
-../../tf_utils.cpp
+../../StarNetProcess.cpp
 
 #
 # Object files
@@ -42,8 +38,7 @@ OBJ_FILES= \
 ./x64/Release/StarNetInterface.o \
 ./x64/Release/StarNetModule.o \
 ./x64/Release/StarNetParameters.o \
-./x64/Release/StarNetProcess.o \
-./x64/Release/tf_utils.o
+./x64/Release/StarNetProcess.o
 
 #
 # Dependency files
@@ -54,8 +49,7 @@ DEP_FILES= \
 ./x64/Release/StarNetInterface.d \
 ./x64/Release/StarNetModule.d \
 ./x64/Release/StarNetParameters.d \
-./x64/Release/StarNetProcess.d \
-./x64/Release/tf_utils.d
+./x64/Release/StarNetProcess.d
 
 #
 # Rules
@@ -64,7 +58,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/StarNet-pxm.so: $(OBJ_FILES)
-	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -s -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)" -o $(OBJ_DIR)/StarNet-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -ltensorflow -ltensorflow_framework
+	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -s -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/StarNet-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -ltensorflow -ltensorflow_framework
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean
@@ -76,6 +70,6 @@ post-build:
 	cp $(OBJ_DIR)/StarNet-pxm.so $(PCLBINDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$PCLSRCDIR/3rdparty/tensorflow" -mtune=znver1 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++11 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mtune=znver2 -mfpmath=sse -msse4.2 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

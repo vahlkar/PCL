@@ -3,19 +3,30 @@
 
 #include <pcl/MetaModule.h>
 
-namespace pcl {
-    class StarNetModule : public MetaModule {
-    public:
-        StarNetModule();
-        virtual const char* Version() const;
-        virtual IsoString Name() const;
-        virtual String Description() const;
-        virtual String Company() const;
-        virtual String Author() const;
-        virtual String Copyright() const;
-        virtual String TradeMarks() const;
-        virtual String OriginalFileName() const;
-        virtual void GetReleaseDate(int& year, int& month, int& day) const;
-    };
-}
-#endif
+namespace pcl
+{
+
+// ----------------------------------------------------------------------------
+
+class StarNetModule : public MetaModule
+{
+public:
+
+   StarNetModule();
+
+   const char* Version() const override;
+   IsoString Name() const override;
+   String Description() const override;
+   String Company() const override;
+   String Author() const override;
+   String Copyright() const override;
+   String TradeMarks() const override;
+   String OriginalFileName() const override;
+   void GetReleaseDate( int& year, int& month, int& day ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+} // pcl
+
+#endif   // __StarNetModule_h

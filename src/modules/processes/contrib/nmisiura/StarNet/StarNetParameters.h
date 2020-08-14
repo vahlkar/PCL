@@ -3,38 +3,57 @@
 
 #include <pcl/MetaParameter.h>
 
-namespace pcl {
-    PCL_BEGIN_LOCAL
-    class StarNetStride : public MetaEnumeration {
-    public:
-        enum { itemOne,
-               itemTwo,
-               itemThree,
-               itemFour,
-               itemFive,
-               NumberOfItems,
-               Default = itemOne };
+namespace pcl
+{
 
-        StarNetStride(MetaProcess*);
+PCL_BEGIN_LOCAL
 
-        IsoString Id() const override;
-        size_type NumberOfElements() const override;
-        IsoString ElementId( size_type ) const override;
-        int ElementValue( size_type ) const override;
-        size_type DefaultValueIndex() const override;
-    };
+// ----------------------------------------------------------------------------
 
-    extern StarNetStride* TheStrideParameter;
+class SNStride : public MetaEnumeration
+{
+public:
 
-    class StarNetMask : public MetaBoolean {
-    public:
+   enum
+   {
+      itemOne,
+      itemTwo,
+      itemThree,
+      itemFour,
+      itemFive,
+      NumberOfItems,
+      Default = itemOne
+   };
 
-        StarNetMask(MetaProcess*);
-        IsoString Id() const override;
-        bool DefaultValue() const override;
-    };
+   SNStride( MetaProcess* );
 
-    extern StarNetMask* TheMaskParameter;
-    PCL_END_LOCAL
-}
-#endif
+   IsoString Id() const override;
+   size_type NumberOfElements() const override;
+   IsoString ElementId( size_type ) const override;
+   int ElementValue( size_type ) const override;
+   size_type DefaultValueIndex() const override;
+};
+
+extern SNStride* TheSNStrideParameter;
+
+// ----------------------------------------------------------------------------
+
+class SNCreateMask : public MetaBoolean
+{
+public:
+
+   SNCreateMask( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern SNCreateMask* TheSNCreateMaskParameter;
+
+// ----------------------------------------------------------------------------
+
+PCL_END_LOCAL
+
+} // pcl
+
+#endif   // __StarNetParameters_h
