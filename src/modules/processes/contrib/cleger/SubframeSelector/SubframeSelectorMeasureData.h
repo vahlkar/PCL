@@ -65,7 +65,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-static double DeviationNormalize( const double& value, const double& median,
+inline double DeviationNormalize( const double& value, const double& median,
                                   const double& deviation )
 {
    return (value - median)/((1 + deviation != 1) ? deviation : 1.0);
