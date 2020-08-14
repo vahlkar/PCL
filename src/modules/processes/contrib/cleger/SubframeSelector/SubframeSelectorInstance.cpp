@@ -384,15 +384,14 @@ private:
          Rect rect( Point( i->position.x - radius, i->position.y - radius ),
                     Point( i->position.x + radius, i->position.y + radius ) );
 
-         PSFFit fit( *m_subframe, i->position, rect, PSFFunction( m_data->instance->p_psfFit ),
-                     m_data->instance->p_psfFitCircular );
+         PSFFit fit( *m_subframe, i->position, rect, PSFFunction(), m_data->instance->p_psfFitCircular );
          if ( fit )
             PSFs << fit.psf;
       }
       return PSFs;
    }
 
-   PSFFit::psf_function PSFFunction( const pcl_enum& fit )
+   PSFFit::psf_function PSFFunction()
    {
       switch ( m_data->instance->p_psfFit )
       {
@@ -408,7 +407,7 @@ private:
       }
    }
 
-   void MeasurePSFs( psf_list fits )
+   void MeasurePSFs( const psf_list& fits )
    {
       m_outputData.stars = fits.Length();
 
@@ -422,35 +421,30 @@ private:
       double eccentricitySumSigma = 0;
       double residualSumSigma = 0;
       double sumWeight = 0;
-      Array<double> fwhms( fits.Length(), 0 );
-      Array<double> eccentricities( fits.Length(), 0 );
-      Array<double> residuals( fits.Length(), 0 );
-      for ( size_type i = 0; i < fits.Length(); ++i )
+      Array<double> fwhms, eccentricities, residuals;
+      for ( const PSFData& fit : fits )
       {
-         PSFData* fit = &fits[i];
+         double fwhm = Sqrt( fit.sx * fit.sy );
+         fwhms << fwhm;
+         double eccentricity = Sqrt( 1.0 - Pow( fit.sy / fit.sx, 2.0 ) );
+         eccentricities << eccentricity;
+         residuals << fit.mad;
 
-         double MAD = fit->mad;
-         double weight = minMAD / MAD;
+         double weight = minMAD / fit.mad;
          sumWeight += weight;
-
-         fwhms[i] = Sqrt( fit->sx * fit->sy );
-         eccentricities[i] = Sqrt( 1.0 - Pow( fit->sy / fit->sx, 2.0 ) );
-         residuals[i] = MAD;
-
-         fwhmSumSigma += weight * fwhms[i];
-         eccentricitySumSigma += weight * eccentricities[i];
-         residualSumSigma += weight * MAD;
+         fwhmSumSigma += weight * fwhm;
+         eccentricitySumSigma += weight * eccentricity;
+         residualSumSigma += weight * fit.mad;
       }
 
       // Average each star parameter against the total weight
-      double FWHM = fwhmSumSigma / sumWeight;
-      m_outputData.fwhm = PSFData::FWHM( PSFFunction( m_data->instance->p_psfFit ), FWHM, 0 ); // beta is unused here
+      m_outputData.fwhm = PSFData::FWHM( PSFFunction(), fwhmSumSigma / sumWeight );
       m_outputData.eccentricity = eccentricitySumSigma / sumWeight;
       m_outputData.starResidual = residualSumSigma / sumWeight;
 
       // Determine Mean Deviation for each star parameter
-      m_outputData.fwhmMeanDev = AvgDev( fwhms.Begin(), fwhms.End(), Median( fwhms.Begin(), fwhms.End() ) );
-      m_outputData.fwhmMeanDev = PSFData::FWHM( PSFFunction( m_data->instance->p_psfFit ), m_outputData.fwhmMeanDev );
+      m_outputData.fwhmMeanDev = PSFData::FWHM( PSFFunction(), AvgDev( fwhms.Begin(), fwhms.End(),
+                                                                       Median( fwhms.Begin(), fwhms.End() ) ) );
       m_outputData.eccentricityMeanDev = AvgDev( eccentricities.Begin(), eccentricities.End(),
                                                  Median( eccentricities.Begin(), eccentricities.End() ) );
       m_outputData.starResidualMeanDev = AvgDev( residuals.Begin(), residuals.End(),
