@@ -1,3 +1,33 @@
+//     ____   ______ __
+//    / __ \ / ____// /
+//   / /_/ // /    / /
+//  / ____// /___ / /___   PixInsight Class Library
+// /_/     \____//_____/   PCL 2.4.0
+// ----------------------------------------------------------------------------
+// Standard StarNet Process Module Version 1.0.0
+// ----------------------------------------------------------------------------
+// StarNetProcess.cpp - Released 2020-08-17T12:19:56Z
+// ----------------------------------------------------------------------------
+// This file is part of the standard StarNet PixInsight module.
+//
+// Copyright (c) 2018-2020 Nikita Misiura
+//
+// This software is available under Attribution-NonCommercial-ShareAlike 4.0
+// International Creative Commons license (CC BY-NC-SA 4.0):
+//
+// https://creativecommons.org/licenses/by-nc-sa/4.0/
+//
+// In short: You are free to use and redistribute the code in any medium or
+// format, but only under the same license terms. You can transform and build
+// your projects upon it. You can NOT use the code for commercial purposes. You
+// must give appropriate credit for usage of the code.
+//
+// This product is based on software from the PixInsight project, developed by
+// Pleiades Astrophoto and its contributors:
+//
+// https://pixinsight.com/
+// ----------------------------------------------------------------------------
+
 #include "StarNetProcess.h"
 #include "StarNetInstance.h"
 #include "StarNetInterface.h"
@@ -6,7 +36,12 @@
 #include <pcl/Arguments.h>
 #include <pcl/Console.h>
 #include <pcl/Exception.h>
+#include <pcl/Settings.h>
 #include <pcl/View.h>
+
+// Settings keys
+#define KEY_RGB_WEIGHTS_FILE        "RGBWeightsFile"
+#define KEY_GRAYSCALE_WEIGHTS_FILE  "GrayscaleWeightsFile"
 
 namespace pcl
 {
@@ -17,6 +52,7 @@ StarNetProcess* TheStarNetProcess = nullptr;
 
 static String s_rgbWeightsFilePath;
 static String s_grayscaleWeightsFilePath;
+static bool   s_preferencesLoaded = false;
 
 // ----------------------------------------------------------------------------
 
@@ -91,28 +127,65 @@ ProcessImplementation* StarNetProcess::Clone( const ProcessImplementation& p ) c
 
 void StarNetProcess::SetRGBWeightsFilePath( const String& filePath )
 {
-   if ( !File::Exists( filePath ) )
-      throw Error( "The specified weights database file (RGB) does not exist: <raw>" + filePath + "</raw>" );
+   if ( !filePath.IsEmpty() )
+      if ( !File::Exists( filePath ) )
+         throw Error( "The specified weights database file (RGB) does not exist: <raw>" + filePath + "</raw>" );
    s_rgbWeightsFilePath = filePath;
 }
 
-const String& StarNetProcess::RGBWeightsFilePath()
+const String& StarNetProcess::RGBWeightsFilePath() const
 {
    return s_rgbWeightsFilePath;
 }
 
+bool StarNetProcess::IsValidRGBWeightsFilePath() const
+{
+   return !s_rgbWeightsFilePath.IsEmpty() && File::Exists( s_rgbWeightsFilePath );
+}
+
+// ----------------------------------------------------------------------------
+
 void StarNetProcess::SetGrayscaleWeightsFilePath( const String& filePath )
 {
-   if ( !File::Exists( filePath ) )
-      throw Error( "The specified weights database file (grayscale) does not exist: <raw>" + filePath + "</raw>" );
+   if ( !filePath.IsEmpty() )
+      if ( !File::Exists( filePath ) )
+         throw Error( "The specified weights database file (grayscale) does not exist: <raw>" + filePath + "</raw>" );
    s_grayscaleWeightsFilePath = filePath;
 }
 
-const String& StarNetProcess::GrayscaleWeightsFilePath()
+const String& StarNetProcess::GrayscaleWeightsFilePath() const
 {
    return s_grayscaleWeightsFilePath;
+}
+
+bool StarNetProcess::IsValidGrayscaleWeightsFilePath() const
+{
+   return !s_grayscaleWeightsFilePath.IsEmpty() && File::Exists( s_grayscaleWeightsFilePath );
+}
+
+// ----------------------------------------------------------------------------
+
+bool StarNetProcess::PreferencesLoaded() const
+{
+   return s_preferencesLoaded;
+}
+
+void StarNetProcess::LoadPreferences()
+{
+   Settings::Read( KEY_RGB_WEIGHTS_FILE,       s_rgbWeightsFilePath );
+   Settings::Read( KEY_GRAYSCALE_WEIGHTS_FILE, s_grayscaleWeightsFilePath );
+   s_preferencesLoaded = true;
+}
+
+void StarNetProcess::SavePreferences()
+{
+   Settings::Write( KEY_RGB_WEIGHTS_FILE,       s_rgbWeightsFilePath );
+   Settings::Write( KEY_GRAYSCALE_WEIGHTS_FILE, s_grayscaleWeightsFilePath );
 }
 
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
+// EOF StarNetProcess.cpp - Released 2020-08-17T12:19:56Z

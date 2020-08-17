@@ -4,10 +4,13 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-08-14T18:27:13.965Z
+# Generated on .... 2020-08-17T11:04:38.295Z
 # Project id ...... StarNet
 # Project type .... Module
 # Platform ........ Windows/vc16
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Additional preprocessor definitions:
+# _CRT_SECURE_NO_WARNINGS
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Additional libraries:
 # tensorflow
@@ -17,10 +20,10 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>c21ad4da-423e-4a51-929a-4a2475fbeed3</UniqueIdentifier>
+      <UniqueIdentifier>177fe592-4efe-4933-9742-b42a3ef76c8c</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>a901b3a2-1885-433f-987e-49ece1b44fd5</UniqueIdentifier>
+      <UniqueIdentifier>681f51f4-7db8-48be-a3ab-331600589d58</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

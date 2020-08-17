@@ -1,6 +1,37 @@
+//     ____   ______ __
+//    / __ \ / ____// /
+//   / /_/ // /    / /
+//  / ____// /___ / /___   PixInsight Class Library
+// /_/     \____//_____/   PCL 2.4.0
+// ----------------------------------------------------------------------------
+// Standard StarNet Process Module Version 1.0.0
+// ----------------------------------------------------------------------------
+// StarNetInterface.h - Released 2020-08-17T12:19:56Z
+// ----------------------------------------------------------------------------
+// This file is part of the standard StarNet PixInsight module.
+//
+// Copyright (c) 2018-2020 Nikita Misiura
+//
+// This software is available under Attribution-NonCommercial-ShareAlike 4.0
+// International Creative Commons license (CC BY-NC-SA 4.0):
+//
+// https://creativecommons.org/licenses/by-nc-sa/4.0/
+//
+// In short: You are free to use and redistribute the code in any medium or
+// format, but only under the same license terms. You can transform and build
+// your projects upon it. You can NOT use the code for commercial purposes. You
+// must give appropriate credit for usage of the code.
+//
+// This product is based on software from the PixInsight project, developed by
+// Pleiades Astrophoto and its contributors:
+//
+// https://pixinsight.com/
+// ----------------------------------------------------------------------------
+
 #ifndef __StarNetInterface_h
 #define __StarNetInterface_h
 
+#include <pcl/BitmapBox.h>
 #include <pcl/CheckBox.h>
 #include <pcl/ComboBox.h>
 #include <pcl/Edit.h>
@@ -28,7 +59,8 @@ public:
    IsoString Id() const override;
    MetaProcess* Process() const override;
    String IconImageSVGFile() const override;
-   void ApplyInstance() const override;
+   InterfaceFeatures Features() const override;
+   void EditPreferences() override;
    void ResetInstance() override;
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned& flags ) override;
    ProcessImplementation* NewProcess() const override;
@@ -53,25 +85,22 @@ private:
          HorizontalSizer   RGBWeightsFile_Sizer;
             Label             RGBWeightsFile_Label;
             Edit              RGBWeightsFile_Edit;
-            ToolButton        RGBWeightsFile_ToolButton;
+            BitmapBox         RGBWeightsFile_BitmapBox;
          HorizontalSizer   GrayscaleWeightsFile_Sizer;
             Label             GrayscaleWeightsFile_Label;
             Edit              GrayscaleWeightsFile_Edit;
-            ToolButton        GrayscaleWeightsFile_ToolButton;
+            BitmapBox         GrayscaleWeightsFile_BitmapBox;
    };
 
    GUIData* GUI = nullptr;
 
    void UpdateControls();
 
-   void __ItemClicked( Button& sender, bool checked );
-   void __ItemSelected( ComboBox& sender, int itemIndex );
-   void __EditCompleted( Edit& sender );
-   void __Click( Button& sender, bool checked );
-   void __FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
-   void __FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_Click( Button& sender, bool checked );
 
    friend struct GUIData;
+   friend class StarNetPreferencesDialog;
 };
 
 PCL_BEGIN_LOCAL
@@ -83,3 +112,6 @@ PCL_END_LOCAL
 } // pcl
 
 #endif   // __StarNetInterface_h
+
+// ----------------------------------------------------------------------------
+// EOF StarNetInterface.h - Released 2020-08-17T12:19:56Z

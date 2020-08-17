@@ -1,3 +1,33 @@
+//     ____   ______ __
+//    / __ \ / ____// /
+//   / /_/ // /    / /
+//  / ____// /___ / /___   PixInsight Class Library
+// /_/     \____//_____/   PCL 2.4.0
+// ----------------------------------------------------------------------------
+// Standard StarNet Process Module Version 1.0.0
+// ----------------------------------------------------------------------------
+// StarNetInstance.cpp - Released 2020-08-17T12:19:56Z
+// ----------------------------------------------------------------------------
+// This file is part of the standard StarNet PixInsight module.
+//
+// Copyright (c) 2018-2020 Nikita Misiura
+//
+// This software is available under Attribution-NonCommercial-ShareAlike 4.0
+// International Creative Commons license (CC BY-NC-SA 4.0):
+//
+// https://creativecommons.org/licenses/by-nc-sa/4.0/
+//
+// In short: You are free to use and redistribute the code in any medium or
+// format, but only under the same license terms. You can transform and build
+// your projects upon it. You can NOT use the code for commercial purposes. You
+// must give appropriate credit for usage of the code.
+//
+// This product is based on software from the PixInsight project, developed by
+// Pleiades Astrophoto and its contributors:
+//
+// https://pixinsight.com/
+// ----------------------------------------------------------------------------
+
 #include "StarNetInstance.h"
 #include "StarNetParameters.h"
 #include "StarNetProcess.h"
@@ -73,6 +103,9 @@ public:
    static void Apply( GenericImage<P>& image, View& view, const StarNetInstance& instance )
    {
       const int window = 256; // input tile size
+
+      if ( !TheStarNetProcess->PreferencesLoaded() )
+         TheStarNetProcess->LoadPreferences();
 
       String weightsFilePath = image.IsColor() ? TheStarNetProcess->RGBWeightsFilePath()
                                                : TheStarNetProcess->GrayscaleWeightsFilePath();
@@ -228,8 +261,7 @@ public:
 
                /*
                 * Basically, just a primitive loop to load vector of values
-                * into pixels and rescale them back, plus a trick to prevent
-                * overflow.
+                * into pixels and rescale them back.
                 */
                for ( int w = border; w < window - border; ++w )
                   for ( int h = border; h < window - border; ++h )
@@ -274,8 +306,7 @@ public:
 
 private:
 
-   static
-   TF_Tensor* CreateTensor( TF_DataType dataType, const int64_t* dims, int num_dims, const void* data, size_type size )
+   static TF_Tensor* CreateTensor( TF_DataType dataType, const int64_t* dims, int num_dims, const void* data, size_type size )
    {
       TF_Tensor* tensor = TF_AllocateTensor( dataType, dims, num_dims, size );
       if ( tensor == nullptr )
@@ -399,3 +430,6 @@ size_type StarNetInstance::ParameterLength( const MetaParameter* p, size_type ta
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
+// EOF StarNetInstance.cpp - Released 2020-08-17T12:19:56Z

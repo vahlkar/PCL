@@ -1,9 +1,41 @@
+//     ____   ______ __
+//    / __ \ / ____// /
+//   / /_/ // /    / /
+//  / ____// /___ / /___   PixInsight Class Library
+// /_/     \____//_____/   PCL 2.4.0
+// ----------------------------------------------------------------------------
+// Standard StarNet Process Module Version 1.0.0
+// ----------------------------------------------------------------------------
+// StarNetInterface.cpp - Released 2020-08-17T12:19:56Z
+// ----------------------------------------------------------------------------
+// This file is part of the standard StarNet PixInsight module.
+//
+// Copyright (c) 2018-2020 Nikita Misiura
+//
+// This software is available under Attribution-NonCommercial-ShareAlike 4.0
+// International Creative Commons license (CC BY-NC-SA 4.0):
+//
+// https://creativecommons.org/licenses/by-nc-sa/4.0/
+//
+// In short: You are free to use and redistribute the code in any medium or
+// format, but only under the same license terms. You can transform and build
+// your projects upon it. You can NOT use the code for commercial purposes. You
+// must give appropriate credit for usage of the code.
+//
+// This product is based on software from the PixInsight project, developed by
+// Pleiades Astrophoto and its contributors:
+//
+// https://pixinsight.com/
+// ----------------------------------------------------------------------------
+
 #include "StarNetInterface.h"
 #include "StarNetParameters.h"
 #include "StarNetProcess.h"
 
+#include <pcl/Dialog.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileDialog.h>
+#include <pcl/PushButton.h>
 
 namespace pcl
 {
@@ -12,6 +44,203 @@ namespace pcl
 
 StarNetInterface* TheStarNetInterface = nullptr;
 
+// ----------------------------------------------------------------------------
+
+
+class StarNetPreferencesDialog : public Dialog
+{
+public:
+
+   StarNetPreferencesDialog();
+
+private:
+
+   String m_rgbWeightsFilePath;
+   String m_grayscaleWeightsFilePath;
+
+   VerticalSizer     Global_Sizer;
+      HorizontalSizer   RGBWeightsFile_Sizer;
+         Label             RGBWeightsFile_Label;
+         Edit              RGBWeightsFile_Edit;
+         ToolButton        RGBWeightsFile_ToolButton;
+      HorizontalSizer   GrayscaleWeightsFile_Sizer;
+         Label             GrayscaleWeightsFile_Label;
+         Edit              GrayscaleWeightsFile_Edit;
+         ToolButton        GrayscaleWeightsFile_ToolButton;
+      HorizontalSizer   Buttons_Sizer;
+         PushButton        OK_PushButton;
+         PushButton        Cancel_PushButton;
+
+   void UpdateControls();
+
+   void e_EditCompleted( Edit& sender );
+   void e_Click( Button& sender, bool checked );
+   void e_Return( Dialog& sender, int retVal );
+};
+
+StarNetPreferencesDialog::StarNetPreferencesDialog()
+{
+   int labelWidth1 = Font().Width( String( "Grayscale weights file:" ) ); // the longest label text
+   int editWidth1 = Font().Width( 'M' )*40;
+
+   //
+
+   const char* rgbWeightsFileToolTip = "<p>Path to the RGB weights file.</p>";
+
+   RGBWeightsFile_Label.SetText( "RGB weights file:" );
+   RGBWeightsFile_Label.SetFixedWidth( labelWidth1 );
+   RGBWeightsFile_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   RGBWeightsFile_Label.SetToolTip( rgbWeightsFileToolTip );
+
+   RGBWeightsFile_Edit.SetToolTip( rgbWeightsFileToolTip );
+   RGBWeightsFile_Edit.SetMinWidth( editWidth1 );
+   RGBWeightsFile_Edit.OnEditCompleted( (Edit::edit_event_handler)&StarNetPreferencesDialog::e_EditCompleted, *this );
+
+   RGBWeightsFile_ToolButton.SetIcon( ScaledResource( ":/browser/select-file.png" ) );
+   RGBWeightsFile_ToolButton.SetScaledFixedSize( 20, 20 );
+   RGBWeightsFile_ToolButton.SetToolTip( "<p>Select the RGB weights file.</p>" );
+   RGBWeightsFile_ToolButton.OnClick( (Button::click_event_handler)&StarNetPreferencesDialog::e_Click, *this );
+
+   RGBWeightsFile_Sizer.SetSpacing( 4 );
+   RGBWeightsFile_Sizer.Add( RGBWeightsFile_Label );
+   RGBWeightsFile_Sizer.Add( RGBWeightsFile_Edit, 100 );
+   RGBWeightsFile_Sizer.Add( RGBWeightsFile_ToolButton );
+
+   //
+
+   const char* grayscaleWeightsFileToolTip = "<p>Path to the grayscale weights file.</p>";
+
+   GrayscaleWeightsFile_Label.SetText( "Grayscale weights file:" );
+   GrayscaleWeightsFile_Label.SetFixedWidth( labelWidth1 );
+   GrayscaleWeightsFile_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   GrayscaleWeightsFile_Label.SetToolTip( grayscaleWeightsFileToolTip );
+
+   GrayscaleWeightsFile_Edit.SetToolTip( grayscaleWeightsFileToolTip );
+   GrayscaleWeightsFile_Edit.SetMinWidth( editWidth1 );
+   GrayscaleWeightsFile_Edit.OnEditCompleted( (Edit::edit_event_handler)&StarNetPreferencesDialog::e_EditCompleted, *this );
+
+   GrayscaleWeightsFile_ToolButton.SetIcon( ScaledResource( ":/browser/select-file.png" ) );
+   GrayscaleWeightsFile_ToolButton.SetScaledFixedSize( 20, 20 );
+   GrayscaleWeightsFile_ToolButton.SetToolTip( "<p>Select the grayscale weights file.</p>" );
+   GrayscaleWeightsFile_ToolButton.OnClick( (Button::click_event_handler)&StarNetPreferencesDialog::e_Click, *this );
+
+   GrayscaleWeightsFile_Sizer.SetSpacing( 4 );
+   GrayscaleWeightsFile_Sizer.Add( GrayscaleWeightsFile_Label );
+   GrayscaleWeightsFile_Sizer.Add( GrayscaleWeightsFile_Edit, 100 );
+   GrayscaleWeightsFile_Sizer.Add( GrayscaleWeightsFile_ToolButton );
+
+   //
+
+   OK_PushButton.SetText( "OK" );
+   OK_PushButton.SetDefault();
+   OK_PushButton.SetCursor( StdCursor::Checkmark );
+   OK_PushButton.OnClick( (pcl::Button::click_event_handler)&StarNetPreferencesDialog::e_Click, *this );
+
+   Cancel_PushButton.SetText( "Cancel" );
+   Cancel_PushButton.SetCursor( StdCursor::Crossmark );
+   Cancel_PushButton.OnClick( (pcl::Button::click_event_handler)&StarNetPreferencesDialog::e_Click, *this );
+
+   Buttons_Sizer.SetSpacing( 8 );
+   Buttons_Sizer.AddStretch();
+   Buttons_Sizer.Add( OK_PushButton );
+   Buttons_Sizer.Add( Cancel_PushButton );
+
+   //
+
+   Global_Sizer.SetMargin( 8 );
+   Global_Sizer.SetSpacing( 6 );
+   Global_Sizer.Add( RGBWeightsFile_Sizer );
+   Global_Sizer.Add( GrayscaleWeightsFile_Sizer );
+   Global_Sizer.AddSpacing( 4 );
+   Global_Sizer.Add( Buttons_Sizer );
+
+   SetSizer( Global_Sizer );
+
+   EnsureLayoutUpdated();
+   AdjustToContents();
+   SetFixedHeight();
+   SetMinWidth();
+
+   SetWindowTitle( "StarNet Preferences" );
+
+   OnReturn( (pcl::Dialog::return_event_handler)&StarNetPreferencesDialog::e_Return, *this );
+
+   if ( !TheStarNetProcess->PreferencesLoaded() )
+      TheStarNetProcess->LoadPreferences();
+
+   m_rgbWeightsFilePath = TheStarNetProcess->RGBWeightsFilePath();
+   m_grayscaleWeightsFilePath = TheStarNetProcess->GrayscaleWeightsFilePath();
+
+   UpdateControls();
+}
+
+void StarNetPreferencesDialog::UpdateControls()
+{
+   RGBWeightsFile_Edit.SetText( m_rgbWeightsFilePath );
+   GrayscaleWeightsFile_Edit.SetText( m_grayscaleWeightsFilePath );
+}
+
+void StarNetPreferencesDialog::e_EditCompleted( Edit& sender )
+{
+   try
+   {
+      String filePath = sender.Text().Trimmed();
+      if ( sender == RGBWeightsFile_Edit )
+         m_rgbWeightsFilePath = filePath;
+      else if ( sender == GrayscaleWeightsFile_Edit )
+         m_grayscaleWeightsFilePath = filePath;
+      UpdateControls();
+   }
+   ERROR_CLEANUP(
+      sender.SelectAll();
+      sender.Focus()
+   )
+}
+
+void StarNetPreferencesDialog::e_Click( Button& sender, bool checked )
+{
+   if ( sender == RGBWeightsFile_ToolButton )
+   {
+      OpenFileDialog d;
+      d.SetCaption( "StarNet: Select RGB Weights File" );
+      d.AddFilter( FileFilter( "StarNet Weights Files", ".pb" ) );
+      d.DisableMultipleSelections();
+      if ( d.Execute() )
+      {
+         m_rgbWeightsFilePath = d.FileName();
+         UpdateControls();
+      }
+   }
+   else if ( sender == GrayscaleWeightsFile_ToolButton )
+   {
+      OpenFileDialog d;
+      d.SetCaption( "StarNet: Select Grayscale Weights File" );
+      d.AddFilter( FileFilter( "StarNet Weights Files", ".pb" ) );
+      d.DisableMultipleSelections();
+      if ( d.Execute() )
+      {
+         m_grayscaleWeightsFilePath = d.FileName();
+         UpdateControls();
+      }
+   }
+   else if ( sender == OK_PushButton )
+      Ok();
+   else if ( sender == Cancel_PushButton )
+      Cancel();
+}
+
+void StarNetPreferencesDialog::e_Return( Dialog& sender, int retVal )
+{
+   if ( retVal == StdDialogCode::Ok )
+   {
+      TheStarNetProcess->SetRGBWeightsFilePath( m_rgbWeightsFilePath );
+      TheStarNetProcess->SetGrayscaleWeightsFilePath( m_grayscaleWeightsFilePath );
+      if ( TheStarNetInterface != nullptr )
+         TheStarNetInterface->UpdateControls();
+   }
+}
+
+// ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
 StarNetInterface::StarNetInterface()
@@ -51,9 +280,16 @@ String StarNetInterface::IconImageSVGFile() const
 
 // ----------------------------------------------------------------------------
 
-void StarNetInterface::ApplyInstance() const
+InterfaceFeatures StarNetInterface::Features() const
 {
-   m_instance.LaunchOnCurrentView();
+   return InterfaceFeature::Default | InterfaceFeature::PreferencesButton;
+}
+
+// ----------------------------------------------------------------------------
+
+void StarNetInterface::EditPreferences()
+{
+   StarNetPreferencesDialog().Execute();
 }
 
 // ----------------------------------------------------------------------------
@@ -68,6 +304,9 @@ void StarNetInterface::ResetInstance()
 
 bool StarNetInterface::Launch( const MetaProcess& P, const ProcessImplementation*, bool& dynamic, unsigned& /*flags*/ )
 {
+   if ( !TheStarNetProcess->PreferencesLoaded() )
+      TheStarNetProcess->LoadPreferences();
+
    if ( GUI == nullptr )
    {
       GUI = new GUIData( *this );
@@ -116,24 +355,23 @@ bool StarNetInterface::ImportProcess( const ProcessImplementation& p )
 
 void StarNetInterface::UpdateControls()
 {
-   GUI->MaskParameter_CheckBox.SetChecked( m_instance.p_mask );
    GUI->StrideParameter_ComboBox.SetCurrentItem( m_instance.p_stride );
+
+   GUI->MaskParameter_CheckBox.SetChecked( m_instance.p_mask );
+
    GUI->RGBWeightsFile_Edit.SetText( TheStarNetProcess->RGBWeightsFilePath() );
+   GUI->RGBWeightsFile_BitmapBox.SetBitmap( ScaledResource( TheStarNetProcess->IsValidRGBWeightsFilePath() ?
+                                                ":/icons/ok.png" : ":/icons/error.png" ) );
+
    GUI->GrayscaleWeightsFile_Edit.SetText( TheStarNetProcess->GrayscaleWeightsFilePath() );
+   GUI->GrayscaleWeightsFile_BitmapBox.SetBitmap( ScaledResource( TheStarNetProcess->IsValidGrayscaleWeightsFilePath() ?
+                                                ":/icons/ok.png" : ":/icons/error.png" ) );
 }
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void StarNetInterface::__ItemClicked( Button& sender, bool checked )
-{
-   if ( sender == GUI->MaskParameter_CheckBox )
-      m_instance.p_mask = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void StarNetInterface::__ItemSelected( ComboBox& sender, int itemIndex )
+void StarNetInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->StrideParameter_ComboBox )
       m_instance.p_stride = itemIndex;
@@ -141,89 +379,10 @@ void StarNetInterface::__ItemSelected( ComboBox& sender, int itemIndex )
 
 // ----------------------------------------------------------------------------
 
-void StarNetInterface::__EditCompleted( Edit& sender )
+void StarNetInterface::e_Click( Button& sender, bool checked )
 {
-   try
-   {
-      String text = sender.Text().Trimmed();
-
-      if ( sender == GUI->RGBWeightsFile_Edit )
-      {
-         if ( !text.IsEmpty() )
-            TheStarNetProcess->SetRGBWeightsFilePath( text );
-      }
-      else if ( sender == GUI->GrayscaleWeightsFile_Edit )
-      {
-         if ( !text.IsEmpty() )
-            TheStarNetProcess->SetGrayscaleWeightsFilePath( text );
-      }
-
-      UpdateControls();
-   }
-   ERROR_CLEANUP(
-      sender.SelectAll();
-      sender.Focus()
-   )
-}
-
-// ----------------------------------------------------------------------------
-
-void StarNetInterface::__Click( Button& sender, bool checked )
-{
-   if ( sender == GUI->RGBWeightsFile_ToolButton )
-   {
-      OpenFileDialog d;
-      d.SetCaption( "StarNet: Select RGB Weights File" );
-      d.AddFilter( FileFilter( "StarNet Weights Files", ".pb" ) );
-      d.DisableMultipleSelections();
-      if ( d.Execute() )
-      {
-         TheStarNetProcess->SetRGBWeightsFilePath( d.FileName() );
-         UpdateControls();
-      }
-   }
-   else if ( sender == GUI->GrayscaleWeightsFile_ToolButton )
-   {
-      OpenFileDialog d;
-      d.SetCaption( "StarNet: Select Grayscale Weights File" );
-      d.AddFilter( FileFilter( "StarNet Weights Files", ".pb" ) );
-      d.DisableMultipleSelections();
-      if ( d.Execute() )
-      {
-         TheStarNetProcess->SetGrayscaleWeightsFilePath( d.FileName() );
-         UpdateControls();
-      }
-   }
-}
-
-// ----------------------------------------------------------------------------
-
-void StarNetInterface::__FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles )
-{
-   if ( sender == GUI->RGBWeightsFile_Edit || sender == GUI->GrayscaleWeightsFile_Edit )
-      wantsFiles = files.Length() == 1 && File::Exists( files[0] );
-}
-
-// ----------------------------------------------------------------------------
-
-void StarNetInterface::__FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers )
-{
-   if ( sender == GUI->RGBWeightsFile_Edit )
-   {
-      if ( File::Exists( files[0] ) )
-      {
-         TheStarNetProcess->SetRGBWeightsFilePath( files[0] );
-         UpdateControls();
-      }
-   }
-   else if ( sender == GUI->GrayscaleWeightsFile_Edit )
-   {
-      if ( File::Exists( files[0] ) )
-      {
-         TheStarNetProcess->SetGrayscaleWeightsFilePath( files[0] );
-         UpdateControls();
-      }
-   }
+   if ( sender == GUI->MaskParameter_CheckBox )
+      m_instance.p_mask = checked;
 }
 
 // ----------------------------------------------------------------------------
@@ -252,7 +411,7 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
    StrideParameter_ComboBox.AddItem( "16" );
    StrideParameter_ComboBox.AddItem( "8" );
    StrideParameter_ComboBox.SetToolTip( strideToolTip );
-   StrideParameter_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&StarNetInterface::__ItemSelected, w );
+   StrideParameter_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&StarNetInterface::e_ItemSelected, w );
 
    StrideParameter_Sizer.SetSpacing( 4 );
    StrideParameter_Sizer.Add( StrideParameter_Label );
@@ -263,7 +422,7 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 
    MaskParameter_CheckBox.SetText( "Create starmask" );
    MaskParameter_CheckBox.SetToolTip( "<p>Generate a star mask instead of a starless image.</p>" );
-   MaskParameter_CheckBox.OnClick( (pcl::Button::click_event_handler)&StarNetInterface::__ItemClicked, w );
+   MaskParameter_CheckBox.OnClick( (pcl::Button::click_event_handler)&StarNetInterface::e_Click, w );
 
    MaskParameter_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
    MaskParameter_Sizer.Add( MaskParameter_CheckBox );
@@ -280,19 +439,14 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 
    RGBWeightsFile_Edit.SetToolTip( rgbWeightsFileToolTip );
    RGBWeightsFile_Edit.SetMinWidth( editWidth1 );
-   RGBWeightsFile_Edit.OnEditCompleted( (Edit::edit_event_handler)&StarNetInterface::__EditCompleted, w );
-   RGBWeightsFile_Edit.OnFileDrag( (Control::file_drag_event_handler)&StarNetInterface::__FileDrag, w );
-   RGBWeightsFile_Edit.OnFileDrop( (Control::file_drop_event_handler)&StarNetInterface::__FileDrop, w );
+   RGBWeightsFile_Edit.SetReadOnly();
 
-   RGBWeightsFile_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/browser/select.png" ) ) );
-   RGBWeightsFile_ToolButton.SetScaledFixedSize( 20, 20 );
-   RGBWeightsFile_ToolButton.SetToolTip( "<p>Select the reference image</p>" );
-   RGBWeightsFile_ToolButton.OnClick( (Button::click_event_handler)&StarNetInterface::__Click, w );
+   RGBWeightsFile_BitmapBox.SetScaledFixedSize( 20, 20 );
 
    RGBWeightsFile_Sizer.SetSpacing( 4 );
    RGBWeightsFile_Sizer.Add( RGBWeightsFile_Label );
    RGBWeightsFile_Sizer.Add( RGBWeightsFile_Edit, 100 );
-   RGBWeightsFile_Sizer.Add( RGBWeightsFile_ToolButton );
+   RGBWeightsFile_Sizer.Add( RGBWeightsFile_BitmapBox );
 
    //
 
@@ -305,19 +459,14 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 
    GrayscaleWeightsFile_Edit.SetToolTip( grayscaleWeightsFileToolTip );
    GrayscaleWeightsFile_Edit.SetMinWidth( editWidth1 );
-   GrayscaleWeightsFile_Edit.OnEditCompleted( (Edit::edit_event_handler)&StarNetInterface::__EditCompleted, w );
-   GrayscaleWeightsFile_Edit.OnFileDrag( (Control::file_drag_event_handler)&StarNetInterface::__FileDrag, w );
-   GrayscaleWeightsFile_Edit.OnFileDrop( (Control::file_drop_event_handler)&StarNetInterface::__FileDrop, w );
+   GrayscaleWeightsFile_Edit.SetReadOnly();
 
-   GrayscaleWeightsFile_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/browser/select.png" ) ) );
-   GrayscaleWeightsFile_ToolButton.SetScaledFixedSize( 20, 20 );
-   GrayscaleWeightsFile_ToolButton.SetToolTip( "<p>Select the reference image</p>" );
-   GrayscaleWeightsFile_ToolButton.OnClick( (Button::click_event_handler)&StarNetInterface::__Click, w );
+   GrayscaleWeightsFile_BitmapBox.SetScaledFixedSize( 20, 20 );
 
    GrayscaleWeightsFile_Sizer.SetSpacing( 4 );
    GrayscaleWeightsFile_Sizer.Add( GrayscaleWeightsFile_Label );
    GrayscaleWeightsFile_Sizer.Add( GrayscaleWeightsFile_Edit, 100 );
-   GrayscaleWeightsFile_Sizer.Add( GrayscaleWeightsFile_ToolButton );
+   GrayscaleWeightsFile_Sizer.Add( GrayscaleWeightsFile_BitmapBox );
 
    //
 
@@ -338,3 +487,6 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
+// EOF StarNetInterface.cpp - Released 2020-08-17T12:19:56Z
