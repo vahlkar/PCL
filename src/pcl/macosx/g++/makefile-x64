@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-07-31T19:36:14.137Z
+# Generated on .... 2020-08-17T11:04:05.272Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ MacOSX/g++
@@ -65,6 +65,8 @@ SRC_FILES= \
 ../../FactorialCache.cpp \
 ../../FastRotation.cpp \
 ../../File.cpp \
+../../FileDataCache.cpp \
+../../FileDataCachePreferencesDialog.cpp \
 ../../FileDialog.cpp \
 ../../FileFormat.cpp \
 ../../FileFormatImplementation.cpp \
@@ -246,6 +248,8 @@ OBJ_FILES= \
 ./x64/Release/FactorialCache.o \
 ./x64/Release/FastRotation.o \
 ./x64/Release/File.o \
+./x64/Release/FileDataCache.o \
+./x64/Release/FileDataCachePreferencesDialog.o \
 ./x64/Release/FileDialog.o \
 ./x64/Release/FileFormat.o \
 ./x64/Release/FileFormatImplementation.o \
@@ -427,6 +431,8 @@ DEP_FILES= \
 ./x64/Release/FactorialCache.d \
 ./x64/Release/FastRotation.d \
 ./x64/Release/File.d \
+./x64/Release/FileDataCache.d \
+./x64/Release/FileDataCachePreferencesDialog.d \
 ./x64/Release/FileDialog.d \
 ./x64/Release/FileFormat.d \
 ./x64/Release/FileFormatImplementation.d \

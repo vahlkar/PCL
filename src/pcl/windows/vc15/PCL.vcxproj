@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-07-31T19:36:14.229Z
+# Generated on .... 2020-08-17T11:04:05.374Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -30,7 +30,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{37D8BE3E-CFA7-4C0C-B6C4-31E32018CFAD}</ProjectGuid>
+    <ProjectGuid>{1E7E03C8-E564-4CEC-A286-BBF2619A37BB}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -236,6 +236,8 @@
     <ClCompile Include="..\..\FactorialCache.cpp"/>
     <ClCompile Include="..\..\FastRotation.cpp"/>
     <ClCompile Include="..\..\File.cpp"/>
+    <ClCompile Include="..\..\FileDataCache.cpp"/>
+    <ClCompile Include="..\..\FileDataCachePreferencesDialog.cpp"/>
     <ClCompile Include="..\..\FileDialog.cpp"/>
     <ClCompile Include="..\..\FileFormat.cpp"/>
     <ClCompile Include="..\..\FileFormatImplementation.cpp"/>
