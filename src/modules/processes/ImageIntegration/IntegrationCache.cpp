@@ -52,8 +52,6 @@
 
 #include "IntegrationCache.h"
 
-#include <pcl/Settings.h>
-
 namespace pcl
 {
 
@@ -113,7 +111,7 @@ void IntegrationCacheItem::AssignData( const FileDataCacheItem& item )
    as1_mad    = src.as1_mad;
    as0_bwmv   = src.as0_bwmv;
    as1_bwmv   = src.as1_bwmv;
-   metadata = src.metadata;
+   metadata   = src.metadata;
 #undef src
 }
 

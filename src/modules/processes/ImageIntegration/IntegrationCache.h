@@ -53,7 +53,8 @@
 #ifndef __IntegrationCache_h
 #define __IntegrationCache_h
 
-#include "FileDataCache.h"
+#include <pcl/FileDataCache.h>
+
 #include "IntegrationFile.h"
 
 namespace pcl
@@ -112,6 +113,16 @@ public:
    String CacheName() const override
    {
       return "ImageIntegration Cache";
+   }
+
+   int Version() const override
+   {
+      return 2;
+   }
+
+   int MinSupportedVersion() const override
+   {
+      return 2;
    }
 
 private:

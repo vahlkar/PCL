@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-07-31T19:36:34.903Z
+# Generated on .... 2020-08-17T11:04:28.687Z
 # Project id ...... ImageIntegration
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{31485685-3C33-45F6-82C4-097DC3EE2915}</ProjectGuid>
+    <ProjectGuid>{2ECDC209-ADB4-4FD6-B051-9EA8B186F2B3}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -236,8 +236,6 @@
     <ClCompile Include="..\..\DrizzleIntegrationInterface.cpp"/>
     <ClCompile Include="..\..\DrizzleIntegrationParameters.cpp"/>
     <ClCompile Include="..\..\DrizzleIntegrationProcess.cpp"/>
-    <ClCompile Include="..\..\FileDataCache.cpp"/>
-    <ClCompile Include="..\..\FileDataCachePreferencesDialog.cpp"/>
     <ClCompile Include="..\..\HDRCompositionInstance.cpp"/>
     <ClCompile Include="..\..\HDRCompositionInterface.cpp"/>
     <ClCompile Include="..\..\HDRCompositionParameters.cpp"/>
@@ -263,8 +261,6 @@
     <ClInclude Include="..\..\DrizzleIntegrationInterface.h"/>
     <ClInclude Include="..\..\DrizzleIntegrationParameters.h"/>
     <ClInclude Include="..\..\DrizzleIntegrationProcess.h"/>
-    <ClInclude Include="..\..\FileDataCache.h"/>
-    <ClInclude Include="..\..\FileDataCachePreferencesDialog.h"/>
     <ClInclude Include="..\..\HDRCompositionInstance.h"/>
     <ClInclude Include="..\..\HDRCompositionInterface.h"/>
     <ClInclude Include="..\..\HDRCompositionParameters.h"/>

@@ -50,12 +50,12 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "FileDataCachePreferencesDialog.h"
 #include "ImageIntegrationInterface.h"
 #include "ImageIntegrationProcess.h"
 #include "IntegrationCache.h"
 
 #include <pcl/DrizzleData.h>
+#include <pcl/FileDataCachePreferencesDialog.h>
 #include <pcl/FileDialog.h>
 #include <pcl/FileFormat.h>
 #include <pcl/LocalNormalizationData.h>

@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-07-31T19:36:34.997Z
+# Generated on .... 2020-08-17T11:04:28.791Z
 # Project id ...... ImageIntegration
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>463f5f2d-b980-45c8-8597-e5743a72bc11</UniqueIdentifier>
+      <UniqueIdentifier>b7ba2e85-2cfc-41d4-94de-8cc8eb142e9e</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>fabbbb0d-0bb4-4eab-b4b2-6dace9b13fb1</UniqueIdentifier>
+      <UniqueIdentifier>aaa7322c-98e4-4c22-825b-910ef043cf99</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>82803c50-b21a-467b-8c6c-c7cdc36e37ea</UniqueIdentifier>
+      <UniqueIdentifier>44380c16-5e0c-45cc-bdc8-4022aa2dd079</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,12 +39,6 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\DrizzleIntegrationProcess.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\FileDataCache.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\FileDataCachePreferencesDialog.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\HDRCompositionInstance.cpp">
@@ -116,12 +110,6 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\DrizzleIntegrationProcess.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileDataCache.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileDataCachePreferencesDialog.h">
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\HDRCompositionInstance.h">

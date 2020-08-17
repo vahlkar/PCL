@@ -163,8 +163,8 @@ void ImageIntegrationModule::GetReleaseDate( int& year, int& month, int& day ) c
 
 // ----------------------------------------------------------------------------
 
-void ImageIntegrationModule::OnLoad()
-{
+// void ImageIntegrationModule::OnLoad()
+// {
    /*
     * ### N.B.: File caches are created and loaded the first time an instance
     * is executed, or the first time a preferences dialog is launched. Loading
@@ -172,7 +172,7 @@ void ImageIntegrationModule::OnLoad()
     */
 //    if ( TheIntegrationCache == nullptr )
 //       new IntegrationCache;
-}
+// }
 
 // ----------------------------------------------------------------------------
 
