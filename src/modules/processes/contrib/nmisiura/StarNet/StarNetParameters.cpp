@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// StarNetParameters.cpp - Released 2020-08-17T12:19:56Z
+// StarNetParameters.cpp - Released 2020-08-17T19:10:47Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -79,16 +79,16 @@ IsoString SNStride::ElementId( size_type i ) const
    switch ( i )
    {
    default: // ?!
-   case itemOne:
-      return "itemOne";
-   case itemTwo:
-      return "itemTwo";
-   case itemThree:
-      return "itemThree";
-   case itemFour:
-      return "itemFour";
-   case itemFive:
-      return "itemFive";
+   case Stride_128:
+      return "Stride_128";
+   case Stride_64:
+      return "Stride_64";
+   case Stride_32:
+      return "Stride_32";
+   case Stride_16:
+      return "Stride_16";
+   case Stride_8:
+      return "Stride_8";
    }
 }
 
@@ -107,4 +107,4 @@ size_type SNStride::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetParameters.cpp - Released 2020-08-17T12:19:56Z
+// EOF StarNetParameters.cpp - Released 2020-08-17T19:10:47Z

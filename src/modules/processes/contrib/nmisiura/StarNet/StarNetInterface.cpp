@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// StarNetInterface.cpp - Released 2020-08-17T12:19:56Z
+// StarNetInterface.cpp - Released 2020-08-17T19:10:47Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -397,7 +397,7 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
    //
 
    const char* strideToolTip =
-      "<p>The target image will be transformed tile by tile, each tile having size stride by stride.</p>"
+      "<p>The target image will be transformed tile by tile, each tile having size stride by stride pixels.</p>"
       "<p>Decreasing this value might help with edge artifacts on large stars, but it is usually not worth it.</p>";
 
    StrideParameter_Label.SetText( "Stride:" );
@@ -420,7 +420,7 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 
    //
 
-   MaskParameter_CheckBox.SetText( "Create starmask" );
+   MaskParameter_CheckBox.SetText( "Create star mask" );
    MaskParameter_CheckBox.SetToolTip( "<p>Generate a star mask instead of a starless image.</p>" );
    MaskParameter_CheckBox.OnClick( (pcl::Button::click_event_handler)&StarNetInterface::e_Click, w );
 
@@ -481,7 +481,8 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 
    w.EnsureLayoutUpdated();
    w.AdjustToContents();
-   w.SetFixedSize();
+   w.SetMinWidth();
+   w.SetFixedHeight();
 }
 
 // ----------------------------------------------------------------------------
@@ -489,4 +490,4 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInterface.cpp - Released 2020-08-17T12:19:56Z
+// EOF StarNetInterface.cpp - Released 2020-08-17T19:10:47Z

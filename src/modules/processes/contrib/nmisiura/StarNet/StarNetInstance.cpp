@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// StarNetInstance.cpp - Released 2020-08-17T12:19:56Z
+// StarNetInstance.cpp - Released 2020-08-17T19:10:47Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -38,6 +38,8 @@
 #include <pcl/View.h>
 
 #include <tensorflow/c/c_api.h>
+
+#define INPUT_TILE_SIZE 256
 
 namespace pcl
 {
@@ -102,14 +104,11 @@ public:
    template <class P>
    static void Apply( GenericImage<P>& image, View& view, const StarNetInstance& instance )
    {
-      const int window = 256; // input tile size
-
       if ( !TheStarNetProcess->PreferencesLoaded() )
          TheStarNetProcess->LoadPreferences();
 
       String weightsFilePath = image.IsColor() ? TheStarNetProcess->RGBWeightsFilePath()
                                                : TheStarNetProcess->GrayscaleWeightsFilePath();
-            //"rgb_starnet_weights.pb" : "mono_starnet_weights.pb" );
       if ( !File::Exists( weightsFilePath ) )
          throw Error( "Checkpoint file not found: " + weightsFilePath );
 
@@ -118,6 +117,8 @@ public:
       int imgHeight = image.Height();
       int imgWidth = image.Width();
       int strideSize = Pow2I<int>()( 7 - instance.p_stride );
+
+      Console console;
 
       /*
        * Starting augmentation of the image.
@@ -131,7 +132,7 @@ public:
        * of an image. This proper size is called finalHeight by finalWidth and
        * is calculated below.
        */
-      int border = (window - strideSize)/2;
+      int border = (INPUT_TILE_SIZE - strideSize)/2;
       int finalWidth  = ((imgWidth % strideSize != 0)  ? (imgWidth/strideSize + 1)*strideSize : imgWidth) + 2*border;
       int finalHeight = ((imgHeight % strideSize != 0) ? (imgHeight/strideSize + 1)*strideSize : imgHeight) + 2*border;
 
@@ -174,20 +175,62 @@ public:
       /*
        * Load the appropriate model for the color space of the image.
        */
-      Console().WriteLn( "<end><cbr>Restoring neural network checkpoint: <raw>" + weightsFilePath + "</raw>" );
+      console.WriteLn( "<end><cbr>Restoring neural network checkpoint: <raw>" + weightsFilePath + "</raw>" );
       TF_Graph* graph = LoadGraphDef( weightsFilePath );
+
+      int stridesPerRow = (finalWidth - INPUT_TILE_SIZE)/strideSize + 1;
+      int numberOfTiles = ((finalHeight - INPUT_TILE_SIZE)/strideSize + 1) * stridesPerRow;
+      console.EnableAbort();
+      StandardStatus callback;
+      StatusMonitor monitor;
+      monitor.SetCallback( &callback );
+      monitor.Initialize( String().Format( "Processing %d image tiles", numberOfTiles ), numberOfTiles );
+
+      /*
+       * ### N.B.
+       *
+       * The commented code below (and the corresponding thread code after this
+       * function) is an attempt to parallelize tile processing.
+       *
+       * This code is kept here for reference but not used, since TensorFlow
+       * already runs parallelized and we cannot improve its execution times
+       * for now.
+       */
+//       Array<size_type> L = Thread::OptimalThreadLoads( numberOfTiles, 1/*overheadLimit*/ );
+//       AbstractImage::ThreadData data( monitor, numberOfTiles );
+//       ReferenceArray<WorkerThread<P>> threads;
+//       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+//          threads << new WorkerThread<P>( data, transformed, starless, graph, strideSize, n, n + int( L[i] ) - 1 );
+//       AbstractImage::RunThreads( threads, data );
+//       threads.Destroy();
+//
+//       TF_DeleteGraph( graph );
+//
+//       /*
+//        * Crop the image back to its original size.
+//        * If we want a mask, return the difference between the initial and
+//        * output images.
+//        */
+//       if ( instance.p_mask )
+//       {
+//          GenericImage<P> mask( finalWidth, finalHeight, image.ColorSpace() );
+//          mask = transformed - starless;
+//          image = mask.CropBy( -left, -top, -right, -bottom );
+//       }
+//       else
+//          image = starless.CropBy( -left, -top, -right, -bottom );
 
       /*
        * Tensorflow stuff.
        */
+      // Operations
       TF_Output inputOp = { TF_GraphOperationByName( graph, "X" ), 0 };
-      // Input dimensions.
-      const int64_t inputDims[ 4 ] = { 1, window, window, imgNumChannels };
-
+      TF_Output outOp = { TF_GraphOperationByName( graph, "generator/g_deconv7/Sub" ), 0 };
+      // Input dimensions
+      const int64_t inputDims[ 4 ] = { 1, INPUT_TILE_SIZE, INPUT_TILE_SIZE, imgNumChannels };
       // Creating all necessary tensors and session for TF.
       TF_SessionOptions* options = TF_NewSessionOptions();
       TF_Status* status = TF_NewStatus();
-      TF_Output outOp = { TF_GraphOperationByName( graph, "generator/g_deconv7/Sub" ), 0 };
       TF_Session* sess = TF_NewSession( graph, options, status );
 
 #define CLEANUP()    TF_CloseSession( sess, status );    \
@@ -195,86 +238,82 @@ public:
                      TF_DeleteSessionOptions( options ); \
                      TF_DeleteGraph( graph );            \
                      TF_DeleteStatus( status );
-
-      size_type numberOfTiles = size_type( (finalHeight - window)/strideSize + 1 )
-                              * size_type( (finalWidth - window)/strideSize + 1 );
-      Console().EnableAbort();
-      StandardStatus callback;
-      StatusMonitor monitor;
-      monitor.SetCallback( &callback );
-      monitor.Initialize( String().Format( "Processing %u image tiles", numberOfTiles ), numberOfTiles );
-
-      /*
-       * This is the main loop - it goes through the whole image tile by tile
-       * and processes it.
-       */
       try
       {
-         for ( int i = 0; i <= finalWidth - window; i += strideSize )
-            for ( int j = 0; j <= finalHeight - window; j += strideSize, ++monitor )
-            {
-               /*
-                * Filling the input vector for TF.
-                *
-                * Rescaling the values - at the moment RGB model works with
-                * samples in the range [-1, 1] and grayscale model works with
-                * samples with zero mean and standard deviation of one. This
-                * will be changed in the future; I am plannning to make both
-                * models works with samples in [-1, 1] range.
-                */
-               Array<float> inputVals;
-               for ( int w = i; w < i + window; ++w )
-                  for ( int h = j; h < j + window; ++h )
-                     for ( int c = 0; c < imgNumChannels; ++c )
-                     {
-                        float f; P::FromSample( f, transformed( w, h, c ) );
-                        inputVals << (image.IsColor() ? f+f - 1 : f);
-                     }
+         /*
+          * This is the main loop - it goes through the whole image tile by
+          * tile and processes it.
+          */
+         for ( int tile = 0; tile < numberOfTiles; ++tile, ++monitor )
+         {
+            /*
+             * Image coordinates of the top left corner of the current tile.
+             */
+            int i = (tile % stridesPerRow) * strideSize;
+            int j = (tile / stridesPerRow) * strideSize;
 
-               /*
-                * Calculation of standard deviation and mean for grayscale
-                * model. I am plannning to make Grayscale model to work with
-                * samples rescaled to [-1, 1] instead, so this is likely to be
-                * removed in the future.
-                */
-               double mean = Mean( inputVals.Begin(), inputVals.End() );
-               double stdev = StdDev( inputVals.Begin(), inputVals.End(), mean );
+            /*
+             * Filling the input vector for TF.
+             *
+             * Rescaling the values - at the moment RGB model works with
+             * samples in the range [-1, 1] and grayscale model works with
+             * samples with zero mean and standard deviation of one.
+             *
+             * This will be changed in the future; I am plannning to make both
+             * models works with samples in [-1, 1] range.
+             */
+            Array<float> inputVals;
+            for ( int w = i; w < i + INPUT_TILE_SIZE; ++w )
+               for ( int h = j; h < j + INPUT_TILE_SIZE; ++h )
+                  for ( int c = 0; c < imgNumChannels; ++c )
+                  {
+                     float f; P::FromSample( f, transformed( w, h, c ) );
+                     inputVals << (image.IsColor() ? f+f - 1 : f);
+                  }
 
-               if ( 1 + stdev == 1 )
-                  stdev = 1;
-               if ( !image.IsColor() )
-                  for ( float& x : inputVals )
-                     x = (x - mean)/stdev;
+            /*
+             * Calculation of standard deviation and mean for grayscale model.
+             * I am plannning to make Grayscale model to work with samples
+             * rescaled to [-1, 1] instead, so this is likely to be removed in
+             * the future.
+             */
+            double mean = Mean( inputVals.Begin(), inputVals.End() );
+            double stdev = StdDev( inputVals.Begin(), inputVals.End(), mean );
 
-               // load values into tensor
-               TF_Tensor* inputTensor = CreateTensor( TF_FLOAT, inputDims, 4, inputVals.Begin(), inputVals.Size() );
-               TF_Tensor* outputTensor = nullptr;
+            if ( 1 + stdev == 1 )
+               stdev = 1;
+            if ( !image.IsColor() )
+               for ( float& x : inputVals )
+                  x = (x - mean)/stdev;
 
-               // Run TF to get output
-               TF_SessionRun( sess, nullptr,                 // run options
-                              &inputOp, &inputTensor, 1,     // input tensors, input tensor values, number of inputs
-                              &outOp, &outputTensor, 1,      // output tensors, output tensor values, number of outputs
-                              nullptr, 0, nullptr, status ); // target operations, number of targets, run metadata, output status
+            // load values into tensor
+            TF_Tensor* inputTensor = CreateTensor( TF_FLOAT, inputDims, 4, inputVals.Begin(), inputVals.Size() );
+            TF_Tensor* outputTensor = nullptr;
 
-               // Output data
-               float* data = reinterpret_cast<float*>( TF_TensorData( outputTensor ) );
+            // Run TF to get output
+            TF_SessionRun( sess, nullptr,                 // run options
+                           &inputOp, &inputTensor, 1,     // input tensors, input tensor values, number of inputs
+                           &outOp, &outputTensor, 1,      // output tensors, output tensor values, number of outputs
+                           nullptr, 0, nullptr, status ); // target operations, number of targets, run metadata, output status
 
-               /*
-                * Basically, just a primitive loop to load vector of values
-                * into pixels and rescale them back.
-                */
-               for ( int w = border; w < window - border; ++w )
-                  for ( int h = border; h < window - border; ++h )
-                     for ( int c = 0; c < imgNumChannels; ++c )
-                     {
-                        float v = data[c + imgNumChannels*(w*window + h)];
-                        v = image.IsColor() ? (v + 1)/2 : v*stdev + mean;
-                        starless( i + w, j + h, c ) = P::ToSample( Range( v, .0F, 1.F ) );
-                     }
+            // Output data
+            float* data = reinterpret_cast<float*>( TF_TensorData( outputTensor ) );
 
-               TF_DeleteTensor( inputTensor );
-               TF_DeleteTensor( outputTensor );
-            }
+            /*
+             * Load vector of values into pixels and rescale them back.
+             */
+            for ( int w = border; w < INPUT_TILE_SIZE - border; ++w )
+               for ( int h = border; h < INPUT_TILE_SIZE - border; ++h )
+                  for ( int c = 0; c < imgNumChannels; ++c )
+                  {
+                     float v = data[c + imgNumChannels*(w*INPUT_TILE_SIZE + h)];
+                     v = image.IsColor() ? (v + 1)/2 : v*stdev + mean;
+                     starless( i + w, j + h, c ) = P::ToSample( Range( v, .0F, 1.F ) );
+                  }
+
+            TF_DeleteTensor( inputTensor );
+            TF_DeleteTensor( outputTensor );
+         } // for each tile
 
          /*
           * Crop the image back to its original size.
@@ -305,6 +344,138 @@ public:
    }
 
 private:
+
+//    template <class P>
+//    class WorkerThread : public Thread
+//    {
+//    public:
+//
+//       WorkerThread( const AbstractImage::ThreadData& data,
+//                     const GenericImage<P>& image, GenericImage<P>& starless,
+//                     TF_Graph* graph, int strideSize, int firstTile, int lastTile )
+//          : m_data( data )
+//          , m_image( image )
+//          , m_starless( starless )
+//          , m_graph( graph )
+//          , m_strideSize( strideSize )
+//          , m_firstTile( firstTile )
+//          , m_lastTile( lastTile )
+//       {
+//       }
+//
+//       void Run() override
+//       {
+//          INIT_THREAD_MONITOR()
+//
+//          // Input dimensions.
+//          int imgNumChannels = m_image.NumberOfNominalChannels();
+//          const int64_t inputDims[ 4 ] = { 1, INPUT_TILE_SIZE, INPUT_TILE_SIZE, imgNumChannels };
+//
+//          // Creating all necessary tensors and session for TF.
+//          TF_Output inputOp = { TF_GraphOperationByName( m_graph, "X" ), 0 };
+//          TF_Output outOp = { TF_GraphOperationByName( m_graph, "generator/g_deconv7/Sub" ), 0 };
+//          TF_SessionOptions* options = TF_NewSessionOptions();
+//          TF_Status* status = TF_NewStatus();
+//          TF_Session* sess = TF_NewSession( m_graph, options, status );
+//
+/* #define CLEANUP()    TF_CloseSession( sess, status );    \
+//                      TF_DeleteSession( sess, status );   \
+//                      TF_DeleteSessionOptions( options ); \
+//                      TF_DeleteStatus( status ); */
+//          try
+//          {
+//             int stridesPerRow = (m_image.Width() - INPUT_TILE_SIZE)/m_strideSize + 1;
+//
+//             for ( int tile = m_firstTile; tile <= m_lastTile; ++tile )
+//             {
+//                int i = (tile % stridesPerRow) * m_strideSize;
+//                int j = (tile / stridesPerRow) * m_strideSize;
+//
+//                /*
+//                 * Filling the input vector for TF.
+//                 *
+//                 * Rescaling the values - at the moment RGB model works with
+//                 * samples in the range [-1, 1] and grayscale model works with
+//                 * samples with zero mean and standard deviation of one.
+//                 *
+//                 * This will be changed in the future; I am plannning to make
+//                 * both models works with samples in [-1, 1] range.
+//                 */
+//                Array<float> inputVals;
+//                for ( int w = i; w < i + INPUT_TILE_SIZE; ++w )
+//                   for ( int h = j; h < j + INPUT_TILE_SIZE; ++h )
+//                      for ( int c = 0; c < imgNumChannels; ++c )
+//                      {
+//                         float f; P::FromSample( f, m_image( w, h, c ) );
+//                         inputVals << (m_image.IsColor() ? f+f - 1 : f);
+//                      }
+//
+//                /*
+//                 * Calculation of standard deviation and mean for grayscale
+//                 * model. I am plannning to make grayscale model to work with
+//                 * samples rescaled to [-1, 1] instead, so this is likely to be
+//                 * removed in the future.
+//                 */
+//                double mean = Mean( inputVals.Begin(), inputVals.End() );
+//                double stdev = StdDev( inputVals.Begin(), inputVals.End(), mean );
+//
+//                if ( 1 + stdev == 1 )
+//                   stdev = 1;
+//                if ( !m_image.IsColor() )
+//                   for ( float& x : inputVals )
+//                      x = (x - mean)/stdev;
+//
+//                // load values into tensor
+//                TF_Tensor* inputTensor = CreateTensor( TF_FLOAT, inputDims, 4, inputVals.Begin(), inputVals.Size() );
+//                TF_Tensor* outputTensor = nullptr;
+//
+//                // Run TF to get output
+//                TF_SessionRun( sess, nullptr,                 // run options
+//                               &inputOp, &inputTensor, 1,     // input tensors, input tensor values, number of inputs
+//                               &outOp, &outputTensor, 1,      // output tensors, output tensor values, number of outputs
+//                               nullptr, 0, nullptr, status ); // target operations, number of targets, run metadata, output status
+//
+//                // Output data
+//                float* data = reinterpret_cast<float*>( TF_TensorData( outputTensor ) );
+//
+//                /*
+//                 * Load vector of values into pixels and rescale them back.
+//                 */
+//                for ( int border = (INPUT_TILE_SIZE - m_strideSize)/2, w = border; w < INPUT_TILE_SIZE - border; ++w )
+//                   for ( int h = border; h < INPUT_TILE_SIZE - border; ++h )
+//                      for ( int c = 0; c < imgNumChannels; ++c )
+//                      {
+//                         float v = data[c + imgNumChannels*(w*INPUT_TILE_SIZE + h)];
+//                         v = m_image.IsColor() ? (v + 1)/2 : v*stdev + mean;
+//                         m_starless( i + w, j + h, c ) = P::ToSample( Range( v, .0F, 1.F ) );
+//                      }
+//
+//                TF_DeleteTensor( inputTensor );
+//                TF_DeleteTensor( outputTensor );
+//
+//                UPDATE_THREAD_MONITOR( 1 )
+//             }
+//
+//             CLEANUP()
+//             m_success = true;
+//          }
+//          catch ( ... )
+//          {
+//             CLEANUP()
+//          }
+//       }
+//
+//    private:
+//
+//       const AbstractImage::ThreadData& m_data;
+//       const GenericImage<P>&           m_image;
+//             GenericImage<P>&           m_starless;
+//             TF_Graph*                  m_graph;
+//             int                        m_strideSize;
+//             int                        m_firstTile;
+//             int                        m_lastTile;
+//             bool                       m_success = false;
+//    };
 
    static TF_Tensor* CreateTensor( TF_DataType dataType, const int64_t* dims, int num_dims, const void* data, size_type size )
    {
@@ -432,4 +603,4 @@ size_type StarNetInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInstance.cpp - Released 2020-08-17T12:19:56Z
+// EOF StarNetInstance.cpp - Released 2020-08-17T19:10:47Z

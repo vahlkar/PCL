@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// StarNetParameters.h - Released 2020-08-17T12:19:56Z
+// StarNetParameters.h - Released 2020-08-17T19:10:47Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -46,13 +46,13 @@ public:
 
    enum
    {
-      itemOne,
-      itemTwo,
-      itemThree,
-      itemFour,
-      itemFive,
+      Stride_128,
+      Stride_64,
+      Stride_32,
+      Stride_16,
+      Stride_8,
       NumberOfItems,
-      Default = itemOne
+      Default = Stride_128
    };
 
    SNStride( MetaProcess* );
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __StarNetParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF StarNetParameters.h - Released 2020-08-17T12:19:56Z
+// EOF StarNetParameters.h - Released 2020-08-17T19:10:47Z
