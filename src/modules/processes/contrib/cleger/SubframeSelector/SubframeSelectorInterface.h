@@ -86,6 +86,7 @@ public:
    MetaProcess* Process() const override;
    String IconImageSVGFile() const override;
    InterfaceFeatures Features() const override;
+   void EditPreferences() override;
    void ResetInstance() override;
    bool Launch( const MetaProcess&, const ProcessImplementation*, bool& dynamic, unsigned&/*flags*/ ) override;
    ProcessImplementation* NewProcess() const override;

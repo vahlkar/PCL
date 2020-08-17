@@ -64,7 +64,6 @@ SubframeSelectorCache* TheSubframeSelectorCache = nullptr;
 void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
 {
 #define src static_cast<const SubframeSelectorCacheItem&>( item )
-   cacheVersion        = src.cacheVersion;
    fwhm                = src.fwhm;
    fwhmMeanDev         = src.fwhmMeanDev;
    eccentricity        = src.eccentricity;
@@ -82,22 +81,21 @@ void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
 
 // ----------------------------------------------------------------------------
 
-String SubframeSelectorCacheItem::DataAsString() const
+String SubframeSelectorCacheItem::DataToString() const
 {
-   StringList tokens;
-   tokens.Append( String().Format( "cacheVersion\n%i", cacheVersion ) );
-   tokens.Append( String().Format( "fwhm\n%.8f", fwhm ) );
-   tokens.Append( String().Format( "fwhmMeanDev\n%.8f", fwhmMeanDev ) );
-   tokens.Append( String().Format( "eccentricity\n%.8f", eccentricity ) );
-   tokens.Append( String().Format( "eccentricityMeanDev\n%.8f", eccentricityMeanDev ) );
-   tokens.Append( String().Format( "snrWeight\n%.8f", snrWeight ) );
-   tokens.Append( String().Format( "median\n%.8f", median ) );
-   tokens.Append( String().Format( "medianMeanDev\n%.8f", medianMeanDev ) );
-   tokens.Append( String().Format( "noise\n%.8f", noise ) );
-   tokens.Append( String().Format( "noiseRatio\n%.8f", noiseRatio ) );
-   tokens.Append( String().Format( "stars\n%u", stars ) );
-   tokens.Append( String().Format( "starResidual\n%.8f", starResidual ) );
-   tokens.Append( String().Format( "starResidualMeanDev\n%.8f", starResidualMeanDev ) );
+   StringList tokens = StringList()
+      << String().Format( "fwhm\n%.8f", fwhm )
+      << String().Format( "fwhmMeanDev\n%.8f", fwhmMeanDev )
+      << String().Format( "eccentricity\n%.8f", eccentricity )
+      << String().Format( "eccentricityMeanDev\n%.8f", eccentricityMeanDev )
+      << String().Format( "snrWeight\n%.8f", snrWeight )
+      << String().Format( "median\n%.8f", median )
+      << String().Format( "medianMeanDev\n%.8f", medianMeanDev )
+      << String().Format( "noise\n%.8f", noise )
+      << String().Format( "noiseRatio\n%.8f", noiseRatio )
+      << String().Format( "stars\n%u", stars )
+      << String().Format( "starResidual\n%.8f", starResidual )
+      << String().Format( "starResidualMeanDev\n%.8f", starResidualMeanDev );
    return String().ToNewLineSeparated( tokens );
 }
 
@@ -108,12 +106,7 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
    AssignData( SubframeSelectorCacheItem() );
 
    for ( StringList::const_iterator i = tokens.Begin(); i != tokens.End(); )
-      if ( *i == "cacheVersion" )
-      {
-         if ( !(++i)->TryToInt( cacheVersion ) )
-            return false;
-      }
-      else if ( *i == "fwhm" )
+      if ( *i == "fwhm" )
       {
          if ( !(++i)->TryToDouble( fwhm ) )
             return false;
@@ -160,7 +153,7 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
       }
       else if ( *i == "stars" )
       {
-         unsigned int s;
+         unsigned s;
          if ( !(++i)->TryToUInt( s ) )
             return false;
          stars = static_cast<uint16>(s);
@@ -185,7 +178,8 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
 
 // ----------------------------------------------------------------------------
 
-SubframeSelectorCache::SubframeSelectorCache() : FileDataCache( "/SubframeSelector/Cache" )
+SubframeSelectorCache::SubframeSelectorCache()
+   : FileDataCache( "/SubframeSelector/Cache" )
 {
    if ( TheSubframeSelectorCache == nullptr )
       TheSubframeSelectorCache = this;

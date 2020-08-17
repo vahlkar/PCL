@@ -53,7 +53,7 @@
 #ifndef __SubframeSelectorCache_h
 #define __SubframeSelectorCache_h
 
-#include "FileDataCache.h"
+#include <pcl/FileDataCache.h>
 
 namespace pcl
 {
@@ -64,7 +64,6 @@ class SubframeSelectorCacheItem : public FileDataCacheItem
 {
 public:
 
-   int      cacheVersion;
    double   fwhm;
    double   fwhmMeanDev;
    double   eccentricity;
@@ -74,7 +73,7 @@ public:
    double   medianMeanDev;
    double   noise;
    double   noiseRatio;
-   uint16   stars;
+   unsigned stars;
    double   starResidual;
    double   starResidualMeanDev;
 
@@ -90,7 +89,7 @@ public:
 private:
 
    void AssignData( const FileDataCacheItem& item ) override;
-   String DataAsString() const override;
+   String DataToString() const override;
    bool GetDataFromTokens( const StringList& tokens ) override;
 };
 
@@ -106,6 +105,16 @@ public:
    String CacheName() const override
    {
       return "SubframeSelector Cache";
+   }
+
+   int Version() const override
+   {
+      return 2;
+   }
+
+   int MinSupportedVersion() const override
+   {
+      return 2;
    }
 
 private:

@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-07-31T19:36:42.616Z
+# Generated on .... 2020-08-17T11:04:36.603Z
 # Project id ...... SubframeSelector
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -17,19 +17,16 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>0226e818-9b24-4a04-be08-575411e81beb</UniqueIdentifier>
+      <UniqueIdentifier>3d26b284-fd5c-400a-9223-fdb13f40f103</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>8ecdc42a-015f-4159-bdf9-caf92536d35d</UniqueIdentifier>
+      <UniqueIdentifier>4249fa6a-9434-4ec2-bfd9-c97045b647e7</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>e6be324c-7d2b-44d9-be0f-9f0b104cd198</UniqueIdentifier>
+      <UniqueIdentifier>4c3ab4ee-71b8-411f-9968-c7e26a8896b2</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\FileDataCache.cpp">
-        <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\GraphWebView.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
@@ -62,9 +59,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\FileDataCache.h">
-        <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\GraphWebView.h">
         <Filter>Header Files</Filter>
     </ClInclude>

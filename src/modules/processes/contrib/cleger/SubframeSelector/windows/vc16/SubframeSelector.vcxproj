@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-07-31T19:36:42.716Z
+# Generated on .... 2020-08-17T11:04:36.703Z
 # Project id ...... SubframeSelector
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -34,7 +34,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{49A987C8-3C6E-430B-9A19-FF4091EC87CF}</ProjectGuid>
+    <ProjectGuid>{8121A667-E2C3-48B3-9C5F-9A67FAFB943E}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -232,7 +232,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\FileDataCache.cpp"/>
     <ClCompile Include="..\..\GraphWebView.cpp"/>
     <ClCompile Include="..\..\SubframeSelectorCache.cpp"/>
     <ClCompile Include="..\..\SubframeSelectorExpressionsInterface.cpp"/>
@@ -245,7 +244,6 @@
     <ClCompile Include="..\..\SubframeSelectorStarDetector.cpp"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\FileDataCache.h"/>
     <ClInclude Include="..\..\GraphWebView.h"/>
     <ClInclude Include="..\..\SubframeSelectorCache.h"/>
     <ClInclude Include="..\..\SubframeSelectorExpressionsInterface.h"/>

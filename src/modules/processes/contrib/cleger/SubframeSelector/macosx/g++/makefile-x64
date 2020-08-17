@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-07-31T19:36:42.496Z
+# Generated on .... 2020-08-17T11:04:36.479Z
 # Project id ...... SubframeSelector
 # Project type .... Module
 # Platform ........ MacOSX/g++
@@ -19,7 +19,6 @@ all: $(OBJ_DIR)/SubframeSelector-pxm.dylib
 #
 
 SRC_FILES= \
-../../FileDataCache.cpp \
 ../../GraphWebView.cpp \
 ../../SubframeSelectorCache.cpp \
 ../../SubframeSelectorExpressionsInterface.cpp \
@@ -36,7 +35,6 @@ SRC_FILES= \
 #
 
 OBJ_FILES= \
-./x64/Release/FileDataCache.o \
 ./x64/Release/GraphWebView.o \
 ./x64/Release/SubframeSelectorCache.o \
 ./x64/Release/SubframeSelectorExpressionsInterface.o \
@@ -53,7 +51,6 @@ OBJ_FILES= \
 #
 
 DEP_FILES= \
-./x64/Release/FileDataCache.d \
 ./x64/Release/GraphWebView.d \
 ./x64/Release/SubframeSelectorCache.d \
 ./x64/Release/SubframeSelectorExpressionsInterface.d \

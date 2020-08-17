@@ -58,8 +58,6 @@
 #include "SubframeSelectorCache.h"
 #include "SubframeSelectorParameters.h"
 
-#define CACHE_VERSION 1
-
 namespace pcl
 {
 
@@ -143,7 +141,6 @@ struct MeasureData
    void AddToCache() const
    {
       SubframeSelectorCacheItem item( path );
-      item.cacheVersion        = CACHE_VERSION;
       item.fwhm                = fwhm;
       item.fwhmMeanDev         = fwhmMeanDev;
       item.eccentricity        = eccentricity;
@@ -180,8 +177,7 @@ struct MeasureData
       starResidual        = item.starResidual;
       starResidualMeanDev = item.starResidualMeanDev;
 
-      return item.cacheVersion   == CACHE_VERSION &&
-             fwhm                != TheSSMeasurementFWHMParameter->DefaultValue() &&
+      return fwhm                != TheSSMeasurementFWHMParameter->DefaultValue() &&
              fwhmMeanDev         != 0 &&
              eccentricity        != TheSSMeasurementEccentricityParameter->DefaultValue() &&
              eccentricityMeanDev != 0 &&
@@ -599,8 +595,6 @@ private:
 // ----------------------------------------------------------------------------
 
 } // pcl
-
-#undef CACHE_VERSION
 
 #endif   // __SubframeSelectorMeasureData_h
 

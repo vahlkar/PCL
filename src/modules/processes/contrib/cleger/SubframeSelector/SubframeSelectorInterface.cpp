@@ -50,19 +50,20 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
+#include "SubframeSelectorExpressionsInterface.h"
+#include "SubframeSelectorInterface.h"
+#include "SubframeSelectorMeasurementsInterface.h"
+#include "SubframeSelectorProcess.h"
+
 #include <pcl/Console.h>
 #include <pcl/Dialog.h>
+#include <pcl/FileDataCachePreferencesDialog.h>
 #include <pcl/FileDialog.h>
 #include <pcl/FileFormat.h>
 #include <pcl/MetaModule.h>
 #include <pcl/PreviewSelectionDialog.h>
 #include <pcl/StdStatus.h>
 #include <pcl/ViewList.h>
-
-#include "SubframeSelectorExpressionsInterface.h"
-#include "SubframeSelectorInterface.h"
-#include "SubframeSelectorMeasurementsInterface.h"
-#include "SubframeSelectorProcess.h"
 
 #define IMAGELIST_MINHEIGHT( fnt )  (12*fnt.Height() + 2)
 
@@ -127,7 +128,17 @@ String SubframeSelectorInterface::IconImageSVGFile() const
 
 InterfaceFeatures SubframeSelectorInterface::Features() const
 {
-   return InterfaceFeature::DefaultGlobal;
+   return InterfaceFeature::DefaultGlobal | InterfaceFeature::PreferencesButton;
+}
+
+// ----------------------------------------------------------------------------
+
+void SubframeSelectorInterface::EditPreferences()
+{
+   if ( TheSubframeSelectorCache == nullptr )
+      new SubframeSelectorCache; // loads upon construction
+   FileDataCachePreferencesDialog dlg( TheSubframeSelectorCache );
+   dlg.Execute();
 }
 
 // ----------------------------------------------------------------------------
