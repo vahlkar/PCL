@@ -121,7 +121,7 @@ private:
    pcl_bool    p_autoExposures;           // sort images by relative exposures automatically; manual order otherwise
    pcl_bool    p_rejectBlack;             // reject black pixels
    pcl_bool    p_useFittingRegion;        // use a rectangular region for image fitting; entire image otherwise
-   Rect        p_fittingRect;             // image fitting rectangle
+   Rect        p_fittingRect = 0;         // image fitting rectangle
    pcl_bool    p_generate64BitResult;     // generate a 64-bit floating point HDR image instead of 32-bit
    pcl_bool    p_outputMasks;             // output the composition mask images
    pcl_bool    p_closePreviousImages;     // close existing mask and HDR images before running
