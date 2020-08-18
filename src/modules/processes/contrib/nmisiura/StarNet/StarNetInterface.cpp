@@ -204,6 +204,7 @@ void StarNetPreferencesDialog::e_Click( Button& sender, bool checked )
       OpenFileDialog d;
       d.SetCaption( "StarNet: Select RGB Weights File" );
       d.AddFilter( FileFilter( "StarNet Weights Files", ".pb" ) );
+      d.AddFilter( FileFilter( "Any Files", "*" ) );
       d.DisableMultipleSelections();
       if ( d.Execute() )
       {
@@ -216,6 +217,7 @@ void StarNetPreferencesDialog::e_Click( Button& sender, bool checked )
       OpenFileDialog d;
       d.SetCaption( "StarNet: Select Grayscale Weights File" );
       d.AddFilter( FileFilter( "StarNet Weights Files", ".pb" ) );
+      d.AddFilter( FileFilter( "Any Files", "*" ) );
       d.DisableMultipleSelections();
       if ( d.Execute() )
       {
