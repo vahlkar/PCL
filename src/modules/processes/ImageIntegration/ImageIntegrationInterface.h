@@ -136,6 +136,9 @@ private:
          HorizontalSizer   Normalization_Sizer;
             Label             Normalization_Label;
             ComboBox          Normalization_ComboBox;
+         HorizontalSizer   AdaptiveGridSize_Sizer;
+            Label             AdaptiveGridSize_Label;
+            SpinBox           AdaptiveGridSize_SpinBox;
          HorizontalSizer   WeightMode_Sizer;
             Label             WeightMode_Label;
             ComboBox          WeightMode_ComboBox;

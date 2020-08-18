@@ -69,7 +69,7 @@ public:
    AdaptiveNormalizationData() = default;
    AdaptiveNormalizationData( const AdaptiveNormalizationData& ) = default;
 
-   AdaptiveNormalizationData( const Image& image, int scaleEstimator, int nx = 4, int ny = 4 );
+   AdaptiveNormalizationData( const Image& image, int scaleEstimator, int gridSize );
 
    AdaptiveNormalizationData( int width, int height, const DVector& x, const DVector& y,
                               const DMultiVector& m, const DMultiVector& s0, const DMultiVector& s1 );
@@ -110,6 +110,9 @@ private:
    interpolators m_scaleHigh;   // high scale interpolation
 
    void InitInterpolations();
+
+   // For cache validation
+   static int NumberOfGridElements( int width, int height, int gridSize );
 
    friend class IntegrationFile;
 };

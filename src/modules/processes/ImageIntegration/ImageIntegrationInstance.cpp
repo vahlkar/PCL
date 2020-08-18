@@ -85,8 +85,7 @@ ImageIntegrationInstance::ImageIntegrationInstance( const MetaProcess* m )
    , p_weightMode( IIWeightMode::Default )
    , p_weightKeyword( TheIIWeightKeywordParameter->DefaultValue() )
    , p_weightScale( IIWeightScale::Default )
-   , p_adaptiveNX( TheIIAdaptiveNXParameter->DefaultValue() )
-   , p_adaptiveNY( TheIIAdaptiveNYParameter->DefaultValue() )
+   , p_adaptiveGridSize( TheIIAdaptiveGridSizeParameter->DefaultValue() )
    , p_ignoreNoiseKeywords( TheIIIgnoreNoiseKeywordsParameter->DefaultValue() )
    , p_rejection( IIRejection::Default )
    , p_rejectionNormalization( IIRejectionNormalization::Default )
@@ -165,8 +164,7 @@ void ImageIntegrationInstance::Assign( const ProcessImplementation& p )
       p_weightMode                        = x->p_weightMode;
       p_weightKeyword                     = x->p_weightKeyword;
       p_weightScale                       = x->p_weightScale;
-      p_adaptiveNX                        = x->p_adaptiveNX;
-      p_adaptiveNY                        = x->p_adaptiveNY;
+      p_adaptiveGridSize                  = x->p_adaptiveGridSize;
       p_ignoreNoiseKeywords               = x->p_ignoreNoiseKeywords;
       p_rejection                         = x->p_rejection;
       p_rejectionNormalization            = x->p_rejectionNormalization;
@@ -1265,10 +1263,8 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return p_weightKeyword.Begin();
    if ( p == TheIIWeightScaleParameter )
       return &p_weightScale;
-   if ( p == TheIIAdaptiveNXParameter )
-      return &p_adaptiveNX;
-   if ( p == TheIIAdaptiveNYParameter )
-      return &p_adaptiveNY;
+   if ( p == TheIIAdaptiveGridSizeParameter )
+      return &p_adaptiveGridSize;
    if ( p == TheIIIgnoreNoiseKeywordsParameter )
       return &p_ignoreNoiseKeywords;
    if ( p == TheIIRejectionParameter )

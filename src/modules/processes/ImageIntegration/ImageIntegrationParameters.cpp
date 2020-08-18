@@ -67,8 +67,7 @@ IICombination*                       TheIICombinationParameter = nullptr;
 IIWeightMode*                        TheIIWeightModeParameter = nullptr;
 IIWeightKeyword*                     TheIIWeightKeywordParameter = nullptr;
 IIWeightScale*                       TheIIWeightScaleParameter = nullptr;
-IIAdaptiveNX*                        TheIIAdaptiveNXParameter = nullptr;
-IIAdaptiveNY*                        TheIIAdaptiveNYParameter = nullptr;
+IIAdaptiveGridSize*                  TheIIAdaptiveGridSizeParameter = nullptr;
 IIIgnoreNoiseKeywords*               TheIIIgnoreNoiseKeywordsParameter = nullptr;
 IINormalization*                     TheIINormalizationParameter = nullptr;
 IIRejection*                         TheIIRejectionParameter = nullptr;
@@ -400,54 +399,27 @@ size_type IIWeightScale::DefaultValueIndex() const
 
 // ----------------------------------------------------------------------------
 
-IIAdaptiveNX::IIAdaptiveNX( MetaProcess* P ) : MetaInt32( P )
+IIAdaptiveGridSize::IIAdaptiveGridSize( MetaProcess* P ) : MetaInt32( P )
 {
-   TheIIAdaptiveNXParameter = this;
+   TheIIAdaptiveGridSizeParameter = this;
 }
 
-IsoString IIAdaptiveNX::Id() const
+IsoString IIAdaptiveGridSize::Id() const
 {
-   return "adaptiveNX";
+   return "adaptiveGridSize";
 }
 
-double IIAdaptiveNX::DefaultValue() const
+double IIAdaptiveGridSize::DefaultValue() const
 {
-   return 8;
+   return 16;
 }
 
-double IIAdaptiveNX::MinimumValue() const
-{
-   return 2;
-}
-
-double IIAdaptiveNX::MaximumValue() const
-{
-   return 50;
-}
-
-// ----------------------------------------------------------------------------
-
-IIAdaptiveNY::IIAdaptiveNY( MetaProcess* P ) : MetaInt32( P )
-{
-   TheIIAdaptiveNYParameter = this;
-}
-
-IsoString IIAdaptiveNY::Id() const
-{
-   return "adaptiveNY";
-}
-
-double IIAdaptiveNY::DefaultValue() const
-{
-   return 8;
-}
-
-double IIAdaptiveNY::MinimumValue() const
+double IIAdaptiveGridSize::MinimumValue() const
 {
    return 2;
 }
 
-double IIAdaptiveNY::MaximumValue() const
+double IIAdaptiveGridSize::MaximumValue() const
 {
    return 50;
 }

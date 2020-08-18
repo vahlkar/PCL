@@ -316,6 +316,8 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
 
    GUI->Normalization_ComboBox.SetCurrentItem( m_instance.p_normalization );
 
+   GUI->AdaptiveGridSize_SpinBox.SetValue( m_instance.p_adaptiveGridSize );
+
    GUI->WeightMode_Label.Enable( isAverage );
 
    GUI->WeightMode_ComboBox.Enable( isAverage );
@@ -874,7 +876,9 @@ void ImageIntegrationInterface::e_Integration_EditCompleted( Edit& sender )
 
 void ImageIntegrationInterface::e_Integration_SpinValueUpdated( SpinBox& sender, int value )
 {
-   if ( sender == GUI->BufferSize_SpinBox )
+   if ( sender == GUI->AdaptiveGridSize_SpinBox )
+      m_instance.p_adaptiveGridSize = value;
+   else if ( sender == GUI->BufferSize_SpinBox )
       m_instance.p_bufferSizeMB = value;
    else if ( sender == GUI->StackSize_SpinBox )
       m_instance.p_stackSizeMB = value;
@@ -1430,6 +1434,35 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Normalization_Sizer.Add( Normalization_ComboBox );
    Normalization_Sizer.AddStretch();
 
+   const char* adaptiveGridToolTip =
+      "<p>This parameter defines the number of samples used to interpolate per-pixel statistical location and scale "
+      "estimates for adaptive normalization. The more samples, the more locally adaptive the normalization will be.</p>"
+
+      "<p>A more adaptive normalization attempts to compensate for additive and multiplicative differences between "
+      "integrated subframes at a smaller scale. A less adaptive normalization acts at a larger scale; for example, the "
+      "default <i>additive with scaling</i> output normalization (or the <i>scale + zero offset</i> normalization for "
+      "rejection) uses a single sample of location and scale, and hence can be regarded as a special case of adaptive "
+      "normalization working at the scale of the entire image.</p>"
+
+      "<p>The value specified with this parameter determines the number of columns or rows (according to the largest "
+      "dimension of the image) in the matrix of regularly distributed samples of location and scale computed from pixels "
+      "of each integrated subframe. This value will be used equally for rejection and output adaptive normalizations.</p>";
+
+   AdaptiveGridSize_Label.SetText( "Adaptive grid size:" );
+   AdaptiveGridSize_Label.SetFixedWidth( labelWidth1 );
+   AdaptiveGridSize_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   AdaptiveGridSize_Label.SetToolTip( adaptiveGridToolTip );
+
+   AdaptiveGridSize_SpinBox.SetRange( int( TheIIAdaptiveGridSizeParameter->MinimumValue() ), int( TheIIAdaptiveGridSizeParameter->MaximumValue() ) );
+   AdaptiveGridSize_SpinBox.SetToolTip( adaptiveGridToolTip );
+   AdaptiveGridSize_SpinBox.SetFixedWidth( editWidth2 );
+   AdaptiveGridSize_SpinBox.OnValueUpdated( (SpinBox::value_event_handler)&ImageIntegrationInterface::e_Integration_SpinValueUpdated, w );
+
+   AdaptiveGridSize_Sizer.SetSpacing( 4 );
+   AdaptiveGridSize_Sizer.Add( AdaptiveGridSize_Label );
+   AdaptiveGridSize_Sizer.Add( AdaptiveGridSize_SpinBox );
+   AdaptiveGridSize_Sizer.AddStretch();
+
    const char* weightModeToolTip = "<p>Image weighting criterion.</p>"
       "<p>Exposure times will be retrieved from standard EXPTIME and EXPOSURE FITS keywords (in that order).</p>"
 
@@ -1711,8 +1744,8 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
       "recalculation of all statistical data required for normalization, which involves loading all "
       "integrated image files from disk.</p>"
 
-      "<p>The file cache can also be <i>persistent</i> across PixInsight Core executions. The persistent "
-      "cache and its options can be controlled with the ImageIntegration Preferences dialog.</p>");
+      "<p>The file cache can also be <i>persistent</i> across PixInsight core application executions. The "
+      "persistent cache and its options can be controlled with the ImageIntegration Preferences dialog.</p>");
    UseCache_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
 
    Cache_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -1722,6 +1755,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Integration_Sizer.SetSpacing( 4 );
    Integration_Sizer.Add( Combination_Sizer );
    Integration_Sizer.Add( Normalization_Sizer );
+   Integration_Sizer.Add( AdaptiveGridSize_Sizer );
    Integration_Sizer.Add( WeightMode_Sizer );
    Integration_Sizer.Add( WeightKeyword_Sizer );
    Integration_Sizer.Add( WeightScale_Sizer );

@@ -116,8 +116,7 @@ private:
    String      p_weightKeyword;
    pcl_enum    p_weightScale;   // scale estimator used for image weighting
 
-   int32       p_adaptiveNX;    // adaptive normalization, number of matrix columns
-   int32       p_adaptiveNY;    // adaptive normalization, number of matrix rows
+   int32       p_adaptiveGridSize;    // adaptive normalization, matrix size
 
    pcl_bool    p_ignoreNoiseKeywords; // always evaluate noise of input images; ignore NOISExx keywords
 

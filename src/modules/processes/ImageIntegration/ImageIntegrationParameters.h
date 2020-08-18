@@ -233,11 +233,11 @@ extern IIWeightScale* TheIIWeightScaleParameter;
 
 // ----------------------------------------------------------------------------
 
-class IIAdaptiveNX : public MetaInt32
+class IIAdaptiveGridSize : public MetaInt32
 {
 public:
 
-   IIAdaptiveNX( MetaProcess* );
+   IIAdaptiveGridSize( MetaProcess* );
 
    IsoString Id() const override;
    double DefaultValue() const override;
@@ -245,23 +245,7 @@ public:
    double MaximumValue() const override;
 };
 
-extern IIAdaptiveNX* TheIIAdaptiveNXParameter;
-
-// ----------------------------------------------------------------------------
-
-class IIAdaptiveNY : public MetaInt32
-{
-public:
-
-   IIAdaptiveNY( MetaProcess* );
-
-   IsoString Id() const override;
-   double DefaultValue() const override;
-   double MinimumValue() const override;
-   double MaximumValue() const override;
-};
-
-extern IIAdaptiveNY* TheIIAdaptiveNYParameter;
+extern IIAdaptiveGridSize* TheIIAdaptiveGridSizeParameter;
 
 // ----------------------------------------------------------------------------
 

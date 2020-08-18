@@ -60,23 +60,28 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int scaleEstimator, int nx, int ny )
+AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int scaleEstimator, int gridSize )
 {
-   nx = Range( nx, 2, 16 );
-   ny = Range( ny, 2, 16 );
-
-   int n = nx * ny;
-   int dx = image.Width() / nx;
-   int dy = image.Height() / ny;
-
-   image.ResetSelections();
-   image.SetRangeClipping( 1.0/65535, 1 - 1.0/65535 );
-
    m_width = image.Width();
    m_height = image.Height();
 
+   gridSize = Range( gridSize, 2, 50 );
+   int delta = Max( m_width, m_height )/gridSize;
+   int nx = m_width/delta + (m_width%delta > 0);
+   int ny = m_height/delta + (m_height%delta > 0);
+   int dx = m_width/nx;
+   int dy = m_height/ny;
+
+   int offsetX = (m_width - nx*dx) >> 1;
+   int offsetY = (m_height - ny*dy) >> 1;
+
+   int n = nx * ny;
+
    m_x = DVector( n );
    m_y = DVector( n );
+
+   image.ResetSelections();
+   image.SetRangeClipping( 1.0/65535, 1 - 1.0/65535 );
 
    for ( int c = 0; c < image.NumberOfChannels(); ++c )
    {
@@ -85,11 +90,11 @@ AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int sc
       DVector m( n ), s0( n ), s1( n );
       for ( int i = 0, k = 0; i < ny; ++i )
       {
-         int y0 = i*dy;
+         int y0 = i*dy - offsetY;
          int y1 = y0 + dy;
          for ( int j = 0; j < nx; ++j, ++k )
          {
-            int x0 = j*dx;
+            int x0 = j*dx - offsetX;
             int x1 = x0 + dx;
             image.SelectRectangle( x0, y0, x1, y1 );
             const Rect& r = image.SelectedRectangle();
@@ -137,6 +142,83 @@ AdaptiveNormalizationData::AdaptiveNormalizationData( const Image& image, int sc
    image.ResetSelections();
 
    InitInterpolations();
+
+
+//    nx = Range( nx, 2, 50 );
+//    ny = Range( ny, 2, 50 );
+//
+//    int n = nx * ny;
+//    int dx = image.Width() / nx;
+//    int dy = image.Height() / ny;
+//
+//    image.ResetSelections();
+//    image.SetRangeClipping( 1.0/65535, 1 - 1.0/65535 );
+//
+//    m_width = image.Width();
+//    m_height = image.Height();
+//
+//    m_x = DVector( n );
+//    m_y = DVector( n );
+//
+//    for ( int c = 0; c < image.NumberOfChannels(); ++c )
+//    {
+//       image.SelectChannel( c );
+//
+//       DVector m( n ), s0( n ), s1( n );
+//       for ( int i = 0, k = 0; i < ny; ++i )
+//       {
+//          int y0 = i*dy;
+//          int y1 = y0 + dy;
+//          for ( int j = 0; j < nx; ++j, ++k )
+//          {
+//             int x0 = j*dx;
+//             int x1 = x0 + dx;
+//             image.SelectRectangle( x0, y0, x1, y1 );
+//             const Rect& r = image.SelectedRectangle();
+//             if ( c == 0 )
+//             {
+//                m_x[k] = 0.5*(r.x0 + r.x1);
+//                m_y[k] = 0.5*(r.y0 + r.y1);
+//             }
+//             m[k] = image.Median();
+//             TwoSidedEstimate s2;
+//             switch ( scaleEstimator )
+//             {
+//             case IIWeightScale::AvgDev:
+//                s2 = image.TwoSidedAvgDev( m[k] );
+//                break;
+//             case IIWeightScale::MAD:
+//                s2 = image.TwoSidedMAD( m[k] );
+//                if ( 1 + s2.low == 1 || 1 + s2.high == 1 )
+//                   s2.low = s2.high = image.MAD( m[k] );
+//                break;
+//             default:
+//             case IIWeightScale::BWMV:
+//                {
+//                   s2 = image.TwoSidedMAD( m[k] );
+//                   if ( 1 + s2.low == 1 || 1 + s2.high == 1 )
+//                      s2.low = s2.high = image.MAD( m[k] );
+//                   s2 = Sqrt( image.TwoSidedBiweightMidvariance( m[k], s2 ) );
+//                }
+//                break;
+//             }
+//
+//             if ( !s2.IsValid() )
+//                throw Error( String().Format( "AdaptiveNormalizationData: Zero or insignificant signal detected "
+//                                              "(x0=%d y0=%d x1=%d y1=%d c=%d)", r.x0, r.y0, r.x1, r.y1, c ) );
+//             s0[k] = s2.low;
+//             s1[k] = s2.high;
+//          }
+//       }
+//
+//       m_m << m;
+//       m_s0 << s0;
+//       m_s1 << s1;
+//    }
+//
+//    image.ResetSelections();
+//
+//    InitInterpolations();
 }
 
 // ----------------------------------------------------------------------------
@@ -224,6 +306,20 @@ void AdaptiveNormalizationData::InitInterpolations()
       m_scaleLow << GS0;
       m_scaleHigh << GS1;
    }
+}
+
+// ----------------------------------------------------------------------------
+
+int AdaptiveNormalizationData::NumberOfGridElements( int width, int height, int gridSize )
+{
+   /*
+    * ### N.B. This must be coherent with the class constructor.
+    */
+   gridSize = Range( gridSize, 2, 50 );
+   int delta = Max( width, height )/gridSize;
+   int nx = width/delta + (width%delta > 0);
+   int ny = height/delta + (height%delta > 0);
+   return nx * ny;
 }
 
 // ----------------------------------------------------------------------------

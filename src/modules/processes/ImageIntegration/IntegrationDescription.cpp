@@ -105,7 +105,7 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
          outputNormalization = "Local";
          break;
       case IINormalization::AdaptiveNormalization:
-         outputNormalization.Format( "Adaptive: nx=%d ny=%d", instance.p_adaptiveNX, instance.p_adaptiveNY );
+         outputNormalization.Format( "Adaptive: grid_size=%d", instance.p_adaptiveGridSize );
          break;
       }
    }
@@ -217,7 +217,7 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
          rejectionNormalization = "Local";
          break;
       case IIRejectionNormalization::AdaptiveRejectionNormalization:
-         rejectionNormalization.Format( "Adaptive: nx=%d ny=%d", instance.p_adaptiveNX, instance.p_adaptiveNY );
+         rejectionNormalization.Format( "Adaptive: grid_size=%d", instance.p_adaptiveGridSize );
          break;
       }
 

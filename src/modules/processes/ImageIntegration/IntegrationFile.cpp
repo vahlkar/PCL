@@ -492,8 +492,7 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
    {
       try
       {
-         m_adaptiveNormalization = AdaptiveNormalizationData( *m_image, instance.p_weightScale,
-                                                              instance.p_adaptiveNX, instance.p_adaptiveNY );
+         m_adaptiveNormalization = AdaptiveNormalizationData( *m_image, instance.p_weightScale, instance.p_adaptiveGridSize );
       }
       catch ( Error& x )
       {
@@ -835,14 +834,14 @@ double IntegrationFile::KeywordValue( const IsoString& keyName )
 
 void IntegrationFile::ResetCacheableData()
 {
-   m_mean           = DVector();
-   m_median         = DVector();
-   m_avgDev         = DVector();
-   m_mad            = DVector();
-   m_bwmv           = DVector();
-   m_noiseEstimates = DVector();
+   m_mean                  = DVector();
+   m_median                = DVector();
+   m_avgDev                = DVector();
+   m_mad                   = DVector();
+   m_bwmv                  = DVector();
+   m_noiseEstimates        = DVector();
    m_adaptiveNormalization = AdaptiveNormalizationData();
-   m_metadata = IntegrationMetadata();
+   m_metadata              = IntegrationMetadata();
 }
 
 // ----------------------------------------------------------------------------
@@ -918,8 +917,10 @@ int IntegrationFile::GetFromCache( const String& path )
       if ( !item.metadata.IsEmpty() )
          m_metadata = IntegrationMetadata( item.metadata ), ++n;
 
-      if ( item.ax.Length() == m_instance->p_adaptiveNX * m_instance->p_adaptiveNY )
-         if ( item.ay.Length() == m_instance->p_adaptiveNX * m_instance->p_adaptiveNY )
+      int na = AdaptiveNormalizationData::NumberOfGridElements( s_width, s_height, m_instance->p_adaptiveGridSize );
+
+      if ( item.ax.Length() == na )
+         if ( item.ay.Length() == na )
             if ( int( item.am.Length() ) == s_numberOfChannels )
             {
                DMultiVector as0, as1;

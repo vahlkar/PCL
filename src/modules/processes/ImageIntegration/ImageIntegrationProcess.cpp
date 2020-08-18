@@ -79,8 +79,7 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIWeightMode( this );
    new IIWeightKeyword( this );
    new IIWeightScale( this );
-   new IIAdaptiveNX( this );
-   new IIAdaptiveNY( this );
+   new IIAdaptiveGridSize( this );
    new IIIgnoreNoiseKeywords( this );
    new IINormalization( this );
    new IIRejection( this );
