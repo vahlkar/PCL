@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// StarNetInterface.cpp - Released 2020-08-17T19:10:47Z
+// StarNetInterface.cpp - Released 2020-08-18T19:14:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -362,12 +362,26 @@ void StarNetInterface::UpdateControls()
    GUI->MaskParameter_CheckBox.SetChecked( m_instance.p_mask );
 
    GUI->RGBWeightsFile_Edit.SetText( TheStarNetProcess->RGBWeightsFilePath() );
-   GUI->RGBWeightsFile_BitmapBox.SetBitmap( ScaledResource( TheStarNetProcess->IsValidRGBWeightsFilePath() ?
-                                                ":/icons/ok.png" : ":/icons/error.png" ) );
+
+   {
+      Bitmap bmp( ScaledResource( TheStarNetProcess->IsValidRGBWeightsFilePath() ?
+                                                   ":/icons/ok.png" : ":/icons/error.png" ) );
+#ifdef __PCL_MACOSX
+      bmp.SetPhysicalPixelRatio( ResourcePixelRatio() );
+#endif
+      GUI->RGBWeightsFile_BitmapBox.SetBitmap( bmp );
+   }
 
    GUI->GrayscaleWeightsFile_Edit.SetText( TheStarNetProcess->GrayscaleWeightsFilePath() );
-   GUI->GrayscaleWeightsFile_BitmapBox.SetBitmap( ScaledResource( TheStarNetProcess->IsValidGrayscaleWeightsFilePath() ?
+
+   {
+      Bitmap bmp( ScaledResource( TheStarNetProcess->IsValidGrayscaleWeightsFilePath() ?
                                                 ":/icons/ok.png" : ":/icons/error.png" ) );
+#ifdef __PCL_MACOSX
+      bmp.SetPhysicalPixelRatio( ResourcePixelRatio() );
+#endif
+      GUI->GrayscaleWeightsFile_BitmapBox.SetBitmap( bmp );
+   }
 }
 
 // ----------------------------------------------------------------------------
@@ -492,4 +506,4 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInterface.cpp - Released 2020-08-17T19:10:47Z
+// EOF StarNetInterface.cpp - Released 2020-08-18T19:14:14Z
