@@ -413,8 +413,8 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
    //
 
    const char* strideToolTip =
-      "<p>The target image will be transformed tile by tile, each tile having size stride by stride pixels.</p>"
-      "<p>Decreasing this value might help with edge artifacts on large stars, but it is usually not worth it.</p>";
+   "<p>The target image will be transformed tile by tile, each tile having size stride by stride pixels.</p>"
+   "<p>Decreasing this value might help with edge artifacts on large stars, but it is usually not worth it.</p>";
 
    StrideParameter_Label.SetText( "Stride:" );
    StrideParameter_Label.SetMinWidth( labelWidth1 );
@@ -446,7 +446,16 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 
    //
 
-   const char* rgbWeightsFileToolTip = "<p>Path to the RGB weights file.</p>";
+   const char* grayscaleWeightsFileIndicatorToolTip =
+   "<p>A red icon with a cross means that the corresponding weights file has either not been selected, "
+   "does not exist, or is invalid.</p>"
+   "<p>A green checkmark icon means that the selected file is correct and ready to be used.</p>";
+
+   const char* rgbWeightsFileToolTip =
+   "<p>Path to the RGB weights file.</p>"
+   "<p>To select an RGB weights file, open the StarNet Preferences dialog by clicking the corresponding "
+   "button (wrench icon) on the tool's control bar. Selected weights files will be stored as persistent "
+   "module settings, and hence remembered across PixInsight sessions.</p>";
 
    RGBWeightsFile_Label.SetText( "RGB weights file:" );
    RGBWeightsFile_Label.SetFixedWidth( labelWidth1 );
@@ -458,6 +467,7 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
    RGBWeightsFile_Edit.SetReadOnly();
 
    RGBWeightsFile_BitmapBox.SetScaledFixedSize( 20, 20 );
+   RGBWeightsFile_BitmapBox.SetToolTip( grayscaleWeightsFileIndicatorToolTip );
 
    RGBWeightsFile_Sizer.SetSpacing( 4 );
    RGBWeightsFile_Sizer.Add( RGBWeightsFile_Label );
@@ -466,7 +476,11 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 
    //
 
-   const char* grayscaleWeightsFileToolTip = "<p>Path to the grayscale weights file.</p>";
+   const char* grayscaleWeightsFileToolTip =
+   "<p>Path to the grayscale weights file.</p>"
+   "<p>To select a grayscale weights file, open the StarNet Preferences dialog by clicking the corresponding "
+   "button (wrench icon) on the tool's control bar. Selected weights files will be stored as persistent "
+   "module settings, and hence remembered across PixInsight sessions.</p>";
 
    GrayscaleWeightsFile_Label.SetText( "Grayscale weights file:" );
    GrayscaleWeightsFile_Label.SetFixedWidth( labelWidth1 );
@@ -478,6 +492,7 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
    GrayscaleWeightsFile_Edit.SetReadOnly();
 
    GrayscaleWeightsFile_BitmapBox.SetScaledFixedSize( 20, 20 );
+   GrayscaleWeightsFile_BitmapBox.SetToolTip( grayscaleWeightsFileIndicatorToolTip );
 
    GrayscaleWeightsFile_Sizer.SetSpacing( 4 );
    GrayscaleWeightsFile_Sizer.Add( GrayscaleWeightsFile_Label );
