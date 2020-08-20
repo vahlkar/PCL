@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// PixelMathInstance.cpp - Released 2020-07-31T19:33:39Z
+// PixelMathInstance.cpp - Released 2020-08-18T19:14:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -260,19 +260,16 @@ inline static void GetPixel( Pixel& p, const ImageVariant& image, int x, int y, 
 inline static void GetPixel( Pixel& p, const ImageReference& r, int x, int y, int c )
 {
    if ( r.ChannelIndex() >= 0 )
-      c = r.ChannelIndex();
-   else if ( !r.Image()->IsColor() )
-      c = 0;
-
-   if ( c < 0 )
-      GetPixel( p, *r.Image(), x, y );
-   else
    {
+      c = r.ChannelIndex();
       if ( c >= r.Image()->NumberOfChannels() )
          throw ParseError( ("Channel index out of range: " + r.Id()).AppendFormat( "[%d]", c ) );
-
       GetPixel( p, *r.Image(), x, y, c );
    }
+   else if ( !r.Image()->IsColor() )
+      GetPixel( p, *r.Image(), x, y, 0 );
+   else
+      GetPixel( p, *r.Image(), x, y );
 }
 
 /*
@@ -334,19 +331,16 @@ inline static void GetPixel( Pixel& p, const ImageVariant& image, double x, doub
 inline static void GetPixel( Pixel& p, const ImageReference& r, double x, double y, int c )
 {
    if ( r.ChannelIndex() >= 0 )
-      c = r.ChannelIndex();
-   else if ( !r.Image()->IsColor() )
-      c = 0;
-
-   if ( c < 0 )
-      GetPixel( p, *r.Image(), x, y, r.Interpolators() );
-   else
    {
+      c = r.ChannelIndex();
       if ( c >= r.Image()->NumberOfChannels() )
          throw ParseError( ("Channel index out of range: " + r.Id()).AppendFormat( "[%d]", c ) );
-
       GetPixel( p, *r.Image(), x, y, c, r.Interpolators() );
    }
+   else if ( !r.Image()->IsColor() )
+      GetPixel( p, *r.Image(), x, y, 0, r.Interpolators() );
+   else
+      GetPixel( p, *r.Image(), x, y, r.Interpolators() );
 }
 
 // ----------------------------------------------------------------------------
@@ -1903,4 +1897,4 @@ size_type PixelMathInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.cpp - Released 2020-07-31T19:33:39Z
+// EOF PixelMathInstance.cpp - Released 2020-08-18T19:14:14Z

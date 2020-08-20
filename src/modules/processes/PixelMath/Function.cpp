@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2020-07-31T19:33:39Z
+// Function.cpp - Released 2020-08-18T19:14:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -1065,7 +1065,7 @@ bool CIEhFunction::ValidateArguments( String& info, component_list::const_iterat
 
 void CIEhFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEh( (*i)[0], (*i)[1], (*i)[2] ) : 0 );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEh( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1080,7 +1080,7 @@ bool CIEhrFunction::ValidateArguments( String& info, component_list::const_itera
 
 void CIEhrFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEhr( (*i)[0], (*i)[1], (*i)[2] ) : 0 );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEhr( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1095,7 +1095,7 @@ bool CIEhdFunction::ValidateArguments( String& info, component_list::const_itera
 
 void CIEhdFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? Deg( PixelMathInstance::s_targetRGBWS->CIEhr( (*i)[0], (*i)[1], (*i)[2] ) ) : 0 );
+   r.SetSamples( i->IsRGB() ? Deg( PixelMathInstance::s_targetRGBWS->CIEhr( (*i)[0], (*i)[1], (*i)[2] ) ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -3539,4 +3539,4 @@ Expression::component_list InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2020-07-31T19:33:39Z
+// EOF Function.cpp - Released 2020-08-18T19:14:14Z
