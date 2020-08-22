@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// StarNetInstance.cpp - Released 2020-08-17T19:10:47Z
+// StarNetInstance.cpp - Released 2020-08-22T12:36:52Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -102,7 +102,7 @@ class StarNetEngine
 public:
 
    template <class P>
-   static void Apply( GenericImage<P>& image, View& view, const StarNetInstance& instance )
+   static void Apply( GenericImage<P>& image, const StarNetInstance& instance )
    {
       if ( !TheStarNetProcess->PreferencesLoaded() )
          TheStarNetProcess->LoadPreferences();
@@ -317,17 +317,35 @@ public:
 
          /*
           * Crop the image back to its original size.
+          */
+         starless.CropBy( -left, -top, -right, -bottom );
+
+         /*
           * If we want a mask, return the difference between the initial and
           * output images.
           */
          if ( instance.p_mask )
          {
-            GenericImage<P> mask( finalWidth, finalHeight, image.ColorSpace() );
-            mask = transformed - starless;
-            image = mask.CropBy( -left, -top, -right, -bottom );
+            ImageWindow maskWindow( imgWidth, imgHeight, imgNumChannels,
+                                    P::BitsPerSample(),
+                                    P::IsFloatSample(),
+                                    image.IsColor(),
+                                    true/*initialProcessing*/,
+                                    "star_mask" );
+            if ( maskWindow.IsNull() )
+               throw Error( "Unable to create image window" );
+
+            ImageVariant v = maskWindow.MainView().Image();
+            GenericImage<P>& mask = static_cast<GenericImage<P>&>( *v );
+            mask.Apply( image, ImageOp::Mov );
+            mask.Apply( starless, ImageOp::Sub );
+            maskWindow.Show();
          }
-         else
-            image = starless.CropBy( -left, -top, -right, -bottom );
+
+         /*
+          * Replace the target image with the starless image.
+          */
+         image = starless;
 
          /*
           * Some cleaning.
@@ -549,23 +567,23 @@ bool StarNetInstance::ExecuteOn( View& view )
       switch ( image.BitsPerSample() )
       {
       case 32:
-         StarNetEngine::Apply( static_cast<Image&>( *image ), view, *this );
+         StarNetEngine::Apply( static_cast<Image&>( *image ), *this );
          break;
       case 64:
-         StarNetEngine::Apply( static_cast<DImage&>( *image ), view, *this );
+         StarNetEngine::Apply( static_cast<DImage&>( *image ), *this );
          break;
       }
    else
       switch ( image.BitsPerSample() )
       {
       case 8:
-         StarNetEngine::Apply( static_cast<UInt8Image&>( *image ), view, *this );
+         StarNetEngine::Apply( static_cast<UInt8Image&>( *image ), *this );
          break;
       case 16:
-         StarNetEngine::Apply( static_cast<UInt16Image&>( *image ), view, *this );
+         StarNetEngine::Apply( static_cast<UInt16Image&>( *image ), *this );
          break;
       case 32:
-         StarNetEngine::Apply( static_cast<UInt32Image&>( *image ), view, *this );
+         StarNetEngine::Apply( static_cast<UInt32Image&>( *image ), *this );
          break;
       }
 
@@ -603,4 +621,4 @@ size_type StarNetInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInstance.cpp - Released 2020-08-17T19:10:47Z
+// EOF StarNetInstance.cpp - Released 2020-08-22T12:36:52Z
