@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2020-07-31T19:33:04Z
+// pcl/Math.h - Released 2020-08-18T19:12:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -31,7 +31,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -222,6 +222,18 @@ inline int IsInfinity( float x )
    return 0;
 }
 
+/*!
+ * Returns true iff the specified 32-bit floating point number is a negative
+ * zero.
+ *
+ * \ingroup fpclassification_functions
+ */
+inline bool IsNegativeZero( float x )
+{
+   union { float f; uint32 u; } v = { x };
+   return v.u == __PCL_FLOAT_SGNMASK;
+}
+
 #define __PCL_DOUBLE_SGNMASK  0x80000000
 #define __PCL_DOUBLE_EXPMASK  0x7ff00000
 #define __PCL_DOUBLE_SIGMASK  0x000fffff
@@ -280,6 +292,19 @@ inline int IsInfinity( double x )
        (v.u[1] & __PCL_DOUBLE_EXPMASK) == __PCL_DOUBLE_EXPMASK )
       return ((v.u[1] & __PCL_DOUBLE_SGNMASK) == 0) ? +1 : -1;
    return 0;
+}
+
+/*!
+ * Returns true iff the specified 64-bit floating point number is a negative
+ * zero.
+ *
+ * \ingroup fpclassification_functions
+ */
+inline bool IsNegativeZero( double x )
+{
+   union { double d; uint32 u[2]; } v = { x };
+   return v.u[1] == __PCL_DOUBLE_SGNMASK &&
+          v.u[0] == 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -4599,4 +4624,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 )
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2020-07-31T19:33:04Z
+// EOF pcl/Math.h - Released 2020-08-18T19:12:56Z
