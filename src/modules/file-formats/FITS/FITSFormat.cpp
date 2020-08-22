@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITSFormat.cpp - Released 2020-07-31T19:33:23Z
+// FITSFormat.cpp - Released 2020-08-18T19:14:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -153,6 +153,12 @@ String FITSFormat::Implementation() const
 "\nsigned-is-logical        (r )  Signed integer images store pixel data with the"
 "\n                               full range [-2^(n-1),+2^(n-1)-1], where n is bit"
 "\n                               depth."
+"\n-------------------------------------------------------------------------------"
+"\nfix-non-finite           (r )  Replace NaNs, infinities and negative zeros with"
+"\n                               zeros in floating-point images."
+"\n-------------------------------------------------------------------------------"
+"\nignore-non-finite        (r )  Do not replace NaNs, infinities and negative"
+"\n                               zeros with zeros in floating-point images."
 "\n-------------------------------------------------------------------------------"
 "\nbottom-up                (rw)  Follow the lower left origin, bottom to top"
 "\n                               convention of image coordinates."
@@ -502,4 +508,4 @@ FITSFormat::FormatOptions* FITSFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.cpp - Released 2020-07-31T19:33:23Z
+// EOF FITSFormat.cpp - Released 2020-08-18T19:14:05Z

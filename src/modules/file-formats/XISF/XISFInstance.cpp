@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2020-07-31T19:33:23Z
+// XISFInstance.cpp - Released 2020-08-18T19:14:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -99,6 +99,8 @@ namespace pcl
  *    no-warnings                   r
  *    warnings-are-errors           r
  *    no-warnings-are-errors        r
+ *    fix-non-finite                r
+ *    ignore-non-finite             r
  */
 class XISFStreamHints
 {
@@ -168,6 +170,7 @@ public:
    int                          imageIdIndex;
    HintValue<double>            outputLowerBound;
    HintValue<double>            outputUpperBound;
+   HintValue<bool>              fixNonFinite;
 
    XISFStreamHints( const IsoString& hints ) : imageIdIndex( 0 )
    {
@@ -315,6 +318,10 @@ public:
             warningsAreErrors = true;
          else if ( *i == "no-warnings-are-errors" )
             warningsAreErrors = false;
+         else if ( *i == "fix-non-finite" )
+            fixNonFinite = true;
+         else if ( *i == "ignore-non-finite" )
+            fixNonFinite = false;
       }
    }
 
@@ -393,6 +400,9 @@ public:
       if ( warningsAreErrors.HasChanged() )
          hints << (warningsAreErrors.Value() ? "warnings-are-errors" : "no-warnings-are-errors");
 
+      if ( fixNonFinite.HasChanged() )
+         hints << (fixNonFinite.Value() ? "fix-non-finite" : "ignore-non-finite");
+
       return IsoString().ToSpaceSeparated( hints );
    }
 
@@ -420,6 +430,8 @@ public:
          options.noWarnings = noWarnings;
       if ( warningsAreErrors.HasChanged() )
          options.warningsAreErrors = warningsAreErrors;
+      if ( fixNonFinite.HasChanged() )
+         options.fixNonFinite = fixNonFinite;
    }
 
    void ApplyWriteHints( ImageOptions& options ) const
@@ -1130,4 +1142,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2020-07-31T19:33:23Z
+// EOF XISFInstance.cpp - Released 2020-08-18T19:14:05Z

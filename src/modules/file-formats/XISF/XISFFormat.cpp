@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.10
 // ----------------------------------------------------------------------------
-// XISFFormat.cpp - Released 2020-07-31T19:33:23Z
+// XISFFormat.cpp - Released 2020-08-18T19:14:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -144,6 +144,12 @@ String XISFFormat::Implementation() const
 "\n                              properties to describe the XISF unit."
 "\n-------------------------------------------------------------------------------"
 "\nno-auto-metadata        (r )  Do not generate metadata automatically."
+"\n-------------------------------------------------------------------------------"
+"\nfix-non-finite          (r )  Replace NaNs, infinities and negative zeros with"
+"\n                              zeros in floating-point images."
+"\n-------------------------------------------------------------------------------"
+"\nignore-non-finite       (r )  Do not replace NaNs, infinities and negative"
+"\n                              zeros with zeros in floating-point images."
 "\n-------------------------------------------------------------------------------"
 "\nembedded-data           (rw)  Read/write embedded image data."
 "\n-------------------------------------------------------------------------------"
@@ -552,4 +558,4 @@ XISFFormat::FormatOptions* XISFFormat::FormatOptions::FromGenericDataBlock( cons
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFFormat.cpp - Released 2020-07-31T19:33:23Z
+// EOF XISFFormat.cpp - Released 2020-08-18T19:14:05Z

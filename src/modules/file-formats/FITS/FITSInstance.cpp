@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.7
 // ----------------------------------------------------------------------------
-// FITSInstance.cpp - Released 2020-07-31T19:33:23Z
+// FITSInstance.cpp - Released 2020-08-18T19:14:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -74,6 +74,7 @@ public:
    bool                              useRowOrderKeywords;
    bool                              signedIntegersArePhysical;
    bool                              noProperties;
+   bool                              fixNonFinite;
    int                               verbosity;
 
    FITSReadHints( const IsoString& hints )
@@ -88,6 +89,7 @@ public:
       useRowOrderKeywords = fitsOptions.useRowOrderKeywords;
       signedIntegersArePhysical = fitsOptions.signedIntegersArePhysical;
       noProperties = false;
+      fixNonFinite = true;
       verbosity = 1;
 
       IsoStringList theHints;
@@ -129,6 +131,10 @@ public:
             noProperties = false;
          else if ( *i == "no-properties" )
             noProperties = true;
+         else if ( *i == "fix-non-finite" )
+            fixNonFinite = true;
+         else if ( *i == "ignore-non-finite" )
+            fixNonFinite = false;
          else if ( *i == "verbosity" )
          {
             if ( ++i == theHints.End() )
@@ -387,14 +393,16 @@ Variant FITSInstance::ReadImageProperty( const IsoString& property )
 template <class P>
 static bool ApplyOutOfRangePolicy( GenericImage<P>& image, const FITSReadHints* readHints )
 {
-   /*
-    * Replace NaNs and infinities with zeros.
-    */
    image.ResetSelections();
-   for ( int c = 0; c < image.NumberOfChannels(); ++c )
-      for ( typename GenericImage<P>::sample_iterator i( image, c ); i; ++i )
-         if ( !IsFinite( *i ) )
-            *i = 0;
+
+   /*
+    * Replace NaNs, infinities and negative zeros with positive zeros.
+    */
+   if ( readHints == nullptr || readHints->fixNonFinite )
+      for ( int c = 0; c < image.NumberOfChannels(); ++c )
+         for ( typename GenericImage<P>::sample_iterator i( image, c ); i; ++i )
+            if ( !IsFinite( *i ) || IsNegativeZero( *i ) )
+               *i = 0;
 
    /*
     * Get extreme pixel sample values.
@@ -987,4 +995,4 @@ void FITSInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.cpp - Released 2020-07-31T19:33:23Z
+// EOF FITSInstance.cpp - Released 2020-08-18T19:14:05Z
