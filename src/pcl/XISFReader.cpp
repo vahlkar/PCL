@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/XISFReader.cpp - Released 2020-07-31T19:33:12Z
+// pcl/XISFReader.cpp - Released 2020-08-18T19:13:07Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -31,7 +31,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -2373,15 +2373,20 @@ private:
 
 #define NORMALIZE_FLOAT_IMAGE( I )                                                  \
       /*                                                                            \
-       * Replace NaNs and infinities with minimum values.                           \
+       * Replace NaNs, infinities and negative zeros with minimum values.           \
        * Truncate out-of-range sample values.                                       \
        */                                                                           \
       for ( int c = 0; c < image.NumberOfChannels(); ++c )                          \
          for ( I::sample_iterator i( image, c ); i; ++i )                           \
-            if ( !IsFinite( *i ) || *i < options.lowerRange )                       \
+         {                                                                          \
+            if ( m_xisfOptions.fixNonFinite )                                       \
+               if ( !IsFinite( *i ) || IsNegativeZero( *i ) )                       \
+                  *i = options.lowerRange;                                          \
+            if ( *i < options.lowerRange )                                          \
                *i = options.lowerRange;                                             \
             else if ( *i > options.upperRange )                                     \
                *i = options.upperRange;                                             \
+         }                                                                          \
                                                                                     \
       /*                                                                            \
        * Normalize to [0,1]                                                         \
@@ -2474,10 +2479,15 @@ private:
        * Truncate out-of-range sample values                                        \
        */                                                                           \
       for ( P::sample* i = buffer, * j = i + count; i < j; ++i )                    \
-         if ( !IsFinite( *i ) || *i < options.lowerRange )                          \
+      {                                                                             \
+         if ( m_xisfOptions.fixNonFinite )                                          \
+            if ( !IsFinite( *i ) || IsNegativeZero( *i ) )                          \
+               *i = options.lowerRange;                                             \
+         if ( *i < options.lowerRange )                                             \
             *i = options.lowerRange;                                                \
          else if ( *i > options.upperRange )                                        \
             *i = options.upperRange;                                                \
+      }                                                                             \
                                                                                     \
       /*                                                                            \
        * Normalize to [0,1]                                                         \
@@ -3017,4 +3027,4 @@ XMLDocument* XISFReader::ExtractHeader( const String& path, XMLParserOptions opt
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFReader.cpp - Released 2020-07-31T19:33:12Z
+// EOF pcl/XISFReader.cpp - Released 2020-08-18T19:13:07Z

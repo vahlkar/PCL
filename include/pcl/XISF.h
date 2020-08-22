@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/XISF.h - Released 2020-07-31T19:33:04Z
+// pcl/XISF.h - Released 2020-08-18T19:12:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -31,7 +31,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -303,6 +303,13 @@ public:
    constexpr static int DefaultVerbosity = 1;
 
    /*!
+    * Whether to replace NaNs, infinities and negative zeros with lower bound
+    * values (usually zero) in floating point images. This applies only to
+    * input operations.
+    */
+   constexpr static bool DefaultFixNonFinite = true;
+
+   /*!
     * The default lower bound of the output floating point pixel sample range.
     */
    constexpr static double DefaultOutputLowerBound = 0.0;
@@ -373,6 +380,7 @@ public:
    static const int DefaultCompressionLevel;
    static const int MaxCompressionLevel;
    static const int DefaultVerbosity;
+   static const bool DefaultFixNonFinite;
    static const double DefaultOutputLowerBound;
    static const double DefaultOutputUpperBound;
    static const bool DefaultStoreFITSKeywords;
@@ -637,6 +645,7 @@ public:
    XISF::block_compression compressionCodec   : 4;  //!< The codec used for compression of %XISF blocks.
    uint8                   compressionLevel   : 7;  //!< Codec-independent compression level: 0 = auto, 1 = fast, 100 = maximum compression.
    uint8                   verbosity          : 3;  //!< Verbosity level: 0 = quiet, > 0 = write console state messages.
+   bool                    fixNonFinite       : 1;  //!< Replace NaNs, infinities and negative zeros with lower bound values in floating point images (reading only).
    uint16                  blockAlignmentSize;      //!< Block alignment size in bytes (0 = 1 = unaligned).
    uint16                  maxInlineBlockSize;      //!< Maximum size in bytes of an inline/embedded block.
    double                  outputLowerBound;        //!< Lower bound for output floating point pixel samples (=0.0 by default).
@@ -677,6 +686,7 @@ public:
       compressionCodec   = XISF::DefaultCompression;
       compressionLevel   = XISF::DefaultCompressionLevel;
       verbosity          = XISF::DefaultVerbosity;
+      fixNonFinite       = XISF::DefaultFixNonFinite;
       blockAlignmentSize = XISF::DefaultBlockAlignSize;
       maxInlineBlockSize = XISF::DefaultMaxBlockInlineSize;
       outputLowerBound   = XISF::DefaultOutputLowerBound;
@@ -1603,4 +1613,4 @@ private:
 #endif   // __PCL_XISF_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISF.h - Released 2020-07-31T19:33:04Z
+// EOF pcl/XISF.h - Released 2020-08-18T19:12:56Z
