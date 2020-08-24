@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// StarNetInstance.cpp - Released 2020-08-22T12:36:52Z
+// StarNetInstance.cpp - Released 2020-08-22T16:51:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -102,7 +102,7 @@ class StarNetEngine
 public:
 
    template <class P>
-   static void Apply( GenericImage<P>& image, const StarNetInstance& instance )
+   static void Apply( GenericImage<P>& image, View& view, const StarNetInstance& instance )
    {
       if ( !TheStarNetProcess->PreferencesLoaded() )
          TheStarNetProcess->LoadPreferences();
@@ -117,6 +117,9 @@ public:
       int imgHeight = image.Height();
       int imgWidth = image.Width();
       int strideSize = Pow2I<int>()( 7 - instance.p_stride );
+
+      AutoViewLock lock( view, false/*lock*/ );
+      lock.LockForWrite();
 
       Console console;
 
@@ -240,6 +243,8 @@ public:
                      TF_DeleteStatus( status );
       try
       {
+         console.EnableAbort();
+
          /*
           * This is the main loop - it goes through the whole image tile by
           * tile and processes it.
@@ -335,16 +340,25 @@ public:
             if ( maskWindow.IsNull() )
                throw Error( "Unable to create image window" );
 
-            ImageVariant v = maskWindow.MainView().Image();
+            View view = maskWindow.MainView();
+            AutoViewLock lock( view );
+            ImageVariant v = view.Image();
             GenericImage<P>& mask = static_cast<GenericImage<P>&>( *v );
-            mask.Apply( image, ImageOp::Mov );
-            mask.Apply( starless, ImageOp::Sub );
+            for ( int c = 0; c < imgNumChannels; ++c )
+            {
+               typename GenericImage<P>::const_sample_iterator i( image, c );
+               typename GenericImage<P>::const_sample_iterator s( starless, c );
+               for ( typename GenericImage<P>::sample_iterator m( mask, c ); m; ++m, ++i, ++s )
+                  *m = P::FloatToSample( Max( 0.0, double( *i ) - double( *s ) ) );
+            }
+            lock.Unlock();
             maskWindow.Show();
          }
 
          /*
           * Replace the target image with the starless image.
           */
+         lock.Lock();
          image = starless;
 
          /*
@@ -552,38 +566,28 @@ private:
 
 bool StarNetInstance::ExecuteOn( View& view )
 {
-   AutoViewLock lock( view );
-
    ImageVariant image = view.Image();
-   if ( image.IsComplexSample() )
-      return false;
-
-   StandardStatus status;
-   image.SetStatusCallback( &status );
-
-   Console().EnableAbort();
-
    if ( image.IsFloatSample() )
       switch ( image.BitsPerSample() )
       {
       case 32:
-         StarNetEngine::Apply( static_cast<Image&>( *image ), *this );
+         StarNetEngine::Apply( static_cast<Image&>( *image ), view, *this );
          break;
       case 64:
-         StarNetEngine::Apply( static_cast<DImage&>( *image ), *this );
+         StarNetEngine::Apply( static_cast<DImage&>( *image ), view, *this );
          break;
       }
    else
       switch ( image.BitsPerSample() )
       {
       case 8:
-         StarNetEngine::Apply( static_cast<UInt8Image&>( *image ), *this );
+         StarNetEngine::Apply( static_cast<UInt8Image&>( *image ), view, *this );
          break;
       case 16:
-         StarNetEngine::Apply( static_cast<UInt16Image&>( *image ), *this );
+         StarNetEngine::Apply( static_cast<UInt16Image&>( *image ), view, *this );
          break;
       case 32:
-         StarNetEngine::Apply( static_cast<UInt32Image&>( *image ), *this );
+         StarNetEngine::Apply( static_cast<UInt32Image&>( *image ), view, *this );
          break;
       }
 
@@ -621,4 +625,4 @@ size_type StarNetInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInstance.cpp - Released 2020-08-22T12:36:52Z
+// EOF StarNetInstance.cpp - Released 2020-08-22T16:51:00Z

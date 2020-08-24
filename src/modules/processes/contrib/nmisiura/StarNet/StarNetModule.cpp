@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// StarNetModule.cpp - Released 2020-08-18T19:14:14Z
+// StarNetModule.cpp - Released 2020-08-22T16:51:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -30,13 +30,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     0
-#define MODULE_VERSION_REVISION  0
-#define MODULE_VERSION_BUILD     23
+#define MODULE_VERSION_REVISION  1
+#define MODULE_VERSION_BUILD     24
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     8
-#define MODULE_RELEASE_DAY       18
+#define MODULE_RELEASE_DAY       22
 
 #include "StarNetModule.h"
 #include "StarNetInterface.h"
@@ -160,4 +160,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF StarNetModule.cpp - Released 2020-08-18T19:14:14Z
+// EOF StarNetModule.cpp - Released 2020-08-22T16:51:00Z
