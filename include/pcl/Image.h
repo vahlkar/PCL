@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Image.h - Released 2020-07-31T19:33:04Z
+// pcl/Image.h - Released 2020-08-22T16:50:26Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -31,7 +31,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -11612,8 +11612,8 @@ public:
       }
 
       const double eps = P::IsComplexSample() ? 2*std::numeric_limits<double>::epsilon() :
-                           (P::IsFloatSample() ?
-                              2*std::numeric_limits<typename P::component>::epsilon() : 0.5/Pow2( P::BitsPerSample() ));
+                           (P::IsFloatSample() ? 2*std::numeric_limits<typename P::component>::epsilon() :
+                              0.5/Pow2( double( P::BitsPerSample() ) ));
       if ( count == 0 )
       {
          m_status += N;
@@ -17300,4 +17300,4 @@ typedef FComplexImage                     ComplexImage;
 #endif   // __PCL_Image_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Image.h - Released 2020-07-31T19:33:04Z
+// EOF pcl/Image.h - Released 2020-08-22T16:50:26Z

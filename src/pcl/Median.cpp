@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Median.cpp - Released 2020-07-31T19:33:12Z
+// pcl/Median.cpp - Released 2020-08-22T16:50:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -31,7 +31,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -198,7 +198,7 @@ static double PCL_FastMedian( const T* begin, const T* end )
    }
 
    const double eps = std::is_floating_point<T>::value ?
-                        2*std::numeric_limits<T>::epsilon() : 0.5/Pow2( sizeof( T ) << 3 );
+                        2*std::numeric_limits<T>::epsilon() : 0.5/Pow2( double( sizeof( T ) << 3 ) );
    if ( high - low < eps )
       return low;
 
@@ -1198,7 +1198,7 @@ static double PCL_OrderStatistic( const T* begin, const T* end, distance_type k 
       return high;
 
    const double eps = std::is_floating_point<T>::value ?
-                        2*std::numeric_limits<T>::epsilon() : 0.5/Pow2( sizeof( T ) << 3 );
+                        2*std::numeric_limits<T>::epsilon() : 0.5/Pow2( double( sizeof( T ) << 3 ) );
    if ( high - low < eps )
       return low;
 
@@ -1969,4 +1969,4 @@ TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* i, const long double* 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Median.cpp - Released 2020-07-31T19:33:12Z
+// EOF pcl/Median.cpp - Released 2020-08-22T16:50:37Z
