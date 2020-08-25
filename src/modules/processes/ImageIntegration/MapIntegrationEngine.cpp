@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.25.0
+// Standard ImageIntegration Process Module Version 1.2.29
 // ----------------------------------------------------------------------------
-// MapIntegrationEngine.cpp - Released 2020-07-31T19:33:39Z
+// MapIntegrationEngine.cpp - Released 2020-08-22T16:51:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -122,12 +122,16 @@ void MapIntegrationEngine::IntegrationThread::Run()
          DVector stack( IntegrationFile::NumberOfFiles() );
          IVector index( IntegrationFile::NumberOfFiles() );
          for ( int i = 0; i < IntegrationFile::NumberOfFiles(); ++i )
-            if ( IntegrationFile::FileByIndex( i ).RejectionMap()( j, E.m_startRow+k, E.m_channel ) == 0 )
+         {
+            // N.B. A rejection map can be empty if no pixel has been rejected.
+            const UInt8Image& map = IntegrationFile::FileByIndex( i ).RejectionMap();
+            if ( !map || map( j, E.m_startRow+k, E.m_channel ) == 0 )
             {
                stack[n] = IntegrationFile::FileByIndex( i )[k][j];
                index[n] = i;
                ++n;
             }
+         }
 
          pcl_enum thisCombination = I.p_combination;
          if ( n == 0 )
@@ -273,4 +277,4 @@ void MapIntegrationEngine::IntegrationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MapIntegrationEngine.cpp - Released 2020-07-31T19:33:39Z
+// EOF MapIntegrationEngine.cpp - Released 2020-08-22T16:51:00Z

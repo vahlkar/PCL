@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.25.0
+// Standard ImageIntegration Process Module Version 1.2.29
 // ----------------------------------------------------------------------------
-// LargeScaleRejectionMapGenerationEngine.cpp - Released 2020-07-31T19:33:39Z
+// LargeScaleRejectionMapGenerationEngine.cpp - Released 2020-08-22T16:51:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -118,45 +118,50 @@ void LargeScaleRejectionMapGenerationEngine::GenerationThread::Run()
 
    for ( int i = m_firstStack; i < m_endStack; ++i )
    {
-      UInt8Image map;
-      map.AllocateData( IntegrationFile::Width(), IntegrationFile::Height() ).Zero();
+      // N.B. A rejection map can be empty if no pixel has been rejected.
+      UInt8Image& rmap = IntegrationFile::FileByIndex( i ).RejectionMap();
+      if ( rmap )
       {
-         UInt8Image::sample_iterator m( map );
-         for ( UInt8Image::const_sample_iterator r( IntegrationFile::FileByIndex( i ).RejectionMap(), E.m_channel ); r; ++r, ++m )
-            if ( *r & inputMask )
-               *m = 0xff;
+         UInt8Image map;
+         map.AllocateData( IntegrationFile::Width(), IntegrationFile::Height() ).Zero();
+         {
+            UInt8Image::sample_iterator m( map );
+            for ( UInt8Image::const_sample_iterator r( rmap, E.m_channel ); r; ++r, ++m )
+               if ( *r & inputMask )
+                  *m = 0xff;
+         }
+
+         UPDATE_THREAD_MONITOR( 1 )
+
+         {
+            MultiscaleMedianTransform T( Max( 1, protectedLayers ) );
+            for ( int j = 0; j < T.NumberOfLayers(); ++j )
+               T.DisableLayer( j );
+            T << map;
+            T >> map;
+         }
+
+         UPDATE_THREAD_MONITOR( 1 )
+
+         {
+            DilationFilter D;
+            CircularStructure C( (growth << 1) + 1 );
+            MorphologicalTransformation M( D, C );
+            M >> map;
+         }
+
+         UPDATE_THREAD_MONITOR( 1 )
+
+         {
+            UInt8Image::const_sample_iterator m( map );
+            for ( UInt8Image::sample_iterator r( rmap, E.m_channel ); r; ++r, ++m )
+               if ( *m )
+                  if ( (*r |= outputMask) & 0x03 == 0 )
+                     ++N[i];
+         }
+
+         UPDATE_THREAD_MONITOR( 1 )
       }
-
-      UPDATE_THREAD_MONITOR( 1 )
-
-      {
-         MultiscaleMedianTransform T( Max( 1, protectedLayers ) );
-         for ( int i = 0; i < T.NumberOfLayers(); ++i )
-            T.DisableLayer( i );
-         T << map;
-         T >> map;
-      }
-
-      UPDATE_THREAD_MONITOR( 1 )
-
-      {
-         DilationFilter D;
-         CircularStructure C( (growth << 1) + 1 );
-         MorphologicalTransformation M( D, C );
-         M >> map;
-      }
-
-      UPDATE_THREAD_MONITOR( 1 )
-
-      {
-         UInt8Image::const_sample_iterator m( map );
-         for ( UInt8Image::sample_iterator r( IntegrationFile::FileByIndex( i ).RejectionMap(), E.m_channel ); r; ++r, ++m )
-            if ( *m )
-               if ( (*r |= outputMask) & 0x03 == 0 )
-                  ++N[i];
-      }
-
-      UPDATE_THREAD_MONITOR( 1 )
    }
 }
 
@@ -171,4 +176,4 @@ void LargeScaleRejectionMapGenerationEngine::GenerationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LargeScaleRejectionMapGenerationEngine.cpp - Released 2020-07-31T19:33:39Z
+// EOF LargeScaleRejectionMapGenerationEngine.cpp - Released 2020-08-22T16:51:00Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.25.0
+// Standard ImageIntegration Process Module Version 1.2.29
 // ----------------------------------------------------------------------------
-// RejectionMapGenerationEngine.cpp - Released 2020-07-31T19:33:39Z
+// RejectionMapGenerationEngine.cpp - Released 2020-08-22T16:51:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -107,16 +107,23 @@ void RejectionMapGenerationEngine::GenerationThread::Run()
 
    Rect rect( 0, m_firstStack, IntegrationFile::Width(), m_endStack );
 
+   GenericVector<bool> v( IntegrationFile::NumberOfFiles() );
    GenericVector<UInt8Image::const_roi_sample_iterator> r( IntegrationFile::NumberOfFiles() );
    for ( int i = 0; i < IntegrationFile::NumberOfFiles(); ++i )
-      r[i] = UInt8Image::const_roi_sample_iterator( IntegrationFile::FileByIndex( i ).RejectionMap(), rect, E.m_channel );
+   {
+      // N.B. A rejection map can be empty if no pixel has been rejected.
+      const UInt8Image& map = IntegrationFile::FileByIndex( i ).RejectionMap();
+      if ( (v[i] = map) != false )
+         r[i] = UInt8Image::const_roi_sample_iterator( map, rect, E.m_channel );
+   }
 
    for ( Image::roi_sample_iterator m( E.m_map, rect, E.m_channel ); m; ++m )
    {
       int n = 0;
       for ( int i = 0; i < IntegrationFile::NumberOfFiles(); ++i )
-         if ( *r[i]++ & inputMask )
-            ++n;
+         if ( v[i] )
+            if ( *r[i]++ & inputMask )
+               ++n;
       *m = float( n )/IntegrationFile::NumberOfFiles();
 
       UPDATE_THREAD_MONITOR( 10 )
@@ -133,4 +140,4 @@ void RejectionMapGenerationEngine::GenerationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RejectionMapGenerationEngine.cpp - Released 2020-07-31T19:33:39Z
+// EOF RejectionMapGenerationEngine.cpp - Released 2020-08-22T16:51:00Z
