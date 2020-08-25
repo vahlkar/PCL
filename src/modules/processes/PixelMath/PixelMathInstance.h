@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// PixelMathInstance.h - Released 2020-07-31T19:33:39Z
+// PixelMathInstance.h - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -136,4 +136,4 @@ private:
 #endif   // __PixelMathInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.h - Released 2020-07-31T19:33:39Z
+// EOF PixelMathInstance.h - Released 2020-08-25T19:19:58Z

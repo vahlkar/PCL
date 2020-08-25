@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SuperbiasProcess.cpp - Released 2020-07-31T19:33:39Z
+// SuperbiasProcess.cpp - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -140,4 +140,4 @@ ProcessImplementation* SuperbiasProcess::Clone( const ProcessImplementation& p )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasProcess.cpp - Released 2020-07-31T19:33:39Z
+// EOF SuperbiasProcess.cpp - Released 2020-08-25T19:19:58Z

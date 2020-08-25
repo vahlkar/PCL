@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.29
+// Standard ImageIntegration Process Module Version 1.2.30
 // ----------------------------------------------------------------------------
-// RejectionMapGenerationEngine.cpp - Released 2020-08-22T16:51:00Z
+// RejectionMapGenerationEngine.cpp - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -140,4 +140,4 @@ void RejectionMapGenerationEngine::GenerationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RejectionMapGenerationEngine.cpp - Released 2020-08-22T16:51:00Z
+// EOF RejectionMapGenerationEngine.cpp - Released 2020-08-25T19:19:58Z

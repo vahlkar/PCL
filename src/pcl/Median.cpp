@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Median.cpp - Released 2020-08-22T16:50:37Z
+// pcl/Median.cpp - Released 2020-08-25T19:17:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1969,4 +1969,4 @@ TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* i, const long double* 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Median.cpp - Released 2020-08-22T16:50:37Z
+// EOF pcl/Median.cpp - Released 2020-08-25T19:17:12Z

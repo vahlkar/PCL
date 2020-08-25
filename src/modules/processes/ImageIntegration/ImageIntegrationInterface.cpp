@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.25.0
+// Standard ImageIntegration Process Module Version 1.2.30
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2020-07-31T19:33:39Z
+// ImageIntegrationInterface.cpp - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -1446,7 +1446,13 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 
       "<p>The value specified with this parameter determines the number of columns or rows (according to the largest "
       "dimension of the image) in the matrix of regularly distributed samples of location and scale computed from pixels "
-      "of each integrated subframe. This value will be used equally for rejection and output adaptive normalizations.</p>";
+      "of each integrated subframe. This value will be used equally for rejection and output adaptive normalizations.</p>"
+
+      "<p><b>Warning:</b> Specifying a value that is too high for this parameter may lead to generation of artifacts in "
+      "the integrated image. This is because too small sampling regions tend to map small-scale local variations that may "
+      "not be representative of significant statistical variations in the image. Always watch rejection maps closely when "
+      "using adaptive normalization. <b>Local normalizations must <i>never</i> be applied blindly without analyzing the "
+      "results.</b></p>";
 
    AdaptiveGridSize_Label.SetText( "Adaptive grid size:" );
    AdaptiveGridSize_Label.SetFixedWidth( labelWidth1 );
@@ -2503,4 +2509,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2020-07-31T19:33:39Z
+// EOF ImageIntegrationInterface.cpp - Released 2020-08-25T19:19:58Z

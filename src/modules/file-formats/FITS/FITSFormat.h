@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.7
+// Standard FITS File Format Module Version 1.1.8
 // ----------------------------------------------------------------------------
-// FITSFormat.h - Released 2020-08-18T19:14:05Z
+// FITSFormat.h - Released 2020-08-25T19:19:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -163,4 +163,4 @@ public:
 #endif   // __FITSFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSFormat.h - Released 2020-08-18T19:14:05Z
+// EOF FITSFormat.h - Released 2020-08-25T19:19:45Z

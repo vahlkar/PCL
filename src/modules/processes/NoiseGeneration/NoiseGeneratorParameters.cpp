@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorParameters.cpp - Released 2020-07-31T19:33:39Z
+// NoiseGeneratorParameters.cpp - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -189,4 +189,4 @@ size_type NGPreserveBrightness::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorParameters.cpp - Released 2020-07-31T19:33:39Z
+// EOF NoiseGeneratorParameters.cpp - Released 2020-08-25T19:19:58Z

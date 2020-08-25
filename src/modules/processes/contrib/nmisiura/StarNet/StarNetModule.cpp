@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard StarNet Process Module Version 1.0.0
+// Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetModule.cpp - Released 2020-08-22T16:51:00Z
+// StarNetModule.cpp - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -14,17 +14,17 @@
 //
 // This software is available under Attribution-NonCommercial-ShareAlike 4.0
 // International Creative Commons license (CC BY-NC-SA 4.0):
-//
+// 
 // https://creativecommons.org/licenses/by-nc-sa/4.0/
-//
+// 
 // In short: You are free to use and redistribute the code in any medium or
 // format, but only under the same license terms. You can transform and build
 // your projects upon it. You can NOT use the code for commercial purposes. You
 // must give appropriate credit for usage of the code.
-//
+// 
 // This product is based on software from the PixInsight project, developed by
 // Pleiades Astrophoto and its contributors:
-//
+// 
 // https://pixinsight.com/
 // ----------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     8
-#define MODULE_RELEASE_DAY       22
+#define MODULE_RELEASE_DAY       25
 
 #include "StarNetModule.h"
 #include "StarNetInterface.h"
@@ -160,4 +160,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF StarNetModule.cpp - Released 2020-08-22T16:51:00Z
+// EOF StarNetModule.cpp - Released 2020-08-25T19:19:58Z

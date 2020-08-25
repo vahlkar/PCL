@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z
+// ImageCalibrationInstance.cpp - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -157,7 +157,7 @@ void ImageCalibrationInstance::Assign( const ProcessImplementation& p )
    if ( x != nullptr )
    {
       p_targetFrames                  = x->p_targetFrames;
-      p_enableCFA                       = x->p_enableCFA;
+      p_enableCFA                     = x->p_enableCFA;
       p_cfaPattern                    = x->p_cfaPattern;
       p_inputHints                    = x->p_inputHints;
       p_outputHints                   = x->p_outputHints;
@@ -2875,4 +2875,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2020-07-31T19:33:39Z
+// EOF ImageCalibrationInstance.cpp - Released 2020-08-25T19:19:58Z

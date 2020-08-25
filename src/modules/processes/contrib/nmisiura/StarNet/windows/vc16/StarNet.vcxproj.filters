@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-08-17T11:04:38.295Z
+# Generated on .... 2020-08-25T19:21:01.442Z
 # Project id ...... StarNet
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -20,10 +20,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>177fe592-4efe-4933-9742-b42a3ef76c8c</UniqueIdentifier>
+      <UniqueIdentifier>26fc9e19-ed91-48b4-9aa2-0a92a49643b1</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>681f51f4-7db8-48be-a3ab-331600589d58</UniqueIdentifier>
+      <UniqueIdentifier>4b70cf72-1c42-4193-afc5-9713ff050e38</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Image Files">
+      <UniqueIdentifier>a41aa9e7-353f-4bff-8e78-a8486591f202</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -59,5 +62,10 @@
     <ClInclude Include="..\..\StarNetProcess.h">
         <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\StarNet.svg">
+        <Filter>Image Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

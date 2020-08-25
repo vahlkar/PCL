@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/SeparableMedianFilter.h - Released 2020-07-31T19:33:04Z
+// pcl/SeparableMedianFilter.h - Released 2020-08-25T19:17:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -31,7 +31,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -140,4 +140,4 @@ protected:
 #endif   // __PCL_SeparableMedianFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableMedianFilter.h - Released 2020-07-31T19:33:04Z
+// EOF pcl/SeparableMedianFilter.h - Released 2020-08-25T19:17:02Z

@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-08-17T11:04:38.195Z
+# Generated on .... 2020-08-25T19:21:01.355Z
 # Project id ...... StarNet
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -37,7 +37,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{619FFA27-DD84-4B8B-AD9E-C9FB450582A5}</ProjectGuid>
+    <ProjectGuid>{C4553B2F-CF0E-4693-A65A-7BF29BC0C07B}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -247,6 +247,9 @@
     <ClInclude Include="..\..\StarNetModule.h"/>
     <ClInclude Include="..\..\StarNetParameters.h"/>
     <ClInclude Include="..\..\StarNetProcess.h"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\icons\StarNet.svg"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
   <ImportGroup Label="ExtensionTargets">

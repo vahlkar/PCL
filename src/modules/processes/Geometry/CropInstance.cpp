@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// CropInstance.cpp - Released 2020-07-31T19:33:39Z
+// CropInstance.cpp - Released 2020-08-25T19:19:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -259,4 +259,4 @@ void* CropInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CropInstance.cpp - Released 2020-07-31T19:33:39Z
+// EOF CropInstance.cpp - Released 2020-08-25T19:19:57Z

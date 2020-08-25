@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/XISFReader.cpp - Released 2020-08-18T19:13:07Z
+// pcl/XISFReader.cpp - Released 2020-08-25T19:17:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -3027,4 +3027,4 @@ XMLDocument* XISFReader::ExtractHeader( const String& path, XMLParserOptions opt
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFReader.cpp - Released 2020-08-18T19:13:07Z
+// EOF pcl/XISFReader.cpp - Released 2020-08-25T19:17:12Z

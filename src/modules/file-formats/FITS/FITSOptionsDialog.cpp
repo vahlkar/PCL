@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard FITS File Format Module Version 1.1.7
+// Standard FITS File Format Module Version 1.1.8
 // ----------------------------------------------------------------------------
-// FITSOptionsDialog.cpp - Released 2020-08-18T19:14:05Z
+// FITSOptionsDialog.cpp - Released 2020-08-25T19:19:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -253,4 +253,4 @@ void FITSOptionsDialog::Dialog_Return( Dialog& /*sender*/, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSOptionsDialog.cpp - Released 2020-08-18T19:14:05Z
+// EOF FITSOptionsDialog.cpp - Released 2020-08-25T19:19:45Z

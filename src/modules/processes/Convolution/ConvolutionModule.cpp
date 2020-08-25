@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionModule.cpp - Released 2020-07-31T19:33:39Z
+// ConvolutionModule.cpp - Released 2020-08-25T19:19:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     7
-#define MODULE_RELEASE_DAY       31
+#define MODULE_RELEASE_MONTH     8
+#define MODULE_RELEASE_DAY       25
 
 #include "ConvolutionInterface.h"
 #include "ConvolutionModule.h"
@@ -183,4 +183,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionModule.cpp - Released 2020-07-31T19:33:39Z
+// EOF ConvolutionModule.cpp - Released 2020-08-25T19:19:57Z

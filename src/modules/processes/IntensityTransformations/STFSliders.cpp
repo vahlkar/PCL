@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// STFSliders.cpp - Released 2020-07-31T19:33:39Z
+// STFSliders.cpp - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -451,4 +451,4 @@ void STFSliders::__MouseWheel( Control& sender, const pcl::Point& pos, int delta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF STFSliders.cpp - Released 2020-07-31T19:33:39Z
+// EOF STFSliders.cpp - Released 2020-08-25T19:19:58Z

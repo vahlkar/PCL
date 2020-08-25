@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard StarNet Process Module Version 1.0.0
+// Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetParameters.h - Released 2020-08-17T19:10:47Z
+// StarNetParameters.h - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __StarNetParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF StarNetParameters.h - Released 2020-08-17T19:10:47Z
+// EOF StarNetParameters.h - Released 2020-08-25T19:19:58Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGOptionsDialog.h - Released 2020-07-31T19:33:23Z
+// JPEGOptionsDialog.h - Released 2020-08-25T19:19:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -116,4 +116,4 @@ protected:
 #endif   // __JPEGOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEGOptionsDialog.h - Released 2020-07-31T19:33:23Z
+// EOF JPEGOptionsDialog.h - Released 2020-08-25T19:19:45Z

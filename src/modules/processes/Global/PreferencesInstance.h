@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2020-07-31T19:33:39Z
+// PreferencesInstance.h - Released 2020-08-25T19:19:57Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -293,4 +293,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2020-07-31T19:33:39Z
+// EOF PreferencesInstance.h - Released 2020-08-25T19:19:57Z

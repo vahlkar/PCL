@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard StarNet Process Module Version 1.0.0
+// Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetInterface.cpp - Released 2020-08-18T19:14:14Z
+// StarNetInterface.cpp - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -14,17 +14,17 @@
 //
 // This software is available under Attribution-NonCommercial-ShareAlike 4.0
 // International Creative Commons license (CC BY-NC-SA 4.0):
-//
+// 
 // https://creativecommons.org/licenses/by-nc-sa/4.0/
-//
+// 
 // In short: You are free to use and redistribute the code in any medium or
 // format, but only under the same license terms. You can transform and build
 // your projects upon it. You can NOT use the code for commercial purposes. You
 // must give appropriate credit for usage of the code.
-//
+// 
 // This product is based on software from the PixInsight project, developed by
 // Pleiades Astrophoto and its contributors:
-//
+// 
 // https://pixinsight.com/
 // ----------------------------------------------------------------------------
 
@@ -437,7 +437,7 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
    //
 
    MaskParameter_CheckBox.SetText( "Create star mask" );
-   MaskParameter_CheckBox.SetToolTip( "<p>Generate a star mask instead of a starless image.</p>" );
+   MaskParameter_CheckBox.SetToolTip( "<p>Generate a star mask along with a starless image.</p>" );
    MaskParameter_CheckBox.OnClick( (pcl::Button::click_event_handler)&StarNetInterface::e_Click, w );
 
    MaskParameter_Sizer.AddUnscaledSpacing( labelWidth1 + w.LogicalPixelsToPhysical( 4 ) );
@@ -521,4 +521,4 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInterface.cpp - Released 2020-08-18T19:14:14Z
+// EOF StarNetInterface.cpp - Released 2020-08-25T19:19:58Z

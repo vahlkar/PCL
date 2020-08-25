@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/ImageWindow.cpp - Released 2020-07-31T19:33:12Z
+// pcl/ImageWindow.cpp - Released 2020-08-25T19:17:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -31,7 +31,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -1200,4 +1200,4 @@ Array<ImageWindow> ImageWindow::AllWindows( bool includeIconicWindows )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageWindow.cpp - Released 2020-07-31T19:33:12Z
+// EOF pcl/ImageWindow.cpp - Released 2020-08-25T19:17:12Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/Image.h - Released 2020-08-22T16:50:26Z
+// pcl/Image.h - Released 2020-08-25T19:17:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -17300,4 +17300,4 @@ typedef FComplexImage                     ComplexImage;
 #endif   // __PCL_Image_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Image.h - Released 2020-08-22T16:50:26Z
+// EOF pcl/Image.h - Released 2020-08-25T19:17:02Z

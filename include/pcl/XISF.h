@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// pcl/XISF.h - Released 2020-08-18T19:12:56Z
+// pcl/XISF.h - Released 2020-08-25T19:17:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1613,4 +1613,4 @@ private:
 #endif   // __PCL_XISF_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISF.h - Released 2020-08-18T19:12:56Z
+// EOF pcl/XISF.h - Released 2020-08-25T19:17:02Z

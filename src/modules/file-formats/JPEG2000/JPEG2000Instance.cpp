@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Instance.cpp - Released 2020-07-31T19:33:23Z
+// JPEG2000Instance.cpp - Released 2020-08-25T19:19:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -32,7 +32,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -894,4 +894,4 @@ void JP2Instance::WriteICCProfile( const ICCProfile& icc )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Instance.cpp - Released 2020-07-31T19:33:23Z
+// EOF JPEG2000Instance.cpp - Released 2020-08-25T19:19:45Z

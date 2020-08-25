@@ -4,11 +4,10 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.25.0
+// pcl/FileDataCachePreferencesDialog.h - Released 2020-08-25T19:17:02Z
 // ----------------------------------------------------------------------------
-// FileDataCachePreferencesDialog.h - Released 2020-07-31T19:33:39Z
-// ----------------------------------------------------------------------------
-// This file is part of the standard ImageIntegration PixInsight module.
+// This file is part of the PixInsight Class Library (PCL).
+// PCL is a multiplatform C++ framework for development of PixInsight modules.
 //
 // Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
 //
@@ -32,7 +31,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -121,4 +120,4 @@ private:
 #endif   // __PCL_FileDataCachePreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FileDataCachePreferencesDialog.h - Released 2020-07-31T19:33:39Z
+// EOF pcl/FileDataCachePreferencesDialog.h - Released 2020-08-25T19:17:02Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInstance.cpp - Released 2020-07-31T19:33:39Z
+// CosmeticCorrectionInstance.cpp - Released 2020-08-25T19:19:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -33,7 +33,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -1308,4 +1308,4 @@ size_type CosmeticCorrectionInstance::ParameterLength( const MetaParameter* p, s
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInstance.cpp - Released 2020-07-31T19:33:39Z
+// EOF CosmeticCorrectionInstance.cpp - Released 2020-08-25T19:19:58Z
