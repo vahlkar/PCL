@@ -1664,10 +1664,10 @@ class PCL_TwoSidedAbsDevMinMaxThread : public Thread
 {
 public:
 
-   double min;
-   double max;
-   size_type nLow;
-   size_type nHigh;
+   double minLow = 0, minHigh = 0;
+   double maxLow = 0, maxHigh = 0;
+   size_type nLow = 0;
+   size_type nHigh = 0;
 
    PCL_TwoSidedAbsDevMinMaxThread( const T* A, size_type start, size_type stop, double center )
       : m_A( A )
@@ -1681,41 +1681,37 @@ public:
    {
       const T* a = m_A + m_start;
       const T* b = m_A + m_stop;
-
-      double x = double( *a );
-      if ( x <= m_center )
-      {
-         nLow = 1;
-         nHigh = 0;
-         min = max = m_center - x;
-      }
-      else
-      {
-         nLow = 0;
-         nHigh = 1;
-         min = max = x - m_center;
-      }
-
-      while ( ++a < b )
+      do
       {
          double x = double( *a );
-         double d;
          if ( x <= m_center )
          {
-            ++nLow;
-            d = m_center - x;
+            double d = m_center - x;
+            if ( nLow++ > 0 )
+            {
+               if ( d < minLow )
+                  minLow = d;
+               else if ( d > maxLow )
+                  maxLow = d;
+            }
+            else
+               minLow = maxLow = d;
          }
          else
          {
-            ++nHigh;
-            d = x - m_center;
+            double d = x - m_center;
+            if ( nHigh++ > 0 )
+            {
+               if ( d < minHigh )
+                  minHigh = d;
+               else if ( d > maxHigh )
+                  maxHigh = d;
+            }
+            else
+               minHigh = maxHigh = d;
          }
-
-         if ( d < min )
-            min = d;
-         else if ( d > max )
-            max = d;
       }
+      while ( ++a < b );
    }
 
 private:
@@ -1752,8 +1748,8 @@ static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* begin, const T* end, doubl
 
    Array<size_type> L = Thread::OptimalThreadLoads( N, 160*1024/*overheadLimit*/ );
 
-   double low, high;
-   distance_type nLow, nHigh;
+   double minLow = 0, minHigh = 0, maxLow = 0, maxHigh = 0;
+   size_type nLow = 0, nHigh = 0;
    {
       ReferenceArray<PCL_TwoSidedAbsDevMinMaxThread<T>> threads;
       for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
@@ -1770,26 +1766,44 @@ static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* begin, const T* end, doubl
       else
          threads[0].Run();
 
-      low = threads[0].min;
-      high = threads[0].max;
-      nLow = threads[0].nLow;
-      nHigh = threads[0].nHigh;
-      for ( size_type i = 1; i < threads.Length(); ++i )
-      {
-         if ( threads[i].min < low )
-            low = threads[i].min;
-         if ( threads[i].max > high )
-            high = threads[i].max;
-         nLow += threads[i].nLow;
-         nHigh += threads[i].nHigh;
-      }
+      for ( size_type i = 0; i < threads.Length(); ++i )
+         if ( threads[i].nLow > 0 )
+         {
+            minLow = threads[i].minLow;
+            maxLow = threads[i].maxLow;
+            nLow = threads[i].nLow;
+            while ( ++i < threads.Length() )
+               if ( threads[i].nLow > 0 )
+               {
+                  if ( threads[i].minLow < minLow )
+                     minLow = threads[i].minLow;
+                  if ( threads[i].maxLow > maxLow )
+                     maxLow = threads[i].maxLow;
+                  nLow += threads[i].nLow;
+               }
+            break;
+         }
+
+      for ( size_type i = 0; i < threads.Length(); ++i )
+         if ( threads[i].nHigh > 0 )
+         {
+            minHigh = threads[i].minHigh;
+            maxHigh = threads[i].maxHigh;
+            nHigh = threads[i].nHigh;
+            while ( ++i < threads.Length() )
+               if ( threads[i].nHigh > 0 )
+               {
+                  if ( threads[i].minHigh < minHigh )
+                     minHigh = threads[i].minHigh;
+                  if ( threads[i].maxHigh > maxHigh )
+                     maxHigh = threads[i].maxHigh;
+                  nHigh += threads[i].nHigh;
+               }
+            break;
+         }
 
       threads.Destroy();
    }
-
-   const double eps = 2*std::numeric_limits<double>::epsilon();
-   if ( high - low < eps )
-      return 0;
 
    int side;
    double sideLow, sideHigh;
@@ -1797,6 +1811,7 @@ static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* begin, const T* end, doubl
    for ( size_type i = 0, n = 0; i < L.Length(); n += L[i++] )
       threads << new PCL_TwoSidedAbsDevHistogramThread<T>( begin, n, n + L[i], center, side, sideLow, sideHigh );
 
+   const double eps = 2*std::numeric_limits<double>::epsilon();
    double mad[ 2 ];
    for ( side = 0; side < 2; ++side )
    {
@@ -1807,8 +1822,8 @@ static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* begin, const T* end, doubl
          continue;
       }
 
-      sideLow = 0;
-      sideHigh = side ? high - center : center - low;
+      sideLow = side ? minHigh : minLow;
+      sideHigh = side ? maxHigh : maxLow;
       if ( sideHigh < eps )
       {
          mad[side] = 0;

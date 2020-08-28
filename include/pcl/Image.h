@@ -12217,7 +12217,7 @@ public:
       Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, 160*1024/*overheadLimitPx*/ );
       bool useAffinity = m_parallel && Thread::IsRootThread();
 
-      double low = 0, high = 0;
+      double minLow = 0, minHigh = 0, maxLow = 0, maxHigh = 0;
       size_type nLow = 0, nHigh = 0;
       {
          ReferenceArray<TwoSidedExtremeAbsDevThread> threads;
@@ -12236,20 +12236,36 @@ public:
             threads[0].Run();
 
          for ( size_type i = 0; i < threads.Length(); ++i )
-            if ( threads[i].count > 0 )
+            if ( threads[i].nLow > 0 )
             {
-               low = threads[i].minAbsDev;
-               high = threads[i].maxAbsDev;
-               nLow += threads[i].nLow;
-               nHigh += threads[i].nHigh;
+               minLow = threads[i].minAbsDevLow;
+               maxLow = threads[i].maxAbsDevLow;
+               nLow = threads[i].nLow;
                while ( ++i < threads.Length() )
-                  if ( threads[i].count > 0 )
+                  if ( threads[i].nLow > 0 )
                   {
-                     if ( threads[i].minAbsDev < low )
-                        low = threads[i].minAbsDev;
-                     if ( threads[i].maxAbsDev > high )
-                        high = threads[i].maxAbsDev;
+                     if ( threads[i].minAbsDevLow < minLow )
+                        minLow = threads[i].minAbsDevLow;
+                     if ( threads[i].maxAbsDevLow > maxLow )
+                        maxLow = threads[i].maxAbsDevLow;
                      nLow += threads[i].nLow;
+                  }
+               break;
+            }
+
+         for ( size_type i = 0; i < threads.Length(); ++i )
+            if ( threads[i].nHigh > 0 )
+            {
+               minHigh = threads[i].minAbsDevHigh;
+               maxHigh = threads[i].maxAbsDevHigh;
+               nHigh = threads[i].nHigh;
+               while ( ++i < threads.Length() )
+                  if ( threads[i].nHigh > 0 )
+                  {
+                     if ( threads[i].minAbsDevHigh < minHigh )
+                        minHigh = threads[i].minAbsDevHigh;
+                     if ( threads[i].maxAbsDevHigh > maxHigh )
+                        maxHigh = threads[i].maxAbsDevHigh;
                      nHigh += threads[i].nHigh;
                   }
                break;
@@ -12258,19 +12274,13 @@ public:
          threads.Destroy();
       }
 
-      const double eps = 2*std::numeric_limits<double>::epsilon();
-      if ( nLow == 0 && nHigh == 0 || high - low < eps )
-      {
-         m_status += N;
-         return 0;
-      }
-
       int side;
       double sideLow, sideHigh;
       ReferenceArray<TwoSidedAbsDevHistogramThread> threads;
       for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
          threads << new TwoSidedAbsDevHistogramThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ), center, side, sideLow, sideHigh );
 
+      const double eps = 2*std::numeric_limits<double>::epsilon();
       double mad[ 2 ];
       for ( side = 0; side < 2; ++side )
       {
@@ -12281,9 +12291,9 @@ public:
             continue;
          }
 
-         sideLow = 0;
-         sideHigh = side ? high - center : center - low;
-         if ( sideHigh < eps )
+         sideLow = side ? minHigh : minLow;
+         sideHigh = side ? maxHigh : maxLow;
+         if ( sideHigh - sideLow < eps )
          {
             mad[side] = 0;
             continue;
@@ -15568,8 +15578,9 @@ private:
    {
    public:
 
-      double minAbsDev, maxAbsDev;
-      size_type count = 0, nLow, nHigh;
+      double minAbsDevLow = 0, minAbsDevHigh = 0;
+      double maxAbsDevLow = 0, maxAbsDevHigh = 0;
+      size_type nLow = 0, nHigh = 0;
 
       TwoSidedExtremeAbsDevThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow, double center )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
@@ -15584,39 +15595,31 @@ private:
       void Perform( const sample* f ) override
       {
          double x; P::FromSample( x, *f );
-         if ( count++ > 0 )
+         if ( x <= m_center )
          {
-            double d;
-            if ( x <= m_center )
+            double d = m_center - x;
+            if ( nLow++ > 0 )
             {
-               ++nLow;
-               d = m_center - x;
+               if ( d < minAbsDevLow )
+                  minAbsDevLow = d;
+               else if ( d > maxAbsDevLow )
+                  maxAbsDevLow = d;
             }
             else
-            {
-               ++nHigh;
-               d = x - m_center;
-            }
-
-            if ( d < minAbsDev )
-               minAbsDev = d;
-            else if ( d > maxAbsDev )
-               maxAbsDev = d;
+               minAbsDevLow = maxAbsDevLow = d;
          }
          else
          {
-            if ( x <= m_center )
+            double d = x - m_center;
+            if ( nHigh++ > 0 )
             {
-               nLow = 1;
-               nHigh = 0;
-               minAbsDev = maxAbsDev = m_center - x;
+               if ( d < minAbsDevHigh )
+                  minAbsDevHigh = d;
+               else if ( d > maxAbsDevHigh )
+                  maxAbsDevHigh = d;
             }
             else
-            {
-               nLow = 0;
-               nHigh = 1;
-               minAbsDev = maxAbsDev = x - m_center;
-            }
+               minAbsDevHigh = maxAbsDevHigh = d;
          }
       }
    };
