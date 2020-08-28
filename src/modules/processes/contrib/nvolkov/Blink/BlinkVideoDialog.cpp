@@ -263,15 +263,19 @@ void BlinkVideoDialog::ExecuteVideoEncoder()
 
    CreateFrames(); // prepare frame sequence
 
-   m_videoEncoder.SetWorkingDirectory( m_parent->m_frameOutputDir );
+   StringList arguments;
+   m_parent->m_arguments.Break( arguments, ' ', true/*trim*/ );
+   arguments.Remove( String() );
 
-   m_command = m_parent->m_program.Trimmed() + ' ' + m_parent->m_arguments.Trimmed();
+   m_command = m_parent->m_program.Trimmed();
    m_timestamp = Timestamp();
-   Console().WriteLn( "<end><cbr><br><raw>* Blink: Running external process: " + m_command + "</raw>" );
+   Console().WriteLn( "<end><cbr><br>* Blink: Running external process: <raw>"
+      + m_command + ' ' + String().ToSpaceSeparated( arguments ) + "</raw>" );
    StdOut_TextBox.Focus();
    try
    {
-      m_videoEncoder.Start( m_command );
+      m_videoEncoder.SetWorkingDirectory( m_parent->m_frameOutputDir );
+      m_videoEncoder.Start( m_command, arguments );
    }
    catch( ... )
    {
