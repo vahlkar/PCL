@@ -78,6 +78,10 @@ public:
    bool          noAutoCrop             = false;
    bool          noBlackPointCorrection = false;
    bool          noClipHighlights       = false;
+   bool          forceFocalLength       = false;
+   double        focalLength            = 0; // mm, 0 = do not generate focal length metadata
+   bool          forceAperture          = false;
+   double        aperture               = 0; // mm, 0 = do not generate aperture metadata
    int           noiseThreshold         = 0;
    int           dcbIterations          = 3;
    bool          dcbRefinement          = false;
@@ -130,7 +134,6 @@ public:
 public :
 
    RawPreferences() = default;
-
    RawPreferences( const RawPreferences& ) = default;
 
    virtual ~RawPreferences()
@@ -152,6 +155,10 @@ public :
       Settings::what   ( "RawPreferences_noAutoCrop",             noAutoCrop );             \
       Settings::what   ( "RawPreferences_noBlackPointCorrection", noBlackPointCorrection ); \
       Settings::what   ( "RawPreferences_noClipHighlights",       noClipHighlights );       \
+      Settings::what   ( "RawPreferences_forceFocalLength",       forceFocalLength );       \
+      Settings::what   ( "RawPreferences_focalLength",            focalLength );            \
+      Settings::what   ( "RawPreferences_forceAperture",          forceAperture );          \
+      Settings::what   ( "RawPreferences_aperture",               aperture );               \
       Settings::what   ( "RawPreferences_noiseThreshold",         noiseThreshold );         \
       Settings::what   ( "RawPreferences_dcbIterations",          dcbIterations );          \
       Settings::what   ( "RawPreferences_dcbRefinement",          dcbRefinement );          \

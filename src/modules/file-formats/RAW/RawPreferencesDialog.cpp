@@ -63,6 +63,7 @@ RawPreferencesDialog::RawPreferencesDialog( RawPreferences& prf )
 {
    pcl::Font fnt = Font();
    int labelWidth1 = fnt.Width( String( "FBDD noise reduction:" ) + 'M' );
+   int editWidth1 = fnt.Width( "9999999999m" );
    int ui4 = LogicalPixelsToPhysical( 4 );
 
    //
@@ -141,6 +142,58 @@ RawPreferencesDialog::RawPreferencesDialog( RawPreferences& prf )
    NoClipHighlights_Sizer.Add( NoClipHighlights_CheckBox );
    NoClipHighlights_Sizer.AddStretch();
 
+   ForceFocalLength_CheckBox.SetText( "Force focal length" );
+   ForceFocalLength_CheckBox.SetToolTip(
+      "<p>Ignore existing focal length metadata, and either force a user-defined value or do not generate any metadata "
+      "for focal length in decoded images.</p>"
+      "<p>Raw frames acquired with digital cameras through telescopes usually don't include valid metadata for focal "
+      "length and aperture. This is because a telescope, as opposed to a standard camera lens, does not normally "
+      "provide any means to inform the camera body about these parameters. For example, a typical raw frame acquired "
+      "through a telescope provides a default '50 mm' focal length metadata item, which is obviously wrong.</p>" );
+   ForceFocalLength_CheckBox.OnClick( (Button::click_event_handler)&RawPreferencesDialog::Button_Click, *this );
+
+   ForceFocalLength_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   ForceFocalLength_Sizer.Add( ForceFocalLength_CheckBox );
+   ForceFocalLength_Sizer.AddStretch();
+
+   FocalLength_NumericEdit.SetReal();
+   FocalLength_NumericEdit.SetPrecision( 2 );
+   FocalLength_NumericEdit.EnableFixedPrecision();
+   FocalLength_NumericEdit.SetRange( 0, int_max );
+   FocalLength_NumericEdit.label.SetText( "Focal length:" );
+   FocalLength_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   FocalLength_NumericEdit.edit.SetFixedWidth( editWidth1 );
+   FocalLength_NumericEdit.sizer.AddStretch();
+   FocalLength_NumericEdit.SetToolTip( "<p>Forced focal length in millimeters. Set to zero to prevent generation of "
+      "focal length metadata in decoded images.</p>" );
+   FocalLength_NumericEdit.OnValueUpdated( (NumericControl::value_event_handler)&RawPreferencesDialog::NumericControl_ValueUpdated, *this );
+
+   ForceAperture_CheckBox.SetText( "Force aperture" );
+   ForceAperture_CheckBox.SetToolTip(
+      "<p>Ignore existing aperture metadata, and either force a user-defined value or do not generate any metadata "
+      "for aperture in decoded images.</p>"
+      "<p>Raw frames acquired with digital cameras through telescopes usually don't include valid metadata for focal "
+      "length and aperture. This is because a telescope, as opposed to a standard camera lens, does not normally "
+      "provide any means to inform the camera body about these parameters. For example, a typical raw frame acquired "
+      "through a telescope provides a default '50 mm' focal length metadata item, which is obviously wrong.</p>" );
+   ForceAperture_CheckBox.OnClick( (Button::click_event_handler)&RawPreferencesDialog::Button_Click, *this );
+
+   ForceAperture_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   ForceAperture_Sizer.Add( ForceAperture_CheckBox );
+   ForceAperture_Sizer.AddStretch();
+
+   Aperture_NumericEdit.SetReal();
+   Aperture_NumericEdit.SetPrecision( 2 );
+   Aperture_NumericEdit.EnableFixedPrecision();
+   Aperture_NumericEdit.SetRange( 0, int_max );
+   Aperture_NumericEdit.label.SetText( "Aperture:" );
+   Aperture_NumericEdit.label.SetFixedWidth( labelWidth1 );
+   Aperture_NumericEdit.edit.SetFixedWidth( editWidth1 );
+   Aperture_NumericEdit.sizer.AddStretch();
+   Aperture_NumericEdit.SetToolTip( "<p>Forced aperture diameter in millimeters. Set to zero to prevent generation of "
+      "aperture metadata in decoded images.</p>" );
+   Aperture_NumericEdit.OnValueUpdated( (NumericControl::value_event_handler)&RawPreferencesDialog::NumericControl_ValueUpdated, *this );
+
    NoiseThreshold_NumericControl.label.SetText( "Noise threshold:" );
    NoiseThreshold_NumericControl.label.SetMinWidth( labelWidth1 );
    NoiseThreshold_NumericControl.slider.SetRange( 0, 200 );
@@ -162,6 +215,10 @@ RawPreferencesDialog::RawPreferencesDialog( RawPreferences& prf )
    OutputOptions_Sizer.Add( NoAutoCrop_Sizer );
    OutputOptions_Sizer.Add( NoBlackPointCorrection_Sizer );
    OutputOptions_Sizer.Add( NoClipHighlights_Sizer );
+   OutputOptions_Sizer.Add( ForceFocalLength_Sizer );
+   OutputOptions_Sizer.Add( FocalLength_NumericEdit );
+   OutputOptions_Sizer.Add( ForceAperture_Sizer );
+   OutputOptions_Sizer.Add( Aperture_NumericEdit );
    OutputOptions_Sizer.Add( NoiseThreshold_NumericControl );
 
    OutputOptions_GroupBox.SetTitle( "Output Options" );
@@ -412,6 +469,12 @@ void RawPreferencesDialog::UpdateControls()
    NoAutoCrop_CheckBox.SetChecked( preferences.noAutoCrop );
    NoBlackPointCorrection_CheckBox.SetChecked( preferences.noBlackPointCorrection );
    NoClipHighlights_CheckBox.SetChecked( preferences.noClipHighlights );
+   ForceFocalLength_CheckBox.SetChecked( preferences.forceFocalLength );
+   FocalLength_NumericEdit.SetValue( preferences.focalLength );
+   FocalLength_NumericEdit.Enable( preferences.forceFocalLength );
+   ForceAperture_CheckBox.SetChecked( preferences.forceAperture );
+   Aperture_NumericEdit.SetValue( preferences.aperture );
+   Aperture_NumericEdit.Enable( preferences.forceAperture );
    NoiseThreshold_NumericControl.SetValue( preferences.noiseThreshold );
 
    Bilinear_RadioButton.SetChecked( preferences.interpolation == RawPreferences::Bilinear );
@@ -455,7 +518,11 @@ void RawPreferencesDialog::UpdateControls()
 
 void RawPreferencesDialog::NumericControl_ValueUpdated( NumericControl& sender, double value )
 {
-   if ( sender == NoiseThreshold_NumericControl )
+   if ( sender == FocalLength_NumericEdit )
+      preferences.focalLength = value;
+   else if ( sender == Aperture_NumericEdit )
+      preferences.aperture = value;
+   else if ( sender == NoiseThreshold_NumericControl )
       preferences.noiseThreshold = value;
    UpdateControls();
 }
@@ -532,6 +599,14 @@ void RawPreferencesDialog::Button_Click( Button& sender, bool checked )
    else if ( sender == NoClipHighlights_CheckBox )
    {
       preferences.noClipHighlights = checked;
+   }
+   else if ( sender == ForceFocalLength_CheckBox )
+   {
+      preferences.forceFocalLength = checked;
+   }
+   else if ( sender == ForceAperture_CheckBox )
+   {
+      preferences.forceAperture = checked;
    }
    else if ( sender == Bilinear_RadioButton )
    {

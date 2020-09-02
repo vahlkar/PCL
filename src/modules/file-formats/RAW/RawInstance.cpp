@@ -250,6 +250,40 @@ public:
          else if ( *token == "no-clip-highlights" )
             preferences.noClipHighlights = true;
 
+         else if ( *token == "force-focal-length" )
+            preferences.forceFocalLength = true;
+         else if ( *token == "no-force-focal-length" )
+            preferences.forceFocalLength = false;
+         else if ( *token == "focal-length" )
+         {
+            if ( ++token == theHints.End() )
+               break;
+            double f;
+            if ( token->TryToDouble( f ) )
+               if ( f >= 0 )
+               {
+                  preferences.forceFocalLength = true;
+                  preferences.focalLength = f;
+               }
+         }
+
+         else if ( *token == "force-aperture" )
+            preferences.forceAperture = true;
+         else if ( *token == "no-force-aperture" )
+            preferences.forceAperture = false;
+         else if ( *token == "aperture" )
+         {
+            if ( ++token == theHints.End() )
+               break;
+            double d;
+            if ( token->TryToDouble( d ) )
+               if ( d >= 0 )
+               {
+                  preferences.forceAperture = true;
+                  preferences.aperture = d;
+               }
+         }
+
          else if ( *token == "wavelet-noise-threshold" )
          {
             if ( ++token == theHints.End() )
@@ -671,6 +705,17 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
          m_aperture = 0;
 
       /*
+       * Forced focal length and aperture via preferences / read hints
+       */
+      if ( m_preferences.forceFocalLength )
+         m_focalLength = m_preferences.focalLength;
+      if ( m_preferences.forceAperture )
+         if ( m_focalLength > 0 && m_preferences.aperture > 0 )
+            m_aperture = m_focalLength/m_preferences.aperture;
+         else
+            m_aperture = 0;
+
+      /*
        * Geometry and color space image properties.
        */
       ImageInfo i;
@@ -715,8 +760,8 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
       o.upperRange         = 65535;
       o.isoSpeed           = m_isoSpeed;
       o.exposure           = m_exposure;
-      o.aperture           = m_aperture;
       o.focalLength        = m_focalLength;
+      o.aperture           = m_aperture;
 
       /*
        * Be verbose as requested.
@@ -737,9 +782,14 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
             console.WriteLn( String().Format(    "ISO speed ........ %d", m_isoSpeed ) );
          if ( m_focalLength > 0 )
          {
-            console.WriteLn( String().Format(    "Focal length ..... %.2g mm", m_focalLength ) );
+            console.WriteLn( String().Format(    "Focal length ..... %.2f mm%s",
+                                                 m_focalLength,
+                                                 m_preferences.forceFocalLength ? " (forced)" : "" ) );
             if ( m_aperture > 0 )
-               console.WriteLn( String().Format( "Aperture ......... f/%.2g = %.2g mm", m_aperture, m_focalLength/m_aperture ) );
+               console.WriteLn( String().Format( "Aperture ......... f/%.2f = %.2f mm%s",
+                                                 m_aperture,
+                                                 m_focalLength/m_aperture,
+                                                 m_preferences.forceAperture ? " (forced)" : "" ) );
          }
          if ( o.embedICCProfile )
             console.WriteLn(                     "ICC profile ...... <raw>" + reinterpret_cast<const ICCProfile*>( color.profile )->Description() + "</raw>" );

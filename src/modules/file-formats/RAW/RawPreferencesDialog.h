@@ -99,6 +99,12 @@ private:
             CheckBox          NoBlackPointCorrection_CheckBox;
          HorizontalSizer   NoClipHighlights_Sizer;
             CheckBox          NoClipHighlights_CheckBox;
+         HorizontalSizer   ForceFocalLength_Sizer;
+            CheckBox          ForceFocalLength_CheckBox;
+         NumericEdit       FocalLength_NumericEdit;
+         HorizontalSizer   ForceAperture_Sizer;
+            CheckBox          ForceAperture_CheckBox;
+         NumericEdit       Aperture_NumericEdit;
          NumericControl    NoiseThreshold_NumericControl;
 
       GroupBox          Interpolation_GroupBox;
