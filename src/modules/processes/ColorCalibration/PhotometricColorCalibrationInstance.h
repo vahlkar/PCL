@@ -113,7 +113,7 @@ private:
    double   p_centerDec;   // deg
    double   p_epochJD;
    pcl_bool p_forcePlateSolve;
-   pcl_bool p_ignoreImagePositionAndScale;
+   pcl_bool p_ignorePositionAndScale;
    String   p_serverURL;
    String   p_solverCatalogName;
    pcl_bool p_solverAutoCatalog;

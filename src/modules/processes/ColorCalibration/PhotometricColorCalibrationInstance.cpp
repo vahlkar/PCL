@@ -109,7 +109,7 @@ PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const 
    , p_centerDec( ThePCCCenterDecParameter->DefaultValue() )
    , p_epochJD( ThePCCEpochJDParameter->DefaultValue() )
    , p_forcePlateSolve( ThePCCForcePlateSolveParameter->DefaultValue() )
-   , p_ignoreImagePositionAndScale( ThePCCIgnoreImagePositionAndScaleParameter->DefaultValue() )
+   , p_ignorePositionAndScale( ThePCCIgnoreImagePositionAndScaleParameter->DefaultValue() )
    , p_serverURL( ThePCCServerURLParameter->DefaultValue() )
    , p_solverCatalogName( ThePCCSolverCatalogNameParameter->DefaultValue() )
    , p_solverAutoCatalog( ThePCCSolverAutoCatalogParameter->DefaultValue() )
@@ -176,7 +176,7 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
       p_centerDec                      = x->p_centerDec;
       p_epochJD                        = x->p_epochJD;
       p_forcePlateSolve                = x->p_forcePlateSolve;
-      p_ignoreImagePositionAndScale    = x->p_ignoreImagePositionAndScale;
+      p_ignorePositionAndScale         = x->p_ignorePositionAndScale;
       p_serverURL                      = x->p_serverURL;
       p_solverCatalogName              = x->p_solverCatalogName;
       p_solverAutoCatalog              = x->p_solverAutoCatalog;
@@ -568,31 +568,45 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
 
          if ( doPlateSolve )
          {
-            double centerRA = wcs.objctra.OrElse( p_centerRA );
-            double centerDec = wcs.objctdec.OrElse( p_centerDec );
-            double epochJD = wcs.dateobs.OrElse( p_epochJD );
-            double focalLength = wcs.focallen.OrElse( p_focalLength );
-            double pixelSize = wcs.xpixsz.OrElse( p_pixelSize );
+            bool doForcePlateSolve = p_forcePlateSolve || p_ignorePositionAndScale;
+            double centerRA, centerDec, epochJD, focalLength, pixelSize;
 
-            if ( p_forcePlateSolve )
+            if ( p_ignorePositionAndScale )
+            {
+               centerRA = p_centerRA;
+               centerDec = p_centerDec;
+               epochJD = p_epochJD;
+               focalLength = p_focalLength;
+               pixelSize = p_pixelSize;
+            }
+            else
+            {
+               centerRA = wcs.objctra.OrElse( p_centerRA );
+               centerDec = wcs.objctdec.OrElse( p_centerDec );
+               epochJD = wcs.dateobs.OrElse( p_epochJD );
+               focalLength = wcs.focallen.OrElse( p_focalLength );
+               pixelSize = wcs.xpixsz.OrElse( p_pixelSize );
+            }
+
+            if ( doForcePlateSolve )
             {
                AstrometricMetadata::RemoveKeywords( inputKeywords );
                AstrometricMetadata::RemoveProperties( inputProperties );
             }
 
-            if ( p_forcePlateSolve || !wcs.objctra.IsDefined() )
+            if ( doForcePlateSolve || !wcs.objctra.IsDefined() )
                inputKeywords << FITSHeaderKeyword( "RA", IsoString( centerRA ) );
-            if ( p_forcePlateSolve || !wcs.objctdec.IsDefined() )
+            if ( doForcePlateSolve || !wcs.objctdec.IsDefined() )
                inputKeywords << FITSHeaderKeyword( "DEC", IsoString( centerDec ) );
-            if ( p_forcePlateSolve || !wcs.dateobs.IsDefined() )
+            if ( doForcePlateSolve || !wcs.dateobs.IsDefined() )
                inputKeywords << FITSHeaderKeyword( "DATE-OBS",
                      '\'' +
                      TimePoint( epochJD ).ToIsoString(
                            ISO8601ConversionOptions( 3/*timeItems*/, 0/*precision*/, false/*timeZone*/ ) ) +
                      '\'' );
-            if ( p_forcePlateSolve || !wcs.focallen.IsDefined() )
+            if ( doForcePlateSolve || !wcs.focallen.IsDefined() )
                inputKeywords << FITSHeaderKeyword( "FOCALLEN", IsoString( focalLength ) );
-            if ( p_forcePlateSolve || !wcs.xpixsz.IsDefined() )
+            if ( doForcePlateSolve || !wcs.xpixsz.IsDefined() )
                inputKeywords << FITSHeaderKeyword( "XPIXSZ", IsoString( pixelSize ) )
                              << FITSHeaderKeyword( "YPIXSZ", IsoString( pixelSize ) );
 
@@ -1269,7 +1283,7 @@ void* PhotometricColorCalibrationInstance::LockParameter( const MetaParameter* p
    if ( p == ThePCCForcePlateSolveParameter )
       return &p_forcePlateSolve;
    if ( p == ThePCCIgnoreImagePositionAndScaleParameter )
-      return &p_ignoreImagePositionAndScale;
+      return &p_ignorePositionAndScale;
    if ( p == ThePCCServerURLParameter )
       return p_serverURL.Begin();
    if ( p == ThePCCSolverCatalogNameParameter )

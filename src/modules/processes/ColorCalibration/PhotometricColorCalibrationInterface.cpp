@@ -346,8 +346,7 @@ void PhotometricColorCalibrationInterface::UpdateControls()
 
    GUI->ForcePlateSolve_CheckBox.SetChecked( m_instance.p_forcePlateSolve );
 
-   GUI->IgnorePositionAndScale_CheckBox.Enable( m_instance.p_forcePlateSolve );
-   GUI->IgnorePositionAndScale_CheckBox.SetChecked( m_instance.p_ignoreImagePositionAndScale );
+   GUI->IgnorePositionAndScale_CheckBox.SetChecked( m_instance.p_ignorePositionAndScale );
 
    GUI->ProjectionSystem_ComboBox.SetCurrentItem( m_instance.p_solverProjection );
 
@@ -742,7 +741,7 @@ void PhotometricColorCalibrationInterface::e_Click( Button& sender, bool checked
    }
    else if ( sender == GUI->IgnorePositionAndScale_CheckBox )
    {
-      m_instance.p_ignoreImagePositionAndScale = checked;
+      m_instance.p_ignorePositionAndScale = checked;
    }
    else if ( sender == GUI->ResetSolverConfiguration_ToolButton )
    {
@@ -1282,9 +1281,8 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    //
 
-   const char* epochToolTip = "<p>The date the image was acquired. This parameter is used to compute proper motions of stars, "
-      "in order to compare the actual positions recorded in the image with the corresponding positions stored in a catalog. "
-      "This date is also used to compute apparent star positions, when appropriate.</p>";
+   const char* epochToolTip = "<p>The date the image was acquired. This parameter is used to compute proper motions of stars "
+      "in order to compare the actual positions recorded in the image with the corresponding positions stored in a catalog.</p>";
 
    Epoch_Label.SetText( "Observation date:" );
    Epoch_Label.SetFixedWidth( labelWidth1 );
@@ -1458,8 +1456,8 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    DistortionCorrection_CheckBox.SetText( "Distortion correction" );
    DistortionCorrection_CheckBox.SetToolTip( "<p>This option enables a distortion correction algorithm based on 2-D surface splines, "
-      "also known as <i>thin plates</i>. This option should be selected when the target image deviates from an ideal projected image. "
-      "This usually happens in images taken with focal lengths shorter than 400 mm.</p>" );
+      "also known as <i>thin plates</i>. This option should be selected when the target image deviates significantly from an ideal "
+      "projected image. This usually happens in images taken with focal lengths shorter than 400 mm.</p>" );
    DistortionCorrection_CheckBox.OnClick( (Button::click_event_handler)&PhotometricColorCalibrationInterface::e_Click, w );
 
    DistortionCorrection_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -1470,7 +1468,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    ForcePlateSolve_CheckBox.SetText( "Force plate solving" );
    ForcePlateSolve_CheckBox.SetToolTip( "<p>If enabled, the target image will be solved even if it contains a valid astrometric "
-      "solution, which will be replaced with a newly computed one.</p>" );
+      "solution, which will be replaced with a newly computed one. See also the <i>Ignore existing metadata</i> option.</p>" );
    ForcePlateSolve_CheckBox.OnClick( (Button::click_event_handler)&PhotometricColorCalibrationInterface::e_Click, w );
 
    ForcePlateSolve_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -1482,8 +1480,10 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    IgnorePositionAndScale_CheckBox.SetText( "Ignore existing metadata" );
    IgnorePositionAndScale_CheckBox.SetToolTip( "<p>If enabled, existing metadata will be ignored and the values set by the "
       "running instance, that is, on this interface, will be used instead. This includes the right ascension and declination "
-      "coordinate of the center of the image, the focal length, pixel size and observation date. If disabled, existing metadata "
-      "will take precedence over the values defined by this instance.</p>" );
+      "coordinates of the center of the image, the focal length, pixel size and observation date. If disabled, existing metadata "
+      "will take precedence over the values defined by this instance.</p>"
+      "<p>Note that for this option to take effect the image must be solved astrometrically, either because the <i>Force plate "
+      "solving</i> option is enabled, or because the image has no valid astrometric solution.</p>" );
    IgnorePositionAndScale_CheckBox.OnClick( (Button::click_event_handler)&PhotometricColorCalibrationInterface::e_Click, w );
 
    //
@@ -1538,7 +1538,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    // N.B.: Items must be coherent with the ImageSolver script.
    ProjectionSystem_ComboBox.AddItem( "Gnomonic" );
    ProjectionSystem_ComboBox.AddItem( "Stereographic" );
-   ProjectionSystem_ComboBox.AddItem( "Plate-carrée" );
+   ProjectionSystem_ComboBox.AddItem( u"Plate carrée" );
    ProjectionSystem_ComboBox.AddItem( "Mercator" );
    ProjectionSystem_ComboBox.AddItem( "Hammer-Aitoff" );
    ProjectionSystem_ComboBox.AddItem( "Zenithal equal area" );
