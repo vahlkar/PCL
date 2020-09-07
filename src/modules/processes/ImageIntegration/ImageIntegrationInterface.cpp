@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.30
+// Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationInterface.cpp - Released 2020-08-25T19:19:58Z
+// ImageIntegrationInterface.cpp - Released 2020-09-07T18:39:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -318,6 +318,8 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
 
    GUI->AdaptiveGridSize_SpinBox.SetValue( m_instance.p_adaptiveGridSize );
 
+   GUI->AdaptiveNoScale_CheckBox.SetChecked( m_instance.p_adaptiveNoScale );
+
    GUI->WeightMode_Label.Enable( isAverage );
 
    GUI->WeightMode_ComboBox.Enable( isAverage );
@@ -331,9 +333,9 @@ void ImageIntegrationInterface::UpdateIntegrationControls()
    GUI->WeightKeyword_Edit.Enable( isAverage && isKeywordWeight );
    GUI->WeightKeyword_Edit.SetText( m_instance.p_weightKeyword );
 
-   GUI->GenerateIntegratedImage_CheckBox.SetChecked( m_instance.p_generateIntegratedImage );
-
    GUI->IgnoreNoiseKeywords_CheckBox.SetChecked( m_instance.p_ignoreNoiseKeywords );
+
+   GUI->GenerateIntegratedImage_CheckBox.SetChecked( m_instance.p_generateIntegratedImage );
 
    GUI->Generate64BitResult_CheckBox.SetChecked( m_instance.p_generate64BitResult );
    GUI->Generate64BitResult_CheckBox.Enable( m_instance.p_generateIntegratedImage );
@@ -899,6 +901,8 @@ void ImageIntegrationInterface::e_Integration_Click( Button& sender, bool checke
       m_instance.p_generateDrizzleData = checked;
    else if ( sender == GUI->IgnoreNoiseKeywords_CheckBox )
       m_instance.p_ignoreNoiseKeywords = checked;
+   else if ( sender == GUI->AdaptiveNoScale_CheckBox )
+      m_instance.p_adaptiveNoScale = checked;
    else if ( sender == GUI->SubtractPedestals_CheckBox )
       m_instance.p_subtractPedestals = checked;
    else if ( sender == GUI->TruncateOnOutOfRange_CheckBox )
@@ -1469,6 +1473,19 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    AdaptiveGridSize_Sizer.Add( AdaptiveGridSize_SpinBox );
    AdaptiveGridSize_Sizer.AddStretch();
 
+   AdaptiveNoScale_CheckBox.SetText( "No adaptive scale components" );
+   AdaptiveNoScale_CheckBox.SetToolTip( "<p>Apply only the location (additive) components of adaptive normalization "
+      "functions, and use global two-sided scale estimates instead of adaptive ones.</p>"
+      "<p>This option can be used to limit adaptive normalization to correction of purely additive gradients. Without "
+      "multiplicative components, adaptive normalization can be more tolerant of excessive grid size parameter values. "
+      "However, in difficult cases with strong gradients, scale components can be necessary to achieve a sufficiently "
+      "accurate normalization.</p>" );
+   AdaptiveNoScale_CheckBox.OnClick( (Button::click_event_handler)&ImageIntegrationInterface::e_Integration_Click, w );
+
+   AdaptiveNoScale_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   AdaptiveNoScale_Sizer.Add( AdaptiveNoScale_CheckBox );
+   AdaptiveNoScale_Sizer.AddStretch();
+
    const char* weightModeToolTip = "<p>Image weighting criterion.</p>"
       "<p>Exposure times will be retrieved from standard EXPTIME and EXPOSURE FITS keywords (in that order).</p>"
 
@@ -1762,6 +1779,7 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
    Integration_Sizer.Add( Combination_Sizer );
    Integration_Sizer.Add( Normalization_Sizer );
    Integration_Sizer.Add( AdaptiveGridSize_Sizer );
+   Integration_Sizer.Add( AdaptiveNoScale_Sizer );
    Integration_Sizer.Add( WeightMode_Sizer );
    Integration_Sizer.Add( WeightKeyword_Sizer );
    Integration_Sizer.Add( WeightScale_Sizer );
@@ -2509,4 +2527,4 @@ ImageIntegrationInterface::GUIData::GUIData( ImageIntegrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInterface.cpp - Released 2020-08-25T19:19:58Z
+// EOF ImageIntegrationInterface.cpp - Released 2020-09-07T18:39:11Z

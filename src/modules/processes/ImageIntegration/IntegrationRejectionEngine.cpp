@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.30
+// Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationRejectionEngine.cpp - Released 2020-08-25T19:19:58Z
+// IntegrationRejectionEngine.cpp - Released 2020-09-07T18:39:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -243,7 +243,6 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
              */
             const DVector& m = E.m_m;
             const scale_estimates& s = E.m_s;
-
             float rmin = 0;
             for ( int j = 0; j < R->Rows(); ++j )
             {
@@ -274,7 +273,6 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
              * Flux equalization normalization.
              */
             const DVector& q = E.m_q;
-
             for ( int j = 0; j < R->Rows(); ++j )
             {
                RejectionDataItem* r = R->RowPtr( j ) + 1;
@@ -324,20 +322,37 @@ void IntegrationRejectionEngine::NormalizationThread::Run()
             for ( int j = 0, x = E.m_x0, y = E.m_y0+k; j < R->Rows(); ++j, ++x )
             {
                double m0 = a0.Location( x, y, E.m_channel );
-               double s00 = a0.ScaleLow( x, y, E.m_channel );
-               double s10 = a0.ScaleHigh( x, y, E.m_channel );
-               RejectionDataItem* r = R->RowPtr( j );
-               for ( int i = 0; i < R->Columns(); ++i, ++r )
-                  if ( !r->IsRejected() )
-                  {
-                     const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( i ).AdaptiveNormalization();
-                     double m = a.Location( x, y, E.m_channel );
-                     r->value = (r->value - m)
-                        * ((r->value <= m) ? s00/a.ScaleLow( x, y, E.m_channel ) : s10/a.ScaleHigh( x, y, E.m_channel ))
-                        + m0;
-                     if ( r->value < rmin )
-                        rmin = r->value;
-                  }
+               if ( I.p_adaptiveNoScale )
+               {
+                  const scale_estimates& s = E.m_s;
+                  RejectionDataItem* r = R->RowPtr( j );
+                  for ( int i = 0; i < R->Columns(); ++i, ++r )
+                     if ( !r->IsRejected() )
+                     {
+                        const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( i ).AdaptiveNormalization();
+                        double m = a.Location( x, y, E.m_channel );
+                        r->value = (r->value - m)*((r->value <= m) ? s[i].low : s[i].high) + m0;
+                        if ( r->value < rmin )
+                           rmin = r->value;
+                     }
+               }
+               else
+               {
+                  double s00 = a0.ScaleLow( x, y, E.m_channel );
+                  double s10 = a0.ScaleHigh( x, y, E.m_channel );
+                  RejectionDataItem* r = R->RowPtr( j );
+                  for ( int i = 0; i < R->Columns(); ++i, ++r )
+                     if ( !r->IsRejected() )
+                     {
+                        const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( i ).AdaptiveNormalization();
+                        double m = a.Location( x, y, E.m_channel );
+                        r->value = (r->value - m)
+                           * ((r->value <= m) ? s00/a.ScaleLow( x, y, E.m_channel ) : s10/a.ScaleHigh( x, y, E.m_channel ))
+                           + m0;
+                        if ( r->value < rmin )
+                           rmin = r->value;
+                     }
+               }
             }
 
             if ( rmin < 0 )
@@ -1074,4 +1089,4 @@ void IntegrationRejectionEngine::CCDClipRejectionThread::PostRun()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationRejectionEngine.cpp - Released 2020-08-25T19:19:58Z
+// EOF IntegrationRejectionEngine.cpp - Released 2020-09-07T18:39:11Z

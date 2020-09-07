@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.30
+// Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationDescription.cpp - Released 2020-08-25T19:19:58Z
+// IntegrationDescription.cpp - Released 2020-09-07T18:39:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -105,7 +105,8 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
          outputNormalization = "Local";
          break;
       case IINormalization::AdaptiveNormalization:
-         outputNormalization.Format( "Adaptive: grid_size=%d", instance.p_adaptiveGridSize );
+         outputNormalization = String().Format( "Adaptive: grid_size=%d scale=",
+                                                instance.p_adaptiveGridSize ) + YesNo( !instance.p_adaptiveNoScale );
          break;
       }
    }
@@ -217,7 +218,8 @@ ImageIntegrationInstance::IntegrationDescriptionItems::IntegrationDescriptionIte
          rejectionNormalization = "Local";
          break;
       case IIRejectionNormalization::AdaptiveRejectionNormalization:
-         rejectionNormalization.Format( "Adaptive: grid_size=%d", instance.p_adaptiveGridSize );
+         rejectionNormalization = String().Format( "Adaptive: grid_size=%d scale=",
+                                                   instance.p_adaptiveGridSize ) + YesNo( !instance.p_adaptiveNoScale );
          break;
       }
 
@@ -305,4 +307,4 @@ String ImageIntegrationInstance::IntegrationDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationDescription.cpp - Released 2020-08-25T19:19:58Z
+// EOF IntegrationDescription.cpp - Released 2020-09-07T18:39:11Z

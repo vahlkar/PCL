@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.30
+// Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// MapIntegrationEngine.cpp - Released 2020-08-25T19:19:58Z
+// MapIntegrationEngine.cpp - Released 2020-09-07T18:39:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -187,15 +187,27 @@ void MapIntegrationEngine::IntegrationThread::Run()
                int y = E.m_y0 + k;
                const AdaptiveNormalizationData& a0 = IntegrationFile::FileByIndex( 0 ).AdaptiveNormalization();
                double m0 = a0.Location( x, y, E.m_channel );
-               double s00 = a0.ScaleLow( x, y, E.m_channel );
-               double s10 = a0.ScaleHigh( x, y, E.m_channel );
-               for ( int i = 0; i < n; ++i )
+               if ( I.p_adaptiveNoScale )
                {
-                  const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( index[i] ).AdaptiveNormalization();
-                  double m = a.Location( x, y, E.m_channel );
-                  stack[i] = (stack[i] - m)
-                        * ((stack[i] <= m) ? s00/a.ScaleLow( x, y, E.m_channel ) : s10/a.ScaleHigh( x, y, E.m_channel ))
-                        + m0;
+                  for ( int i = 0; i < n; ++i )
+                  {
+                     const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( index[i] ).AdaptiveNormalization();
+                     double m = a.Location( x, y, E.m_channel );
+                     stack[i] = (stack[i] - m)*((stack[i] <= m) ? s[index[i]].low : s[index[i]].high) + m0;
+                  }
+               }
+               else
+               {
+                  double s00 = a0.ScaleLow( x, y, E.m_channel );
+                  double s10 = a0.ScaleHigh( x, y, E.m_channel );
+                  for ( int i = 0; i < n; ++i )
+                  {
+                     const AdaptiveNormalizationData& a = IntegrationFile::FileByIndex( index[i] ).AdaptiveNormalization();
+                     double m = a.Location( x, y, E.m_channel );
+                     stack[i] = (stack[i] - m)
+                           * ((stack[i] <= m) ? s00/a.ScaleLow( x, y, E.m_channel ) : s10/a.ScaleHigh( x, y, E.m_channel ))
+                           + m0;
+                  }
                }
             }
             break;
@@ -277,4 +289,4 @@ void MapIntegrationEngine::IntegrationThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MapIntegrationEngine.cpp - Released 2020-08-25T19:19:58Z
+// EOF MapIntegrationEngine.cpp - Released 2020-09-07T18:39:11Z

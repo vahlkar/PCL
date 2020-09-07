@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.30
+// Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationDataLoaderEngine.cpp - Released 2020-08-25T19:19:58Z
+// IntegrationDataLoaderEngine.cpp - Released 2020-09-07T18:39:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -139,4 +139,4 @@ void IntegrationDataLoaderEngine::DataLoaderThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationDataLoaderEngine.cpp - Released 2020-08-25T19:19:58Z
+// EOF IntegrationDataLoaderEngine.cpp - Released 2020-09-07T18:39:11Z

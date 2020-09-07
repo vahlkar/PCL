@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.30
+// Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2020-08-25T19:19:58Z
+// ImageIntegrationInstance.cpp - Released 2020-09-07T18:39:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -86,6 +86,7 @@ ImageIntegrationInstance::ImageIntegrationInstance( const MetaProcess* m )
    , p_weightKeyword( TheIIWeightKeywordParameter->DefaultValue() )
    , p_weightScale( IIWeightScale::Default )
    , p_adaptiveGridSize( TheIIAdaptiveGridSizeParameter->DefaultValue() )
+   , p_adaptiveNoScale( TheIIAdaptiveNoScaleParameter->DefaultValue() )
    , p_ignoreNoiseKeywords( TheIIIgnoreNoiseKeywordsParameter->DefaultValue() )
    , p_rejection( IIRejection::Default )
    , p_rejectionNormalization( IIRejectionNormalization::Default )
@@ -165,6 +166,7 @@ void ImageIntegrationInstance::Assign( const ProcessImplementation& p )
       p_weightKeyword                     = x->p_weightKeyword;
       p_weightScale                       = x->p_weightScale;
       p_adaptiveGridSize                  = x->p_adaptiveGridSize;
+      p_adaptiveNoScale                   = x->p_adaptiveNoScale;
       p_ignoreNoiseKeywords               = x->p_ignoreNoiseKeywords;
       p_rejection                         = x->p_rejection;
       p_rejectionNormalization            = x->p_rejectionNormalization;
@@ -428,9 +430,11 @@ bool ImageIntegrationInstance::ExecuteGlobal()
          if ( p_generateDrizzleData ||
               p_generateIntegratedImage &&
                   (p_normalization == IINormalization::AdditiveWithScaling ||
-                   p_normalization == IINormalization::MultiplicativeWithScaling) ||
-              p_rejection != IIRejection::NoRejection
-                  && p_rejectionNormalization == IIRejectionNormalization::Scale )
+                   p_normalization == IINormalization::MultiplicativeWithScaling ||
+                   p_normalization == IINormalization::AdaptiveNormalization && p_adaptiveNoScale) ||
+              p_rejection != IIRejection::NoRejection &&
+                  (p_rejectionNormalization == IIRejectionNormalization::Scale ||
+                   p_rejectionNormalization == IIRejectionNormalization::AdaptiveRejectionNormalization && p_adaptiveNoScale) )
          {
             m = DVector( IntegrationFile::NumberOfFiles() );
             s = scale_estimates( IntegrationFile::NumberOfFiles() );
@@ -1265,6 +1269,8 @@ void* ImageIntegrationInstance::LockParameter( const MetaParameter* p, size_type
       return &p_weightScale;
    if ( p == TheIIAdaptiveGridSizeParameter )
       return &p_adaptiveGridSize;
+   if ( p == TheIIAdaptiveNoScaleParameter )
+      return &p_adaptiveNoScale;
    if ( p == TheIIIgnoreNoiseKeywordsParameter )
       return &p_ignoreNoiseKeywords;
    if ( p == TheIIRejectionParameter )
@@ -1757,4 +1763,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2020-08-25T19:19:58Z
+// EOF ImageIntegrationInstance.cpp - Released 2020-09-07T18:39:11Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.30
+// Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2020-08-25T19:19:58Z
+// ImageIntegrationParameters.cpp - Released 2020-09-07T18:39:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -68,6 +68,7 @@ IIWeightMode*                        TheIIWeightModeParameter = nullptr;
 IIWeightKeyword*                     TheIIWeightKeywordParameter = nullptr;
 IIWeightScale*                       TheIIWeightScaleParameter = nullptr;
 IIAdaptiveGridSize*                  TheIIAdaptiveGridSizeParameter = nullptr;
+IIAdaptiveNoScale*                   TheIIAdaptiveNoScaleParameter = nullptr;
 IIIgnoreNoiseKeywords*               TheIIIgnoreNoiseKeywordsParameter = nullptr;
 IINormalization*                     TheIINormalizationParameter = nullptr;
 IIRejection*                         TheIIRejectionParameter = nullptr;
@@ -422,6 +423,23 @@ double IIAdaptiveGridSize::MinimumValue() const
 double IIAdaptiveGridSize::MaximumValue() const
 {
    return 50;
+}
+
+// ----------------------------------------------------------------------------
+
+IIAdaptiveNoScale::IIAdaptiveNoScale( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheIIAdaptiveNoScaleParameter = this;
+}
+
+IsoString IIAdaptiveNoScale::Id() const
+{
+   return "adaptiveNoScale";
+}
+
+bool IIAdaptiveNoScale::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -2852,4 +2870,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2020-08-25T19:19:58Z
+// EOF ImageIntegrationParameters.cpp - Released 2020-09-07T18:39:11Z

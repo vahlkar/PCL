@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.30
+// Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2020-08-25T19:19:58Z
+// IntegrationFile.cpp - Released 2020-09-07T18:39:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -848,42 +848,45 @@ void IntegrationFile::ResetCacheableData()
 
 void IntegrationFile::AddToCache( const String& path ) const
 {
-   IntegrationCacheItem item( path );
-
-   item.mean   = m_mean;
-   item.median = m_median;
-   item.avgDev = m_avgDev;
-   item.mad    = m_mad;
-   item.bwmv   = m_bwmv;
-   item.noise  = m_noiseEstimates;
-
-   if ( m_adaptiveNormalization.IsValid() )
+   if ( TheIntegrationCache != nullptr )
    {
-      item.ax = m_adaptiveNormalization.m_x;
-      item.ay = m_adaptiveNormalization.m_y;
-      item.am = m_adaptiveNormalization.m_m;
+      IntegrationCacheItem item( path );
 
-      switch ( m_instance->p_weightScale )
+      item.mean   = m_mean;
+      item.median = m_median;
+      item.avgDev = m_avgDev;
+      item.mad    = m_mad;
+      item.bwmv   = m_bwmv;
+      item.noise  = m_noiseEstimates;
+
+      if ( m_adaptiveNormalization.IsValid() )
       {
-      case IIWeightScale::AvgDev:
-         item.as0_avgDev = m_adaptiveNormalization.m_s0;
-         item.as1_avgDev = m_adaptiveNormalization.m_s1;
-         break;
-      case IIWeightScale::MAD:
-         item.as0_mad = m_adaptiveNormalization.m_s0;
-         item.as1_mad = m_adaptiveNormalization.m_s1;
-         break;
-      default:
-      case IIWeightScale::BWMV:
-         item.as0_bwmv = m_adaptiveNormalization.m_s0;
-         item.as1_bwmv = m_adaptiveNormalization.m_s1;
-         break;
+         item.ax = m_adaptiveNormalization.m_x;
+         item.ay = m_adaptiveNormalization.m_y;
+         item.am = m_adaptiveNormalization.m_m;
+
+         switch ( m_instance->p_weightScale )
+         {
+         case IIWeightScale::AvgDev:
+            item.as0_avgDev = m_adaptiveNormalization.m_s0;
+            item.as1_avgDev = m_adaptiveNormalization.m_s1;
+            break;
+         case IIWeightScale::MAD:
+            item.as0_mad = m_adaptiveNormalization.m_s0;
+            item.as1_mad = m_adaptiveNormalization.m_s1;
+            break;
+         default:
+         case IIWeightScale::BWMV:
+            item.as0_bwmv = m_adaptiveNormalization.m_s0;
+            item.as1_bwmv = m_adaptiveNormalization.m_s1;
+            break;
+         }
       }
+
+      item.metadata = m_metadata.Serialize();
+
+      TheIntegrationCache->Add( item );
    }
-
-   item.metadata = m_metadata.Serialize();
-
-   TheIntegrationCache->Add( item );
 }
 
 // ----------------------------------------------------------------------------
@@ -891,74 +894,77 @@ void IntegrationFile::AddToCache( const String& path ) const
 int IntegrationFile::GetFromCache( const String& path )
 {
    ResetCacheableData();
-
    int n = 0;
-   IntegrationCacheItem item;
-   if ( TheIntegrationCache->Get( item, path ) )
+
+   if ( TheIntegrationCache != nullptr )
    {
-      if ( item.mean.Length() == s_numberOfChannels )
-         m_mean = item.mean, ++n;
+      IntegrationCacheItem item;
+      if ( TheIntegrationCache->Get( item, path ) )
+      {
+         if ( item.mean.Length() == s_numberOfChannels )
+            m_mean = item.mean, ++n;
 
-      if ( item.median.Length() == s_numberOfChannels )
-         m_median = item.median, ++n;
+         if ( item.median.Length() == s_numberOfChannels )
+            m_median = item.median, ++n;
 
-      if ( item.avgDev.Length() == s_numberOfChannels )
-         m_avgDev = item.avgDev, ++n;
+         if ( item.avgDev.Length() == s_numberOfChannels )
+            m_avgDev = item.avgDev, ++n;
 
-      if ( item.mad.Length() == s_numberOfChannels )
-         m_mad = item.mad, ++n;
+         if ( item.mad.Length() == s_numberOfChannels )
+            m_mad = item.mad, ++n;
 
-      if ( item.bwmv.Length() == s_numberOfChannels )
-         m_bwmv = item.bwmv, ++n;
+         if ( item.bwmv.Length() == s_numberOfChannels )
+            m_bwmv = item.bwmv, ++n;
 
-      if ( item.noise.Length() == s_numberOfChannels )
-         m_noiseEstimates = item.noise, ++n;
+         if ( item.noise.Length() == s_numberOfChannels )
+            m_noiseEstimates = item.noise, ++n;
 
-      if ( !item.metadata.IsEmpty() )
-         m_metadata = IntegrationMetadata( item.metadata ), ++n;
+         if ( !item.metadata.IsEmpty() )
+            m_metadata = IntegrationMetadata( item.metadata ), ++n;
 
-      int na = AdaptiveNormalizationData::NumberOfGridElements( s_width, s_height, m_instance->p_adaptiveGridSize );
+         int na = AdaptiveNormalizationData::NumberOfGridElements( s_width, s_height, m_instance->p_adaptiveGridSize );
 
-      if ( item.ax.Length() == na )
-         if ( item.ay.Length() == na )
-            if ( int( item.am.Length() ) == s_numberOfChannels )
-            {
-               DMultiVector as0, as1;
-               switch ( m_instance->p_weightScale )
+         if ( item.ax.Length() == na )
+            if ( item.ay.Length() == na )
+               if ( int( item.am.Length() ) == s_numberOfChannels )
                {
-               case IIWeightScale::AvgDev:
-                  as0 = item.as0_avgDev;
-                  as1 = item.as1_avgDev;
-                  break;
-               case IIWeightScale::MAD:
-                  as0 = item.as0_mad;
-                  as1 = item.as1_mad;
-                  break;
-               default:
-               case IIWeightScale::BWMV:
-                  as0 = item.as0_bwmv;
-                  as1 = item.as1_bwmv;
-                  break;
-               }
-
-               if ( int( as0.Length() ) == s_numberOfChannels )
-                  if ( int( as1.Length() ) == s_numberOfChannels )
+                  DMultiVector as0, as1;
+                  switch ( m_instance->p_weightScale )
                   {
-                     try
-                     {
-                        m_adaptiveNormalization = AdaptiveNormalizationData( s_width, s_height, item.ax, item.ay, item.am, as0, as1 );
-                        ++n;
-                     }
-                     catch ( Error& x )
-                     {
-                        throw Error( path + ": " + x.Message() );
-                     }
-                     catch ( ... )
-                     {
-                        throw;
-                     }
+                  case IIWeightScale::AvgDev:
+                     as0 = item.as0_avgDev;
+                     as1 = item.as1_avgDev;
+                     break;
+                  case IIWeightScale::MAD:
+                     as0 = item.as0_mad;
+                     as1 = item.as1_mad;
+                     break;
+                  default:
+                  case IIWeightScale::BWMV:
+                     as0 = item.as0_bwmv;
+                     as1 = item.as1_bwmv;
+                     break;
                   }
-            }
+
+                  if ( int( as0.Length() ) == s_numberOfChannels )
+                     if ( int( as1.Length() ) == s_numberOfChannels )
+                     {
+                        try
+                        {
+                           m_adaptiveNormalization = AdaptiveNormalizationData( s_width, s_height, item.ax, item.ay, item.am, as0, as1 );
+                           ++n;
+                        }
+                        catch ( Error& x )
+                        {
+                           throw Error( path + ": " + x.Message() );
+                        }
+                        catch ( ... )
+                        {
+                           throw;
+                        }
+                     }
+               }
+      }
    }
 
    return n;
@@ -997,4 +1003,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2020-08-25T19:19:58Z
+// EOF IntegrationFile.cpp - Released 2020-09-07T18:39:11Z

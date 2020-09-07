@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard ImageIntegration Process Module Version 1.2.30
+// Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.cpp - Released 2020-08-25T19:19:58Z
+// ImageIntegrationProcess.cpp - Released 2020-09-07T18:39:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -68,7 +68,6 @@ ImageIntegrationProcess::ImageIntegrationProcess()
 {
    TheImageIntegrationProcess = this;
 
-   // Instantiate process parameters
    new IIImages( this );
    new IIImageEnabled( TheIIImagesParameter );
    new IIImagePath( TheIIImagesParameter );
@@ -80,6 +79,7 @@ ImageIntegrationProcess::ImageIntegrationProcess()
    new IIWeightKeyword( this );
    new IIWeightScale( this );
    new IIAdaptiveGridSize( this );
+   new IIAdaptiveNoScale( this );
    new IIIgnoreNoiseKeywords( this );
    new IINormalization( this );
    new IIRejection( this );
@@ -251,4 +251,4 @@ ProcessImplementation* ImageIntegrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.cpp - Released 2020-08-25T19:19:58Z
+// EOF ImageIntegrationProcess.cpp - Released 2020-09-07T18:39:11Z
