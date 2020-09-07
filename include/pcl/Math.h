@@ -3430,7 +3430,7 @@ inline TwoSidedEstimate Sqrt( const TwoSidedEstimate& e )
 }
 
 /*!
- * Returns the component wise square root of a two-sided estimate.
+ * Returns the component wise exponent function of a two-sided estimate.
  * \ingroup statistical_functions
  */
 template <typename T> inline TwoSidedEstimate Pow( const TwoSidedEstimate& e, T x )
