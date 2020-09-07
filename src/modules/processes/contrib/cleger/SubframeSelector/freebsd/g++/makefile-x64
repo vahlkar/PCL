@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-08-25T19:20:59.783Z
+# Generated on .... 2020-09-07T17:41:09.452Z
 # Project id ...... SubframeSelector
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -24,6 +24,7 @@ SRC_FILES= \
 ../../SubframeSelectorExpressionsInterface.cpp \
 ../../SubframeSelectorInstance.cpp \
 ../../SubframeSelectorInterface.cpp \
+../../SubframeSelectorMeasureData.cpp \
 ../../SubframeSelectorMeasurementsInterface.cpp \
 ../../SubframeSelectorModule.cpp \
 ../../SubframeSelectorParameters.cpp \
@@ -40,6 +41,7 @@ OBJ_FILES= \
 ./x64/Release/SubframeSelectorExpressionsInterface.o \
 ./x64/Release/SubframeSelectorInstance.o \
 ./x64/Release/SubframeSelectorInterface.o \
+./x64/Release/SubframeSelectorMeasureData.o \
 ./x64/Release/SubframeSelectorMeasurementsInterface.o \
 ./x64/Release/SubframeSelectorModule.o \
 ./x64/Release/SubframeSelectorParameters.o \
@@ -56,6 +58,7 @@ DEP_FILES= \
 ./x64/Release/SubframeSelectorExpressionsInterface.d \
 ./x64/Release/SubframeSelectorInstance.d \
 ./x64/Release/SubframeSelectorInterface.d \
+./x64/Release/SubframeSelectorMeasureData.d \
 ./x64/Release/SubframeSelectorMeasurementsInterface.d \
 ./x64/Release/SubframeSelectorModule.d \
 ./x64/Release/SubframeSelectorParameters.d \
@@ -69,7 +72,7 @@ DEP_FILES= \
 -include $(DEP_FILES)
 
 $(OBJ_DIR)/SubframeSelector-pxm.so: $(OBJ_FILES)
-	clang++ -m64 -fPIC -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/SubframeSelector-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	clang++ -m64 -fPIC -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -s -shared -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/SubframeSelector-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
 	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
 
 .PHONY: clean

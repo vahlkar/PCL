@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.4
+// Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorExpressionsInterface.cpp - Released 2020-08-25T19:19:58Z
+// SubframeSelectorExpressionsInterface.cpp - Released 2020-09-07T17:40:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -333,4 +333,4 @@ SubframeSelectorExpressionsInterface::GUIData::GUIData( SubframeSelectorExpressi
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorExpressionsInterface.cpp - Released 2020-08-25T19:19:58Z
+// EOF SubframeSelectorExpressionsInterface.cpp - Released 2020-09-07T17:40:02Z

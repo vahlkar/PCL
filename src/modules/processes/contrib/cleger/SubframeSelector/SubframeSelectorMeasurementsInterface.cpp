@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.4
+// Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2020-08-25T19:19:58Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2020-09-07T17:40:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -455,6 +455,7 @@ void SubframeSelectorMeasurementsInterface::ExportCSV() const
             << IsoString().Format( "Site Local Midnight,%d", m_instance.p_siteLocalMidnight )
             << "Scale Unit,\"" + TheSSScaleUnitParameter->ElementLabel( m_instance.p_scaleUnit ) + "\""
             << "Data Unit,\"" + TheSSDataUnitParameter->ElementLabel( m_instance.p_dataUnit ) + "\""
+            << IsoString().Format( "Trimming Factor,%.2f", m_instance.p_trimmingFactor )
             << IsoString().Format( "Structure Layers,%d", m_instance.p_structureLayers )
             << IsoString().Format( "Noise Layers,%d", m_instance.p_noiseLayers )
             << IsoString().Format( "Hot Pixel Filter Radius,%d", m_instance.p_hotPixelFilterRadius )
@@ -527,17 +528,12 @@ void SubframeSelectorMeasurementsInterface::ExportPDF() const
    d.EnableOverwritePrompt();
    if ( d.Execute() )
    {
+      Console console;
       String filePath = d.FileName();
       File f = File::CreateFileForWriting( filePath );
-      Console().WriteLn( "Generating output PDF file: " + filePath );
-
-      double defaultWidth = 210;
-      double ratio = (double) GUI->MeasurementGraph_Graph.Width() / (double) GUI->MeasurementGraph_Graph.Height();
-      GUI->MeasurementGraph_Graph.SaveAsPDF( filePath,
-                                             defaultWidth, pcl::Ceil( defaultWidth / ratio ),
-                                             0, 0, 0, 0 );
-
-      Console().WriteLn( "Generated PDF file: " + filePath );
+      console.WriteLn( "Generating output PDF file: " + filePath );
+      GUI->MeasurementGraph_Graph.SaveAsPDF( filePath, 210/*width*/, 297/*height*/, 5, 5, 5, 5/*margins*/ );
+      console.WriteLn( "Generated PDF file: " + filePath );
    }
 }
 
@@ -935,4 +931,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2020-08-25T19:19:58Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2020-09-07T17:40:02Z

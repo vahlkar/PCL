@@ -4,26 +4,22 @@
 # PixInsight Makefile Generator Script v1.118
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-08-25T19:21:00.080Z
+# Generated on .... 2020-09-07T17:41:09.766Z
 # Project id ...... SubframeSelector
 # Project type .... Module
 # Platform ........ Windows/vc16
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Additional preprocessor definitions:
-# _CRT_SECURE_NO_WARNINGS
-# CMINPACK_NO_DLL
 ######################################################################
 -->
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>69423837-e584-4f13-9bcf-961007ad1c35</UniqueIdentifier>
+      <UniqueIdentifier>5be19653-a2f2-4a7e-8403-be6ea0c8be14</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>8f39a3f2-bf85-45e9-88ca-66dc1239984d</UniqueIdentifier>
+      <UniqueIdentifier>59ad246b-8351-4c76-bd00-bda3b405b57e</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>c7fb2937-06b3-4960-a04b-9bddde718617</UniqueIdentifier>
+      <UniqueIdentifier>ab83d0f7-22c8-48d0-857a-8c1dbf6b56bf</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -40,6 +36,9 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SubframeSelectorInterface.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SubframeSelectorMeasureData.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\SubframeSelectorMeasurementsInterface.cpp">

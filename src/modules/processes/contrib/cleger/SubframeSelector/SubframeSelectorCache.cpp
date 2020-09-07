@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.4
+// Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.cpp - Released 2020-08-25T19:19:58Z
+// SubframeSelectorCache.cpp - Released 2020-09-07T17:40:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -71,6 +71,7 @@ void SubframeSelectorCacheItem::AssignData( const FileDataCacheItem& item )
    snrWeight           = src.snrWeight;
    median              = src.median;
    medianMeanDev       = src.medianMeanDev;
+   trimmingFactor      = src.trimmingFactor;
    noise               = src.noise;
    noiseRatio          = src.noiseRatio;
    stars               = src.stars;
@@ -91,6 +92,7 @@ String SubframeSelectorCacheItem::DataToString() const
       << String().Format( "snrWeight\n%.8f", snrWeight )
       << String().Format( "median\n%.8f", median )
       << String().Format( "medianMeanDev\n%.8f", medianMeanDev )
+      << String().Format( "trimmingFactor\n%.2f", trimmingFactor )
       << String().Format( "noise\n%.8f", noise )
       << String().Format( "noiseRatio\n%.8f", noiseRatio )
       << String().Format( "stars\n%u", stars )
@@ -141,6 +143,11 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
          if ( !(++i)->TryToDouble( medianMeanDev ) )
             return false;
       }
+      else if ( *i == "trimmingFactor" )
+      {
+         if ( !(++i)->TryToDouble( trimmingFactor ) )
+            return false;
+      }
       else if ( *i == "noise" )
       {
          if ( !(++i)->TryToDouble( noise ) )
@@ -181,9 +188,18 @@ bool SubframeSelectorCacheItem::GetDataFromTokens( const StringList& tokens )
 SubframeSelectorCache::SubframeSelectorCache()
    : FileDataCache( "/SubframeSelector/Cache" )
 {
+   try
+   {
+      Load();
+   }
+   catch ( ... )
+   {
+      Purge();
+      throw;
+   }
+
    if ( TheSubframeSelectorCache == nullptr )
       TheSubframeSelectorCache = this;
-   Load();
 }
 
 // ----------------------------------------------------------------------------
@@ -199,4 +215,4 @@ SubframeSelectorCache::~SubframeSelectorCache()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.cpp - Released 2020-08-25T19:19:58Z
+// EOF SubframeSelectorCache.cpp - Released 2020-09-07T17:40:02Z

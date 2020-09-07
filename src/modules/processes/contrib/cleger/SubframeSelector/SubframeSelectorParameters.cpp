@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.4
+// Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2020-08-25T19:19:58Z
+// SubframeSelectorParameters.cpp - Released 2020-09-07T17:40:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -71,6 +71,7 @@ SSCameraResolution*               TheSSCameraResolutionParameter = nullptr;
 SSSiteLocalMidnight*              TheSSSiteLocalMidnightParameter = nullptr;
 SSScaleUnit*                      TheSSScaleUnitParameter = nullptr;
 SSDataUnit*                       TheSSDataUnitParameter = nullptr;
+SSTrimmingFactor*                 TheSSTrimmingFactorParameter = nullptr;
 
 SSStructureLayers*                TheSSStructureLayersParameter = nullptr;
 SSNoiseLayers*                    TheSSNoiseLayersParameter = nullptr;
@@ -246,9 +247,9 @@ bool SSFileCache::DefaultValue() const
 
 IsoString SSFileCache::Tooltip() const
 {
-   return "<p>Enable this option skip measuring subframes that have already been measured and are in the file cache. "
+   return "<p>Enable this option to skip measuring subframes that have already been measured and are in the file cache. "
           "Each time a subframe is measured, its file cache entry is created or overwritten.</p>"
-          "<p>When updates to this Module affect measurements, the file cache will not use older items.</p>";
+          "<p>When changes to process parameters affect measurements, the file cache will not use older items.</p>";
 }
 
 // ----------------------------------------------------------------------------
@@ -538,6 +539,38 @@ size_type SSDataUnit::DefaultValueIndex() const
 IsoString SSDataUnit::Tooltip() const
 {
    return "<p>How to present some subframe-related measurements.</p>";
+}
+
+// ----------------------------------------------------------------------------
+
+SSTrimmingFactor::SSTrimmingFactor( MetaProcess* P ) : MetaFloat( P )
+{
+   TheSSTrimmingFactorParameter = this;
+}
+
+IsoString SSTrimmingFactor::Id() const
+{
+   return "trimmingFactor";
+}
+
+int SSTrimmingFactor::Precision() const
+{
+   return 2;
+}
+
+double SSTrimmingFactor::DefaultValue() const
+{
+   return 0.1;
+}
+
+double SSTrimmingFactor::MinimumValue() const
+{
+   return 0;
+}
+
+double SSTrimmingFactor::MaximumValue() const
+{
+   return 0.5;
 }
 
 // ----------------------------------------------------------------------------
@@ -2093,4 +2126,4 @@ double SSMeasurementStarResidualMeanDev::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2020-08-25T19:19:58Z
+// EOF SubframeSelectorParameters.cpp - Released 2020-09-07T17:40:02Z

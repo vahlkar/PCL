@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.4
+// Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2020-08-25T19:19:58Z
+// SubframeSelectorInstance.cpp - Released 2020-09-07T17:40:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -106,6 +106,7 @@ SubframeSelectorInstance::SubframeSelectorInstance( const MetaProcess* m )
    , p_siteLocalMidnight( TheSSSiteLocalMidnightParameter->DefaultValue() )
    , p_scaleUnit( SSScaleUnit::Default )
    , p_dataUnit( SSDataUnit::Default )
+   , p_trimmingFactor( TheSSTrimmingFactorParameter->DefaultValue() )
    , p_structureLayers( TheSSStructureLayersParameter->DefaultValue() )
    , p_noiseLayers( TheSSNoiseLayersParameter->DefaultValue() )
    , p_hotPixelFilterRadius( TheSSHotPixelFilterRadiusParameter->DefaultValue() )
@@ -158,6 +159,7 @@ void SubframeSelectorInstance::Assign( const ProcessImplementation& p )
       p_siteLocalMidnight          = x->p_siteLocalMidnight;
       p_scaleUnit                  = x->p_scaleUnit;
       p_dataUnit                   = x->p_dataUnit;
+      p_trimmingFactor             = x->p_trimmingFactor;
       p_structureLayers            = x->p_structureLayers;
       p_noiseLayers                = x->p_noiseLayers;
       p_hotPixelFilterRadius       = x->p_hotPixelFilterRadius;
@@ -221,15 +223,18 @@ public:
 
    void Run() override
    {
+      Console console;
+
       try
       {
          m_success = false;
+         m_errorInfo.Clear();
+
          ElapsedTime T;
 
          if ( IsAborted() )
             throw Error( "Aborted" );
 
-         Console console;
          console.NoteLn( "<end><cbr><br>Measuring: " + m_outputData.path );
          MeasureImage();
          console.WriteLn( "Image Calculations: " + T.ToString() );
@@ -244,6 +249,8 @@ public:
 
          // Run the Star Detector
          star_list stars = StarDetector();
+         if ( stars.IsEmpty() )
+            throw Error( "No stars detected" );
 
          // Stop if just showing the maps
          if ( m_data->showStarDetectionMaps )
@@ -252,24 +259,13 @@ public:
             return;
          }
 
-         // Stop if no stars found
-         if ( stars.IsEmpty() )
-         {
-            m_success = false;
-            return;
-         }
-
          if ( IsAborted() )
             throw Error( "Aborted" );
 
          // Run the PSF Fitter
          psf_list fits = FitPSFs( stars.Begin(), stars.End() );
-
          if ( fits.IsEmpty() )
-         {
-            m_success = false;
-            return;
-         }
+            throw Error( "No PSF could be fitted" );
 
          if ( IsAborted() )
             throw Error( "Aborted" );
@@ -285,11 +281,19 @@ public:
       }
       catch ( ... )
       {
+         if ( IsRootThread() )
+            throw;
+
+         String text = ConsoleOutputText();
+         ClearConsoleOutputText();
          try
          {
             throw;
          }
          ERROR_HANDLER
+         m_errorInfo = ConsoleOutputText();
+         ClearConsoleOutputText();
+         console.Write( text );
       }
    }
 
@@ -303,12 +307,24 @@ public:
       return m_outputData;
    }
 
-   bool Success() const
+   bool Succeeded() const
    {
       return m_success;
    }
 
+   String ErrorInfo() const
+   {
+      return m_errorInfo;
+   }
+
 private:
+
+   int                       m_index;
+   AutoPointer<ImageVariant> m_subframe;
+   MeasureData               m_outputData;
+   bool                      m_success = false;
+   String                    m_errorInfo;
+   MeasureThreadInputData*   m_data = nullptr;
 
    void EvaluateNoise()
    {
@@ -348,12 +364,23 @@ private:
 
    void MeasureImage()
    {
-      // Most parameters here are defaults, but set it to use 1 CPU at the end
-      m_outputData.median = m_subframe->Median( 0, -1, -1, 1 );
-      m_outputData.medianMeanDev = m_subframe->AvgDev( m_outputData.median, 0, -1, -1, 1 );
+      // Robust estimate of location: median.
+      m_outputData.median = m_subframe->Median();
+
+      // Robust estimate of scale: trimmed mean deviation from the median.
+      double min, max;
+      m_subframe->GetExtremeSampleValues( min, max );
+      m_subframe->SetRangeClipping( m_outputData.median - (1 - m_data->instance->p_trimmingFactor)*(m_outputData.median - min),
+                                    m_outputData.median + (1 - m_data->instance->p_trimmingFactor)*(max - m_outputData.median) );
+      m_outputData.medianMeanDev = m_subframe->AvgDev( m_outputData.median );
+      m_subframe->ResetSelections();
+
+      // Robust noise estimate.
       EvaluateNoise();
-      m_outputData.snrWeight = m_outputData.noise != 0 ?
-                     Pow( m_outputData.medianMeanDev, 2.0 ) / Pow( m_outputData.noise, 2.0 ) : 0;
+
+      // SNR weight estimate.
+      m_outputData.snrWeight = (1 + m_outputData.noise != 1) ?
+                     m_outputData.medianMeanDev*m_outputData.medianMeanDev/m_outputData.noise/m_outputData.noise : 0;
    }
 
    star_list StarDetector()
@@ -450,12 +477,6 @@ private:
       m_outputData.starResidualMeanDev = AvgDev( residuals.Begin(), residuals.End(),
                                                  Median( residuals.Begin(), residuals.End() ) );
    }
-
-   int                        m_index;
-   AutoPointer<ImageVariant>  m_subframe;
-   MeasureData                m_outputData;
-   bool                       m_success = false;
-   MeasureThreadInputData*    m_data = nullptr;
 };
 
 // ----------------------------------------------------------------------------
@@ -496,11 +517,15 @@ ImageVariant* SubframeSelectorInstance::LoadSubframe( const String& filePath )
    if ( images.Length() > 1 )
       throw Error( filePath + ": Has multiple images; unsupported " );
 
-   // Create a shared image, 32-bit floating point
-   Image* image = new Image( (void*)0, 0, 0 );
+   /*
+    * Create a shared image, 32-bit floating point.
+    */
+   AutoPointer<Image> image = new Image( (void*)0, 0, 0 );
 
-   // Read the image
-   if ( !file.ReadImage( *image ) )
+   /*
+    * Read the image and close the input stream.
+    */
+   if ( !file.ReadImage( *image ) || !file.Close() )
       throw CaughtException();
 
    /*
@@ -513,17 +538,22 @@ ImageVariant* SubframeSelectorInstance::LoadSubframe( const String& filePath )
    }
 
    /*
-    * Convert to grayscale.
+    * For grayscale images, return the image just read. For color images,
+    * extract the HSI intensity component.
     */
-   ImageVariant* imageVariant = new ImageVariant();
-   image->GetIntensity( *imageVariant );
-   image->FreeData();
+   ImageVariant* imageVariant;
+   if ( image->ColorSpace() == ColorSpace::Gray || image->ColorSpace() == ColorSpace::HSI )
+   {
+      imageVariant = new ImageVariant( image.Release() );
+      imageVariant->SetOwnership( true );
+   }
+   else
+   {
+      imageVariant = new ImageVariant;
+      image->GetIntensity( *imageVariant );
+   }
 
-   /*
-    * Close the input stream.
-    */
-   if ( !file.Close() )
-      throw CaughtException();
+   imageVariant->SetMaxProcessors( 1 );
 
    return imageVariant;
 }
@@ -637,7 +667,6 @@ bool SubframeSelectorInstance::TestStarDetector()
       console.ResetStatus();
       console.EnableAbort();
 
-      console.NoteLn( "Abort on error." );
       throw ProcessAborted();
    }
 }
@@ -767,46 +796,36 @@ bool SubframeSelectorInstance::Measure()
                   /*
                    * A thread has just finished.
                    */
-                  try
-                  {
-                     if ( !(*i)->Success() )
-                        throw Error( (*i)->ConsoleOutputText() );
+                  (*i)->FlushConsoleOutputText();
+                  String errorInfo;
+                  if ( !(*i)->Succeeded() )
+                     errorInfo = (*i)->ErrorInfo();
 
-                     (*i)->FlushConsoleOutputText();
-                     Module->ProcessEvents();
+                  /*
+                   * Store output data.
+                   */
+                  MeasureItem m( (*i)->Index() );
+                  m.Input( (*i)->OutputData() );
+                  p_measures << m;
+                  if ( p_fileCache )
+                     (*i)->OutputData().AddToCache( *this );
 
-                     /*
-                      * Store output data.
-                      */
-                     MeasureItem m( (*i)->Index() );
-                     m.Input( (*i)->OutputData() );
-                     p_measures << m;
-                     (*i)->OutputData().AddToCache();
+                  /*
+                   * N.B.: IndirectArray<>::Delete() sets to zero the pointer
+                   * pointed to by the iterator, but does not remove the array
+                   * element.
+                   */
+                  runningThreads.Delete( i );
 
-                     /*
-                      * Dispose this calibration thread, since we are done with
-                      * it. NB: IndirectArray<T>::Delete() sets to zero the
-                      * pointer pointed to by the iterator, but does not remove
-                      * the array element.
-                      */
-                     runningThreads.Delete( i );
-                  }
-                  catch ( ... )
-                  {
-                     /*
-                      * Ensure the thread is also destroyed in the event of
-                      * error; we'd enter an infinite loop otherwise!
-                      */
-                     runningThreads.Delete( i );
-                     throw;
-                  }
+                  if ( !errorInfo.IsEmpty() )
+                     throw Error( errorInfo );
 
                   ++succeeded;
                }
 
                /*
-                * If there are items pending, create a new thread and fire the
-                * next one.
+                * If there are items pending, load data from the cache if
+                * available, or create a new thread and fire it.
                 */
                if ( !pendingItems.IsEmpty() )
                {
@@ -823,7 +842,7 @@ bool SubframeSelectorInstance::Measure()
                    * possible.
                    */
                   MeasureData cacheData( item.path );
-                  if ( p_fileCache && cacheData.GetFromCache() )
+                  if ( p_fileCache && cacheData.GetFromCache( *this ) )
                   {
                      console.NoteLn( "<end><cbr>* Retrieved data from file cache." );
                      MeasureItem m( pendingItemsTotal-pendingItems.Length()+1, item.path );
@@ -875,7 +894,6 @@ bool SubframeSelectorInstance::Measure()
             console.ResetStatus();
             console.EnableAbort();
 
-            console.NoteLn( "Abort on error." );
             throw ProcessAborted();
          }
       }
@@ -1445,6 +1463,8 @@ void* SubframeSelectorInstance::LockParameter( const MetaParameter* p, size_type
       return &p_scaleUnit;
    else if ( p == TheSSDataUnitParameter )
       return &p_dataUnit;
+   else if ( p == TheSSTrimmingFactorParameter )
+      return &p_trimmingFactor;
 
    else if ( p == TheSSStructureLayersParameter )
       return &p_structureLayers;
@@ -1683,4 +1703,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2020-08-25T19:19:58Z
+// EOF SubframeSelectorInstance.cpp - Released 2020-09-07T17:40:02Z

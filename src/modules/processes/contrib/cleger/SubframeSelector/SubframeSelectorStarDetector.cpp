@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.4
+// Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorStarDetector.cpp - Released 2020-08-25T19:19:58Z
+// SubframeSelectorStarDetector.cpp - Released 2020-09-07T17:40:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -102,15 +102,15 @@ static void GetSamples( const ImageVariant& image, Array<double>& sampleArray )
    if ( image.IsFloatSample() )
       switch ( image.BitsPerSample() )
       {
-         case 32: return GetSamples( static_cast<const Image&>( *image ), sampleArray );
-         case 64: return GetSamples( static_cast<const DImage&>( *image ), sampleArray );
+      case 32: return GetSamples( static_cast<const Image&>( *image ), sampleArray );
+      case 64: return GetSamples( static_cast<const DImage&>( *image ), sampleArray );
       }
    else
       switch ( image.BitsPerSample() )
       {
-         case  8: return GetSamples( static_cast<const UInt8Image&>( *image ), sampleArray );
-         case 16: return GetSamples( static_cast<const UInt16Image&>( *image ), sampleArray );
-         case 32: return GetSamples( static_cast<const UInt32Image&>( *image ), sampleArray );
+      case  8: return GetSamples( static_cast<const UInt8Image&>( *image ), sampleArray );
+      case 16: return GetSamples( static_cast<const UInt16Image&>( *image ), sampleArray );
+      case 32: return GetSamples( static_cast<const UInt32Image&>( *image ), sampleArray );
       }
 }
 
@@ -469,4 +469,4 @@ Star pcl::SubframeSelectorStarDetector::GetStarParameters( ImageVariant& image, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorStarDetector.cpp - Released 2020-08-25T19:19:58Z
+// EOF SubframeSelectorStarDetector.cpp - Released 2020-09-07T17:40:02Z

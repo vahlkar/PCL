@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.4
+// Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.cpp - Released 2020-08-25T19:19:58Z
+// SubframeSelectorProcess.cpp - Released 2020-09-07T17:40:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -82,6 +82,7 @@ SubframeSelectorProcess::SubframeSelectorProcess()
    new SSSiteLocalMidnight( this );
    new SSScaleUnit( this );
    new SSDataUnit( this );
+   new SSTrimmingFactor( this );
 
    new SSStructureLayers( this );
    new SSNoiseLayers( this );
@@ -209,4 +210,4 @@ ProcessImplementation* SubframeSelectorProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.cpp - Released 2020-08-25T19:19:58Z
+// EOF SubframeSelectorProcess.cpp - Released 2020-09-07T17:40:02Z

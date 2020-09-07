@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.4
+// Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2020-08-25T19:19:58Z
+// SubframeSelectorInterface.cpp - Released 2020-09-07T17:40:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -814,7 +814,7 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
    SubframeImages_Clear_PushButton.OnClick( (Button::click_event_handler)
                                     &SubframeSelectorInterface::e_SubframeImages_Click, w );
 
-   SubframeImages_FileCache_Control.SetText( "File Cache" );
+   SubframeImages_FileCache_Control.SetText( "File cache" );
    SubframeImages_FileCache_Control.SetToolTip( TheSSFileCacheParameter->Tooltip() );
    SubframeImages_FileCache_Control.OnCheck( (Button::check_event_handler)
                                     &SubframeSelectorInterface::e_CheckboxUpdated, w );
@@ -1414,4 +1414,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2020-08-25T19:19:58Z
+// EOF SubframeSelectorInterface.cpp - Released 2020-09-07T17:40:02Z

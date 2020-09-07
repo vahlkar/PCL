@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.0
 // ----------------------------------------------------------------------------
-// Standard SubframeSelector Process Module Version 1.4.4
+// Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorCache.h - Released 2020-08-25T19:19:58Z
+// SubframeSelectorCache.h - Released 2020-09-07T17:40:02Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -71,6 +71,7 @@ public:
    double   snrWeight;
    double   median;
    double   medianMeanDev;
+   double   trimmingFactor;
    double   noise;
    double   noiseRatio;
    unsigned stars;
@@ -109,12 +110,12 @@ public:
 
    int Version() const override
    {
-      return 2;
+      return 3;
    }
 
    int MinSupportedVersion() const override
    {
-      return 2;
+      return 3;
    }
 
 private:
@@ -134,4 +135,4 @@ extern SubframeSelectorCache* TheSubframeSelectorCache;
 #endif   // __SubframeSelectorCache_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorCache.h - Released 2020-08-25T19:19:58Z
+// EOF SubframeSelectorCache.h - Released 2020-09-07T17:40:02Z
