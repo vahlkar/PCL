@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2020-08-25T19:19:57Z
+// PreferencesInstance.h - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -53,8 +53,8 @@
 #ifndef __PreferencesInstance_h
 #define __PreferencesInstance_h
 
-#include <pcl/ProcessImplementation.h>
 #include <pcl/MetaParameter.h> // pcl_bool, pcl_enum
+#include <pcl/ProcessImplementation.h>
 
 namespace pcl
 {
@@ -293,4 +293,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2020-08-25T19:19:57Z
+// EOF PreferencesInstance.h - Released 2020-10-12T19:25:16Z

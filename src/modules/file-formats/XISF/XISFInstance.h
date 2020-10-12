@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.12
 // ----------------------------------------------------------------------------
-// XISFInstance.h - Released 2020-08-25T19:19:45Z
+// XISFInstance.h - Released 2020-10-12T19:25:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -143,7 +143,7 @@ private:
    AutoPointer<XISFWriter>      m_writer;
    AutoPointer<XISFStreamHints> m_readHints;
    AutoPointer<XISFStreamHints> m_writeHints;
-   bool                         m_queriedOptions : 1; // did us query options to the user?
+   bool                         m_queriedOptions = false; // did us query options to the user?
 
    class LogHandler : public XISFLogHandler
    {
@@ -151,9 +151,9 @@ private:
 
       LogHandler() = default;
 
-      virtual void Init( const String& filePath, bool writing );
-      virtual void Log( const String& text, message_type type );
-      virtual void Close();
+      void Init( const String& filePath, bool writing ) override;
+      void Log( const String& text, message_type type ) override;
+      void Close() override;
 
    private:
 
@@ -168,4 +168,4 @@ private:
 #endif   // __XISFInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.h - Released 2020-08-25T19:19:45Z
+// EOF XISFInstance.h - Released 2020-10-12T19:25:05Z

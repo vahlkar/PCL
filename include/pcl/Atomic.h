@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/Atomic.h - Released 2020-08-25T19:17:02Z
+// pcl/Atomic.h - Released 2020-10-12T19:24:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -663,4 +663,4 @@ private:
 #endif  // __PCL_Atomic_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Atomic.h - Released 2020-08-25T19:17:02Z
+// EOF pcl/Atomic.h - Released 2020-10-12T19:24:41Z

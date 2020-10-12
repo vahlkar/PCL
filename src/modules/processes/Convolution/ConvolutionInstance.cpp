@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInstance.cpp - Released 2020-08-25T19:19:57Z
+// ConvolutionInstance.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -493,4 +493,4 @@ bool ConvolutionInstance::CreateFilterImage( Image& filter ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInstance.cpp - Released 2020-08-25T19:19:57Z
+// EOF ConvolutionInstance.cpp - Released 2020-10-12T19:25:16Z

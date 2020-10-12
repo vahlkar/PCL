@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.cpp - Released 2020-08-25T19:17:12Z
+// pcl/EphemerisFile.cpp - Released 2020-10-12T19:24:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -686,7 +686,7 @@ void EphemerisFile::Serialize( const String& filePath,
     * Replace index position attributes. This is an iterative algorithm
     * resilient to changes in attribute value lengths.
     */
-   for ( size_type n = header.Length(); ; )
+   for ( size_type n = header.Length();; )
    {
       position = sizeof( XEPHFileSignature ) + n;
       int i = 0;
@@ -1137,4 +1137,4 @@ void EphemerisFile::OverrideCIP_ITRSDataFilePath( const String& filePath )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.cpp - Released 2020-08-25T19:17:12Z
+// EOF pcl/EphemerisFile.cpp - Released 2020-10-12T19:24:49Z

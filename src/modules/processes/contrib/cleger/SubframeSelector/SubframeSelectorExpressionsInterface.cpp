@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorExpressionsInterface.cpp - Released 2020-09-07T17:40:02Z
+// SubframeSelectorExpressionsInterface.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -129,6 +129,13 @@ bool SubframeSelectorExpressionsInterface::Launch( const MetaProcess&,
 {
    if ( GUI == nullptr )
    {
+      m_okBitmap = new Bitmap( ScaledResource( ":/icons/ok.png" ) );
+      m_errorBitmap = new Bitmap( ScaledResource( ":/icons/error.png" ) );
+#ifdef __PCL_MACOSX
+      m_okBitmap->SetPhysicalPixelRatio( ResourcePixelRatio() );
+      m_errorBitmap->SetPhysicalPixelRatio( ResourcePixelRatio() );
+#endif
+
       GUI = new GUIData( *this );
       SetWindowTitle( "SubframeSelector | Expressions" );
       UpdateControls();
@@ -145,11 +152,11 @@ void SubframeSelectorExpressionsInterface::ApplyApprovalExpression()
    try
    {
       m_instance.ApproveMeasurements();
-      GUI->ExpressionParameters_Approval_Status.SetBitmap( Bitmap( ScaledResource( ":/browser/enabled.png" ) ) );
+      GUI->ExpressionParameters_Approval_Status.SetBitmap( *m_okBitmap );
    }
    catch ( ... )
    {
-      GUI->ExpressionParameters_Approval_Status.SetBitmap( Bitmap( ScaledResource( ":/browser/disabled.png" ) ) );
+      GUI->ExpressionParameters_Approval_Status.SetBitmap( *m_errorBitmap );
       Console().Show();
    }
 }
@@ -161,11 +168,11 @@ void SubframeSelectorExpressionsInterface::ApplyWeightingExpression()
    try
    {
       m_instance.WeightMeasurements();
-      GUI->ExpressionParameters_Weighting_Status.SetBitmap( Bitmap( ScaledResource( ":/browser/enabled.png" ) ) );
+      GUI->ExpressionParameters_Weighting_Status.SetBitmap( *m_okBitmap );
    }
    catch ( ... )
    {
-      GUI->ExpressionParameters_Weighting_Status.SetBitmap( Bitmap( ScaledResource( ":/browser/disabled.png" ) ) );
+      GUI->ExpressionParameters_Weighting_Status.SetBitmap( *m_errorBitmap );
       Console().Show();
    }
 }
@@ -185,17 +192,16 @@ void SubframeSelectorExpressionsInterface::UpdateControls()
 void SubframeSelectorExpressionsInterface::e_TextUpdated( CodeEditor& sender )
 {
    String text = sender.Text();
-   String bmp = ScaledResource( MeasureUtils::IsValidExpression( text ) ?
-                        ":/browser/enabled.png" : ":/browser/disabled.png" );
+   const Bitmap* bmp = MeasureUtils::IsValidExpression( text ) ? m_okBitmap : m_errorBitmap;
    if ( sender == GUI->ExpressionParameters_Approval_Editor )
    {
-      if ( m_instance.p_approvalExpression != text )
-         GUI->ExpressionParameters_Approval_Status.SetBitmap( Bitmap( bmp ) );
+      if ( m_instance.p_approvalExpression.Trimmed() != text.Trimmed() )
+         GUI->ExpressionParameters_Approval_Status.SetBitmap( *bmp );
    }
    else if ( sender == GUI->ExpressionParameters_Weighting_Editor )
    {
-      if ( m_instance.p_weightingExpression != text )
-         GUI->ExpressionParameters_Weighting_Status.SetBitmap( Bitmap( bmp ) );
+      if ( m_instance.p_weightingExpression.Trimmed() != text.Trimmed() )
+         GUI->ExpressionParameters_Weighting_Status.SetBitmap( *bmp );
    }
 }
 
@@ -220,8 +226,8 @@ void SubframeSelectorExpressionsInterface::e_ButtonClick( Button& sender, bool/*
 {
    if ( sender == GUI->ExpressionParameters_Approval_ToolButton )
    {
-      String text = GUI->ExpressionParameters_Approval_Editor.Text().Trimmed();
-      if ( m_instance.p_approvalExpression != text )
+      String text = GUI->ExpressionParameters_Approval_Editor.Text();
+      if ( m_instance.p_approvalExpression.Trimmed() != text.Trimmed() )
       {
          m_instance.p_approvalExpression = text;
          if ( MeasureUtils::IsValidExpression( text ) )
@@ -231,7 +237,7 @@ void SubframeSelectorExpressionsInterface::e_ButtonClick( Button& sender, bool/*
    else if ( sender == GUI->ExpressionParameters_Weighting_ToolButton )
    {
       String text = GUI->ExpressionParameters_Weighting_Editor.Text();
-      if ( m_instance.p_weightingExpression != text )
+      if ( m_instance.p_weightingExpression.Trimmed() != text.Trimmed() )
       {
          m_instance.p_weightingExpression = text;
          if ( MeasureUtils::IsValidExpression( text ) )
@@ -247,7 +253,7 @@ SubframeSelectorExpressionsInterface::GUIData::GUIData( SubframeSelectorExpressi
 {
    int labelWidth1 = w.Font().Width( String( "Weighting:" ) + 'T' );
 
-   ExpressionParameters_Approval_Status.SetBitmap( Bitmap( w.ScaledResource( ":/browser/enabled.png" ) ) );
+   ExpressionParameters_Approval_Status.SetBitmap( *w.m_okBitmap );
 
    ExpressionParameters_Approval_Label.SetText( "Approval:" );
    ExpressionParameters_Approval_Label.SetMinWidth( labelWidth1 );
@@ -268,7 +274,7 @@ SubframeSelectorExpressionsInterface::GUIData::GUIData( SubframeSelectorExpressi
    ExpressionParameters_Approval_Editor.OnKeyPress( (Control::keyboard_event_handler)
                                     &SubframeSelectorExpressionsInterface::e_KeyPressed, w );
 
-   ExpressionParameters_Approval_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/play.png" ) ) );
+   ExpressionParameters_Approval_ToolButton.SetIcon( w.ScaledResource( ":/icons/play.png" ) );
    ExpressionParameters_Approval_ToolButton.SetScaledFixedSize( 20, 20 );
    ExpressionParameters_Approval_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ExpressionParameters_Approval_ToolButton.SetToolTip( "Execute" );
@@ -282,7 +288,7 @@ SubframeSelectorExpressionsInterface::GUIData::GUIData( SubframeSelectorExpressi
 
    //
 
-   ExpressionParameters_Weighting_Status.SetBitmap( Bitmap( w.ScaledResource( ":/browser/enabled.png" ) ) );
+   ExpressionParameters_Weighting_Status.SetBitmap( *w.m_okBitmap );
 
    ExpressionParameters_Weighting_Label.SetText( "Weighting:" );
    ExpressionParameters_Weighting_Label.SetMinWidth( labelWidth1 );
@@ -303,7 +309,7 @@ SubframeSelectorExpressionsInterface::GUIData::GUIData( SubframeSelectorExpressi
    ExpressionParameters_Weighting_Editor.OnKeyPress( (Control::keyboard_event_handler)
                                     &SubframeSelectorExpressionsInterface::e_KeyPressed, w );
 
-   ExpressionParameters_Weighting_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/play.png" ) ) );
+   ExpressionParameters_Weighting_ToolButton.SetIcon( w.ScaledResource( ":/icons/play.png" ) );
    ExpressionParameters_Weighting_ToolButton.SetScaledFixedSize( 20, 20 );
    ExpressionParameters_Weighting_ToolButton.SetFocusStyle( FocusStyle::NoFocus );
    ExpressionParameters_Weighting_ToolButton.SetToolTip( "Execute" );
@@ -333,4 +339,4 @@ SubframeSelectorExpressionsInterface::GUIData::GUIData( SubframeSelectorExpressi
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorExpressionsInterface.cpp - Released 2020-09-07T17:40:02Z
+// EOF SubframeSelectorExpressionsInterface.cpp - Released 2020-10-12T19:25:16Z

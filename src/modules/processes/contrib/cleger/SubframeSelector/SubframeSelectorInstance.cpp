@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInstance.cpp - Released 2020-09-07T17:40:02Z
+// SubframeSelectorInstance.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -364,15 +364,18 @@ private:
 
    void MeasureImage()
    {
+      double min, max;
+      m_subframe->GetExtremeSampleValues( min, max );
+
       // Robust estimate of location: median.
+      m_subframe->SetRangeClipping( 1.0/65535, 1 - 1.0/65535 ); // reject saturated areas
       m_outputData.median = m_subframe->Median();
 
       // Robust estimate of scale: trimmed mean deviation from the median.
-      double min, max;
-      m_subframe->GetExtremeSampleValues( min, max );
       m_subframe->SetRangeClipping( m_outputData.median - (1 - m_data->instance->p_trimmingFactor)*(m_outputData.median - min),
                                     m_outputData.median + (1 - m_data->instance->p_trimmingFactor)*(max - m_outputData.median) );
       m_outputData.medianMeanDev = m_subframe->AvgDev( m_outputData.median );
+
       m_subframe->ResetSelections();
 
       // Robust noise estimate.
@@ -719,12 +722,27 @@ bool SubframeSelectorInstance::Measure()
     */
    if ( TheSubframeSelectorCache == nullptr )
    {
-      new SubframeSelectorCache; // loads cache upon construction
-      if ( TheSubframeSelectorCache->IsEnabled() )
-         if ( TheSubframeSelectorCache->IsEmpty() )
-            console.NoteLn( "<end><cbr><br>* Empty file cache" );
-         else
-            console.NoteLn( "<end><cbr><br>* Loaded cache: " + String( TheSubframeSelectorCache->NumberOfItems() ) + " item(s)" );
+      new SubframeSelectorCache;
+
+      try
+      {
+         TheSubframeSelectorCache->Load();
+
+         if ( TheSubframeSelectorCache->IsEnabled() )
+            if ( TheSubframeSelectorCache->IsEmpty() )
+               console.NoteLn( "<end><cbr><br>* Empty file cache" );
+            else
+               console.NoteLn( "<end><cbr><br>* Loaded cache: " + String( TheSubframeSelectorCache->NumberOfItems() ) + " item(s)" );
+      }
+      catch ( ... )
+      {
+         TheSubframeSelectorCache->Purge();
+         try
+         {
+            throw;
+         }
+         ERROR_HANDLER;
+      }
    }
 
    /*
@@ -1703,4 +1721,4 @@ size_type SubframeSelectorInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInstance.cpp - Released 2020-09-07T17:40:02Z
+// EOF SubframeSelectorInstance.cpp - Released 2020-10-12T19:25:16Z

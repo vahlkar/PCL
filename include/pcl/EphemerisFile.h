@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/EphemerisFile.h - Released 2020-08-25T19:17:02Z
+// pcl/EphemerisFile.h - Released 2020-10-12T19:24:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -621,9 +621,7 @@ public:
     * Constructs an invalid instance that cannot be used until initialized by
     * calling the Open() member function.
     */
-   EphemerisFile()
-   {
-   }
+   EphemerisFile() = default;
 
    /*!
     * Constructs an &EphemerisFile instance initialized from the specified
@@ -686,7 +684,7 @@ public:
     * This member function opens an existing file at the specified \a filePath,
     * loads and parses its XML header, and loads the file indexes ready for
     * fast access to ephemeris data. The file will remain open until this
-    * object is destroyed, or until a new call to this function.
+    * object is destroyed, or until a new call to this function is made.
     *
     * If a previous file was already opened by this instance, it will be closed
     * and all associated control and file indexing structures will be destroyed
@@ -1998,4 +1996,4 @@ private:
 #endif  // __PCL_EphemerisFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EphemerisFile.h - Released 2020-08-25T19:17:02Z
+// EOF pcl/EphemerisFile.h - Released 2020-10-12T19:24:41Z

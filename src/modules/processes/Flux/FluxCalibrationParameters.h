@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationParameters.h - Released 2020-08-25T19:19:57Z
+// FluxCalibrationParameters.h - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -524,4 +524,4 @@ PCL_END_LOCAL
 #endif   // __FluxCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationParameters.h - Released 2020-08-25T19:19:57Z
+// EOF FluxCalibrationParameters.h - Released 2020-10-12T19:25:16Z

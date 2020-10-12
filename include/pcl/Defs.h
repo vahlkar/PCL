@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/Defs.h - Released 2020-08-25T19:17:02Z
+// pcl/Defs.h - Released 2020-10-12T19:24:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -337,6 +337,20 @@
  */
 template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
 #define PCL_UNUSED( x ) __pcl_unused__( x );
+
+/*
+ * Code optimization with unlikely/likely macros: Help the compiler to optimize
+ * for execution paths that are more likely to run.
+ */
+#ifndef __PCL_NO_BRANCH_OPTIMIZATION_MACROS
+#  if defined( __GNUC__ ) || defined( __clang__ )
+#     define unlikely( expr ) __builtin_expect( !!(expr), 0 )
+#     define likely( expr )   __builtin_expect( !!(expr), 1 )
+#  else
+#     define unlikely( expr ) (expr)
+#     define likely( expr )   (expr)
+#  endif
+#endif
 
 /*
  * On Windows/MSVC++, _CRT_RAND_S must be #defined for rand_s() to work:
@@ -1135,4 +1149,4 @@ typedef int64                 fsize_type;
 #endif   // __PCL_Defs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Defs.h - Released 2020-08-25T19:17:02Z
+// EOF pcl/Defs.h - Released 2020-10-12T19:24:41Z

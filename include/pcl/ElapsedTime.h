@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/ElapsedTime.h - Released 2020-08-25T19:17:02Z
+// pcl/ElapsedTime.h - Released 2020-10-12T19:24:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -311,13 +311,17 @@ public:
     * <tr><td>(6) d:hh:mm:ss</td> <td>Same as (5) with elapsed days if t >= 86400</td></tr>
     * </table>
     *
+    * If \a width > 0 and t &le; 60, the integer part of the represented
+    * microseconds, milliseconds or seconds will be right-padded in a field of
+    * \a width space characters.
+    *
     * The output format is chosen automatically to generate the most
     * significant representation. If the specified interval is negative (toward
     * the past), a minus sign is prepended to the returned string.
     */
-   static IsoString ToIsoString( double seconds )
+   static IsoString ToIsoString( double seconds, int width = 0 )
    {
-      return ToString( seconds, (IsoString*)0 );
+      return ToString( seconds, width, (IsoString*)0 );
    }
 
    /*!
@@ -325,9 +329,9 @@ public:
     * \a s in seconds. See ToIsoString( double ) for information on the
     * representation format.
     */
-   static String ToString( double s )
+   static String ToString( double s, int width = 0 )
    {
-      return ToString( s, (String*)0 );
+      return ToString( s, width, (String*)0 );
    }
 
    /*!
@@ -347,16 +351,16 @@ private:
    double m_start; // timestamp in seconds
 
    template <class S>
-   static S ToString( double s, S* )
+   static S ToString( double s, int w, S* )
    {
       if ( s < 0.001 )
-         return S().Format( "%.3f us", s*1000000 );
+         return S().Format( "%*.3f us", Max( 5, w+4 ), s*1000000 );
 
       if ( s < 1 )
-         return S().Format( "%.3f ms", s*1000 );
+         return S().Format( "%*.3f ms", Max( 5, w+4 ), s*1000 );
 
       if ( s < 60 )
-         return S().Format( "%.3f s", s );
+         return S().Format( "%*.3f s", Max( 5, w+4 ), s );
 
       int sign = (s < 0) ? -1 : +1;
       s = Abs( s );
@@ -394,4 +398,4 @@ private:
 #endif   // __PCL_ElapsedTime_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ElapsedTime.h - Released 2020-08-25T19:17:02Z
+// EOF pcl/ElapsedTime.h - Released 2020-10-12T19:24:41Z

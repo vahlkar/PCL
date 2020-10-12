@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetInterface.cpp - Released 2020-08-25T19:19:58Z
+// StarNetInterface.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -45,7 +45,6 @@ namespace pcl
 StarNetInterface* TheStarNetInterface = nullptr;
 
 // ----------------------------------------------------------------------------
-
 
 class StarNetPreferencesDialog : public Dialog
 {
@@ -521,4 +520,4 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInterface.cpp - Released 2020-08-25T19:19:58Z
+// EOF StarNetInterface.cpp - Released 2020-10-12T19:25:16Z

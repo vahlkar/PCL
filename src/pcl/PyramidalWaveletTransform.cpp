@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/PyramidalWaveletTransform.cpp - Released 2020-08-25T19:17:12Z
+// pcl/PyramidalWaveletTransform.cpp - Released 2020-10-12T19:24:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -615,4 +615,4 @@ void PyramidalWaveletTransform::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PyramidalWaveletTransform.cpp - Released 2020-08-25T19:17:12Z
+// EOF pcl/PyramidalWaveletTransform.cpp - Released 2020-10-12T19:24:49Z

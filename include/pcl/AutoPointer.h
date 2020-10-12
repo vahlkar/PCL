@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/AutoPointer.h - Released 2020-08-25T19:17:02Z
+// pcl/AutoPointer.h - Released 2020-10-12T19:24:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -89,7 +89,7 @@ namespace pcl
  * %StandardDeleter implements object and array destruction/deallocation by
  * calling the standard \c delete operator.
  *
- * \sa AutoPointer
+ * \sa AutoPointer, AutoPointerCloner
  */
 template <typename T>
 class PCL_CLASS StandardDeleter
@@ -122,8 +122,8 @@ public:
 
 /*!
  * \class AutoPointer
- * \brief A smart pointer with sole object ownership and optional automatic
- * object destruction.
+ * \brief A smart pointer with exclusive object ownership and optional
+ * automatic object destruction.
  *
  * %AutoPointer stores a pointer to an object of which it is the sole owner.
  * The owned object can optionally be destroyed when the owner %AutoPointer
@@ -278,7 +278,7 @@ public:
     *
     * A copy of the specified deleter \a d will be used. If no deleter is
     * specified, this object will use a default-constructed instance of the
-    * deleter template argument class.
+    * \a D template argument class.
     */
    AutoPointer( bool autoDelete = true, const deleter& d = deleter() )
       : m_deleter( d )
@@ -301,7 +301,7 @@ public:
     *
     * A copy of the specified deleter \a d will be used. If no deleter is
     * specified, this object will use a default-constructed instance of the
-    * deleter template argument class.
+    * \a D template argument class.
     */
    AutoPointer( pointer p, bool autoDelete = true, const deleter& d = deleter() )
       : m_deleter( d )
@@ -317,8 +317,8 @@ public:
     * The automatic deletion feature for this object will be in the same state
     * as it is currently set for the source object \a x.
     *
-    * The smart pointer \a x will be a null pointer after this instance is
-    * constructed. This happens irrespective of the state of the automatic
+    * The smart pointer \a x will transport a null pointer after this instance
+    * is constructed. This happens irrespective of the state of the automatic
     * deletion feature. This guarantees that, as long as no two %AutoPointer
     * instances have been \e explicitly constructed to store the same pointer,
     * no two %AutoPointer instances can share the same pointer accidentally,
@@ -405,8 +405,8 @@ public:
     *
     * The object pointed is never destroyed by this function, irrespective of
     * the state of automatic deletion. In this way, ownership of the pointed
-    * object (that is, the responsibility for destroying it) is transferred to
-    * the caller.
+    * object (or more specifically, the responsibility for destroying it) is
+    * transferred to the caller.
     */
    pointer Release()
    {
@@ -680,8 +680,8 @@ protected:
 
 /*!
  * \class AutoPointerCloner
- * \brief A smart pointer able to clone the objects pointed to by other smart
- * pointers.
+ * \brief A smart pointer able to generate dynamically allocated copies of the
+ * objects pointed to by other smart pointers.
  *
  * %AutoPointerCloner is like AutoPointer, from which it derives publicly, with
  * the only and substantial difference that it makes a dynamically allocated
@@ -909,4 +909,4 @@ public:
 #endif  // __PCL_AutoPointer_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AutoPointer.h - Released 2020-08-25T19:17:02Z
+// EOF pcl/AutoPointer.h - Released 2020-10-12T19:24:41Z

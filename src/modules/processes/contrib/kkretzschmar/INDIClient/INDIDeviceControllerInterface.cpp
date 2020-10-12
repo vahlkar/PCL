@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.2.0
+// Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInterface.cpp - Released 2020-08-25T19:19:58Z
+// INDIDeviceControllerInterface.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -1127,4 +1127,4 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInterface.cpp - Released 2020-08-25T19:19:58Z
+// EOF INDIDeviceControllerInterface.cpp - Released 2020-10-12T19:25:16Z

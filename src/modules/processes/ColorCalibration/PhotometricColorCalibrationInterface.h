@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.2
+// Standard ColorCalibration Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.h - Released 2020-08-25T19:19:57Z
+// PhotometricColorCalibrationInterface.h - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -96,7 +96,7 @@ private:
 
    PhotometricColorCalibrationInstance m_instance;
    OnlineObjectSearchDialog*           m_searchDialog = nullptr;
-   bool                                m_showComplexAngles = true;
+   bool                                m_showCompoundAngles = true;
    bool                                m_raInTimeUnits = true;
 
    struct GUIData
@@ -144,8 +144,8 @@ private:
                HorizontalSizer   Dec_Sizer;
                   Label             Dec_Label;
                   Edit              Dec_Edit;
-               HorizontalSizer   ShowComplexAngles_Sizer;
-                  CheckBox          ShowComplexAngles_CheckBox;
+               HorizontalSizer   ShowCompoundAngles_Sizer;
+                  CheckBox          ShowCompoundAngles_CheckBox;
                HorizontalSizer   RAInTimeUnits_Sizer;
                   CheckBox          RAInTimeUnits_CheckBox;
                HorizontalSizer   Epoch_Sizer;
@@ -280,4 +280,4 @@ PCL_END_LOCAL
 #endif   // __PhotometricColorCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.h - Released 2020-08-25T19:19:57Z
+// EOF PhotometricColorCalibrationInterface.h - Released 2020-10-12T19:25:16Z

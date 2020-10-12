@@ -32,6 +32,9 @@ make -j
 cd $BASEDIR/Fourier/host/g++
 make -j
 
+cd $BASEDIR/GaiaDR2/host/g++
+make -j
+
 cd $BASEDIR/Geometry/host/g++
 make -j
 

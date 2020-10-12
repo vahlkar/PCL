@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.12
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2020-08-25T19:19:45Z
+// XISFInstance.cpp - Released 2020-10-12T19:25:05Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -525,7 +525,6 @@ static void CheckOpenStream( const S& stream, const String& memberFunc )
 
 XISFInstance::XISFInstance( const XISFFormat* F )
    : FileFormatImplementation( F )
-   , m_queriedOptions( false )
 {
 }
 
@@ -1142,4 +1141,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2020-08-25T19:19:45Z
+// EOF XISFInstance.cpp - Released 2020-10-12T19:25:05Z

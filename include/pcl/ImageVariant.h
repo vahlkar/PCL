@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.h - Released 2020-08-25T19:17:02Z
+// pcl/ImageVariant.h - Released 2020-10-12T19:24:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -3456,6 +3456,28 @@ public:
    }
 
 #undef __MEDIAN
+
+   // -------------------------------------------------------------------------
+
+#define __ORDER_STATISTIC( I ) \
+   result = static_cast<const pcl::I&>( **this ).OrderStatistic( k, rect, firstChannel, lastChannel, maxProcessors )
+
+   /*!
+    * Returns an order statistic computed for a subset of pixel samples.
+    *
+    * This member function is a generalized wrapper for GenericImage::OrderStatistic()
+    */
+   double OrderStatistic( double k,
+                          const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                          int maxProcessors = 0 ) const
+   {
+      double result = 0;
+      if ( *this )
+         SOLVE_TEMPLATE( __ORDER_STATISTIC )
+      return result;
+   }
+
+#undef __ORDER_STATISTIC
 
    // -------------------------------------------------------------------------
 
@@ -7231,4 +7253,4 @@ GenericImage<P>& GenericImage<P>::SetLightness( const ImageVariant& L, const Poi
 #endif   // __PCL_ImageVariant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.h - Released 2020-08-25T19:17:02Z
+// EOF pcl/ImageVariant.h - Released 2020-10-12T19:24:41Z

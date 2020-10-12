@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.2
+// Standard ColorCalibration Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2020-08-25T19:19:57Z
+// PhotometricColorCalibrationInstance.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -481,7 +481,8 @@ struct FromKeyword
    IsoString name;
    double    value;
 
-   FromKeyword( double initialValue ) : value( initialValue )
+   FromKeyword( double initialValue )
+      : value( initialValue )
    {
    }
 
@@ -610,29 +611,6 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                inputKeywords << FITSHeaderKeyword( "XPIXSZ", IsoString( pixelSize ) )
                              << FITSHeaderKeyword( "YPIXSZ", IsoString( pixelSize ) );
 
-            int limitMagnitude = p_solverLimitMagnitude;
-            String catalogName = p_solverCatalogName;
-            if ( p_solverAutoLimitMagnitude || p_solverAutoCatalog )
-            {
-               Rect r = view.Image().Bounds();
-               double h = Min( r.Width(), r.Height() )*pixelSize/1000;
-               double fov = Deg( 2*ArcTan( h, focalLength ) );
-               // Empiric formula for 1000 stars at 20 deg of galactic latitude
-               int m = Range( RoundInt( p_solverAutoLimitMagnitudeFactor*Pow( fov, -0.179 ) ), 7, 20 );
-               if ( p_solverAutoLimitMagnitude )
-               {
-                  limitMagnitude = m;
-                  console.NoteLn( "<end><cbr><br>* Using an automatically calculated limit magnitude of " + String( limitMagnitude ) + '.' );
-               }
-               if ( p_solverAutoCatalog )
-                  if ( m == 7 )
-                     catalogName = "Bright Stars";
-                  else if ( fov > 3 )
-                     catalogName = "TYCHO-2";
-                  else
-                     catalogName = "Gaia";
-            }
-
             SaveImage( TPath, view.Image(), inputKeywords, inputProperties );
 
             String scriptPath = coreSrcDir + "/scripts/AdP/ImageSolver.js";
@@ -644,8 +622,10 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                              << StringKeyValue( "metadata_dec", String( centerDec ) )
                                              << StringKeyValue( "metadata_epoch", String( epochJD ) )
                                              << StringKeyValue( "solver_vizierServer", p_serverURL )
-                                             << StringKeyValue( "solver_catalog", catalogName )
-                                             << StringKeyValue( "solver_magnitude", String( limitMagnitude ) )
+                                             << StringKeyValue( "solver_catalog", p_solverCatalogName )
+                                             << StringKeyValue( "solver_catalogMode", p_solverAutoCatalog ? "2" : "1" )
+                                             << StringKeyValue( "solver_magnitude", String( p_solverLimitMagnitude ) )
+                                             << StringKeyValue( "solver_autoMagnitude", p_solverAutoLimitMagnitude ? "true" : "false" )
                                              << StringKeyValue( "solver_sensitivity", String( p_solverStarSensitivity ) )
                                              << StringKeyValue( "solver_noiseLayers", String( p_solverNoiseLayers ) )
                                              << StringKeyValue( "solver_alignAlgorithm", String( p_solverAlignmentDevice ) )
@@ -656,8 +636,6 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                              << StringKeyValue( "solver_simplifierTolerance", "0.25" )
                                              << StringKeyValue( "solver_simplifierRejectFraction", "0.1" )
                                              << StringKeyValue( "solver_projection", String( p_solverProjection ) )
-                                             << StringKeyValue( "solver_catalogMode", "1" )
-                                             << StringKeyValue( "solver_autoMagnitude", "false" )
                                              << StringKeyValue( "solver_showStars", "false" )
                                              << StringKeyValue( "solver_showSimplifiedSurfaces", "false" )
                                              << StringKeyValue( "solver_showDistortion", "false" )
@@ -1423,4 +1401,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-08-25T19:19:57Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-10-12T19:25:16Z

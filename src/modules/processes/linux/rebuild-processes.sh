@@ -42,6 +42,10 @@ cd $BASEDIR/Fourier/host/g++
 make clean
 make -j
 
+cd $BASEDIR/GaiaDR2/host/g++
+make clean
+make -j
+
 cd $BASEDIR/Geometry/host/g++
 make clean
 make -j

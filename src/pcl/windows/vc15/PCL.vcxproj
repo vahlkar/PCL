@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.118
+# PixInsight Makefile Generator Script v1.119
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-08-25T19:20:32.234Z
+# Generated on .... 2020-10-12T19:29:32.967Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -30,7 +30,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1E0F31C5-5C37-42C2-8D72-7079C79BF818}</ProjectGuid>
+    <ProjectGuid>{CD4891C4-0E6C-42F9-B4A0-979C257A4B46}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -334,6 +334,7 @@
     <ClCompile Include="..\..\SphericalRotation.cpp"/>
     <ClCompile Include="..\..\SpinBox.cpp"/>
     <ClCompile Include="..\..\SpinStatus.cpp"/>
+    <ClCompile Include="..\..\StarDatabaseFile.cpp"/>
     <ClCompile Include="..\..\StatusMonitor.cpp"/>
     <ClCompile Include="..\..\StdStatus.cpp"/>
     <ClCompile Include="..\..\String.cpp"/>

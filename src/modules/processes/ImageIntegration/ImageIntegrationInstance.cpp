@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2020-09-07T18:39:11Z
+// ImageIntegrationInstance.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -286,12 +286,27 @@ bool ImageIntegrationInstance::ExecuteGlobal()
 
       if ( TheIntegrationCache == nullptr )
       {
-         new IntegrationCache; // loads cache upon construction
-         if ( TheIntegrationCache->IsEnabled() )
-            if ( TheIntegrationCache->IsEmpty() )
-               console.NoteLn( "<end><cbr><br>* Empty file cache" );
-            else
-               console.NoteLn( "<end><cbr><br>* Loaded cache: " + String( TheIntegrationCache->NumberOfItems() ) + " item(s)" );
+         new IntegrationCache;
+
+         try
+         {
+            TheIntegrationCache->Load();
+
+            if ( TheIntegrationCache->IsEnabled() )
+               if ( TheIntegrationCache->IsEmpty() )
+                  console.NoteLn( "<end><cbr><br>* Empty file cache" );
+               else
+                  console.NoteLn( "<end><cbr><br>* Loaded cache: " + String( TheIntegrationCache->NumberOfItems() ) + " item(s)" );
+         }
+         catch ( ... )
+         {
+            TheIntegrationCache->Purge();
+            try
+            {
+               throw;
+            }
+            ERROR_HANDLER;
+         }
       }
 
       IntegrationFile::OpenFiles( *this );
@@ -1763,4 +1778,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2020-09-07T18:39:11Z
+// EOF ImageIntegrationInstance.cpp - Released 2020-10-12T19:25:16Z

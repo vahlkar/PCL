@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/Image.h - Released 2020-08-25T19:17:02Z
+// pcl/Image.h - Released 2020-10-12T19:24:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -11692,6 +11692,167 @@ public:
    }
 
    /*!
+    * Returns an order statistic computed for a subset of pixel samples.
+    *
+    * \param k    Selection point in the [0,1] range, where 0 corresponds to
+    *          the minimum value in the ordered subset of selected pixel
+    *          samples and 1 corresponds to the maximum value. If the value of
+    *          this parameter is outside the [0,1] range, this function returns
+    *          zero conventionally.
+    *
+    * \param maxProcessors    If a value greater than zero is specified, it is
+    *          the maximum number of concurrent threads that this function can
+    *          execute. If zero or a negative value is specified, the current
+    *          thread limit for this image will be used instead (see
+    *          AbstractImage::SetMaxProcessors()). The default value is zero.
+    *
+    * For information on the rest of parameters of this member function, see
+    * the documentation for Fill().
+    *
+    * This function returns the requested order statistic in the normalized
+    * range [0,1], irrespective of the sample data type of the image.
+    *
+    * For complex-valued images, this function returns the requested order
+    * statistic for the set of magnitudes (or absolute values) of all selected
+    * samples.
+    *
+    * If range clipping is enabled for this image, only pixel samples within
+    * the current clipping range will be taken into account.
+    *
+    * \note Increments the status monitoring object by the number of selected
+    * pixel samples.
+    */
+   double OrderStatistic( double k,
+                          const Rect& rect = Rect( 0 ), int firstChannel = -1, int lastChannel = -1,
+                          int maxProcessors = 0 ) const
+   {
+      if ( k < 0 || k > 1 )
+         return 0;
+
+      Rect r = rect;
+      if ( !ParseSelection( r, firstChannel, lastChannel ) )
+         return 0;
+
+      size_type N = size_type( r.Width() )*size_type( r.Height() )*(1 + lastChannel - firstChannel);
+      if ( m_status.IsInitializationEnabled() )
+         m_status.Initialize( "Computing order statistic", N );
+
+      if ( N <= 2560000 )
+      {
+         SmpThread S( *this, r, firstChannel, lastChannel, 0, r.Height() );
+         S.Run();
+         m_status += N;
+         if ( S.n == 0 )
+            return 0;
+         return double( *pcl::Select( S.samples.Begin(), S.samples.At( S.n ), distance_type( k*(S.n - 1) ) ) )/double( P::MaxSampleValue() );
+      }
+
+      Array<size_type> L = OptimalThreadRows( r.Height(), r.Width(), maxProcessors, 160*1024/*overheadLimitPx*/ );
+      bool useAffinity = m_parallel && Thread::IsRootThread();
+
+      double low, high;
+      size_type count = 0;
+      {
+         ReferenceArray<MinMaxThread> threads;
+         for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+            threads << new MinMaxThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ) );
+
+         if ( threads.Length() > 1 )
+         {
+            int i = 0;
+            for ( MinMaxThread& thread : threads )
+               thread.Start( ThreadPriority::DefaultMax, useAffinity ? i++ : -1 );
+            for ( MinMaxThread& thread : threads )
+               thread.Wait();
+         }
+         else
+            threads[0].Run();
+
+         sample slow = 0, shigh = 0;
+         for ( size_type i = 0; i < threads.Length(); ++i )
+            if ( threads[i].count > 0 )
+            {
+               slow = threads[i].min;
+               shigh = threads[i].max;
+               count = threads[i].count;
+               while ( ++i < threads.Length() )
+                  if ( threads[i].count > 0 )
+                  {
+                     if ( threads[i].min < slow )
+                        slow = threads[i].min;
+                     if ( shigh < threads[i].max )
+                        shigh = threads[i].max;
+                     count += threads[i].count;
+                  }
+               break;
+            }
+
+         threads.Destroy();
+
+         low = double( slow );
+         high = double( shigh );
+      }
+
+      const double eps = P::IsComplexSample() ? 2*std::numeric_limits<double>::epsilon() :
+                           (P::IsFloatSample() ? 2*std::numeric_limits<typename P::component>::epsilon() :
+                              0.5/Pow2( double( P::BitsPerSample() ) ));
+      if ( count == 0 )
+      {
+         m_status += N;
+         return 0;
+      }
+      if ( k == 0 || high - low < eps )
+      {
+         m_status += N;
+         return low/double( P::MaxSampleValue() );
+      }
+      if ( k == 1 )
+      {
+         m_status += N;
+         return high/double( P::MaxSampleValue() );
+      }
+
+      size_type index = size_type( k*(count - 1) );
+
+      ReferenceArray<HistogramThread> threads;
+      for ( int i = 0, n = 0; i < int( L.Length() ); n += int( L[i++] ) )
+         threads << new HistogramThread( *this, r, firstChannel, lastChannel, n, n + int( L[i] ), low, high );
+
+      for ( size_type n = 0;; )
+      {
+         if ( threads.Length() > 1 )
+         {
+            int i = 0;
+            for ( HistogramThread& thread : threads )
+               thread.Start( ThreadPriority::DefaultMax, useAffinity ? i++ : -1 );
+            for ( HistogramThread& thread : threads )
+               thread.Wait();
+         }
+         else
+            threads[0].Run();
+
+         SzVector H = threads[0].H;
+         for ( size_type i = 1; i < threads.Length(); ++i )
+            H += threads[i].H;
+
+         for ( int i = 0; ; n += H[i++] )
+            if ( n + H[i] > index )
+            {
+               double range = high - low;
+               high = (range * (i + 1))/(__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) + low;
+               low = (range * i)/(__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) + low;
+               if ( high - low < eps )
+               {
+                  threads.Destroy();
+                  m_status += N;
+                  return low/double( P::MaxSampleValue() );
+               }
+               break;
+            }
+      }
+   }
+
+   /*!
     * Returns the variance from the mean of a subset of pixel samples.
     *
     * \param maxProcessors    If a value greater than zero is specified, it is
@@ -17303,4 +17464,4 @@ typedef FComplexImage                     ComplexImage;
 #endif   // __PCL_Image_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Image.h - Released 2020-08-25T19:17:02Z
+// EOF pcl/Image.h - Released 2020-10-12T19:24:41Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2020-09-07T17:40:02Z
+// SubframeSelectorMeasureData.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -122,19 +122,19 @@ bool MeasureData::GetFromCache( const SubframeSelectorInstance& instance )
          starResidual        = item.starResidual;
          starResidualMeanDev = item.starResidualMeanDev;
 
-         return item.trimmingFactor == instance.p_trimmingFactor &&
-                  fwhm                != TheSSMeasurementFWHMParameter->DefaultValue() &&
-                  fwhmMeanDev         != 0 &&
-                  eccentricity        != TheSSMeasurementEccentricityParameter->DefaultValue() &&
-                  eccentricityMeanDev != 0 &&
-                  snrWeight           != TheSSMeasurementSNRWeightParameter->DefaultValue() &&
-                  median              != TheSSMeasurementMedianParameter->DefaultValue() &&
-                  medianMeanDev       != 0 &&
-                  noise               != TheSSMeasurementNoiseParameter->DefaultValue() &&
-                  noiseRatio          != TheSSMeasurementNoiseRatioParameter->DefaultValue() &&
-                  stars               != TheSSMeasurementStarsParameter->DefaultValue() &&
-                  starResidual        != TheSSMeasurementStarResidualParameter->DefaultValue() &&
-                  starResidualMeanDev != 0;
+         return RoundInt( 100*item.trimmingFactor ) == RoundInt( 100*instance.p_trimmingFactor ) &&
+                fwhm                != TheSSMeasurementFWHMParameter->DefaultValue() &&
+                fwhmMeanDev         != 0 &&
+                eccentricity        != TheSSMeasurementEccentricityParameter->DefaultValue() &&
+                eccentricityMeanDev != 0 &&
+                snrWeight           != TheSSMeasurementSNRWeightParameter->DefaultValue() &&
+                median              != TheSSMeasurementMedianParameter->DefaultValue() &&
+                medianMeanDev       != 0 &&
+                noise               != TheSSMeasurementNoiseParameter->DefaultValue() &&
+                noiseRatio          != TheSSMeasurementNoiseRatioParameter->DefaultValue() &&
+                stars               != TheSSMeasurementStarsParameter->DefaultValue() &&
+                starResidual        != TheSSMeasurementStarResidualParameter->DefaultValue() &&
+                starResidualMeanDev != 0;
       }
    }
 
@@ -375,4 +375,4 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, float 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2020-09-07T17:40:02Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2020-10-12T19:25:16Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// Standard INDIClient Process Module Version 1.2.0
+// Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIMountInterface.cpp - Released 2020-08-25T19:19:58Z
+// INDIMountInterface.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -79,8 +79,7 @@ INDIMountInterface* TheINDIMountInterface = nullptr;
 // ----------------------------------------------------------------------------
 
 CoordinateSearchDialog::CoordinateSearchDialog( INDIMountInterface& parent )
-   : Dialog( parent )
-   , m_parent( parent )
+   : m_parent( parent )
 {
    const char* objectNameToolTip =
       "<p>Name or identifier of the object to search for. Examples: M31, Pleiades, NGC 253, Orion Nebula, Antares.</p>";
@@ -410,8 +409,7 @@ void CoordinateSearchDialog::e_Click( Button& sender, bool checked )
 // ----------------------------------------------------------------------------
 
 EphemerisSearchDialog::EphemerisSearchDialog( INDIMountInterface& parent )
-   : Dialog( parent )
-   , m_parent( parent )
+   : m_parent( parent )
 {
    const char* objectToolTip =
       "<p>Select one of the solar system bodies available to calculate ephemerides.</p>";
@@ -2806,4 +2804,4 @@ void INDIMountInterface::plotAlignemtResiduals( AlignmentModel* model )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInterface.cpp - Released 2020-08-25T19:19:58Z
+// EOF INDIMountInterface.cpp - Released 2020-10-12T19:25:16Z

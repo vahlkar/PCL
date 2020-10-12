@@ -1,8 +1,8 @@
 ######################################################################
-# PixInsight Makefile Generator Script v1.118
+# PixInsight Makefile Generator Script v1.119
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-08-25T19:20:32.042Z
+# Generated on .... 2020-10-12T19:29:32.775Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ FreeBSD/g++
@@ -163,6 +163,7 @@ SRC_FILES= \
 ../../SphericalRotation.cpp \
 ../../SpinBox.cpp \
 ../../SpinStatus.cpp \
+../../StarDatabaseFile.cpp \
 ../../StatusMonitor.cpp \
 ../../StdStatus.cpp \
 ../../String.cpp \
@@ -346,6 +347,7 @@ OBJ_FILES= \
 ./x64/Release/SphericalRotation.o \
 ./x64/Release/SpinBox.o \
 ./x64/Release/SpinStatus.o \
+./x64/Release/StarDatabaseFile.o \
 ./x64/Release/StatusMonitor.o \
 ./x64/Release/StdStatus.o \
 ./x64/Release/String.o \
@@ -529,6 +531,7 @@ DEP_FILES= \
 ./x64/Release/SphericalRotation.d \
 ./x64/Release/SpinBox.d \
 ./x64/Release/SpinStatus.d \
+./x64/Release/StarDatabaseFile.d \
 ./x64/Release/StatusMonitor.d \
 ./x64/Release/StdStatus.d \
 ./x64/Release/String.d \

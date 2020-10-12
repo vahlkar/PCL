@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/Position.cpp - Released 2020-08-25T19:17:12Z
+// pcl/Position.cpp - Released 2020-10-12T19:24:49Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -651,9 +651,11 @@ Vector Position::Geometric( const StarPosition& S )
                            ca, -sd*sa, cd*sa,
                           0.0,  cd,    sd    ) * Vector( f*s*S.muAlpha, f*s*S.muDelta, f*k*S.v*p ));
 
+   // Time of observation corrected for the Roemer delay.
+   TimePoint tb = m_t + (ca*cd*m_Eb[0] + sa*cd*m_Eb[1] + sd*m_Eb[2])/c_au_day;
    // Barycentric position vector at time t.
    // ESAsA Eq. 7.127
-   m_ub = u + (m_t - S.t0)*udot;
+   m_ub = u + (tb - S.t0)*udot;
 
    // Geocentric position vector at time t.
    // ESAsA Eq. 7.128
@@ -1193,4 +1195,4 @@ Optional<double> Position::ApparentVisualMagnitude( EphemerisFile::Handle& H )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Position.cpp - Released 2020-08-25T19:17:12Z
+// EOF pcl/Position.cpp - Released 2020-10-12T19:24:49Z

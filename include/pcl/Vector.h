@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2020-08-25T19:17:02Z
+// pcl/Vector.h - Released 2020-10-12T19:24:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -580,6 +580,44 @@ public:
    }
 
 #undef IMPLEMENT_SCALAR_ASSIGN_OP
+
+   /*!
+    * Returns the dot product of this vector and a vector \a v.
+    *
+    * \note For performance reasons, this function does not check whether the
+    * specified vector has at least the same number of components as this
+    * vector. If that condition does not hold, this function will invoke
+    * undefined behavior.
+    */
+   double Dot( const GenericVector& v ) const
+   {
+      PCL_PRECONDITION( v.Length() >= Length() )
+      double r = 0;
+      for ( const_iterator a = m_data->Begin(), b = v.Begin(), a1 = m_data->End(); a < a1; ++a, ++b )
+         r += double( *a ) * double( *b );
+      return r;
+   }
+
+   /*!
+    * Returns the cross product of this vector and a vector \a v2.
+    *
+    * \note The cross product is only defined for vectors of three components.
+    * For performance reasons, this function does not check vector lengths. For
+    * vectors of length < 3, this function will invoke undefined behavior.
+    */
+   GenericVector Cross( const GenericVector& v2 ) const
+   {
+      PCL_PRECONDITION( Length() == 3 && v2.Length() == 3 )
+      component x1 = *At( 0 );
+      component y1 = *At( 1 );
+      component z1 = *At( 2 );
+      component x2 = v2[0];
+      component y2 = v2[1];
+      component z2 = v2[2];
+      return GenericVector( y1*z2 - z1*y2,
+                            z1*x2 - x1*z2,
+                            x1*y2 - y1*x2 );
+   }
 
    /*!
     * Returns the square of this vector. The result is a new vector of the same
@@ -1985,6 +2023,71 @@ public:
    }
 
    /*!
+    * Returns the angle between this vector and another vector \a v, with both
+    * vectors being defined in two-dimensional space.
+    *
+    * The returned value is the angle between both vectors in radians, in the
+    * range [-pi,+pi].
+    *
+    * \note This member function is only defined for vectors of two components.
+    * For performance reasons, this condition is not verified; if it doesn't
+    * hold, this function will invoke undefined behavior.
+    */
+   double Angle2D( const GenericVector& v ) const
+   {
+      /*
+       * https://stackoverflow.com/questions/14066933/direct-way-of-computing-clockwise-angle-between-2-vectors
+       * https://stackoverflow.com/questions/243945/calculating-a-2d-vectors-cross-product
+       */
+      component x1 = *At( 0 );
+      component y1 = *At( 1 );
+      component x2 = v[0];
+      component y2 = v[1];
+      return ArcTan( x1*y2 - y1*x2, Dot( v ) );
+   }
+
+   /*!
+    * Returns the angle between this vector and another vector \a v, with both
+    * vectors being defined in three-dimensional space.
+    *
+    * The returned value is the angle between both vectors in radians, in the
+    * range [0,pi].
+    *
+    * \note This member function is only defined for vectors of three
+    * components. For performance reasons, this condition is not verified; if
+    * it doesn't hold, this function will invoke undefined behavior.
+    */
+   double Angle3D( const GenericVector& v ) const
+   {
+      /*
+       * https://stackoverflow.com/questions/14066933/direct-way-of-computing-clockwise-angle-between-2-vectors
+       */
+      return ArcTan( Cross( v ).L2Norm(), Dot( v ) );
+   }
+
+   /*!
+    * Returns the angle between this vector and another vector \a v, being both
+    * vectors defined in three-dimensional space, with sign determined by the
+    * direction of an additional 3D vector \a n.
+    *
+    * The returned value is the angle between both vectors in radians, in the
+    * range [-pi,+pi]. The angle is positive if this vector is clockwise with
+    * respect to the direction of \a n, negative otherwise.
+    *
+    * \note This member function is only defined for vectors of three
+    * components. For performance reasons, this condition is not verified; if
+    * it doesn't hold, this function will invoke undefined behavior.
+    */
+   double Angle3D( const GenericVector& v, const GenericVector& n ) const
+   {
+      /*
+       * https://stackoverflow.com/questions/14066933/direct-way-of-computing-clockwise-angle-between-2-vectors
+       */
+      GenericVector c = Cross( v );
+      return ArcTan( (((n * c) >= 0) ? 1 : -1) * c.L2Norm(), Dot( v ) );
+   }
+
+   /*!
     * Generates a sequence of string tokens separated with the specified
     * \a separator string. Returns a reference to the target string \a s.
     *
@@ -2445,8 +2548,9 @@ GenericVector<T> operator -( const T& x, GenericVector<T>&& A )
 /*!
  * Returns the cross product of two vectors \a A and \a B.
  *
- * The cross product is only defined for vectors of three components. For
- * performance reasons, this function does not check vector lengths.
+ * \note The cross product is only defined for vectors of three components. For
+ * performance reasons, this function does not check vector lengths. For
+ * vectors of length < 3, this function will invoke undefined behavior.
  * \ingroup vector_operators
  */
 template <typename T> inline
@@ -2461,8 +2565,9 @@ GenericVector<T> operator ^( const GenericVector<T>& A, const GenericVector<T>& 
 /*!
  * Returns the cross product of two vectors \a A (rvalue reference) and \a B.
  *
- * The cross product is only defined for vectors of three components. For
- * performance reasons, this function does not check vector lengths.
+ * \note The cross product is only defined for vectors of three components. For
+ * performance reasons, this function does not check vector lengths. For
+ * vectors of length < 3, this function will invoke undefined behavior.
  * \ingroup vector_operators
  */
 template <typename T> inline
@@ -2479,8 +2584,9 @@ GenericVector<T> operator ^( GenericVector<T>&& A, const GenericVector<T>& B )
 /*!
  * Returns the cross product of two vectors \a A and \a B (rvalue reference).
  *
- * The cross product is only defined for vectors of three components. For
- * performance reasons, this function does not check vector lengths.
+ * \note The cross product is only defined for vectors of three components. For
+ * performance reasons, this function does not check vector lengths. For
+ * vectors of length < 3, this function will invoke undefined behavior.
  * \ingroup vector_operators
  */
 template <typename T> inline
@@ -2498,8 +2604,9 @@ GenericVector<T> operator ^( const GenericVector<T>& A, GenericVector<T>&& B )
  * Returns the cross product of two vectors \a A (rvalue reference) and \a B
  * (rvalue reference).
  *
- * The cross product is only defined for vectors of three components. For
- * performance reasons, this function does not check vector lengths.
+ * \note The cross product is only defined for vectors of three components. For
+ * performance reasons, this function does not check vector lengths. For
+ * vectors of length < 3, this function will invoke undefined behavior.
  * \ingroup vector_operators
  */
 template <typename T> inline
@@ -2518,8 +2625,9 @@ GenericVector<T> operator ^( GenericVector<T>&& A, GenericVector<T>&& B )
 /*!
  * Returns the dot product of two vectors \a A and \a B.
  *
- * For performance reasons, this function does not check whether the specified
- * vectors have compatible lengths.
+ * \note For performance reasons, this function does not check whether the
+ * specified vectors have compatible lengths; in case \a B has less components
+ * than \a A, this function will invoke undefined behavior.
  * \ingroup vector_operators
  */
 template <typename T> inline
@@ -2970,4 +3078,4 @@ typedef F80Vector                   LDVector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2020-08-25T19:17:02Z
+// EOF pcl/Vector.h - Released 2020-10-12T19:24:41Z

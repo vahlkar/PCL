@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// pcl/QuadTree.h - Released 2020-08-25T19:17:02Z
+// pcl/QuadTree.h - Released 2020-10-12T19:24:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -145,16 +145,25 @@ public:
     */
    struct Node
    {
-      rectangle rect;         //!< The rectangular region represented by this node.
+      rectangle rect = 0.0;   //!< The rectangular region represented by this node.
       Node*     nw = nullptr; //!< North-West child node, representing the top-left subregion.
       Node*     ne = nullptr; //!< North-East child node, representing the top-right subregion.
       Node*     sw = nullptr; //!< South-West child node, representing the bottom-left subregion.
       Node*     se = nullptr; //!< South-East child node, representing the bottom-right subregion.
 
+#ifdef __PCL_QUADTREE_STRUCTURAL_NODE_HAS_DATA
+      void* data = nullptr;
+#endif
+
       /*!
        * Default constructor. Constructs an uninitialized quadtree node.
        */
-      Node( const rectangle& r = rectangle( 0.0 ) )
+      Node() = default;
+
+      /*!
+       * Constructs a quadtree node for the specified rectangular region \a r.
+       */
+      Node( const rectangle& r )
          : rect( r )
       {
       }
@@ -253,6 +262,8 @@ public:
        */
       point_list points;
 
+#ifndef __PCL_QUADTREE_STRUCTURAL_NODE_HAS_DATA
+
       /*!
        * Pointer to an arbitrary data structure that can be associated with
        * this leaf node. Its default value is \c nullptr.
@@ -262,6 +273,8 @@ public:
        * the sole responsibility of the external code that has defined it.
        */
       void* data = nullptr;
+
+#endif
 
       /*!
        * Constructs a new leaf node representing the specified rectangular
@@ -634,6 +647,46 @@ public:
    }
 
    /*!
+    * Forces a quadtree subdivision of the leaf node that includes the
+    * specified point \a p in the plane.
+    *
+    * Returns the newly created structural node. This function should only
+    * return nullptr if the specified point \a p is exterior to the root
+    * rectangular region of this quadtree, or if this quadtree is empty. It
+    * could also return nullptr in degenerate cases where no further
+    * subdivision of the plane would be possible because of numerical limits.
+    */
+   Node* SplitAt( rectangle::point p )
+   {
+      Node* node = SearchDeepestStructuralNodeAt( p, m_root );
+      if ( node != nullptr )
+      {
+         Node** leaf = nullptr;
+         if ( node->nw != nullptr && node->nw->Includes( p ) )
+            leaf = &node->nw;
+         else if ( node->ne != nullptr && node->ne->Includes( p ) )
+            leaf = &node->ne;
+         else if ( node->sw != nullptr && node->sw->Includes( p ) )
+            leaf = &node->sw;
+         else if ( node->se != nullptr && node->se->Includes( p ) )
+            leaf = &node->se;
+
+         if ( leaf != nullptr ) // cannot be false!
+         {
+            Node* newNode = SplitLeafNode( *leaf );
+            if ( newNode != nullptr ) // should be true
+            {
+               delete static_cast<LeafNode*>( *leaf );
+               *leaf = newNode;
+            }
+            return newNode;
+         }
+      }
+
+      return nullptr;
+   }
+
+   /*!
     * Performs a recursive left-to-right, depth-first traversal of the subtree
     * rooted at the specified \a node, invoking the specified function \a f
     * successively for each leaf node.
@@ -865,6 +918,33 @@ private:
       return nullptr;
    }
 
+   Node* SearchDeepestStructuralNodeAt( const rectangle::point& p, const Node* node ) const
+   {
+      if ( node != nullptr )
+         if ( !node->IsLeaf() )
+            if ( node->Includes( p ) )
+            {
+               Node* child = SearchDeepestStructuralNodeAt( p, node->nw );
+               if ( child == nullptr )
+               {
+                  child = SearchDeepestStructuralNodeAt( p, node->ne );
+                  if ( child == nullptr )
+                  {
+                     child = SearchDeepestStructuralNodeAt( p, node->sw );
+                     if ( child == nullptr )
+                     {
+                        child = SearchDeepestStructuralNodeAt( p, node->se );
+                        if ( child == nullptr )
+                           return const_cast<Node*>( node );
+                     }
+                  }
+               }
+               return child;
+            }
+
+      return nullptr;
+   }
+
    Node* BuildTree( const rectangle& rect, const point_list& points )
    {
       if ( points.IsEmpty() )
@@ -922,6 +1002,65 @@ private:
       }
 
       return node;
+   }
+
+   Node* SplitLeafNode( const Node* node )
+   {
+      if ( node == nullptr || !node->IsLeaf() )
+         return nullptr;
+
+      double x2 = (node->rect.x0 + node->rect.x1)/2;
+      double y2 = (node->rect.y0 + node->rect.y1)/2;
+      // Prevent geometrically degenerate subtrees. For safety, we enforce
+      // minimum region dimensions larger than twice the machine epsilon for
+      // the rectangle coordinate type.
+      if ( x2 - node->rect.x0 < 2*std::numeric_limits<coordinate>::epsilon() ||
+           node->rect.x1 - x2 < 2*std::numeric_limits<coordinate>::epsilon() ||
+           y2 - node->rect.y0 < 2*std::numeric_limits<coordinate>::epsilon() ||
+           node->rect.y1 - y2 < 2*std::numeric_limits<coordinate>::epsilon() )
+      {
+         return nullptr;
+      }
+
+      const LeafNode* leaf = static_cast<const LeafNode*>( node );
+      point_list nw, ne, sw, se;
+      for ( const point& p : leaf->points )
+      {
+         component x = p[0];
+         component y = p[1];
+         if ( x <= x2 )
+         {
+            if ( y <= y2 )
+               nw << p;
+            else
+               sw << p;
+         }
+         else
+         {
+            if ( y <= y2 )
+               ne << p;
+            else
+               se << p;
+         }
+      }
+
+      size_type savedLength = m_length;
+      Node* newNode = new Node( node->rect );
+      newNode->nw = BuildTree( rectangle( node->rect.x0, node->rect.y0,      x2,      y2 ), nw );
+      newNode->ne = BuildTree( rectangle(      x2, node->rect.y0, node->rect.x1,      y2 ), ne );
+      newNode->sw = BuildTree( rectangle( node->rect.x0,      y2,      x2, node->rect.y1 ), sw );
+      newNode->se = BuildTree( rectangle(      x2,      y2, node->rect.x1, node->rect.y1 ), se );
+      m_length = savedLength;
+
+      // Further degeneracies may result, e.g. if the point class is not
+      // behaving as expected. Do not allow them.
+      if ( newNode->IsLeaf() )
+      {
+         delete newNode;
+         return nullptr;
+      }
+
+      return newNode;
    }
 
    void SearchTree( point_list& found, const rectangle& rect, const Node* node ) const
@@ -1271,4 +1410,4 @@ private:
 #endif   // __PCL_QuadTree_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/QuadTree.h - Released 2020-08-25T19:17:02Z
+// EOF pcl/QuadTree.h - Released 2020-10-12T19:24:41Z

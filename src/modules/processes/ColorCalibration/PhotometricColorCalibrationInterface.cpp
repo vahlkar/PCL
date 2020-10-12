@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.0
+// /_/     \____//_____/   PCL 2.4.1
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.2
+// Standard ColorCalibration Process Module Version 1.4.4
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2020-08-25T19:19:57Z
+// PhotometricColorCalibrationInterface.cpp - Released 2020-10-12T19:25:16Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -91,22 +91,23 @@ static void InitializeData()
    {
       s_vizierServers.Clear();
       s_vizierServers << ServerData{ "CDS Strasbourg, France", "http://cdsarc.u-strasbg.fr/" }
-                << ServerData{ "ADAC Tokyo, Japan", "http://vizier.nao.ac.jp/" }
-                << ServerData{ "CADC Victoria, Canada ", "http://vizier.hia.nrc.ca/" }
-                << ServerData{ "CASU Cambridge, UK", "http://vizier.ast.cam.ac.uk/" }
-                << ServerData{ "IUCAA Pune, India", "http://vizier.iucaa.ernet.in/" }
-                << ServerData{ "NAOC Beijing, China", "http://VizieR.china-vo.org/" }
-                << ServerData{ "INASAN Moscow, Russia", "http://vizier.inasan.ru/" }
-                << ServerData{ "CFA Harvard, Cambridge, USA", "http://vizier.cfa.harvard.edu/" }
-                << ServerData{ "JAC Hilo, Hawaii, USA", "http://www.ukirt.hawaii.edu/" }
-                << ServerData{ "SAAO, South Africa", "http://viziersaao.chpc.ac.za/" };
+                      << ServerData{ "ADAC Tokyo, Japan", "http://vizier.nao.ac.jp/" }
+                      << ServerData{ "CADC Victoria, Canada ", "http://vizier.hia.nrc.ca/" }
+                      << ServerData{ "CASU Cambridge, UK", "http://vizier.ast.cam.ac.uk/" }
+                      << ServerData{ "IUCAA Pune, India", "http://vizier.iucaa.ernet.in/" }
+                      << ServerData{ "NAOC Beijing, China", "http://VizieR.china-vo.org/" }
+                      << ServerData{ "INASAN Moscow, Russia", "http://vizier.inasan.ru/" }
+                      << ServerData{ "CFA Harvard, Cambridge, USA", "http://vizier.cfa.harvard.edu/" }
+                      << ServerData{ "JAC Hilo, Hawaii, USA", "http://www.ukirt.hawaii.edu/" }
+                      << ServerData{ "SAAO, South Africa", "http://viziersaao.chpc.ac.za/" };
 
       s_solverCatalogs.Clear();
-      s_solverCatalogs << CatalogData{ "UCAC3", "UCAC3 catalog (100,765,502 objects)" }
+      s_solverCatalogs << CatalogData{ "GaiaDR2", "Gaia Data Release 2 (Gaia collaboration, 2018, 1,692,919,135 sources)" }
+                       << CatalogData{ "GaiaDR2_XPSD", "Gaia Data Release 2 - Local XPSD Server (Gaia collaboration, 2018, 1,692,919,135 sources)" }
                        << CatalogData{ "PPMXL", "PPMXL catalog (910,469,430 objects)" }
+                       << CatalogData{ "UCAC3", "UCAC3 catalog (100,765,502 objects)" }
                        << CatalogData{ "TYCHO-2", "Tycho-2 catalog (2,539,913 stars)" }
-                       << CatalogData{ "Bright Stars", "Bright Star Catalog, 5th ed. (Hoffleit+, 9110 stars)" }
-                       << CatalogData{ "Gaia", "Gaia Data Release 1 (Gaia collaboration 2016, 1,142,679,769 sources)" };
+                       << CatalogData{ "Bright Stars", "Bright Star Catalog, 5th ed. (Hoffleit+, 9110 stars)" };
 
       s_photometryCatalogs.Clear();
       s_photometryCatalogs << CatalogData{ "APASS", "AAVSO Photometric All Sky Survey DR9 (Henden+, 2016, 62 million stars)" };
@@ -303,7 +304,7 @@ void PhotometricColorCalibrationInterface::UpdateControls()
 
    GUI->Dec_Edit.SetText( DecToString( m_instance.p_centerDec ) );
 
-   GUI->ShowComplexAngles_CheckBox.SetChecked( m_showComplexAngles );
+   GUI->ShowCompoundAngles_CheckBox.SetChecked( m_showCompoundAngles );
 
    GUI->RAInTimeUnits_CheckBox.SetChecked( m_raInTimeUnits );
 
@@ -478,7 +479,7 @@ String PhotometricColorCalibrationInterface::RAToString( double ra ) const
    if ( m_raInTimeUnits )
       ra /= 15;
 
-   if ( m_showComplexAngles )
+   if ( m_showCompoundAngles )
       return String::ToSexagesimal( ra, SexagesimalConversionOptions( 3/*items*/,
                                                                       3/*precision*/,
                                                                       false/*sign*/,
@@ -489,7 +490,7 @@ String PhotometricColorCalibrationInterface::RAToString( double ra ) const
 
 String PhotometricColorCalibrationInterface::DecToString( double deg ) const
 {
-   if ( m_showComplexAngles )
+   if ( m_showCompoundAngles )
       return String::ToSexagesimal( deg, SexagesimalConversionOptions( 3/*items*/,
                                                                        2/*precision*/,
                                                                        true/*sign*/,
@@ -683,9 +684,9 @@ void PhotometricColorCalibrationInterface::e_Click( Button& sender, bool checked
       m_instance.p_applyCalibration = checked;
       UpdateControls();
    }
-   else if ( sender == GUI->ShowComplexAngles_CheckBox )
+   else if ( sender == GUI->ShowCompoundAngles_CheckBox )
    {
-      m_showComplexAngles = checked;
+      m_showCompoundAngles = checked;
       UpdateControls();
    }
    else if ( sender == GUI->RAInTimeUnits_CheckBox )
@@ -1259,14 +1260,15 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    //
 
-   ShowComplexAngles_CheckBox.SetText( "Show complex angles" );
-   ShowComplexAngles_CheckBox.SetToolTip( "<p>If enabled, coordinates will be shown as complex angular quantities "
-      "(degrees/hours, minutes, and seconds). If disabled, coordinates will be shown as scalars (degrees or hours with decimals).</p>" );
-   ShowComplexAngles_CheckBox.OnClick( (Button::click_event_handler)&PhotometricColorCalibrationInterface::e_Click, w );
+   ShowCompoundAngles_CheckBox.SetText( "Show compound angles" );
+   ShowCompoundAngles_CheckBox.SetToolTip( "<p>If enabled, coordinates will be shown as compound angular quantities "
+      "(degrees/hours, (arc)minutes, and (arc)seconds). If disabled, coordinates will be shown as scalars (degrees "
+      "or hours with decimals).</p>" );
+   ShowCompoundAngles_CheckBox.OnClick( (Button::click_event_handler)&PhotometricColorCalibrationInterface::e_Click, w );
 
-   ShowComplexAngles_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
-   ShowComplexAngles_Sizer.Add( ShowComplexAngles_CheckBox );
-   ShowComplexAngles_Sizer.AddStretch();
+   ShowCompoundAngles_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   ShowCompoundAngles_Sizer.Add( ShowCompoundAngles_CheckBox );
+   ShowCompoundAngles_Sizer.AddStretch();
 
    //
 
@@ -1331,7 +1333,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    ImageParametersLeft_Sizer.SetSpacing( 4 );
    ImageParametersLeft_Sizer.Add( RA_Sizer );
    ImageParametersLeft_Sizer.Add( Dec_Sizer );
-   ImageParametersLeft_Sizer.Add( ShowComplexAngles_Sizer );
+   ImageParametersLeft_Sizer.Add( ShowCompoundAngles_Sizer );
    ImageParametersLeft_Sizer.Add( RAInTimeUnits_Sizer );
    ImageParametersLeft_Sizer.Add( Epoch_Sizer );
    ImageParametersLeft_Sizer.Add( FocalLength_NumericEdit );
@@ -1396,10 +1398,14 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    const char* solverCatalogToolTip = "<p>This is the catalog used to acquire positions and proper motions of stars for "
       "plate solving the target image.</p>"
-      "<p>You should select the appropriate catalog for your image. For example, for very wide field images (focal lengths "
-      "smaller than 25 mm), you should use the catalog Bright Stars because it provides enough stars and the queries are fast "
-      "for large fields. PPMXL and UCAC-3 are useful for very deep images because they include very dim stars. However, the "
-      "queries in these two catalogs can be very slow for relatively large fields.</p>";
+      "<p>Under normal working conditions, you should select the <i>Automatic catalog</i> option to use an optimal catalog "
+      "selected as a function of the field of view of the image.</p>"
+      "<p>When using a manually selected catalog, you should select the appropriate catalog for your image. For example, for "
+      "very wide field images (focal lengths smaller than 25 mm), you should use the Bright Stars catalog because it provides "
+      "enough stars and the queries are fast for large fields. Gaia and PPMXL are useful for very deep images because they "
+      "include very dim stars; however, online queries in these two catalogs can be slow for relatively large fields.</p>"
+      "<p>If you have a Gaia XPSD server configured with local database files, you should use it in all cases except when the "
+      "Bright Stars catalog is applicable.</p>";
 
    SolverCatalog_Label.SetText( "Astrometry catalog:" );
    SolverCatalog_Label.SetFixedWidth( labelWidth1 );
@@ -1420,8 +1426,8 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    SolverAutoLimitMagnitude_CheckBox.SetText( "Automatic limit magnitude" );
    SolverAutoLimitMagnitude_CheckBox.SetToolTip( "<p>When this option is enabled, PhotometricColorCalibration will select an optimal "
-      "limit magnitude for plate solving based on the field of view of the target image. Enabling this option is recommended under "
-      "normal working conditions.</p>" );
+      "limit magnitude for plate solving based on the field of view and center coordinates of the target image. Enabling this option "
+      "is recommended under normal working conditions.</p>" );
    SolverAutoLimitMagnitude_CheckBox.OnClick( (Button::click_event_handler)&PhotometricColorCalibrationInterface::e_Click, w );
 
    SolverAutoLimitMagnitude_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -1434,7 +1440,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
       "with magnitude smaller than this value. This limit magnitude should be similar to the magnitude of the dimmest stars in the image. "
       "If this value is too low, the plate solving algorithm may not have enough stars to compare, but if the value is too high, it will "
       "try to match catalog stars that are not visible on the image. This will slow down the process, and could prevent the algorithm "
-      "from finding a valid solution.</p>";
+      "from finding a valid solution in extreme cases.</p>";
 
    SolverLimitMagnitude_Label.SetText( "Limit magnitude:" );
    SolverLimitMagnitude_Label.SetFixedWidth( labelWidth1 );
@@ -1456,8 +1462,9 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    DistortionCorrection_CheckBox.SetText( "Distortion correction" );
    DistortionCorrection_CheckBox.SetToolTip( "<p>This option enables a distortion correction algorithm based on 2-D surface splines, "
-      "also known as <i>thin plates</i>. This option should be selected when the target image deviates significantly from an ideal "
-      "projected image. This usually happens in images taken with focal lengths shorter than 400 mm.</p>" );
+      "also known as <i>thin plates</i>. This option should always be selected when the target image suffers from significant "
+      "distortions, or if it deviates significantly from an ideal projected image, which usually happens in images taken with focal "
+      "lengths shorter than 400 mm.</p>" );
    DistortionCorrection_CheckBox.OnClick( (Button::click_event_handler)&PhotometricColorCalibrationInterface::e_Click, w );
 
    DistortionCorrection_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -2050,4 +2057,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-08-25T19:19:57Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-10-12T19:25:16Z
