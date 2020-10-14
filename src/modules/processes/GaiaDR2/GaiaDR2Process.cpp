@@ -57,6 +57,7 @@
 #include <pcl/Arguments.h>
 #include <pcl/Console.h>
 #include <pcl/ErrorHandler.h>
+#include <pcl/MetaModule.h>
 #include <pcl/Settings.h>
 
 // Settings keys
@@ -292,8 +293,35 @@ void GaiaDR2Process::EnsureDatabasesInitialized( int verbosity )
             if ( s_databaseFilePaths.IsEmpty() )
                throw Error( "No database files have been selected." );
 
+            Console console;
+            if ( verbosity > 1 )
+            {
+               console.Show();
+               console.WriteLn( "<end><cbr><br>Installing Gaia DR2 database files...\n" );
+               Module->ProcessEvents();
+            }
+
             for ( const String& filePath : s_databaseFilePaths )
-               s_databases.Add( new GaiaDR2DatabaseFile( filePath ) );
+            {
+               GaiaDR2DatabaseFile* file = new GaiaDR2DatabaseFile( filePath );
+               s_databases.Add( file );
+               if ( verbosity > 1 )
+               {
+                  console.WriteLn( "<b><raw>" + file->FilePath() + "</raw></b>\n"
+                     +  "Database version .... " + file->Metadata().databaseIdentifier + ' ' + file->Metadata().databaseVersion + '\n'
+                     + String().Format(
+                        "Magnitude range ..... %.2f -> %.2f\n"
+                        "Total sources ....... %llu\n"
+                        "Total index nodes ... %u"
+                        , file->MagnitudeLow()
+                        , file->MagnitudeHigh()
+                        , file->Statistics().totalSources
+                        , file->Statistics().totalNodes )
+                     + " (" + File::SizeAsString( file->Statistics().totalNodes * 48 ) + ")\n"
+                  );
+                  Module->ProcessEvents();
+               }
+            }
 
             s_databases.Sort(
                []( const GaiaDR2DatabaseFile& d1, const GaiaDR2DatabaseFile& d2 )
@@ -313,26 +341,6 @@ void GaiaDR2Process::EnsureDatabasesInitialized( int verbosity )
                ERROR_HANDLER
             }
          }
-
-         if ( verbosity > 1 )
-            if ( !s_databases.IsEmpty() )
-            {
-               Console console;
-               console.WriteLn( "<end><cbr><br>Installed Gaia DR2 database files:\n" );
-               for ( const GaiaDR2DatabaseFile& d : s_databases )
-                  console.WriteLn( "<b><raw>" + d.FilePath() + "</raw></b>\n"
-                     +  "Database version .... " + d.Metadata().databaseIdentifier + ' ' + d.Metadata().databaseVersion + '\n'
-                     + String().Format(
-                        "Magnitude range ..... %.2f -> %.2f\n"
-                        "Total sources ....... %llu\n"
-                        "Total index nodes ... %u"
-                        , d.MagnitudeLow()
-                        , d.MagnitudeHigh()
-                        , d.Statistics().totalSources
-                        , d.Statistics().totalNodes )
-                     + " (" + File::SizeAsString( d.Statistics().totalNodes * 48 ) + ")\n"
-                  );
-            }
 
          s_databasesInitialized.Store( 1 );
       }
