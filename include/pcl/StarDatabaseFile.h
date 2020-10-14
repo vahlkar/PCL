@@ -153,6 +153,18 @@ protected:
       uint32 se; // bottom-right child node
    };
 
+#ifdef _MSC_VER
+   /*
+    * Our favorite brain-damaged thing does not know how to implement bit
+    * fields. Oh well...
+    */
+   struct LeafNodeData
+   {
+      uint64 blockOffsetAndLeafFlag;
+      uint32 blockSize;
+      uint32 compressedBlockSize;
+   };
+#else
    struct LeafNodeData
    {
       uint64 blockOffset : 63;    // position of source data block, byte offset
@@ -160,6 +172,7 @@ protected:
       uint32 blockSize;           // size of point source data, in bytes
       uint32 compressedBlockSize; // size of compressed data, in bytes
    };
+#endif
 
    /*
     * Quadtree index node (48 bytes).
@@ -188,12 +201,20 @@ protected:
 
       bool IsLeaf() const
       {
+#ifdef _MSC_VER
+         return (index.leaf.blockOffsetAndLeafFlag & 0x8000000000000000) != 0;
+#else
          return index.leaf.leafFlag;
+#endif
       }
 
       uint64 BlockOffset() const
       {
+#ifdef _MSC_VER
+         return index.leaf.blockOffsetAndLeafFlag & 0x7FFFFFFFFFFFFFFF;
+#else
          return index.leaf.blockOffset;
+#endif
       }
 
       uint32 BlockSize() const
@@ -641,10 +662,10 @@ XPSD::IndexTree::SearchRecursive( uint32 nodeIndex, double ra, double dec, doubl
    {
       if ( node.IsLeaf() )
       {
-         ByteArray block( size_type( node.index.leaf.compressedBlockSize ) );
-         m_parent->LoadData( block.Begin(), node.index.leaf.blockOffset, node.index.leaf.compressedBlockSize, searchData );
-         if ( node.index.leaf.compressedBlockSize != node.index.leaf.blockSize )
-            m_parent->Uncompress( block, node.index.leaf.blockSize, searchData );
+         ByteArray block( size_type( node.CompressedBlockSize() ) );
+         m_parent->LoadData( block.Begin(), node.BlockOffset(), node.CompressedBlockSize(), searchData );
+         if ( node.CompressedBlockSize() != node.BlockSize() )
+            m_parent->Uncompress( block, node.BlockSize(), searchData );
          m_parent->GetEncodedData( block, *this, node, searchData );
       }
       else

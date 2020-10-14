@@ -344,10 +344,32 @@ private:
       uint16 magG;
       uint16 magBP;
       uint16 magRP;
+#ifdef _MSC_VER
+      uint32 flagsAndDRA;
+#else
       // Data availability and quality flags.
       uint32 flags : 20;
       // Right ascension correction for high declinations, in 0.01 mas units.
       int    dra   : 12;
+#endif
+
+      uint32 Flags() const
+      {
+#ifdef _MSC_VER
+         return flagsAndDRA & 0x000FFFFF;
+#else
+         return flags;
+#endif
+      }
+
+      int DRA() const
+      {
+#ifdef _MSC_VER
+         return int( (flagsAndDRA & 0xFFF00000) >> 20 );
+#else
+         return dra;
+#endif
+      }
    };
 #pragma pack(pop)
 
@@ -372,11 +394,11 @@ private:
       GaiaDR2SearchData* search = reinterpret_cast<GaiaDR2SearchData*>( searchData );
       double r = Rad( search->radius );
       const EncodedStarData* S = reinterpret_cast<const EncodedStarData*>( data.Begin() );
-      int count = data.Size() / sizeof( EncodedStarData );
+      int count = int( data.Size() / sizeof( EncodedStarData ) );
       int matched = 0;
       for ( int i = 0; i < count; ++i, ++S )
-         if ( search->inclusionFlags == 0 || (S->flags & search->inclusionFlags) == search->inclusionFlags )
-            if ( (S->flags & search->exclusionFlags) == 0 )
+         if ( search->inclusionFlags == 0 || (S->Flags() & search->inclusionFlags) == search->inclusionFlags )
+            if ( (S->Flags() & search->exclusionFlags) == 0 )
             {
                float magG = 0.001*S->magG - 1.5;
                if ( magG >= search->magnitudeLow )
@@ -386,9 +408,9 @@ private:
                      double x = node.x0 + double( S->dx )/3600/1000/500;
                      double y = node.y0 + double( S->dy )/3600/1000/500;
                      tree.Unproject( star.ra, star.dec, x, y );
-                     if ( unlikely( S->dra != 0 ) )
+                     if ( unlikely( S->DRA() != 0 ) )
                      {
-                        star.ra += double( S->dra )/3600/1000/100;
+                        star.ra += double( S->DRA() )/3600/1000/100;
                         if ( star.ra < 0 )
                            star.ra += 360;
                         else if ( star.ra >= 360 )
@@ -404,7 +426,7 @@ private:
                            star.magG = magG;
                            star.magBP = 0.001*S->magBP - 1.5;
                            star.magRP = 0.001*S->magRP - 1.5;
-                           star.flags = S->flags;
+                           star.flags = S->Flags();
                            search->stars << star;
                         }
                         else
