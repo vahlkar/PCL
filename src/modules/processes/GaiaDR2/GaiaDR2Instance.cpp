@@ -474,8 +474,13 @@ void GaiaDR2Instance::GenerateTextOutput() const
                                  "===============\n"
                                  "Total sources ............ " + IsoString( p_searchData.stars.Length() ) + '\n' +
                                  "Center Right Ascension ... " + sa + " (hms)\n" +
+#ifdef _MSC_VER
+                                 "Center Declination ....... " + sd + "  (\xc2\xb0\xe2\x80\xb2\xe2\x80\xb3)\n" +
+                                 "Search radius ............ " + sr + "  (\xc2\xb0\xe2\x80\xb2\xe2\x80\xb3)\n" +
+#else
                                  "Center Declination ....... " + sd + String( u"  (°′″)\n" ).ToUTF8() +
                                  "Search radius ............ " + sr + String( u"  (°′″)\n" ).ToUTF8() +
+#endif
                         IsoString().Format(
                                  "Magnitude low limit ...... %6.3f\n"
                                  "Magnitude high limit ..... %6.3f\n"
@@ -491,10 +496,17 @@ void GaiaDR2Instance::GenerateTextOutput() const
       if ( p_textHeaders == GDR2TextHeaders::TableColumns
         || p_textHeaders == GDR2TextHeaders::SearchParametersAndTableColumns )
       {
+#ifdef _MSC_VER
+         f.OutTextLn( "       \xce\xb1               \xce\xb4             \xcf\x96         \xce\xbc\xce\xb1*        \xce\xbc\xce\xb4       G     G_BP   G_RP   Flags" );
+         f.OutTextLn( "--------------- --------------- ---------- ---------- ---------- ------ ------ ------ --------" );
+         f.OutTextLn( "  h  m  s          \xc2\xb0  \xe2\x80\xb2  \xe2\x80\xb3           mas       mas/yr     mas/yr   mag    mag    mag" );
+         f.OutTextLn(          "=============== =============== ========== ========== ========== ====== ====== ====== ========" );
+#else
          f.OutTextLn( String( u"       α               δ             ϖ         μα*        μδ       G     G_BP   G_RP   Flags" ).ToUTF8() );
          f.OutTextLn(          "--------------- --------------- ---------- ---------- ---------- ------ ------ ------ --------" );
          f.OutTextLn( String( u"  h  m  s          °  ′  ″           mas       mas/yr     mas/yr   mag    mag    mag" ).ToUTF8() );
          f.OutTextLn(          "=============== =============== ========== ========== ========== ====== ====== ====== ========" );
+#endif
       }
       for ( const GaiaDR2StarData& star : p_searchData.stars )
       {
