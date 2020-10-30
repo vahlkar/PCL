@@ -62,8 +62,9 @@ namespace pcl
 template <typename T> inline static
 void AddMulVector( int n, T k, const T* q, T* z )
 {
-   for ( ; n > 0; --n )
-      *z++ += k * *q++;
+   for ( ; n > 0; --n, ++q, ++z )
+      *z = std::fma( k, *q, *z );
+//       *z += k * *q;
 }
 
 // ----------------------------------------------------------------------------
@@ -111,7 +112,8 @@ T DotProduct( const T* v, const T* w, int n )
 {
    T vdotw = T( 0 );
    for ( ; n > 0; --n )
-      vdotw += *v++ * *w++;
+      vdotw = std::fma( *v++, *w++, vdotw );
+//       vdotw += *v++ * *w++;
    return vdotw;
 }
 
