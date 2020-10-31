@@ -106,79 +106,79 @@ GaiaDR2FlagsSelectionDialog::GaiaDR2FlagsSelectionDialog( uint32 a_flags )
    : flags( a_flags )
 {
    NoPM_CheckBox.SetText( "No proper motions" );
-   NoPM_CheckBox.SetToolTip( "<p>No proper motions and parallax available.</p>" );
+   NoPM_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">No proper motions and parallax available.</p>" );
    NoPM_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    NoGBPMag_CheckBox.SetText( "No GBP magnitude" );
-   NoGBPMag_CheckBox.SetToolTip( "<p>No G-BP magnitude available.</p>" );
+   NoGBPMag_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">No G-BP magnitude available.</p>" );
    NoGBPMag_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    NoGRPMag_CheckBox.SetText( "No GRP magnitude" );
-   NoGRPMag_CheckBox.SetToolTip( "<p>No G-RP magnitude available.</p>" );
+   NoGRPMag_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">No G-RP magnitude available.</p>" );
    NoGRPMag_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    GoodRA_CheckBox.SetText( "High-quality right ascension" );
-   GoodRA_CheckBox.SetToolTip( "<p>Standard error of right ascension < 1 mas.</p>" );
+   GoodRA_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of right ascension &lt; 1 mas.</p>" );
    GoodRA_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    GoodDec_CheckBox.SetText( "High quality declination" );
-   GoodDec_CheckBox.SetToolTip( "<p>Standard error of declination < 1 mas.</p>" );
+   GoodDec_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of declination &lt; 1 mas.</p>" );
    GoodDec_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    GoodPMRA_CheckBox.SetText( "High quality proper motion in R.A." );
-   GoodPMRA_CheckBox.SetToolTip( "<p>Standard error of proper motion in right ascension < 0.75 mas/year.</p>" );
+   GoodPMRA_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of proper motion in right ascension &lt; 0.75 mas/year.</p>" );
    GoodPMRA_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    GoodPMDec_CheckBox.SetText( "High quality proper motion in declination" );
-   GoodPMDec_CheckBox.SetToolTip( "<p>Standard error of proper motion in declination < 0.75 mas/year.</p>" );
+   GoodPMDec_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of proper motion in declination &lt; 0.75 mas/year.</p>" );
    GoodPMDec_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    GoodParx_CheckBox.SetText( "High quality parallax" );
-   GoodParx_CheckBox.SetToolTip( "<p>Standard error of parallax < 0.25 mas.</p>" );
+   GoodParx_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of parallax &lt; 0.25 mas.</p>" );
    GoodParx_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    BadRA_CheckBox.SetText( "Low quality right ascension" );
-   BadRA_CheckBox.SetToolTip( "<p>Standard error of right ascension > 2 mas.</p>" );
+   BadRA_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of right ascension &gt; 2 mas.</p>" );
    BadRA_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    BadDec_CheckBox.SetText( "Low quality declination" );
-   BadDec_CheckBox.SetToolTip( "<p>Standard error of declination > 2 mas.</p>" );
+   BadDec_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of declination &gt; 2 mas.</p>" );
    BadDec_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    BadPMRA_CheckBox.SetText( "Low quality proper motion in R.A." );
-   BadPMRA_CheckBox.SetToolTip( "<p>Standard error of proper motion in right ascension > 1.5 mas/year.</p>" );
+   BadPMRA_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of proper motion in right ascension &gt; 1.5 mas/year.</p>" );
    BadPMRA_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    BadPMDec_CheckBox.SetText( "Low quality proper motion in declination" );
-   BadPMDec_CheckBox.SetToolTip( "<p>Standard error of proper motion in declination > 1.5 mas/year.</p>" );
+   BadPMDec_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of proper motion in declination &gt; 1.5 mas/year.</p>" );
    BadPMDec_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    BadParx_CheckBox.SetText( "Low quality parallax" );
-   BadParx_CheckBox.SetToolTip( "<p>Standard error of parallax > 0.65 mas.</p>" );
+   BadParx_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Standard error of parallax &gt; 0.65 mas.</p>" );
    BadParx_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    GoodGMag_CheckBox.SetText( "High quality G magnitude" );
-   GoodGMag_CheckBox.SetToolTip( "<p>Error on G-band mean flux < 1.5 e-/s.</p>" );
+   GoodGMag_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Error on G-band mean flux &lt; 1.5 e-/s.</p>" );
    GoodGMag_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    GoodGBPMag_CheckBox.SetText( "High quality GBP magnitude" );
-   GoodGBPMag_CheckBox.SetToolTip( "<p>Error on the integrated BP mean flux < 10 e-/s.</p>" );
+   GoodGBPMag_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Error on the integrated BP mean flux &lt; 10 e-/s.</p>" );
    GoodGBPMag_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    GoodGRPMag_CheckBox.SetText( "High quality GRP magnitude" );
-   GoodGRPMag_CheckBox.SetToolTip( "<p>Error on the integrated RP mean flux < 10 e-/s.</p>" );
+   GoodGRPMag_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Error on the integrated RP mean flux &lt; 10 e-/s.</p>" );
    GoodGRPMag_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    BadGMag_CheckBox.SetText( "Low quality G magnitude" );
-   BadGMag_CheckBox.SetToolTip( "<p>Error on G-band mean flux > 2.5 e-/s.</p>" );
+   BadGMag_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Error on G-band mean flux &gt; 2.5 e-/s.</p>" );
    BadGMag_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    BadGBPMag_CheckBox.SetText( "Low quality GBP magnitude" );
-   BadGBPMag_CheckBox.SetToolTip( "<p>Error on the integrated BP mean flux > 20 e-/s, or BP/RP excess factor > 2.5.</p>" );
+   BadGBPMag_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Error on the integrated BP mean flux &gt; 20 e-/s,<br/>or BP/RP excess factor &gt; 2.5.</p>" );
    BadGBPMag_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    BadGRPMag_CheckBox.SetText( "Low quality GRP magnitude" );
-   BadGRPMag_CheckBox.SetToolTip( "<p>Error on the integrated RP mean flux > 20 e-/s, or BP/RP excess factor > 2.5.</p>" );
+   BadGRPMag_CheckBox.SetToolTip( "<p style=\"white-space: nowrap;\">Error on the integrated RP mean flux &gt; 20 e-/s,<br/>or BP/RP excess factor &gt; 2.5.</p>" );
    BadGRPMag_CheckBox.OnClick( (Button::click_event_handler)&GaiaDR2FlagsSelectionDialog::e_Click, *this );
 
    OK_PushButton.SetText( "OK" );
@@ -409,7 +409,7 @@ private:
       Label             Title_Label;
       TreeBox           FilePaths_TreeBox;
       HorizontalSizer   FileButtons_Sizer;
-         PushButton        AddFile_PushButton;
+         PushButton        SelectFiles_PushButton;
          PushButton        RemoveFile_PushButton;
          PushButton        ClearFiles_PushButton;
       HorizontalSizer   Buttons_Sizer;
@@ -442,9 +442,9 @@ GaiaDR2PreferencesDialog::GaiaDR2PreferencesDialog()
    FilePaths_TreeBox.Viewport().OnFileDrag( (Control::file_drag_event_handler)&GaiaDR2PreferencesDialog::e_FileDrag, *this );
    FilePaths_TreeBox.Viewport().OnFileDrop( (Control::file_drop_event_handler)&GaiaDR2PreferencesDialog::e_FileDrop, *this );
 
-   AddFile_PushButton.SetText( "Add" );
-   AddFile_PushButton.SetToolTip( "<p>Add a database file to the list.</p>" );
-   AddFile_PushButton.OnClick( (Button::click_event_handler)&GaiaDR2PreferencesDialog::e_Click, *this );
+   SelectFiles_PushButton.SetText( "Select" );
+   SelectFiles_PushButton.SetToolTip( "<p>Select a new set of database files.</p>" );
+   SelectFiles_PushButton.OnClick( (Button::click_event_handler)&GaiaDR2PreferencesDialog::e_Click, *this );
 
    RemoveFile_PushButton.SetText( "Remove" );
    RemoveFile_PushButton.SetToolTip( "<p>Remove the selected database file from the list.</p>" );
@@ -455,7 +455,7 @@ GaiaDR2PreferencesDialog::GaiaDR2PreferencesDialog()
    ClearFiles_PushButton.OnClick( (Button::click_event_handler)&GaiaDR2PreferencesDialog::e_Click, *this );
 
    FileButtons_Sizer.SetSpacing( 4 );
-   FileButtons_Sizer.Add( AddFile_PushButton );
+   FileButtons_Sizer.Add( SelectFiles_PushButton );
    FileButtons_Sizer.Add( RemoveFile_PushButton );
    FileButtons_Sizer.AddStretch();
    FileButtons_Sizer.Add( ClearFiles_PushButton );
@@ -531,7 +531,7 @@ void GaiaDR2PreferencesDialog::e_NodeActivated( TreeBox& sender, TreeBox::Node& 
 
 void GaiaDR2PreferencesDialog::e_Click( Button& sender, bool checked )
 {
-   if ( sender == AddFile_PushButton )
+   if ( sender == SelectFiles_PushButton )
    {
       OpenFileDialog d;
       d.SetCaption( "GaiaDR2: Select Database Files" );
