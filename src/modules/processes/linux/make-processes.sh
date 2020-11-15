@@ -2,136 +2,136 @@
 
 BASEDIR=$PCLSRCDIR/modules/processes
 
-# cd $BASEDIR/BackgroundModelization/host/g++
-# make -j
+# cd $BASEDIR/BackgroundModelization/$PCLHOST/g++
+# make -j$(nproc)
 
-cd $BASEDIR/CloneStamp/host/g++
-make -j
+cd $BASEDIR/CloneStamp/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/ColorCalibration/host/g++
-make -j
+cd $BASEDIR/ColorCalibration/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/ColorManagement/host/g++
-make -j
+cd $BASEDIR/ColorManagement/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/ColorSpaces/host/g++
-make -j
+cd $BASEDIR/ColorSpaces/$PCLHOST/g++
+make -j$(nproc)
 
-# cd $BASEDIR/Compatibility/host/g++
-# make -j
+# cd $BASEDIR/Compatibility/$PCLHOST/g++
+# make -j$(nproc)
 
-cd $BASEDIR/Convolution/host/g++
-make -j
+cd $BASEDIR/Convolution/$PCLHOST/g++
+make -j$(nproc)
 
-# cd $BASEDIR/Deconvolution/host/g++
-# make -j
+# cd $BASEDIR/Deconvolution/$PCLHOST/g++
+# make -j$(nproc)
 
-cd $BASEDIR/Flux/host/g++
-make -j
+cd $BASEDIR/Flux/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/Fourier/host/g++
-make -j
+cd $BASEDIR/Fourier/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/GaiaDR2/host/g++
-make -j
+cd $BASEDIR/GaiaDR2/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/Geometry/host/g++
-make -j
+cd $BASEDIR/Geometry/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/Global/host/g++
-make -j
+cd $BASEDIR/Global/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/GREYCstoration/host/g++
-make -j
+cd $BASEDIR/GREYCstoration/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/Image/host/g++
-make -j
+cd $BASEDIR/Image/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/ImageCalibration/host/g++
-make -j
+cd $BASEDIR/ImageCalibration/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/ImageIntegration/host/g++
-make -j
+cd $BASEDIR/ImageIntegration/$PCLHOST/g++
+make -j$(nproc)
 
-# cd $BASEDIR/ImageRegistration/host/g++
-# make -j
+# cd $BASEDIR/ImageRegistration/$PCLHOST/g++
+# make -j$(nproc)
 
-cd $BASEDIR/IntensityTransformations/host/g++
-make -j
+cd $BASEDIR/IntensityTransformations/$PCLHOST/g++
+make -j$(nproc)
 
-# cd $BASEDIR/MaskGeneration/host/g++
-# make -j
+# cd $BASEDIR/MaskGeneration/$PCLHOST/g++
+# make -j$(nproc)
 
-cd $BASEDIR/Morphology/host/g++
-make -j
+cd $BASEDIR/Morphology/$PCLHOST/g++
+make -j$(nproc)
 
-# cd $BASEDIR/MultiscaleProcessing/host/g++
-# make -j
+# cd $BASEDIR/MultiscaleProcessing/$PCLHOST/g++
+# make -j$(nproc)
 
-cd $BASEDIR/NoiseGeneration/host/g++
-make -j
+cd $BASEDIR/NoiseGeneration/$PCLHOST/g++
+make -j$(nproc)
 
-# cd $BASEDIR/NoiseReduction/host/g++
-# make -j
+# cd $BASEDIR/NoiseReduction/$PCLHOST/g++
+# make -j$(nproc)
 
-cd $BASEDIR/NoOperation/host/g++
-make -j
+cd $BASEDIR/NoOperation/$PCLHOST/g++
+make -j$(nproc)
 
-# cd $BASEDIR/Obsolete/host/g++
-# make -j
+# cd $BASEDIR/Obsolete/$PCLHOST/g++
+# make -j$(nproc)
 
-cd $BASEDIR/PixelMath/host/g++
-make -j
+cd $BASEDIR/PixelMath/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/RestorationFilters/host/g++
-make -j
+cd $BASEDIR/RestorationFilters/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/Sandbox/host/g++
-make -j
+cd $BASEDIR/Sandbox/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/StarGenerator/host/g++
-make -j
+cd $BASEDIR/StarGenerator/$PCLHOST/g++
+make -j$(nproc)
 
-# cd $BASEDIR/TGV/host/g++
-# make -j
+# cd $BASEDIR/TGV/$PCLHOST/g++
+# make -j$(nproc)
 
-cd $BASEDIR/contrib/cleger/SubframeSelector/host/g++
-make -j
+cd $BASEDIR/contrib/cleger/SubframeSelector/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/gviehoever/GradientDomain/host/g++
-make -j
+cd $BASEDIR/contrib/gviehoever/GradientDomain/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/kkretzschmar/INDIClient/host/g++
-make -j
+cd $BASEDIR/contrib/kkretzschmar/INDIClient/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nmisiura/StarNet/host/g++
-make -j
+cd $BASEDIR/contrib/nmisiura/StarNet/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/Blink/host/g++
-make -j
+cd $BASEDIR/contrib/nvolkov/Blink/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/CometAlignment/host/g++
-make -j
+cd $BASEDIR/contrib/nvolkov/CometAlignment/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/CosmeticCorrection/host/g++
-make -j
+cd $BASEDIR/contrib/nvolkov/CosmeticCorrection/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/SplitCFA/host/g++
-make -j
+cd $BASEDIR/contrib/nvolkov/SplitCFA/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/sharkmelley/ArcsinhStretch/host/g++
-make -j
+cd $BASEDIR/contrib/sharkmelley/ArcsinhStretch/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/spool/Debayer/host/g++
-make -j
+cd $BASEDIR/contrib/spool/Debayer/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/zvrastil/Annotation/host/g++
-make -j
+cd $BASEDIR/contrib/zvrastil/Annotation/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/zvrastil/AssistedColorCalibration/host/g++
-make -j
+cd $BASEDIR/contrib/zvrastil/AssistedColorCalibration/$PCLHOST/g++
+make -j$(nproc)
 
-cd $BASEDIR/contrib/zvrastil/LocalHistogramEqualization/host/g++
-make -j
+cd $BASEDIR/contrib/zvrastil/LocalHistogramEqualization/$PCLHOST/g++
+make -j$(nproc)
 
 cd $BASEDIR
