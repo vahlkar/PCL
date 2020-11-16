@@ -2,136 +2,136 @@
 
 BASEDIR=$PCLSRCDIR/modules/processes
 
-# cd $BASEDIR/BackgroundModelization/$PCLHOST/g++
+# cd $BASEDIR/BackgroundModelization/linux/g++
 # make -j$(nproc)
 
-cd $BASEDIR/CloneStamp/$PCLHOST/g++
+cd $BASEDIR/CloneStamp/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/ColorCalibration/$PCLHOST/g++
+cd $BASEDIR/ColorCalibration/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/ColorManagement/$PCLHOST/g++
+cd $BASEDIR/ColorManagement/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/ColorSpaces/$PCLHOST/g++
+cd $BASEDIR/ColorSpaces/linux/g++
 make -j$(nproc)
 
-# cd $BASEDIR/Compatibility/$PCLHOST/g++
+# cd $BASEDIR/Compatibility/linux/g++
 # make -j$(nproc)
 
-cd $BASEDIR/Convolution/$PCLHOST/g++
+cd $BASEDIR/Convolution/linux/g++
 make -j$(nproc)
 
-# cd $BASEDIR/Deconvolution/$PCLHOST/g++
+# cd $BASEDIR/Deconvolution/linux/g++
 # make -j$(nproc)
 
-cd $BASEDIR/Flux/$PCLHOST/g++
+cd $BASEDIR/Flux/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/Fourier/$PCLHOST/g++
+cd $BASEDIR/Fourier/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/GaiaDR2/$PCLHOST/g++
+cd $BASEDIR/GaiaDR2/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/Geometry/$PCLHOST/g++
+cd $BASEDIR/Geometry/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/Global/$PCLHOST/g++
+cd $BASEDIR/Global/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/GREYCstoration/$PCLHOST/g++
+cd $BASEDIR/GREYCstoration/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/Image/$PCLHOST/g++
+cd $BASEDIR/Image/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/ImageCalibration/$PCLHOST/g++
+cd $BASEDIR/ImageCalibration/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/ImageIntegration/$PCLHOST/g++
+cd $BASEDIR/ImageIntegration/linux/g++
 make -j$(nproc)
 
-# cd $BASEDIR/ImageRegistration/$PCLHOST/g++
+# cd $BASEDIR/ImageRegistration/linux/g++
 # make -j$(nproc)
 
-cd $BASEDIR/IntensityTransformations/$PCLHOST/g++
+cd $BASEDIR/IntensityTransformations/linux/g++
 make -j$(nproc)
 
-# cd $BASEDIR/MaskGeneration/$PCLHOST/g++
+# cd $BASEDIR/MaskGeneration/linux/g++
 # make -j$(nproc)
 
-cd $BASEDIR/Morphology/$PCLHOST/g++
+cd $BASEDIR/Morphology/linux/g++
 make -j$(nproc)
 
-# cd $BASEDIR/MultiscaleProcessing/$PCLHOST/g++
+# cd $BASEDIR/MultiscaleProcessing/linux/g++
 # make -j$(nproc)
 
-cd $BASEDIR/NoiseGeneration/$PCLHOST/g++
+cd $BASEDIR/NoiseGeneration/linux/g++
 make -j$(nproc)
 
-# cd $BASEDIR/NoiseReduction/$PCLHOST/g++
+# cd $BASEDIR/NoiseReduction/linux/g++
 # make -j$(nproc)
 
-cd $BASEDIR/NoOperation/$PCLHOST/g++
+cd $BASEDIR/NoOperation/linux/g++
 make -j$(nproc)
 
-# cd $BASEDIR/Obsolete/$PCLHOST/g++
+# cd $BASEDIR/Obsolete/linux/g++
 # make -j$(nproc)
 
-cd $BASEDIR/PixelMath/$PCLHOST/g++
+cd $BASEDIR/PixelMath/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/RestorationFilters/$PCLHOST/g++
+cd $BASEDIR/RestorationFilters/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/Sandbox/$PCLHOST/g++
+cd $BASEDIR/Sandbox/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/StarGenerator/$PCLHOST/g++
+cd $BASEDIR/StarGenerator/linux/g++
 make -j$(nproc)
 
-# cd $BASEDIR/TGV/$PCLHOST/g++
+# cd $BASEDIR/TGV/linux/g++
 # make -j$(nproc)
 
-cd $BASEDIR/contrib/cleger/SubframeSelector/$PCLHOST/g++
+cd $BASEDIR/contrib/cleger/SubframeSelector/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/gviehoever/GradientDomain/$PCLHOST/g++
+cd $BASEDIR/contrib/gviehoever/GradientDomain/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/kkretzschmar/INDIClient/$PCLHOST/g++
+cd $BASEDIR/contrib/kkretzschmar/INDIClient/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/nmisiura/StarNet/$PCLHOST/g++
+cd $BASEDIR/contrib/nmisiura/StarNet/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/Blink/$PCLHOST/g++
+cd $BASEDIR/contrib/nvolkov/Blink/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/CometAlignment/$PCLHOST/g++
+cd $BASEDIR/contrib/nvolkov/CometAlignment/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/CosmeticCorrection/$PCLHOST/g++
+cd $BASEDIR/contrib/nvolkov/CosmeticCorrection/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/SplitCFA/$PCLHOST/g++
+cd $BASEDIR/contrib/nvolkov/SplitCFA/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/sharkmelley/ArcsinhStretch/$PCLHOST/g++
+cd $BASEDIR/contrib/sharkmelley/ArcsinhStretch/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/spool/Debayer/$PCLHOST/g++
+cd $BASEDIR/contrib/spool/Debayer/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/zvrastil/Annotation/$PCLHOST/g++
+cd $BASEDIR/contrib/zvrastil/Annotation/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/zvrastil/AssistedColorCalibration/$PCLHOST/g++
+cd $BASEDIR/contrib/zvrastil/AssistedColorCalibration/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/contrib/zvrastil/LocalHistogramEqualization/$PCLHOST/g++
+cd $BASEDIR/contrib/zvrastil/LocalHistogramEqualization/linux/g++
 make -j$(nproc)
 
 cd $BASEDIR

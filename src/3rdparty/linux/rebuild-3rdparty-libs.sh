@@ -2,47 +2,47 @@
 
 BASEDIR=$PCLSRCDIR/3rdparty
 
-cd $BASEDIR/cfitsio/$PCLHOST/g++
+cd $BASEDIR/cfitsio/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/cminpack/$PCLHOST/g++
+cd $BASEDIR/cminpack/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/jasper/$PCLHOST/g++
+cd $BASEDIR/jasper/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/jpeg/$PCLHOST/g++
+cd $BASEDIR/jpeg/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/lcms/$PCLHOST/g++
+cd $BASEDIR/lcms/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/libraw/$PCLHOST/g++
+cd $BASEDIR/libraw/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/libraw-compat/$PCLHOST/g++
+cd $BASEDIR/libraw-compat/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/libtiff/$PCLHOST/g++
+cd $BASEDIR/libtiff/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/lz4/$PCLHOST/g++
+cd $BASEDIR/lz4/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/RFC6234/$PCLHOST/g++
+cd $BASEDIR/RFC6234/linux/g++
 make clean
 make -j$(nproc)
 
-cd $BASEDIR/zlib/$PCLHOST/g++
+cd $BASEDIR/zlib/linux/g++
 make clean
 make -j$(nproc)
 

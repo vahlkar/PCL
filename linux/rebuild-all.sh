@@ -7,8 +7,7 @@ if [ -z ${PCLDIR+x} ] ||
    [ -z ${PCLLIBDIR64+x} ] ||
    [ -z ${PCLLIBDIR+x} ] ||
    [ -z ${PCLINCDIR+x} ] ||
-   [ -z ${PCLSRCDIR+x} ] ||
-   [ -z ${PCLHOST+x} ]; then
+   [ -z ${PCLSRCDIR+x} ]; then
   echo "PCL environment variables must be defined.";
   echo "Reference: https://gitlab.com/pixinsight/PCL";
   exit
@@ -18,10 +17,10 @@ fi
 [ ! -d $PCLLIBDIR64 ] && mkdir -p $PCLLIBDIR64
 [ ! -d $PCLBINDIR64 ] && mkdir -p $PCLBINDIR64
 
-PCL_MAKE_PATH="${PCLSRCDIR}/pcl/${PCLHOST}/g++"
-LIB_3RDPARTY_SCRIPT="${PCLSRCDIR}/3rdparty/${PCLHOST}/rebuild-3rdparty-libs.sh"
-FILE_FORMAT_SCRIPT="${PCLSRCDIR}/src/modules/processes/${PCLHOST}/rebuild-file-formats.sh"
-PROCESSES_SCRIPT="${PCLSRCDIR}/modules/processes/${PCLHOST}/rebuild-processes.sh"
+PCL_MAKE_PATH="${PCLSRCDIR}/pcl/linux/g++"
+LIB_3RDPARTY_SCRIPT="${PCLSRCDIR}/3rdparty/linux/rebuild-3rdparty-libs.sh"
+FILE_FORMAT_SCRIPT="${PCLSRCDIR}/src/modules/processes/linux/rebuild-file-formats.sh"
+PROCESSES_SCRIPT="${PCLSRCDIR}/modules/processes/linux/rebuild-processes.sh"
 
 # build PCL
 cd $PCL_MAKE_PATH

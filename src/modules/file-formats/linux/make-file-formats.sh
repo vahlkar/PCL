@@ -2,25 +2,25 @@
 
 BASEDIR=$PCLSRCDIR/modules/file-formats
 
-cd $BASEDIR/BMP/$PCLHOST/g++
+cd $BASEDIR/BMP/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/RAW/$PCLHOST/g++
+cd $BASEDIR/RAW/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/FITS/$PCLHOST/g++
+cd $BASEDIR/FITS/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/JPEG/$PCLHOST/g++
+cd $BASEDIR/JPEG/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/JPEG2000/$PCLHOST/g++
+cd $BASEDIR/JPEG2000/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/TIFF/$PCLHOST/g++
+cd $BASEDIR/TIFF/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/XISF/$PCLHOST/g++
+cd $BASEDIR/XISF/linux/g++
 make -j$(nproc)
 
 cd $BASEDIR
