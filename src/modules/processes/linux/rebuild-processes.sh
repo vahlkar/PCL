@@ -2,180 +2,180 @@
 
 BASEDIR=$PCLSRCDIR/modules/processes
 
-# cd $BASEDIR/BackgroundModelization/host/g++
+# cd $BASEDIR/BackgroundModelization/linux/g++
 # make clean
-# make -j
+# make -j$(nproc)
 
-cd $BASEDIR/CloneStamp/host/g++
+cd $BASEDIR/CloneStamp/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/ColorCalibration/host/g++
+cd $BASEDIR/ColorCalibration/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/ColorManagement/host/g++
+cd $BASEDIR/ColorManagement/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/ColorSpaces/host/g++
+cd $BASEDIR/ColorSpaces/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-# cd $BASEDIR/Compatibility/host/g++
+# cd $BASEDIR/Compatibility/linux/g++
 # make clean
-# make -j
+# make -j$(nproc)
 
-cd $BASEDIR/Convolution/host/g++
+cd $BASEDIR/Convolution/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-# cd $BASEDIR/Deconvolution/host/g++
+# cd $BASEDIR/Deconvolution/linux/g++
 # make clean
-# make -j
+# make -j$(nproc)
 
-cd $BASEDIR/Flux/host/g++
+cd $BASEDIR/Flux/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/Fourier/host/g++
+cd $BASEDIR/Fourier/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/GaiaDR2/host/g++
+cd $BASEDIR/GaiaDR2/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/Geometry/host/g++
+cd $BASEDIR/Geometry/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/Global/host/g++
+cd $BASEDIR/Global/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/GREYCstoration/host/g++
+cd $BASEDIR/GREYCstoration/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/Image/host/g++
+cd $BASEDIR/Image/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/ImageCalibration/host/g++
+cd $BASEDIR/ImageCalibration/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/ImageIntegration/host/g++
+cd $BASEDIR/ImageIntegration/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-# cd $BASEDIR/ImageRegistration/host/g++
+# cd $BASEDIR/ImageRegistration/linux/g++
 # make clean
-# make -j
+# make -j$(nproc)
 
-cd $BASEDIR/IntensityTransformations/host/g++
+cd $BASEDIR/IntensityTransformations/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-# cd $BASEDIR/MaskGeneration/host/g++
+# cd $BASEDIR/MaskGeneration/linux/g++
 # make clean
-# make -j
+# make -j$(nproc)
 
-cd $BASEDIR/Morphology/host/g++
+cd $BASEDIR/Morphology/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-# cd $BASEDIR/MultiscaleProcessing/host/g++
+# cd $BASEDIR/MultiscaleProcessing/linux/g++
 # make clean
-# make -j
+# make -j$(nproc)
 
-cd $BASEDIR/NoiseGeneration/host/g++
+cd $BASEDIR/NoiseGeneration/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-# cd $BASEDIR/NoiseReduction/host/g++
+# cd $BASEDIR/NoiseReduction/linux/g++
 # make clean
-# make -j
+# make -j$(nproc)
 
-cd $BASEDIR/NoOperation/host/g++
+cd $BASEDIR/NoOperation/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-# cd $BASEDIR/Obsolete/host/g++
+# cd $BASEDIR/Obsolete/linux/g++
 # make clean
-# make -j
+# make -j$(nproc)
 
-cd $BASEDIR/PixelMath/host/g++
+cd $BASEDIR/PixelMath/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/RestorationFilters/host/g++
+cd $BASEDIR/RestorationFilters/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/Sandbox/host/g++
+cd $BASEDIR/Sandbox/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/StarGenerator/host/g++
+cd $BASEDIR/StarGenerator/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-# cd $BASEDIR/TGV/host/g++
+# cd $BASEDIR/TGV/linux/g++
 # make clean
-# make -j
+# make -j$(nproc)
 
-cd $BASEDIR/contrib/cleger/SubframeSelector/host/g++
+cd $BASEDIR/contrib/cleger/SubframeSelector/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/gviehoever/GradientDomain/host/g++
+cd $BASEDIR/contrib/gviehoever/GradientDomain/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/kkretzschmar/INDIClient/host/g++
+cd $BASEDIR/contrib/kkretzschmar/INDIClient/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nmisiura/StarNet/host/g++
+cd $BASEDIR/contrib/nmisiura/StarNet/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/Blink/host/g++
+cd $BASEDIR/contrib/nvolkov/Blink/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/CometAlignment/host/g++
+cd $BASEDIR/contrib/nvolkov/CometAlignment/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/CosmeticCorrection/host/g++
+cd $BASEDIR/contrib/nvolkov/CosmeticCorrection/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/nvolkov/SplitCFA/host/g++
+cd $BASEDIR/contrib/nvolkov/SplitCFA/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/sharkmelley/ArcsinhStretch/host/g++
+cd $BASEDIR/contrib/sharkmelley/ArcsinhStretch/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/spool/Debayer/host/g++
+cd $BASEDIR/contrib/spool/Debayer/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/zvrastil/Annotation/host/g++
+cd $BASEDIR/contrib/zvrastil/Annotation/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/zvrastil/AssistedColorCalibration/host/g++
+cd $BASEDIR/contrib/zvrastil/AssistedColorCalibration/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
-cd $BASEDIR/contrib/zvrastil/LocalHistogramEqualization/host/g++
+cd $BASEDIR/contrib/zvrastil/LocalHistogramEqualization/linux/g++
 make clean
-make -j
+make -j$(nproc)
 
 cd $BASEDIR
