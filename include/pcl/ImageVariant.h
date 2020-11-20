@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.h - Released 2020-10-12T19:24:41Z
+// pcl/ImageVariant.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -405,7 +405,7 @@ public:
     * Returns a pointer to the unmodifiable image transported by this
     * %ImageVariant object.
     */
-   const AbstractImage* ImagePtr() const
+   const AbstractImage* ImagePtr() const noexcept
    {
       return m_data->image;
    }
@@ -413,7 +413,7 @@ public:
    /*!
     * Returns a pointer to the image transported by this %ImageVariant object.
     */
-   AbstractImage* ImagePtr()
+   AbstractImage* ImagePtr() noexcept
    {
       return m_data->image;
    }
@@ -425,7 +425,7 @@ public:
     * This member function also returns true if \e both objects transport no
     * image.
     */
-   bool IsSameImage( const ImageVariant& image ) const
+   bool IsSameImage( const ImageVariant& image ) const noexcept
    {
       return m_data->image == image.m_data->image;
    }
@@ -434,7 +434,7 @@ public:
     * Returns true iff this %ImageVariant instance transports a floating point
     * image.
     */
-   bool IsFloatSample() const
+   bool IsFloatSample() const noexcept
    {
       return m_data->isFloatSample;
    }
@@ -442,7 +442,7 @@ public:
    /*!
     * Returns true iff this %ImageVariant instance transports a complex image.
     */
-   bool IsComplexSample() const
+   bool IsComplexSample() const noexcept
    {
       return m_data->isComplexSample;
    }
@@ -451,7 +451,7 @@ public:
     * Returns the number of bits per sample of the image transported by this
     * %ImageVariant object, or zero if it transports no image.
     */
-   int BitsPerSample() const
+   int BitsPerSample() const noexcept
    {
       return m_data->bitsPerSample;
    }
@@ -460,7 +460,7 @@ public:
     * Returns the number of 8-bit bytes per sample of the image transported by
     * this %ImageVariant, or zero if this object transports no image.
     */
-   int BytesPerSample() const
+   int BytesPerSample() const noexcept
    {
       return m_data->bitsPerSample >> 3;
    }
@@ -469,7 +469,7 @@ public:
     * Returns the width in pixels of the image transported by this
     * %ImageVariant, or zero if this object transports no image.
     */
-   int Width() const
+   int Width() const noexcept
    {
       return m_data->image ? m_data->image->Width() : 0;
    }
@@ -478,7 +478,7 @@ public:
     * Returns the height in pixels of the image transported by this
     * %ImageVariant, or zero if this object transports no image.
     */
-   int Height() const
+   int Height() const noexcept
    {
       return m_data->image ? m_data->image->Height() : 0;
    }
@@ -489,7 +489,7 @@ public:
     *
     * The returned value is equal to Width()*Height().
     */
-   size_type NumberOfPixels() const
+   size_type NumberOfPixels() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfPixels() : 0;
    }
@@ -498,7 +498,7 @@ public:
     * Returns the total number of channels in the image transported by this
     * %ImageVariant, or zero if this object transports no image.
     */
-   int NumberOfChannels() const
+   int NumberOfChannels() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfChannels() : 0;
    }
@@ -510,7 +510,7 @@ public:
     * this object is empty, or if this object does not transport an image, this
     * function returns -1.
     */
-   int LastChannel() const
+   int LastChannel() const noexcept
    {
       return m_data->image ? m_data->image->LastChannel() : -1;
    }
@@ -520,7 +520,7 @@ public:
     * channel index corresponds to an existing channel in this image. Returns
     * false if this object does not transport an image.
     */
-   bool IsValidChannelIndex( int c ) const
+   bool IsValidChannelIndex( int c ) const noexcept
    {
       return m_data->image && m_data->image->IsValidChannelIndex( c );
    }
@@ -533,7 +533,7 @@ public:
     * channel for monochrome grayscale images, and three channels for RGB color
     * images. Additional channels are known as <em>alpha channels</em>.
     */
-   int NumberOfNominalChannels() const
+   int NumberOfNominalChannels() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfNominalChannels() : 0;
    }
@@ -546,7 +546,7 @@ public:
     * to the color space of the image; for example, a second channel in a
     * grayscale image, or a fourth channel in an RGB color image.
     */
-   bool HasAlphaChannels() const
+   bool HasAlphaChannels() const noexcept
    {
       return m_data->image && m_data->image->HasAlphaChannels();
    }
@@ -559,7 +559,7 @@ public:
     * to the color space of the image; for example, a second channel in a
     * grayscale image, or a fourth channel in an RGB color image.
     */
-   int NumberOfAlphaChannels() const
+   int NumberOfAlphaChannels() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfAlphaChannels() : 0;
    }
@@ -570,7 +570,7 @@ public:
     *
     * The number of samples is equal to NumberOfPixels()*NumberOfChannels().
     */
-   size_type NumberOfSamples() const
+   size_type NumberOfSamples() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfSamples() : 0;
    }
@@ -582,7 +582,7 @@ public:
     * The number of nominal samples is equal to
     * NumberOfPixels()*NumberOfNominalChannels().
     */
-   size_type NumberOfNominalSamples() const
+   size_type NumberOfNominalSamples() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfNominalSamples() : 0;
    }
@@ -594,7 +594,7 @@ public:
     * The number of alpha samples is equal to
     * NumberOfPixels()*NumberOfAlphaChannels().
     */
-   size_type NumberOfAlphaSamples() const
+   size_type NumberOfAlphaSamples() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfAlphaSamples() : 0;
    }
@@ -609,7 +609,7 @@ public:
     * If this object transports no image, this function returns an empty
     * rectangle.
     */
-   Rect Bounds() const
+   Rect Bounds() const noexcept
    {
       return m_data->image ? m_data->image->Bounds() : Rect( 0 );
    }
@@ -621,7 +621,7 @@ public:
     * If this object transports no image, this function returns false.
     */
    template <typename T>
-   bool Includes( const GenericPoint<T>& p ) const
+   bool Includes( const GenericPoint<T>& p ) const noexcept
    {
       return m_data->image && m_data->image->Includes( p );
    }
@@ -633,7 +633,7 @@ public:
     * If this object transports no image, this function returns false.
     */
    template <typename T>
-   bool Includes( const GenericRectangle<T>& r ) const
+   bool Includes( const GenericRectangle<T>& r ) const noexcept
    {
       return m_data->image && m_data->image->Includes( r );
    }
@@ -648,7 +648,7 @@ public:
     * If this object transports no image, this function returns false.
     */
    template <typename T>
-   bool Includes( T x0, T y0, T x1, T y1 ) const
+   bool Includes( T x0, T y0, T x1, T y1 ) const noexcept
    {
       return m_data->image && m_data->image->Includes( x0, y0, x1, y1 );
    }
@@ -663,7 +663,7 @@ public:
     * If this object transports no image, this function returns false.
     */
    template <typename T>
-   bool Includes( T x, T y ) const
+   bool Includes( T x, T y ) const noexcept
    {
       return m_data->image && m_data->image->Includes( x, y );
    }
@@ -675,7 +675,7 @@ public:
     * If this object transports no image, this function returns false.
     */
    template <typename T>
-   bool Intersects( const pcl::GenericRectangle<T>& r ) const
+   bool Intersects( const pcl::GenericRectangle<T>& r ) const noexcept
    {
       return m_data->image && m_data->image->Intersects( r );
    }
@@ -690,7 +690,7 @@ public:
     * If this object transports no image, this function returns false.
     */
    template <typename T>
-   bool Intersects( T x0, T y0, T x1, T y1 ) const
+   bool Intersects( T x0, T y0, T x1, T y1 ) const noexcept
    {
       return m_data->image && m_data->image->Intersects( x0, y0, x1, y1 );
    }
@@ -703,7 +703,7 @@ public:
     * returns false.
     */
    template <typename T>
-   bool Clip( pcl::GenericPoint<T>& p ) const
+   bool Clip( pcl::GenericPoint<T>& p ) const noexcept
    {
       return m_data->image && m_data->image->Clip( p );
    }
@@ -721,7 +721,7 @@ public:
     * returns false.
     */
    template <typename T>
-   bool Clip( T& x, T& y ) const
+   bool Clip( T& x, T& y ) const noexcept
    {
       return m_data->image && m_data->image->Clip( x, y );
    }
@@ -737,7 +737,7 @@ public:
     * returns false.
     */
    template <typename T>
-   bool Clip( pcl::GenericRectangle<T>& r ) const
+   bool Clip( pcl::GenericRectangle<T>& r ) const noexcept
    {
       return m_data->image && m_data->image->Clip( r );
    }
@@ -759,7 +759,7 @@ public:
     * returns false.
     */
    template <typename T>
-   bool Clip( T& x0, T& y0, T& x1, T& y1 ) const
+   bool Clip( T& x0, T& y0, T& x1, T& y1 ) const noexcept
    {
       return m_data->image && m_data->image->Clip( x0, y0, x1, y1 );
    }
@@ -770,7 +770,7 @@ public:
     * \param c    Channel index, 0 &le; \a c < \a n, where \a n is the total
     *             number of channels in this image, including alpha channels.
     */
-   void SelectChannel( int c ) const
+   void SelectChannel( int c ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SelectChannel( c );
@@ -785,7 +785,7 @@ public:
     *
     * This function is a convenience synonym for FirstSelectedChannel().
     */
-   int SelectedChannel() const
+   int SelectedChannel() const noexcept
    {
       return m_data->image ? m_data->image->SelectedChannel() : -1;
    }
@@ -797,7 +797,7 @@ public:
     * \param c0   Index of the first channel to select.
     * \param c1   Index of the last channel to select.
     */
-   void SelectChannelRange( int c0, int c1 ) const
+   void SelectChannelRange( int c0, int c1 ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SelectChannelRange( c0, c1 );
@@ -807,7 +807,7 @@ public:
     * Sets the current channel range selection to include all nominal channels
     * exclusively, excluding alpha channels.
     */
-   void SelectNominalChannels() const
+   void SelectNominalChannels() const noexcept
    {
       if ( m_data->image )
          m_data->image->SelectNominalChannels();
@@ -820,7 +820,7 @@ public:
     * \note If this image has no alpha channels, this function selects the last
     * nominal channel. The channel range selection cannot be empty by design.
     */
-   void SelectAlphaChannels() const
+   void SelectAlphaChannels() const noexcept
    {
       if ( m_data->image )
          m_data->image->SelectAlphaChannels();
@@ -830,7 +830,7 @@ public:
     * Resets the channel range selection to include all existing channels (all
     * nominal and alpha channels) in this image.
     */
-   void ResetChannelRange() const
+   void ResetChannelRange() const noexcept
    {
       if ( m_data->image )
          m_data->image->ResetChannelRange();
@@ -840,7 +840,7 @@ public:
     * Returns the number of selected channels, or zero if this object does not
     * transport an image.
     */
-   int NumberOfSelectedChannels() const
+   int NumberOfSelectedChannels() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfSelectedChannels() : 0;
    }
@@ -849,7 +849,7 @@ public:
     * Returns the channel index of the first selected channel, or -1 if this
     * object does not transport an image.
     */
-   int FirstSelectedChannel() const
+   int FirstSelectedChannel() const noexcept
    {
       return m_data->image ? m_data->image->FirstSelectedChannel() : -1;
    }
@@ -858,7 +858,7 @@ public:
     * Returns the channel index of the last selected channel, or -1 if this
     * object does not transport an image.
     */
-   int LastSelectedChannel() const
+   int LastSelectedChannel() const noexcept
    {
       return m_data->image ? m_data->image->LastSelectedChannel() : -1;
    }
@@ -870,7 +870,7 @@ public:
     * \param[out] c0 Index of the first selected channel.
     * \param[out] c1 Index of the last selected channel.
     */
-   void GetSelectedChannelRange( int& c0, int& c1 ) const
+   void GetSelectedChannelRange( int& c0, int& c1 ) const noexcept
    {
       if ( m_data->image )
          m_data->image->GetSelectedChannelRange( c0, c1 );
@@ -882,7 +882,7 @@ public:
     * \param x Horizontal coordinate of the new anchor point.
     * \param y Vertical coordinate of the new anchor point.
     */
-   void SelectPoint( int x, int y ) const
+   void SelectPoint( int x, int y ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SelectPoint( x, y );
@@ -891,7 +891,7 @@ public:
    /*!
     * Selects a new anchor point \a p in image coordinates.
     */
-   void SelectPoint( const Point& p ) const
+   void SelectPoint( const Point& p ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SelectPoint( p );
@@ -900,7 +900,7 @@ public:
    /*!
     * Resets the anchor point to the origin of image coordinates, i.e to x=y=0.
     */
-   void ResetPoint() const
+   void ResetPoint() const noexcept
    {
       if ( m_data->image )
          m_data->image->ResetPoint();
@@ -910,7 +910,7 @@ public:
     * Returns the current anchor point, or zero if this object does not
     * transport an image.
     */
-   Point SelectedPoint() const
+   Point SelectedPoint() const noexcept
    {
       return m_data->image ? m_data->image->SelectedPoint() : Point( 0 );
    }
@@ -928,7 +928,7 @@ public:
     * The resulting selection is constrained to stay within the image
     * boundaries.
     */
-   void SelectRectangle( int x0, int y0, int x1, int y1 ) const
+   void SelectRectangle( int x0, int y0, int x1, int y1 ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SelectRectangle( x0, y0, x1, y1 );
@@ -942,7 +942,7 @@ public:
     *
     * \param p1   Position of the lower right corner of the new selection.
     */
-   void SelectRectangle( const Point& p0, const Point& p1 ) const
+   void SelectRectangle( const Point& p0, const Point& p1 ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SelectRectangle( p0, p1 );
@@ -952,7 +952,7 @@ public:
     * Defines the current rectangular selection as the specified rectangle \a r
     * in image coordinates.
     */
-   void SelectRectangle( const Rect& r ) const
+   void SelectRectangle( const Rect& r ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SelectRectangle( r );
@@ -961,7 +961,7 @@ public:
    /*!
     * Resets the rectangular selection to include the entire image boundaries.
     */
-   void ResetSelection() const
+   void ResetSelection() const noexcept
    {
       if ( m_data->image )
          m_data->image->ResetSelection();
@@ -972,7 +972,7 @@ public:
     * Returns false if the current selection is not empty, or if this object
     * does not transport an image.
     */
-   bool IsEmptySelection() const
+   bool IsEmptySelection() const noexcept
    {
       return m_data->image ? m_data->image->IsEmptySelection() : false;
    }
@@ -982,7 +982,7 @@ public:
     * image. Returns false if the selection is not complete, or if this object
     * does not transport an image.
     */
-   bool IsFullSelection() const
+   bool IsFullSelection() const noexcept
    {
       return m_data->image ? m_data->image->IsFullSelection() : false;
    }
@@ -991,7 +991,7 @@ public:
     * Returns the current rectangular selection, or zero if this object does
     * not transport an image.
     */
-   Rect SelectedRectangle() const
+   Rect SelectedRectangle() const noexcept
    {
       return m_data->image ? m_data->image->SelectedRectangle() : Rect( 0 );
    }
@@ -1004,7 +1004,7 @@ public:
     * includes the whole image, and the current channel range selection
     * comprises all existing channels, including nominal and alpha channels.
     */
-   bool IsCompletelySelected() const
+   bool IsCompletelySelected() const noexcept
    {
       return m_data->image ? m_data->image->IsCompletelySelected() : false;
    }
@@ -1014,7 +1014,7 @@ public:
     * of the current selection rectangle. Returns zero if this object does not
     * transport an image.
     */
-   size_type NumberOfSelectedPixels() const
+   size_type NumberOfSelectedPixels() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfSelectedPixels() : 0;
    }
@@ -1024,7 +1024,7 @@ public:
     * of the current selection rectangle multiplied by the number of selected
     * channels. Returns zero if this object does not transport an image.
     */
-   size_type NumberOfSelectedSamples() const
+   size_type NumberOfSelectedSamples() const noexcept
    {
       return m_data->image ? m_data->image->NumberOfSelectedSamples() : 0;
    }
@@ -1053,7 +1053,7 @@ public:
     * The default clipping range is the normalized (0,1) range. Range clipping
     * is disabled by default.
     */
-   bool IsRangeClippingEnabled() const
+   bool IsRangeClippingEnabled() const noexcept
    {
       return m_data->image ? m_data->image->IsRangeClippingEnabled() : false;
    }
@@ -1068,7 +1068,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   bool IsLowRangeClippingEnabled() const
+   bool IsLowRangeClippingEnabled() const noexcept
    {
       return m_data->image ? m_data->image->IsLowRangeClippingEnabled() : false;
    }
@@ -1083,7 +1083,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   bool IsHighRangeClippingEnabled() const
+   bool IsHighRangeClippingEnabled() const noexcept
    {
       return m_data->image ? m_data->image->IsHighRangeClippingEnabled() : false;
    }
@@ -1093,7 +1093,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void EnableRangeClipping( bool enableLow = true, bool enableHigh = true ) const
+   void EnableRangeClipping( bool enableLow = true, bool enableHigh = true ) const noexcept
    {
       if ( m_data->image )
          m_data->image->EnableRangeClipping( enableLow, enableHigh );
@@ -1104,7 +1104,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void DisableRangeClipping( bool disableLow = true, bool disableHigh = true ) const
+   void DisableRangeClipping( bool disableLow = true, bool disableHigh = true ) const noexcept
    {
       if ( m_data->image )
          m_data->image->DisableRangeClipping( disableLow, disableHigh );
@@ -1116,7 +1116,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   double RangeClipLow() const
+   double RangeClipLow() const noexcept
    {
       return m_data->image ? m_data->image->RangeClipLow() : 0.0;
    }
@@ -1127,7 +1127,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   double RangeClipHigh() const
+   double RangeClipHigh() const noexcept
    {
       return m_data->image ? m_data->image->RangeClipHigh() : 0.0;
    }
@@ -1137,7 +1137,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void SetRangeClipLow( double clipLow ) const
+   void SetRangeClipLow( double clipLow ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SetRangeClipLow( clipLow );
@@ -1148,7 +1148,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void SetRangeClipHigh( double clipHigh ) const
+   void SetRangeClipHigh( double clipHigh ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SetRangeClipHigh( clipHigh );
@@ -1160,7 +1160,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void SetRangeClipping( double clipLow, double clipHigh ) const
+   void SetRangeClipping( double clipLow, double clipHigh ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SetRangeClipping( clipLow, clipHigh );
@@ -1173,7 +1173,7 @@ public:
     * Clipping range upper bound = 1.0
     * Range clipping disabled
     */
-   void ResetRangeClipping() const
+   void ResetRangeClipping() const noexcept
    {
       if ( m_data->image )
          m_data->image->ResetRangeClipping();
@@ -1197,7 +1197,7 @@ public:
     * ResetRangeClipping();
     * \endcode
     */
-   void ResetSelections() const
+   void ResetSelections() const noexcept
    {
       if ( m_data->image )
          m_data->image->ResetSelections();
@@ -1210,7 +1210,7 @@ public:
     * \note This member function assumes that this object transports a valid
     * image. Do not call it otherwise.
     */
-   ImageSelections& Selections() const
+   ImageSelections& Selections() const noexcept
    {
       return m_data->image->Selections();
    }
@@ -1245,7 +1245,7 @@ public:
     * to restore them. Returns false otherwise, or if this object does not
     * transport an image.
     */
-   bool CanPopSelections() const
+   bool CanPopSelections() const noexcept
    {
       return m_data->image ? m_data->image->CanPopSelections() : false;
    }
@@ -1257,7 +1257,7 @@ public:
     * \note This member function assumes that this object transports a valid
     * image. Do not call it otherwise.
     */
-   StatusMonitor& Status() const
+   StatusMonitor& Status() const noexcept
    {
       PCL_PRECONDITION( m_data->image != nullptr )
       return m_data->image->Status();
@@ -1268,7 +1268,7 @@ public:
     * selected for the image transported by this %ImageVariant, or zero if this
     * object does not transport an image.
     */
-   pcl::StatusCallback* StatusCallback() const
+   pcl::StatusCallback* StatusCallback() const noexcept
    {
       return m_data->image ? m_data->image->StatusCallback() : nullptr;
    }
@@ -1280,7 +1280,7 @@ public:
     * If this object does not transport an image, calling this member function
     * has no effect.
     */
-   void SetStatusCallback( pcl::StatusCallback* callback ) const
+   void SetStatusCallback( pcl::StatusCallback* callback ) const noexcept
    {
       if ( m_data->image )
          m_data->image->SetStatusCallback( callback );
@@ -1294,7 +1294,7 @@ public:
     * If this object does not transport an image, this member function returns
     * false.
     */
-   bool IsParallelProcessingEnabled() const
+   bool IsParallelProcessingEnabled() const noexcept
    {
       return m_data->image != nullptr && m_data->image->IsParallelProcessingEnabled();
    }
@@ -1312,7 +1312,7 @@ public:
     * If this object does not transport an image, calling this member function
     * has no effect.
     */
-   void EnableParallelProcessing( bool enable = true, int maxProcessors = 0 )
+   void EnableParallelProcessing( bool enable = true, int maxProcessors = 0 ) noexcept
    {
       if ( m_data->image )
          m_data->image->EnableParallelProcessing( enable, maxProcessors );
@@ -1327,7 +1327,7 @@ public:
     * If this object does not transport an image, calling this member function
     * has no effect.
     */
-   void DisableParallelProcessing( bool disable = true )
+   void DisableParallelProcessing( bool disable = true ) noexcept
    {
       if ( m_data->image )
          m_data->image->DisableParallelProcessing( disable );
@@ -1346,7 +1346,7 @@ public:
     * the "Process/MaxProcessors" global variable (refer to the GlobalSettings
     * class for information on global variables).
     */
-   int MaxProcessors() const
+   int MaxProcessors() const noexcept
    {
       return m_data->image ? m_data->image->MaxProcessors() : 0;
    }
@@ -1371,7 +1371,7 @@ public:
     * If this object does not transport an image, calling this member function
     * has no effect.
     */
-   void SetMaxProcessors( int maxProcessors )
+   void SetMaxProcessors( int maxProcessors ) noexcept
    {
       if ( m_data->image )
          m_data->image->SetMaxProcessors( maxProcessors );
@@ -1384,7 +1384,7 @@ public:
     *
     * The returned value is BytesPerSample()*Width().
     */
-   size_type LineSize() const
+   size_type LineSize() const noexcept
    {
       return m_data->image ? BytesPerSample() * size_type( m_data->image->Width() ) : 0;
    }
@@ -1395,7 +1395,7 @@ public:
     *
     * The returned value is BytesPerSample()*NumberOfPixels().
     */
-   size_type ChannelSize() const
+   size_type ChannelSize() const noexcept
    {
       return BytesPerSample() * NumberOfPixels();
    }
@@ -1407,7 +1407,7 @@ public:
     *
     * The returned value is NumberOfSamples()*BytesPerSample().
     */
-   size_type ImageSize() const
+   size_type ImageSize() const noexcept
    {
       return ChannelSize() * size_type( NumberOfChannels() );
    }
@@ -1420,7 +1420,7 @@ public:
     *
     * The returned value is ChannelSize()*NumberOfNominalChannels().
     */
-   size_type NominalSize() const
+   size_type NominalSize() const noexcept
    {
       return ChannelSize() * size_type( NumberOfNominalChannels() );
    }
@@ -1433,7 +1433,7 @@ public:
     *
     * The returned value is ChannelSize()*NumberOfAlphaChannels().
     */
-   size_type AlphaSize() const
+   size_type AlphaSize() const noexcept
    {
       return ChannelSize() * size_type( NumberOfAlphaChannels() );
    }
@@ -1443,7 +1443,7 @@ public:
     * false if this object transports a grayscale image, or if it does not
     * transport any image.
     */
-   bool IsColor() const
+   bool IsColor() const noexcept
    {
       return m_data->image && m_data->image->IsColor();
    }
@@ -1456,7 +1456,7 @@ public:
     * ColorSpace namespace. If this object transports no image, this function
     * returns ColorSpace::Unknown.
     */
-   color_space ColorSpace() const
+   color_space ColorSpace() const noexcept
    {
       return m_data->image ? m_data->image->ColorSpace() : ColorSpace::Unknown;
    }
@@ -1466,7 +1466,7 @@ public:
     * color space of the image transported by this %ImageVariant, or an empty
     * string if this object transports no image.
     */
-   String ChannelId( int c ) const
+   String ChannelId( int c ) const noexcept
    {
       return m_data->image ? m_data->image->ChannelId( c ) : String();
    }
@@ -1478,7 +1478,7 @@ public:
     * \warning Do not call this member function if the %ImageVariant does not
     * transport an image.
     */
-   const RGBColorSystem& RGBWorkingSpace() const
+   const RGBColorSystem& RGBWorkingSpace() const noexcept
    {
       PCL_PRECONDITION( m_data->image != nullptr )
       return m_data->image->RGBWorkingSpace();
@@ -3095,7 +3095,7 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::IsShared()
     */
-   bool IsSharedImage() const
+   bool IsSharedImage() const noexcept
    {
       bool result = false;
       if ( *this )
@@ -3119,9 +3119,9 @@ public:
     * object, or zero (a null pointer) if the transported image is local, or if
     * this object transports no image.
     */
-   void* SharedImageHandle() const
+   void* SharedImageHandle() const noexcept
    {
-      void* handle = 0;
+      void* handle = nullptr;
       if ( *this )
          SOLVE_TEMPLATE( __SHARED_IMAGE_HANDLE )
       return handle;
@@ -3145,7 +3145,7 @@ public:
     * This member function is a generalized wrapper for
     * GenericImage::IsUnique()
     */
-   bool IsUniqueImage() const
+   bool IsUniqueImage() const noexcept
    {
       bool result = false;
       if ( *this )
@@ -6181,7 +6181,7 @@ public:
    /*!
     * Exchanges two %ImageVariant instances \a x1 and \a x2.
     */
-   friend void Swap( ImageVariant& x1, ImageVariant& x2 )
+   friend void Swap( ImageVariant& x1, ImageVariant& x2 ) noexcept
    {
       pcl::Swap( x1.m_data, x2.m_data );
    }
@@ -6256,8 +6256,8 @@ public:
       Free();
       switch ( bitSize )
       {
-      case 32 : CREATE_IMAGE( Image ); break;
-      case 64 : CREATE_IMAGE( DImage ); break;
+      case 32: CREATE_IMAGE( Image ); break;
+      case 64: CREATE_IMAGE( DImage ); break;
       }
       m_data->ownsImage = m_data->image != nullptr;
       return *this;
@@ -6293,8 +6293,8 @@ public:
       Free();
       switch ( bitSize )
       {
-      case 32 : CREATE_IMAGE( ComplexImage ); break;
-      case 64 : CREATE_IMAGE( DComplexImage ); break;
+      case 32: CREATE_IMAGE( ComplexImage ); break;
+      case 64: CREATE_IMAGE( DComplexImage ); break;
       }
       m_data->ownsImage = m_data->image != nullptr;
       return *this;
@@ -6317,9 +6317,9 @@ public:
       Free();
       switch ( bitSize )
       {
-      case  8 : CREATE_IMAGE( UInt8Image ); break;
-      case 16 : CREATE_IMAGE( UInt16Image ); break;
-      case 32 : CREATE_IMAGE( UInt32Image ); break;
+      case  8: CREATE_IMAGE( UInt8Image ); break;
+      case 16: CREATE_IMAGE( UInt16Image ); break;
+      case 32: CREATE_IMAGE( UInt32Image ); break;
       }
       m_data->ownsImage = m_data->image != nullptr;
       return *this;
@@ -6439,8 +6439,8 @@ public:
       Free();
       switch ( bitSize )
       {
-      case 32 : CREATE_SHARED_IMAGE( Image ); break;
-      case 64 : CREATE_SHARED_IMAGE( DImage ); break;
+      case 32: CREATE_SHARED_IMAGE( Image ); break;
+      case 64: CREATE_SHARED_IMAGE( DImage ); break;
       }
       m_data->ownsImage = m_data->image != nullptr;
       return *this;
@@ -6482,8 +6482,8 @@ public:
       Free();
       switch ( bitSize )
       {
-      case 32 : CREATE_SHARED_IMAGE( ComplexImage ); break;
-      case 64 : CREATE_SHARED_IMAGE( DComplexImage ); break;
+      case 32: CREATE_SHARED_IMAGE( ComplexImage ); break;
+      case 64: CREATE_SHARED_IMAGE( DComplexImage ); break;
       }
       m_data->ownsImage = m_data->image != nullptr;
       return *this;
@@ -6509,9 +6509,9 @@ public:
       Free();
       switch ( bitSize )
       {
-      case  8 : CREATE_SHARED_IMAGE( UInt8Image ); break;
-      case 16 : CREATE_SHARED_IMAGE( UInt16Image ); break;
-      case 32 : CREATE_SHARED_IMAGE( UInt32Image ); break;
+      case  8: CREATE_SHARED_IMAGE( UInt8Image ); break;
+      case 16: CREATE_SHARED_IMAGE( UInt16Image ); break;
+      case 32: CREATE_SHARED_IMAGE( UInt32Image ); break;
       }
       m_data->ownsImage = m_data->image != nullptr;
       return *this;
@@ -6984,7 +6984,7 @@ public:
     * Returns true iff %ImageVariant owns the image transported by this
     * instance, if any.
     */
-   bool OwnsImage() const
+   bool OwnsImage() const noexcept
    {
       return m_data->ownsImage;
    }
@@ -6999,7 +6999,7 @@ public:
     * <em>class-wide property</em> of %ImageVariant, not a private property of
     * any particular %ImageVariant instance.
     */
-   ImageVariant& SetOwnership( bool owner = true )
+   ImageVariant& SetOwnership( bool owner = true ) noexcept
    {
       m_data->ownsImage = owner && m_data->image;
       return *this;
@@ -7032,7 +7032,7 @@ public:
     * \warning Do not call this member function if the %ImageVariant does not
     * transport an image.
     */
-   const AbstractImage* operator ->() const
+   const AbstractImage* operator ->() const noexcept
    {
       PCL_PRECONDITION( m_data->image != nullptr )
       return m_data->image;
@@ -7045,7 +7045,7 @@ public:
     * \warning Do not call this member function if the %ImageVariant does not
     * transport an image.
     */
-   AbstractImage* operator ->()
+   AbstractImage* operator ->() noexcept
    {
       PCL_PRECONDITION( m_data->image != nullptr )
       return m_data->image;
@@ -7058,7 +7058,7 @@ public:
     * \warning Do not call this member function if the %ImageVariant does not
     * transport an image.
     */
-   const AbstractImage& operator *() const
+   const AbstractImage& operator *() const noexcept
    {
       PCL_PRECONDITION( m_data->image != nullptr )
       return *m_data->image;
@@ -7071,7 +7071,7 @@ public:
     * \warning Do not call this member function if the %ImageVariant does not
     * transport an image.
     */
-   AbstractImage& operator *()
+   AbstractImage& operator *() noexcept
    {
       PCL_PRECONDITION( m_data->image != nullptr )
       return *m_data->image;
@@ -7080,7 +7080,7 @@ public:
    /*!
     * Returns true iff this %ImageVariant instance transports an image.
     */
-   operator bool() const
+   operator bool() const noexcept
    {
       return m_data->image != nullptr;
    }
@@ -7113,7 +7113,7 @@ public:
     * lead to unpredictable results, most likey raising an access violation
     * signal or exception.
     */
-   double operator ()( int x, int y, int channel = 0 ) const
+   double operator ()( int x, int y, int channel = 0 ) const noexcept
    {
       double result = 0;
       if ( *this )
@@ -7125,7 +7125,7 @@ public:
 
 #ifdef __PCL_BUILDING_PIXINSIGHT_APPLICATION
 
-   bool IsShared() const
+   bool IsShared() const noexcept
    {
       return m_shared != nullptr;
    }
@@ -7154,7 +7154,7 @@ private:
       }
 
       template <class P>
-      void Update( GenericImage<P>* a_image )
+      void Update( GenericImage<P>* a_image ) noexcept
       {
          image = a_image;
          isFloatSample = P::IsFloatSample();
@@ -7253,4 +7253,4 @@ GenericImage<P>& GenericImage<P>::SetLightness( const ImageVariant& L, const Poi
 #endif   // __PCL_ImageVariant_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/ImageVariant.h - Released 2020-11-20T19:46:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInstance.cpp - Released 2020-10-12T19:25:16Z
+// UnsharpMaskInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -56,7 +56,7 @@
 #include <pcl/AutoPointer.h>
 #include <pcl/AutoViewLock.h>
 #include <pcl/View.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Console.h>
 #include <pcl/SeparableConvolution.h>
 #include <pcl/FFTConvolution.h>
@@ -219,15 +219,9 @@ private:
    template <class P>
    void Apply( GenericImage<P>& image )
    {
-      /*
-       * For USM filters of size <= 49px, we use separable convolutions in the
-       * spatial domain. For larger filters, FFT convolutions are faster. This
-       * limit has been determined empirically.
-       */
-
       GaussianFilter G( instance.sigma, 0.05F );
       AutoPointer<ImageTransformation> T;
-      if ( G.Size() < PCL_FFT_CONVOLUTION_IS_FASTER_THAN_SEPARABLE_FILTER_SIZE )
+      if ( G.Size() < FFTConvolution::FasterThanSeparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) )
          T = new SeparableConvolution( G.AsSeparableFilter() );
       else
          T = new FFTConvolution( G );
@@ -517,4 +511,4 @@ void* UnsharpMaskInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF UnsharpMaskInstance.cpp - Released 2020-11-20T19:49:00Z

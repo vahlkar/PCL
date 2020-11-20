@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertInstance.cpp - Released 2020-10-12T19:25:16Z
+// InvertInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -53,7 +53,7 @@
 #include "InvertInstance.h"
 
 #include <pcl/AutoViewLock.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
 namespace pcl
@@ -129,4 +129,4 @@ bool InvertInstance::ExecuteOn( View& view )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InvertInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF InvertInstance.cpp - Released 2020-11-20T19:49:00Z

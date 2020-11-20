@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2020-10-12T19:24:41Z
+// pcl/APIDefs.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -827,6 +827,7 @@ typedef api_bool              (api_func* format_set_icc_profile_routine)        
 typedef api_bool              (api_func* format_set_thumbnail_routine)                ( file_format_handle, const_image_handle );
 typedef api_bool              (api_func* format_write_image_routine)                  ( file_format_handle, const_image_handle );
 typedef api_bool              (api_func* format_write_pixels_routine)                 ( file_format_handle, const void*, uint32, uint32, uint32, uint32, api_bool, api_bool );
+typedef api_bool              (api_func* format_allow_incremental_op_routine)         ( const_file_format_handle );
 typedef api_bool              (api_func* format_query_inexact_read_routine)           ( const_file_format_handle );
 typedef api_bool              (api_func* format_query_lossy_write_routine)            ( const_file_format_handle );
 
@@ -947,4 +948,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/APIDefs.h - Released 2020-11-20T19:46:29Z

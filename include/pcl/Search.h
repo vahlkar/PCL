@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Search.h - Released 2020-10-12T19:24:41Z
+// pcl/Search.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -88,7 +88,7 @@ namespace pcl
  * \ingroup search_algorithms
  */
 template <class FI, class T> inline
-FI LinearSearch( FI i, FI j, const T& v )
+FI LinearSearch( FI i, FI j, const T& v ) noexcept
 {
    for( ; i != j; ++i )
       if ( *i == v )
@@ -107,7 +107,7 @@ FI LinearSearch( FI i, FI j, const T& v )
  * \ingroup search_algorithms
  */
 template <class FI, class T, class BP> inline
-FI LinearSearch( FI i, FI j, const T& v, BP p )
+FI LinearSearch( FI i, FI j, const T& v, BP p ) noexcept( noexcept( p ) )
 {
    for( ; i != j; ++i )
       if ( p( *i, v ) )
@@ -126,7 +126,7 @@ FI LinearSearch( FI i, FI j, const T& v, BP p )
  * \ingroup search_algorithms
  */
 template <class BI, class T> inline
-BI LinearSearchLast( BI i, BI j, const T& v )
+BI LinearSearchLast( BI i, BI j, const T& v ) noexcept
 {
    for( BI k = j; i != k; )
       if ( *--k == v )
@@ -145,7 +145,7 @@ BI LinearSearchLast( BI i, BI j, const T& v )
  * \ingroup search_algorithms
  */
 template <class BI, class T, class BP> inline
-BI LinearSearchLast( BI i, BI j, const T& v, BP p )
+BI LinearSearchLast( BI i, BI j, const T& v, BP p ) noexcept( noexcept( p ) )
 {
    for( BI k = j; i != k; )
       if ( p( *--k, v ) )
@@ -167,7 +167,7 @@ BI LinearSearchLast( BI i, BI j, const T& v, BP p )
  * \ingroup search_algorithms
  */
 template <class FI, class T> inline
-FI BinarySearch( FI i, FI j, const T& v )
+FI BinarySearch( FI i, FI j, const T& v ) noexcept
 {
    for ( distance_type n = Distance( i, j ); n > 0; )
    {
@@ -201,7 +201,7 @@ FI BinarySearch( FI i, FI j, const T& v )
  * \ingroup search_algorithms
  */
 template <class FI, class T, class BP> inline
-FI BinarySearch( FI i, FI j, const T& v, BP p )
+FI BinarySearch( FI i, FI j, const T& v, BP p ) noexcept( noexcept( p ) )
 {
    for ( distance_type n = Distance( i, j ); n > 0; )
    {
@@ -235,7 +235,7 @@ FI BinarySearch( FI i, FI j, const T& v, BP p )
  * \ingroup search_algorithms
  */
 template <class FI, class T> inline
-FI BinarySearchLast( FI i, FI j, const T& v )
+FI BinarySearchLast( FI i, FI j, const T& v ) noexcept
 {
    FI k = BinarySearch( i, j, v );
    if ( k != j )
@@ -258,7 +258,7 @@ FI BinarySearchLast( FI i, FI j, const T& v )
  * \ingroup search_algorithms
  */
 template <class FI, class T, class BP> inline
-FI BinarySearchLast( FI i, FI j, const T& v, BP p )
+FI BinarySearchLast( FI i, FI j, const T& v, BP p ) noexcept( noexcept( p ) )
 {
    FI k = BinarySearch( i, j, v, p );
    if ( k != j )
@@ -282,7 +282,7 @@ FI BinarySearchLast( FI i, FI j, const T& v, BP p )
  * \ingroup search_algorithms
  */
 template <class FI, class T, class BP1, class BP2> inline
-FI BinarySearch( FI i, FI j, const T& v, BP1 p1, BP2 p2 )
+FI BinarySearch( FI i, FI j, const T& v, BP1 p1, BP2 p2 ) noexcept( noexcept( p1 ) && noexcept( p2 ) )
 {
    for ( distance_type n = Distance( i, j ); n > 0; )
    {
@@ -323,7 +323,7 @@ FI BinarySearch( FI i, FI j, const T& v, BP1 p1, BP2 p2 )
  * \ingroup search_algorithms
  */
 template <class FI, class T> inline
-FI InsertionPoint( FI i, FI j, const T& v )
+FI InsertionPoint( FI i, FI j, const T& v ) noexcept
 {
    for ( distance_type n = Distance( i, j ); n > 0; )
    {
@@ -364,7 +364,7 @@ FI InsertionPoint( FI i, FI j, const T& v )
  * \ingroup search_algorithms
  */
 template <class FI, class T, class BP> inline
-FI InsertionPoint( FI i, FI j, const T& v, BP p )
+FI InsertionPoint( FI i, FI j, const T& v, BP p ) noexcept( noexcept( p ) )
 {
    for ( distance_type n = Distance( i, j ); n > 0; )
    {
@@ -394,7 +394,7 @@ FI InsertionPoint( FI i, FI j, const T& v, BP p )
  * \ingroup search_algorithms
  */
 template <class FI1, class FI2> inline
-FI1 Search( FI1 i1, FI1 j1, FI2 i2, FI2 j2 )
+FI1 Search( FI1 i1, FI1 j1, FI2 i2, FI2 j2 ) noexcept
 {
    distance_type n1 = Distance( i1, j1 );
    distance_type n2 = Distance( i2, j2 );
@@ -420,7 +420,7 @@ FI1 Search( FI1 i1, FI1 j1, FI2 i2, FI2 j2 )
  * \ingroup search_algorithms
  */
 template <class FI1, class FI2, class BP> inline
-FI1 Search( FI1 i1, FI1 j1, FI2 i2, FI2 j2, BP p )
+FI1 Search( FI1 i1, FI1 j1, FI2 i2, FI2 j2, BP p ) noexcept( noexcept( p ) )
 {
    distance_type n1 = Distance( i1, j1 );
    distance_type n2 = Distance( i2, j2 );
@@ -446,7 +446,7 @@ FI1 Search( FI1 i1, FI1 j1, FI2 i2, FI2 j2, BP p )
  * \ingroup search_algorithms
  */
 template <class BI1, class FI2> inline
-BI1 SearchLast( BI1 i1, BI1 j1, FI2 i2, FI2 j2 )
+BI1 SearchLast( BI1 i1, BI1 j1, FI2 i2, FI2 j2 ) noexcept
 {
    distance_type n1 = Distance( i1, j1 );
    distance_type n2 = Distance( i2, j2 );
@@ -478,7 +478,7 @@ BI1 SearchLast( BI1 i1, BI1 j1, FI2 i2, FI2 j2 )
  * \ingroup search_algorithms
  */
 template <class BI1, class FI2, class BP> inline
-BI1 SearchLast( BI1 i1, BI1 j1, FI2 i2, FI2 j2, BP p )
+BI1 SearchLast( BI1 i1, BI1 j1, FI2 i2, FI2 j2, BP p ) noexcept( noexcept( p ) )
 {
    distance_type n1 = Distance( i1, j1 );
    distance_type n2 = Distance( i2, j2 );
@@ -507,4 +507,4 @@ BI1 SearchLast( BI1 i1, BI1 j1, FI2 i2, FI2 j2, BP p )
 #endif  // __PCL_Search_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Search.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Search.h - Released 2020-11-20T19:46:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetInstance.cpp - Released 2020-10-12T19:25:16Z
+// StarNetInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -34,7 +34,7 @@
 
 #include <pcl/AutoViewLock.h>
 #include <pcl/Console.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
 #include <tensorflow/c/c_api.h>
@@ -625,4 +625,4 @@ size_type StarNetInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF StarNetInstance.cpp - Released 2020-11-20T19:49:00Z

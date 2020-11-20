@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Matrix.h - Released 2020-10-12T19:24:41Z
+// pcl/Matrix.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -202,9 +202,12 @@ public:
       m_data = new Data( rows, cols );
       if ( a != nullptr )
       {
-         block_iterator c = m_data->Begin();
-         for ( const T1* b = a + NumberOfElements(); a < b; ++a, ++c )
-            *c = element( *a );
+               block_iterator __restrict__ i = m_data->Begin();
+         const_block_iterator __restrict__ j = m_data->End();
+         const T1*            __restrict__ k = a;
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *i = element( *k );
       }
    }
 
@@ -225,7 +228,7 @@ public:
                   const T1& a20, const T1& a21, const T1& a22 )
    {
       m_data = new Data( 3, 3 );
-      block_iterator v = m_data->Begin();
+      block_iterator __restrict__ v = m_data->Begin();
       v[0] = element( a00 ); v[1] = element( a01 ); v[2] = element( a02 );
       v[3] = element( a10 ); v[4] = element( a11 ); v[5] = element( a12 );
       v[6] = element( a20 ); v[7] = element( a21 ); v[8] = element( a22 );
@@ -471,7 +474,7 @@ public:
     * This function is efficient because it simply swaps the internal matrix
     * data pointers owned by the objects.
     */
-   friend void Swap( GenericMatrix& x1, GenericMatrix& x2 )
+   friend void Swap( GenericMatrix& x1, GenericMatrix& x2 ) noexcept
    {
       pcl::Swap( x1.m_data, x2.m_data );
    }
@@ -499,19 +502,21 @@ public:
 #define IMPLEMENT_SCALAR_ASSIGN_OP( op )                                      \
       if ( IsUnique() )                                                       \
       {                                                                       \
-               block_iterator a = m_data->Begin();                            \
-         const_block_iterator b = m_data->End();                              \
-         for ( ; a < b; ++a )                                                 \
-            *a op##= x;                                                       \
+               block_iterator __restrict__ i = m_data->Begin();               \
+         const_block_iterator __restrict__ j = m_data->End();                 \
+         PCL_IVDEP                                                            \
+         for ( ; i < j; ++i )                                                 \
+            *i op##= x;                                                       \
       }                                                                       \
       else                                                                    \
       {                                                                       \
          Data* newData = new Data( m_data->Rows(), m_data->Cols() );          \
-               block_iterator a = newData->Begin();                           \
-         const_block_iterator b = newData->End();                             \
-         const_block_iterator c = m_data->Begin();                            \
-         for ( ; a < b; ++a, ++c )                                            \
-            *a = *c op x;                                                     \
+               block_iterator __restrict__ i = newData->Begin();              \
+         const_block_iterator __restrict__ j = newData->End();                \
+         const_block_iterator __restrict__ k = m_data->Begin();               \
+         PCL_IVDEP                                                            \
+         for ( ; i < j; ++i, ++k )                                            \
+            *i = *k op x;                                                     \
          DetachFromData();                                                    \
          m_data = newData;                                                    \
       }                                                                       \
@@ -581,19 +586,21 @@ public:
    {
       if ( IsUnique() )
       {
-               block_iterator a = m_data->Begin();
-         const_block_iterator b = m_data->End();
-         for ( ; a < b; ++a )
-            *a = pcl::Pow( *a, x );
+               block_iterator __restrict__ i = m_data->Begin();
+         const_block_iterator __restrict__ j = m_data->End();
+         PCL_IVDEP
+         for ( ; i < j; ++i )
+            *i = pcl::Pow( *i, x );
       }
       else
       {
          Data* newData = new Data( m_data->Rows(), m_data->Cols() );
-               block_iterator a = newData->Begin();
-         const_block_iterator b = newData->End();
-         const_block_iterator c = m_data->Begin();
-         for ( ; a < b; ++a, ++c )
-            *a = pcl::Pow( *c, x );
+               block_iterator __restrict__ i = newData->Begin();
+         const_block_iterator __restrict__ j = newData->End();
+         const_block_iterator __restrict__ k = m_data->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *i = pcl::Pow( *k, x );
          DetachFromData();
          m_data = newData;
       }
@@ -604,27 +611,31 @@ public:
 
 #ifndef __PCL_NO_MATRIX_ELEMENT_WISE_ARITHMETIC_OPERATIONS
 
-#define IMPLEMENT_ELEMENT_WISE_ASSIGN_OP( op )                                            \
-      if ( IsUnique() )                                                                   \
-      {                                                                                   \
-               block_iterator a = m_data->Begin();                                        \
-         const_block_iterator b = pcl::Min( m_data->End(), a + x.NumberOfElements() );    \
-         const_block_iterator c = x.m_data->Begin();                                      \
-         for ( ; a < b; ++a, ++c )                                                        \
-            *a op##= *c;                                                                  \
-      }                                                                                   \
-      else                                                                                \
-      {                                                                                   \
-         Data* newData = new Data( m_data->Rows(), m_data->Cols() );                      \
-               block_iterator a = newData->Begin();                                       \
-         const_block_iterator b = pcl::Min( newData->End(), a + x.NumberOfElements() );   \
-         const_block_iterator c = m_data->Begin();                                        \
-         const_block_iterator d = x.m_data->Begin();                                      \
-         for ( ; a < b; ++a, ++c, ++d )                                                   \
-            *a = *c op *d;                                                                \
-         DetachFromData();                                                                \
-         m_data = newData;                                                                \
-      }                                                                                   \
+#define IMPLEMENT_ELEMENT_WISE_ASSIGN_OP( op )                                                        \
+      if ( IsUnique() )                                                                               \
+      {                                                                                               \
+               block_iterator __restrict__ i = m_data->Begin();                                       \
+         const_block_iterator __restrict__ j = pcl::Min( m_data->End(),                               \
+                                                         m_data->Begin() + x.NumberOfElements() );    \
+         const_block_iterator __restrict__ k = x.m_data->Begin();                                     \
+         PCL_IVDEP                                                                                    \
+         for ( ; i < j; ++i, ++k )                                                                    \
+            *i op##= *k;                                                                              \
+      }                                                                                               \
+      else                                                                                            \
+      {                                                                                               \
+         Data* newData = new Data( m_data->Rows(), m_data->Cols() );                                  \
+               block_iterator __restrict__ i = newData->Begin();                                      \
+         const_block_iterator __restrict__ j = pcl::Min( newData->End(),                              \
+                                                         newData->Begin() + x.NumberOfElements() );   \
+         const_block_iterator __restrict__ k = x.m_data->Begin();                                     \
+         const_block_iterator __restrict__ t = m_data->Begin();                                       \
+         PCL_IVDEP                                                                                    \
+         for ( ; i < j; ++i, ++k, ++t )                                                               \
+            *i = *t op *k;                                                                            \
+         DetachFromData();                                                                            \
+         m_data = newData;                                                                            \
+      }                                                                                               \
       return *this;
 
    /*!
@@ -710,21 +721,25 @@ public:
    {
       if ( IsUnique() )
       {
-               block_iterator a = m_data->Begin();
-         const_block_iterator b = pcl::Min( m_data->End(), a + x.NumberOfElements() );
-         const_block_iterator c = x.m_data->Begin();
-         for ( ; a < b; ++a, ++c )
-            *a = pcl::Pow( *a, *c );
+               block_iterator __restrict__ i = m_data->Begin();
+         const_block_iterator __restrict__ j = pcl::Min( m_data->End(),
+                                                         m_data->Begin() + x.NumberOfElements() );
+         const_block_iterator __restrict__ k = x.m_data->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *i = pcl::Pow( *i, *k );
       }
       else
       {
          Data* newData = new Data( m_data->Rows(), m_data->Cols() );
-               block_iterator a = newData->Begin();
-         const_block_iterator b = pcl::Min( newData->End(), a + x.NumberOfElements() );
-         const_block_iterator c = m_data->Begin();
-         const_block_iterator d = x.m_data->Begin();
-         for ( ; a < b; ++a, ++c, ++d )
-            *a = pcl::Pow( *c, *d );
+               block_iterator __restrict__ i = newData->Begin();
+         const_block_iterator __restrict__ j = pcl::Min( newData->End(),
+                                                         newData->Begin() + x.NumberOfElements() );
+         const_block_iterator __restrict__ k = x.m_data->Begin();
+         const_block_iterator __restrict__ t = m_data->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k, ++t )
+            *i = pcl::Pow( *t, *k );
          DetachFromData();
          m_data = newData;
       }
@@ -743,11 +758,12 @@ public:
    GenericMatrix Sqr() const
    {
       GenericMatrix R( m_data->Rows(), m_data->Cols() );
-            block_iterator r = R.m_data->Begin();
-      const_block_iterator s = R.m_data->End();
-      const_block_iterator a = m_data->Begin();
-      for ( ; r < s; ++r, ++a )
-         *r = *a * *a;
+            block_iterator __restrict__ i = R.m_data->Begin();
+      const_block_iterator __restrict__ j = R.m_data->End();
+      const_block_iterator __restrict__ k = m_data->Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *i = *k * *k;
       return R;
    }
 
@@ -761,19 +777,21 @@ public:
    {
       if ( IsUnique() )
       {
-               block_iterator a = m_data->Begin();
-         const_block_iterator b = m_data->End();
-         for ( ; a < b; ++a )
-            *a *= *a;
+               block_iterator __restrict__ i = m_data->Begin();
+         const_block_iterator __restrict__ j = m_data->End();
+         PCL_IVDEP
+         for ( ; i < j; ++i )
+            *i *= *i;
       }
       else
       {
          Data* newData = new Data( m_data->Rows(), m_data->Cols() );
-               block_iterator a = newData->Begin();
-         const_block_iterator b = newData->End();
-         const_block_iterator c = m_data->Begin();
-         for ( ; a < b; ++a, ++c )
-            *a = *c * *c;
+               block_iterator __restrict__ i = newData->Begin();
+         const_block_iterator __restrict__ j = newData->End();
+         const_block_iterator __restrict__ k = m_data->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *i = *k * *k;
          DetachFromData();
          m_data = newData;
       }
@@ -787,11 +805,12 @@ public:
    GenericMatrix Sqrt() const
    {
       GenericMatrix R( m_data->Rows(), m_data->Cols() );
-            block_iterator r = R.m_data->Begin();
-      const_block_iterator s = R.m_data->End();
-      const_block_iterator a = m_data->Begin();
-      for ( ; r < s; ++r, ++a )
-         *r = pcl::Sqrt( *a );
+            block_iterator __restrict__ i = R.m_data->Begin();
+      const_block_iterator __restrict__ j = R.m_data->End();
+      const_block_iterator __restrict__ k = m_data->Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *i = pcl::Sqrt( *k );
       return R;
    }
 
@@ -805,19 +824,21 @@ public:
    {
       if ( IsUnique() )
       {
-               block_iterator a = m_data->Begin();
-         const_block_iterator b = m_data->End();
-         for ( ; a < b; ++a )
-            *a = pcl::Sqrt( *a );
+               block_iterator __restrict__ i = m_data->Begin();
+         const_block_iterator __restrict__ j = m_data->End();
+         PCL_IVDEP
+         for ( ; i < j; ++i )
+            *i = pcl::Sqrt( *i );
       }
       else
       {
          Data* newData = new Data( m_data->Rows(), m_data->Cols() );
-               block_iterator a = newData->Begin();
-         const_block_iterator b = newData->End();
-         const_block_iterator c = m_data->Begin();
-         for ( ; a < b; ++a, ++c )
-            *a = pcl::Sqrt( *c );
+               block_iterator __restrict__ i = newData->Begin();
+         const_block_iterator __restrict__ j = newData->End();
+         const_block_iterator __restrict__ k = m_data->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *i = pcl::Sqrt( *k );
          DetachFromData();
          m_data = newData;
       }
@@ -831,11 +852,12 @@ public:
    GenericMatrix Abs() const
    {
       GenericMatrix R( m_data->Rows(), m_data->Cols() );
-            block_iterator r = R.m_data->Begin();
-      const_block_iterator s = R.m_data->End();
-      const_block_iterator a = m_data->Begin();
-      for ( ; r < s; ++r, ++a )
-         *r = pcl::Abs( *a );
+            block_iterator __restrict__ i = R.m_data->Begin();
+      const_block_iterator __restrict__ j = R.m_data->End();
+      const_block_iterator __restrict__ k = m_data->Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *i = pcl::Abs( *k );
       return R;
    }
 
@@ -849,19 +871,21 @@ public:
    {
       if ( IsUnique() )
       {
-               block_iterator a = m_data->Begin();
-         const_block_iterator b = m_data->End();
-         for ( ; a < b; ++a )
-            *a = pcl::Abs( *a );
+               block_iterator __restrict__ i = m_data->Begin();
+         const_block_iterator __restrict__ j = m_data->End();
+         PCL_IVDEP
+         for ( ; i < j; ++i )
+            *i = pcl::Abs( *i );
       }
       else
       {
          Data* newData = new Data( m_data->Rows(), m_data->Cols() );
-               block_iterator a = newData->Begin();
-         const_block_iterator b = newData->End();
-         const_block_iterator c = m_data->Begin();
-         for ( ; a < b; ++a, ++c )
-            *a = pcl::Abs( *c );
+               block_iterator __restrict__ i = newData->Begin();
+         const_block_iterator __restrict__ j = newData->End();
+         const_block_iterator __restrict__ k = m_data->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *i = pcl::Abs( *k );
          DetachFromData();
          m_data = newData;
       }
@@ -870,7 +894,7 @@ public:
    /*!
     * Returns true iff this instance uniquely references its matrix data.
     */
-   bool IsUnique() const
+   bool IsUnique() const noexcept
    {
       return m_data->IsUnique();
    }
@@ -879,7 +903,7 @@ public:
     * Returns true iff this instance references (shares) the same matrix data as
     * another instance \a x.
     */
-   bool IsAliasOf( const GenericMatrix& x ) const
+   bool IsAliasOf( const GenericMatrix& x ) const noexcept
    {
       return m_data == x.m_data;
    }
@@ -896,7 +920,12 @@ public:
       if ( !IsUnique() )
       {
          Data* newData = new Data( m_data->Rows(), m_data->Cols() );
-         pcl::Copy( newData->Begin(), m_data->Begin(), m_data->End() );
+         const_block_iterator __restrict__ i = m_data->Begin();
+         const_block_iterator __restrict__ j = m_data->End();
+               block_iterator __restrict__ k = newData->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *k = *i;
          DetachFromData();
          m_data = newData;
       }
@@ -906,7 +935,7 @@ public:
     * Returns the number of rows in this matrix. If this object is an empty
     * matrix, this member function returns zero.
     */
-   int Rows() const
+   int Rows() const noexcept
    {
       return m_data->Rows();
    }
@@ -915,7 +944,7 @@ public:
     * Returns the number of columns in this matrix. If this object is an empty
     * matrix, this member function returns zero.
     */
-   int Cols() const
+   int Cols() const noexcept
    {
       return m_data->Cols();
    }
@@ -926,7 +955,7 @@ public:
     *
     * This function is a synonym for Cols().
     */
-   int Columns() const
+   int Columns() const noexcept
    {
       return Cols();
    }
@@ -946,7 +975,7 @@ public:
     * immediately. Invalid matrices are always destroyed automatically during
     * move construction and move assignment operations.
     */
-   bool IsValid() const
+   bool IsValid() const noexcept
    {
       return m_data != nullptr;
    }
@@ -955,7 +984,7 @@ public:
     * Returns true iff this is an empty matrix. An empty matrix has no elements,
     * and hence its dimensions are zero.
     */
-   bool IsEmpty() const
+   bool IsEmpty() const noexcept
    {
       return Rows() == 0 || Cols() == 0;
    }
@@ -965,7 +994,7 @@ public:
     *
     * \code !IsEmpty(); \endcode
     */
-   operator bool() const
+   operator bool() const noexcept
    {
       return !IsEmpty();
    }
@@ -974,7 +1003,7 @@ public:
     * Returns the total number of matrix elements in this object, or
     * Rows()*Cols().
     */
-   size_type NumberOfElements() const
+   size_type NumberOfElements() const noexcept
    {
       return m_data->NumberOfElements();
    }
@@ -983,7 +1012,7 @@ public:
     * Returns the total number of bytes required to store the data contained in
     * this matrix.
     */
-   size_type Size() const
+   size_type Size() const noexcept
    {
       return m_data->Size();
    }
@@ -995,7 +1024,7 @@ public:
     * %Matrix comparisons are performed element-wise. Two matrices are equal if
     * both have the same dimensions and identical element values.
     */
-   bool operator ==( const GenericMatrix& x ) const
+   bool operator ==( const GenericMatrix& x ) const noexcept
    {
       return IsAliasOf( x ) || SameDimensions( x ) && pcl::Equal( Begin(), x.Begin(), x.End() );
    }
@@ -1009,7 +1038,7 @@ public:
     * differ, or until the end of one of the matrices is reached. In the latter
     * case the shortest matrix is the lesser one.
     */
-   bool operator <( const GenericMatrix& x ) const
+   bool operator <( const GenericMatrix& x ) const noexcept
    {
       return !IsAliasOf( x ) && pcl::Compare( Begin(), End(), x.Begin(), x.End() ) < 0;
    }
@@ -1018,7 +1047,7 @@ public:
     * Returns true iff this matrix has the same dimensions, i.e. the same number
     * of rows and columns, as another matrix \a x.
     */
-   bool SameDimensions( const GenericMatrix& x ) const
+   bool SameDimensions( const GenericMatrix& x ) const noexcept
    {
       return Rows() == x.Rows() && Cols() == x.Cols();
    }
@@ -1032,17 +1061,18 @@ public:
     * rows and columns, are different. Only the number and order of elements
     * are relevant for this comparison.
     */
-   bool SameElements( const GenericMatrix& x ) const
+   bool SameElements( const GenericMatrix& x ) const noexcept
    {
-      if ( IsAliasOf( x ) )
+      if ( unlikely( IsAliasOf( x ) ) )
          return true;
-      if ( NumberOfElements() != x.NumberOfElements() )
+      if ( unlikely( NumberOfElements() != x.NumberOfElements() ) )
          return false;
-      const_block_iterator a = Begin();
-      const_block_iterator b = End();
-      const_block_iterator c = x.Begin();
-      for ( ; a < b; ++a, ++c )
-         if ( *a != *c )
+      const_block_iterator __restrict__ i = Begin();
+      const_block_iterator __restrict__ j = End();
+      const_block_iterator __restrict__ k = x.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         if ( *i != *k )
             return false;
       return true;
    }
@@ -1063,7 +1093,7 @@ public:
     * Returns a reference to the immutable matrix element at row \a i and
     * column \a j.
     */
-   const element& Element( int i, int j ) const
+   const element& Element( int i, int j ) const noexcept
    {
       return m_data->Element( i, j );
    }
@@ -1089,7 +1119,7 @@ public:
     * All elements in row \a i are guaranteed to be stored at consecutive
     * locations addressable from the pointer returned by this function.
     */
-   const_block_iterator operator []( int i ) const
+   const_block_iterator operator []( int i ) const noexcept
    {
       return m_data->v[i];
    }
@@ -1121,7 +1151,7 @@ public:
     * are stored in row order: all elements of row 0 followed by all elements
     * of row 1, and so on.
     */
-   const_block_iterator Begin() const
+   const_block_iterator Begin() const noexcept
    {
       return m_data->Begin();
    }
@@ -1129,7 +1159,7 @@ public:
    /*!
     * A synonym for Begin() const.
     */
-   const_block_iterator ConstBegin() const
+   const_block_iterator ConstBegin() const noexcept
    {
       return Begin();
    }
@@ -1151,7 +1181,7 @@ public:
     *
     * This member function is a convenience alias to Begin() const.
     */
-   const_block_iterator operator *() const
+   const_block_iterator operator *() const noexcept
    {
       return Begin();
    }
@@ -1184,7 +1214,7 @@ public:
     * function. Matrix elements are stored in row order (all elements of row n
     * followed by all elements of row n-1, and so on).
     */
-   const_block_iterator End() const
+   const_block_iterator End() const noexcept
    {
       return m_data->End();
    }
@@ -1192,7 +1222,7 @@ public:
    /*!
     * A synonym for End() const.
     */
-   const_block_iterator ConstEnd() const
+   const_block_iterator ConstEnd() const noexcept
    {
       return End();
    }
@@ -1215,7 +1245,7 @@ public:
     * copies are not necessary. Typically this happens when two or more threads
     * work simultaneously on non-overlapping regions of the same matrix.
     */
-   block_iterator* DataPtr()
+   block_iterator* DataPtr() noexcept
    {
       return m_data->v;
    }
@@ -1230,7 +1260,7 @@ public:
     * matrix is unique. See DataPtr() for more information on how to use this
     * member function.
     */
-   block_iterator RowPtr( int i )
+   block_iterator RowPtr( int i ) noexcept
    {
       return m_data->v[i];
    }
@@ -1247,7 +1277,7 @@ public:
    /*!
     * STL-compatible iteration. Equivalent to Begin() const.
     */
-   const_block_iterator begin() const
+   const_block_iterator begin() const noexcept
    {
       return Begin();
    }
@@ -1263,7 +1293,7 @@ public:
    /*!
     * STL-compatible iteration. Equivalent to End() const.
     */
-   const_block_iterator end() const
+   const_block_iterator end() const noexcept
    {
       return End();
    }
@@ -1474,8 +1504,9 @@ public:
    void RotateX( double sphi, double cphi )
    {
       PCL_PRECONDITION( Rows() == 3 && Cols() == 3 )
-      block_iterator A1 = m_data->v[1];
-      block_iterator A2 = m_data->v[2];
+      EnsureUnique();
+      block_iterator __restrict__ A1 = m_data->v[1];
+      block_iterator __restrict__ A2 = m_data->v[2];
       double a10 =  cphi*A1[0] + sphi*A2[0];
       double a11 =  cphi*A1[1] + sphi*A2[1];
       double a12 =  cphi*A1[2] + sphi*A2[2];
@@ -1554,8 +1585,9 @@ public:
    void RotateY( double sphi, double cphi )
    {
       PCL_PRECONDITION( Rows() == 3 && Cols() == 3 )
-      block_iterator A0 = m_data->v[0];
-      block_iterator A2 = m_data->v[2];
+      EnsureUnique();
+      block_iterator __restrict__ A0 = m_data->v[0];
+      block_iterator __restrict__ A2 = m_data->v[2];
       double a00 = cphi*A0[0] - sphi*A2[0];
       double a01 = cphi*A0[1] - sphi*A2[1];
       double a02 = cphi*A0[2] - sphi*A2[2];
@@ -1634,8 +1666,9 @@ public:
    void RotateZ( double sphi, double cphi )
    {
       PCL_PRECONDITION( Rows() == 3 && Cols() == 3 )
-      block_iterator A0 = m_data->v[0];
-      block_iterator A1 = m_data->v[1];
+      EnsureUnique();
+      block_iterator __restrict__ A0 = m_data->v[0];
+      block_iterator __restrict__ A1 = m_data->v[1];
       double a00 =  cphi*A0[0] + sphi*A1[0];
       double a01 =  cphi*A0[1] + sphi*A1[1];
       double a02 =  cphi*A0[2] + sphi*A1[2];
@@ -1703,13 +1736,14 @@ public:
    void Truncate( const element& f0 = element( 0 ), const element& f1 = element( 1 ) )
    {
       EnsureUnique();
-      block_iterator a = m_data->Begin();
-      block_iterator b = m_data->End();
-      for ( ; a < b; ++a )
-         if ( *a < f0 )
-            *a = f0;
-         else if ( *a > f1 )
-            *a = f1;
+      block_iterator __restrict__ i = m_data->Begin();
+      block_iterator __restrict__ j = m_data->End();
+      PCL_IVDEP
+      for ( ; i < j; ++i )
+         if ( *i < f0 )
+            *i = f0;
+         else if ( *i > f1 )
+            *i = f1;
    }
 
    /*!
@@ -1748,15 +1782,21 @@ public:
          {
             if ( f0 != f1 )
             {
-               block_iterator a = m_data->Begin();
-               block_iterator b = m_data->End();
+               block_iterator __restrict__ i = m_data->Begin();
+               block_iterator __restrict__ j = m_data->End();
                double d = (double( f1 ) - double( f0 ))/(double( v1 ) - double( v0 ));
                if ( f0 == element( 0 ) )
-                  for ( ; a < b; ++a )
-                     *a = element( d*(*a - v0) );
+               {
+                  PCL_IVDEP
+                  for ( ; i < j; ++i )
+                     *i = element( d*(*i - v0) );
+               }
                else
-                  for ( ; a < b; ++a )
-                     *a = element( d*(*a - v0) + f0 );
+               {
+                  PCL_IVDEP
+                  for ( ; i < j; ++i )
+                     *i = element( d*(*i - v0) + f0 );
+               }
             }
             else
                pcl::Fill( m_data->Begin(), m_data->End(), f0 );
@@ -1841,38 +1881,39 @@ public:
 
    /*!
     * Returns a pointer to the first immutable matrix element with the
-    * specified value \a x, or zero if this matrix does not contain such value.
+    * specified value \a x, or nullptr if this matrix does not contain such
+    * value.
     */
-   const_block_iterator Find( const element& x ) const
+   const_block_iterator Find( const element& x ) const noexcept
    {
       const_block_iterator p = pcl::LinearSearch( m_data->Begin(), m_data->End(), x );
-      return (p != m_data->End()) ? p : 0;
+      return (p != m_data->End()) ? p : nullptr;
    }
 
    /*!
     * Returns a pointer to the first immutable matrix element with the
-    * specified value \a x, or zero if this matrix does not contain such value.
-    * This function is an alias to Find().
+    * specified value \a x, or nullptr if this matrix does not contain such
+    * value. This function is an alias to Find().
     */
-   const_block_iterator FindFirst( const element& x ) const
+   const_block_iterator FindFirst( const element& x ) const noexcept
    {
       return Find( x );
    }
 
    /*!
-    * Returns a pointer to the last immutable matrix element with the
-    * specified value \a x, or zero if this matrix does not contain such value.
+    * Returns a pointer to the last immutable matrix element with the specified
+    * value \a x, or nullptr if this matrix does not contain such value.
     */
-   const_block_iterator FindLast( const element& x ) const
+   const_block_iterator FindLast( const element& x ) const noexcept
    {
       const_block_iterator p = pcl::LinearSearchLast( m_data->Begin(), m_data->End(), x );
-      return (p != m_data->End()) ? p : -1;
+      return (p != m_data->End()) ? p : nullptr;
    }
 
    /*!
     * Returns true iff this matrix contains the specified value \a x.
     */
-   bool Contains( const element& x ) const
+   bool Contains( const element& x ) const noexcept
    {
       return pcl::LinearSearch( m_data->Begin(), m_data->End(), x ) != m_data->End();
    }
@@ -1883,7 +1924,7 @@ public:
     * Returns the value of the minimum element in this matrix.
     * For empty matrices, this function returns zero.
     */
-   element MinElement() const
+   element MinElement() const noexcept
    {
       if ( !IsEmpty() )
          return *MinItem( m_data->Begin(), m_data->End() );
@@ -1896,7 +1937,7 @@ public:
     * For empty matrices, this function returns zero and assigns zero to the
     * point coordinates.
     */
-   element MinElement( Point& p ) const
+   element MinElement( Point& p ) const noexcept
    {
       if ( !IsEmpty() )
       {
@@ -1914,7 +1955,7 @@ public:
     * Returns the value of the maximum element in this matrix.
     * For empty matrices, this function returns zero.
     */
-   element MaxElement() const
+   element MaxElement() const noexcept
    {
       if ( !IsEmpty() )
          return *MaxItem( m_data->Begin(), m_data->End() );
@@ -1927,7 +1968,7 @@ public:
     * For empty matrices, this function returns zero and assigns zero to the
     * point coordinates.
     */
-   element MaxElement( Point& p ) const
+   element MaxElement( Point& p ) const noexcept
    {
       if ( !IsEmpty() )
       {
@@ -1946,7 +1987,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double Sum() const
+   double Sum() const noexcept
    {
       return pcl::Sum( m_data->Begin(), m_data->End() );
    }
@@ -1957,7 +1998,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double StableSum() const
+   double StableSum() const noexcept
    {
       return pcl::StableSum( m_data->Begin(), m_data->End() );
    }
@@ -1967,7 +2008,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double Modulus() const
+   double Modulus() const noexcept
    {
       return pcl::Modulus( m_data->Begin(), m_data->End() );
    }
@@ -1978,7 +2019,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double StableModulus() const
+   double StableModulus() const noexcept
    {
       return pcl::StableModulus( m_data->Begin(), m_data->End() );
    }
@@ -1988,7 +2029,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double SumOfSquares() const
+   double SumOfSquares() const noexcept
    {
       return pcl::SumOfSquares( m_data->Begin(), m_data->End() );
    }
@@ -1999,7 +2040,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double StableSumOfSquares() const
+   double StableSumOfSquares() const noexcept
    {
       return pcl::StableSumOfSquares( m_data->Begin(), m_data->End() );
    }
@@ -2009,7 +2050,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double Mean() const
+   double Mean() const noexcept
    {
       return pcl::Mean( m_data->Begin(), m_data->End() );
    }
@@ -2020,7 +2061,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double StableMean() const
+   double StableMean() const noexcept
    {
       return pcl::StableMean( m_data->Begin(), m_data->End() );
    }
@@ -2032,7 +2073,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double TrimmedMean( distance_type l = 1, distance_type h = 1 ) const
+   double TrimmedMean( distance_type l = 1, distance_type h = 1 ) const noexcept
    {
       return pcl::TrimmedMean( m_data->Begin(), m_data->End(), l, h );
    }
@@ -2044,7 +2085,7 @@ public:
     *
     * For empty matrices, this function returns zero.
     */
-   double TrimmedMeanOfSquares( distance_type l = 1, distance_type h = 1 ) const
+   double TrimmedMeanOfSquares( distance_type l = 1, distance_type h = 1 ) const noexcept
    {
       return pcl::TrimmedMeanOfSquares( m_data->Begin(), m_data->End(), l, h );
    }
@@ -2054,7 +2095,7 @@ public:
     *
     * For matrices with less than two elements, this function returns zero.
     */
-   double Variance() const
+   double Variance() const noexcept
    {
       return pcl::Variance( m_data->Begin(), m_data->End() );
    }
@@ -2065,7 +2106,7 @@ public:
     *
     * For matrices with less than two elements, this function returns zero.
     */
-   double StdDev() const
+   double StdDev() const noexcept
    {
       return pcl::StdDev( m_data->Begin(), m_data->End() );
    }
@@ -2094,7 +2135,7 @@ public:
     * with the standard deviation of a normal distribution, it must be
     * multiplied by the constant 1.2533.
     */
-   double AvgDev( double center ) const
+   double AvgDev( double center ) const noexcept
    {
       return pcl::AvgDev( m_data->Begin(), m_data->End(), center );
    }
@@ -2114,7 +2155,7 @@ public:
     * with the standard deviation of a normal distribution, it must be
     * multiplied by the constant 1.2533.
     */
-   double StableAvgDev( double center ) const
+   double StableAvgDev( double center ) const noexcept
    {
       return pcl::StableAvgDev( m_data->Begin(), m_data->End(), center );
    }
@@ -2160,7 +2201,7 @@ public:
     *
     * See AvgDev( double ) for more information.
     */
-   TwoSidedEstimate TwoSidedAvgDev( double center ) const
+   TwoSidedEstimate TwoSidedAvgDev( double center ) const noexcept
    {
       return pcl::TwoSidedAvgDev( m_data->Begin(), m_data->End(), center );
    }
@@ -2262,7 +2303,7 @@ public:
     * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and
     * Hypothesis Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.1.
     */
-   double BiweightMidvariance( double center, double sigma, int k = 9, bool reducedLength = false ) const
+   double BiweightMidvariance( double center, double sigma, int k = 9, bool reducedLength = false ) const noexcept
    {
       return pcl::BiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k, reducedLength );
    }
@@ -2317,7 +2358,7 @@ public:
     * on the rest of parameters and references.
     */
    TwoSidedEstimate TwoSidedBiweightMidvariance( double center, const TwoSidedEstimate& sigma,
-                                                 int k = 9, bool reducedLength = false ) const
+                                                 int k = 9, bool reducedLength = false ) const noexcept
    {
       return pcl::TwoSidedBiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k, reducedLength );
    }
@@ -2452,7 +2493,7 @@ public:
     * The \a seed parameter can be used to generate repeatable hash values. It
     * can also be set to a random value in compromised environments.
     */
-   uint64 Hash64( uint64 seed = 0 ) const
+   uint64 Hash64( uint64 seed = 0 ) const noexcept
    {
       return pcl::Hash64( m_data->Begin(), m_data->Size(), seed );
    }
@@ -2465,7 +2506,7 @@ public:
     * The \a seed parameter can be used to generate repeatable hash values. It
     * can also be set to a random value in compromised environments.
     */
-   uint32 Hash32( uint32 seed = 0 ) const
+   uint32 Hash32( uint32 seed = 0 ) const noexcept
    {
       return pcl::Hash32( m_data->Begin(), m_data->Size(), seed );
    }
@@ -2474,7 +2515,7 @@ public:
     * Returns a non-cryptographic hash value computed for this matrix. This
     * function is a synonym for Hash64().
     */
-   uint64 Hash( uint64 seed = 0 ) const
+   uint64 Hash( uint64 seed = 0 ) const noexcept
    {
       return Hash64( seed );
    }
@@ -2652,11 +2693,12 @@ public:
    void ToImage( GenericImage<P>& image ) const
    {
       image.AllocateData( Cols(), Rows() );
-      typename P::sample* v = *image;
-      const_block_iterator a = m_data->Begin();
-      const_block_iterator b = m_data->End();
-      for ( ; a < b; ++a, ++v )
-         *v = P::ToSample( *a );
+      typename P::sample*  __restrict__ v = *image;
+      const_block_iterator __restrict__ i = m_data->Begin();
+      const_block_iterator __restrict__ j = m_data->End();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++v )
+         *v = P::ToSample( *i );
    }
 
    /*!
@@ -2751,11 +2793,12 @@ public:
       if ( r == image.Bounds() )
       {
          GenericMatrix M( image.Height(), image.Width() );
-         const typename P::sample* v = image[channel];
-               block_iterator a = M.m_data->Begin();
-         const_block_iterator b = M.m_data->End();
-         for ( ; a < b; ++a, ++v )
-            P::FromSample( *a, *v );
+         const typename P::sample* __restrict__ v = image[channel];
+               block_iterator      __restrict__ i = M.m_data->Begin();
+         const_block_iterator      __restrict__ j = M.m_data->End();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++v )
+            P::FromSample( *i, *v );
          return M;
       }
       else
@@ -2763,12 +2806,14 @@ public:
          int w = r.Width();
          int h = r.Height();
          GenericMatrix M( h, w );
-         block_iterator a = M.m_data->Begin();
+         block_iterator __restrict__ m = M.m_data->Begin();
+         PCL_IVDEP
          for ( int i = r.y0; i < r.y1; ++i )
          {
-            const typename P::sample* v = image.PixelAddress( r.x0, i, channel );
+            const typename P::sample* __restrict__ v = image.PixelAddress( r.x0, i, channel );
+            PCL_IVDEP
             for ( int j = 0; j < w; ++j )
-               P::FromSample( *a++, *v++ );
+               P::FromSample( *m++, *v++ );
          }
          return M;
       }
@@ -2827,7 +2872,7 @@ private:
    {
       int             n = 0;       //!< Number of matrix rows
       int             m = 0;       //!< Number of matrix columns
-      block_iterator* v = nullptr; //!< Contiguous block of matrix elements
+      block_iterator* v = nullptr; //!< Pointer to a pointer to a contiguous block of matrix elements
 
       Data() = default;
 
@@ -2842,37 +2887,40 @@ private:
          Deallocate();
       }
 
-      int Rows() const
+      int Rows() const noexcept
       {
          return n;
       }
 
-      int Cols() const
+      int Cols() const noexcept
       {
          return m;
       }
 
-      size_type NumberOfElements() const
+      size_type NumberOfElements() const noexcept
       {
          return size_type( n )*size_type( m );
       }
 
-      size_type Size() const
+      size_type Size() const noexcept
       {
          return NumberOfElements()*sizeof( element );
       }
 
       block_iterator Begin() const
       {
-         return (v != nullptr) ? *v : nullptr;
+         block_iterator p = (v != nullptr) ? *v : nullptr;
+         if ( likely( std::is_scalar<element>::value ) )
+            return reinterpret_cast<block_iterator>( PCL_ASSUME_ALIGNED_32( p ) );
+         return p;
       }
 
-      block_iterator End() const
+      block_iterator End() const noexcept
       {
          return (v != nullptr) ? *v + NumberOfElements() : nullptr;
       }
 
-      element& Element( int i, int j ) const
+      element& Element( int i, int j ) const noexcept
       {
          return v[i][j];
       }
@@ -2882,7 +2930,19 @@ private:
          n = rows;
          m = cols;
          v = new block_iterator[ n ];
-         *v = new element[ NumberOfElements() ];
+         if ( likely( std::is_scalar<element>::value ) )
+         {
+            *v = reinterpret_cast<block_iterator>( PCL_ALIGNED_MALLOC( Size(), 32 ) );
+            if ( unlikely( *v == nullptr ) )
+            {
+               delete [] v;
+               v = nullptr;
+               n = m = 0;
+               throw std::bad_alloc();
+            }
+         }
+         else
+            *v = new element[ NumberOfElements() ];
          for ( int i = 1; i < n; ++i )
             v[i] = v[i-1] + m;
       }
@@ -2892,7 +2952,10 @@ private:
          PCL_PRECONDITION( refCount == 0 )
          if ( v != nullptr )
          {
-            delete [] *v;
+            if ( likely( std::is_scalar<element>::value ) )
+               PCL_ALIGNED_FREE( *v );
+            else
+               delete [] *v;
             delete [] v;
             v = nullptr;
             n = m = 0;
@@ -2920,7 +2983,7 @@ private:
     * \internal
     * Inverts a small matrix of dimension <= 3.
     */
-   static bool Invert( block_iterator* Ai, const_block_iterator const* A, int n )
+   static bool Invert( block_iterator* Ai, const_block_iterator const* A, int n ) noexcept
    {
       switch ( n )
       {
@@ -2931,8 +2994,8 @@ private:
          break;
       case 2:
          {
-            const_block_iterator A0 = A[0];
-            const_block_iterator A1 = A[1];
+            const_block_iterator __restrict__ A0 = A[0];
+            const_block_iterator __restrict__ A1 = A[1];
             element d = A0[0]*A1[1] - A0[1]*A1[0];
             if ( 1 + d == 1 )
                return false;
@@ -2944,9 +3007,9 @@ private:
          break;
       case 3:
          {
-            const_block_iterator A0 = A[0];
-            const_block_iterator A1 = A[1];
-            const_block_iterator A2 = A[2];
+            const_block_iterator __restrict__ A0 = A[0];
+            const_block_iterator __restrict__ A1 = A[1];
+            const_block_iterator __restrict__ A2 = A[2];
             element d1 = A1[1]*A2[2] - A1[2]*A2[1];
             element d2 = A1[2]*A2[0] - A1[0]*A2[2];
             element d3 = A1[0]*A2[1] - A1[1]*A2[0];
@@ -3043,12 +3106,13 @@ GenericMatrix<T> operator +( const GenericMatrix<T>& A, const GenericMatrix<T>& 
    if ( B.Rows() != A.Rows() || B.Cols() != A.Cols() )
       throw Error( "Invalid matrix addition." );
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   typename GenericMatrix<T>::const_block_iterator b = B.Begin();
-   for ( ; r < s; ++r, ++a, ++b )
-      *r = *a + *b;
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ t = B.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k, ++t )
+      *i = *k + *t;
    return R;
 }
 
@@ -3061,11 +3125,12 @@ template <typename T> inline
 GenericMatrix<T> operator +( const GenericMatrix<T>& A, const T& x )
 {
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   for ( ; r < s; ++r, ++a )
-      *r = *a + x;
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k )
+      *i = *k + x;
    return R;
 }
 
@@ -3099,12 +3164,13 @@ GenericMatrix<T> operator -( const GenericMatrix<T>& A, const GenericMatrix<T>& 
    if ( B.Rows() != A.Rows() || B.Cols() != A.Cols() )
       throw Error( "Invalid matrix subtraction." );
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   typename GenericMatrix<T>::const_block_iterator b = B.Begin();
-   for ( ; r < s; ++r, ++a, ++b )
-      *r = *a - *b;
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ t = B.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k, ++t )
+      *i = *k - *t;
    return R;
 }
 
@@ -3117,11 +3183,12 @@ template <typename T> inline
 GenericMatrix<T> operator -( const GenericMatrix<T>& A, const T& x )
 {
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   for ( ; r < s; ++r, ++a )
-      *r = *a - x;
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k )
+      *i = *k - x;
    return R;
 }
 
@@ -3138,11 +3205,12 @@ template <typename T> inline
 GenericMatrix<T> operator -( const T& x, const GenericMatrix<T>& A )
 {
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   for ( ; r < s; ++r, ++a )
-      *r = x - *a;
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k )
+      *i = x - *k;
    return R;
 }
 
@@ -3219,11 +3287,12 @@ template <typename T> inline
 GenericMatrix<T> operator *( const GenericMatrix<T>& A, const T& x )
 {
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   for ( ; r < s; ++r, ++a )
-      *r = *a * x;
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k )
+      *i = *k * x;
    return R;
 }
 
@@ -3252,11 +3321,12 @@ template <typename T> inline
 GenericMatrix<T> operator /( const GenericMatrix<T>& A, const T& x )
 {
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   for ( ; r < s; ++r, ++a )
-      *r = *a / x;
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k )
+      *i = *k / x;
    return R;
 }
 
@@ -3272,11 +3342,12 @@ template <typename T> inline
 GenericMatrix<T> operator /( const T& x, const GenericMatrix<T>& A )
 {
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   for ( ; r < s; ++r, ++a )
-      *r = x / *a;
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k )
+      *i = x / *k;
    return R;
 }
 
@@ -3291,11 +3362,12 @@ template <typename T> inline
 GenericMatrix<T> operator ^( const GenericMatrix<T>& A, const T& x )
 {
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   for ( ; r < s; ++r, ++a )
-      *r = pcl::Pow( *a, x );
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k )
+      *i = pcl::Pow( *k, x );
    return R;
 }
 
@@ -3311,11 +3383,12 @@ template <typename T> inline
 GenericMatrix<T> operator ^( const T& x, const GenericMatrix<T>& A )
 {
    GenericMatrix<T> R( A.Rows(), A.Cols() );
-   typename       GenericMatrix<T>::block_iterator r = R.Begin();
-   typename GenericMatrix<T>::const_block_iterator s = R.End();
-   typename GenericMatrix<T>::const_block_iterator a = A.Begin();
-   for ( ; r < s; ++r, ++a )
-      *r = pcl::Pow( x, *a );
+   typename       GenericMatrix<T>::block_iterator __restrict__ i = R.Begin();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ j = R.End();
+   typename GenericMatrix<T>::const_block_iterator __restrict__ k = A.Begin();
+   PCL_IVDEP
+   for ( ; i < j; ++i, ++k )
+      *i = pcl::Pow( x, *k );
    return R;
 }
 
@@ -3544,4 +3617,4 @@ typedef F80Matrix                   LDMatrix;
 #endif   // __PCL_Matrix_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Matrix.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Matrix.h - Released 2020-11-20T19:46:29Z

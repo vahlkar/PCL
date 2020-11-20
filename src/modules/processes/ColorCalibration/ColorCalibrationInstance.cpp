@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.4
+// Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// ColorCalibrationInstance.cpp - Released 2020-10-12T19:25:16Z
+// ColorCalibrationInstance.cpp - Released 2020-11-20T19:48:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -56,7 +56,7 @@
 #include <pcl/ATrousWaveletTransform.h>
 #include <pcl/AutoViewLock.h>
 #include <pcl/Console.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
 namespace pcl
@@ -154,14 +154,16 @@ bool ColorCalibrationInstance::CanExecuteOn( const View& view, pcl::String& whyN
 #define SD_ITERATIONS   4
 #define SD_COST         (SD_ITERATIONS*(4 + 2*structureLayers) + 1)
 
-static const float __3x3Linear_hv[] = { 0.50F, 1.00F, 0.50F };
+const float g_3x3Linear[] =
+{
+   0.25F, 0.50F, 0.25F,
+   0.50F, 1.00F, 0.50F,
+   0.25F, 0.50F, 0.25F
+};
 
 static void GetStructureMap( Image& map, int structureLayers, int noiseLayers )
 {
-   ATrousWaveletTransform::WaveletScalingFunction H;
-   H.Set( SeparableFilter( __3x3Linear_hv, __3x3Linear_hv, 3 ) );
-
-   ATrousWaveletTransform W( H );
+   ATrousWaveletTransform W( KernelFilter( g_3x3Linear, 3 ) );
    W.SetNumberOfLayers( structureLayers );
    for ( int j = noiseLayers; j < structureLayers; ++j )
       W.DisableLayer( j );
@@ -716,4 +718,4 @@ size_type ColorCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF ColorCalibrationInstance.cpp - Released 2020-11-20T19:48:59Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/FFTConvolution.h - Released 2020-10-12T19:24:41Z
+// pcl/FFTConvolution.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -68,51 +68,21 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 /*!
- * \defgroup fft_convolution_limits_macros Constants for Automatic&nbsp;\
- * Selection of FFT-based, Separable and Nonseparable Convolutions
+ * \defgroup convolution_speed_limits Helper Functions for Selection of
+ * FFT-based, Separable and Nonseparable Convolution Algorithms
  */
-
-/*!
- * \def PCL_FFT_CONVOLUTION_IS_FASTER_THAN_SEPARABLE_FILTER_SIZE
- * \brief Defines a filter size in pixels above which FFT-based convolution is
- * consistently faster than separable convolution on the current PixInsight/PCL
- * platform.
- *
- * This value has been determined experimentally, and has been optimized for
- * parallel execution on relatively fast machines with eight or more logical
- * processor cores.
- *
- * \ingroup fft_convolution_limits_macros
- */
-#define PCL_FFT_CONVOLUTION_IS_FASTER_THAN_SEPARABLE_FILTER_SIZE     162
-
-/*!
- * \def PCL_FFT_CONVOLUTION_IS_FASTER_THAN_NONSEPARABLE_FILTER_SIZE
- * \brief Defines a filter size in pixels above which FFT-based convolution is
- * consistently faster than nonseparable convolution on the current
- * PixInsight/PCL platform.
- *
- * This value has been determined experimentally, and has been optimized for
- * parallel execution on relatively fast machines with eight or more logical
- * processor cores. Note that separable convolution is \e always faster than
- * nonseparable convolution, so this value should only be considered for
- * convolution with nonseparable filters.
- *
- * \ingroup fft_convolution_limits_macros
- */
-#define PCL_FFT_CONVOLUTION_IS_FASTER_THAN_NONSEPARABLE_FILTER_SIZE  12
 
 /*!
  * \class FFTConvolution
- * \brief Fourier-based two-dimensional convolution
+ * \brief Fourier-based two-dimensional convolution in the spatial domain
  *
- * %FFTConvolution implements a high-performance, two-dimensional discrete
+ * %FFTConvolution implements a fully multithreaded, two-dimensional discrete
  * convolution algorithm via fast Fourier transforms. It performs automatic
  * fixing of border artifacts by applying Neumann boundary conditions
  * (mirroring), and is able to convolve images and response functions of
  * arbitrary sizes, only limited by the available memory.
  *
- * \sa Convolution, SeparableConvolution, ATrousWaveletTransform, ImageTransformation
+ * \sa Convolution, SeparableConvolution
 */
 class PCL_CLASS FFTConvolution : public ImageTransformation, public ParallelProcess
 {
@@ -357,6 +327,94 @@ public:
       m_outputRealCmp = !enable;
    }
 
+   /*!
+    * Returns the minimum filter size in pixels for which FFT-based
+    * two-dimensional convolution is consistently faster than nonseparable
+    * convolution on the current PixInsight/PCL platform, for the specified
+    * number of parallel execution threads.
+    *
+    * The values returned by this function have been determined experimentally
+    * on reference hardware for optimized execution on machines and builds with
+    * and without AVX2/FMA3 processor instruction support.
+    *
+    * \ingroup convolution_speed_limits
+    */
+   static constexpr int FasterThanNonseparableFilterSize( int numThreads )
+   {
+#ifdef __PCL_AVX2
+
+      if ( numThreads >= 32 )
+         return 29;
+      if ( numThreads >= 24 )
+         return 27;
+      if ( numThreads >= 16 )
+         return 25;
+      if ( numThreads >= 12 )
+         return 21;
+      if ( numThreads >= 8 )
+         return 19;
+      if ( numThreads >= 4 )
+         return 17;
+      if ( numThreads >= 2 )
+         return 15;
+      return 13;
+
+#else
+
+      if ( numThreads >= 32 )
+         return 17;
+      if ( numThreads >= 24 )
+         return 15;
+      if ( numThreads >= 12 )
+         return 13;
+      if ( numThreads >= 8 )
+         return 11;
+      return 9;
+
+#endif
+   }
+
+   /*!
+    * Returns the minimum filter size in pixels for which FFT-based
+    * two-dimensional convolution is consistently faster than separable
+    * convolution on the current PixInsight/PCL platform, for the specified
+    * number of parallel execution threads.
+    *
+    * The values returned by this function have been determined experimentally
+    * on reference hardware for optimized execution on machines and builds with
+    * and without AVX2/FMA3 processor instruction support.
+    *
+    * \ingroup convolution_speed_limits
+    */
+   static constexpr int FasterThanSeparableFilterSize( int numThreads )
+   {
+#ifdef __PCL_AVX2
+
+      if ( numThreads >= 16 )
+         return 901;
+      if ( numThreads >= 12 )
+         return 831;
+      if ( numThreads >= 8 )
+         return 741;
+      return 395;
+
+#else
+
+      if ( numThreads >= 24 )
+         return 191;
+      if ( numThreads >= 16 )
+         return 141;
+      if ( numThreads >= 12 )
+         return 135;
+      if ( numThreads >= 8 )
+         return 95;
+      if ( numThreads >= 4 )
+         return 75;
+      return 61;
+
+#endif
+   }
+
 protected:
 
    /*
@@ -408,4 +466,4 @@ private:
 #endif   // __PCL_FFTConvolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFTConvolution.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/FFTConvolution.h - Released 2020-11-20T19:46:29Z

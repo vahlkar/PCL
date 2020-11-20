@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.119
+# PixInsight Makefile Generator Script v1.120
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-10-12T19:30:09.469Z
+# Generated on .... 2020-11-20T20:29:56.501Z
 # Project id ...... AssistedColorCalibration
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>4056aa53-1bb4-4733-862c-771b93d7c402</UniqueIdentifier>
+      <UniqueIdentifier>0e043db9-8936-4371-ba6c-8afd543dd4bd</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>b549a911-3205-4d67-93bc-0719dbc16789</UniqueIdentifier>
+      <UniqueIdentifier>bb4bf5ff-c7da-4256-801c-0041bd3452f2</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>af3d3cdb-d0c7-4648-a990-6ff02872c319</UniqueIdentifier>
+      <UniqueIdentifier>e02a9668-b5c3-41df-8a09-7b20b4c98628</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

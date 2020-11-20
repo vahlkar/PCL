@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentInstance.cpp - Released 2020-10-12T19:25:16Z
+// CometAlignmentInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -63,7 +63,7 @@
 #include <pcl/LinearFit.h>
 #include <pcl/MetaModule.h>
 #include <pcl/SpinStatus.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Translation.h>
 #include <pcl/Vector.h>
 #include <pcl/Version.h>
@@ -1715,4 +1715,4 @@ size_type CometAlignmentInstance::ParameterLength( const MetaParameter* p, size_
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF CometAlignmentInstance.cpp - Released 2020-11-20T19:49:00Z

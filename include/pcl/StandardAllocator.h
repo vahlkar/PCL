@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/StdAlloc.h - Released 2020-10-12T19:24:41Z
+// pcl/StandardAllocator.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,10 +49,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#ifndef __PCL_StdAlloc_h
-#define __PCL_StdAlloc_h
+#ifndef __PCL_StandardAllocator_h
+#define __PCL_StandardAllocator_h
 
-/// \file pcl/StdAlloc.h
+/// \file pcl/StandardAllocator.h
 
 #include <pcl/Defs.h>
 #include <pcl/Diagnostics.h>
@@ -76,7 +76,7 @@ namespace pcl
  * For a complete description of block allocators and their fundamental role in
  * PCL, read the documentation for the Allocator class.
  *
- * \sa Allocator
+ * \sa Allocator, AlignedAllocator
  */
 class PCL_CLASS StandardAllocator
 {
@@ -92,7 +92,7 @@ public:
     *                      this allocator.
     *
     * See the IsFastGrowthEnabled() and IsShrinkingEnabled() member functions
-    * for more information on allocation policies.
+    * for more information on block allocation policies.
     */
    StandardAllocator( bool fastGrowth = true, bool canShrink = true )
       : m_fastGrowth( fastGrowth )
@@ -110,6 +110,7 @@ public:
     * object is able to allocate.
     *
     * %StandardAllocator can (theoretically) allocate ~size_type( 0 ) bytes.
+    * This poses no practical limit on 64-bit systems.
     *
     * \note This member function is mandatory for a block allocator to be
     * usable by the Allocator class.
@@ -182,30 +183,24 @@ public:
    }
 
    /*!
-    * Custom allocation routine. Allocates a contiguous memory block of length
-    * \a sz in bytes, and returns the address of the first byte in the
-    * newly allocated block.
-    *
-    * As implemented by %StandardAllocator, this member function simply
-    * calls ::operator new( sz ).
+    * Custom allocation routine. Allocates a contiguous memory block of the
+    * specified \a size in bytes, and returns the address of the first byte in
+    * the newly allocated block.
     *
     * \note This member function is mandatory for a block allocator to be
     * usable by the Allocator class.
     *
     * \sa DeallocateBlock()
     */
-   void* AllocateBlock( size_type sz )
+   void* AllocateBlock( size_type size )
    {
-      PCL_PRECONDITION( sz != 0 )
-      return ::operator new( sz );
+      PCL_PRECONDITION( size != 0 )
+      return ::operator new( size );
    }
 
    /*!
     * Custom deallocation routine. Deallocates a previously allocated
     * contiguous memory block that begins at the specified location \a p.
-    *
-    * As implemented by %StandardAllocator, this member function simply
-    * calls ::operator delete( p ).
     *
     * \note This member function is mandatory for a block allocator to be
     * usable by the Allocator class.
@@ -316,36 +311,13 @@ public:
 
 private:
 
-   bool m_fastGrowth = true;
-   bool m_canShrink = true;
+   bool     m_fastGrowth : 1;
+   bool     m_canShrink  : 1;
 };
 
 } // pcl
 
 // ----------------------------------------------------------------------------
-
-/* ** !
-   Block allocation operator for class StandardAllocator. Allocates a
-   contiguous block of memory of length \a sz in bytes, using the
-   standard operator new( size_t ).
- */
-/*
-inline void* operator new( pcl::size_type sz, pcl::StandardAllocator& )
-{
-   PCL_PRECONDITION( sz != nullptr )
-   return ::operator new( sz );
-}
-
-#ifdef _MSC_VER
-
-inline void operator delete( void* p, pcl::StandardAllocator& )
-{
-   PCL_PRECONDITION( p != nullptr )
-   ::operator delete( p );
-}
-
-#endif
- */
 
 /*!
  * Placement new operator for class StandardAllocator. Returns the specified
@@ -358,7 +330,6 @@ inline void* operator new( pcl::size_type, void* p, pcl::StandardAllocator& )
 }
 
 #ifdef _MSC_VER
-
 #pragma warning( push )
 #pragma warning( disable: 4100 ) // 'unreferenced formal parameter'
 
@@ -368,12 +339,11 @@ inline void operator delete( void* p, void*, pcl::StandardAllocator& )
 }
 
 #pragma warning( pop )
-
-#endif
-
-// ----------------------------------------------------------------------------
-
-#endif  // __PCL_StdAlloc_h
+#endif // _MSC_VER
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StdAlloc.h - Released 2020-10-12T19:24:41Z
+
+#endif  // __PCL_StandardAllocator_h
+
+// ----------------------------------------------------------------------------
+// EOF pcl/StandardAllocator.h - Released 2020-11-20T19:46:29Z

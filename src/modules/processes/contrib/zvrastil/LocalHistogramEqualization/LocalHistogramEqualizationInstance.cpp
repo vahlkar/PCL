@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationInstance.cpp - Released 2020-10-12T19:25:17Z
+// LocalHistogramEqualizationInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
@@ -58,7 +58,7 @@
 #include <pcl/Console.h>
 #include <pcl/MuteStatus.h>
 #include <pcl/ReferenceArray.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Thread.h>
 #include <pcl/View.h>
 
@@ -656,4 +656,4 @@ int LocalHistogramEqualizationInstance::GetHistogramSize() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationInstance.cpp - Released 2020-10-12T19:25:17Z
+// EOF LocalHistogramEqualizationInstance.cpp - Released 2020-11-20T19:49:00Z

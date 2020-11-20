@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// Alignment.cpp - Released 2020-10-12T19:25:16Z
+// Alignment.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -68,7 +68,7 @@ double GreenwhichMeanSiderialTime()
    TimePoint currentTime = TimePoint::Now();
    int year, month, day, hour, minute;
    double seconds;
-   currentTime.GetComplexTime( year, month, day, hour, minute, seconds );
+   currentTime.GetCalendarTime( year, month, day, hour, minute, seconds );
    double hoursSinceMidnight = hour + minute / 60.0 + seconds / 3600.0;
    // JD0 : julian date of last midnight
    // JD = JD0 + hoursSinceMidnight / 24.0
@@ -930,4 +930,4 @@ void GeneralAnalyticalPointingModel::PrintParameters()
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF Alignment.cpp - Released 2020-10-12T19:25:16Z
+// EOF Alignment.cpp - Released 2020-11-20T19:49:00Z

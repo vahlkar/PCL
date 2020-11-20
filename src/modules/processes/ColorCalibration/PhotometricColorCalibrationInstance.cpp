@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.4
+// Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2020-10-12T19:25:16Z
+// PhotometricColorCalibrationInstance.cpp - Released 2020-11-20T19:48:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -61,7 +61,7 @@
 #include <pcl/ImageWindow.h>
 #include <pcl/LinearFit.h>
 #include <pcl/MetaModule.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Version.h>
 #include <pcl/View.h>
 #include <pcl/XISF.h>
@@ -495,7 +495,7 @@ struct FromKeyword
          double dayf, tz;
          if ( !text.TryParseISO8601DateTime( year, month, day, dayf, tz ) )
             return *this;
-         value = ComplexTimeToJD( year, month, day, dayf - tz/24 );
+         value = CalendarTimeToJD( year, month, day, dayf - tz/24 );
       }
       else
       {
@@ -1401,4 +1401,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-11-20T19:48:59Z

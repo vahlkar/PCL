@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/IndirectArray.h - Released 2020-10-12T19:24:41Z
+// pcl/IndirectArray.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -98,7 +98,7 @@ public:
 
    /*! #
     */
-   typedef Allocator<T,A>           allocator;
+   typedef pcl::Allocator<T,A>      allocator;
 
    /*! #
     */
@@ -318,9 +318,9 @@ public:
    /*!
     * Returns a reference to the allocator object used by this indirect array.
     */
-   const allocator& GetAllocator() const
+   const allocator& Allocator() const
    {
-      return m_array.GetAllocator();
+      return m_array.Allocator();
    }
 
    /*!
@@ -2020,4 +2020,4 @@ IndirectArray<T,A>& operator <<( IndirectArray<T,A>&& x1, const IndirectArray<T,
 #endif  // __PCL_IndirectArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IndirectArray.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/IndirectArray.h - Released 2020-11-20T19:46:29Z

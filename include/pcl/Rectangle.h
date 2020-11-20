@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Rectangle.h - Released 2020-10-12T19:24:41Z
+// pcl/Rectangle.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -121,7 +121,7 @@ typedef Flags<Clip::mask_type>   ClipFlags;
  * \ingroup rect_classification_2d
  */
 template <typename T> inline
-bool IsPoint( T x0, T y0, T x1, T y1 )
+bool IsPoint( T x0, T y0, T x1, T y1 ) noexcept
 {
    return x0 == x1 && y0 == y1;
 }
@@ -139,7 +139,7 @@ bool IsPoint( T x0, T y0, T x1, T y1 )
  * \ingroup rect_classification_2d
  */
 template <typename T> inline
-bool IsLine( T x0, T y0, T x1, T y1 )
+bool IsLine( T x0, T y0, T x1, T y1 ) noexcept
 {
    return ((x0 == x1) ^ (y0 == y1)) != 0;
 }
@@ -156,7 +156,7 @@ bool IsLine( T x0, T y0, T x1, T y1 )
  * \ingroup rect_classification_2d
  */
 template <typename T> inline
-bool IsHorizontalLine( T x0, T y0, T x1, T y1 )
+bool IsHorizontalLine( T x0, T y0, T x1, T y1 ) noexcept
 {
    return y0 == y1 && x0 != x1;
 }
@@ -173,7 +173,7 @@ bool IsHorizontalLine( T x0, T y0, T x1, T y1 )
  * \ingroup rect_classification_2d
  */
 template <typename T> inline
-bool IsVerticalLine( T x0, T y0, T x1, T y1 )
+bool IsVerticalLine( T x0, T y0, T x1, T y1 ) noexcept
 {
    return x0 == x1 && y0 != y1;
 }
@@ -190,7 +190,7 @@ bool IsVerticalLine( T x0, T y0, T x1, T y1 )
  * \ingroup rect_classification_2d
  */
 template <typename T> inline
-bool IsPointOrLine( T x0, T y0, T x1, T y1 )
+bool IsPointOrLine( T x0, T y0, T x1, T y1 ) noexcept
 {
    return x0 == x1 || y0 == y1;
 }
@@ -207,7 +207,7 @@ bool IsPointOrLine( T x0, T y0, T x1, T y1 )
  * \ingroup rect_classification_2d
  */
 template <typename T> inline
-bool IsRect( T x0, T y0, T x1, T y1 )
+bool IsRect( T x0, T y0, T x1, T y1 ) noexcept
 {
    return x0 != x1 && y0 != y1;
 }
@@ -223,7 +223,7 @@ bool IsRect( T x0, T y0, T x1, T y1 )
  * \ingroup rect_classification_2d
  */
 template <typename T> inline
-bool IsNormalRect( T x0, T y0, T x1, T y1 )
+bool IsNormalRect( T x0, T y0, T x1, T y1 ) noexcept
 {
    return x0 < x1 && y0 < y1;
 }
@@ -240,7 +240,7 @@ bool IsNormalRect( T x0, T y0, T x1, T y1 )
  * \ingroup rect_classification_2d
  */
 template <typename T> inline
-bool IsOrderedRect( T x0, T y0, T x1, T y1 )
+bool IsOrderedRect( T x0, T y0, T x1, T y1 ) noexcept
 {
    return x0 <= x1 && y0 <= y1;
 }
@@ -257,7 +257,7 @@ bool IsOrderedRect( T x0, T y0, T x1, T y1 )
  * \ingroup rect_classification_2d
  */
 template <typename T> inline
-void OrderRect( T& x0, T& y0, T& x1, T& y1 )
+void OrderRect( T& x0, T& y0, T& x1, T& y1 ) noexcept
 {
    if ( x1 < x0 )
       pcl::Swap( x0, x1 );
@@ -488,7 +488,7 @@ public:
     * Returns the left coordinate of this rectangle. This function returns the
     * value of the x0 data member.
     */
-   component Left() const
+   component Left() const noexcept
    {
       return x0;
    }
@@ -497,7 +497,7 @@ public:
     * Returns the top coordinate of this rectangle. This function returns the
     * value of the y0 data member.
     */
-   component Top() const
+   component Top() const noexcept
    {
       return y0;
    }
@@ -506,7 +506,7 @@ public:
     * Returns the right coordinate of this rectangle. This function returns the
     * value of the x1 data member.
     */
-   component Right() const
+   component Right() const noexcept
    {
       return x1;
    }
@@ -515,7 +515,7 @@ public:
     * Returns the bottom coordinate of this rectangle. This function returns
     * the value of the y1 data member.
     */
-   component Bottom() const
+   component Bottom() const noexcept
    {
       return y1;
    }
@@ -524,7 +524,7 @@ public:
     * Returns a point with the coordinates of the upper left (left-top) corner
     * of this rectangle.
     */
-   point LeftTop() const
+   point LeftTop() const noexcept
    {
       return point( pcl::Min( x0, x1 ), pcl::Min( y0, y1 ) );
    }
@@ -532,7 +532,7 @@ public:
    /*!
     * A synonym for LeftTop().
     */
-   point TopLeft() const
+   point TopLeft() const noexcept
    {
       return LeftTop();
    }
@@ -541,7 +541,7 @@ public:
     * Returns a point with the coordinates of the upper right (right-top)
     * corner of this rectangle.
     */
-   point RightTop() const
+   point RightTop() const noexcept
    {
       return point( pcl::Max( x0, x1 ), pcl::Min( y0, y1 ) );
    }
@@ -549,7 +549,7 @@ public:
    /*!
     * A synonym for RightTop().
     */
-   point TopRight() const
+   point TopRight() const noexcept
    {
       return RightTop();
    }
@@ -558,7 +558,7 @@ public:
     * Returns a point with the coordinates of the lower left (left-bottom)
     * corner of this rectangle.
     */
-   point LeftBottom() const
+   point LeftBottom() const noexcept
    {
       return point( pcl::Min( x0, x1 ), pcl::Max( y0, y1 ) );
    }
@@ -566,7 +566,7 @@ public:
    /*!
     * A synonym for LeftBottom().
     */
-   point BottomLeft() const
+   point BottomLeft() const noexcept
    {
       return LeftBottom();
    }
@@ -575,7 +575,7 @@ public:
     * Returns a point with the coordinates of the lower right (right-bottom)
     * corner of this rectangle.
     */
-   point RightBottom() const
+   point RightBottom() const noexcept
    {
       return point( pcl::Max( x0, x1 ), pcl::Max( y0, y1 ) );
    }
@@ -583,7 +583,7 @@ public:
    /*!
     * A synonym for RightBottom().
     */
-   point BottomRight() const
+   point BottomRight() const noexcept
    {
       return RightBottom();
    }
@@ -591,7 +591,7 @@ public:
    /*!
     * Returns a point with the coordinates of the center of this rectangle.
     */
-   point Center() const
+   point Center() const noexcept
    {
       return point( (x0 + x1)/2, (y0 + y1)/2 );
    }
@@ -599,7 +599,7 @@ public:
    /*!
     * Returns the upper middle (center-top) point of this rectangle.
     */
-   point CenterTop() const
+   point CenterTop() const noexcept
    {
       return point( (x0 + x1)/2, pcl::Min( y0, y1 ) );
    }
@@ -607,7 +607,7 @@ public:
    /*!
     * Returns the lower middle (center-bottom) point of this rectangle.
     */
-   point CenterBottom() const
+   point CenterBottom() const noexcept
    {
       return point( (x0 + x1)/2, pcl::Min( y0, y1 ) );
    }
@@ -615,7 +615,7 @@ public:
    /*!
     * Returns the left middle (center-left) point of this rectangle.
     */
-   point CenterLeft() const
+   point CenterLeft() const noexcept
    {
       return point( pcl::Min( x0, x1 ), (y0 + y1)/2 );
    }
@@ -623,7 +623,7 @@ public:
    /*!
     * Returns the right middle (center-right) point of this rectangle.
     */
-   point CenterRight() const
+   point CenterRight() const noexcept
    {
       return point( pcl::Min( x0, x1 ), (y0 + y1)/2 );
    }
@@ -632,7 +632,7 @@ public:
     * Returns the width of this rectangle. The returned value is the absolute
     * difference between the x1 and x0 data members.
     */
-   component Width() const
+   component Width() const noexcept
    {
       return pcl::Abs( x1 - x0 );
    }
@@ -641,7 +641,7 @@ public:
     * Returns the height of this rectangle. The returned value is the absolute
     * difference between the y1 and y0 data members.
     */
-   component Height() const
+   component Height() const noexcept
    {
       return pcl::Abs( y1 - y0 );
    }
@@ -650,7 +650,7 @@ public:
     * Returns the perimeter of this rectangle. The returned value is equal to
     * twice the width plus twice the height.
     */
-   component Perimeter() const
+   component Perimeter() const noexcept
    {
       component w = Width(), h = Height();
       return w+w+h+h;
@@ -662,7 +662,7 @@ public:
     *
     * The returned value is equal to the width plus the height.
     */
-   component ManhattanDistance() const
+   component ManhattanDistance() const noexcept
    {
       return Width() + Height();
    }
@@ -671,7 +671,7 @@ public:
     * Returns the area of this rectangle. The returned value is equal to the
     * width multiplied by the height.
     */
-   component Area() const
+   component Area() const noexcept
    {
       return pcl::Abs( (x1 - x0)*(y1 - y0) );
    }
@@ -680,7 +680,7 @@ public:
     * Returns the x coordinate of the central point of this rectangle. The
     * returned value is a \c double real value equal to 0.5*(x0 + x1).
     */
-   double CenterX() const
+   double CenterX() const noexcept
    {
       return 0.5*(x0 + x1);
    }
@@ -689,7 +689,7 @@ public:
     * Returns the y coordinate of the central point of this rectangle. The
     * returned value is a \c double real value equal to 0.5*(y0 + y1).
     */
-   double CenterY() const
+   double CenterY() const noexcept
    {
       return 0.5*(y0 + y1);
    }
@@ -700,7 +700,7 @@ public:
     * The returned value is equal to the square of the width multiplied by the
     * square of the height.
     */
-   double Hypot() const
+   double Hypot() const noexcept
    {
       double w = x1 - x0, h = y1 - y0;
       return w*w + h*h;
@@ -710,7 +710,7 @@ public:
     * Returns the length of the diagonal of this rectangle, equal to the square
     * root of the Hypot() function.
     */
-   double Diagonal() const
+   double Diagonal() const noexcept
    {
       return pcl::Sqrt( Hypot() );
    }
@@ -718,7 +718,7 @@ public:
    /*!
     * Returns true iff this rectangle defines a point in the plane.
     */
-   bool IsPoint() const
+   bool IsPoint() const noexcept
    {
       return pcl::IsPoint( x0, y0, x1, y1 );
    }
@@ -726,7 +726,7 @@ public:
    /*!
     * Returns true iff this rectangle defines a line.
     */
-   bool IsLine() const
+   bool IsLine() const noexcept
    {
       return pcl::IsLine( x0, y0, x1, y1 );
    }
@@ -734,7 +734,7 @@ public:
    /*!
     * Returns true iff this rectangle defines a horizontal line.
     */
-   bool IsHorizontalLine() const
+   bool IsHorizontalLine() const noexcept
    {
       return pcl::IsHorizontalLine( x0, y0, x1, y1 );
    }
@@ -742,7 +742,7 @@ public:
    /*!
     * Returns true iff this rectangle defines a vertical line.
     */
-   bool IsVerticalLine() const
+   bool IsVerticalLine() const noexcept
    {
       return pcl::IsVerticalLine( x0, y0, x1, y1 );
    }
@@ -750,7 +750,7 @@ public:
    /*!
     * Returns true iff this rectangle defines a point or a line.
     */
-   bool IsPointOrLine() const
+   bool IsPointOrLine() const noexcept
    {
       return pcl::IsPointOrLine( x0, y0, x1, y1 );
    }
@@ -759,7 +759,7 @@ public:
     * Returns true iff the coordinates of this object define a rectangle,
     * instead of a point or a line.
     */
-   bool IsRect() const
+   bool IsRect() const noexcept
    {
       return pcl::IsRect( x0, y0, x1, y1 );
    }
@@ -767,7 +767,7 @@ public:
    /*!
     * Returns true iff this is a normal rectangle.
     */
-   bool IsNormal() const
+   bool IsNormal() const noexcept
    {
       return pcl::IsNormalRect( x0, y0, x1, y1 );
    }
@@ -775,7 +775,7 @@ public:
    /*!
     * Returns true iff this is an ordered rectangle.
     */
-   bool IsOrdered() const
+   bool IsOrdered() const noexcept
    {
       return pcl::IsOrderedRect( x0, y0, x1, y1 );
    }
@@ -783,7 +783,7 @@ public:
    /*!
     * Orders the coordinates of this rectangle.
     */
-   void Order()
+   void Order() noexcept
    {
       pcl::OrderRect( x0, y0, x1, y1 );
    }
@@ -791,7 +791,7 @@ public:
    /*!
     * Returns an ordered rectangle equivalent to this.
     */
-   GenericRectangle Ordered() const
+   GenericRectangle Ordered() const noexcept
    {
       GenericRectangle r = *this;
       r.Order();
@@ -807,7 +807,7 @@ public:
     * namespace.
     */
    template <typename T1>
-   ClipFlags ClipCode( T1 x, T1 y ) const
+   ClipFlags ClipCode( T1 x, T1 y ) const noexcept
    {
       ClipFlags clip; // defaults to zero
 
@@ -844,7 +844,7 @@ public:
     * namespace.
     */
    template <typename T1>
-   ClipFlags ClipCode( const pcl::GenericPoint<T1>& p ) const
+   ClipFlags ClipCode( const pcl::GenericPoint<T1>& p ) const noexcept
    {
       return ClipCode( p.x, p.y );
    }
@@ -854,7 +854,7 @@ public:
     * separate \a x and \a y coordinates.
     */
    template <typename T1>
-   bool Includes( T1 x, T1 y ) const
+   bool Includes( T1 x, T1 y ) const noexcept
    {
       return ((x0 < x1) ? (x >= x0 && x <= x1) : (x >= x1 && x <= x0)) &&
              ((y0 < y1) ? (y >= y0 && y <= y1) : (y >= y1 && y <= y0));
@@ -864,7 +864,7 @@ public:
     * Returns true iff this rectangle includes a point \a p.
     */
    template <typename T1>
-   bool Includes( const pcl::GenericPoint<T1>& p ) const
+   bool Includes( const pcl::GenericPoint<T1>& p ) const noexcept
    {
       return Includes( p.x, p.y );
    }
@@ -873,18 +873,18 @@ public:
     * Returns true iff this rectangle completely includes a rectangle \a r.
     */
    template <typename T1>
-   bool Includes( const GenericRectangle<T1>& r ) const
+   bool Includes( const GenericRectangle<T1>& r ) const noexcept
    {
       return Includes( r.x0, r.y0 ) && Includes( r.x1, r.y1 );
    }
 
 #ifdef __PCL_QT_INTERFACE
-   bool Includes( const QPoint& p ) const
+   bool Includes( const QPoint& p ) const noexcept
    {
       return Includes( p.x(), p.y() );
    }
 
-   bool Includes( const QRect& r ) const
+   bool Includes( const QRect& r ) const noexcept
    {
       return Includes( r.left(), r.top() ) && Includes( r.right()+1, r.bottom()+1 );
    }
@@ -899,7 +899,7 @@ public:
     * return a wrong result.
     */
    template <typename T1>
-   bool IncludesFast( T1 x, T1 y ) const
+   bool IncludesFast( T1 x, T1 y ) const noexcept
    {
       return x >= x0 && y >= y0 && x <= x1 && y <= y1;
    }
@@ -912,7 +912,7 @@ public:
     * return a wrong result.
     */
    template <typename T1>
-   bool IncludesFast( const pcl::GenericPoint<T1>& p ) const
+   bool IncludesFast( const pcl::GenericPoint<T1>& p ) const noexcept
    {
       return IncludesFast( p.x, p.y );
    }
@@ -928,7 +928,7 @@ public:
     *             for intersection.
     */
    template <typename T1>
-   bool Intersects( T1 left, T1 top, T1 right, T1 bottom ) const
+   bool Intersects( T1 left, T1 top, T1 right, T1 bottom ) const noexcept
    {
       OrderRect( left, top, right, bottom );
       return ((x0 < x1) ? (right >= x0 && left <= x1) : (right >= x1 && left <= x0)) &&
@@ -939,13 +939,13 @@ public:
     * Returns true iff this rectangle intersects a rectangle \a r.
     */
    template <typename T1>
-   bool Intersects( const pcl::GenericRectangle<T1>& r ) const
+   bool Intersects( const pcl::GenericRectangle<T1>& r ) const noexcept
    {
       return Intersects( r.x0, r.y0, r.x1, r.y1 );
    }
 
 #ifdef __PCL_QT_INTERFACE
-   bool Intersects( const QRect& r ) const
+   bool Intersects( const QRect& r ) const noexcept
    {
       return Intersects( r.left(), r.top(), r.right()+1, r.bottom()+1 );
    }
@@ -971,7 +971,7 @@ public:
     * and y0 &le; y1 must hold.
     */
    template <typename T1>
-   bool IntersectsFast( T1 left, T1 top, T1 right, T1 bottom ) const
+   bool IntersectsFast( T1 left, T1 top, T1 right, T1 bottom ) const noexcept
    {
       return right >= x0 && left <= x1 && bottom >= y0 && top <= y1;
    }
@@ -983,7 +983,7 @@ public:
     * specified object \a r are ordered rectangles.
     */
    template <typename T1>
-   bool IntersectsFast( const pcl::GenericRectangle<T1>& r ) const
+   bool IntersectsFast( const pcl::GenericRectangle<T1>& r ) const noexcept
    {
       return IntersectsFast( r.x0, r.y0, r.x1, r.y1 );
    }
@@ -993,7 +993,7 @@ public:
     * coordinates as necessary.
     */
    template <typename T1>
-   void Unite( const GenericRectangle<T1>& r )
+   void Unite( const GenericRectangle<T1>& r ) noexcept
    {
       Unite( r.x0, r.y0, r.x1, r.y1 );
    }
@@ -1009,7 +1009,7 @@ public:
     *                      will be included by this rectangle.
     */
    template <typename T1>
-   void Unite( T1 left, T1 top, T1 right, T1 bottom )
+   void Unite( T1 left, T1 top, T1 right, T1 bottom ) noexcept
    {
       if ( right < left )
          Swap( left, right );
@@ -1047,7 +1047,7 @@ public:
     * specified object \a r are ordered rectangles.
     */
    template <typename T1>
-   void UniteFast( const GenericRectangle<T1>& r )
+   void UniteFast( const GenericRectangle<T1>& r ) noexcept
    {
       UniteFast( r.x0, r.y0, r.x1, r.y1 );
    }
@@ -1072,7 +1072,7 @@ public:
     * and y0 &le; y1 must hold.
     */
    template <typename T1>
-   void UniteFast( T1 left, T1 top, T1 right, T1 bottom )
+   void UniteFast( T1 left, T1 top, T1 right, T1 bottom ) noexcept
    {
       x0 = pcl::Min( x0, component( left ) );
       y0 = pcl::Min( y0, component( top ) );
@@ -1084,7 +1084,7 @@ public:
     * Returns a rectangle that includes this one and another rectangle \a r.
     */
    template <typename T1>
-   GenericRectangle Union( const GenericRectangle<T1>& r ) const
+   GenericRectangle Union( const GenericRectangle<T1>& r ) const noexcept
    {
       GenericRectangle r1 = *this;
       r1.Unite( r );
@@ -1098,7 +1098,7 @@ public:
     * specified object \a r are ordered rectangles.
     */
    template <typename T1>
-   GenericRectangle UnionFast( const GenericRectangle<T1>& r ) const
+   GenericRectangle UnionFast( const GenericRectangle<T1>& r ) const noexcept
    {
       GenericRectangle r1 = *this;
       r1.UniteFast( r );
@@ -1110,7 +1110,7 @@ public:
     * coordinates as necessary. Returns a reference to this rectangle.
     */
    template <typename T1>
-   GenericRectangle& operator |=( const GenericRectangle<T1>& r )
+   GenericRectangle& operator |=( const GenericRectangle<T1>& r ) noexcept
    {
       Unite( r );
       return *this;
@@ -1122,14 +1122,14 @@ public:
       Unite( r.left(), r.top(), r.right()+1, r.bottom()+1 );
    }
 
-   GenericRectangle Union( const QRect& r ) const
+   GenericRectangle Union( const QRect& r ) const noexcept
    {
       GenericRectangle r1 = *this;
       r1.Unite( r );
       return r1;
    }
 
-   GenericRectangle& operator |=( const QRect& r )
+   GenericRectangle& operator |=( const QRect& r ) noexcept
    {
       Unite( r );
       return *this;
@@ -1145,7 +1145,7 @@ public:
     * function.
     */
    template <typename T1>
-   bool Intersect( const GenericRectangle<T1>& r )
+   bool Intersect( const GenericRectangle<T1>& r ) noexcept
    {
       return Intersect( r.x0, r.y0, r.x1, r.y1 );
    }
@@ -1165,7 +1165,7 @@ public:
     * function.
     */
    template <typename T1>
-   bool Intersect( T1 left, T1 top, T1 right, T1 bottom )
+   bool Intersect( T1 left, T1 top, T1 right, T1 bottom ) noexcept
    {
       if ( right < left )
          Swap( left, right );
@@ -1209,7 +1209,7 @@ public:
     * specified object \a r are ordered rectangles.
     */
    template <typename T1>
-   bool IntersectFast( const GenericRectangle<T1>& r )
+   bool IntersectFast( const GenericRectangle<T1>& r ) noexcept
    {
       return IntersectFast( r.x0, r.y0, r.x1, r.y1 );
    }
@@ -1238,7 +1238,7 @@ public:
     * and y0 &le; y1 must hold.
     */
    template <typename T1>
-   bool IntersectFast( T1 left, T1 top, T1 right, T1 bottom )
+   bool IntersectFast( T1 left, T1 top, T1 right, T1 bottom ) noexcept
    {
       x0 = pcl::Max( x0, component( left ) );
       y0 = pcl::Max( y0, component( top ) );
@@ -1252,7 +1252,7 @@ public:
     * another rectangle \a r.
     */
    template <typename T1>
-   GenericRectangle Intersection( const GenericRectangle<T1>& r ) const
+   GenericRectangle Intersection( const GenericRectangle<T1>& r ) const noexcept
    {
       GenericRectangle r1 = *this;
       (void)r1.Intersect( r );
@@ -1267,7 +1267,7 @@ public:
     * specified object \a r are ordered rectangles.
     */
    template <typename T1>
-   GenericRectangle IntersectionFast( const GenericRectangle<T1>& r ) const
+   GenericRectangle IntersectionFast( const GenericRectangle<T1>& r ) const noexcept
    {
       GenericRectangle r1 = *this;
       (void)r1.IntersectFast( r );
@@ -1279,26 +1279,26 @@ public:
     * rectangle \a r. Returns a reference to this rectangle.
     */
    template <typename T1>
-   GenericRectangle& operator &=( const GenericRectangle<T1>& r )
+   GenericRectangle& operator &=( const GenericRectangle<T1>& r ) noexcept
    {
       Intersect( r );
       return *this;
    }
 
 #ifdef __PCL_QT_INTERFACE
-   bool Intersect( const QRect& r )
+   bool Intersect( const QRect& r ) noexcept
    {
       return Intersect( r.left(), r.top(), r.right()+1, r.bottom()+1 );
    }
 
-   GenericRectangle Intersection( const QRect& r ) const
+   GenericRectangle Intersection( const QRect& r ) const noexcept
    {
       GenericRectangle r1 = *this;
       (void)r1.Intersect( r );
       return r1;
    }
 
-   GenericRectangle& operator &=( const QRect& r )
+   GenericRectangle& operator &=( const QRect& r ) noexcept
    {
       Intersect( r );
       return *this;
@@ -1312,7 +1312,7 @@ public:
     * \param right,bottom  New lower right corner coordinates.
     */
    template <typename T1>
-   void Set( T1 left, T1 top, T1 right, T1 bottom )
+   void Set( T1 left, T1 top, T1 right, T1 bottom ) noexcept
    {
       x0 = component( left );
       y0 = component( top );
@@ -1328,7 +1328,7 @@ public:
     * readjusted to keep its width and height unmodified.
     */
    template <typename T1>
-   void MoveTo( const pcl::GenericPoint<T1>& p )
+   void MoveTo( const pcl::GenericPoint<T1>& p ) noexcept
    {
       MoveTo( p.x, p.y );
    }
@@ -1341,7 +1341,7 @@ public:
     * readjusted to keep its width and height unmodified.
     */
    template <typename T1>
-   void MoveTo( T1 x, T1 y )
+   void MoveTo( T1 x, T1 y ) noexcept
    {
       component dx = x1 - x0, dy = y1 - y0;
       x0 = component( x );
@@ -1351,7 +1351,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   void MoveTo( const QPoint& p )
+   void MoveTo( const QPoint& p ) noexcept
    {
       MoveTo( p.x(), p.y() );
    }
@@ -1364,7 +1364,7 @@ public:
     * \code GenericRectangle r( *this ); r.MoveTo( p ); \endcode
     */
    template <typename T1>
-   GenericRectangle MovedTo( const pcl::GenericPoint<T1>& p ) const
+   GenericRectangle MovedTo( const pcl::GenericPoint<T1>& p ) const noexcept
    {
       GenericRectangle r( *this );
       r.MoveTo( p );
@@ -1378,7 +1378,7 @@ public:
     * \code GenericRectangle<T> r( *this ); r.MoveTo( x, y ); \endcode
     */
    template <typename T1>
-   GenericRectangle MovedTo( T1 x, T1 y ) const
+   GenericRectangle MovedTo( T1 x, T1 y ) const noexcept
    {
       GenericRectangle r( *this );
       r.MoveTo( x, y );
@@ -1390,7 +1390,7 @@ public:
     * coordinates of a point \a d as increments in the X and Y directions.
     */
    template <typename T1>
-   void MoveBy( const pcl::GenericPoint<T1>& d )
+   void MoveBy( const pcl::GenericPoint<T1>& d ) noexcept
    {
       MoveBy( d.x, d.y );
    }
@@ -1401,7 +1401,7 @@ public:
     * directions, respectively.
     */
    template <typename T1>
-   void MoveBy( T1 dx, T1 dy )
+   void MoveBy( T1 dx, T1 dy ) noexcept
    {
       x0 += component( dx );
       y0 += component( dy );
@@ -1419,7 +1419,7 @@ public:
     * \code MoveBy( dxy, dxy ); \endcode
     */
    template <typename T1>
-   void MoveBy( T1 dxy )
+   void MoveBy( T1 dxy ) noexcept
    {
       x0 += component( dxy );
       y0 += component( dxy );
@@ -1428,7 +1428,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   void MoveBy( const QPoint& p )
+   void MoveBy( const QPoint& p ) noexcept
    {
       MoveBy( p.x(), p.y() );
    }
@@ -1441,7 +1441,7 @@ public:
     * \code GenericRectangle<T> r( *this ); r.MoveBy( d ); \endcode
     */
    template <typename T1>
-   GenericRectangle MovedBy( const pcl::GenericPoint<T1>& d ) const
+   GenericRectangle MovedBy( const pcl::GenericPoint<T1>& d ) const noexcept
    {
       GenericRectangle r( *this );
       r.MoveBy( d );
@@ -1455,7 +1455,7 @@ public:
     * \code GenericRectangle<T> r( *this ); r.MoveBy( dx, dy ); \endcode
     */
    template <typename T1>
-   GenericRectangle MovedBy( T1 dx, T1 dy ) const
+   GenericRectangle MovedBy( T1 dx, T1 dy ) const noexcept
    {
       GenericRectangle r( *this );
       r.MoveBy( dx, dy );
@@ -1473,7 +1473,7 @@ public:
     * one, the upper left coordinate is modified.
     */
    template <typename T1>
-   void ResizeTo( T1 w, T1 h )
+   void ResizeTo( T1 w, T1 h ) noexcept
    {
       if ( x0 <= x1 )
          x1 = x0 + component( w );
@@ -1493,7 +1493,7 @@ public:
     * \code GenericRectangle<T> r( *this ); r.ResizeTo( w, h ); \endcode
     */
    template <typename T1>
-   GenericRectangle ResizedTo( T1 w, T1 h ) const
+   GenericRectangle ResizedTo( T1 w, T1 h ) const noexcept
    {
       GenericRectangle r( *this );
       r.ResizeTo( w, h );
@@ -1512,7 +1512,7 @@ public:
     * one, the upper left coordinate is modified.
     */
    template <typename T1>
-   void ResizeBy( T1 dw, T1 dh )
+   void ResizeBy( T1 dw, T1 dh ) noexcept
    {
       if ( x0 <= x1 )
          x1 += component( dw );
@@ -1532,7 +1532,7 @@ public:
     * \code GenericRectangle<T> r( *this ); r.ResizeBy( dw, dh ); \endcode
     */
    template <typename T1>
-   GenericRectangle ResizedBy( T1 dw, T1 dh ) const
+   GenericRectangle ResizedBy( T1 dw, T1 dh ) const noexcept
    {
       GenericRectangle r( *this );
       r.ResizeBy( dw, dh );
@@ -1548,7 +1548,7 @@ public:
     * than x0, then x0 is modified.
     */
    template <typename T1>
-   void SetWidth( T1 w )
+   void SetWidth( T1 w ) noexcept
    {
       if ( x0 <= x1 )
          x1 = x0 + component( w );
@@ -1565,7 +1565,7 @@ public:
     * than y0, then y0 is modified.
     */
    template <typename T1>
-   void SetHeight( T1 h )
+   void SetHeight( T1 h ) noexcept
    {
       if ( y0 <= y1 )
          y1 = y0 + component( h );
@@ -1579,7 +1579,7 @@ public:
     * left corner, and adds them to the bottom right corner.
     */
    template <typename T1>
-   void InflateBy( T1 dx, T1 dy )
+   void InflateBy( T1 dx, T1 dy ) noexcept
    {
       if ( x1 < x0 )
          dx = -dx;
@@ -1597,7 +1597,7 @@ public:
     * corner.
     */
    template <typename T1>
-   void InflateBy( T1 d )
+   void InflateBy( T1 d ) noexcept
    {
       if ( x0 <= x1 )
          x0 -= d, x1 += d;
@@ -1615,7 +1615,7 @@ public:
     * specified \a dx and \a dy increments.
     */
    template <typename T1>
-   GenericRectangle InflatedBy( T1 dx, T1 dy ) const
+   GenericRectangle InflatedBy( T1 dx, T1 dy ) const noexcept
    {
       GenericRectangle r( *this );
       r.InflateBy( dx, dy );
@@ -1627,7 +1627,7 @@ public:
     * specified \a d increments on both axes.
     */
    template <typename T1>
-   GenericRectangle InflatedBy( T1 d ) const
+   GenericRectangle InflatedBy( T1 d ) const noexcept
    {
       GenericRectangle r( *this );
       r.InflateBy( d );
@@ -1640,7 +1640,7 @@ public:
     * and subtracts them to the bottom right corner.
     */
    template <typename T1>
-   void DeflateBy( T1 dx, T1 dy )
+   void DeflateBy( T1 dx, T1 dy ) noexcept
    {
       if ( x1 < x0 )
          dx = -dx;
@@ -1658,7 +1658,7 @@ public:
     * corner.
     */
    template <typename T1>
-   void DeflateBy( T1 d )
+   void DeflateBy( T1 d ) noexcept
    {
       if ( x0 <= x1 )
          x0 += d, x1 -= d;
@@ -1676,7 +1676,7 @@ public:
     * \a dx and \a dy increments.
     */
    template <typename T1>
-   GenericRectangle DeflatedBy( T1 dx, T1 dy ) const
+   GenericRectangle DeflatedBy( T1 dx, T1 dy ) const noexcept
    {
       GenericRectangle r( *this );
       r.DeflateBy( dx, dy );
@@ -1688,7 +1688,7 @@ public:
     * \a d increment on both axes.
     */
    template <typename T1>
-   GenericRectangle DeflatedBy( T1 d ) const
+   GenericRectangle DeflatedBy( T1 d ) const noexcept
    {
       GenericRectangle r( *this );
       r.DeflateBy( d );
@@ -1702,7 +1702,7 @@ public:
     * \code GenericRectangle<T> r( *this ); r.SetWidth( w ); \endcode
     */
    template <typename T1>
-   GenericRectangle WidthSetTo( T1 w ) const
+   GenericRectangle WidthSetTo( T1 w ) const noexcept
    {
       GenericRectangle r( *this );
       r.SetWidth( w );
@@ -1716,7 +1716,7 @@ public:
     * \code GenericRectangle<T> r( *this ); r.SetHeight( h ); \endcode
     */
    template <typename T1>
-   GenericRectangle HeightSetTo( T1 h ) const
+   GenericRectangle HeightSetTo( T1 h ) const noexcept
    {
       GenericRectangle r( *this );
       r.SetHeight( h );
@@ -1729,7 +1729,7 @@ public:
     * \a yc.
     */
    template <typename T1, typename T2>
-   void Rotate( T1 angle, T2 xc, T2 yc )
+   void Rotate( T1 angle, T2 xc, T2 yc ) noexcept
    {
       T1 sa, ca; pcl::SinCos( angle, sa, ca );
       pcl::Rotate( x0, y0, sa, ca, xc, yc );
@@ -1741,7 +1741,7 @@ public:
     * with respect to the specified \a center of rotation.
     */
    template <typename T1, typename T2>
-   void Rotate( T1 angle, const GenericPoint<T2>& center )
+   void Rotate( T1 angle, const GenericPoint<T2>& center ) noexcept
    {
       Rotate( angle, center.x, center.y );
    }
@@ -1752,7 +1752,7 @@ public:
     * of rotation given by its coordinates \a xc and \a yc.
     */
    template <typename T1, typename T2>
-   void Rotate( T1 sa, T1 ca, T2 xc, T2 yc )
+   void Rotate( T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
    {
       pcl::Rotate( x0, y0, sa, ca, xc, yc );
       pcl::Rotate( x1, y1, sa, ca, xc, yc );
@@ -1764,7 +1764,7 @@ public:
     * specified \a center of rotation.
     */
    template <typename T1, typename T2>
-   void Rotate( T1 sa, T1 ca, const GenericPoint<T2>& center )
+   void Rotate( T1 sa, T1 ca, const GenericPoint<T2>& center ) noexcept
    {
       Rotate( sa, ca, center.x, center.y );
    }
@@ -1775,7 +1775,7 @@ public:
     * to a center of rotation given by its coordinates \a xc and \a yc.
     */
    template <typename T1, typename T2>
-   GenericRectangle Rotated( T1 angle, T2 xc, T2 yc ) const
+   GenericRectangle Rotated( T1 angle, T2 xc, T2 yc ) const noexcept
    {
       GenericRectangle r( *this );
       r.Rotate( angle, xc, yc );
@@ -1788,7 +1788,7 @@ public:
     * to the specified \a center of rotation.
     */
    template <typename T1, typename T2>
-   GenericRectangle Rotated( T1 angle, const GenericPoint<T2>& center ) const
+   GenericRectangle Rotated( T1 angle, const GenericPoint<T2>& center ) const noexcept
    {
       GenericRectangle r( *this );
       r.Rotate( angle, center );
@@ -1802,7 +1802,7 @@ public:
     * by its coordinates \a xc and \a yc.
     */
    template <typename T1, typename T2>
-   GenericRectangle Rotated( T1 sa, T1 ca, T2 xc, T2 yc ) const
+   GenericRectangle Rotated( T1 sa, T1 ca, T2 xc, T2 yc ) const noexcept
    {
       GenericRectangle r( *this );
       r.Rotate( sa, ca, xc, yc );
@@ -1816,7 +1816,7 @@ public:
     * rotation.
     */
    template <typename T1, typename T2>
-   GenericRectangle Rotated( T1 sa, T1 ca, const GenericPoint<T2>& center ) const
+   GenericRectangle Rotated( T1 sa, T1 ca, const GenericPoint<T2>& center ) const noexcept
    {
       GenericRectangle r( *this );
       r.Rotate( sa, ca, center );
@@ -1827,7 +1827,7 @@ public:
     * Rounds the coordinates of this rectangle to their corresponding nearest
     * integer coordinates.
     */
-   void Round()
+   void Round() noexcept
    {
       x0 = component( pcl::Round( double( x0 ) ) );
       y0 = component( pcl::Round( double( y0 ) ) );
@@ -1839,7 +1839,7 @@ public:
     * Rounds the coordinates of this rectangle to \a n fractional digits
     * (\a n >= 0).
     */
-   void Round( int n )
+   void Round( int n ) noexcept
    {
       PCL_PRECONDITION( n >= 0 )
       if ( n < 0 )
@@ -1854,7 +1854,7 @@ public:
     * Returns a rectangle whose coordinates are the coordinates of this object
     * rounded to their nearest integers.
     */
-   GenericRectangle Rounded() const
+   GenericRectangle Rounded() const noexcept
    {
       return GenericRectangle( component( pcl::Round( double( x0 ) ) ), component( pcl::Round( double( y0 ) ) ),
                                component( pcl::Round( double( x1 ) ) ), component( pcl::Round( double( y1 ) ) ) );
@@ -1864,7 +1864,7 @@ public:
     * Returns a rectangle whose coordinates are the coordinates of this object
     * rounded to \a n fractional digits (\a n >= 0).
     */
-   GenericRectangle Rounded( int n ) const
+   GenericRectangle Rounded( int n ) const noexcept
    {
       PCL_PRECONDITION( n >= 0 )
       return GenericRectangle( component( pcl::Round( double( x0 ), n ) ), component( pcl::Round( double( y0 ), n ) ),
@@ -1875,7 +1875,7 @@ public:
     * Returns a rectangle of integer template type whose coordinates are the
     * coordinates of this object rounded to their nearest integers.
     */
-   GenericRectangle<int> RoundedToInt() const
+   GenericRectangle<int> RoundedToInt() const noexcept
    {
       return GenericRectangle<int>( pcl::RoundInt( double( x0 ) ), pcl::RoundInt( double( y0 ) ),
                                     pcl::RoundInt( double( x1 ) ), pcl::RoundInt( double( y1 ) ) );
@@ -1886,7 +1886,7 @@ public:
     * this rectangle to the nearest integer coordinates a, b, c, d such that
     * a <= x0, b <= y0, c <= x1, d <= y1.
     */
-   void Truncate()
+   void Truncate() noexcept
    {
       x0 = component( pcl::Trunc( double( x0 ) ) );
       y0 = component( pcl::Trunc( double( y0 ) ) );
@@ -1900,7 +1900,7 @@ public:
     * nearest integer coordinates a, b, c, d such that a <= x0, b <= y0,
     * c <= x1, d <= y1.
     */
-   GenericRectangle Truncated() const
+   GenericRectangle Truncated() const noexcept
    {
       return GenericRectangle( component( pcl::Trunc( double( x0 ) ) ), component( pcl::Trunc( double( y0 ) ) ),
                                component( pcl::Trunc( double( x1 ) ) ), component( pcl::Trunc( double( y1 ) ) ) );
@@ -1912,7 +1912,7 @@ public:
     * this rectangle truncated to the nearest integer coordinates a, b, c, d
     * such that a <= x0, b <= y0, c <= x1, d <= y1.
     */
-   GenericRectangle<int> TruncatedToInt() const
+   GenericRectangle<int> TruncatedToInt() const noexcept
    {
       return GenericRectangle<int>( pcl::TruncInt( double( x0 ) ), pcl::TruncInt( double( y0 ) ),
                                     pcl::TruncInt( double( x1 ) ), pcl::TruncInt( double( y1 ) ) );
@@ -1923,7 +1923,7 @@ public:
     * rectangle.
     */
    template <typename T1>
-   GenericRectangle& operator =( const GenericRectangle<T1>& r )
+   GenericRectangle& operator =( const GenericRectangle<T1>& r ) noexcept
    {
       x0 = component( r.x0 );
       y0 = component( r.y0 );
@@ -1940,7 +1940,7 @@ public:
     * horizontal and vertical coordinates of this rectangle.
     */
    template <typename T1>
-   GenericRectangle& operator =( const pcl::GenericPoint<T1>& p )
+   GenericRectangle& operator =( const pcl::GenericPoint<T1>& p ) noexcept
    {
       x0 = x1 = component( p.x );
       y0 = y1 = component( p.y );
@@ -1953,14 +1953,14 @@ public:
     *
     * The scalar \a d is assigned to the four coordinates of this rectangle.
     */
-   GenericRectangle& operator =( component d )
+   GenericRectangle& operator =( component d ) noexcept
    {
       x0 = y0 = x1 = y1 = d;
       return *this;
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericRectangle& operator =( const QRect& r )
+   GenericRectangle& operator =( const QRect& r ) noexcept
    {
       x0 = component( r.left() );
       y0 = component( r.top() );
@@ -1983,7 +1983,7 @@ public:
     * \a s.y1 = \a r1.y1 + \a r2.y1
     */
    template <typename T1>
-   GenericRectangle& operator +=( const GenericRectangle<T1>& r )
+   GenericRectangle& operator +=( const GenericRectangle<T1>& r ) noexcept
    {
       x0 += component( r.x0 );
       y0 += component( r.y0 );
@@ -2006,7 +2006,7 @@ public:
     * \a s.y1 = \a r.y1 + \a p.y
     */
    template <typename T1>
-   GenericRectangle& operator +=( const pcl::GenericPoint<T1>& p )
+   GenericRectangle& operator +=( const pcl::GenericPoint<T1>& p ) noexcept
    {
       x0 += component( p.x );
       y0 += component( p.y );
@@ -2029,7 +2029,7 @@ public:
     * \a s.x1 = \a r.x1 + \a d \n
     * \a s.y1 = \a r.y1 + \a d
     */
-   GenericRectangle& operator +=( component d )
+   GenericRectangle& operator +=( component d ) noexcept
    {
       x0 += d;
       y0 += d;
@@ -2039,7 +2039,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericRectangle& operator +=( const QPoint& p )
+   GenericRectangle& operator +=( const QPoint& p ) noexcept
    {
       component dx = component( p.x() ), dy = component( p.y() );
       x0 += dx;
@@ -2063,7 +2063,7 @@ public:
     * \a s.y1 = \a r1.y1 - \a r2.y1
     */
    template <typename T1>
-   GenericRectangle& operator -=( const GenericRectangle<T1>& r )
+   GenericRectangle& operator -=( const GenericRectangle<T1>& r ) noexcept
    {
       x0 -= component( r.x0 );
       y0 -= component( r.y0 );
@@ -2086,7 +2086,7 @@ public:
     * \a s.y1 = \a r.y1 - \a p.y
     */
    template <typename T1>
-   GenericRectangle& operator -=( const pcl::GenericPoint<T1>& p )
+   GenericRectangle& operator -=( const pcl::GenericPoint<T1>& p ) noexcept
    {
       x0 -= component( p.x );
       y0 -= component( p.y );
@@ -2109,7 +2109,7 @@ public:
     * \a s.x1 = \a r.x1 - \a d \n
     * \a s.y1 = \a r.y1 - \a d
     */
-   GenericRectangle& operator -=( component d )
+   GenericRectangle& operator -=( component d ) noexcept
    {
       x0 -= d;
       y0 -= d;
@@ -2119,7 +2119,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericRectangle& operator -=( const QPoint& p )
+   GenericRectangle& operator -=( const QPoint& p ) noexcept
    {
       component dx = component( p.x() ), dy = component( p.y() );
       x0 -= dx;
@@ -2143,7 +2143,7 @@ public:
     * \a P.y1 = \a r1.y1 * \a r2.y1
     */
    template <typename T1>
-   GenericRectangle& operator *=( const GenericRectangle<T1>& r )
+   GenericRectangle& operator *=( const GenericRectangle<T1>& r ) noexcept
    {
       x0 *= component( r.x0 );
       y0 *= component( r.y0 );
@@ -2167,7 +2167,7 @@ public:
     * \a P.y1 = \a r.y1 * \a p.y
     */
    template <typename T1>
-   GenericRectangle& operator *=( const pcl::GenericPoint<T1>& p )
+   GenericRectangle& operator *=( const pcl::GenericPoint<T1>& p ) noexcept
    {
       x0 *= component( p.x );
       y0 *= component( p.y );
@@ -2190,7 +2190,7 @@ public:
     * \a P.x1 = \a r.x1 * \a d \n
     * \a P.y1 = \a r.y1 * \a d
     */
-   GenericRectangle& operator *=( component d )
+   GenericRectangle& operator *=( component d ) noexcept
    {
       x0 *= d;
       y0 *= d;
@@ -2200,7 +2200,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericRectangle& operator *=( const QPoint& p )
+   GenericRectangle& operator *=( const QPoint& p ) noexcept
    {
       component dx = component( p.x() ), dy = component( p.y() );
       x0 *= dx; y0 *= dy; x1 *= dx; y1 *= dy;
@@ -2221,7 +2221,7 @@ public:
     * \a Q.y1 = \a r1.y1 / \a r2.y1
     */
    template <typename T1>
-   GenericRectangle& operator /=( const GenericRectangle<T1>& r )
+   GenericRectangle& operator /=( const GenericRectangle<T1>& r ) noexcept
    {
       PCL_PRECONDITION( component( r.x0 ) != component( 0 ) && component( r.y0 ) != component( 0 ) &&
                         component( r.x1 ) != component( 0 ) && component( r.y1 ) != component( 0 ) )
@@ -2247,7 +2247,7 @@ public:
     * \a Q.y1 = \a r.y1 / \a p.y
     */
    template <typename T1>
-   GenericRectangle& operator /=( const pcl::GenericPoint<T1>& p )
+   GenericRectangle& operator /=( const pcl::GenericPoint<T1>& p ) noexcept
    {
       PCL_PRECONDITION( component( p.x ) != component( 0 ) && component( p.y ) != component( 0 ) )
       x0 /= component( p.x );
@@ -2271,7 +2271,7 @@ public:
     * \a Q.x1 = \a r.x1 / \a d \n
     * \a Q.y1 = \a r.y1 / \a d
     */
-   GenericRectangle& operator /=( component d )
+   GenericRectangle& operator /=( component d ) noexcept
    {
       PCL_PRECONDITION( d != component( 0 ) )
       x0 /= d; y0 /= d; x1 /= d; y1 /= d;
@@ -2279,7 +2279,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericRectangle& operator /=( const QPoint& p )
+   GenericRectangle& operator /=( const QPoint& p ) noexcept
    {
       PCL_PRECONDITION( component( p.x() ) != component( 0 ) && component( p.y() ) != component( 0 ) )
       component dx = component( p.x() ), dy = component( p.y() );
@@ -2294,7 +2294,7 @@ public:
    /*!
     * Returns a copy of this rectangle.
     */
-   GenericRectangle operator +() const
+   GenericRectangle operator +() const noexcept
    {
       return *this;
    }
@@ -2305,13 +2305,13 @@ public:
     * so defined is symmetric to this rectangle with respect to the origin of
     * coordinates.
     */
-   GenericRectangle operator -() const
+   GenericRectangle operator -() const noexcept
    {
       return GenericRectangle( -x0, -y0, -x1, -y1 );
    }
 
 #ifdef __PCL_QT_INTERFACE
-   operator QRect() const
+   operator QRect() const noexcept
    {
       return QRect( int( x0 ), int( y0 ), int( x1-x0 ), int( y1-y0 ) );
    }
@@ -2388,7 +2388,7 @@ public:
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-bool operator ==( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 )
+bool operator ==( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 ) noexcept
 {
    return r1.x0 == r2.x0 && r1.y0 == r2.y0 && r1.x1 == r2.x1 && r1.y1 == r2.y1;
 }
@@ -2399,7 +2399,7 @@ bool operator ==( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-bool operator ==( const GenericRectangle<T>& r1, T d2 )
+bool operator ==( const GenericRectangle<T>& r1, T d2 ) noexcept
 {
    return r1.x0 == d2 && r1.y0 == d2 && r1.x1 == d2 && r1.y1 == d2;
 }
@@ -2411,7 +2411,7 @@ bool operator ==( const GenericRectangle<T>& r1, T d2 )
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-bool operator ==( T d1, const GenericRectangle<T>& r2 )
+bool operator ==( T d1, const GenericRectangle<T>& r2 ) noexcept
 {
    return d1 == r2.x0 && d1 == r2.y0 && d1 == r2.x1 && d1 == r2.y1;
 }
@@ -2423,7 +2423,7 @@ bool operator ==( T d1, const GenericRectangle<T>& r2 )
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-bool operator <( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 )
+bool operator <( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 ) noexcept
 {
    T1 x01 = Min( r1.x0, r1.x1 ); T1 y01 = Min( r1.y0, r1.y1 );
    T1 x11 = Max( r1.x0, r1.x1 ); T1 y11 = Max( r1.y0, r1.y1 );
@@ -2454,7 +2454,7 @@ bool operator <( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T1> operator +( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 )
+GenericRectangle<T1> operator +( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 ) noexcept
 {
    return GenericRectangle<T1>( T1( r1.x0 + r2.x0 ), T1( r1.y0 + r2.y0 ),
                                 T1( r1.x1 + r2.x1 ), T1( r1.y1 + r2.y1 ) );
@@ -2475,7 +2475,7 @@ GenericRectangle<T1> operator +( const GenericRectangle<T1>& r1, const GenericRe
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T1> operator +( const GenericRectangle<T1>& r1, const GenericPoint<T2>& p2 )
+GenericRectangle<T1> operator +( const GenericRectangle<T1>& r1, const GenericPoint<T2>& p2 ) noexcept
 {
    return GenericRectangle<T1>( T1( r1.x0 + p2.x ), T1( r1.y0 + p2.y ),
                                 T1( r1.x1 + p2.x ), T1( r1.y1 + p2.y ) );
@@ -2491,7 +2491,7 @@ GenericRectangle<T1> operator +( const GenericRectangle<T1>& r1, const GenericPo
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T2> operator +( const GenericPoint<T1>& p1, const GenericRectangle<T2>& r2 )
+GenericRectangle<T2> operator +( const GenericPoint<T1>& p1, const GenericRectangle<T2>& r2 ) noexcept
 {
    return GenericRectangle<T2>( T2( p1.x + r2.x0 ), T2( p1.y + r2.y0 ),
                                 T2( p1.x + r2.x1 ), T2( p1.y + r2.y1 ) );
@@ -2512,7 +2512,7 @@ GenericRectangle<T2> operator +( const GenericPoint<T1>& p1, const GenericRectan
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-GenericRectangle<T> operator +( const GenericRectangle<T>& r1, T d2 )
+GenericRectangle<T> operator +( const GenericRectangle<T>& r1, T d2 ) noexcept
 {
    return GenericRectangle<T>( r1.x0+d2, r1.y0+d2, r1.x1+d2, r1.y1+d2 );
 }
@@ -2527,7 +2527,7 @@ GenericRectangle<T> operator +( const GenericRectangle<T>& r1, T d2 )
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-GenericRectangle<T> operator +( T d1, const GenericRectangle<T>& r2 )
+GenericRectangle<T> operator +( T d1, const GenericRectangle<T>& r2 ) noexcept
 {
    return GenericRectangle<T>( d1+r2.x0, d1+r2.y0, d1+r2.x1, d1+r2.y1 );
 }
@@ -2548,7 +2548,7 @@ GenericRectangle<T> operator +( T d1, const GenericRectangle<T>& r2 )
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T1> operator -( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 )
+GenericRectangle<T1> operator -( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 ) noexcept
 {
    return GenericRectangle<T1>( T1( r1.x0 - r2.x0 ), T1( r1.y0 - r2.y0 ),
                                 T1( r1.x1 - r2.x1 ), T1( r1.y1 - r2.y1 ) );
@@ -2569,7 +2569,7 @@ GenericRectangle<T1> operator -( const GenericRectangle<T1>& r1, const GenericRe
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T1> operator -( const GenericRectangle<T1>& r1, const GenericPoint<T2>& p2 )
+GenericRectangle<T1> operator -( const GenericRectangle<T1>& r1, const GenericPoint<T2>& p2 ) noexcept
 {
    return GenericRectangle<T1>( T1( r1.x0 - p2.x ), T1( r1.y0 - p2.y ),
                                 T1( r1.x1 - p2.x ), T1( r1.y1 - p2.y ) );
@@ -2590,7 +2590,7 @@ GenericRectangle<T1> operator -( const GenericRectangle<T1>& r1, const GenericPo
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T2> operator -( const GenericPoint<T1>& p1, const GenericRectangle<T2>& r2 )
+GenericRectangle<T2> operator -( const GenericPoint<T1>& p1, const GenericRectangle<T2>& r2 ) noexcept
 {
    return GenericRectangle<T2>( T2( p1.x - r2.x0 ), T2( p1.y - r2.y0 ),
                                 T2( p1.x - r2.x1 ), T2( p1.y - r2.y1 ) );
@@ -2611,7 +2611,7 @@ GenericRectangle<T2> operator -( const GenericPoint<T1>& p1, const GenericRectan
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-GenericRectangle<T> operator -( const GenericRectangle<T>& r1, T d2 )
+GenericRectangle<T> operator -( const GenericRectangle<T>& r1, T d2 ) noexcept
 {
    return GenericRectangle<T>( r1.x0-d2, r1.y0-d2, r1.x1-d2, r1.y1-d2 );
 }
@@ -2631,7 +2631,7 @@ GenericRectangle<T> operator -( const GenericRectangle<T>& r1, T d2 )
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-GenericRectangle<T> operator -( T d1, const GenericRectangle<T>& r2 )
+GenericRectangle<T> operator -( T d1, const GenericRectangle<T>& r2 ) noexcept
 {
    return GenericRectangle<T>( d1-r2.x0, d1-r2.y0, d1-r2.x1, d1-r2.y1 );
 }
@@ -2652,7 +2652,7 @@ GenericRectangle<T> operator -( T d1, const GenericRectangle<T>& r2 )
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T1> operator *( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 )
+GenericRectangle<T1> operator *( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 ) noexcept
 {
    return GenericRectangle<T1>( T1( r1.x0 * r2.x0 ), T1( r1.y0 * r2.y0 ),
                                 T1( r1.x1 * r2.x1 ), T1( r1.y1 * r2.y1 ) );
@@ -2673,7 +2673,7 @@ GenericRectangle<T1> operator *( const GenericRectangle<T1>& r1, const GenericRe
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T1> operator *( const GenericRectangle<T1>& r1, const GenericPoint<T2>& p2 )
+GenericRectangle<T1> operator *( const GenericRectangle<T1>& r1, const GenericPoint<T2>& p2 ) noexcept
 {
    return GenericRectangle<T1>( T1( r1.x0 * p2.x ), T1( r1.y0 * p2.y ),
                                 T1( r1.x1 * p2.x ), T1( r1.y1 * p2.y ) );
@@ -2689,7 +2689,7 @@ GenericRectangle<T1> operator *( const GenericRectangle<T1>& r1, const GenericPo
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T2> operator *( const GenericPoint<T1>& p1, const GenericRectangle<T2>& r2 )
+GenericRectangle<T2> operator *( const GenericPoint<T1>& p1, const GenericRectangle<T2>& r2 ) noexcept
 {
    return GenericRectangle<T2>( T2( p1.x * r2.x0 ), T2( p1.y * r2.y0 ),
                                 T2( p1.x * r2.x1 ), T2( p1.y * r2.y1 ) );
@@ -2710,7 +2710,7 @@ GenericRectangle<T2> operator *( const GenericPoint<T1>& p1, const GenericRectan
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-GenericRectangle<T> operator *( const GenericRectangle<T>& r1, T d2 )
+GenericRectangle<T> operator *( const GenericRectangle<T>& r1, T d2 ) noexcept
 {
    return GenericRectangle<T>( r1.x0*d2, r1.y0*d2, r1.x1*d2, r1.y1*d2 );
 }
@@ -2725,7 +2725,7 @@ GenericRectangle<T> operator *( const GenericRectangle<T>& r1, T d2 )
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-GenericRectangle<T> operator *( T d1, const GenericRectangle<T>& r2 )
+GenericRectangle<T> operator *( T d1, const GenericRectangle<T>& r2 ) noexcept
 {
    return GenericRectangle<T>( d1*r2.x0, d1*r2.y0, d1*r2.x1, d1*r2.y1 );
 }
@@ -2746,7 +2746,7 @@ GenericRectangle<T> operator *( T d1, const GenericRectangle<T>& r2 )
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T1> operator /( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 )
+GenericRectangle<T1> operator /( const GenericRectangle<T1>& r1, const GenericRectangle<T2>& r2 ) noexcept
 {
    PCL_PRECONDITION( r2.x0 != T2( 0 ) && r2.y0 != T2( 0 ) &&
                      r2.x1 != T2( 0 ) && r2.y1 != T2( 0 ) )
@@ -2769,7 +2769,7 @@ GenericRectangle<T1> operator /( const GenericRectangle<T1>& r1, const GenericRe
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T1> operator /( const GenericRectangle<T1>& r1, const GenericPoint<T2>& p2 )
+GenericRectangle<T1> operator /( const GenericRectangle<T1>& r1, const GenericPoint<T2>& p2 ) noexcept
 {
    PCL_PRECONDITION( p2.x != T2( 0 ) && p2.y != T2( 0 ) )
    return GenericRectangle<T1>( T1( r1.x0 / p2.x ), T1( r1.y0 / p2.y ),
@@ -2791,7 +2791,7 @@ GenericRectangle<T1> operator /( const GenericRectangle<T1>& r1, const GenericPo
  * \ingroup rect_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericRectangle<T2> operator /( const GenericPoint<T1>& p1, const GenericRectangle<T2>& r2 )
+GenericRectangle<T2> operator /( const GenericPoint<T1>& p1, const GenericRectangle<T2>& r2 ) noexcept
 {
    PCL_PRECONDITION( r2.x0 != T2( 0 ) && r2.y0 != T2( 0 ) &&
                      r2.x1 != T2( 0 ) && r2.y1 != T2( 0 ) )
@@ -2814,7 +2814,7 @@ GenericRectangle<T2> operator /( const GenericPoint<T1>& p1, const GenericRectan
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-GenericRectangle<T> operator /( const GenericRectangle<T>& r1, T d2 )
+GenericRectangle<T> operator /( const GenericRectangle<T>& r1, T d2 ) noexcept
 {
    PCL_PRECONDITION( d2 != T( 0 ) )
    return GenericRectangle<T>( r1.x0/d2, r1.y0/d2, r1.x1/d2, r1.y1/d2 );
@@ -2835,7 +2835,7 @@ GenericRectangle<T> operator /( const GenericRectangle<T>& r1, T d2 )
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-GenericRectangle<T> operator /( T d1, const GenericRectangle<T>& r2 )
+GenericRectangle<T> operator /( T d1, const GenericRectangle<T>& r2 ) noexcept
 {
    PCL_PRECONDITION( r2.x0 != T( 0 ) && r2.y0 != T( 0 ) &&
                      r2.x1 != T( 0 ) && r2.y1 != T( 0 ) )
@@ -2858,7 +2858,7 @@ GenericRectangle<T> operator /( T d1, const GenericRectangle<T>& r2 )
  * \ingroup rect_functions_2d
  */
 template <typename T, typename T1, typename T2> inline
-void Rotate( GenericRectangle<T>& r, T1 a, T2 xc, T2 yc )
+void Rotate( GenericRectangle<T>& r, T1 a, T2 xc, T2 yc ) noexcept
 {
    T1 sa, ca; pcl::SinCos( a, sa, ca );
    pcl::Rotate( r.x0, r.y0, sa, ca, xc, yc );
@@ -2881,7 +2881,7 @@ void Rotate( GenericRectangle<T>& r, T1 a, T2 xc, T2 yc )
  * \ingroup rect_functions_2d
  */
 template <typename T, typename T1, typename T2> inline
-void Rotate( GenericRectangle<T>& r, T1 a, const GenericPoint<T2>& c )
+void Rotate( GenericRectangle<T>& r, T1 a, const GenericPoint<T2>& c ) noexcept
 {
    pcl::Rotate( r, a, c.x, c.y );
 }
@@ -2902,7 +2902,7 @@ void Rotate( GenericRectangle<T>& r, T1 a, const GenericPoint<T2>& c )
  * \ingroup rect_functions_2d
  */
 template <typename T, typename T1, typename T2> inline
-void Rotate( GenericRectangle<T>& r, T1 sa, T1 ca, T2 xc, T2 yc )
+void Rotate( GenericRectangle<T>& r, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    pcl::Rotate( r.x0, r.y0, sa, ca, xc, yc );
    pcl::Rotate( r.x1, r.y1, sa, ca, xc, yc );
@@ -2924,7 +2924,7 @@ void Rotate( GenericRectangle<T>& r, T1 sa, T1 ca, T2 xc, T2 yc )
  * \ingroup rect_functions_2d
  */
 template <typename T, typename T1, typename T2> inline
-void Rotate( GenericRectangle<T>& r, T1 sa, T1 ca, const GenericPoint<T2>& c )
+void Rotate( GenericRectangle<T>& r, T1 sa, T1 ca, const GenericPoint<T2>& c ) noexcept
 {
    pcl::Rotate( r, sa, ca, c.x, c.y );
 }
@@ -2941,7 +2941,7 @@ void Rotate( GenericRectangle<T>& r, T1 sa, T1 ca, const GenericPoint<T2>& c )
  * \ingroup rect_functions_2d
  */
 template <typename T> inline
-void Swap( GenericRectangle<T>& r1, GenericRectangle<T>& r2 )
+void Swap( GenericRectangle<T>& r1, GenericRectangle<T>& r2 ) noexcept
 {
    pcl::Swap( r1.x0, r2.x0 ); pcl::Swap( r1.y0, r2.y0 );
    pcl::Swap( r1.x1, r2.x1 ); pcl::Swap( r1.y1, r2.y1 );
@@ -3021,4 +3021,4 @@ typedef F64Rect                     DRect;
 #endif  // __PCL_Rectangle_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Rectangle.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Rectangle.h - Released 2020-11-20T19:46:29Z

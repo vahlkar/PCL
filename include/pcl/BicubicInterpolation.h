@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/BicubicInterpolation.h - Released 2020-10-12T19:24:41Z
+// pcl/BicubicInterpolation.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -98,7 +98,7 @@ public:
 
 protected:
 
-   void InitXY( int& i1, int& j1, double* p0, double* p1, double* p2, double* p3, double x, double y ) const
+   void InitXY( int& i1, int& j1, double* p0, double* p1, double* p2, double* p3, double x, double y ) const noexcept
    {
       PCL_PRECONDITION( int( x ) >= 0 )
       PCL_PRECONDITION( int( x ) < m_width )
@@ -167,7 +167,7 @@ __done:
       ;
    }
 
-   void InitYX( int& i1, int& j1, double* p0, double* p1, double* p2, double* p3, double x, double y ) const
+   void InitYX( int& i1, int& j1, double* p0, double* p1, double* p2, double* p3, double x, double y ) const noexcept
    {
       PCL_PRECONDITION( int( x ) >= 0 )
       PCL_PRECONDITION( int( x ) < m_width )
@@ -238,7 +238,7 @@ __done:
 
 private:
 
-   void GetRow( double* p, const T* fp, int j0, int j2, int j3 ) const
+   void GetRow( double* p, const T* fp, int j0, int j2, int j3 ) const noexcept
    {
       if ( m_fillBorder )
       {
@@ -277,7 +277,7 @@ private:
       }
    }
 
-   void GetColumn( double* p, const T* fp, int i0, int i2, int i3 ) const
+   void GetColumn( double* p, const T* fp, int i0, int i2, int i3 ) const noexcept
    {
       if ( m_fillBorder )
       {
@@ -454,7 +454,7 @@ public:
     * algorithm is being used to interpolate an image on the horizontal axis
     * exclusively.
     */
-   void InterpolateX( double fx[], double x, double y ) const
+   void InterpolateX( double fx[], double x, double y ) const noexcept
    {
       PCL_PRECONDITION( m_data != nullptr )
       PCL_PRECONDITION( m_width > 0 && m_height > 0 )
@@ -489,7 +489,7 @@ public:
     * algorithm is being used to interpolate an image on the vertical axis
     * exclusively.
     */
-   void InterpolateY( double fy[], double x, double y ) const
+   void InterpolateY( double fy[], double x, double y ) const noexcept
    {
       PCL_PRECONDITION( m_data != nullptr )
       PCL_PRECONDITION( m_width > 0 && m_height > 0 )
@@ -529,7 +529,7 @@ public:
     * spline interpolation with other interpolation algorithms, which allows
     * for flexible interpolation schemes.
     */
-   double InterpolateVector( const double c[], double dx ) const
+   double InterpolateVector( const double c[], double dx ) const noexcept
    {
       double C[ 4 ];
       GetSplineCoefficients( C, dx );
@@ -543,7 +543,7 @@ public:
     * See the documentation for SetClampingThreshold( float ) for a detailed
     * description of the automatic linear clamping mechanism.
     */
-   float ClampingThreshold() const
+   float ClampingThreshold() const noexcept
    {
       return m_clamp;
    }
@@ -571,7 +571,7 @@ public:
     * The specified clamping threshold \e clamp must be in the [0,1] range.
     * Lower values cause a more aggressive deringing effect.
     */
-   void SetClampingThreshold( float c )
+   void SetClampingThreshold( float c ) noexcept
    {
       PCL_PRECONDITION( 0 <= c && c <= 1 )
       m_clamp = Range( c, 0.0F, 1.0F );
@@ -582,7 +582,7 @@ private:
    double m_clamp;
 
    PCL_HOT_FUNCTION
-   double Interpolate( const double p[], const double C[] ) const
+   double Interpolate( const double* __restrict__ p, const double* __restrict__ C ) const noexcept
    {
       // Unclamped code:
       //return p[0]*C[0] + p[1]*C[1] + p[2]*C[2] + p[3]*C[3];
@@ -592,7 +592,7 @@ private:
    }
 
    PCL_HOT_FUNCTION
-   void GetSplineCoefficients( double C[], double dx ) const
+   void GetSplineCoefficients( double* __restrict__ C, double dx ) const noexcept
    {
       double dx2 = dx*dx;
       double dx3 = dx2*dx;
@@ -746,12 +746,12 @@ public:
 
 private:
 
-   double BXY( const double* p, int j, double x, double y ) const
+   double BXY( const double* __restrict__ p, int j, double x, double y ) const noexcept
    {
       return p[j]*B( x )*B( y );
    }
 
-   double B( double x ) const
+   double B( double x ) const noexcept
    {
       double fx = (x > 0) ? x*x*x : 0;
 
@@ -788,4 +788,4 @@ private:
 #endif   // __PCL_BicubicInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/BicubicInterpolation.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/BicubicInterpolation.h - Released 2020-11-20T19:46:29Z

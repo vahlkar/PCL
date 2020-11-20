@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Array.h - Released 2020-10-12T19:24:41Z
+// pcl/Array.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -68,7 +68,7 @@
 #include <pcl/Rotate.h>
 #include <pcl/Search.h>
 #include <pcl/Sort.h>
-#include <pcl/StdAlloc.h>
+#include <pcl/StandardAllocator.h>
 #include <pcl/Utility.h>
 
 namespace pcl
@@ -219,7 +219,7 @@ public:
    /*!
     * Returns true iff this array uniquely references its contained data.
     */
-   bool IsUnique() const
+   bool IsUnique() const noexcept
    {
       return m_data->IsUnique();
    }
@@ -229,7 +229,7 @@ public:
     *
     * Two objects are aliases if both share the same data.
     */
-   bool IsAliasOf( const Array& x ) const
+   bool IsAliasOf( const Array& x ) const noexcept
    {
       return m_data == x.m_data;
    }
@@ -257,7 +257,7 @@ public:
     * Returns the total number of bytes required to store the objects contained
     * by this dynamic array.
     */
-   size_type Size() const
+   size_type Size() const noexcept
    {
       return m_data->Size();
    }
@@ -265,7 +265,7 @@ public:
    /*!
     * Returns the length of this dynamic array.
     */
-   size_type Length() const
+   size_type Length() const noexcept
    {
       return m_data->Length();
    }
@@ -274,7 +274,7 @@ public:
     * Returns the capacity of this array. The capacity is the maximum number of
     * objects that this array can contain without requiring a reallocation.
     */
-   size_type Capacity() const
+   size_type Capacity() const noexcept
    {
       return m_data->Capacity();
    }
@@ -285,7 +285,7 @@ public:
     * objects that can be added to this array without requiring a reallocation.
     * It is equal to Capacity() - Length() by definition.
     */
-   size_type Available() const
+   size_type Available() const noexcept
    {
       return m_data->Available();
    }
@@ -303,7 +303,7 @@ public:
     * immediately. Invalid arrays are always destroyed automatically during
     * move construction and move assignment operations.
     */
-   bool IsValid() const
+   bool IsValid() const noexcept
    {
       return m_data != nullptr;
    }
@@ -311,7 +311,7 @@ public:
    /*!
     * Returns true iff this array is empty.
     */
-   bool IsEmpty() const
+   bool IsEmpty() const noexcept
    {
       return m_data->IsEmpty();
    }
@@ -320,7 +320,7 @@ public:
     * Returns the minimum legal index in this array (always zero). For empty
     * arrays, this function returns a meaningless value.
     */
-   size_type LowerBound() const
+   size_type LowerBound() const noexcept
    {
       return 0;
    }
@@ -329,7 +329,7 @@ public:
     * Returns the maximum legal index in this array. It is equal to Length()-1.
     * For empty arrays, this function returns a meaningless value.
     */
-   size_type UpperBound() const
+   size_type UpperBound() const noexcept
    {
       return Length()-1;
    }
@@ -337,7 +337,7 @@ public:
    /*!
     * Returns a reference to the allocator object used by this array.
     */
-   const allocator& GetAllocator() const
+   const allocator& Allocator() const noexcept
    {
       return m_data->alloc;
    }
@@ -364,7 +364,7 @@ public:
    /*!
     * Returns an immutable array iterator located at the specified index \a i.
     */
-   const_iterator At( size_type i ) const
+   const_iterator At( size_type i ) const noexcept
    {
       PCL_PRECONDITION( !IsEmpty() && i < Length() )
       return m_data->begin + i;
@@ -398,7 +398,7 @@ public:
     * Returns a reference to the unmodifiable element at the specified index
     * \a i in this array. No bounds checking is performed.
     */
-   const T& operator []( size_type i ) const
+   const T& operator []( size_type i ) const noexcept
    {
       return *At( i );
    }
@@ -416,7 +416,7 @@ public:
    /*!
     * Returns a reference to the unmodifiable first element of this array.
     */
-   const T& operator *() const
+   const T& operator *() const noexcept
    {
       PCL_PRECONDITION( m_data->begin != nullptr )
       return *m_data->begin;
@@ -434,7 +434,7 @@ public:
    /*!
     * Returns an immutable iterator located at the beginning of this array.
     */
-   const_iterator Begin() const
+   const_iterator Begin() const noexcept
    {
       return m_data->begin;
    }
@@ -442,7 +442,7 @@ public:
    /*!
     * Returns an immutable iterator located at the beginning of this array.
     */
-   const_iterator ConstBegin() const
+   const_iterator ConstBegin() const noexcept
    {
       return m_data->begin;
    }
@@ -459,7 +459,7 @@ public:
    /*!
     * Returns an immutable iterator located at the end of this array.
     */
-   const_iterator End() const
+   const_iterator End() const noexcept
    {
       return m_data->end;
    }
@@ -467,7 +467,7 @@ public:
    /*!
     * Returns an immutable iterator located at the end of this array.
     */
-   const_iterator ConstEnd() const
+   const_iterator ConstEnd() const noexcept
    {
       return m_data->end;
    }
@@ -491,7 +491,7 @@ public:
     *
     * The reverse beginning corresponds to the last element in the array.
     */
-   const_reverse_iterator ReverseBegin() const
+   const_reverse_iterator ReverseBegin() const noexcept
    {
       PCL_PRECONDITION( m_data->end != nullptr )
       return m_data->end - 1;
@@ -503,7 +503,7 @@ public:
     *
     * The reverse beginning corresponds to the last element in the array.
     */
-   const_reverse_iterator ConstReverseBegin() const
+   const_reverse_iterator ConstReverseBegin() const noexcept
    {
       PCL_PRECONDITION( m_data->end != nullptr )
       return m_data->end - 1;
@@ -530,7 +530,7 @@ public:
     * The reverse end corresponds to an (nonexistent) element immediately
     * before the first element in the array.
     */
-   const_reverse_iterator ReverseEnd() const
+   const_reverse_iterator ReverseEnd() const noexcept
    {
       PCL_PRECONDITION( m_data->begin != nullptr )
       return m_data->begin - 1;
@@ -543,7 +543,7 @@ public:
     * The reverse end corresponds to an (nonexistent) element immediately
     * before the first element in the array.
     */
-   const_reverse_iterator ConstReverseEnd() const
+   const_reverse_iterator ConstReverseEnd() const noexcept
    {
       PCL_PRECONDITION( m_data->begin != nullptr )
       return m_data->begin - 1;
@@ -602,7 +602,7 @@ public:
    /*!
     * STL-compatible iteration. Equivalent to Begin() const.
     */
-   const_iterator begin() const
+   const_iterator begin() const noexcept
    {
       return Begin();
    }
@@ -618,7 +618,7 @@ public:
    /*!
     * STL-compatible iteration. Equivalent to End() const.
     */
-   const_iterator end() const
+   const_iterator end() const noexcept
    {
       return End();
    }
@@ -1380,7 +1380,7 @@ public:
     * successively from the first contained object to the last one.
     */
    template <class F>
-   void Apply( F f ) const
+   void Apply( F f ) const noexcept( noexcept( f ) )
    {
       pcl::Apply( m_data->begin, m_data->end, f );
    }
@@ -1391,7 +1391,7 @@ public:
     * exist.
     */
    template <class F>
-   iterator FirstThat( F f ) const
+   iterator FirstThat( F f ) const noexcept( noexcept( f ) )
    {
       return const_cast<iterator>( pcl::FirstThat( m_data->begin, m_data->end, f ) );
    }
@@ -1402,14 +1402,14 @@ public:
     * exist.
     */
    template <class F>
-   iterator LastThat( F f ) const
+   iterator LastThat( F f ) const noexcept( noexcept( f ) )
    {
       return const_cast<iterator>( pcl::LastThat( m_data->begin, m_data->end, f ) );
    }
 
    /*! #
     */
-   size_type Count( const T& v ) const
+   size_type Count( const T& v ) const noexcept
    {
       return pcl::Count( m_data->begin, m_data->end, v );
    }
@@ -1417,7 +1417,7 @@ public:
    /*! #
     */
    template <class BP>
-   size_type Count( const T& v, BP p ) const
+   size_type Count( const T& v, BP p ) const noexcept( noexcept( p ) )
    {
       return pcl::Count( m_data->begin, m_data->end, v, p );
    }
@@ -1425,14 +1425,14 @@ public:
    /*! #
     */
    template <class UP>
-   size_type CountIf( UP p ) const
+   size_type CountIf( UP p ) const noexcept( noexcept( p ) )
    {
       return pcl::CountIf( m_data->begin, m_data->end, p );
    }
 
    /*! #
     */
-   iterator MinItem() const
+   iterator MinItem() const noexcept
    {
       return const_cast<iterator>( pcl::MinItem( m_data->begin, m_data->end ) );
    }
@@ -1440,14 +1440,14 @@ public:
    /*! #
     */
    template <class BP>
-   iterator MinItem( BP p ) const
+   iterator MinItem( BP p ) const noexcept( noexcept( p ) )
    {
       return const_cast<iterator>( pcl::MinItem( m_data->begin, m_data->end, p ) );
    }
 
    /*! #
     */
-   iterator MaxItem() const
+   iterator MaxItem() const noexcept
    {
       return const_cast<iterator>( pcl::MaxItem( m_data->begin, m_data->end ) );
    }
@@ -1455,7 +1455,7 @@ public:
    /*! #
     */
    template <class BP>
-   iterator MaxItem( BP p ) const
+   iterator MaxItem( BP p ) const noexcept( noexcept( p ) )
    {
       return const_cast<iterator>( pcl::MaxItem( m_data->begin, m_data->end, p ) );
    }
@@ -1511,7 +1511,7 @@ public:
 
    /*! #
     */
-   iterator Search( const T& v ) const
+   iterator Search( const T& v ) const noexcept
    {
       return const_cast<iterator>( pcl::LinearSearch( m_data->begin, m_data->end, v ) );
    }
@@ -1519,14 +1519,14 @@ public:
    /*! #
     */
    template <class BP>
-   iterator Search( const T& v, BP p ) const
+   iterator Search( const T& v, BP p ) const noexcept( noexcept( p ) )
    {
       return const_cast<iterator>( pcl::LinearSearch( m_data->begin, m_data->end, v, p ) );
    }
 
    /*! #
     */
-   iterator SearchLast( const T& v ) const
+   iterator SearchLast( const T& v ) const noexcept
    {
       return const_cast<iterator>( pcl::LinearSearchLast( m_data->begin, m_data->end, v ) );
    }
@@ -1534,7 +1534,7 @@ public:
    /*! #
     */
    template <class BP>
-   iterator SearchLast( const T& v, BP p ) const
+   iterator SearchLast( const T& v, BP p ) const noexcept( noexcept( p ) )
    {
       return const_cast<iterator>( pcl::LinearSearchLast( m_data->begin, m_data->end, v, p ) );
    }
@@ -1542,7 +1542,7 @@ public:
    /*! #
     */
    template <class FI>
-   iterator SearchSubset( FI i, FI j ) const
+   iterator SearchSubset( FI i, FI j ) const noexcept
    {
       return const_cast<iterator>( pcl::Search( m_data->begin, m_data->end, i, j ) );
    }
@@ -1550,7 +1550,7 @@ public:
    /*! #
     */
    template <class FI, class BP>
-   iterator SearchSubset( FI i, FI j, BP p ) const
+   iterator SearchSubset( FI i, FI j, BP p ) const noexcept( noexcept( p ) )
    {
       return const_cast<iterator>( pcl::Search( m_data->begin, m_data->end, i, j, p ) );
    }
@@ -1558,7 +1558,7 @@ public:
    /*! #
     */
    template <class C>
-   iterator SearchSubset( const C& x ) const
+   iterator SearchSubset( const C& x ) const noexcept
    {
       PCL_ASSERT_DIRECT_CONTAINER( C, T );
       return const_cast<iterator>( pcl::Search( m_data->begin, m_data->end, x.Begin(), x.End() ) );
@@ -1567,7 +1567,7 @@ public:
    /*! #
     */
    template <class C, class BP>
-   iterator SearchSubset( const C& x, BP p ) const
+   iterator SearchSubset( const C& x, BP p ) const noexcept( noexcept( p ) )
    {
       PCL_ASSERT_DIRECT_CONTAINER( C, T );
       return const_cast<iterator>( pcl::Search( m_data->begin, m_data->end, x.Begin(), x.End(), p ) );
@@ -1576,7 +1576,7 @@ public:
    /*! #
     */
    template <class BI>
-   iterator SearchLastSubset( BI i, BI j ) const
+   iterator SearchLastSubset( BI i, BI j ) const noexcept
    {
       return const_cast<iterator>( pcl::SearchLast( m_data->begin, m_data->end, i, j ) );
    }
@@ -1584,7 +1584,7 @@ public:
    /*! #
     */
    template <class BI, class BP>
-   iterator SearchLastSubset( BI i, BI j, BP p ) const
+   iterator SearchLastSubset( BI i, BI j, BP p ) const noexcept( noexcept( p ) )
    {
       return const_cast<iterator>( pcl::SearchLast( m_data->begin, m_data->end, i, j, p ) );
    }
@@ -1592,7 +1592,7 @@ public:
    /*! #
     */
    template <class C>
-   iterator SearchLastSubset( const C& x ) const
+   iterator SearchLastSubset( const C& x ) const noexcept
    {
       PCL_ASSERT_DIRECT_CONTAINER( C, T );
       return const_cast<iterator>( pcl::SearchLast( m_data->begin, m_data->end, x.Begin(), x.End() ) );
@@ -1601,7 +1601,7 @@ public:
    /*! #
     */
    template <class C, class BP>
-   iterator SearchLastSubset( const C& x, BP p ) const
+   iterator SearchLastSubset( const C& x, BP p ) const noexcept( noexcept( p ) )
    {
       PCL_ASSERT_DIRECT_CONTAINER( C, T );
       return const_cast<iterator>( pcl::SearchLast( m_data->begin, m_data->end, x.Begin(), x.End(), p ) );
@@ -1609,7 +1609,7 @@ public:
 
    /*! #
     */
-   bool Contains( const T& v ) const
+   bool Contains( const T& v ) const noexcept
    {
       return Search( v ) != m_data->end;
    }
@@ -1617,7 +1617,7 @@ public:
    /*! #
     */
    template <class BP>
-   bool Contains( const T& v, BP p ) const
+   bool Contains( const T& v, BP p ) const noexcept( noexcept( p ) )
    {
       return Search( v, p ) != m_data->end;
    }
@@ -1625,7 +1625,7 @@ public:
    /*! #
     */
    template <class FI>
-   iterator ContainsSubset( FI i, FI j ) const
+   iterator ContainsSubset( FI i, FI j ) const noexcept
    {
       return SearchSubset( i, j ) != m_data->end;
    }
@@ -1633,7 +1633,7 @@ public:
    /*! #
     */
    template <class FI, class BP>
-   iterator ContainsSubset( FI i, FI j, BP p ) const
+   iterator ContainsSubset( FI i, FI j, BP p ) const noexcept( noexcept( p ) )
    {
       return SearchSubset( i, j, p ) != m_data->end;
    }
@@ -1641,7 +1641,7 @@ public:
    /*! #
     */
    template <class C>
-   iterator ContainsSubset( const C& c ) const
+   iterator ContainsSubset( const C& c ) const noexcept
    {
       return SearchSubset( c ) != m_data->end;
    }
@@ -1649,7 +1649,7 @@ public:
    /*! #
     */
    template <class C, class BP>
-   iterator ContainsSubset( const C& c, BP p ) const
+   iterator ContainsSubset( const C& c, BP p ) const noexcept( noexcept( p ) )
    {
       return SearchSubset( c, p ) != m_data->end;
    }
@@ -1674,7 +1674,7 @@ public:
    /*!
     * Exchanges two dynamic arrays \a x1 and \a x2.
     */
-   friend void Swap( Array& x1, Array& x2 )
+   friend void Swap( Array& x1, Array& x2 ) noexcept
    {
       pcl::Swap( x1.m_data, x2.m_data );
    }
@@ -1833,7 +1833,7 @@ public:
     * The \a seed parameter can be used to generate repeatable hash values. It
     * can also be set to a random value in compromised environments.
     */
-   uint32 Hash32( uint32 seed = 0 ) const
+   uint32 Hash32( uint32 seed = 0 ) const noexcept
    {
       return pcl::Hash32( m_data->begin, m_data->Size(), seed );
    }
@@ -1842,7 +1842,7 @@ public:
     * Returns a non-cryptographic hash value computed for this array. This
     * function is a synonym for Hash64().
     */
-   uint64 Hash( uint64 seed = 0 ) const
+   uint64 Hash( uint64 seed = 0 ) const noexcept
    {
       return Hash64( seed );
    }
@@ -1879,7 +1879,7 @@ private:
       /*!
        * Returns the size in bytes of the array.
        */
-      size_type Size() const
+      size_type Size() const noexcept
       {
          return Length()*sizeof( T );
       }
@@ -1887,7 +1887,7 @@ private:
       /*!
        * Returns the number of elements in the array.
        */
-      size_type Length() const
+      size_type Length() const noexcept
       {
          return end - begin;
       }
@@ -1895,7 +1895,7 @@ private:
       /*!
        * Returns the total capacity of the allocated block in array elements.
        */
-      size_type Capacity() const
+      size_type Capacity() const noexcept
       {
          return available - begin;
       }
@@ -1903,7 +1903,7 @@ private:
       /*!
        * Returns the number of array elements available in the allocated block.
        */
-      size_type Available() const
+      size_type Available() const noexcept
       {
          return available - end;
       }
@@ -1911,7 +1911,7 @@ private:
       /*!
        * Returns true iff the array is empty.
        */
-      bool IsEmpty() const
+      bool IsEmpty() const noexcept
       {
          return begin == end;
       }
@@ -2002,15 +2002,15 @@ private:
        * array location corresponding to the specified iterator \a i. Returns
        * an iterator pointing to the first newly created element.
        */
-      iterator UninitializedGrow( iterator i, size_type n )
+      iterator UninitializedGrow( iterator __restrict__ i, size_type n )
       {
          if ( n > 0 )
             if ( Available() >= n )
             {
                if ( i < end )
                {
-                  iterator j1 = end;
-                  iterator j2 = end + n;
+                  iterator __restrict__ j1 = end;
+                  iterator __restrict__ j2 = end + n;
 
                   for ( ;; )
                   {
@@ -2089,7 +2089,7 @@ private:
  * \ingroup array_relational_operators
  */
 template <class T, class A> inline
-bool operator ==( const Array<T,A>& x1, const Array<T,A>& x2 )
+bool operator ==( const Array<T,A>& x1, const Array<T,A>& x2 ) noexcept
 {
    return x1.Length() == x2.Length() && pcl::Equal( x1.Begin(), x2.Begin(), x2.End() );
 }
@@ -2100,7 +2100,7 @@ bool operator ==( const Array<T,A>& x1, const Array<T,A>& x2 )
  * \ingroup array_relational_operators
  */
 template <class T, class A> inline
-bool operator <( const Array<T,A>& x1, const Array<T,A>& x2 )
+bool operator <( const Array<T,A>& x1, const Array<T,A>& x2 ) noexcept
 {
    return pcl::Compare( x1.Begin(), x1.End(), x2.Begin(), x2.End() ) < 0;
 }
@@ -2168,4 +2168,4 @@ Array<T,A>& operator <<( Array<T,A>&& x1, const Array<T,A>& x2 )
 #endif  // __PCL_Array_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Array.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Array.h - Released 2020-11-20T19:46:29Z

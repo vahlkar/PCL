@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Allocator.h - Released 2020-10-12T19:24:41Z
+// pcl/Allocator.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -196,7 +196,7 @@ public:
     * Given a number \a n of T instances, returns the corresponding <em>paged
     * length</em> for this allocator. The paged length is the actual number of
     * T instances that would be allocated instead of \a n, which depends on the
-    * block allocation policy implemented by the allocator class.
+    * block allocation policy implemented by the block allocator class.
     *
     * The value returned by this member function is always greater than or
     * equal to \a n.
@@ -217,7 +217,7 @@ public:
     *
     * The returned length is the actual number of T instances that would be
     * allocated instead of \a newLength, which depends on the block allocation
-    * policy implemented by the allocator class.
+    * policy implemented by the block allocator class.
     *
     * The value returned by this member function is always greater than or
     * equal to \a n.
@@ -406,4 +406,4 @@ inline void Destroy( long double**, long double** ) {}
 #endif  // __PCL_Allocator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Allocator.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Allocator.h - Released 2020-11-20T19:46:29Z

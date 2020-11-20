@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.119
+# PixInsight Makefile Generator Script v1.120
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-10-12T19:29:32.967Z
+# Generated on .... 2020-11-20T20:29:26.745Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Windows/vc15
@@ -30,7 +30,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{CD4891C4-0E6C-42F9-B4A0-979C257A4B46}</ProjectGuid>
+    <ProjectGuid>{C299D6B1-A61B-4A58-BC99-B1734FC85460}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -113,6 +113,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR64)\PCL-pxi.lib</OutputFile>
@@ -133,7 +134,6 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Precise</FloatingPointModel>
       <PrecompiledHeader></PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -141,6 +141,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR32)\PCL-pxi.lib</OutputFile>
@@ -164,6 +165,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR64)\PCL-pxi.lib</OutputFile>
@@ -184,6 +186,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Lib>
       <OutputFile>$(PCLLIBDIR32)\PCL-pxi.lib</OutputFile>
@@ -334,9 +337,9 @@
     <ClCompile Include="..\..\SphericalRotation.cpp"/>
     <ClCompile Include="..\..\SpinBox.cpp"/>
     <ClCompile Include="..\..\SpinStatus.cpp"/>
+    <ClCompile Include="..\..\StandardStatus.cpp"/>
     <ClCompile Include="..\..\StarDatabaseFile.cpp"/>
     <ClCompile Include="..\..\StatusMonitor.cpp"/>
-    <ClCompile Include="..\..\StdStatus.cpp"/>
     <ClCompile Include="..\..\String.cpp"/>
     <ClCompile Include="..\..\SurfaceSimplifier.cpp"/>
     <ClCompile Include="..\..\SurfaceSpline.cpp"/>

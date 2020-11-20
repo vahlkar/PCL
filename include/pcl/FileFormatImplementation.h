@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/FileFormatImplementation.h - Released 2020-10-12T19:24:41Z
+// pcl/FileFormatImplementation.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -84,7 +84,7 @@ struct FileFormatImplementationPrivate;
  * defined as a descendant of the MetaFileFormat class.
  * %FileFormatImplementation defines the behavior and functionality of a file
  * format instance, which usually (although not necessarily) identifies an
- * <em>image file</em> stored in the corresponding file format.
+ * <em>image file</em> encoded in the corresponding file format.
  *
  * Note that %MetaFileFormat and %FileFormatImplementation describe and
  * implement, respectively, an \e installable image file format in a PixInsight
@@ -381,6 +381,21 @@ public:
    virtual void ReadImage( UInt32Image& image );
 
    /*!
+    * Returns true iff this instance can perform incremental read operations.
+    *
+    * The default implementation returns true. Do not confuse this member
+    * function with MetaFileFormat::CanReadIncrementally(), which tells the
+    * PixInsight core application if a given file format has the capability of
+    * performing incremental file reads in general. The value returned by this
+    * function refers specifically to the file format instance (e.g., a
+    * particular file) represented by this object.
+    */
+   virtual bool CanReadIncrementally() const
+   {
+      return true; // allow incremental reads if the format supports them
+   }
+
+   /*!
     * Incremental read in 32-bit floating point sample format.
     *
     * \param[out] buffer      Address of the destination sample buffer.
@@ -397,7 +412,9 @@ public:
     * To implement incremental reading,
     * MetaFileFormat::CanReadIncrementally() must be reimplemented to return
     * true in the metaformat class for this file instance; otherwise this
-    * member function will never be called.
+    * member function will never be called. Furthermore, the
+    * FileFormatImplementation::CanReadIncrementally() member function must
+    * return true for the format instance represented by this object.
     */
    virtual void ReadSamples( pcl::Image::sample* buffer, int startRow, int rowCount, int channel );
 
@@ -702,6 +719,21 @@ public:
    virtual void CloseImage();
 
    /*!
+    * Returns true iff this instance can perform incremental write operations.
+    *
+    * The default implementation returns true. Do not confuse this member
+    * function with MetaFileFormat::CanWriteIncrementally(), which tells the
+    * PixInsight core application if a given file format has the capability of
+    * performing incremental file writes in general. The value returned by this
+    * function refers specifically to the file format instance (e.g., a
+    * particular file) represented by this object.
+    */
+   virtual bool CanWriteIncrementally() const
+   {
+      return true; // allow incremental writes if the format supports them
+   }
+
+   /*!
     * Incremental write of 32-bit floating point pixel samples.
     *
     * \param buffer     Address of the source sample buffer.
@@ -718,7 +750,9 @@ public:
     * To implement incremental writing,
     * MetaFileFormat::CanWriteIncrementally() must be reimplemented to return
     * true in the metaformat class for this file instance; otherwise this
-    * member function will never be called.
+    * member function will never be called. Furthermore, the
+    * FileFormatImplementation::CanWriteIncrementally() member function must
+    * return true for the format instance represented by this object.
     */
    virtual void WriteSamples( const pcl::Image::sample* buffer, int startRow, int rowCount, int channel );
 
@@ -866,4 +900,4 @@ private:
 #endif   // __PCL_FileFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormatImplementation.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/FileFormatImplementation.h - Released 2020-11-20T19:46:29Z

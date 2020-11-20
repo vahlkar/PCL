@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/SharedPixelData.cpp - Released 2020-10-12T19:24:49Z
+// pcl/SharedPixelData.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -142,10 +142,11 @@ void* SharedPixelData::Allocate( size_type size ) const
 {
    if ( size > 0 )
    {
-      void* p = (m_handle == nullptr) ? PCL_ALIGNED_MALLOC( size, 16 ) : (*API->Global->Allocate)( size );
-      if ( p != nullptr )
-         return p;
-      throw std::bad_alloc();
+      // Allocate all pixel data blocks with 32-byte alignment for AVX/SSE load/store requirements
+      void* p = (m_handle == nullptr) ? PCL_ALIGNED_MALLOC( size, 32 ) : (*API->Global->Allocate)( size );
+      if ( unlikely( p == nullptr ) )
+         throw std::bad_alloc();
+      return p;
    }
    return nullptr;
 }
@@ -266,4 +267,4 @@ void SharedPixelData::SetSharedColor( color_space colorSpace, const RGBColorSyst
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SharedPixelData.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/SharedPixelData.cpp - Released 2020-11-20T19:46:37Z

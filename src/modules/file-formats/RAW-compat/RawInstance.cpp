@@ -58,7 +58,7 @@
 
 #include <pcl/FastRotation.h>
 #include <pcl/FITSHeaderKeyword.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/TimePoint.h>
 #include <pcl/Version.h>
 

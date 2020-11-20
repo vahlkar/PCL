@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ImageColor.h - Released 2020-10-12T19:24:41Z
+// pcl/ImageColor.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -107,7 +107,7 @@ public:
    /*!
     * Returns a reference to the RGB working space associated with this image.
     */
-   const RGBColorSystem& RGBWorkingSpace() const
+   const RGBColorSystem& RGBWorkingSpace() const noexcept
    {
       return m_RGBWS;
    }
@@ -134,7 +134,7 @@ public:
     * \note This function only works for local images. For shared images, the
     * default RGBWS is controlled by the ImageWindow class.
     */
-   static const RGBColorSystem& DefaultRGBWorkingSpace()
+   static const RGBColorSystem& DefaultRGBWorkingSpace() noexcept
    {
       return s_defaultRGBWS;
    }
@@ -166,7 +166,7 @@ public:
     * Returns true iff this is a color image. Returns false if this is a
     * grayscale monochrome image.
     */
-   bool IsColor() const
+   bool IsColor() const noexcept
    {
       return m_colorSpace != ColorSpace::Gray;
    }
@@ -175,7 +175,7 @@ public:
     * Returns the color space of this image. This function returns the value of
     * a symbolic constant enumerated by the ColorSpace namespace.
     */
-   color_space ColorSpace() const
+   color_space ColorSpace() const noexcept
    {
       return m_colorSpace;
    }
@@ -184,7 +184,7 @@ public:
     * Returns the identifier of a nominal channel \a c in the current color
     * space of this image.
     */
-   String ChannelId( int c ) const
+   String ChannelId( int c ) const noexcept
    {
       return ColorSpace::ChannelId( m_colorSpace, c );
    }
@@ -210,7 +210,7 @@ protected:
          RGBWS = x.RGBWS;
       }
 
-      void Reset()
+      void Reset() noexcept
       {
          colorSpace = ColorSpace::Gray;
       }
@@ -237,7 +237,7 @@ protected:
       m_color = nullptr;
    }
 
-   void Swap( ImageColor& image )
+   void Swap( ImageColor& image ) noexcept
    {
       pcl::Swap( m_color, image.m_color );
    }
@@ -255,4 +255,4 @@ protected:
 #endif   // __PCL_ImageColor_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageColor.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/ImageColor.h - Released 2020-11-20T19:46:29Z

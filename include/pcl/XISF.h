@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/XISF.h - Released 2020-10-12T19:24:41Z
+// pcl/XISF.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1162,6 +1162,19 @@ public:
    void ReadImage( UInt32Image& image );
 
    /*!
+    * Returns true iff this stream supports incremental read operations.
+    *
+    * Incremental reads are not supported for compressed images. The reader
+    * will be forced to load and uncompresses a compressed image transparently
+    * upon the first call to a ReadSamples() member function, and the entire
+    * pixel data of the image will be stored in a temporary memory buffer.
+    * Pixel samples returned by succesive calls to ReadSamples() will be copied
+    * from this temporary buffer. Note that this is just a convenience feature
+    * that provides none of the benefits of incremental stream I/O operations.
+    */
+   bool ImplementsIncrementalRead() const;
+
+   /*!
     * Incremental random access read of 32-bit floating point pixel samples.
     *
     * \param[out] buffer      Address of the destination pixel sample buffer.
@@ -1613,4 +1626,4 @@ private:
 #endif   // __PCL_XISF_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISF.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/XISF.h - Released 2020-11-20T19:46:29Z

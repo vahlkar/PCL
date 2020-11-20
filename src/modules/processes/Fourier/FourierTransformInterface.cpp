@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformInterface.cpp - Released 2020-10-12T19:25:16Z
+// FourierTransformInterface.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -215,4 +215,4 @@ FourierTransformInterface::GUIData::GUIData( FourierTransformInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformInterface.cpp - Released 2020-10-12T19:25:16Z
+// EOF FourierTransformInterface.cpp - Released 2020-11-20T19:49:00Z

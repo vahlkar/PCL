@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Point.h - Released 2020-10-12T19:24:41Z
+// pcl/Point.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -223,7 +223,7 @@ public:
     * \sa DistanceTo(), ManhattanDistanceTo()
     */
    template <typename T1>
-   double SquaredDistanceTo( const GenericPoint<T1>& p ) const
+   double SquaredDistanceTo( const GenericPoint<T1>& p ) const noexcept
    {
       double dx = double( p.x ) - double( x );
       double dy = double( p.y ) - double( y );
@@ -240,7 +240,7 @@ public:
     * \sa SquaredDistanceTo(), ManhattanDistanceTo()
     */
    template <typename T1>
-   double DistanceTo( const GenericPoint<T1>& p ) const
+   double DistanceTo( const GenericPoint<T1>& p ) const noexcept
    {
       return pcl::Sqrt( SquaredDistanceTo( p ) );
    }
@@ -259,7 +259,7 @@ public:
     *
     * \sa DistanceToOrigin()
     */
-   double SquaredDistanceToOrigin() const
+   double SquaredDistanceToOrigin() const noexcept
    {
       return double( x )*double( x ) + double( y )*double( y );
    }
@@ -277,7 +277,7 @@ public:
     *
     * \sa SquaredDistanceToOrigin(), ManhattanDistanceToOrigin()
     */
-   double DistanceToOrigin() const
+   double DistanceToOrigin() const noexcept
    {
       return pcl::Sqrt( SquaredDistanceToOrigin() );
    }
@@ -292,7 +292,7 @@ public:
     * \sa DistanceTo(), ManhattanDistanceToOrigin()
     */
    template <typename T1>
-   double ManhattanDistanceTo( const GenericPoint<T1>& p ) const
+   double ManhattanDistanceTo( const GenericPoint<T1>& p ) const noexcept
    {
       return Abs( double( p.x ) - double( x ) ) + Abs( double( p.y ) - double( y ) );
    }
@@ -310,7 +310,7 @@ public:
     *
     * \sa ManhattanDistanceTo(), DistanceToOrigin()
     */
-   double ManhattanDistanceToOrigin() const
+   double ManhattanDistanceToOrigin() const noexcept
    {
       return Abs( double( x ) ) + Abs( double( y ) );
    }
@@ -321,7 +321,7 @@ public:
     * \sa MoveBy()
     */
    template <typename T1>
-   void MoveTo( const GenericPoint<T1>& p )
+   void MoveTo( const GenericPoint<T1>& p ) noexcept
    {
       MoveTo( p.x, p.y );
    }
@@ -333,13 +333,13 @@ public:
     * \sa MoveBy()
     */
    template <typename T1>
-   void MoveTo( T1 xPos, T1 yPos )
+   void MoveTo( T1 xPos, T1 yPos ) noexcept
    {
       x = component( xPos ); y = component( yPos );
    }
 
 #ifdef __PCL_QT_INTERFACE
-   void MoveTo( const QPoint& p )
+   void MoveTo( const QPoint& p ) noexcept
    {
       MoveTo( p.x(), p.y() );
    }
@@ -350,7 +350,7 @@ public:
     * specified point \a d.
     */
    template <typename T1>
-   GenericPoint MovedTo( const GenericPoint<T1>& p ) const
+   GenericPoint MovedTo( const GenericPoint<T1>& p ) const noexcept
    {
       return GenericPoint( component( p.x ), component( p.y ) );
    }
@@ -359,7 +359,7 @@ public:
     * Returns a point at the specified \a xPos and \a yPos coordinates.
     */
    template <typename T1>
-   GenericPoint MovedTo( T1 xPos, T1 yPos ) const
+   GenericPoint MovedTo( T1 xPos, T1 yPos ) const noexcept
    {
       return GenericPoint( component( xPos ), component( yPos ) );
    }
@@ -374,7 +374,7 @@ public:
     * \sa MoveTo()
     */
    template <typename T1>
-   void MoveBy( const GenericPoint<T1>& d )
+   void MoveBy( const GenericPoint<T1>& d ) noexcept
    {
       MoveBy( d.x, d.y );
    }
@@ -397,7 +397,7 @@ public:
     * \sa MoveTo()
     */
    template <typename T1>
-   void MoveBy( T1 dx, T1 dy )
+   void MoveBy( T1 dx, T1 dy ) noexcept
    {
       x += component( dx ); y += component( dy );
    }
@@ -413,7 +413,7 @@ public:
     * \sa MoveTo()
     */
    template <typename T1>
-   void MoveBy( T1 dxy )
+   void MoveBy( T1 dxy ) noexcept
    {
       x += component( dxy ); y += component( dxy );
    }
@@ -430,7 +430,7 @@ public:
     * displaced by the increments specified as the point \a d.
     */
    template <typename T1>
-   GenericPoint MovedBy( const GenericPoint<T1>& d ) const
+   GenericPoint MovedBy( const GenericPoint<T1>& d ) const noexcept
    {
       return GenericPoint( x + component( d.x ), y + component( d.y ) );
    }
@@ -440,7 +440,7 @@ public:
     * displaced by the specified increments \a dx and \a dy.
     */
    template <typename T1>
-   GenericPoint MovedBy( T1 dx, T1 dy ) const
+   GenericPoint MovedBy( T1 dx, T1 dy ) const noexcept
    {
       return GenericPoint( x + component( dx ), y + component( dy ) );
    }
@@ -451,7 +451,7 @@ public:
     * \a yc.
     */
    template <typename T1, typename T2>
-   void Rotate( T1 angle, T2 xc, T2 yc )
+   void Rotate( T1 angle, T2 xc, T2 yc ) noexcept
    {
       pcl::Rotate( x, y, angle, xc, yc );
    }
@@ -461,7 +461,7 @@ public:
     * with respect to the specified \a center of rotation.
     */
    template <typename T1, typename T2>
-   void Rotate( T1 angle, const GenericPoint<T2>& center )
+   void Rotate( T1 angle, const GenericPoint<T2>& center ) noexcept
    {
       Rotate( angle, center.x, center.y );
    }
@@ -472,7 +472,7 @@ public:
     * rotation given by its coordinates \a xc and \a yc.
     */
    template <typename T1, typename T2>
-   void Rotate( T1 sa, T1 ca, T2 xc, T2 yc )
+   void Rotate( T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
    {
       pcl::Rotate( x, y, sa, ca, xc, yc );
    }
@@ -483,7 +483,7 @@ public:
     * \a center of rotation.
     */
    template <typename T1, typename T2>
-   void Rotate( T1 sa, T1 ca, const GenericPoint<T2>& center )
+   void Rotate( T1 sa, T1 ca, const GenericPoint<T2>& center ) noexcept
    {
       Rotate( sa, ca, center.x, center.y );
    }
@@ -494,7 +494,7 @@ public:
     * to a center of rotation given by its coordinates \a xc and \a yc.
     */
    template <typename T1, typename T2>
-   GenericPoint Rotated( T1 angle, T2 xc, T2 yc ) const
+   GenericPoint Rotated( T1 angle, T2 xc, T2 yc ) const noexcept
    {
       GenericPoint p( *this );
       p.Rotate( angle, xc, yc );
@@ -507,7 +507,7 @@ public:
     * to the specified \a center of rotation.
     */
    template <typename T1, typename T2>
-   GenericPoint Rotated( T1 angle, const GenericPoint<T2>& center ) const
+   GenericPoint Rotated( T1 angle, const GenericPoint<T2>& center ) const noexcept
    {
       GenericPoint p( *this );
       p.Rotate( angle, center );
@@ -521,7 +521,7 @@ public:
     * by its coordinates \a xc and \a yc.
     */
    template <typename T1, typename T2>
-   GenericPoint Rotated( T1 sa, T1 ca, T2 xc, T2 yc ) const
+   GenericPoint Rotated( T1 sa, T1 ca, T2 xc, T2 yc ) const noexcept
    {
       GenericPoint p( *this );
       p.Rotate( sa, ca, xc, yc );
@@ -535,7 +535,7 @@ public:
     * rotation.
     */
    template <typename T1, typename T2>
-   GenericPoint Rotated( T1 sa, T1 ca, const GenericPoint<T2>& center ) const
+   GenericPoint Rotated( T1 sa, T1 ca, const GenericPoint<T2>& center ) const noexcept
    {
       GenericPoint p( *this );
       p.Rotate( sa, ca, center );
@@ -548,7 +548,7 @@ public:
     *
     * \sa Round( int ), Rounded(), Truncate(), RoundedToInt(), TruncatedToInt()
     */
-   void Round()
+   void Round() noexcept
    {
       x = component( pcl::Round( double( x ) ) );
       y = component( pcl::Round( double( y ) ) );
@@ -559,7 +559,7 @@ public:
     *
     * \sa Round(), Rounded( int ), Truncate(), RoundedToInt(), TruncatedToInt()
     */
-   void Round( int n )
+   void Round( int n ) noexcept
    {
       PCL_PRECONDITION( n >= 0 )
       x = component( pcl::Round( double( x ), n ) );
@@ -572,7 +572,7 @@ public:
     *
     * \sa Round(), Rounded( int ), Truncated(), RoundedToInt(), TruncatedToInt()
     */
-   GenericPoint Rounded() const
+   GenericPoint Rounded() const noexcept
    {
       return GenericPoint( component( pcl::Round( double( x ) ) ), component( pcl::Round( double( y ) ) ) );
    }
@@ -583,7 +583,7 @@ public:
     *
     * \sa Round( int ), Rounded(), Truncated(), RoundedToInt(), TruncatedToInt()
     */
-   GenericPoint Rounded( int n ) const
+   GenericPoint Rounded( int n ) const noexcept
    {
       PCL_PRECONDITION( n >= 0 )
       return GenericPoint( component( pcl::Round( double( x ), n ) ), component( pcl::Round( double( y ), n ) ) );
@@ -595,7 +595,7 @@ public:
     *
     * \sa Round(), Rounded(), Truncated(), TruncatedToInt()
     */
-   GenericPoint<int> RoundedToInt() const
+   GenericPoint<int> RoundedToInt() const noexcept
    {
       return GenericPoint<int>( pcl::RoundInt( double( x ) ), pcl::RoundInt( double( y ) ) );
    }
@@ -607,7 +607,7 @@ public:
     *
     * \sa Truncated(), Round(), RoundedToInt(), TruncatedToInt()
     */
-   void Truncate()
+   void Truncate() noexcept
    {
       x = component( pcl::Trunc( double( x ) ) );
       y = component( pcl::Trunc( double( y ) ) );
@@ -620,7 +620,7 @@ public:
     *
     * \sa Truncate(), Rounded(), RoundedToInt(), TruncatedToInt()
     */
-   GenericPoint Truncated() const
+   GenericPoint Truncated() const noexcept
    {
       return GenericPoint( component( pcl::Trunc( double( x ) ) ), component( pcl::Trunc( double( y ) ) ) );
    }
@@ -632,7 +632,7 @@ public:
     *
     * \sa Truncate(), Truncated(), Rounded(), RoundedToInt()
     */
-   GenericPoint<int> TruncatedToInt() const
+   GenericPoint<int> TruncatedToInt() const noexcept
    {
       return GenericPoint<int>( pcl::TruncInt( double( x ) ), pcl::TruncInt( double( y ) ) );
    }
@@ -644,7 +644,7 @@ public:
     * \sa MoveTo()
     */
    template <typename T1>
-   GenericPoint& operator =( const GenericPoint<T1>& p )
+   GenericPoint& operator =( const GenericPoint<T1>& p ) noexcept
    {
       x = component( p.x );
       y = component( p.y );
@@ -657,14 +657,14 @@ public:
     *
     * \sa MoveTo()
     */
-   GenericPoint& operator =( component v )
+   GenericPoint& operator =( component v ) noexcept
    {
       x = y = v;
       return *this;
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericPoint& operator =( const QPoint& p )
+   GenericPoint& operator =( const QPoint& p ) noexcept
    {
       x = component( p.x() );
       y = component( p.y() );
@@ -679,7 +679,7 @@ public:
     * \sa MoveBy(), operator -=()
     */
    template <typename T1>
-   GenericPoint& operator +=( const GenericPoint<T1>& p )
+   GenericPoint& operator +=( const GenericPoint<T1>& p ) noexcept
    {
       x += component( p.x );
       y += component( p.y );
@@ -692,7 +692,7 @@ public:
     *
     * \sa MoveBy(), operator -=()
     */
-   GenericPoint& operator +=( component d )
+   GenericPoint& operator +=( component d ) noexcept
    {
       x += d;
       y += d;
@@ -700,7 +700,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericPoint& operator +=( const QPoint& p )
+   GenericPoint& operator +=( const QPoint& p ) noexcept
    {
       x += component( p.x() );
       y += component( p.y() );
@@ -715,7 +715,7 @@ public:
     * \sa MoveBy(), operator +=()
     */
    template <typename T1>
-   GenericPoint& operator -=( const GenericPoint<T1>& p )
+   GenericPoint& operator -=( const GenericPoint<T1>& p ) noexcept
    {
       x -= component( p.x );
       y -= component( p.y );
@@ -728,7 +728,7 @@ public:
     *
     * \sa MoveBy(), operator +=()
     */
-   GenericPoint& operator -=( component d )
+   GenericPoint& operator -=( component d ) noexcept
    {
       x -= d;
       y -= d;
@@ -736,7 +736,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericPoint& operator -=( const QPoint& p )
+   GenericPoint& operator -=( const QPoint& p ) noexcept
    {
       x -= component( p.x() );
       y -= component( p.y() );
@@ -751,7 +751,7 @@ public:
     * \sa operator /=(), operator +=()
     */
    template <typename T1>
-   GenericPoint& operator *=( const GenericPoint<T1>& p )
+   GenericPoint& operator *=( const GenericPoint<T1>& p ) noexcept
    {
       x *= component( p.x );
       y *= component( p.y );
@@ -764,7 +764,7 @@ public:
     *
     * \sa operator /=(), operator +=()
     */
-   GenericPoint& operator *=( component d )
+   GenericPoint& operator *=( component d ) noexcept
    {
       x *= d;
       y *= d;
@@ -772,7 +772,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericPoint& operator *=( const QPoint& p )
+   GenericPoint& operator *=( const QPoint& p ) noexcept
    {
       x *= component( p.x() );
       y *= component( p.y() );
@@ -787,7 +787,7 @@ public:
     * \sa operator *=(), operator -=()
     */
    template <typename T1>
-   GenericPoint& operator /=( const GenericPoint<T1>& p )
+   GenericPoint& operator /=( const GenericPoint<T1>& p ) noexcept
    {
       PCL_PRECONDITION( component( p.x ) != component( 0 ) && component( p.y ) != component( 0 ) )
       x /= component( p.x );
@@ -801,7 +801,7 @@ public:
     *
     * \sa operator *=(), operator -=()
     */
-   GenericPoint& operator /=( component d )
+   GenericPoint& operator /=( component d ) noexcept
    {
       PCL_PRECONDITION( d != component( 0 ) )
       x /= d;
@@ -810,7 +810,7 @@ public:
    }
 
 #ifdef __PCL_QT_INTERFACE
-   GenericPoint& operator /=( const QPoint& p )
+   GenericPoint& operator /=( const QPoint& p ) noexcept
    {
       PCL_PRECONDITION( component( p.x() ) != component( 0 ) && component( p.y() ) != component( 0 ) )
       x /= component( p.x() );
@@ -822,7 +822,7 @@ public:
    /*!
     * Returns a copy of this point.
     */
-   GenericPoint operator +() const
+   GenericPoint operator +() const noexcept
    {
       return *this;
    }
@@ -832,7 +832,7 @@ public:
     * coordinates of this point, but opposite signs. The returned point so
     * defined represents a vector diametrically opposed to this one.
     */
-   GenericPoint operator -() const
+   GenericPoint operator -() const noexcept
    {
       return GenericPoint( -x, -y );
    }
@@ -841,7 +841,7 @@ public:
     * Reflects this point in the origin. This transformation changes the signs
     * of both point coordinates.
     */
-   void Reflect()
+   void Reflect() noexcept
    {
       x = -x;
       y = -y;
@@ -851,7 +851,7 @@ public:
     * Reflects this point across the X axis. This transformation changes the
     * sign of this point's y-coordinate.
     */
-   void ReflectX()
+   void ReflectX() noexcept
    {
       y = -y;
    }
@@ -860,7 +860,7 @@ public:
     * Reflects this point across the Y axis. This transformation changes the
     * sign of this point's x-coordinate.
     */
-   void ReflectY()
+   void ReflectY() noexcept
    {
       x = -x;
    }
@@ -869,7 +869,7 @@ public:
     * Returns the reflexion of this point in the origin. The returned point has
     * the coordinates of this point with inverse signs.
     */
-   GenericPoint Reflected() const
+   GenericPoint Reflected() const noexcept
    {
       return GenericPoint( -x, -y );
    }
@@ -879,7 +879,7 @@ public:
     * has the same x-coordinate as this point and the y-coordinate of this
     * point with inverse sign.
     */
-   GenericPoint ReflectedX() const
+   GenericPoint ReflectedX() const noexcept
    {
       return GenericPoint( x, -y );
    }
@@ -889,7 +889,7 @@ public:
     * has the x-coordinate of this point with inverse sign and the same
     * y-coordinate as this point.
     */
-   GenericPoint ReflectedY() const
+   GenericPoint ReflectedY() const noexcept
    {
       return GenericPoint( -x, y );
    }
@@ -899,7 +899,7 @@ public:
     * converted to radians, assuming that this point has coordinates expressed
     * in degrees.
     */
-   GenericPoint Rad() const
+   GenericPoint Rad() const noexcept
    {
       return GenericPoint( pcl::Rad( x ), pcl::Rad( y ) );
    }
@@ -909,7 +909,7 @@ public:
     * converted to degrees, assuming that this point has coordinates expressed
     * in radians.
     */
-   GenericPoint Deg() const
+   GenericPoint Deg() const noexcept
    {
       return GenericPoint( pcl::Deg( x ), pcl::Deg( y ) );
    }
@@ -919,7 +919,7 @@ public:
     * expressed in degrees before calling this function. Returns a reference to
     * this object.
     */
-   GenericPoint& ToRad()
+   GenericPoint& ToRad() noexcept
    {
       x = pcl::Rad( x );
       y = pcl::Rad( y );
@@ -931,7 +931,7 @@ public:
     * expressed in radians before calling this function. Returns a reference to
     * this object.
     */
-   GenericPoint& ToDeg()
+   GenericPoint& ToDeg() noexcept
    {
       x = pcl::Deg( x );
       y = pcl::Deg( y );
@@ -943,7 +943,7 @@ public:
     * point coordinate if the specified index \a i is zero, or a reference to
     * the Y coordinate otherwise.
     */
-   component& operator []( int i )
+   component& operator []( int i ) noexcept
    {
       return (i == 0) ? x : y;
    }
@@ -952,7 +952,7 @@ public:
     * Returns a copy of a point component. Returns the X point coordinate if
     * the specified index \a i is zero, or the Y coordinate otherwise.
     */
-   component operator []( int i ) const
+   component operator []( int i ) const noexcept
    {
       return (i == 0) ? x : y;
    }
@@ -962,7 +962,7 @@ public:
     * coordinates \a px and \a py.
     */
    template <typename T1, typename T2>
-   double Dot( T1 px, T2 py ) const
+   double Dot( T1 px, T2 py ) const noexcept
    {
       return double( x )*double( px ) + double( y )*double( py );
    }
@@ -971,13 +971,13 @@ public:
     * Returns the dot product of this point and another point \a p.
     */
    template <typename T1>
-   double Dot( const GenericPoint<T1>& p ) const
+   double Dot( const GenericPoint<T1>& p ) const noexcept
    {
       return Dot( p.x, p.y );
    }
 
 #ifdef __PCL_QT_INTERFACE
-   operator QPoint() const
+   operator QPoint() const noexcept
    {
       return QPoint( int( x ), int( y ) );
    }
@@ -998,7 +998,7 @@ public:
  * \ingroup point_functions_2d
  */
 template <typename T1, typename T2> inline
-bool operator ==( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 )
+bool operator ==( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 ) noexcept
 {
    return p1.x == p2.x && p1.y == p2.y;
 }
@@ -1009,7 +1009,7 @@ bool operator ==( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 )
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-bool operator ==( const GenericPoint<T>& p1, T d2 )
+bool operator ==( const GenericPoint<T>& p1, T d2 ) noexcept
 {
    return p1.x == d2 && p1.y == d2;
 }
@@ -1020,7 +1020,7 @@ bool operator ==( const GenericPoint<T>& p1, T d2 )
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-bool operator ==( T d1, const GenericPoint<T>& p2 )
+bool operator ==( T d1, const GenericPoint<T>& p2 ) noexcept
 {
    return d1 == p2.x && d1 == p2.y;
 }
@@ -1036,7 +1036,7 @@ bool operator ==( T d1, const GenericPoint<T>& p2 )
  * \ingroup point_functions_2d
  */
 template <typename T1, typename T2> inline
-bool operator <( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 )
+bool operator <( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 ) noexcept
 {
    return p1.y < p2.y || p1.y == p2.y && p1.x < p2.x;
 }
@@ -1051,7 +1051,7 @@ bool operator <( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 )
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-bool operator <( const GenericPoint<T>& p1, T d2 )
+bool operator <( const GenericPoint<T>& p1, T d2 ) noexcept
 {
    return p1.y < d2 || p1.y == d2 && p1.x < d2;
 }
@@ -1066,7 +1066,7 @@ bool operator <( const GenericPoint<T>& p1, T d2 )
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-bool operator <( T d1, const GenericPoint<T>& p2 )
+bool operator <( T d1, const GenericPoint<T>& p2 ) noexcept
 {
    return d1 < p2.y || d1 == p2.y && d1 < p2.x;
 }
@@ -1083,7 +1083,7 @@ bool operator <( T d1, const GenericPoint<T>& p2 )
  * \ingroup point_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericPoint<T1> operator +( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 )
+GenericPoint<T1> operator +( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 ) noexcept
 {
    return GenericPoint<T1>( T1( p1.x + p2.x ), T1( p1.y + p2.y ) );
 }
@@ -1100,7 +1100,7 @@ GenericPoint<T1> operator +( const GenericPoint<T1>& p1, const GenericPoint<T2>&
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-GenericPoint<T> operator +( const GenericPoint<T>& p1, T d2 )
+GenericPoint<T> operator +( const GenericPoint<T>& p1, T d2 ) noexcept
 {
    return GenericPoint<T>( p1.x+d2, p1.y+d2 );
 }
@@ -1114,7 +1114,7 @@ GenericPoint<T> operator +( const GenericPoint<T>& p1, T d2 )
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-GenericPoint<T> operator +( T d1, const GenericPoint<T>& p2 )
+GenericPoint<T> operator +( T d1, const GenericPoint<T>& p2 ) noexcept
 {
    return GenericPoint<T>( p2.x+d1, p2.y+d1 );
 }
@@ -1133,7 +1133,7 @@ GenericPoint<T> operator +( T d1, const GenericPoint<T>& p2 )
  * \ingroup point_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericPoint<T1> operator -( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 )
+GenericPoint<T1> operator -( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 ) noexcept
 {
    return GenericPoint<T1>( T1( p1.x - p2.x ), T1( p1.y - p2.y ) );
 }
@@ -1151,7 +1151,7 @@ GenericPoint<T1> operator -( const GenericPoint<T1>& p1, const GenericPoint<T2>&
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-GenericPoint<T> operator -( const GenericPoint<T>& p1, T d2 )
+GenericPoint<T> operator -( const GenericPoint<T>& p1, T d2 ) noexcept
 {
    return GenericPoint<T>( p1.x-d2, p1.y-d2 );
 }
@@ -1169,7 +1169,7 @@ GenericPoint<T> operator -( const GenericPoint<T>& p1, T d2 )
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-GenericPoint<T> operator -( T d1, const GenericPoint<T>& p2 )
+GenericPoint<T> operator -( T d1, const GenericPoint<T>& p2 ) noexcept
 {
    return GenericPoint<T>( d1-p2.x, d1-p2.y );
 }
@@ -1188,7 +1188,7 @@ GenericPoint<T> operator -( T d1, const GenericPoint<T>& p2 )
  * \ingroup point_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericPoint<T1> operator *( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 )
+GenericPoint<T1> operator *( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 ) noexcept
 {
    return GenericPoint<T1>( T1( p1.x * p2.x ), T1( p1.y * p2.y ) );
 }
@@ -1206,7 +1206,7 @@ GenericPoint<T1> operator *( const GenericPoint<T1>& p1, const GenericPoint<T2>&
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-GenericPoint<T> operator *( const GenericPoint<T>& p1, T d2 )
+GenericPoint<T> operator *( const GenericPoint<T>& p1, T d2 ) noexcept
 {
    return GenericPoint<T>( p1.x*d2, p1.y*d2 );
 }
@@ -1221,7 +1221,7 @@ GenericPoint<T> operator *( const GenericPoint<T>& p1, T d2 )
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-GenericPoint<T> operator *( T d1, const GenericPoint<T>& p2 )
+GenericPoint<T> operator *( T d1, const GenericPoint<T>& p2 ) noexcept
 {
    return GenericPoint<T>( p2.x*d1, p2.y*d1 );
 }
@@ -1238,7 +1238,7 @@ GenericPoint<T> operator *( T d1, const GenericPoint<T>& p2 )
  * \ingroup point_functions_2d
  */
 template <typename T1, typename T2> inline
-GenericPoint<T1> operator /( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 )
+GenericPoint<T1> operator /( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 ) noexcept
 {
    PCL_PRECONDITION( p2.x != T2( 0 ) && p2.y != T2( 0 ) )
    return GenericPoint<T1>( T1( p1.x / p2.x ), T1( p1.y / p2.y ) );
@@ -1257,7 +1257,7 @@ GenericPoint<T1> operator /( const GenericPoint<T1>& p1, const GenericPoint<T2>&
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-GenericPoint<T> operator /( const GenericPoint<T>& p1, T d2 )
+GenericPoint<T> operator /( const GenericPoint<T>& p1, T d2 ) noexcept
 {
    PCL_PRECONDITION( d2 != T( 0 ) )
    return GenericPoint<T>( p1.x/d2, p1.y/d2 );
@@ -1276,7 +1276,7 @@ GenericPoint<T> operator /( const GenericPoint<T>& p1, T d2 )
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-GenericPoint<T> operator /( T d1, const GenericPoint<T>& p2 )
+GenericPoint<T> operator /( T d1, const GenericPoint<T>& p2 ) noexcept
 {
    PCL_PRECONDITION( p2.x != T( 0 ) && p2.y != T( 0 ) )
    return GenericPoint<T>( d1/p2.x, d1/p2.y );
@@ -1290,7 +1290,7 @@ GenericPoint<T> operator /( T d1, const GenericPoint<T>& p2 )
 //            Distance( FI, FI ) defined in Iterator.h
 //template <typename T1, typename T2> inline
 template <typename T> inline
-double Distance( const GenericPoint<T>& p1, const GenericPoint<T>& p2 )
+double Distance( const GenericPoint<T>& p1, const GenericPoint<T>& p2 ) noexcept
 {
    double dx = double( p2.x ) - double( p1.x );
    double dy = double( p2.y ) - double( p1.y );
@@ -1303,7 +1303,7 @@ double Distance( const GenericPoint<T>& p1, const GenericPoint<T>& p2 )
  * \ingroup point_functions_2d
  */
 template <typename T1, typename T2> inline
-double ManhattanDistance( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 )
+double ManhattanDistance( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2 ) noexcept
 {
    return Abs( double( p2.x ) - double( p1.x ) ) + Abs( double( p2.y ) - double( p1.y ) );
 }
@@ -1324,7 +1324,7 @@ double ManhattanDistance( const GenericPoint<T1>& p1, const GenericPoint<T2>& p2
  * \ingroup point_functions_2d
  */
 template <typename T, typename T1, typename T2> inline
-void Rotate( GenericPoint<T>& p, T1 a, T2 xc, T2 yc )
+void Rotate( GenericPoint<T>& p, T1 a, T2 xc, T2 yc ) noexcept
 {
    pcl::Rotate( p.x, p.y, a, xc, yc );
 }
@@ -1345,7 +1345,7 @@ void Rotate( GenericPoint<T>& p, T1 a, T2 xc, T2 yc )
  * \ingroup point_functions_2d
  */
 template <typename T, typename T1, typename T2> inline
-void Rotate( GenericPoint<T>& p, T1 a, const GenericPoint<T2>& c )
+void Rotate( GenericPoint<T>& p, T1 a, const GenericPoint<T2>& c ) noexcept
 {
    pcl::Rotate( p, a, c.x, c.y );
 }
@@ -1366,7 +1366,7 @@ void Rotate( GenericPoint<T>& p, T1 a, const GenericPoint<T2>& c )
  * \ingroup point_functions_2d
  */
 template <typename T, typename T1, typename T2> inline
-void Rotate( GenericPoint<T>& p, T1 sa, T1 ca, T2 xc, T2 yc )
+void Rotate( GenericPoint<T>& p, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    pcl::Rotate( p.x, p.y, sa, ca, xc, yc );
 }
@@ -1387,7 +1387,7 @@ void Rotate( GenericPoint<T>& p, T1 sa, T1 ca, T2 xc, T2 yc )
  * \ingroup point_functions_2d
  */
 template <typename T, typename T1, typename T2> inline
-void Rotate( GenericPoint<T>& p, T1 sa, T1 ca, const GenericPoint<T2>& c )
+void Rotate( GenericPoint<T>& p, T1 sa, T1 ca, const GenericPoint<T2>& c ) noexcept
 {
    pcl::Rotate( p, sa, ca, c.x, c.y );
 }
@@ -1401,7 +1401,7 @@ void Rotate( GenericPoint<T>& p, T1 sa, T1 ca, const GenericPoint<T2>& c )
  * \ingroup point_functions_2d
  */
 template <typename T> inline
-void Swap( GenericPoint<T>& p1, GenericPoint<T>& p2 )
+void Swap( GenericPoint<T>& p1, GenericPoint<T>& p2 ) noexcept
 {
    pcl::Swap( p1.x, p2.x );
    pcl::Swap( p1.y, p2.y );
@@ -1481,4 +1481,4 @@ typedef F64Point                    DPoint;
 #endif  // __PCL_Point_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Point.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Point.h - Released 2020-11-20T19:46:29Z

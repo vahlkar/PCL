@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/XISFReader.cpp - Released 2020-10-12T19:24:49Z
+// pcl/XISFReader.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -64,7 +64,7 @@
       {                                                                       \
          throw;                                                               \
       }                                                                       \
-      catch ( pcl::CaughtException& )                                        \
+      catch ( pcl::CaughtException& )                                         \
       {                                                                       \
       }                                                                       \
       catch ( pcl::Exception& x )                                             \
@@ -1257,6 +1257,15 @@ public:
 
       if ( options.readNormalized )
          NormalizeImage( image, options );
+   }
+
+   /*
+    * Returns true iff the current image is compressed.
+    */
+   bool IsCompressedImage() const
+   {
+      ValidateImageAccess( m_currentImage );
+      return m_images[m_currentImage].image.IsCompressed();
    }
 
    /*
@@ -2945,6 +2954,13 @@ void XISFReader::ReadImage( UInt32Image& image )
 
 // ----------------------------------------------------------------------------
 
+bool XISFReader::ImplementsIncrementalRead() const
+{
+   return !m_engine->IsCompressedImage();
+}
+
+// ----------------------------------------------------------------------------
+
 void XISFReader::ReadSamples( FImage::sample* buffer, int startRow, int rowCount, int channel )
 {
    CheckOpenStream( "ReadSamples" );
@@ -3027,4 +3043,4 @@ XMLDocument* XISFReader::ExtractHeader( const String& path, XMLParserOptions opt
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFReader.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/XISFReader.cpp - Released 2020-11-20T19:46:37Z

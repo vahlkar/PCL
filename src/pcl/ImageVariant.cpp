@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.cpp - Released 2020-10-12T19:24:49Z
+// pcl/ImageVariant.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -103,8 +103,6 @@ struct SwapFileHeader
 
    SwapFileHeader( const ImageVariant& image )
    {
-      *this = SwapFileHeader();
-
       validImage = image ? 1 : 0;
       floatSample = image.IsFloatSample() ? 1 : 0;
       complexSample = image.IsComplexSample() ? 1 : 0;
@@ -1372,4 +1370,4 @@ void ImageVariant::MaskImage( const ImageVariant& src, const ImageVariant& mask,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/ImageVariant.cpp - Released 2020-11-20T19:46:37Z

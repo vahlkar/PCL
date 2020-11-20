@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Convolution.h - Released 2020-10-12T19:24:41Z
+// pcl/Convolution.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -72,12 +72,16 @@ namespace pcl
 
 /*!
  * \class Convolution
- * \brief Discrete two-dimensional, nonseparable convolution in the spatial
+ * \brief Discrete two-dimensional nonseparable convolution in the spatial
  * domain
  *
- * ### TODO: Write a detailed description for %Convolution.
+ * %Convolution implements a fully multithreaded, two-dimensional discrete
+ * nonseparable convolution algorithm. It performs automatic fixing of
+ * border artifacts by applying Neumann boundary conditions (mirroring).
  *
  * \note ImageTransformation is a virtual base class of %Convolution.
+ *
+ * \sa SeparableConvolution, FFTConvolution, KernelFilter
  */
 class PCL_CLASS Convolution : public InterlacedTransformation,
                               public ThresholdedTransformation,
@@ -352,4 +356,4 @@ private:
 #endif   // __PCL_Convolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Convolution.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Convolution.h - Released 2020-11-20T19:46:29Z

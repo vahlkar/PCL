@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Math.h - Released 2020-10-12T19:24:41Z
+// pcl/Math.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -124,7 +124,7 @@ namespace pcl
  *
  * \ingroup hw_identification_functions
  */
-inline int MaxSSEInstructionSetSupported()
+inline int MaxSSEInstructionSetSupported() noexcept
 {
    int32 edxFlags = 0;
    int32 ecxFlags = 0;
@@ -175,7 +175,7 @@ inline int MaxSSEInstructionSetSupported()
  * \ingroup fpclassification_functions
  * \sa IsNaN( float ), IsInfinity( float )
  */
-inline bool IsFinite( float x )
+inline bool IsFinite( float x ) noexcept
 {
    union { float f; uint32 u; } v = { x };
    return (v.u & __PCL_FLOAT_EXPMASK) != __PCL_FLOAT_EXPMASK;
@@ -191,7 +191,7 @@ inline bool IsFinite( float x )
  * \ingroup fpclassification_functions
  * \sa IsFinite( float ), IsInfinity( float )
  */
-inline bool IsNaN( float x )
+inline bool IsNaN( float x ) noexcept
 {
    union { float f; uint32 u; } v = { x };
    return (v.u & __PCL_FLOAT_EXPMASK) == __PCL_FLOAT_EXPMASK &&
@@ -213,7 +213,7 @@ inline bool IsNaN( float x )
  * \ingroup fpclassification_functions
  * \sa IsFinite( float ), IsNaN( float )
  */
-inline int IsInfinity( float x )
+inline int IsInfinity( float x ) noexcept
 {
    union { float f; uint32 u; } v = { x };
    if ( (v.u & __PCL_FLOAT_EXPMASK) == __PCL_FLOAT_EXPMASK &&
@@ -228,7 +228,7 @@ inline int IsInfinity( float x )
  *
  * \ingroup fpclassification_functions
  */
-inline bool IsNegativeZero( float x )
+inline bool IsNegativeZero( float x ) noexcept
 {
    union { float f; uint32 u; } v = { x };
    return v.u == __PCL_FLOAT_SGNMASK;
@@ -246,7 +246,7 @@ inline bool IsNegativeZero( float x )
  * \ingroup fpclassification_functions
  * \sa IsNaN( double ), IsInfinity( double )
  */
-inline bool IsFinite( double x )
+inline bool IsFinite( double x ) noexcept
 {
    union { double d; uint32 u[2]; } v = { x };
    return (v.u[1] & __PCL_DOUBLE_EXPMASK) != __PCL_DOUBLE_EXPMASK;
@@ -262,7 +262,7 @@ inline bool IsFinite( double x )
  * \ingroup fpclassification_functions
  * \sa IsFinite( double ), IsInfinity( double )
  */
-inline bool IsNaN( double x )
+inline bool IsNaN( double x ) noexcept
 {
    union { double d; uint32 u[2]; } v = { x };
    return (v.u[1] & __PCL_DOUBLE_EXPMASK) == __PCL_DOUBLE_EXPMASK &&
@@ -284,7 +284,7 @@ inline bool IsNaN( double x )
  * \ingroup fpclassification_functions
  * \sa IsFinite( double ), IsNaN( double )
  */
-inline int IsInfinity( double x )
+inline int IsInfinity( double x ) noexcept
 {
    union { double d; uint32 u[2]; } v = { x };
    if ( v.u[0] == 0 &&
@@ -300,7 +300,7 @@ inline int IsInfinity( double x )
  *
  * \ingroup fpclassification_functions
  */
-inline bool IsNegativeZero( double x )
+inline bool IsNegativeZero( double x ) noexcept
 {
    union { double d; uint32 u[2]; } v = { x };
    return v.u[1] == __PCL_DOUBLE_SGNMASK &&
@@ -317,7 +317,7 @@ inline bool IsNegativeZero( double x )
  * Absolute value of \a x.
  * \ingroup mathematical_functions
  */
-inline float Abs( float x )
+inline float Abs( float x ) noexcept
 {
    return std::fabs( x );
 }
@@ -325,7 +325,7 @@ inline float Abs( float x )
 /*!
  * \ingroup mathematical_functions
  */
-inline double Abs( double x )
+inline double Abs( double x ) noexcept
 {
    return std::fabs( x );
 }
@@ -333,7 +333,7 @@ inline double Abs( double x )
 /*!
  * \ingroup mathematical_functions
  */
-inline long double Abs( long double x )
+inline long double Abs( long double x ) noexcept
 {
    return std::fabs( x );
 }
@@ -341,7 +341,7 @@ inline long double Abs( long double x )
 /*!
  * \ingroup mathematical_functions
  */
-inline signed int Abs( signed int x )
+inline signed int Abs( signed int x ) noexcept
 {
    return ::abs( x );
 }
@@ -353,7 +353,7 @@ inline signed int Abs( signed int x )
 _Pragma("clang diagnostic push")
 _Pragma("clang diagnostic ignored \"-Wabsolute-value\"")
 #endif
-inline signed long Abs( signed long x )
+inline signed long Abs( signed long x ) noexcept
 {
    return ::abs( x );
 }
@@ -365,17 +365,17 @@ _Pragma("clang diagnostic pop")
  * \ingroup mathematical_functions
  */
 #if defined( _MSC_VER )
-inline __int64 Abs( __int64 x )
+inline __int64 Abs( __int64 x ) noexcept
 {
    return (x < 0) ? -x : +x;
 }
 #elif defined( __PCL_MACOSX ) && defined( __clang__ )
-inline constexpr signed long long Abs( signed long long x )
+inline constexpr signed long long Abs( signed long long x ) noexcept
 {
    return (x < 0) ? -x : +x;
 }
 #else
-inline signed long long Abs( signed long long x )
+inline signed long long Abs( signed long long x ) noexcept
 {
    return ::abs( x );
 }
@@ -384,7 +384,7 @@ inline signed long long Abs( signed long long x )
 /*!
  * \ingroup mathematical_functions
  */
-inline signed short Abs( signed short x )
+inline signed short Abs( signed short x ) noexcept
 {
    return (signed short)::abs( int( x ) );
 }
@@ -392,7 +392,7 @@ inline signed short Abs( signed short x )
 /*!
  * \ingroup mathematical_functions
  */
-inline signed char Abs( signed char x )
+inline signed char Abs( signed char x ) noexcept
 {
    return (signed char)::abs( int( x ) );
 }
@@ -400,7 +400,7 @@ inline signed char Abs( signed char x )
 /*!
  * \ingroup mathematical_functions
  */
-inline wchar_t Abs( wchar_t x )
+inline wchar_t Abs( wchar_t x ) noexcept
 {
    return (wchar_t)::abs( int( x ) );
 }
@@ -408,7 +408,7 @@ inline wchar_t Abs( wchar_t x )
 /*!
  * \ingroup mathematical_functions
  */
-inline constexpr unsigned int Abs( unsigned int x )
+inline constexpr unsigned int Abs( unsigned int x ) noexcept
 {
    return x;
 }
@@ -416,7 +416,7 @@ inline constexpr unsigned int Abs( unsigned int x )
 /*!
  * \ingroup mathematical_functions
  */
-inline constexpr unsigned long Abs( unsigned long x )
+inline constexpr unsigned long Abs( unsigned long x ) noexcept
 {
    return x;
 }
@@ -425,12 +425,12 @@ inline constexpr unsigned long Abs( unsigned long x )
  * \ingroup mathematical_functions
  */
 #ifdef _MSC_VER
-inline unsigned __int64 Abs( unsigned __int64 x )
+inline unsigned __int64 Abs( unsigned __int64 x ) noexcept
 {
    return x;
 }
 #else
-inline constexpr unsigned long long Abs( unsigned long long x )
+inline constexpr unsigned long long Abs( unsigned long long x ) noexcept
 {
    return x;
 }
@@ -439,7 +439,7 @@ inline constexpr unsigned long long Abs( unsigned long long x )
 /*!
  * \ingroup mathematical_functions
  */
-inline constexpr unsigned short Abs( unsigned short x )
+inline constexpr unsigned short Abs( unsigned short x ) noexcept
 {
    return x;
 }
@@ -447,7 +447,7 @@ inline constexpr unsigned short Abs( unsigned short x )
 /*!
  * \ingroup mathematical_functions
  */
-inline constexpr unsigned char Abs( unsigned char x )
+inline constexpr unsigned char Abs( unsigned char x ) noexcept
 {
    return x;
 }
@@ -458,7 +458,7 @@ inline constexpr unsigned char Abs( unsigned char x )
  * The pi constant: 3.141592...
  * \ingroup mathematical_functions
  */
-inline constexpr long double Pi()
+inline constexpr long double Pi() noexcept
 {
    return (long double)( 0.31415926535897932384626433832795029e+01L );
 }
@@ -467,7 +467,7 @@ inline constexpr long double Pi()
  * Twice the pi constant: 0.6283185...
  * \ingroup mathematical_functions
  */
-inline constexpr long double TwoPi()
+inline constexpr long double TwoPi() noexcept
 {
    return (long double)( 0.62831853071795864769252867665590058e+01L );
 }
@@ -478,7 +478,7 @@ inline constexpr long double TwoPi()
  * Merges a complex angle given by degrees and arcminutes into single degrees.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Angle( int d, T m )
+template <typename T> inline constexpr T Angle( int d, T m ) noexcept
 {
    return d + m/60;
 }
@@ -488,7 +488,7 @@ template <typename T> inline constexpr T Angle( int d, T m )
  * single degrees.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Angle( int d, int m, T s )
+template <typename T> inline constexpr T Angle( int d, int m, T s ) noexcept
 {
    return Angle( d, m + s/60 );
 }
@@ -499,7 +499,7 @@ template <typename T> inline constexpr T Angle( int d, int m, T s )
  * Inverse cosine function (arccosine).
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T ArcCos( T x )
+template <typename T> inline constexpr T ArcCos( T x ) noexcept
 {
    PCL_PRECONDITION( T( -1 ) <= x && x <= T( 1 ) )
    return std::acos( x );
@@ -511,7 +511,7 @@ template <typename T> inline constexpr T ArcCos( T x )
  * Inverse sine function (arcsine).
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T ArcSin( T x )
+template <typename T> inline constexpr T ArcSin( T x ) noexcept
 {
    PCL_PRECONDITION( T( -1 ) <= x && x <= T( 1 ) )
    return std::asin( x );
@@ -523,7 +523,7 @@ template <typename T> inline constexpr T ArcSin( T x )
  * Inverse tangent function (arctangent).
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T ArcTan( T x )
+template <typename T> inline constexpr T ArcTan( T x ) noexcept
 {
    return std::atan( x );
 }
@@ -534,7 +534,7 @@ template <typename T> inline constexpr T ArcTan( T x )
  * Arctangent of y/x, result in the proper quadrant.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T ArcTan( T y, T x )
+template <typename T> inline constexpr T ArcTan( T y, T x ) noexcept
 {
    return std::atan2( y, x );
 }
@@ -545,7 +545,7 @@ template <typename T> inline constexpr T ArcTan( T y, T x )
  * Arctangent of y/x, proper quadrant, result in the interval [0,2pi).
  * \ingroup mathematical_functions
  */
-template <typename T> inline T ArcTan2Pi( T y, T x )
+template <typename T> inline T ArcTan2Pi( T y, T x ) noexcept
 {
    T r = ArcTan( y, x );
    if ( r < 0 )
@@ -559,7 +559,7 @@ template <typename T> inline T ArcTan2Pi( T y, T x )
  * The ceil function: lowest integer >= x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Ceil( T x )
+template <typename T> inline constexpr T Ceil( T x ) noexcept
 {
    return std::ceil( x );
 }
@@ -570,7 +570,7 @@ template <typename T> inline constexpr T Ceil( T x )
  * Cosine function.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Cos( T x )
+template <typename T> inline constexpr T Cos( T x ) noexcept
 {
    return std::cos( x );
 }
@@ -581,7 +581,7 @@ template <typename T> inline constexpr T Cos( T x )
  * Hyperbolic Cosine function.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Cosh( T x )
+template <typename T> inline constexpr T Cosh( T x ) noexcept
 {
    return std::cosh( x );
 }
@@ -592,7 +592,7 @@ template <typename T> inline constexpr T Cosh( T x )
  * Cotangent of x, equal to Cos(x)/Sin(x) or 1/Tan(x).
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Cotan( T x )
+template <typename T> inline constexpr T Cotan( T x ) noexcept
 {
    return T( 1 )/std::tan( x );
 }
@@ -603,7 +603,7 @@ template <typename T> inline constexpr T Cotan( T x )
  * Conversion from radians to degrees.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Deg( T x )
+template <typename T> inline constexpr T Deg( T x ) noexcept
 {
    return static_cast<T>( 0.572957795130823208767981548141051700441964e+02L * x );
 }
@@ -614,7 +614,7 @@ template <typename T> inline constexpr T Deg( T x )
  * The exponential function e**x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Exp( T x )
+template <typename T> inline constexpr T Exp( T x ) noexcept
 {
    return std::exp( x );
 }
@@ -625,7 +625,7 @@ template <typename T> inline constexpr T Exp( T x )
  * The floor function: highest integer <= x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Floor( T x )
+template <typename T> inline constexpr T Floor( T x ) noexcept
 {
    return std::floor( x );
 }
@@ -637,7 +637,7 @@ template <typename T> inline constexpr T Floor( T x )
  * The returned value is within (-1,+1), and has the same sign as x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Frac( T x )
+template <typename T> inline constexpr T Frac( T x ) noexcept
 {
    return std::modf( x, &x );
 }
@@ -650,7 +650,7 @@ template <typename T> inline constexpr T Frac( T x )
  * exponent, respectively, such that: 0.5 <= m < 1.0, x = m * 2**p
  * \ingroup mathematical_functions
  */
-template <typename T> inline void Frexp( T x, T& m, int& p )
+template <typename T> inline void Frexp( T x, T& m, int& p ) noexcept
 {
    m = std::frexp( x, &p );
 }
@@ -666,7 +666,7 @@ template <typename T> inline void Frexp( T x, T& m, int& p )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Hav( T x )
+template <typename T> inline constexpr T Hav( T x ) noexcept
 {
    return (1 - Cos( x ))/2;
 }
@@ -677,7 +677,7 @@ template <typename T> inline constexpr T Hav( T x )
  * Calculates m * 2**p.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Ldexp( T m, int p )
+template <typename T> inline constexpr T Ldexp( T m, int p ) noexcept
 {
    return std::ldexp( m, p );
 }
@@ -688,7 +688,7 @@ template <typename T> inline constexpr T Ldexp( T m, int p )
  * Natural (base e) logarithm of \a x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Ln( T x )
+template <typename T> inline constexpr T Ln( T x ) noexcept
 {
    PCL_PRECONDITION( x >= 0 )
    return std::log( x );
@@ -709,7 +709,7 @@ struct PCL_CLASS FactorialCache
  *
  * \ingroup mathematical_functions
  */
-inline double Factorial( int n )
+inline double Factorial( int n ) noexcept
 {
    PCL_PRECONDITION( n >= 0 )
    if ( n <= FactorialCache::s_cacheSize )
@@ -729,7 +729,7 @@ inline double Factorial( int n )
  *
  * \ingroup mathematical_functions
  */
-inline double LnFactorial( int n )
+inline double LnFactorial( int n ) noexcept
 {
    PCL_PRECONDITION( n >= 0 )
    if ( n <= FactorialCache::s_cacheSize )
@@ -762,7 +762,7 @@ template <typename T> struct PCL_CLASS Fact : public FactorialCache
    /*!
     * Returns the factorial of \a n &ge; 0.
     */
-   T operator()( int n ) const
+   T operator()( int n ) const noexcept
    {
       PCL_PRECONDITION( n >= 0 )
       if ( n <= s_cacheSize )
@@ -779,7 +779,7 @@ template <typename T> struct PCL_CLASS Fact : public FactorialCache
     * directly. For \a n > 127 computes a series approximation, so that the
     * function won't overflow even for very large arguments.
     */
-   T Ln( int n ) const
+   T Ln( int n ) const noexcept
    {
       PCL_PRECONDITION( n >= 0 )
       if ( n <= s_cacheSize )
@@ -796,7 +796,7 @@ template <typename T> struct PCL_CLASS Fact : public FactorialCache
  * Natural (base e) logarithm of two.
  * \ingroup mathematical_functions
  */
-inline constexpr long double Ln2()
+inline constexpr long double Ln2() noexcept
 {
    return (long double)( 0.6931471805599453094172321214581766e+00L );
 }
@@ -807,7 +807,7 @@ inline constexpr long double Ln2()
  * Base 10 Logarithm of x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Log( T x )
+template <typename T> inline constexpr T Log( T x ) noexcept
 {
    PCL_PRECONDITION( x >= 0 )
    return std::log10( x );
@@ -819,7 +819,7 @@ template <typename T> inline constexpr T Log( T x )
  * Base 10 Logarithm of two.
  * \ingroup mathematical_functions
  */
-inline constexpr long double Log2()
+inline constexpr long double Log2() noexcept
 {
    // Use the relation:
    //    log10(2) = ln(2)/ln(10)
@@ -832,7 +832,7 @@ inline constexpr long double Log2()
  * Base 2 Logarithm of x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Log2( T x )
+template <typename T> inline constexpr T Log2( T x ) noexcept
 {
    // Use the relation:
    //    log2(x) = ln(x)/ln(2)
@@ -846,7 +846,7 @@ template <typename T> inline constexpr T Log2( T x )
  * Base 2 Logarithm of e.
  * \ingroup mathematical_functions
  */
-inline constexpr long double Log2e()
+inline constexpr long double Log2e() noexcept
 {
    // Use the relation:
    //    log2(e) = 1/ln(2)
@@ -859,7 +859,7 @@ inline constexpr long double Log2e()
  * Base 2 Logarithm of ten.
  * \ingroup mathematical_functions
  */
-inline constexpr long double Log2T()
+inline constexpr long double Log2T() noexcept
 {
    // Use the relation:
    //    log2(10) = 1/log(2)
@@ -872,7 +872,7 @@ inline constexpr long double Log2T()
  * Base \a n logarithm of \a x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T LogN( T n, T x )
+template <typename T> inline constexpr T LogN( T n, T x ) noexcept
 {
    PCL_PRECONDITION( x >= 0 )
    return std::log( x )/std::log( n );
@@ -884,7 +884,7 @@ template <typename T> inline constexpr T LogN( T n, T x )
  * Remainder of x/y.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Mod( T x, T y )
+template <typename T> inline constexpr T Mod( T x, T y ) noexcept
 {
    return std::fmod( x, y );
 }
@@ -905,7 +905,7 @@ template <typename T> inline constexpr T Mod( T x, T y )
  *
  * \ingroup mathematical_functions
  */
-template <typename T, typename C> inline T Poly( T x, C c, int n )
+template <typename T, typename C> inline T Poly( T x, C c, int n ) noexcept
 {
    PCL_PRECONDITION( n >= 0 )
    T y;
@@ -929,7 +929,7 @@ template <typename T, typename C> inline T Poly( T x, C c, int n )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline T Poly( T x, std::initializer_list<T> c )
+template <typename T> inline T Poly( T x, std::initializer_list<T> c ) noexcept
 {
    PCL_PRECONDITION( c.size() > 0 )
    return Poly( x, c.begin(), int( c.size() )-1 );
@@ -948,7 +948,7 @@ template <typename T> inline T Poly( T x, std::initializer_list<T> c )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr int Sign( T x )
+template <typename T> inline constexpr int Sign( T x ) noexcept
 {
    return (x < 0) ? -1 : ((x > 0) ? +1 : 0);
 }
@@ -966,7 +966,7 @@ template <typename T> inline constexpr int Sign( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr char SignChar( T x )
+template <typename T> inline constexpr char SignChar( T x ) noexcept
 {
    return (x < 0) ? '-' : ((x > 0) ? '+' : ' ');
 }
@@ -977,7 +977,7 @@ template <typename T> inline constexpr char SignChar( T x )
  * Sine function
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Sin( T x )
+template <typename T> inline constexpr T Sin( T x ) noexcept
 {
    return std::sin( x );
 }
@@ -988,7 +988,7 @@ template <typename T> inline constexpr T Sin( T x )
  * Hyperbolic Sine function.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Sinh( T x )
+template <typename T> inline constexpr T Sinh( T x ) noexcept
 {
    return std::sinh( x );
 }
@@ -997,17 +997,17 @@ template <typename T> inline constexpr T Sinh( T x )
 
 #ifdef __PCL_HAVE_SINCOS
 
-inline void __pcl_sincos__( float x, float& sx, float& cx )
+inline void __pcl_sincos__( float x, float& sx, float& cx ) noexcept
 {
    ::sincosf( x, &sx, &cx );
 }
 
-inline void __pcl_sincos__( double x, double& sx, double& cx )
+inline void __pcl_sincos__( double x, double& sx, double& cx ) noexcept
 {
    ::sincos( x, &sx, &cx );
 }
 
-inline void __pcl_sincos__( long double x, long double& sx, long double& cx )
+inline void __pcl_sincos__( long double x, long double& sx, long double& cx ) noexcept
 {
    ::sincosl( x, &sx, &cx );
 }
@@ -1027,7 +1027,7 @@ inline void __pcl_sincos__( long double x, long double& sx, long double& cx )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline void SinCos( T x, T& sx, T& cx )
+template <typename T> inline void SinCos( T x, T& sx, T& cx ) noexcept
 {
 #ifdef __PCL_HAVE_SINCOS
    __pcl_sincos__( x, sx, cx );
@@ -1048,7 +1048,7 @@ template <typename T> inline void SinCos( T x, T& sx, T& cx )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline void Split( T x, T& i, T& f )
+template <typename T> inline void Split( T x, T& i, T& f ) noexcept
 {
    f = std::modf( x, &i );
 }
@@ -1059,7 +1059,7 @@ template <typename T> inline void Split( T x, T& i, T& f )
  * Square root function.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Sqrt( T x )
+template <typename T> inline constexpr T Sqrt( T x ) noexcept
 {
    return std::sqrt( x );
 }
@@ -1070,7 +1070,7 @@ template <typename T> inline constexpr T Sqrt( T x )
  * Tangent function.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Tan( T x )
+template <typename T> inline constexpr T Tan( T x ) noexcept
 {
    return std::tan( x );
 }
@@ -1081,7 +1081,7 @@ template <typename T> inline constexpr T Tan( T x )
  * Hyperbolic Tangent function.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Tanh( T x )
+template <typename T> inline constexpr T Tanh( T x ) noexcept
 {
    return std::tanh( x );
 }
@@ -1092,7 +1092,7 @@ template <typename T> inline constexpr T Tanh( T x )
  * Truncated integer part of \a x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline T Trunc( T x )
+template <typename T> inline T Trunc( T x ) noexcept
 {
    (void)std::modf( x, &x );
    return x;
@@ -1102,17 +1102,17 @@ template <typename T> inline T Trunc( T x )
 
 #ifdef __PCL_HAVE_SSE2
 
-inline int __pcl_trunci__( float x )
+inline int __pcl_trunci__( float x ) noexcept
 {
    return _mm_cvtt_ss2si( _mm_load_ss( &x ) );
 }
 
-inline int __pcl_trunci__( double x )
+inline int __pcl_trunci__( double x ) noexcept
 {
    return _mm_cvttsd_si32( _mm_load_sd( &x ) );
 }
 
-inline int __pcl_trunci__( long double x )
+inline int __pcl_trunci__( long double x ) noexcept
 {
    return int( x );
 }
@@ -1129,7 +1129,7 @@ inline int __pcl_trunci__( long double x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline int TruncInt( T x )
+template <typename T> inline int TruncInt( T x ) noexcept
 {
    PCL_PRECONDITION( x >= int_min && x <= int_max )
 #ifdef __PCL_NO_PERFORMANCE_CRITICAL_MATH_ROUTINES
@@ -1151,7 +1151,7 @@ template <typename T> inline int TruncInt( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline int TruncI( T x )
+template <typename T> inline int TruncI( T x ) noexcept
 {
    return TruncInt( x );
 }
@@ -1165,31 +1165,31 @@ template <typename T> inline int TruncI( T x )
 
 #if defined( __x86_64__ ) || defined( _M_X64 )
 
-inline int64 __pcl_trunci64__( float x )
+inline int64 __pcl_trunci64__( float x ) noexcept
 {
    return _mm_cvttss_si64( _mm_load_ss( &x ) );
 }
 
-inline int64 __pcl_trunci64__( double x )
+inline int64 __pcl_trunci64__( double x ) noexcept
 {
    return _mm_cvttsd_si64( _mm_load_sd( &x ) );
 }
 
 #else
 
-inline int64 __pcl_trunci64__( float x )
+inline int64 __pcl_trunci64__( float x ) noexcept
 {
    return int64( _mm_cvtt_ss2si( _mm_load_ss( &x ) ) );
 }
 
-inline int64 __pcl_trunci64__( double x )
+inline int64 __pcl_trunci64__( double x ) noexcept
 {
    return int64( x );
 }
 
 #endif
 
-inline int64 __pcl_trunci64__( long double x )
+inline int64 __pcl_trunci64__( long double x ) noexcept
 {
    return int64( x );
 }
@@ -1206,7 +1206,7 @@ inline int64 __pcl_trunci64__( long double x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline int64 TruncInt64( T x )
+template <typename T> inline int64 TruncInt64( T x ) noexcept
 {
    PCL_PRECONDITION( x >= int64_min && x <= int64_max )
 #ifdef __PCL_NO_PERFORMANCE_CRITICAL_MATH_ROUTINES
@@ -1228,7 +1228,7 @@ template <typename T> inline int64 TruncInt64( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline int64 TruncI64( T x )
+template <typename T> inline int64 TruncI64( T x ) noexcept
 {
    return TruncInt64( x );
 }
@@ -1248,7 +1248,7 @@ template <typename T> inline int64 TruncI64( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Pow( T x, T y )
+template <typename T> inline constexpr T Pow( T x, T y ) noexcept
 {
    PCL_PRECONDITION( y < T( int_max ) )
    return std::pow( x, y );
@@ -1268,7 +1268,7 @@ template <typename T> inline constexpr T Pow( T x, T y )
  */
 template <typename T> struct PCL_CLASS Pow10I
 {
-   T operator ()( int n ) const
+   T operator ()( int n ) const noexcept
    {
       // Use fast table lookups and squaring up to |n| <= 50.
       static const T lut[] =
@@ -1309,7 +1309,7 @@ template <typename T> struct PCL_CLASS Pow10I
  * The exponential function 10**x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline T Pow10( T x )
+template <typename T> inline T Pow10( T x ) noexcept
 {
    int i = TruncInt( x );
    return (i == x) ? Pow10I<T>()( i ) : T( std::pow( 10, x ) );
@@ -1327,7 +1327,7 @@ template <typename T> inline T Pow10( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline T RotL( T x, uint32 n )
+template <typename T> inline T RotL( T x, uint32 n ) noexcept
 {
    static_assert( std::is_unsigned<T>::value,
                   "RotL() can only be used for unsigned integer scalar types" );
@@ -1348,7 +1348,7 @@ template <typename T> inline T RotL( T x, uint32 n )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline T RotR( T x, uint32 n )
+template <typename T> inline T RotR( T x, uint32 n ) noexcept
 {
    static_assert( std::is_unsigned<T>::value,
                   "RotR() can only be used for unsigned integer scalar types" );
@@ -1370,7 +1370,7 @@ template <typename T> inline T RotR( T x, uint32 n )
  *
  * \ingroup mathematical_functions
  */
-inline double Round( double x )
+inline double Round( double x ) noexcept
 {
 #ifdef __PCL_NO_PERFORMANCE_CRITICAL_MATH_ROUTINES
 
@@ -1403,7 +1403,7 @@ inline double Round( double x )
  *
  * \ingroup mathematical_functions
  */
-inline float Round( float x )
+inline float Round( float x ) noexcept
 {
 #ifdef __PCL_NO_PERFORMANCE_CRITICAL_MATH_ROUTINES
 
@@ -1436,7 +1436,7 @@ inline float Round( float x )
  *
  * \ingroup mathematical_functions
  */
-inline long double Round( long double x )
+inline long double Round( long double x ) noexcept
 {
 #ifdef __PCL_NO_PERFORMANCE_CRITICAL_MATH_ROUTINES
 
@@ -1500,7 +1500,7 @@ inline long double Round( long double x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline int RoundInt( T x )
+template <typename T> inline int RoundInt( T x ) noexcept
 {
    PCL_PRECONDITION( x >= int_min && x <= int_max )
 
@@ -1541,7 +1541,7 @@ template <typename T> inline int RoundInt( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline int RoundI( T x )
+template <typename T> inline int RoundI( T x ) noexcept
 {
    return RoundInt( x );
 }
@@ -1554,7 +1554,7 @@ template <typename T> inline int RoundI( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline int RoundIntBanker( T x )
+template <typename T> inline int RoundIntBanker( T x ) noexcept
 {
    return RoundInt( x );
 }
@@ -1583,7 +1583,7 @@ template <typename T> inline int RoundIntBanker( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline int RoundIntArithmetic( T x )
+template <typename T> inline int RoundIntArithmetic( T x ) noexcept
 {
    PCL_PRECONDITION( x >= int_min && x <= int_max )
 
@@ -1617,7 +1617,7 @@ template <typename T> inline int RoundIntArithmetic( T x )
  *
  * \ingroup mathematical_functions
  */
-inline int64 RoundInt64( double x )
+inline int64 RoundInt64( double x ) noexcept
 {
 #ifdef __PCL_NO_PERFORMANCE_CRITICAL_MATH_ROUTINES
 
@@ -1651,7 +1651,7 @@ inline int64 RoundInt64( double x )
  *
  * \deprecated Use RoundInt64() in newly produced code.
  */
-inline int64 RoundI64( double x )
+inline int64 RoundI64( double x ) noexcept
 {
    return RoundInt64( x );
 }
@@ -1680,7 +1680,7 @@ inline int64 RoundI64( double x )
  *
  * \ingroup mathematical_functions
  */
-inline int64 RoundInt64Arithmetic( double x )
+inline int64 RoundInt64Arithmetic( double x ) noexcept
 {
    int64 i = TruncInt64( x );
    if ( i < 0 )
@@ -1702,7 +1702,7 @@ inline int64 RoundInt64Arithmetic( double x )
  * General rounding function: \a x rounded to \a n fractional digits.
  * \ingroup mathematical_functions
  */
-template <typename T> inline T Round( T x, int n )
+template <typename T> inline T Round( T x, int n ) noexcept
 {
    PCL_PRECONDITION( n >= 0 )
    T p = Pow10I<T>()( n ); return Round( p*x )/p;
@@ -1714,7 +1714,7 @@ template <typename T> inline T Round( T x, int n )
  * The exponential function 2**x.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Pow2( T x )
+template <typename T> inline constexpr T Pow2( T x ) noexcept
 {
    // Use the relation:
    //    2**x = e**(x*ln(2))
@@ -1735,7 +1735,7 @@ template <typename T> inline constexpr T Pow2( T x )
  */
 template <typename T> struct PCL_CLASS Pow2I
 {
-   T operator ()( int n ) const
+   T operator ()( int n ) const noexcept
    {
       // We shift left a single bit in 31-bit chunks.
       int i = ::abs( n ), p;
@@ -1752,7 +1752,7 @@ template <typename T> struct PCL_CLASS Pow2I
  * The exponential function x**n, where \a n is a signed integer.
  * \ingroup mathematical_functions
  */
-template <typename T> inline T PowI( T x, int n )
+template <typename T> inline T PowI( T x, int n ) noexcept
 {
    if ( n == 0 )
       return 1;
@@ -1780,7 +1780,7 @@ template <typename T> inline T PowI( T x, int n )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T ArcSinh( T x )
+template <typename T> inline constexpr T ArcSinh( T x ) noexcept
 {
    return Ln( x + Sqrt( 1 + x*x ) );
 }
@@ -1794,7 +1794,7 @@ template <typename T> inline constexpr T ArcSinh( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T ArcCosh( T x )
+template <typename T> inline constexpr T ArcCosh( T x ) noexcept
 {
    return 2*Ln( Sqrt( (x + 1)/2 ) + Sqrt( (x - 1)/2 ) );
 }
@@ -1808,7 +1808,7 @@ template <typename T> inline constexpr T ArcCosh( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T ArcTanh( T x )
+template <typename T> inline constexpr T ArcTanh( T x ) noexcept
 {
    return (Ln( 1 + x ) - Ln( 1 - x ))/2;
 }
@@ -1824,7 +1824,7 @@ template <typename T> inline constexpr T ArcTanh( T x )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T ArcHav( T x )
+template <typename T> inline constexpr T ArcHav( T x ) noexcept
 {
    return 2*ArcSin( Sqrt( x ) );
 }
@@ -1835,7 +1835,7 @@ template <typename T> inline constexpr T ArcHav( T x )
  * Conversion from degrees to radians.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Rad( T x )
+template <typename T> inline constexpr T Rad( T x ) noexcept
 {
    return static_cast<T>( 0.174532925199432957692369076848861272222e-01L * x );
 }
@@ -1846,7 +1846,7 @@ template <typename T> inline constexpr T Rad( T x )
  * Conversion from radians to arcminutes.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T RadMin( T x )
+template <typename T> inline constexpr T RadMin( T x ) noexcept
 {
    return Deg( x )*60;
 }
@@ -1857,7 +1857,7 @@ template <typename T> inline constexpr T RadMin( T x )
  * Conversion from radians to arcseconds.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T RadSec( T x )
+template <typename T> inline constexpr T RadSec( T x ) noexcept
 {
    return Deg( x )*3600;
 }
@@ -1868,7 +1868,7 @@ template <typename T> inline constexpr T RadSec( T x )
  * Conversion from arcminutes to radians.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T MinRad( T x )
+template <typename T> inline constexpr T MinRad( T x ) noexcept
 {
    return Rad( x/60 );
 }
@@ -1879,7 +1879,7 @@ template <typename T> inline constexpr T MinRad( T x )
  * Conversion from arcseconds to radians.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T SecRad( T x )
+template <typename T> inline constexpr T SecRad( T x ) noexcept
 {
    return Rad( x/3600 );
 }
@@ -1888,7 +1888,7 @@ template <typename T> inline constexpr T SecRad( T x )
  * Conversion from arcseconds to radians (a synonym for SecRad()).
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T AsRad( T x )
+template <typename T> inline constexpr T AsRad( T x ) noexcept
 {
    return SecRad( x );
 }
@@ -1899,7 +1899,7 @@ template <typename T> inline constexpr T AsRad( T x )
  * Conversion from milliarcseconds (mas) to radians.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T MasRad( T x )
+template <typename T> inline constexpr T MasRad( T x ) noexcept
 {
    return Rad( x/3600000 );
 }
@@ -1910,7 +1910,7 @@ template <typename T> inline constexpr T MasRad( T x )
  * Conversion from microarcseconds (uas) to radians.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T UasRad( T x )
+template <typename T> inline constexpr T UasRad( T x ) noexcept
 {
    return Rad( x/3600000000 );
 }
@@ -1922,7 +1922,7 @@ template <typename T> inline constexpr T UasRad( T x )
  * of x/(2*pi).
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Mod2Pi( T x )
+template <typename T> inline constexpr T Mod2Pi( T x ) noexcept
 {
    return Mod( x, static_cast<T>( TwoPi() ) );
 }
@@ -1933,7 +1933,7 @@ template <typename T> inline constexpr T Mod2Pi( T x )
  * An angle in radians normalized to the [0,2pi) range.
  * \ingroup mathematical_functions
  */
-template <typename T> inline constexpr T Norm2Pi( T x )
+template <typename T> inline constexpr T Norm2Pi( T x ) noexcept
 {
    return ((x = Mod2Pi( x )) < 0) ? x + static_cast<T>( TwoPi() ) : x;
 }
@@ -1953,7 +1953,7 @@ template <typename T> inline constexpr T Norm2Pi( T x )
  * \ingroup mathematical_functions
  */
 template <typename T, typename T1, typename T2>
-inline void Rotate( T& x, T& y, T1 sa, T1 ca, T2 xc, T2 yc )
+inline void Rotate( T& x, T& y, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    T1 dx = T1( x ) - T1( xc );
    T1 dy = T1( y ) - T1( yc );
@@ -1972,7 +1972,7 @@ inline void Rotate( T& x, T& y, T1 sa, T1 ca, T2 xc, T2 yc )
  * \ingroup mathematical_functions
  */
 template <typename T1, typename T2>
-inline void Rotate( int& x, int& y, T1 sa, T1 ca, T2 xc, T2 yc )
+inline void Rotate( int& x, int& y, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    T1 dx = T1( x ) - T1( xc );
    T1 dy = T1( y ) - T1( yc );
@@ -1991,7 +1991,7 @@ inline void Rotate( int& x, int& y, T1 sa, T1 ca, T2 xc, T2 yc )
  * \ingroup mathematical_functions
  */
 template <typename T1, typename T2>
-inline void Rotate( long& x, long& y, T1 sa, T1 ca, T2 xc, T2 yc )
+inline void Rotate( long& x, long& y, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    T1 dx = T1( x ) - T1( xc );
    T1 dy = T1( y ) - T1( yc );
@@ -2010,7 +2010,7 @@ inline void Rotate( long& x, long& y, T1 sa, T1 ca, T2 xc, T2 yc )
  * \ingroup mathematical_functions
  */
 template <typename T1, typename T2>
-inline void Rotate( int64& x, int64& y, T1 sa, T1 ca, T2 xc, T2 yc )
+inline void Rotate( int64& x, int64& y, T1 sa, T1 ca, T2 xc, T2 yc ) noexcept
 {
    T1 dx = T1( x ) - T1( xc );
    T1 dy = T1( y ) - T1( yc );
@@ -2034,7 +2034,7 @@ inline void Rotate( int64& x, int64& y, T1 sa, T1 ca, T2 xc, T2 yc )
  * \ingroup mathematical_functions
  */
 template <typename T, typename T1, typename T2>
-inline void Rotate( T& x, T& y, T1 a, T2 xc, T2 yc )
+inline void Rotate( T& x, T& y, T1 a, T2 xc, T2 yc ) noexcept
 {
    T1 sa, ca; SinCos( a, sa, ca ); Rotate( x, y, sa, ca, xc, yc );
 }
@@ -2054,7 +2054,7 @@ inline void Rotate( T& x, T& y, T1 a, T2 xc, T2 yc )
  * \ingroup mathematical_functions
  * \sa L1Norm(), L2Norm()
  */
-template <typename T> inline double Norm( const T* i, const T* j, double p )
+template <typename T> inline double Norm( const T* i, const T* j, double p ) noexcept
 {
    PCL_PRECONDITION( p > 0 )
    double N = 0;
@@ -2069,7 +2069,7 @@ template <typename T> inline double Norm( const T* i, const T* j, double p )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline double L1Norm( const T* i, const T* j )
+template <typename T> inline double L1Norm( const T* i, const T* j ) noexcept
 {
    double N = 0;
    for ( ; i < j; ++i )
@@ -2083,7 +2083,7 @@ template <typename T> inline double L1Norm( const T* i, const T* j )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline double L2Norm( const T* i, const T* j )
+template <typename T> inline double L2Norm( const T* i, const T* j ) noexcept
 {
    double N = 0;
    for ( ; i < j; ++i )
@@ -2097,7 +2097,7 @@ template <typename T> inline double L2Norm( const T* i, const T* j )
  *
  * \ingroup mathematical_functions
  */
-template <typename T> inline double Norm( const T* i, const T* j )
+template <typename T> inline double Norm( const T* i, const T* j ) noexcept
 {
    return L2Norm( i, j );
 }
@@ -2128,7 +2128,7 @@ template <typename T> inline double Norm( const T* i, const T* j )
  *                   computes the JD at zero hours. Usually in the [0,1) range
  *                   but can be any real number.
  *
- * This routine, as well as JDToComplexTime(), implement modified versions of
+ * This routine, as well as JDToCalendarTime(), implement modified versions of
  * the original algorithms due to Jean Meeus. Our modifications allow for
  * negative Julian dates, which extends the range of allowed dates to the past
  * considerably. We developed these modifications in the context of large-scale
@@ -2144,7 +2144,7 @@ template <typename T> inline double Norm( const T* i, const T* j )
  *
  * \ingroup mathematical_functions
  */
-void PCL_FUNC ComplexTimeToJD( int& jdi, double& jdf, int year, int month, int day, double dayf = 0 );
+void PCL_FUNC CalendarTimeToJD( int& jdi, double& jdf, int year, int month, int day, double dayf = 0 ) noexcept;
 
 /*!
  * Computes the Julian date (JD) corresponding to a time point expressed as a
@@ -2165,7 +2165,7 @@ void PCL_FUNC ComplexTimeToJD( int& jdi, double& jdf, int year, int month, int d
  *                the JD at zero hours. Usually in the [0,1) range but can be
  *                any real number.
  *
- * This routine, as well as JDToComplexTime(), implement modified versions of
+ * This routine, as well as JDToCalendarTime(), implement modified versions of
  * the original algorithms due to Jean Meeus. Our modifications allow for
  * negative Julian dates, which extends the range of allowed dates to the past
  * considerably. We developed these modifications in the context of large-scale
@@ -2185,11 +2185,11 @@ void PCL_FUNC ComplexTimeToJD( int& jdi, double& jdf, int year, int month, int d
  *
  * \ingroup mathematical_functions
  */
-inline double ComplexTimeToJD( int year, int month, int day, double dayf = 0 )
+inline double CalendarTimeToJD( int year, int month, int day, double dayf = 0 ) noexcept
 {
    int jdi;
    double jdf;
-   ComplexTimeToJD( jdi, jdf, year, month, day, dayf );
+   CalendarTimeToJD( jdi, jdf, year, month, day, dayf );
    return jdi + jdf;
 }
 
@@ -2219,11 +2219,11 @@ inline double ComplexTimeToJD( int year, int month, int day, double dayf = 0 )
  * The input time point must be equal to the sum of \a jdi and \a jdf.
  *
  * For more information about the implemented algorithms and references, see
- * the documentation for ComplexTimeToJD().
+ * the documentation for CalendarTimeToJD().
  *
  * \ingroup mathematical_functions
  */
-void PCL_FUNC JDToComplexTime( int& year, int& month, int& day, double& dayf, int jdi, double jdf );
+void PCL_FUNC JDToCalendarTime( int& year, int& month, int& day, double& dayf, int jdi, double jdf ) noexcept;
 
 /*!
  * Computes the date and day fraction corresponding to a time point expressed
@@ -2250,13 +2250,13 @@ void PCL_FUNC JDToComplexTime( int& year, int& month, int& day, double& dayf, in
  * millisecond.
  *
  * For more information about the implemented algorithms and references, see
- * the documentation for ComplexTimeToJD().
+ * the documentation for CalendarTimeToJD().
  *
  * \ingroup mathematical_functions
  */
-inline void JDToComplexTime( int& year, int& month, int& day, double& dayf, double jd )
+inline void JDToCalendarTime( int& year, int& month, int& day, double& dayf, double jd ) noexcept
 {
-   JDToComplexTime( year, month, day, dayf, TruncInt( jd ), Frac( jd ) );
+   JDToCalendarTime( year, month, day, dayf, TruncInt( jd ), Frac( jd ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -2282,7 +2282,7 @@ inline void JDToComplexTime( int& year, int& month, int& day, double& dayf, doub
  * \ingroup mathematical_functions
  */
 template <typename S1, typename S2, typename S3, typename D>
-inline void DecimalToSexagesimal( int& sign, S1& s1, S2& s2, S3& s3, const D& d )
+inline void DecimalToSexagesimal( int& sign, S1& s1, S2& s2, S3& s3, const D& d ) noexcept
 {
    double t1 = Abs( d );
    double t2 = Frac( t1 )*60;
@@ -2304,7 +2304,7 @@ inline void DecimalToSexagesimal( int& sign, S1& s1, S2& s2, S3& s3, const D& d 
  * \ingroup mathematical_functions
  */
 template <typename S1, typename S2, typename S3>
-inline double SexagesimalToDecimal( int sign, const S1& s1, const S2& s2 = S2( 0 ), const S3& s3 = S3( 0 ) )
+inline double SexagesimalToDecimal( int sign, const S1& s1, const S2& s2 = S2( 0 ), const S3& s3 = S3( 0 ) ) noexcept
 {
    double d = Abs( s1 ) + (s2 + s3/60)/60;
    return (sign < 0) ? -d : d;
@@ -2330,7 +2330,7 @@ inline double SexagesimalToDecimal( int sign, const S1& s1, const S2& s2 = S2( 0
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double Sum( const T* i, const T* j )
+template <typename T> inline double Sum( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    double sum = 0;
    while ( i < j )
@@ -2349,7 +2349,7 @@ template <typename T> inline double Sum( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double StableSum( const T* i, const T* j )
+template <typename T> inline double StableSum( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    double sum = 0;
    double eps = 0;
@@ -2374,7 +2374,7 @@ template <typename T> inline double StableSum( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double Modulus( const T* i, const T* j )
+template <typename T> inline double Modulus( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    double S = 0;
    while ( i < j )
@@ -2393,7 +2393,7 @@ template <typename T> inline double Modulus( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double StableModulus( const T* i, const T* j )
+template <typename T> inline double StableModulus( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    double sum = 0;
    double eps = 0;
@@ -2418,7 +2418,7 @@ template <typename T> inline double StableModulus( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double SumOfSquares( const T* i, const T* j )
+template <typename T> inline double SumOfSquares( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    double Q = 0;
    while ( i < j )
@@ -2440,7 +2440,7 @@ template <typename T> inline double SumOfSquares( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double StableSumOfSquares( const T* i, const T* j )
+template <typename T> inline double StableSumOfSquares( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    double sum = 0;
    double eps = 0;
@@ -2466,7 +2466,7 @@ template <typename T> inline double StableSumOfSquares( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double Mean( const T* i, const T* j )
+template <typename T> inline double Mean( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -2485,7 +2485,7 @@ template <typename T> inline double Mean( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double StableMean( const T* i, const T* j )
+template <typename T> inline double StableMean( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -2510,7 +2510,7 @@ template <typename T> inline double StableMean( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double Variance( const T* i, const T* j, double center )
+template <typename T> inline double Variance( const T* __restrict__ i, const T* __restrict__ j, double center ) noexcept
 {
    distance_type n = j - i;
    if ( n < 2 )
@@ -2542,7 +2542,7 @@ template <typename T> inline double Variance( const T* i, const T* j, double cen
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double Variance( const T* i, const T* j )
+template <typename T> inline double Variance( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    distance_type n = j - i;
    if ( n < 2 )
@@ -2570,7 +2570,7 @@ template <typename T> inline double Variance( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double StdDev( const T* i, const T* j, double center )
+template <typename T> inline double StdDev( const T* __restrict__ i, const T* __restrict__ j, double center ) noexcept
 {
    return Sqrt( Variance( i, j, center ) );
 }
@@ -2582,7 +2582,7 @@ template <typename T> inline double StdDev( const T* i, const T* j, double cente
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double StdDev( const T* i, const T* j )
+template <typename T> inline double StdDev( const T* __restrict__ i, const T* __restrict__ j ) noexcept
 {
    return Sqrt( Variance( i, j ) );
 }
@@ -2635,7 +2635,7 @@ template <typename T> inline double StdDev( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <class T> inline double Median( const T* i, const T* j )
+template <class T> inline double Median( const T* __restrict__ i, const T* __restrict__ j )
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -2643,7 +2643,7 @@ template <class T> inline double Median( const T* i, const T* j )
    if ( n == 1 )
       return double( *i );
    double* d = new double[ n ];
-   double* t = d;
+   double* __restrict__ t = d;
    do
       *t++ = double( *i++ );
    while ( i < j );
@@ -2654,20 +2654,20 @@ template <class T> inline double Median( const T* i, const T* j )
    return m;
 }
 
-double PCL_FUNC Median( const unsigned char* i, const unsigned char* j );
-double PCL_FUNC Median( const signed char* i, const signed char* j );
-double PCL_FUNC Median( const wchar_t* i, const wchar_t* j );
-double PCL_FUNC Median( const unsigned short* i, const unsigned short* j );
-double PCL_FUNC Median( const signed short* i, const signed short* j );
-double PCL_FUNC Median( const unsigned int* i, const unsigned int* j );
-double PCL_FUNC Median( const signed int* i, const signed int* j );
-double PCL_FUNC Median( const unsigned long* i, const unsigned long* j );
-double PCL_FUNC Median( const signed long* i, const signed long* j );
-double PCL_FUNC Median( const unsigned long long* i, const unsigned long long* j );
-double PCL_FUNC Median( const signed long long* i, const signed long long* j );
-double PCL_FUNC Median( const float* i, const float* j );
-double PCL_FUNC Median( const double* i, const double* j );
-double PCL_FUNC Median( const long double* i, const long double* j );
+double PCL_FUNC Median( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j );
+double PCL_FUNC Median( const signed char* __restrict__ i, const signed char* __restrict__ j );
+double PCL_FUNC Median( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j );
+double PCL_FUNC Median( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j );
+double PCL_FUNC Median( const signed short* __restrict__ i, const signed short* __restrict__ j );
+double PCL_FUNC Median( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j );
+double PCL_FUNC Median( const signed int* __restrict__ i, const signed int* __restrict__ j );
+double PCL_FUNC Median( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j );
+double PCL_FUNC Median( const signed long* __restrict__ i, const signed long* __restrict__ j );
+double PCL_FUNC Median( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j );
+double PCL_FUNC Median( const signed long long* __restrict__ i, const signed long long* __restrict__ j );
+double PCL_FUNC Median( const float* __restrict__ i, const float* __restrict__ j );
+double PCL_FUNC Median( const double* __restrict__ i, const double* __restrict__ j );
+double PCL_FUNC Median( const long double* __restrict__ i, const long double* __restrict__ j );
 
 #define CMPXCHG( a, b )  \
    if ( i[b] < i[a] ) pcl::Swap( i[a], i[b] )
@@ -2717,7 +2717,7 @@ double PCL_FUNC Median( const long double* i, const long double* j );
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double MedianDestructive( T* i, T* j )
+template <typename T> inline double MedianDestructive( T* __restrict__ i, T* __restrict__ j ) noexcept
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -2798,7 +2798,7 @@ template <typename T> inline double MedianDestructive( T* i, T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T, class BP> inline double MedianDestructive( T* i, T* j, BP p )
+template <typename T, class BP> inline double MedianDestructive( T* __restrict__ i, T* __restrict__ j, BP p ) noexcept
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -2895,7 +2895,7 @@ template <typename T, class BP> inline double MedianDestructive( T* i, T* j, BP 
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double OrderStatistic( const T* i, const T* j, distance_type k )
+template <typename T> inline double OrderStatistic( const T* __restrict__ i, const T* __restrict__ j, distance_type k )
 {
    distance_type n = j - i;
    if ( n < 1 || k < 0 || k >= n )
@@ -2912,20 +2912,20 @@ template <typename T> inline double OrderStatistic( const T* i, const T* j, dist
    return s;
 }
 
-double PCL_FUNC OrderStatistic( const unsigned char* i, const unsigned char* j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed char* i, const signed char* j, distance_type k );
-double PCL_FUNC OrderStatistic( const wchar_t* i, const wchar_t* j, distance_type k );
-double PCL_FUNC OrderStatistic( const unsigned short* i, const unsigned short* j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed short* i, const signed short* j, distance_type k );
-double PCL_FUNC OrderStatistic( const unsigned int* i, const unsigned int* j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed int* i, const signed int* j, distance_type k );
-double PCL_FUNC OrderStatistic( const unsigned long* i, const unsigned long* j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed long* i, const signed long* j, distance_type k );
-double PCL_FUNC OrderStatistic( const unsigned long long* i, const unsigned long long* j, distance_type k );
-double PCL_FUNC OrderStatistic( const signed long long* i, const signed long long* j, distance_type k );
-double PCL_FUNC OrderStatistic( const float* i, const float* j, distance_type k );
-double PCL_FUNC OrderStatistic( const double* i, const double* j, distance_type k );
-double PCL_FUNC OrderStatistic( const long double* i, const long double* j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed char* __restrict__ i, const signed char* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed short* __restrict__ i, const signed short* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed int* __restrict__ i, const signed int* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed long* __restrict__ i, const signed long* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const signed long long* __restrict__ i, const signed long long* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const float* __restrict__ i, const float* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const double* __restrict__ i, const double* __restrict__ j, distance_type k );
+double PCL_FUNC OrderStatistic( const long double* __restrict__ i, const long double* __restrict__ j, distance_type k );
 
 /*!
  * Returns the k-th order statistic of a sequence [i,j), altering the existing
@@ -2954,7 +2954,7 @@ double PCL_FUNC OrderStatistic( const long double* i, const long double* j, dist
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double OrderStatisticDestructive( T* i, T* j, distance_type k )
+template <typename T> inline double OrderStatisticDestructive( T* __restrict__ i, T* __restrict__ j, distance_type k ) noexcept
 {
    distance_type n = j - i;
    if ( n < 1 || k < 0 || k >= n )
@@ -2976,7 +2976,7 @@ template <typename T> inline double OrderStatisticDestructive( T* i, T* j, dista
  *
  * \ingroup statistical_functions
  */
-template <typename T, class BP> inline double OrderStatisticDestructive( const T* i, const T* j, distance_type k, BP p )
+template <typename T, class BP> inline double OrderStatisticDestructive( const T* __restrict__ i, const T* __restrict__ j, distance_type k, BP p ) noexcept
 {
    distance_type n = j - i;
    if ( n < 1 || k < 0 || k >= n )
@@ -2999,7 +2999,7 @@ template <typename T, class BP> inline double OrderStatisticDestructive( const T
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double TrimmedMean( const T* i, const T* j, distance_type l = 1, distance_type h = 1 )
+template <typename T> inline double TrimmedMean( const T* __restrict__ i, const T* __restrict__ j, distance_type l = 1, distance_type h = 1 )
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -3038,7 +3038,7 @@ template <typename T> inline double TrimmedMean( const T* i, const T* j, distanc
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double TrimmedMeanDestructive( T* i, T* j, distance_type l = 1, distance_type h = 1 )
+template <typename T> inline double TrimmedMeanDestructive( T* __restrict__ i, T* __restrict__ j, distance_type l = 1, distance_type h = 1 ) noexcept
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -3076,7 +3076,7 @@ template <typename T> inline double TrimmedMeanDestructive( T* i, T* j, distance
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double TrimmedMeanOfSquares( const T* i, const T* j, distance_type l = 1, distance_type h = 1 )
+template <typename T> inline double TrimmedMeanOfSquares( const T* __restrict__ i, const T* __restrict__ j, distance_type l = 1, distance_type h = 1 )
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -3119,7 +3119,7 @@ template <typename T> inline double TrimmedMeanOfSquares( const T* i, const T* j
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double TrimmedMeanOfSquaresDestructive( T* i, T* j, distance_type l = 1, distance_type h = 1 )
+template <typename T> inline double TrimmedMeanOfSquaresDestructive( T* __restrict__ i, T* __restrict__ j, distance_type l = 1, distance_type h = 1 ) noexcept
 {
    distance_type n = j - i;
    if ( n < 1 )
@@ -3161,7 +3161,7 @@ template <typename T> inline double TrimmedMeanOfSquaresDestructive( T* i, T* j,
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double AvgDev( const T* i, const T* j, double center )
+template <typename T> inline double AvgDev( const T* __restrict__ i, const T* __restrict__ j, double center ) noexcept
 {
    distance_type n = j - i;
    if ( n < 2 )
@@ -3193,7 +3193,7 @@ template <typename T> inline double AvgDev( const T* i, const T* j, double cente
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double StableAvgDev( const T* i, const T* j, double center )
+template <typename T> inline double StableAvgDev( const T* __restrict__ i, const T* __restrict__ j, double center ) noexcept
 {
    distance_type n = j - i;
    if ( n < 2 )
@@ -3230,7 +3230,7 @@ template <typename T> inline double StableAvgDev( const T* i, const T* j, double
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double AvgDev( const T* i, const T* j )
+template <typename T> inline double AvgDev( const T* __restrict__ i, const T* __restrict__ j )
 {
    distance_type n = j - i;
    if ( n < 2 )
@@ -3262,7 +3262,7 @@ template <typename T> inline double AvgDev( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double StableAvgDev( const T* i, const T* j )
+template <typename T> inline double StableAvgDev( const T* __restrict__ i, const T* __restrict__ j )
 {
    return pcl::StableAvgDev( i, j, pcl::Median( i, j ) );
 }
@@ -3340,7 +3340,7 @@ struct TwoSidedEstimate
     * positive and nonzero with respect to the machine epsilon for the type
     * \c double.
     */
-   bool IsValid() const
+   bool IsValid() const noexcept
    {
       return IsFinite( low ) && low > std::numeric_limits<double>::epsilon()
           && IsFinite( high ) && high > std::numeric_limits<double>::epsilon();
@@ -3351,7 +3351,7 @@ struct TwoSidedEstimate
     * estimates if both are nonzero. Returns the nonzero estimate otherwise if
     * it exists, zero otherwise.
     */
-   explicit operator double() const
+   explicit operator double() const noexcept
    {
       if ( low != 0 )
       {
@@ -3366,7 +3366,7 @@ struct TwoSidedEstimate
     * Assignment-multiplication by a scalar. Returns a reference to this
     * object.
     */
-   TwoSidedEstimate& operator *=( double x )
+   TwoSidedEstimate& operator *=( double x ) noexcept
    {
       low *= x;
       high *= x;
@@ -3376,7 +3376,7 @@ struct TwoSidedEstimate
    /*!
     * Assignment-division by a scalar. Returns a reference to this object.
     */
-   TwoSidedEstimate& operator /=( double x )
+   TwoSidedEstimate& operator /=( double x ) noexcept
    {
       low /= x;
       high /= x;
@@ -3387,7 +3387,7 @@ struct TwoSidedEstimate
     * Assignment-division by a two-sided estimate. Returns a reference to this
     * object.
     */
-   TwoSidedEstimate& operator /=( const TwoSidedEstimate& e )
+   TwoSidedEstimate& operator /=( const TwoSidedEstimate& e ) noexcept
    {
       low /= e.low;
       high /= e.high;
@@ -3397,7 +3397,7 @@ struct TwoSidedEstimate
    /*!
     * Returns the result of multiplying this two-sided estimate by a scalar.
     */
-   TwoSidedEstimate operator *( double x ) const
+   TwoSidedEstimate operator *( double x ) const noexcept
    {
       return { low*x, high*x };
    }
@@ -3405,7 +3405,7 @@ struct TwoSidedEstimate
    /*!
     * Returns the result of dividing this two-sided estimate by a scalar.
     */
-   TwoSidedEstimate operator /( double x ) const
+   TwoSidedEstimate operator /( double x ) const noexcept
    {
       return { low/x, high/x };
    }
@@ -3414,7 +3414,7 @@ struct TwoSidedEstimate
     * Returns the result of the component wise division of this two-sided
     * estimate by another two-sided estimate.
     */
-   TwoSidedEstimate operator /( const TwoSidedEstimate& e ) const
+   TwoSidedEstimate operator /( const TwoSidedEstimate& e ) const noexcept
    {
       return { low/e.low, high/e.high };
    }
@@ -3424,7 +3424,7 @@ struct TwoSidedEstimate
  * Returns the component wise square root of a two-sided estimate.
  * \ingroup statistical_functions
  */
-inline TwoSidedEstimate Sqrt( const TwoSidedEstimate& e )
+inline TwoSidedEstimate Sqrt( const TwoSidedEstimate& e ) noexcept
 {
    return { Sqrt( e.low ), Sqrt( e.high ) };
 }
@@ -3433,7 +3433,7 @@ inline TwoSidedEstimate Sqrt( const TwoSidedEstimate& e )
  * Returns the component wise exponent function of a two-sided estimate.
  * \ingroup statistical_functions
  */
-template <typename T> inline TwoSidedEstimate Pow( const TwoSidedEstimate& e, T x )
+template <typename T> inline TwoSidedEstimate Pow( const TwoSidedEstimate& e, T x ) noexcept
 {
    double x_ = double( x );
    return { Pow( e.low, x_ ), Pow( e.high, x_ ) };
@@ -3459,7 +3459,7 @@ template <typename T> inline TwoSidedEstimate Pow( const TwoSidedEstimate& e, T 
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline TwoSidedEstimate TwoSidedAvgDev( const T* i, const T* j, double center )
+template <typename T> inline TwoSidedEstimate TwoSidedAvgDev( const T* __restrict__ i, const T* __restrict__ j, double center ) noexcept
 {
    double dl = 0, dh = 0;
    distance_type nl = 0, nh = 0;
@@ -3500,7 +3500,7 @@ template <typename T> inline TwoSidedEstimate TwoSidedAvgDev( const T* i, const 
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline TwoSidedEstimate TwoSidedAvgDev( const T* i, const T* j )
+template <typename T> inline TwoSidedEstimate TwoSidedAvgDev( const T* __restrict__ i, const T* __restrict__ j )
 {
    return pcl::TwoSidedAvgDev( i, j, pcl::Median( i, j ) );
 }
@@ -3518,7 +3518,7 @@ template <typename T> inline TwoSidedEstimate TwoSidedAvgDev( const T* i, const 
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double MAD( const T* i, const T* j, double center )
+template <typename T> inline double MAD( const T* __restrict__ i, const T* __restrict__ j, double center )
 {
    distance_type n = j - i;
    if ( n < 2 )
@@ -3533,20 +3533,20 @@ template <typename T> inline double MAD( const T* i, const T* j, double center )
    return m;
 }
 
-double PCL_FUNC MAD( const unsigned char* i, const unsigned char* j, double center );
-double PCL_FUNC MAD( const signed char* i, const signed char* j, double center );
-double PCL_FUNC MAD( const wchar_t* i, const wchar_t* j, double center );
-double PCL_FUNC MAD( const unsigned short* i, const unsigned short* j, double center );
-double PCL_FUNC MAD( const signed short* i, const signed short* j, double center );
-double PCL_FUNC MAD( const unsigned int* i, const unsigned int* j, double center );
-double PCL_FUNC MAD( const signed int* i, const signed int* j, double center );
-double PCL_FUNC MAD( const unsigned long* i, const unsigned long* j, double center );
-double PCL_FUNC MAD( const signed long* i, const signed long* j, double center );
-double PCL_FUNC MAD( const unsigned long long* i, const unsigned long long* j, double center );
-double PCL_FUNC MAD( const signed long long* i, const signed long long* j, double center );
-double PCL_FUNC MAD( const float* i, const float* j, double center );
-double PCL_FUNC MAD( const double* i, const double* j, double center );
-double PCL_FUNC MAD( const long double* i, const long double* j, double center );
+double PCL_FUNC MAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center );
+double PCL_FUNC MAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center );
+double PCL_FUNC MAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center );
+double PCL_FUNC MAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center );
+double PCL_FUNC MAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center );
+double PCL_FUNC MAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center );
+double PCL_FUNC MAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center );
+double PCL_FUNC MAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center );
+double PCL_FUNC MAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center );
+double PCL_FUNC MAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center );
+double PCL_FUNC MAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center );
+double PCL_FUNC MAD( const float* __restrict__ i, const float* __restrict__ j, double center );
+double PCL_FUNC MAD( const double* __restrict__ i, const double* __restrict__ j, double center );
+double PCL_FUNC MAD( const long double* __restrict__ i, const long double* __restrict__ j, double center );
 
 /*!
  * Returns the median absolute deviation from the median (MAD) for the values
@@ -3561,7 +3561,7 @@ double PCL_FUNC MAD( const long double* i, const long double* j, double center )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline double MAD( const T* i, const T* j )
+template <typename T> inline double MAD( const T* __restrict__ i, const T* __restrict__ j )
 {
    return pcl::MAD( i, j, pcl::Median( i, j ) );
 }
@@ -3579,14 +3579,14 @@ template <typename T> inline double MAD( const T* i, const T* j )
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* i, const T* j, double center )
+template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* __restrict__ i, const T* __restrict__ j, double center )
 {
    distance_type n = j - i;
    if ( n < 2 )
       return 0;
    double* d = new double[ n ];
-   double* p = d;
-   double* q = d + n;
+   double* __restrict__ p = d;
+   double* __restrict__ q = d + n;
    do
    {
       double x = double( *i++ );
@@ -3602,20 +3602,20 @@ template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* i, const T* 
    return { l, h };
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned char* i, const unsigned char* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed char* i, const signed char* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const wchar_t* i, const wchar_t* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned short* i, const unsigned short* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed short* i, const signed short* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned int* i, const unsigned int* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed int* i, const signed int* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long* i, const unsigned long* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long* i, const signed long* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long long* i, const unsigned long long* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long long* i, const signed long long* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const float* i, const float* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const double* i, const double* j, double center );
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* i, const long double* j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const float* __restrict__ i, const float* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const double* __restrict__ i, const double* __restrict__ j, double center );
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* __restrict__ i, const long double* __restrict__ j, double center );
 
 /*!
  * Returns the two-sided median absolute deviation from the median (MAD) for
@@ -3630,7 +3630,7 @@ TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* i, const long double* 
  *
  * \ingroup statistical_functions
  */
-template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* i, const T* j )
+template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* __restrict__ i, const T* __restrict__ j )
 {
    return pcl::TwoSidedMAD( i, j, pcl::Median( i, j ) );
 }
@@ -3666,7 +3666,7 @@ template <typename T> inline TwoSidedEstimate TwoSidedMAD( const T* i, const T* 
  *
  * \ingroup statistical_functions
  */
-template <typename T> double Sn( T* x, T* xn )
+template <typename T> double Sn( T* __restrict__ x, T* __restrict__ xn )
 {
    /*
     * N.B.: In the code below, lines commented with an asterisk (*) have been
@@ -3915,7 +3915,7 @@ inline double __pcl_whimed__( double* a, distance_type* iw, distance_type n,
  *
  * \ingroup statistical_functions
  */
-template <typename T> double Qn( T* x, T* xn )
+template <typename T> double Qn( T* __restrict__ x, T* __restrict__ xn )
 {
    distance_type n = xn - x;
    if ( n < 2 )
@@ -4086,8 +4086,8 @@ template <typename T> double Qn( T* x, T* xn )
  * \ingroup statistical_functions
  */
 template <typename T>
-double BiweightMidvariance( const T* x, const T* xn, double center,
-                            double sigma, int k = 9, bool reducedLength = false )
+double BiweightMidvariance( const T* __restrict__ x, const T* __restrict__ xn, double center,
+                            double sigma, int k = 9, bool reducedLength = false ) noexcept
 {
    distance_type n = xn - x;
    if ( n < 2 )
@@ -4149,8 +4149,8 @@ double BiweightMidvariance( const T* x, const T* xn, double center,
  * \ingroup statistical_functions
  */
 template <typename T>
-TwoSidedEstimate TwoSidedBiweightMidvariance( const T* x, const T* xn, double center,
-                                              const TwoSidedEstimate& sigma, int k = 9, bool reducedLength = false )
+TwoSidedEstimate TwoSidedBiweightMidvariance( const T* __restrict__ x, const T* __restrict__ xn, double center,
+                                              const TwoSidedEstimate& sigma, int k = 9, bool reducedLength = false ) noexcept
 {
    double kd0 = k * sigma.low;
    double kd1 = k * sigma.high;
@@ -4225,7 +4225,7 @@ TwoSidedEstimate TwoSidedBiweightMidvariance( const T* x, const T* xn, double ce
  * \ingroup statistical_functions
  */
 template <typename T>
-double BendMidvariance( const T* x, const T* xn, double center, double beta = 0.2 )
+double BendMidvariance( const T* __restrict__ x, const T* __restrict__ xn, double center, double beta = 0.2 )
 {
    distance_type n = xn - x;
    if ( n < 2 )
@@ -4285,7 +4285,7 @@ double BendMidvariance( const T* x, const T* xn, double center, double beta = 0.
  *
  * \ingroup special_functions
  */
-inline double IncompleteBeta( double a, double b, double x, double eps = 1.0e-8 )
+inline double IncompleteBeta( double a, double b, double x, double eps = 1.0e-8 ) noexcept
 {
    if ( x < 0 || x > 1 )
       return std::numeric_limits<double>::infinity();
@@ -4381,7 +4381,7 @@ inline double IncompleteBeta( double a, double b, double x, double eps = 1.0e-8 
  *
  * \ingroup hash_functions
  */
-inline uint64 Hash64( const void* data, size_type size, uint64 seed = 0 )
+inline uint64 Hash64( const void* data, size_type size, uint64 seed = 0 ) noexcept
 {
 #define PRIME64_1 11400714785074694791ULL
 #define PRIME64_2 14029467366897019727ULL
@@ -4535,7 +4535,7 @@ inline uint64 Hash64( const void* data, size_type size, uint64 seed = 0 )
  *
  * \ingroup hash_functions
  */
-inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 )
+inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 ) noexcept
 {
 #define PRIME32_1 2654435761U
 #define PRIME32_2 2246822519U
@@ -4624,4 +4624,4 @@ inline uint32 Hash32( const void* data, size_type size, uint32 seed = 0 )
 #endif   // __PCL_Math_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Math.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Math.h - Released 2020-11-20T19:46:29Z

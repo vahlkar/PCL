@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// HDRCompositionInstance.cpp - Released 2020-10-12T19:25:16Z
+// HDRCompositionInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -67,8 +67,9 @@
 #include <pcl/MultiscaleMedianTransform.h>
 #include <pcl/SeparableConvolution.h>
 #include <pcl/SpinStatus.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/StructuringElement.h>
+#include <pcl/Thread.h>
 #include <pcl/Version.h>
 #include <pcl/View.h>
 
@@ -625,17 +626,10 @@ private:
       if ( m_instance->p_maskSmoothness > 0 )
       {
          GaussianFilter G( m_instance->p_maskSmoothness*2 + 1 );
-         if ( G.Size() >= PCL_FFT_CONVOLUTION_IS_FASTER_THAN_SEPARABLE_FILTER_SIZE )
-         {
-            FFTConvolution C( G );
-            C >> mask;
-         }
+         if ( G.Size() < FFTConvolution::FasterThanSeparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) )
+            SeparableConvolution( G.AsSeparableFilter() ) >> mask;
          else
-         {
-            SeparableFilter S( G.AsSeparableFilter() );
-            SeparableConvolution C( S );
-            C >> mask;
-         }
+            FFTConvolution( G ) >> mask;
       }
       else
          mask.Status() += N;
@@ -982,4 +976,4 @@ size_type HDRCompositionInstance::ParameterLength( const MetaParameter* p, size_
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF HDRCompositionInstance.cpp - Released 2020-11-20T19:49:00Z

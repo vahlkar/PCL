@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleInstance.cpp - Released 2020-10-12T19:25:16Z
+// RescaleInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -55,7 +55,7 @@
 #include <pcl/AutoViewLock.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/MessageBox.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
 namespace pcl
@@ -171,4 +171,4 @@ void* RescaleInstance::LockParameter( const MetaParameter* p, size_type /*tableR
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF RescaleInstance.cpp - Released 2020-11-20T19:49:00Z

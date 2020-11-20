@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/WCSKeywords.cpp - Released 2020-10-12T19:24:49Z
+// pcl/WCSKeywords.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -78,6 +78,8 @@ void WCSKeywords::Read( const PropertyArray& properties, const FITSKeywordArray&
          objctra = property.Value().ToDouble();
       else if ( property.Id() == "Observation:Center:Dec" )
          objctdec = property.Value().ToDouble();
+      else if ( property.Id() == "Observation:CelestialReferenceSystem" )
+         radesys = property.Value().ToIsoString();
       else if ( property.Id() == "Observation:Equinox" )
          equinox = property.Value().ToDouble();
       else if ( property.Id() == "Observation:Time:Start" )
@@ -240,6 +242,8 @@ void WCSKeywords::Read( const PropertyArray& properties, const FITSKeywordArray&
                if ( nvalue <= +90 )
                   objctdec = nvalue;
       }
+      else if ( radesys.IsEmpty() && keyword.name == "RADESYS" )
+         radesys = svalue.Uppercase();
       else if ( !equinox.IsDefined() && keyword.name == "EQUINOX" )
       {
          if ( svalue.TryToDouble( nvalue ) )
@@ -440,4 +444,4 @@ bool WCSKeywords::ExtractWorldTransformation( LinearTransformation& transIW, int
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WCSKeywords.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/WCSKeywords.cpp - Released 2020-11-20T19:46:37Z

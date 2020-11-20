@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000Instance.cpp - Released 2020-10-12T19:25:05Z
+// JPEG2000Instance.cpp - Released 2020-11-20T19:48:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -55,7 +55,7 @@
 #include "JPEG2000OptionsDialog.h"
 
 #include <pcl/ICCProfile.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/File.h>
 #include <pcl/MetaModule.h>
@@ -894,4 +894,4 @@ void JP2Instance::WriteICCProfile( const ICCProfile& icc )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000Instance.cpp - Released 2020-10-12T19:25:05Z
+// EOF JPEG2000Instance.cpp - Released 2020-11-20T19:48:45Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionInstance.cpp - Released 2020-10-12T19:25:16Z
+// ConvolutionInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -63,7 +63,7 @@
 #include <pcl/PixelInterpolation.h>
 #include <pcl/Resample.h>
 #include <pcl/SeparableConvolution.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/VariableShapeFilter.h>
 #include <pcl/View.h>
 
@@ -137,6 +137,8 @@ public:
 
    static void Apply( ImageVariant& image, const ConvolutionInstance& instance )
    {
+      int nofThreads = Thread::NumberOfThreads( PCL_MAX_PROCESSORS );
+
       switch ( instance.mode )
       {
       default: // ?
@@ -145,24 +147,20 @@ public:
             VariableShapeFilter H( instance.sigma, instance.shape, 0.01F,
                                    instance.aspectRatio, Rad( instance.rotationAngle ) );
 
-            if (     H.Size() >= PCL_FFT_CONVOLUTION_IS_FASTER_THAN_SEPARABLE_FILTER_SIZE
-                 || !H.IsSeparable() && H.Size() >= PCL_FFT_CONVOLUTION_IS_FASTER_THAN_NONSEPARABLE_FILTER_SIZE
-                 ||  H.Size() > image.Width()
-                 ||  H.Size() > image.Height() )
+            if (    H.Size() >= FFTConvolution::FasterThanSeparableFilterSize( nofThreads )
+                 || !H.IsSeparable() && H.Size() >= FFTConvolution::FasterThanNonseparableFilterSize( nofThreads )
+                 || H.Size() > image.Width()
+                 || H.Size() > image.Height() )
             {
-               FFTConvolution Z( H );
-               Z >> image;
+               FFTConvolution( H ) >> image;
             }
-            else if ( H.IsSeparable() )
+            else if ( H.IsSeparable() && H.Size() >= SeparableConvolution::FasterThanNonseparableFilterSize( nofThreads ) )
             {
-               SeparableFilter S( H.AsSeparableFilter() );
-               SeparableConvolution C( S );
-               C >> image;
+               SeparableConvolution( H.AsSeparableFilter() ) >> image;
             }
             else
             {
-               Convolution C( H );
-               C >> image;
+               Convolution( H ) >> image;
             }
          }
          break;
@@ -181,7 +179,7 @@ public:
             }
             else
             {
-               if (    F.Kernel().Size() < PCL_FFT_CONVOLUTION_IS_FASTER_THAN_NONSEPARABLE_FILTER_SIZE
+               if (    F.Kernel().Size() < FFTConvolution::FasterThanNonseparableFilterSize( nofThreads )
                     || F.Kernel().IsHighPassFilter() )
                {
                   Convolution C( F.Kernel() );
@@ -493,4 +491,4 @@ bool ConvolutionInstance::CreateFilterImage( Image& filter ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF ConvolutionInstance.cpp - Released 2020-11-20T19:49:00Z

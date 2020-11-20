@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Random.cpp - Released 2020-10-12T19:24:49Z
+// pcl/Random.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -89,14 +89,14 @@ static bool GetSystemSeed( void* bytes, size_type n )
 #endif
 }
 
-static uint64 TimeSeed()
+static uint64 TimeSeed() noexcept
 {
    union { time_t t; uint64 u; } t;
    t.t = time( 0 );
    return t.u;
 }
 
-static uint64 XorShift64Seed( uint64& x )
+static uint64 XorShift64Seed( uint64& x ) noexcept
 {
    for ( ;; )
    {
@@ -460,7 +460,7 @@ double RandomNumberGenerator::Normal( double mean, double sigma )
 
 // ----------------------------------------------------------------------------
 
-static double LnGamma( double x )
+static double LnGamma( double x ) noexcept
 {
    /*
     * Adapted from Numerical Recipes in C 3rd Ed. p. 257
@@ -538,4 +538,4 @@ int RandomNumberGenerator::Poisson( double lambda )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Random.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/Random.cpp - Released 2020-11-20T19:46:37Z

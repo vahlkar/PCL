@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.2
 // ----------------------------------------------------------------------------
-// ResampleInstance.cpp - Released 2020-10-12T19:25:16Z
+// ResampleInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -58,7 +58,7 @@
 #include <pcl/AutoViewLock.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/IntegerResample.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
 namespace pcl
@@ -272,4 +272,4 @@ void* ResampleInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF ResampleInstance.cpp - Released 2020-11-20T19:49:00Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Image.h - Released 2020-10-12T19:24:41Z
+// pcl/Image.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -171,7 +171,7 @@ namespace ImageOp
    /*!
     * Returns true iff the specified operator \a op is an arithmetic operator.
     */
-   inline bool IsArithmeticOperator( int op )
+   inline bool IsArithmeticOperator( int op ) noexcept
    {
       return op >= Add && op <= Dif;
    }
@@ -180,7 +180,7 @@ namespace ImageOp
     * Returns true iff the specified operator \a op is a bitwise logical
     * operator.
     */
-   inline bool IsBitwiseLogicalOperator( int op )
+   inline bool IsBitwiseLogicalOperator( int op ) noexcept
    {
       return op >= Or && op <= Xnor;
    }
@@ -189,7 +189,7 @@ namespace ImageOp
     * Returns true iff the specified operator \a op is a move or replace
     * operator.
     */
-   inline bool IsMoveOperator( int op )
+   inline bool IsMoveOperator( int op ) noexcept
    {
       return op == Mov || op == Min || op == Max;
    }
@@ -198,7 +198,7 @@ namespace ImageOp
     * Returns true iff the specified operator \a op is a pixel composition
     * operator.
     */
-   inline bool IsPixelCompositionOperator( int op )
+   inline bool IsPixelCompositionOperator( int op ) noexcept
    {
       return op >= ColorBurn && op <= Exclusion;
    }
@@ -212,6 +212,7 @@ namespace ImageOp
 // ----------------------------------------------------------------------------
 
 #define m_pixelData        m_data->data
+#define m_channelData( c ) reinterpret_cast<sample*>( PCL_ASSUME_ALIGNED_32( m_pixelData[c] ) )
 #define m_allocator        m_data->allocator
 
 #define m_width            m_geometry->width
@@ -435,7 +436,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return m_image != nullptr && m_iterator != nullptr;
       }
@@ -443,7 +444,7 @@ public:
       /*!
        * Returns a reference to the image being iterated by this object.
        */
-      image_type& Image() const
+      image_type& Image() const noexcept
       {
          return *m_image;
       }
@@ -451,7 +452,7 @@ public:
       /*!
        * Returns a pointer to the pixel sample pointed to by this iterator.
        */
-      sample* Position() const
+      sample* Position() const noexcept
       {
          return m_iterator;
       }
@@ -463,7 +464,7 @@ public:
        * channel, or the end of the iteration range, depending on how the
        * iterator has been constructed.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return m_iterator < m_end;
       }
@@ -472,7 +473,7 @@ public:
        * Indirection operator. Returns a reference to the pixel sample pointed
        * to by this iterator.
        */
-      sample& operator *() const
+      sample& operator *() const noexcept
       {
          return *m_iterator;
       }
@@ -482,7 +483,7 @@ public:
        * pixel sample in the iterated image channel. Returns a reference to
        * this iterator.
        */
-      sample_iterator& operator ++()
+      sample_iterator& operator ++() noexcept
       {
          ++m_iterator;
          return *this;
@@ -493,7 +494,7 @@ public:
        * pixel sample in the iterated image channel. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      sample_iterator operator ++( int )
+      sample_iterator operator ++( int ) noexcept
       {
          return sample_iterator( *m_image, m_iterator++, m_end );
       }
@@ -503,7 +504,7 @@ public:
        * pixel sample in the iterated image channel, then returns a reference
        * to this iterator.
        */
-      sample_iterator& operator --()
+      sample_iterator& operator --() noexcept
       {
          --m_iterator;
          return *this;
@@ -514,7 +515,7 @@ public:
        * pixel sample in the iterated image channel. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      sample_iterator operator --( int )
+      sample_iterator operator --( int ) noexcept
       {
          return sample_iterator( *m_image, m_iterator--, m_end );
       }
@@ -526,7 +527,7 @@ public:
        * increments move this iterator backward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      sample_iterator& operator +=( distance_type delta )
+      sample_iterator& operator +=( distance_type delta ) noexcept
       {
          m_iterator += delta;
          return *this;
@@ -539,7 +540,7 @@ public:
        * increments move this iterator forward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      sample_iterator& operator -=( distance_type delta )
+      sample_iterator& operator -=( distance_type delta ) noexcept
       {
          m_iterator -= delta;
          return *this;
@@ -552,7 +553,7 @@ public:
        * \a dx increments move the iterator rightwards (leftwards). Positive
        * (negative) \a dy increments move the iterator downwards (upwards).
        */
-      sample_iterator& MoveBy( int dx, int dy )
+      sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
          m_iterator += distance_type( dy )*m_image->Width() + distance_type( dx );
          return *this;
@@ -562,7 +563,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend sample_iterator operator +( const sample_iterator& i, distance_type delta )
+      friend sample_iterator operator +( const sample_iterator& i, distance_type delta ) noexcept
       {
          return sample_iterator( *i.m_image, i.m_iterator + delta, i.m_end );
       }
@@ -571,7 +572,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend sample_iterator operator +( distance_type delta, const sample_iterator& i )
+      friend sample_iterator operator +( distance_type delta, const sample_iterator& i ) noexcept
       {
          return sample_iterator( *i.m_image, i.m_iterator + delta, i.m_end );
       }
@@ -580,7 +581,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend sample_iterator operator -( const sample_iterator& i, distance_type delta )
+      friend sample_iterator operator -( const sample_iterator& i, distance_type delta ) noexcept
       {
          return sample_iterator( *i.m_image, i.m_iterator - delta, i.m_end );
       }
@@ -589,7 +590,7 @@ public:
        * Iterator subtraction operator. Returns the distance in pixels between
        * the specified iterators \a i and \a j.
        */
-      friend distance_type operator -( const sample_iterator& i, const sample_iterator& j )
+      friend distance_type operator -( const sample_iterator& i, const sample_iterator& j ) noexcept
       {
          return i.m_iterator - j.m_iterator;
       }
@@ -598,7 +599,7 @@ public:
        * Returns the distance in pixels between an iterator \a i and a sample
        * pointer \a j.
        */
-      friend distance_type operator -( const sample_iterator& i, const sample* j )
+      friend distance_type operator -( const sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator - j;
       }
@@ -607,7 +608,7 @@ public:
        * Returns the distance in pixels between a sample pointer \a i and an
        * iterator \a j.
        */
-      friend distance_type operator -( const sample* i, const sample_iterator& j )
+      friend distance_type operator -( const sample* i, const sample_iterator& j ) noexcept
       {
          return i - j.m_iterator;
       }
@@ -616,7 +617,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel sample.
        */
-      friend bool operator ==( const sample_iterator& i, const sample_iterator& j )
+      friend bool operator ==( const sample_iterator& i, const sample_iterator& j ) noexcept
       {
          return i.m_iterator == j.m_iterator;
       }
@@ -625,7 +626,7 @@ public:
        * Returns true iff an iterator \a i and a sample pointer \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const sample_iterator& i, const sample* j )
+      friend bool operator ==( const sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator == j;
       }
@@ -634,7 +635,7 @@ public:
        * Returns true iff a sample pointer \a i and an iterator \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const sample* i, const sample_iterator& j )
+      friend bool operator ==( const sample* i, const sample_iterator& j ) noexcept
       {
          return i == j.m_iterator;
       }
@@ -643,7 +644,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const sample_iterator& i, const sample_iterator& j )
+      friend bool operator <( const sample_iterator& i, const sample_iterator& j ) noexcept
       {
          return i.m_iterator < j.m_iterator;
       }
@@ -651,7 +652,7 @@ public:
       /*!
        * Returns true iff an iterator \a i precedes a sample pointer \a j.
        */
-      friend bool operator <( const sample_iterator& i, const sample* j )
+      friend bool operator <( const sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator < j;
       }
@@ -659,7 +660,7 @@ public:
       /*!
        * Returns true iff a sample pointer \a i precedes an iterator \a j.
        */
-      friend bool operator <( const sample* i, const sample_iterator& j )
+      friend bool operator <( const sample* i, const sample_iterator& j ) noexcept
       {
          return i < j.m_iterator;
       }
@@ -777,7 +778,7 @@ public:
        * Assigns a mutable iterator to this object. Returns a reference to this
        * iterator.
        */
-      const_sample_iterator& operator =( const sample_iterator& i )
+      const_sample_iterator& operator =( const sample_iterator& i ) noexcept
       {
          m_image    = i.m_image;
          m_iterator = i.m_iterator;
@@ -794,7 +795,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return m_image != nullptr && m_iterator != nullptr;
       }
@@ -803,7 +804,7 @@ public:
        * Returns a reference to the constant image being iterated by this
        * object.
        */
-      const image_type& Image() const
+      const image_type& Image() const noexcept
       {
          return *m_image;
       }
@@ -812,7 +813,7 @@ public:
        * Returns a pointer to the constant pixel sample pointed to by this
        * iterator.
        */
-      const sample* Position() const
+      const sample* Position() const noexcept
       {
          return m_iterator;
       }
@@ -824,7 +825,7 @@ public:
        * channel, or the end of the iteration range, depending on how the
        * iterator has been constructed.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return m_iterator < m_end;
       }
@@ -833,7 +834,7 @@ public:
        * Indirection operator. Returns a reference to the constant pixel sample
        * pointed to by this iterator.
        */
-      const sample& operator *() const
+      const sample& operator *() const noexcept
       {
          return *m_iterator;
       }
@@ -843,7 +844,7 @@ public:
        * pixel sample in the iterated image channel, then returns a reference
        * to this iterator.
        */
-      const_sample_iterator& operator ++()
+      const_sample_iterator& operator ++() noexcept
       {
          ++m_iterator;
          return *this;
@@ -854,7 +855,7 @@ public:
        * pixel sample in the iterated image channel. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      const_sample_iterator operator ++( int )
+      const_sample_iterator operator ++( int ) noexcept
       {
          return const_sample_iterator( *m_image, m_iterator++, m_end );
       }
@@ -864,7 +865,7 @@ public:
        * pixel sample in the iterated image channel, then returns a reference
        * to this iterator.
        */
-      const_sample_iterator& operator --()
+      const_sample_iterator& operator --() noexcept
       {
          --m_iterator;
          return *this;
@@ -875,7 +876,7 @@ public:
        * pixel sample in the iterated image channel. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      const_sample_iterator operator --( int )
+      const_sample_iterator operator --( int ) noexcept
       {
          return const_sample_iterator( *m_image, m_iterator--, m_end );
       }
@@ -887,7 +888,7 @@ public:
        * increments move this iterator backward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      const_sample_iterator& operator +=( distance_type delta )
+      const_sample_iterator& operator +=( distance_type delta ) noexcept
       {
          m_iterator += delta;
          return *this;
@@ -900,7 +901,7 @@ public:
        * increments move this iterator forward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      const_sample_iterator& operator -=( distance_type delta )
+      const_sample_iterator& operator -=( distance_type delta ) noexcept
       {
          m_iterator -= delta;
          return *this;
@@ -913,7 +914,7 @@ public:
        * \a dx increments move the iterator rightwards (leftwards). Positive
        * (negative) \a dy increments move the iterator downwards (upwards).
        */
-      const_sample_iterator& MoveBy( int dx, int dy )
+      const_sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
          m_iterator += distance_type( dy )*m_image->Width() + distance_type( dx );
          return *this;
@@ -923,7 +924,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend const_sample_iterator operator +( const const_sample_iterator& i, distance_type delta )
+      friend const_sample_iterator operator +( const const_sample_iterator& i, distance_type delta ) noexcept
       {
          return const_sample_iterator( *i.m_image, i.m_iterator + delta, i.m_end );
       }
@@ -932,7 +933,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend const_sample_iterator operator +( distance_type delta, const const_sample_iterator& i )
+      friend const_sample_iterator operator +( distance_type delta, const const_sample_iterator& i ) noexcept
       {
          return const_sample_iterator( *i.m_image, i.m_iterator + delta, i.m_end );
       }
@@ -941,7 +942,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend const_sample_iterator operator -( const const_sample_iterator& i, distance_type delta )
+      friend const_sample_iterator operator -( const const_sample_iterator& i, distance_type delta ) noexcept
       {
          return const_sample_iterator( *i.m_image, i.m_iterator - delta, i.m_end );
       }
@@ -950,7 +951,7 @@ public:
        * Iterator subtraction operator. Returns the distance in pixels between
        * the specified iterators \a i and \a j.
        */
-      friend distance_type operator -( const const_sample_iterator& i, const const_sample_iterator& j )
+      friend distance_type operator -( const const_sample_iterator& i, const const_sample_iterator& j ) noexcept
       {
          return i.m_iterator - j.m_iterator;
       }
@@ -959,7 +960,7 @@ public:
        * Returns the distance in pixels between an iterator \a i and a sample
        * pointer \a j.
        */
-      friend distance_type operator -( const const_sample_iterator& i, const sample* j )
+      friend distance_type operator -( const const_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator - j;
       }
@@ -968,7 +969,7 @@ public:
        * Returns the distance in pixels between a sample pointer \a i and an
        * iterator \a j.
        */
-      friend distance_type operator -( const sample* i, const const_sample_iterator& j )
+      friend distance_type operator -( const sample* i, const const_sample_iterator& j ) noexcept
       {
          return i - j.m_iterator;
       }
@@ -977,7 +978,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel sample.
        */
-      friend bool operator ==( const const_sample_iterator& i, const const_sample_iterator& j )
+      friend bool operator ==( const const_sample_iterator& i, const const_sample_iterator& j ) noexcept
       {
          return i.m_iterator == j.m_iterator;
       }
@@ -986,7 +987,7 @@ public:
        * Returns true iff an iterator \a i and a sample pointer \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const const_sample_iterator& i, const sample* j )
+      friend bool operator ==( const const_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator == j;
       }
@@ -995,7 +996,7 @@ public:
        * Returns true iff a sample pointer \a i and an iterator \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const sample* i, const const_sample_iterator& j )
+      friend bool operator ==( const sample* i, const const_sample_iterator& j ) noexcept
       {
          return i == j.m_iterator;
       }
@@ -1004,7 +1005,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const const_sample_iterator& i, const const_sample_iterator& j )
+      friend bool operator <( const const_sample_iterator& i, const const_sample_iterator& j ) noexcept
       {
          return i.m_iterator < j.m_iterator;
       }
@@ -1012,7 +1013,7 @@ public:
       /*!
        * Returns true iff an iterator \a i precedes a sample pointer \a j.
        */
-      friend bool operator <( const const_sample_iterator& i, const sample* j )
+      friend bool operator <( const const_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator < j;
       }
@@ -1020,7 +1021,7 @@ public:
       /*!
        * Returns true iff a sample pointer \a i precedes an iterator \a j.
        */
-      friend bool operator <( const sample* i, const const_sample_iterator& j )
+      friend bool operator <( const sample* i, const const_sample_iterator& j ) noexcept
       {
          return i < j.m_iterator;
       }
@@ -1076,7 +1077,7 @@ public:
 
       roi_sample_iterator_base& operator =( const roi_sample_iterator_base& ) = default;
 
-      void Increment()
+      void Increment() noexcept
       {
          if ( ++m_iterator == m_rowEnd )
          {
@@ -1086,7 +1087,7 @@ public:
          }
       }
 
-      void Decrement()
+      void Decrement() noexcept
       {
          if ( m_iterator == m_rowBegin )
          {
@@ -1097,7 +1098,7 @@ public:
          --m_iterator;
       }
 
-      void MoveBy( int cols, int rows )
+      void MoveBy( int cols, int rows ) noexcept
       {
          cols += m_iterator - m_rowBegin;
          if ( cols != 0 )
@@ -1217,7 +1218,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && this->m_iterator != nullptr;
       }
@@ -1225,7 +1226,7 @@ public:
       /*!
        * Returns a reference to the image being iterated by this object.
        */
-      image_type& Image() const
+      image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -1233,7 +1234,7 @@ public:
       /*!
        * Returns a pointer to the pixel sample pointed to by this iterator.
        */
-      sample* Position() const
+      sample* Position() const noexcept
       {
          return this->m_iterator;
       }
@@ -1244,7 +1245,7 @@ public:
        * (or surpassed) its iteration limit, i.e. the bottom right corner of
        * its iterated region of interest.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator < this->m_end;
       }
@@ -1253,7 +1254,7 @@ public:
        * Indirection operator. Returns a reference to the pixel sample pointed
        * to by this iterator.
        */
-      sample& operator *() const
+      sample& operator *() const noexcept
       {
          return *this->m_iterator;
       }
@@ -1263,7 +1264,7 @@ public:
        * pixel sample in the iterated region of interest, then returns a
        * reference to this iterator.
        */
-      roi_sample_iterator& operator ++()
+      roi_sample_iterator& operator ++() noexcept
       {
          this->Increment();
          return *this;
@@ -1274,7 +1275,7 @@ public:
        * pixel sample in the iterated region of interest. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      roi_sample_iterator operator ++( int )
+      roi_sample_iterator operator ++( int ) noexcept
       {
          roi_sample_iterator i0( *this );
          this->Increment();
@@ -1286,7 +1287,7 @@ public:
        * pixel sample in the iterated region of interest, then returns a
        * reference to this iterator.
        */
-      roi_sample_iterator& operator --()
+      roi_sample_iterator& operator --() noexcept
       {
          this->Decrement();
          return *this;
@@ -1297,7 +1298,7 @@ public:
        * pixel sample in the iterated region of interest. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      roi_sample_iterator operator --( int )
+      roi_sample_iterator operator --( int ) noexcept
       {
          roi_sample_iterator i0( *this );
          this->Decrement();
@@ -1313,7 +1314,7 @@ public:
        * and upwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      roi_sample_iterator& operator +=( distance_type delta )
+      roi_sample_iterator& operator +=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          iterator_base::MoveBy( delta%w, delta/w );
@@ -1329,7 +1330,7 @@ public:
        * and downwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      roi_sample_iterator& operator -=( distance_type delta )
+      roi_sample_iterator& operator -=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          iterator_base::MoveBy( -delta%w, -delta/w );
@@ -1344,7 +1345,7 @@ public:
        * Positive (negative) \a dy increments move the iterator downwards
        * (upwards).
        */
-      roi_sample_iterator& MoveBy( int dx, int dy )
+      roi_sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
          iterator_base::MoveBy( dx, dy );
          return *this;
@@ -1354,7 +1355,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend roi_sample_iterator operator +( const roi_sample_iterator& i, distance_type delta )
+      friend roi_sample_iterator operator +( const roi_sample_iterator& i, distance_type delta ) noexcept
       {
          roi_sample_iterator j( i );
          j += delta;
@@ -1365,7 +1366,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend roi_sample_iterator operator +( distance_type delta, const roi_sample_iterator& i )
+      friend roi_sample_iterator operator +( distance_type delta, const roi_sample_iterator& i ) noexcept
       {
          roi_sample_iterator j( i );
          j += delta;
@@ -1376,7 +1377,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend roi_sample_iterator operator -( const roi_sample_iterator& i, distance_type delta )
+      friend roi_sample_iterator operator -( const roi_sample_iterator& i, distance_type delta ) noexcept
       {
          roi_sample_iterator j( i );
          j -= delta;
@@ -1387,7 +1388,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel sample.
        */
-      friend bool operator ==( const roi_sample_iterator& i, const roi_sample_iterator& j )
+      friend bool operator ==( const roi_sample_iterator& i, const roi_sample_iterator& j ) noexcept
       {
          return i.m_iterator == j.m_iterator;
       }
@@ -1396,7 +1397,7 @@ public:
        * Returns true iff an iterator \a i and a sample pointer \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const roi_sample_iterator& i, const sample* j )
+      friend bool operator ==( const roi_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator == j;
       }
@@ -1405,7 +1406,7 @@ public:
        * Returns true iff a sample pointer \a i and an iterator \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const sample* i, const roi_sample_iterator& j )
+      friend bool operator ==( const sample* i, const roi_sample_iterator& j ) noexcept
       {
          return i == j.m_iterator;
       }
@@ -1414,7 +1415,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const roi_sample_iterator& i, const roi_sample_iterator& j )
+      friend bool operator <( const roi_sample_iterator& i, const roi_sample_iterator& j ) noexcept
       {
          return i.m_iterator < j.m_iterator;
       }
@@ -1422,7 +1423,7 @@ public:
       /*!
        * Returns true iff an iterator \a i precedes a sample pointer \a j.
        */
-      friend bool operator <( const roi_sample_iterator& i, const sample* j )
+      friend bool operator <( const roi_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator < j;
       }
@@ -1430,7 +1431,7 @@ public:
       /*!
        * Returns true iff a sample pointer \a i precedes an iterator \a j.
        */
-      friend bool operator <( const sample* i, const roi_sample_iterator& j )
+      friend bool operator <( const sample* i, const roi_sample_iterator& j ) noexcept
       {
          return i < j.m_iterator;
       }
@@ -1547,7 +1548,7 @@ public:
        * Assigns a mutable iterator to this object. Returns a reference to this
        * iterator.
        */
-      const_roi_sample_iterator& operator =( const roi_sample_iterator& i )
+      const_roi_sample_iterator& operator =( const roi_sample_iterator& i ) noexcept
       {
          this->m_image    = i.m_image;
          this->m_iterator = i.m_iterator;
@@ -1566,7 +1567,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && this->m_iterator != nullptr;
       }
@@ -1575,7 +1576,7 @@ public:
        * Returns a reference to the constant image being iterated by this
        * object.
        */
-      const image_type& Image() const
+      const image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -1584,7 +1585,7 @@ public:
        * Returns a pointer to the constant pixel sample pointed to by this
        * iterator.
        */
-      const sample* Position() const
+      const sample* Position() const noexcept
       {
          return this->m_iterator;
       }
@@ -1595,7 +1596,7 @@ public:
        * (or surpassed) its iteration limit, i.e. the bottom right corner of
        * its iterated region of interest.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator < this->m_end;
       }
@@ -1604,7 +1605,7 @@ public:
        * Indirection operator. Returns a reference to the constant pixel sample
        * pointed to by this iterator.
        */
-      const sample& operator *() const
+      const sample& operator *() const noexcept
       {
          return *this->m_iterator;
       }
@@ -1614,7 +1615,7 @@ public:
        * pixel sample in the iterated region of interest, then returns a
        * reference to this iterator.
        */
-      const_roi_sample_iterator& operator ++()
+      const_roi_sample_iterator& operator ++() noexcept
       {
          this->Increment();
          return *this;
@@ -1625,7 +1626,7 @@ public:
        * pixel sample in the iterated region of interest. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      const_roi_sample_iterator operator ++( int )
+      const_roi_sample_iterator operator ++( int ) noexcept
       {
          const_roi_sample_iterator i0( *this );
          this->Increment();
@@ -1637,7 +1638,7 @@ public:
        * pixel sample in the iterated region of interest, then returns a
        * reference to this iterator.
        */
-      const_roi_sample_iterator& operator --()
+      const_roi_sample_iterator& operator --() noexcept
       {
          this->Decrement();
          return *this;
@@ -1648,7 +1649,7 @@ public:
        * pixel sample in the iterated region of interest. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      const_roi_sample_iterator operator --( int )
+      const_roi_sample_iterator operator --( int ) noexcept
       {
          const_roi_sample_iterator i0( *this );
          this->Decrement();
@@ -1664,7 +1665,7 @@ public:
        * and upwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      const_roi_sample_iterator& operator +=( distance_type delta )
+      const_roi_sample_iterator& operator +=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          iterator_base::MoveBy( delta%w, delta/w );
@@ -1680,7 +1681,7 @@ public:
        * and downwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      const_roi_sample_iterator& operator -=( distance_type delta )
+      const_roi_sample_iterator& operator -=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          iterator_base::MoveBy( -delta%w, -delta/w );
@@ -1695,7 +1696,7 @@ public:
        * Positive (negative) \a dy increments move the iterator downwards
        * (upwards).
        */
-      const_roi_sample_iterator& MoveBy( int dx, int dy )
+      const_roi_sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
          iterator_base::MoveBy( dx, dy );
          return *this;
@@ -1705,7 +1706,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend const_roi_sample_iterator operator +( const const_roi_sample_iterator& i, distance_type delta )
+      friend const_roi_sample_iterator operator +( const const_roi_sample_iterator& i, distance_type delta ) noexcept
       {
          const_roi_sample_iterator j( i );
          j += delta;
@@ -1716,7 +1717,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend const_roi_sample_iterator operator +( distance_type delta, const const_roi_sample_iterator& i )
+      friend const_roi_sample_iterator operator +( distance_type delta, const const_roi_sample_iterator& i ) noexcept
       {
          const_roi_sample_iterator j( i );
          j += delta;
@@ -1727,7 +1728,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend const_roi_sample_iterator operator -( const const_roi_sample_iterator& i, distance_type delta )
+      friend const_roi_sample_iterator operator -( const const_roi_sample_iterator& i, distance_type delta ) noexcept
       {
          const_roi_sample_iterator j( i );
          j -= delta;
@@ -1738,7 +1739,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel sample.
        */
-      friend bool operator ==( const const_roi_sample_iterator& i, const const_roi_sample_iterator& j )
+      friend bool operator ==( const const_roi_sample_iterator& i, const const_roi_sample_iterator& j ) noexcept
       {
          return i.m_iterator == j.m_iterator;
       }
@@ -1747,7 +1748,7 @@ public:
        * Returns true iff an iterator \a i and a sample pointer \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const const_roi_sample_iterator& i, const sample* j )
+      friend bool operator ==( const const_roi_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator == j;
       }
@@ -1756,7 +1757,7 @@ public:
        * Returns true iff a sample pointer \a i and an iterator \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const sample* i, const const_roi_sample_iterator& j )
+      friend bool operator ==( const sample* i, const const_roi_sample_iterator& j ) noexcept
       {
          return i == j.m_iterator;
       }
@@ -1765,7 +1766,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const const_roi_sample_iterator& i, const const_roi_sample_iterator& j )
+      friend bool operator <( const const_roi_sample_iterator& i, const const_roi_sample_iterator& j ) noexcept
       {
          return i.m_iterator < j.m_iterator;
       }
@@ -1773,7 +1774,7 @@ public:
       /*!
        * Returns true iff an iterator \a i precedes a sample pointer \a j.
        */
-      friend bool operator <( const const_roi_sample_iterator& i, const sample* j )
+      friend bool operator <( const const_roi_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator < j;
       }
@@ -1781,7 +1782,7 @@ public:
       /*!
        * Returns true iff a sample pointer \a i precedes an iterator \a j.
        */
-      friend bool operator <( const sample* i, const const_roi_sample_iterator& j )
+      friend bool operator <( const sample* i, const const_roi_sample_iterator& j ) noexcept
       {
          return i < j.m_iterator;
       }
@@ -1827,20 +1828,20 @@ public:
 
       filter_sample_iterator_base& operator =( const filter_sample_iterator_base& ) = default;
 
-      filter_sample_iterator_base& operator =( const iterator_base& i )
+      filter_sample_iterator_base& operator =( const iterator_base& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          JumpToNextValidSample();
          return *this;
       }
 
-      void JumpToNextValidSample()
+      void JumpToNextValidSample() noexcept
       {
          while ( this->m_iterator < this->m_end && !this->m_filter( *this->m_iterator ) )
             ++this->m_iterator;
       }
 
-      void JumpToPrevValidSample()
+      void JumpToPrevValidSample() noexcept
       {
          while ( this->m_iterator > this->m_begin && !this->m_filter( *this->m_iterator ) )
             --this->m_iterator;
@@ -1984,7 +1985,7 @@ public:
        * Assigns a pixel sample iterator to this object. Returns a reference to
        * this iterator.
        */
-      filter_sample_iterator& operator =( const sample_iterator& i )
+      filter_sample_iterator& operator =( const sample_iterator& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          return *this;
@@ -1994,7 +1995,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && this->m_iterator != nullptr;
       }
@@ -2002,7 +2003,7 @@ public:
       /*!
        * Returns a reference to the image being iterated by this object.
        */
-      image_type& Image() const
+      image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -2011,7 +2012,7 @@ public:
        * Returns a reference to the immutable predicate object used by this
        * filter iterator.
        */
-      const filter_type& Filter() const
+      const filter_type& Filter() const noexcept
       {
          return this->m_filter;
       }
@@ -2020,7 +2021,7 @@ public:
        * Returns a reference to the mutable predicate object used by this
        * filter iterator.
        */
-      filter_type& Filter()
+      filter_type& Filter() noexcept
       {
          return this->m_filter;
       }
@@ -2028,7 +2029,7 @@ public:
       /*!
        * Returns a pointer to the pixel sample pointed to by this iterator.
        */
-      sample* Position() const
+      sample* Position() const noexcept
       {
          return this->m_iterator;
       }
@@ -2040,7 +2041,7 @@ public:
        * channel, or the end of the iteration range, depending on how the
        * iterator has been constructed.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator < this->m_end;
       }
@@ -2049,7 +2050,7 @@ public:
        * Indirection operator. Returns a reference to the pixel sample pointed
        * to by this iterator.
        */
-      sample& operator *() const
+      sample& operator *() const noexcept
       {
          return *this->m_iterator;
       }
@@ -2059,7 +2060,7 @@ public:
        * valid pixel sample in the iterated image channel. Returns a reference
        * to this iterator.
        */
-      filter_sample_iterator& operator ++()
+      filter_sample_iterator& operator ++() noexcept
       {
          ++this->m_iterator;
          this->JumpToNextValidSample();
@@ -2071,7 +2072,7 @@ public:
        * valid pixel sample in the iterated image channel. Returns a copy of
        * the iterator as it was before incrementing it.
        */
-      filter_sample_iterator operator ++( int )
+      filter_sample_iterator operator ++( int ) noexcept
       {
          sample* i0 = this->m_iterator++;
          this->JumpToNextValidSample();
@@ -2083,7 +2084,7 @@ public:
        * valid pixel sample in the iterated image channel, then returns a
        * reference to this iterator.
        */
-      filter_sample_iterator& operator --()
+      filter_sample_iterator& operator --() noexcept
       {
          --this->m_iterator;
          this->JumpToPrevValidSample();
@@ -2095,7 +2096,7 @@ public:
        * valid pixel sample in the iterated image channel. Returns a copy of
        * the iterator as it was before decrementing it.
        */
-      filter_sample_iterator operator --( int )
+      filter_sample_iterator operator --( int ) noexcept
       {
          sample* i0 = this->m_iterator--;
          this->JumpToPrevValidSample();
@@ -2109,7 +2110,7 @@ public:
        * increments move this iterator backward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      filter_sample_iterator& operator +=( distance_type delta )
+      filter_sample_iterator& operator +=( distance_type delta ) noexcept
       {
          this->m_iterator += delta;
          this->JumpToNextValidSample();
@@ -2123,7 +2124,7 @@ public:
        * increments move this iterator forward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      filter_sample_iterator& operator -=( distance_type delta )
+      filter_sample_iterator& operator -=( distance_type delta ) noexcept
       {
          this->m_iterator -= delta;
          this->JumpToPrevValidSample();
@@ -2137,7 +2138,7 @@ public:
        * \a dx increments move the iterator rightwards (leftwards). Positive
        * (negative) \a dy increments move the iterator downwards (upwards).
        */
-      filter_sample_iterator& MoveBy( int dx, int dy )
+      filter_sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
          distance_type d = distance_type( dy )*this->m_image->Width() + distance_type( dx );
          this->m_iterator += d;
@@ -2152,7 +2153,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend filter_sample_iterator operator +( const filter_sample_iterator& i, distance_type delta )
+      friend filter_sample_iterator operator +( const filter_sample_iterator& i, distance_type delta ) noexcept
       {
          return filter_sample_iterator( *i.m_image, i.m_iterator + delta, i.m_end );
       }
@@ -2161,7 +2162,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend filter_sample_iterator operator +( distance_type delta, const filter_sample_iterator& i )
+      friend filter_sample_iterator operator +( distance_type delta, const filter_sample_iterator& i ) noexcept
       {
          return filter_sample_iterator( *i.m_image, i.m_iterator + delta, i.m_end );
       }
@@ -2170,7 +2171,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend filter_sample_iterator operator -( const filter_sample_iterator& i, distance_type delta )
+      friend filter_sample_iterator operator -( const filter_sample_iterator& i, distance_type delta ) noexcept
       {
          return filter_sample_iterator( *i.m_image, i.m_iterator - delta, i.m_end );
       }
@@ -2179,7 +2180,7 @@ public:
        * Iterator subtraction operator. Returns the distance in pixels between
        * the specified iterators \a i and \a j.
        */
-      friend distance_type operator -( const filter_sample_iterator& i, const filter_sample_iterator& j )
+      friend distance_type operator -( const filter_sample_iterator& i, const filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator - j.m_iterator;
       }
@@ -2188,7 +2189,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel sample.
        */
-      friend bool operator ==( const filter_sample_iterator& i, const filter_sample_iterator& j )
+      friend bool operator ==( const filter_sample_iterator& i, const filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator == j.m_iterator;
       }
@@ -2197,7 +2198,7 @@ public:
        * Returns true iff an iterator \a i and a sample pointer \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const filter_sample_iterator& i, const sample* j )
+      friend bool operator ==( const filter_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator == j;
       }
@@ -2206,7 +2207,7 @@ public:
        * Returns true iff a sample pointer \a i and an iterator \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const sample* i, const filter_sample_iterator& j )
+      friend bool operator ==( const sample* i, const filter_sample_iterator& j ) noexcept
       {
          return i == j.m_iterator;
       }
@@ -2215,7 +2216,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const filter_sample_iterator& i, const filter_sample_iterator& j )
+      friend bool operator <( const filter_sample_iterator& i, const filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator < j.m_iterator;
       }
@@ -2223,7 +2224,7 @@ public:
       /*!
        * Returns true iff an iterator \a i precedes a sample pointer \a j.
        */
-      friend bool operator <( const filter_sample_iterator& i, const sample* j )
+      friend bool operator <( const filter_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator < j;
       }
@@ -2231,7 +2232,7 @@ public:
       /*!
        * Returns true iff a sample pointer \a i precedes an iterator \a j.
        */
-      friend bool operator <( const sample* i, const filter_sample_iterator& j )
+      friend bool operator <( const sample* i, const filter_sample_iterator& j ) noexcept
       {
          return i < j.m_iterator;
       }
@@ -2392,7 +2393,7 @@ public:
        * Assigns a mutable pixel sample iterator to this object. Returns a
        * reference to this iterator.
        */
-      const_filter_sample_iterator& operator =( const sample_iterator& i )
+      const_filter_sample_iterator& operator =( const sample_iterator& i ) noexcept
       {
          (void)const_sample_iterator::operator =( i );
          this->JumpToNextValidSample();
@@ -2403,7 +2404,7 @@ public:
        * Assigns an immutable pixel sample iterator to this object. Returns a
        * reference to this iterator.
        */
-      const_filter_sample_iterator& operator =( const const_sample_iterator& i )
+      const_filter_sample_iterator& operator =( const const_sample_iterator& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          return *this;
@@ -2413,7 +2414,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && this->m_iterator != nullptr;
       }
@@ -2422,7 +2423,7 @@ public:
        * Returns a reference to the constant image being iterated by this
        * object.
        */
-      const image_type& Image() const
+      const image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -2431,7 +2432,7 @@ public:
        * Returns a reference to the immutable predicate object used by this
        * filter iterator.
        */
-      const filter_type& Filter() const
+      const filter_type& Filter() const noexcept
       {
          return this->m_filter;
       }
@@ -2440,7 +2441,7 @@ public:
        * Returns a reference to the mutable predicate object used by this
        * filter iterator.
        */
-      filter_type& Filter()
+      filter_type& Filter() noexcept
       {
          return this->m_filter;
       }
@@ -2449,7 +2450,7 @@ public:
        * Returns a pointer to the constant pixel sample pointed to by this
        * iterator.
        */
-      const sample* Position() const
+      const sample* Position() const noexcept
       {
          return this->m_iterator;
       }
@@ -2461,7 +2462,7 @@ public:
        * channel, or the end of the iteration range, depending on how the
        * iterator has been constructed.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator < this->m_end;
       }
@@ -2470,7 +2471,7 @@ public:
        * Indirection operator. Returns a reference to the constant pixel sample
        * pointed to by this iterator.
        */
-      const sample& operator *() const
+      const sample& operator *() const noexcept
       {
          return *this->m_iterator;
       }
@@ -2480,7 +2481,7 @@ public:
        * valid pixel sample in the iterated image channel. Returns a reference
        * to this iterator.
        */
-      const_filter_sample_iterator& operator ++()
+      const_filter_sample_iterator& operator ++() noexcept
       {
          ++this->m_iterator;
          this->JumpToNextValidSample();
@@ -2492,7 +2493,7 @@ public:
        * valid pixel sample in the iterated image channel. Returns a copy of
        * the iterator as it was before incrementing it.
        */
-      const_filter_sample_iterator operator ++( int )
+      const_filter_sample_iterator operator ++( int ) noexcept
       {
          sample* i0 = this->m_iterator++;
          this->JumpToNextValidSample();
@@ -2504,7 +2505,7 @@ public:
        * valid pixel sample in the iterated image channel, then returns a
        * reference to this iterator.
        */
-      const_filter_sample_iterator& operator --()
+      const_filter_sample_iterator& operator --() noexcept
       {
          --this->m_iterator;
          this->JumpToPrevValidSample();
@@ -2516,7 +2517,7 @@ public:
        * valid pixel sample in the iterated image channel. Returns a copy of
        * the iterator as it was before decrementing it.
        */
-      const_filter_sample_iterator operator --( int )
+      const_filter_sample_iterator operator --( int ) noexcept
       {
          sample* i0 = this->m_iterator--;
          this->JumpToPrevValidSample();
@@ -2530,7 +2531,7 @@ public:
        * increments move this iterator backward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      const_filter_sample_iterator& operator +=( distance_type delta )
+      const_filter_sample_iterator& operator +=( distance_type delta ) noexcept
       {
          this->m_iterator += delta;
          this->JumpToNextValidSample();
@@ -2544,7 +2545,7 @@ public:
        * increments move this iterator forward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      const_filter_sample_iterator& operator -=( distance_type delta )
+      const_filter_sample_iterator& operator -=( distance_type delta ) noexcept
       {
          this->m_iterator -= delta;
          this->JumpToPrevValidSample();
@@ -2558,7 +2559,7 @@ public:
        * \a dx increments move the iterator rightwards (leftwards). Positive
        * (negative) \a dy increments move the iterator downwards (upwards).
        */
-      const_filter_sample_iterator& MoveBy( int dx, int dy )
+      const_filter_sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
          distance_type d = distance_type( dy )*this->m_image->Width() + distance_type( dx );
          this->m_iterator += d;
@@ -2573,7 +2574,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend const_filter_sample_iterator operator +( const const_filter_sample_iterator& i, distance_type delta )
+      friend const_filter_sample_iterator operator +( const const_filter_sample_iterator& i, distance_type delta ) noexcept
       {
          return const_filter_sample_iterator( *i.m_image, i.m_iterator + delta, i.m_end );
       }
@@ -2582,7 +2583,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend const_filter_sample_iterator operator +( distance_type delta, const const_filter_sample_iterator& i )
+      friend const_filter_sample_iterator operator +( distance_type delta, const const_filter_sample_iterator& i ) noexcept
       {
          return const_filter_sample_iterator( *i.m_image, i.m_iterator + delta, i.m_end );
       }
@@ -2591,7 +2592,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend const_filter_sample_iterator operator -( const const_filter_sample_iterator& i, distance_type delta )
+      friend const_filter_sample_iterator operator -( const const_filter_sample_iterator& i, distance_type delta ) noexcept
       {
          return const_filter_sample_iterator( *i.m_image, i.m_iterator - delta, i.m_end );
       }
@@ -2600,7 +2601,7 @@ public:
        * Iterator subtraction operator. Returns the distance in pixels between
        * the specified iterators \a i and \a j.
        */
-      friend distance_type operator -( const const_filter_sample_iterator& i, const const_filter_sample_iterator& j )
+      friend distance_type operator -( const const_filter_sample_iterator& i, const const_filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator - j.m_iterator;
       }
@@ -2609,7 +2610,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel sample.
        */
-      friend bool operator ==( const const_filter_sample_iterator& i, const const_filter_sample_iterator& j )
+      friend bool operator ==( const const_filter_sample_iterator& i, const const_filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator == j.m_iterator;
       }
@@ -2618,7 +2619,7 @@ public:
        * Returns true iff an iterator \a i and a sample pointer \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const const_filter_sample_iterator& i, const sample* j )
+      friend bool operator ==( const const_filter_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator == j;
       }
@@ -2627,7 +2628,7 @@ public:
        * Returns true iff a sample pointer \a i and an iterator \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const sample* i, const const_filter_sample_iterator& j )
+      friend bool operator ==( const sample* i, const const_filter_sample_iterator& j ) noexcept
       {
          return i == j.m_iterator;
       }
@@ -2636,7 +2637,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const const_filter_sample_iterator& i, const const_filter_sample_iterator& j )
+      friend bool operator <( const const_filter_sample_iterator& i, const const_filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator < j.m_iterator;
       }
@@ -2644,7 +2645,7 @@ public:
       /*!
        * Returns true iff an iterator \a i precedes a sample pointer \a j.
        */
-      friend bool operator <( const const_filter_sample_iterator& i, const sample* j )
+      friend bool operator <( const const_filter_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator < j;
       }
@@ -2652,7 +2653,7 @@ public:
       /*!
        * Returns true iff a sample pointer \a i precedes an iterator \a j.
        */
-      friend bool operator <( const sample* i, const const_filter_sample_iterator& j )
+      friend bool operator <( const sample* i, const const_filter_sample_iterator& j ) noexcept
       {
          return i < j.m_iterator;
       }
@@ -2701,20 +2702,20 @@ public:
 
       roi_filter_sample_iterator_base& operator =( const roi_filter_sample_iterator_base& i ) = default;
 
-      roi_filter_sample_iterator_base& operator =( const roi_iterator_base& i )
+      roi_filter_sample_iterator_base& operator =( const roi_iterator_base& i ) noexcept
       {
          (void)roi_iterator_base::operator =( i );
          JumpToNextValidSample();
          return *this;
       }
 
-      void JumpToNextValidSample()
+      void JumpToNextValidSample() noexcept
       {
          while ( this->m_iterator < this->m_end && !this->m_filter( *this->m_iterator ) )
             roi_iterator_base::Increment();
       }
 
-      void JumpToPrevValidSample()
+      void JumpToPrevValidSample() noexcept
       {
          while ( this->m_iterator > this->m_begin && !this->m_filter( *this->m_iterator ) )
             roi_iterator_base::Decrement();
@@ -2843,7 +2844,7 @@ public:
        * Assigns a ROI pixel sample iterator. Returns a reference to this
        * object.
        */
-      roi_filter_sample_iterator& operator =( const roi_sample_iterator& i )
+      roi_filter_sample_iterator& operator =( const roi_sample_iterator& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          return *this;
@@ -2853,7 +2854,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && this->m_iterator != nullptr;
       }
@@ -2861,7 +2862,7 @@ public:
       /*!
        * Returns a reference to the image being iterated by this object.
        */
-      image_type& Image() const
+      image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -2870,7 +2871,7 @@ public:
        * Returns a reference to the immutable predicate object used by this
        * filter iterator.
        */
-      const filter_type& Filter() const
+      const filter_type& Filter() const noexcept
       {
          return this->m_filter;
       }
@@ -2879,7 +2880,7 @@ public:
        * Returns a reference to the mutable predicate object used by this
        * filter iterator.
        */
-      filter_type& Filter()
+      filter_type& Filter() noexcept
       {
          return this->m_filter;
       }
@@ -2887,7 +2888,7 @@ public:
       /*!
        * Returns a pointer to the pixel sample pointed to by this iterator.
        */
-      sample* Position() const
+      sample* Position() const noexcept
       {
          return this->m_iterator;
       }
@@ -2898,7 +2899,7 @@ public:
        * (or surpassed) its iteration limit, i.e. the bottom right corner of
        * its iterated region of interest.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator < this->m_end;
       }
@@ -2907,7 +2908,7 @@ public:
        * Indirection operator. Returns a reference to the pixel sample pointed
        * to by this iterator.
        */
-      sample& operator *() const
+      sample& operator *() const noexcept
       {
          return *this->m_iterator;
       }
@@ -2917,7 +2918,7 @@ public:
        * valid pixel sample in the iterated region of interest. Returns a
        * reference to this iterator.
        */
-      roi_filter_sample_iterator& operator ++()
+      roi_filter_sample_iterator& operator ++() noexcept
       {
          this->Increment();
          this->JumpToNextValidSample();
@@ -2929,7 +2930,7 @@ public:
        * valid pixel sample in the iterated region of interest. Returns a copy
        * of the iterator as it was before incrementing it.
        */
-      roi_filter_sample_iterator operator ++( int )
+      roi_filter_sample_iterator operator ++( int ) noexcept
       {
          roi_filter_sample_iterator i0( *this );
          this->Increment();
@@ -2942,7 +2943,7 @@ public:
        * valid pixel sample in the iterated region of interest, then returns a
        * reference to this iterator.
        */
-      roi_filter_sample_iterator& operator --()
+      roi_filter_sample_iterator& operator --() noexcept
       {
          this->Decrement();
          this->JumpToPrevValidSample();
@@ -2954,7 +2955,7 @@ public:
        * valid pixel sample in the iterated region of interest. Returns a copy
        * of the iterator as it was before decrementing it.
        */
-      roi_filter_sample_iterator operator --( int )
+      roi_filter_sample_iterator operator --( int ) noexcept
       {
          roi_filter_sample_iterator i0( *this );
          this->Decrement();
@@ -2971,7 +2972,7 @@ public:
        * and upwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      roi_filter_sample_iterator& operator +=( distance_type delta )
+      roi_filter_sample_iterator& operator +=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          return MoveBy( delta%w, delta/w );
@@ -2986,7 +2987,7 @@ public:
        * and downwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      roi_filter_sample_iterator& operator -=( distance_type delta )
+      roi_filter_sample_iterator& operator -=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          return MoveBy( -delta%w, -delta/w );
@@ -3000,7 +3001,7 @@ public:
        * Positive (negative) \a dy increments move the iterator downwards
        * (upwards).
        */
-      roi_filter_sample_iterator& MoveBy( int dx, int dy )
+      roi_filter_sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
          sample* i0 = this->m_iterator;
          iterator_base::MoveBy( dx, dy );
@@ -3015,7 +3016,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend roi_filter_sample_iterator operator +( const roi_filter_sample_iterator& i, distance_type delta )
+      friend roi_filter_sample_iterator operator +( const roi_filter_sample_iterator& i, distance_type delta ) noexcept
       {
          roi_filter_sample_iterator j( i );
          j += delta;
@@ -3026,7 +3027,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend roi_filter_sample_iterator operator +( distance_type delta, const roi_filter_sample_iterator& i )
+      friend roi_filter_sample_iterator operator +( distance_type delta, const roi_filter_sample_iterator& i ) noexcept
       {
          roi_filter_sample_iterator j( i );
          j += delta;
@@ -3037,7 +3038,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend roi_filter_sample_iterator operator -( const roi_filter_sample_iterator& i, distance_type delta )
+      friend roi_filter_sample_iterator operator -( const roi_filter_sample_iterator& i, distance_type delta ) noexcept
       {
          roi_filter_sample_iterator j( i );
          j -= delta;
@@ -3048,7 +3049,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel sample.
        */
-      friend bool operator ==( const roi_filter_sample_iterator& i, const roi_filter_sample_iterator& j )
+      friend bool operator ==( const roi_filter_sample_iterator& i, const roi_filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator == j.m_iterator;
       }
@@ -3057,7 +3058,7 @@ public:
        * Returns true iff an iterator \a i and a sample pointer \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const roi_filter_sample_iterator& i, const sample* j )
+      friend bool operator ==( const roi_filter_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator == j;
       }
@@ -3066,7 +3067,7 @@ public:
        * Returns true iff a sample pointer \a i and an iterator \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const sample* i, const roi_filter_sample_iterator& j )
+      friend bool operator ==( const sample* i, const roi_filter_sample_iterator& j ) noexcept
       {
          return i == j.m_iterator;
       }
@@ -3075,7 +3076,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const roi_filter_sample_iterator& i, const roi_filter_sample_iterator& j )
+      friend bool operator <( const roi_filter_sample_iterator& i, const roi_filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator < j.m_iterator;
       }
@@ -3083,7 +3084,7 @@ public:
       /*!
        * Returns true iff an iterator \a i precedes a sample pointer \a j.
        */
-      friend bool operator <( const roi_filter_sample_iterator& i, const sample* j )
+      friend bool operator <( const roi_filter_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator < j;
       }
@@ -3091,7 +3092,7 @@ public:
       /*!
        * Returns true iff a sample pointer \a i precedes an iterator \a j.
        */
-      friend bool operator <( const sample* i, const roi_filter_sample_iterator& j )
+      friend bool operator <( const sample* i, const roi_filter_sample_iterator& j ) noexcept
       {
          return i < j.m_iterator;
       }
@@ -3219,7 +3220,7 @@ public:
        * Assigns an immutable ROI pixel sample iterator. Returns a reference to
        * this object.
        */
-      const_roi_filter_sample_iterator& operator =( const const_roi_sample_iterator& i )
+      const_roi_filter_sample_iterator& operator =( const const_roi_sample_iterator& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          return *this;
@@ -3229,7 +3230,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && this->m_iterator != nullptr;
       }
@@ -3238,7 +3239,7 @@ public:
        * Returns a reference to the constant image being iterated by this
        * object.
        */
-      const image_type& Image() const
+      const image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -3247,7 +3248,7 @@ public:
        * Returns a reference to the immutable predicate object used by this
        * filter iterator.
        */
-      const filter_type& Filter() const
+      const filter_type& Filter() const noexcept
       {
          return this->m_filter;
       }
@@ -3256,7 +3257,7 @@ public:
        * Returns a reference to the mutable predicate object used by this
        * filter iterator.
        */
-      filter_type& Filter()
+      filter_type& Filter() noexcept
       {
          return this->m_filter;
       }
@@ -3265,7 +3266,7 @@ public:
        * Returns a pointer to the constant pixel sample pointed to by this
        * iterator.
        */
-      const sample* Position() const
+      const sample* Position() const noexcept
       {
          return this->m_iterator;
       }
@@ -3276,7 +3277,7 @@ public:
        * (or surpassed) its iteration limit, i.e. the bottom right corner of
        * its iterated region of interest.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator < this->m_end;
       }
@@ -3285,7 +3286,7 @@ public:
        * Indirection operator. Returns a reference to the constant pixel sample
        * pointed to by this iterator.
        */
-      const sample& operator *() const
+      const sample& operator *() const noexcept
       {
          return *this->m_iterator;
       }
@@ -3295,7 +3296,7 @@ public:
        * valid pixel sample in the iterated region of interest. Returns a
        * reference to this iterator.
        */
-      const_roi_filter_sample_iterator& operator ++()
+      const_roi_filter_sample_iterator& operator ++() noexcept
       {
          this->Increment();
          this->JumpToNextValidSample();
@@ -3307,7 +3308,7 @@ public:
        * valid pixel sample in the iterated region of interest. Returns a copy
        * of the iterator as it was before incrementing it.
        */
-      const_roi_filter_sample_iterator operator ++( int )
+      const_roi_filter_sample_iterator operator ++( int ) noexcept
       {
          const_roi_filter_sample_iterator i0( *this );
          this->Increment();
@@ -3320,7 +3321,7 @@ public:
        * valid pixel sample in the iterated region of interest, then returns a
        * reference to this iterator.
        */
-      const_roi_filter_sample_iterator& operator --()
+      const_roi_filter_sample_iterator& operator --() noexcept
       {
          this->Decrement();
          this->JumpToPrevValidSample();
@@ -3332,7 +3333,7 @@ public:
        * valid pixel sample in the iterated region of interest. Returns a copy
        * of the iterator as it was before decrementing it.
        */
-      const_roi_filter_sample_iterator operator --( int )
+      const_roi_filter_sample_iterator operator --( int ) noexcept
       {
          const_roi_filter_sample_iterator i0( *this );
          this->Decrement();
@@ -3349,7 +3350,7 @@ public:
        * and upwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      const_roi_filter_sample_iterator& operator +=( distance_type delta )
+      const_roi_filter_sample_iterator& operator +=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          return MoveBy( delta%w, delta/w );
@@ -3364,7 +3365,7 @@ public:
        * and downwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      const_roi_filter_sample_iterator& operator -=( distance_type delta )
+      const_roi_filter_sample_iterator& operator -=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          return MoveBy( -delta%w, -delta/w );
@@ -3378,7 +3379,7 @@ public:
        * Positive (negative) \a dy increments move the iterator downwards
        * (upwards).
        */
-      const_roi_filter_sample_iterator& MoveBy( int dx, int dy )
+      const_roi_filter_sample_iterator& MoveBy( int dx, int dy ) noexcept
       {
          const sample* i0 = this->m_iterator;
          iterator_base::MoveBy( dx, dy );
@@ -3393,7 +3394,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend const_roi_filter_sample_iterator operator +( const const_roi_filter_sample_iterator& i, distance_type delta )
+      friend const_roi_filter_sample_iterator operator +( const const_roi_filter_sample_iterator& i, distance_type delta ) noexcept
       {
          const_roi_filter_sample_iterator j( i );
          j += delta;
@@ -3404,7 +3405,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend const_roi_filter_sample_iterator operator +( distance_type delta, const const_roi_filter_sample_iterator& i )
+      friend const_roi_filter_sample_iterator operator +( distance_type delta, const const_roi_filter_sample_iterator& i ) noexcept
       {
          const_roi_filter_sample_iterator j( i );
          j += delta;
@@ -3415,7 +3416,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend const_roi_filter_sample_iterator operator -( const const_roi_filter_sample_iterator& i, distance_type delta )
+      friend const_roi_filter_sample_iterator operator -( const const_roi_filter_sample_iterator& i, distance_type delta ) noexcept
       {
          const_roi_filter_sample_iterator j( i );
          j -= delta;
@@ -3426,7 +3427,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel sample.
        */
-      friend bool operator ==( const const_roi_filter_sample_iterator& i, const const_roi_filter_sample_iterator& j )
+      friend bool operator ==( const const_roi_filter_sample_iterator& i, const const_roi_filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator == j.m_iterator;
       }
@@ -3435,7 +3436,7 @@ public:
        * Returns true iff an iterator \a i and a sample pointer \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const const_roi_filter_sample_iterator& i, const sample* j )
+      friend bool operator ==( const const_roi_filter_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator == j;
       }
@@ -3444,7 +3445,7 @@ public:
        * Returns true iff a sample pointer \a i and an iterator \a j point to
        * the same pixel sample.
        */
-      friend bool operator ==( const sample* i, const const_roi_filter_sample_iterator& j )
+      friend bool operator ==( const sample* i, const const_roi_filter_sample_iterator& j ) noexcept
       {
          return i == j.m_iterator;
       }
@@ -3453,7 +3454,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const const_roi_filter_sample_iterator& i, const const_roi_filter_sample_iterator& j )
+      friend bool operator <( const const_roi_filter_sample_iterator& i, const const_roi_filter_sample_iterator& j ) noexcept
       {
          return i.m_iterator < j.m_iterator;
       }
@@ -3461,7 +3462,7 @@ public:
       /*!
        * Returns true iff an iterator \a i precedes a sample pointer \a j.
        */
-      friend bool operator <( const const_roi_filter_sample_iterator& i, const sample* j )
+      friend bool operator <( const const_roi_filter_sample_iterator& i, const sample* j ) noexcept
       {
          return i.m_iterator < j;
       }
@@ -3469,7 +3470,7 @@ public:
       /*!
        * Returns true iff a sample pointer \a i precedes an iterator \a j.
        */
-      friend bool operator <( const sample* i, const const_roi_filter_sample_iterator& j )
+      friend bool operator <( const sample* i, const const_roi_filter_sample_iterator& j ) noexcept
       {
          return i < j.m_iterator;
       }
@@ -3542,7 +3543,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return m_image != nullptr && !m_iterator.IsEmpty();
       }
@@ -3550,7 +3551,7 @@ public:
       /*!
        * Returns a reference to the image being iterated by this object.
        */
-      image_type& Image() const
+      image_type& Image() const noexcept
       {
          return *m_image;
       }
@@ -3559,7 +3560,7 @@ public:
        * Returns a pointer to the pixel sample pointed to by this iterator in
        * the specified \a channel.
        */
-      sample* Position( int channel ) const
+      sample* Position( int channel ) const noexcept
       {
          return m_iterator[channel];
       }
@@ -3569,7 +3570,7 @@ public:
        * active. A pixel iterator is active if it has not reached (or
        * surpassed) its iteration limit.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return m_iterator[0] < m_end;
       }
@@ -3578,7 +3579,7 @@ public:
        * Array subscript operator. Returns a reference to the pixel sample
        * pointed to by this iterator in the specified \a channel.
        */
-      sample& operator []( int channel ) const
+      sample& operator []( int channel ) const noexcept
       {
          return *m_iterator[channel];
       }
@@ -3587,7 +3588,7 @@ public:
        * Pre-increment operator. Causes this iterator to point to the next
        * pixel in the iterated image. Returns a reference to this iterator.
        */
-      pixel_iterator& operator ++()
+      pixel_iterator& operator ++() noexcept
       {
          for ( int i = 0; i < m_iterator.Length(); ++i )
             ++m_iterator[i];
@@ -3599,7 +3600,7 @@ public:
        * pixel in the iterated image. Returns a copy of the iterator as it was
        * before incrementing it.
        */
-      pixel_iterator operator ++( int )
+      pixel_iterator operator ++( int ) noexcept
       {
          pixel_iterator i0( *this );
          for ( int i = 0; i < m_iterator.Length(); ++i )
@@ -3611,7 +3612,7 @@ public:
        * Pre-decrement operator. Causes this iterator to point to the previous
        * pixel in the iterated image. Returns a reference to this iterator.
        */
-      pixel_iterator& operator --()
+      pixel_iterator& operator --() noexcept
       {
          for ( int i = 0; i < m_iterator.Length(); ++i )
             --m_iterator[i];
@@ -3623,7 +3624,7 @@ public:
        * pixel in the iterated image. Returns a copy of the iterator as it was
        * before decrementing it.
        */
-      pixel_iterator operator --( int )
+      pixel_iterator operator --( int ) noexcept
       {
          pixel_iterator i0( *this );
          for ( int i = 0; i < m_iterator.Length(); ++i )
@@ -3638,7 +3639,7 @@ public:
        * move this iterator backward by \a delta pixels. Returns a reference to
        * this iterator.
        */
-      pixel_iterator& operator +=( distance_type delta )
+      pixel_iterator& operator +=( distance_type delta ) noexcept
       {
          for ( int i = 0; i < m_iterator.Length(); ++i )
             m_iterator[i] += delta;
@@ -3652,7 +3653,7 @@ public:
        * move this iterator forward by \a delta pixels. Returns a reference to
        * this iterator.
        */
-      pixel_iterator& operator -=( distance_type delta )
+      pixel_iterator& operator -=( distance_type delta ) noexcept
       {
          for ( int i = 0; i < m_iterator.Length(); ++i )
             m_iterator[i] -= delta;
@@ -3666,7 +3667,7 @@ public:
        * move the iterator rightwards (leftwards). Positive (negative) \a dy
        * increments move the iterator downwards (upwards).
        */
-      pixel_iterator& MoveBy( int dx, int dy )
+      pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
          return operator +=( distance_type( dy )*m_image->Width() + distance_type( dx ) );
       }
@@ -3675,7 +3676,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend pixel_iterator operator +( const pixel_iterator& i, distance_type delta )
+      friend pixel_iterator operator +( const pixel_iterator& i, distance_type delta ) noexcept
       {
          pixel_iterator j( i );
          j += delta;
@@ -3686,7 +3687,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend pixel_iterator operator +( distance_type delta, const pixel_iterator& i )
+      friend pixel_iterator operator +( distance_type delta, const pixel_iterator& i ) noexcept
       {
          pixel_iterator j( i );
          j += delta;
@@ -3697,7 +3698,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend pixel_iterator operator -( const pixel_iterator& i, distance_type delta )
+      friend pixel_iterator operator -( const pixel_iterator& i, distance_type delta ) noexcept
       {
          pixel_iterator j( i );
          j -= delta;
@@ -3708,7 +3709,7 @@ public:
        * Iterator subtraction operator. Returns the distance in pixels between
        * the specified iterators \a i and \a j.
        */
-      friend distance_type operator -( const pixel_iterator& i, const pixel_iterator& j )
+      friend distance_type operator -( const pixel_iterator& i, const pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] - j.m_iterator[0];
       }
@@ -3717,7 +3718,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel.
        */
-      friend bool operator ==( const pixel_iterator& i, const pixel_iterator& j )
+      friend bool operator ==( const pixel_iterator& i, const pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] == j.m_iterator[0];
       }
@@ -3726,7 +3727,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const pixel_iterator& i, const pixel_iterator& j )
+      friend bool operator <( const pixel_iterator& i, const pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] < j.m_iterator[0];
       }
@@ -3804,7 +3805,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return m_image != nullptr && !m_iterator.IsEmpty();
       }
@@ -3813,7 +3814,7 @@ public:
        * Returns a reference to the constant image being iterated by this
        * object.
        */
-      const image_type& Image() const
+      const image_type& Image() const noexcept
       {
          return *m_image;
       }
@@ -3822,7 +3823,7 @@ public:
        * Returns a pointer to the constant pixel sample pointed to by this
        * iterator in the specified \a channel.
        */
-      const sample* Position( int channel ) const
+      const sample* Position( int channel ) const noexcept
       {
          return m_iterator[channel];
       }
@@ -3832,7 +3833,7 @@ public:
        * active. A pixel iterator is active if it has not reached (or
        * surpassed) its iteration limit.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return m_iterator[0] < m_end;
       }
@@ -3841,7 +3842,7 @@ public:
        * Array subscript operator. Returns a reference to the constant pixel
        * sample pointed to by this iterator in the specified \a channel.
        */
-      const sample& operator []( int channel ) const
+      const sample& operator []( int channel ) const noexcept
       {
          return *m_iterator[channel];
       }
@@ -3850,7 +3851,7 @@ public:
        * Pre-increment operator. Causes this iterator to point to the next
        * pixel in the iterated image. Returns a reference to this iterator.
        */
-      const_pixel_iterator& operator ++()
+      const_pixel_iterator& operator ++() noexcept
       {
          for ( int i = 0; i < m_iterator.Length(); ++i )
             ++m_iterator[i];
@@ -3862,7 +3863,7 @@ public:
        * pixel in the iterated image. Returns a copy of the iterator as it was
        * before incrementing it.
        */
-      const_pixel_iterator operator ++( int )
+      const_pixel_iterator operator ++( int ) noexcept
       {
          const_pixel_iterator i0( *this );
          for ( int i = 0; i < m_iterator.Length(); ++i )
@@ -3874,7 +3875,7 @@ public:
        * Pre-decrement operator. Causes this iterator to point to the previous
        * pixel in the iterated image. Returns a reference to this iterator.
        */
-      const_pixel_iterator& operator --()
+      const_pixel_iterator& operator --() noexcept
       {
          for ( int i = 0; i < m_iterator.Length(); ++i )
             --m_iterator[i];
@@ -3886,7 +3887,7 @@ public:
        * pixel in the iterated image. Returns a copy of the iterator as it was
        * before decrementing it.
        */
-      const_pixel_iterator operator --( int )
+      const_pixel_iterator operator --( int ) noexcept
       {
          const_pixel_iterator i0( *this );
          for ( int i = 0; i < m_iterator.Length(); ++i )
@@ -3901,7 +3902,7 @@ public:
        * move this iterator backward by \a delta pixels. Returns a reference to
        * this iterator.
        */
-      const_pixel_iterator& operator +=( distance_type delta )
+      const_pixel_iterator& operator +=( distance_type delta ) noexcept
       {
          for ( int i = 0; i < m_iterator.Length(); ++i )
             m_iterator[i] += delta;
@@ -3915,7 +3916,7 @@ public:
        * move this iterator forward by \a delta pixels. Returns a reference to
        * this iterator.
        */
-      const_pixel_iterator& operator -=( distance_type delta )
+      const_pixel_iterator& operator -=( distance_type delta ) noexcept
       {
          for ( int i = 0; i < m_iterator.Length(); ++i )
             m_iterator[i] -= delta;
@@ -3929,7 +3930,7 @@ public:
        * move the iterator rightwards (leftwards). Positive (negative) \a dy
        * increments move the iterator downwards (upwards).
        */
-      const_pixel_iterator& MoveBy( int dx, int dy )
+      const_pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
          return operator +=( distance_type( dy )*m_image->Width() + distance_type( dx ) );
       }
@@ -3938,7 +3939,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend const_pixel_iterator operator +( const const_pixel_iterator& i, distance_type delta )
+      friend const_pixel_iterator operator +( const const_pixel_iterator& i, distance_type delta ) noexcept
       {
          const_pixel_iterator j( i );
          j += delta;
@@ -3949,7 +3950,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend const_pixel_iterator operator +( distance_type delta, const const_pixel_iterator& i )
+      friend const_pixel_iterator operator +( distance_type delta, const const_pixel_iterator& i ) noexcept
       {
          const_pixel_iterator j( i );
          j += delta;
@@ -3960,7 +3961,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend const_pixel_iterator operator -( const const_pixel_iterator& i, distance_type delta )
+      friend const_pixel_iterator operator -( const const_pixel_iterator& i, distance_type delta ) noexcept
       {
          const_pixel_iterator j( i );
          j -= delta;
@@ -3971,7 +3972,7 @@ public:
        * Iterator subtraction operator. Returns the distance in pixels between
        * the specified iterators \a i and \a j.
        */
-      friend distance_type operator -( const const_pixel_iterator& i, const const_pixel_iterator& j )
+      friend distance_type operator -( const const_pixel_iterator& i, const const_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] - j.m_iterator[0];
       }
@@ -3980,7 +3981,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel.
        */
-      friend bool operator ==( const const_pixel_iterator& i, const const_pixel_iterator& j )
+      friend bool operator ==( const const_pixel_iterator& i, const const_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] == j.m_iterator[0];
       }
@@ -3989,7 +3990,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const const_pixel_iterator& i, const const_pixel_iterator& j )
+      friend bool operator <( const const_pixel_iterator& i, const const_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] < j.m_iterator[0];
       }
@@ -4037,7 +4038,7 @@ public:
 
       roi_pixel_iterator_base& operator =( const roi_pixel_iterator_base& ) = default;
 
-      void Increment()
+      void Increment() noexcept
       {
          for ( int i = 0; i < m_iterator.Length(); ++i )
             ++m_iterator[i];
@@ -4051,7 +4052,7 @@ public:
          }
       }
 
-      void Decrement()
+      void Decrement() noexcept
       {
          if ( m_iterator[0] == m_rowBegin )
          {
@@ -4065,7 +4066,7 @@ public:
             --m_iterator[i];
       }
 
-      void MoveBy( int cols, int rows )
+      void MoveBy( int cols, int rows ) noexcept
       {
          int dx = m_iterator[0] - m_rowBegin;
          for ( int i = 0; i < m_iterator.Length(); ++i )
@@ -4159,7 +4160,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && !this->m_iterator.IsEmpty();
       }
@@ -4167,7 +4168,7 @@ public:
       /*!
        * Returns a reference to the image being iterated by this object.
        */
-      image_type& Image() const
+      image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -4176,7 +4177,7 @@ public:
        * Returns a pointer to the pixel sample pointed to by this iterator in
        * the specified \a channel.
        */
-      sample* Position( int channel ) const
+      sample* Position( int channel ) const noexcept
       {
          return this->m_iterator[channel];
       }
@@ -4187,7 +4188,7 @@ public:
        * surpassed) its iteration limit, i.e. the bottom right corner of its
        * iterated region of interest.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator[0] < this->m_end;
       }
@@ -4196,7 +4197,7 @@ public:
        * Array subscript operator. Returns a reference to the pixel sample
        * pointed to by this iterator in the specified \a channel.
        */
-      sample& operator []( int channel ) const
+      sample& operator []( int channel ) const noexcept
       {
          return *this->m_iterator[channel];
       }
@@ -4206,7 +4207,7 @@ public:
        * pixel in the iterated region of interest, then returns a reference to
        * this iterator.
        */
-      roi_pixel_iterator& operator ++()
+      roi_pixel_iterator& operator ++() noexcept
       {
          this->Increment();
          return *this;
@@ -4217,7 +4218,7 @@ public:
        * pixel in the iterated region of interest. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      roi_pixel_iterator operator ++( int )
+      roi_pixel_iterator operator ++( int ) noexcept
       {
          roi_pixel_iterator i0( *this );
          this->Increment();
@@ -4229,7 +4230,7 @@ public:
        * pixel in the iterated region of interest, then returns a reference to
        * this iterator.
        */
-      roi_pixel_iterator& operator --()
+      roi_pixel_iterator& operator --() noexcept
       {
          this->Decrement();
          return *this;
@@ -4240,7 +4241,7 @@ public:
        * pixel in the iterated region of interest. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      roi_pixel_iterator operator --( int )
+      roi_pixel_iterator operator --( int ) noexcept
       {
          roi_pixel_iterator i0( *this );
          this->Decrement();
@@ -4256,7 +4257,7 @@ public:
        * and upwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      roi_pixel_iterator& operator +=( distance_type delta )
+      roi_pixel_iterator& operator +=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          iterator_base::MoveBy( delta%w, delta/w );
@@ -4272,7 +4273,7 @@ public:
        * and downwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      roi_pixel_iterator& operator -=( distance_type delta )
+      roi_pixel_iterator& operator -=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          iterator_base::MoveBy( -delta%w, -delta/w );
@@ -4287,7 +4288,7 @@ public:
        * Positive (negative) \a dy increments move the iterator downwards
        * (upwards).
        */
-      roi_pixel_iterator& MoveBy( int dx, int dy )
+      roi_pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
          iterator_base::MoveBy( dx, dy );
          return *this;
@@ -4297,7 +4298,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend roi_pixel_iterator operator +( const roi_pixel_iterator& i, distance_type delta )
+      friend roi_pixel_iterator operator +( const roi_pixel_iterator& i, distance_type delta ) noexcept
       {
          roi_pixel_iterator j( i );
          j += delta;
@@ -4308,7 +4309,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend roi_pixel_iterator operator +( distance_type delta, const roi_pixel_iterator& i )
+      friend roi_pixel_iterator operator +( distance_type delta, const roi_pixel_iterator& i ) noexcept
       {
          roi_pixel_iterator j( i );
          j += delta;
@@ -4319,7 +4320,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend roi_pixel_iterator operator -( const roi_pixel_iterator& i, distance_type delta )
+      friend roi_pixel_iterator operator -( const roi_pixel_iterator& i, distance_type delta ) noexcept
       {
          roi_pixel_iterator j( i );
          j -= delta;
@@ -4330,7 +4331,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel.
        */
-      friend bool operator ==( const roi_pixel_iterator& i, const roi_pixel_iterator& j )
+      friend bool operator ==( const roi_pixel_iterator& i, const roi_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] == j.m_iterator[0];
       }
@@ -4339,7 +4340,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const roi_pixel_iterator& i, const roi_pixel_iterator& j )
+      friend bool operator <( const roi_pixel_iterator& i, const roi_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] < j.m_iterator[0];
       }
@@ -4416,7 +4417,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && !this->m_iterator.IsEmpty();
       }
@@ -4425,7 +4426,7 @@ public:
        * Returns a reference to the constant image being iterated by this
        * object.
        */
-      const image_type& Image() const
+      const image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -4434,7 +4435,7 @@ public:
        * Returns a pointer to the constant pixel sample pointed to by this
        * iterator in the specified \a channel.
        */
-      const sample* Position( int channel ) const
+      const sample* Position( int channel ) const noexcept
       {
          return this->m_iterator[channel];
       }
@@ -4445,7 +4446,7 @@ public:
        * surpassed) its iteration limit, i.e. the bottom right corner of its
        * iterated region of interest.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator[0] < this->m_end;
       }
@@ -4454,7 +4455,7 @@ public:
        * Array subscript operator. Returns a reference to the constant pixel
        * sample pointed to by this iterator in the specified \a channel.
        */
-      const sample& operator []( int channel ) const
+      const sample& operator []( int channel ) const noexcept
       {
          return *this->m_iterator[channel];
       }
@@ -4464,7 +4465,7 @@ public:
        * pixel in the iterated region of interest, then returns a reference to
        * this iterator.
        */
-      const_roi_pixel_iterator& operator ++()
+      const_roi_pixel_iterator& operator ++() noexcept
       {
          this->Increment();
          return *this;
@@ -4475,7 +4476,7 @@ public:
        * pixel in the iterated region of interest. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      const_roi_pixel_iterator operator ++( int )
+      const_roi_pixel_iterator operator ++( int ) noexcept
       {
          const_roi_pixel_iterator i0( *this );
          this->Increment();
@@ -4487,7 +4488,7 @@ public:
        * pixel in the iterated region of interest, then returns a reference to
        * this iterator.
        */
-      const_roi_pixel_iterator& operator --()
+      const_roi_pixel_iterator& operator --() noexcept
       {
          this->Decrement();
          return *this;
@@ -4498,7 +4499,7 @@ public:
        * pixel in the iterated region of interest. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      const_roi_pixel_iterator operator --( int )
+      const_roi_pixel_iterator operator --( int ) noexcept
       {
          const_roi_pixel_iterator i0( *this );
          this->Decrement();
@@ -4514,7 +4515,7 @@ public:
        * and upwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      const_roi_pixel_iterator& operator +=( distance_type delta )
+      const_roi_pixel_iterator& operator +=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          iterator_base::MoveBy( delta%w, delta/w );
@@ -4530,7 +4531,7 @@ public:
        * and downwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      const_roi_pixel_iterator& operator -=( distance_type delta )
+      const_roi_pixel_iterator& operator -=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          iterator_base::MoveBy( -delta%w, -delta/w );
@@ -4545,7 +4546,7 @@ public:
        * Positive (negative) \a dy increments move the iterator downwards
        * (upwards).
        */
-      const_roi_pixel_iterator& MoveBy( int dx, int dy )
+      const_roi_pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
          iterator_base::MoveBy( dx, dy );
          return *this;
@@ -4555,7 +4556,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend const_roi_pixel_iterator operator +( const const_roi_pixel_iterator& i, distance_type delta )
+      friend const_roi_pixel_iterator operator +( const const_roi_pixel_iterator& i, distance_type delta ) noexcept
       {
          const_roi_pixel_iterator j( i );
          j += delta;
@@ -4566,7 +4567,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend const_roi_pixel_iterator operator +( distance_type delta, const const_roi_pixel_iterator& i )
+      friend const_roi_pixel_iterator operator +( distance_type delta, const const_roi_pixel_iterator& i ) noexcept
       {
          const_roi_pixel_iterator j( i );
          j += delta;
@@ -4577,7 +4578,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend const_roi_pixel_iterator operator -( const const_roi_pixel_iterator& i, distance_type delta )
+      friend const_roi_pixel_iterator operator -( const const_roi_pixel_iterator& i, distance_type delta ) noexcept
       {
          const_roi_pixel_iterator j( i );
          j -= delta;
@@ -4588,7 +4589,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel.
        */
-      friend bool operator ==( const const_roi_pixel_iterator& i, const const_roi_pixel_iterator& j )
+      friend bool operator ==( const const_roi_pixel_iterator& i, const const_roi_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] == j.m_iterator[0];
       }
@@ -4597,7 +4598,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const const_roi_pixel_iterator& i, const const_roi_pixel_iterator& j )
+      friend bool operator <( const const_roi_pixel_iterator& i, const const_roi_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] < j.m_iterator[0];
       }
@@ -4635,20 +4636,20 @@ public:
 
       filter_pixel_iterator_base& operator =( const filter_pixel_iterator_base& ) = default;
 
-      filter_pixel_iterator_base& operator =( const iterator_base& i )
+      filter_pixel_iterator_base& operator =( const iterator_base& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          JumpToNextValidSample();
       }
 
-      void JumpToNextValidSample()
+      void JumpToNextValidSample() noexcept
       {
          while ( this->m_iterator[0] < this->m_end && !this->m_filter( this->m_iterator ) )
             for ( int i = 0; i < this->m_iterator.Length(); ++i )
                ++this->m_iterator[i];
       }
 
-      void JumpToPrevValidSample()
+      void JumpToPrevValidSample() noexcept
       {
          while ( this->m_iterator[0] > this->m_begin && !this->m_filter( this->m_iterator ) )
             for ( int i = 0; i < this->m_iterator.Length(); ++i )
@@ -4764,7 +4765,7 @@ public:
        * Assigns a mutable pixel iterator to this object. Returns a reference
        * to this iterator.
        */
-      filter_pixel_iterator& operator =( const pixel_iterator& i )
+      filter_pixel_iterator& operator =( const pixel_iterator& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          return *this;
@@ -4774,7 +4775,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && !this->m_iterator.IsEmpty();
       }
@@ -4782,7 +4783,7 @@ public:
       /*!
        * Returns a reference to the image being iterated by this object.
        */
-      image_type& Image() const
+      image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -4791,7 +4792,7 @@ public:
        * Returns a reference to the immutable predicate object used by this
        * filter iterator.
        */
-      const filter_type& Filter() const
+      const filter_type& Filter() const noexcept
       {
          return this->m_filter;
       }
@@ -4800,7 +4801,7 @@ public:
        * Returns a reference to the mutable predicate object used by this
        * filter iterator.
        */
-      filter_type& Filter()
+      filter_type& Filter() noexcept
       {
          return this->m_filter;
       }
@@ -4809,7 +4810,7 @@ public:
        * Returns a pointer to the pixel sample pointed to by this iterator in
        * the specified \a channel.
        */
-      sample* Position( int channel ) const
+      sample* Position( int channel ) const noexcept
       {
          return this->m_iterator[channel];
       }
@@ -4819,7 +4820,7 @@ public:
        * active. A pixel iterator is active if it has not reached (or
        * surpassed) its iteration limit.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator[0] < this->m_end;
       }
@@ -4828,7 +4829,7 @@ public:
        * Array subscript operator. Returns a reference to the pixel sample
        * pointed to by this iterator in the specified \a channel.
        */
-      sample& operator []( int channel ) const
+      sample& operator []( int channel ) const noexcept
       {
          return *this->m_iterator[channel];
       }
@@ -4838,7 +4839,7 @@ public:
        * valid pixel in the iterated image. Returns a reference to this
        * iterator.
        */
-      filter_pixel_iterator& operator ++()
+      filter_pixel_iterator& operator ++() noexcept
       {
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
             ++this->m_iterator[i];
@@ -4851,7 +4852,7 @@ public:
        * valid pixel in the iterated image channel. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      filter_pixel_iterator operator ++( int )
+      filter_pixel_iterator operator ++( int ) noexcept
       {
          filter_pixel_iterator i0( *this );
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
@@ -4865,7 +4866,7 @@ public:
        * valid pixel in the iterated image channel, then returns a reference to
        * this iterator.
        */
-      filter_pixel_iterator& operator --()
+      filter_pixel_iterator& operator --() noexcept
       {
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
             --this->m_iterator[i];
@@ -4878,7 +4879,7 @@ public:
        * valid pixel in the iterated image channel. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      filter_pixel_iterator operator --( int )
+      filter_pixel_iterator operator --( int ) noexcept
       {
          filter_pixel_iterator i0( *this );
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
@@ -4894,7 +4895,7 @@ public:
        * increments move this iterator backward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      filter_pixel_iterator& operator +=( distance_type delta )
+      filter_pixel_iterator& operator +=( distance_type delta ) noexcept
       {
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
             this->m_iterator[i] += delta;
@@ -4909,7 +4910,7 @@ public:
        * increments move this iterator forward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      filter_pixel_iterator& operator -=( distance_type delta )
+      filter_pixel_iterator& operator -=( distance_type delta ) noexcept
       {
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
             this->m_iterator[i] -= delta;
@@ -4924,7 +4925,7 @@ public:
        * move the iterator rightwards (leftwards). Positive (negative) \a dy
        * increments move the iterator downwards (upwards).
        */
-      filter_pixel_iterator& MoveBy( int dx, int dy )
+      filter_pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
          distance_type d = distance_type( dy )*this->m_image->Width() + distance_type( dx );
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
@@ -4940,7 +4941,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend filter_pixel_iterator operator +( const filter_pixel_iterator& i, distance_type delta )
+      friend filter_pixel_iterator operator +( const filter_pixel_iterator& i, distance_type delta ) noexcept
       {
          filter_pixel_iterator j( i );
          j += delta;
@@ -4951,7 +4952,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend filter_pixel_iterator operator +( distance_type delta, const filter_pixel_iterator& i )
+      friend filter_pixel_iterator operator +( distance_type delta, const filter_pixel_iterator& i ) noexcept
       {
          filter_pixel_iterator j( i );
          j += delta;
@@ -4962,7 +4963,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend filter_pixel_iterator operator -( const filter_pixel_iterator& i, distance_type delta )
+      friend filter_pixel_iterator operator -( const filter_pixel_iterator& i, distance_type delta ) noexcept
       {
          filter_pixel_iterator j( i );
          j -= delta;
@@ -4973,7 +4974,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel.
        */
-      friend bool operator ==( const filter_pixel_iterator& i, const filter_pixel_iterator& j )
+      friend bool operator ==( const filter_pixel_iterator& i, const filter_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] == j.m_iterator[0];
       }
@@ -4982,7 +4983,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const filter_pixel_iterator& i, const filter_pixel_iterator& j )
+      friend bool operator <( const filter_pixel_iterator& i, const filter_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] < j.m_iterator[0];
       }
@@ -5096,7 +5097,7 @@ public:
        * Assigns an immutable pixel iterator to this object. Returns a
        * reference to this iterator.
        */
-      const_filter_pixel_iterator& operator =( const const_pixel_iterator& i )
+      const_filter_pixel_iterator& operator =( const const_pixel_iterator& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          return *this;
@@ -5106,7 +5107,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && !this->m_iterator.IsEmpty();
       }
@@ -5115,7 +5116,7 @@ public:
        * Returns a reference to the constant image being iterated by this
        * object.
        */
-      const image_type& Image() const
+      const image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -5124,7 +5125,7 @@ public:
        * Returns a reference to the immutable predicate object used by this
        * filter iterator.
        */
-      const filter_type& Filter() const
+      const filter_type& Filter() const noexcept
       {
          return this->m_filter;
       }
@@ -5133,7 +5134,7 @@ public:
        * Returns a reference to the mutable predicate object used by this
        * filter iterator.
        */
-      filter_type& Filter()
+      filter_type& Filter() noexcept
       {
          return this->m_filter;
       }
@@ -5142,7 +5143,7 @@ public:
        * Returns a pointer to the constant pixel sample pointed to by this
        * iterator in the specified \a channel.
        */
-      const sample* Position( int channel ) const
+      const sample* Position( int channel ) const noexcept
       {
          return this->m_iterator[channel];
       }
@@ -5152,7 +5153,7 @@ public:
        * active. A pixel iterator is active if it has not reached (or
        * surpassed) its iteration limit.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator[0] < this->m_end;
       }
@@ -5161,7 +5162,7 @@ public:
        * Array subscript operator. Returns a reference to the constant pixel
        * sample pointed to by this iterator in the specified \a channel.
        */
-      const sample& operator []( int channel ) const
+      const sample& operator []( int channel ) const noexcept
       {
          return *this->m_iterator[channel];
       }
@@ -5171,7 +5172,7 @@ public:
        * valid pixel in the iterated image. Returns a reference to this
        * iterator.
        */
-      const_filter_pixel_iterator& operator ++()
+      const_filter_pixel_iterator& operator ++() noexcept
       {
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
             ++this->m_iterator[i];
@@ -5184,7 +5185,7 @@ public:
        * valid pixel in the iterated image channel. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      const_filter_pixel_iterator operator ++( int )
+      const_filter_pixel_iterator operator ++( int ) noexcept
       {
          const_filter_pixel_iterator i0( *this );
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
@@ -5198,7 +5199,7 @@ public:
        * valid pixel in the iterated image channel, then returns a reference to
        * this iterator.
        */
-      const_filter_pixel_iterator& operator --()
+      const_filter_pixel_iterator& operator --() noexcept
       {
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
             --this->m_iterator[i];
@@ -5211,7 +5212,7 @@ public:
        * valid pixel in the iterated image channel. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      const_filter_pixel_iterator operator --( int )
+      const_filter_pixel_iterator operator --( int ) noexcept
       {
          const_filter_pixel_iterator i0( *this );
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
@@ -5227,7 +5228,7 @@ public:
        * increments move this iterator backward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      const_filter_pixel_iterator& operator +=( distance_type delta )
+      const_filter_pixel_iterator& operator +=( distance_type delta ) noexcept
       {
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
             this->m_iterator[i] += delta;
@@ -5242,7 +5243,7 @@ public:
        * increments move this iterator forward by \a delta pixel samples.
        * Returns a reference to this iterator.
        */
-      const_filter_pixel_iterator& operator -=( distance_type delta )
+      const_filter_pixel_iterator& operator -=( distance_type delta ) noexcept
       {
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
             this->m_iterator[i] -= delta;
@@ -5257,7 +5258,7 @@ public:
        * move the iterator rightwards (leftwards). Positive (negative) \a dy
        * increments move the iterator downwards (upwards).
        */
-      const_filter_pixel_iterator& MoveBy( int dx, int dy )
+      const_filter_pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
          distance_type d = distance_type( dy )*this->m_image->Width() + distance_type( dx );
          for ( int i = 0; i < this->m_iterator.Length(); ++i )
@@ -5273,7 +5274,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend const_filter_pixel_iterator operator +( const const_filter_pixel_iterator& i, distance_type delta )
+      friend const_filter_pixel_iterator operator +( const const_filter_pixel_iterator& i, distance_type delta ) noexcept
       {
          const_filter_pixel_iterator j( i );
          j += delta;
@@ -5284,7 +5285,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend const_filter_pixel_iterator operator +( distance_type delta, const const_filter_pixel_iterator& i )
+      friend const_filter_pixel_iterator operator +( distance_type delta, const const_filter_pixel_iterator& i ) noexcept
       {
          const_filter_pixel_iterator j( i );
          j += delta;
@@ -5295,7 +5296,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend const_filter_pixel_iterator operator -( const const_filter_pixel_iterator& i, distance_type delta )
+      friend const_filter_pixel_iterator operator -( const const_filter_pixel_iterator& i, distance_type delta ) noexcept
       {
          const_filter_pixel_iterator j( i );
          j -= delta;
@@ -5306,7 +5307,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel.
        */
-      friend bool operator ==( const const_filter_pixel_iterator& i, const const_filter_pixel_iterator& j )
+      friend bool operator ==( const const_filter_pixel_iterator& i, const const_filter_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] == j.m_iterator[0];
       }
@@ -5315,7 +5316,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const const_filter_pixel_iterator& i, const const_filter_pixel_iterator& j )
+      friend bool operator <( const const_filter_pixel_iterator& i, const const_filter_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] < j.m_iterator[0];
       }
@@ -5356,20 +5357,20 @@ public:
 
       roi_filter_pixel_iterator_base& operator =( const roi_filter_pixel_iterator_base& ) = default;
 
-      roi_filter_pixel_iterator_base& operator =( const roi_iterator_base& i )
+      roi_filter_pixel_iterator_base& operator =( const roi_iterator_base& i ) noexcept
       {
          (void)roi_iterator_base::operator =( i );
          JumpToNextValidSample();
          return *this;
       }
 
-      void JumpToNextValidSample()
+      void JumpToNextValidSample() noexcept
       {
          while ( this->m_iterator[0] < this->m_end && !this->m_filter( this->m_iterator ) )
             roi_iterator_base::Increment();
       }
 
-      void JumpToPrevValidSample()
+      void JumpToPrevValidSample() noexcept
       {
          while ( this->m_iterator[0] > this->m_begin && !this->m_filter( this->m_iterator ) )
             roi_iterator_base::Decrement();
@@ -5466,7 +5467,7 @@ public:
       /*!
        * Assigns a ROI pixel iterator. Returns a reference to this object.
        */
-      roi_filter_pixel_iterator& operator =( const roi_pixel_iterator& i )
+      roi_filter_pixel_iterator& operator =( const roi_pixel_iterator& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          return *this;
@@ -5476,7 +5477,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && !this->m_iterator.IsEmpty();
       }
@@ -5484,7 +5485,7 @@ public:
       /*!
        * Returns a reference to the image being iterated by this object.
        */
-      image_type& Image() const
+      image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -5493,7 +5494,7 @@ public:
        * Returns a reference to the immutable predicate object used by this
        * filter iterator.
        */
-      const filter_type& Filter() const
+      const filter_type& Filter() const noexcept
       {
          return this->m_filter;
       }
@@ -5502,7 +5503,7 @@ public:
        * Returns a reference to the mutable predicate object used by this
        * filter iterator.
        */
-      filter_type& Filter()
+      filter_type& Filter() noexcept
       {
          return this->m_filter;
       }
@@ -5511,7 +5512,7 @@ public:
        * Returns a pointer to the pixel sample pointed to by this iterator in
        * the specified \a channel.
        */
-      sample* Position( int channel ) const
+      sample* Position( int channel ) const noexcept
       {
          return this->m_iterator[channel];
       }
@@ -5522,7 +5523,7 @@ public:
        * surpassed) its iteration limit, i.e. the bottom right corner of its
        * iterated region of interest.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator[0] < this->m_end;
       }
@@ -5531,7 +5532,7 @@ public:
        * Array subscript operator. Returns a reference to the pixel sample
        * pointed to by this iterator in the specified \a channel.
        */
-      sample& operator []( int channel ) const
+      sample& operator []( int channel ) const noexcept
       {
          return *this->m_iterator[channel];
       }
@@ -5541,7 +5542,7 @@ public:
        * valid pixel in the iterated region of interest. Returns a reference to
        * this iterator.
        */
-      roi_filter_pixel_iterator& operator ++()
+      roi_filter_pixel_iterator& operator ++() noexcept
       {
          this->Increment();
          this->JumpToNextValidSample();
@@ -5553,7 +5554,7 @@ public:
        * valid pixel in the iterated region of interest. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      roi_filter_pixel_iterator operator ++( int )
+      roi_filter_pixel_iterator operator ++( int ) noexcept
       {
          roi_filter_pixel_iterator i0( *this );
          this->Increment();
@@ -5566,7 +5567,7 @@ public:
        * valid pixel in the iterated region of interest, then returns a
        * reference to this iterator.
        */
-      roi_filter_pixel_iterator& operator --()
+      roi_filter_pixel_iterator& operator --() noexcept
       {
          this->Decrement();
          this->JumpToPrevValidSample();
@@ -5578,7 +5579,7 @@ public:
        * valid pixel in the iterated region of interest. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      roi_filter_pixel_iterator operator --( int )
+      roi_filter_pixel_iterator operator --( int ) noexcept
       {
          roi_filter_pixel_iterator i0( *this );
          this->Decrement();
@@ -5595,7 +5596,7 @@ public:
        * and upwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      roi_filter_pixel_iterator& operator +=( distance_type delta )
+      roi_filter_pixel_iterator& operator +=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          return MoveBy( delta%w, delta/w );
@@ -5610,7 +5611,7 @@ public:
        * and downwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      roi_filter_pixel_iterator& operator -=( distance_type delta )
+      roi_filter_pixel_iterator& operator -=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          return MoveBy( -delta%w, -delta/w );
@@ -5624,7 +5625,7 @@ public:
        * Positive (negative) \a dy increments move the iterator downwards
        * (upwards).
        */
-      roi_filter_pixel_iterator& MoveBy( int dx, int dy )
+      roi_filter_pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
          sample* i0 = this->m_iterator[0];
          iterator_base::MoveBy( dx, dy );
@@ -5639,7 +5640,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend roi_filter_pixel_iterator operator +( const roi_filter_pixel_iterator& i, distance_type delta )
+      friend roi_filter_pixel_iterator operator +( const roi_filter_pixel_iterator& i, distance_type delta ) noexcept
       {
          roi_filter_pixel_iterator j( i );
          j += delta;
@@ -5650,7 +5651,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend roi_filter_pixel_iterator operator +( distance_type delta, const roi_filter_pixel_iterator& i )
+      friend roi_filter_pixel_iterator operator +( distance_type delta, const roi_filter_pixel_iterator& i ) noexcept
       {
          roi_filter_pixel_iterator j( i );
          j += delta;
@@ -5661,7 +5662,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend roi_filter_pixel_iterator operator -( const roi_filter_pixel_iterator& i, distance_type delta )
+      friend roi_filter_pixel_iterator operator -( const roi_filter_pixel_iterator& i, distance_type delta ) noexcept
       {
          roi_filter_pixel_iterator j( i );
          j -= delta;
@@ -5672,7 +5673,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel.
        */
-      friend bool operator ==( const roi_filter_pixel_iterator& i, const roi_filter_pixel_iterator& j )
+      friend bool operator ==( const roi_filter_pixel_iterator& i, const roi_filter_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] == j.m_iterator[0];
       }
@@ -5681,7 +5682,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const roi_filter_pixel_iterator& i, const roi_filter_pixel_iterator& j )
+      friend bool operator <( const roi_filter_pixel_iterator& i, const roi_filter_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] < j.m_iterator[0];
       }
@@ -5779,7 +5780,7 @@ public:
       /*!
        * Assigns a ROI pixel iterator. Returns a reference to this object.
        */
-      const_roi_filter_pixel_iterator& operator =( const const_roi_pixel_iterator& i )
+      const_roi_filter_pixel_iterator& operator =( const const_roi_pixel_iterator& i ) noexcept
       {
          (void)iterator_base::operator =( i );
          return *this;
@@ -5789,7 +5790,7 @@ public:
        * Returns true only if this iterator is valid. A valid iterator defines
        * a valid iterated image and a non-null position.
        */
-      bool IsValid() const
+      bool IsValid() const noexcept
       {
          return this->m_image != nullptr && !this->m_iterator.IsEmpty();
       }
@@ -5798,7 +5799,7 @@ public:
        * Returns a reference to the constant image being iterated by this
        * object.
        */
-      const image_type& Image() const
+      const image_type& Image() const noexcept
       {
          return *this->m_image;
       }
@@ -5807,7 +5808,7 @@ public:
        * Returns a reference to the immutable predicate object used by this
        * filter iterator.
        */
-      const filter_type& Filter() const
+      const filter_type& Filter() const noexcept
       {
          return this->m_filter;
       }
@@ -5816,7 +5817,7 @@ public:
        * Returns a reference to the mutable predicate object used by this
        * filter iterator.
        */
-      filter_type& Filter()
+      filter_type& Filter() noexcept
       {
          return this->m_filter;
       }
@@ -5825,7 +5826,7 @@ public:
        * Returns a pointer to the constant pixel sample pointed to by this
        * iterator in the specified \a channel.
        */
-      const sample* Position( int channel ) const
+      const sample* Position( int channel ) const noexcept
       {
          return this->m_iterator[channel];
       }
@@ -5836,7 +5837,7 @@ public:
        * surpassed) its iteration limit, i.e. the bottom right corner of its
        * iterated region of interest.
        */
-      operator bool() const
+      operator bool() const noexcept
       {
          return this->m_iterator[0] < this->m_end;
       }
@@ -5845,7 +5846,7 @@ public:
        * Array subscript operator. Returns a reference to the constant pixel
        * sample pointed to by this iterator in the specified \a channel.
        */
-      const sample& operator []( int channel ) const
+      const sample& operator []( int channel ) const noexcept
       {
          return *this->m_iterator[channel];
       }
@@ -5855,7 +5856,7 @@ public:
        * valid pixel in the iterated region of interest. Returns a reference to
        * this iterator.
        */
-      const_roi_filter_pixel_iterator& operator ++()
+      const_roi_filter_pixel_iterator& operator ++() noexcept
       {
          this->Increment();
          this->JumpToNextValidSample();
@@ -5867,7 +5868,7 @@ public:
        * valid pixel in the iterated region of interest. Returns a copy of the
        * iterator as it was before incrementing it.
        */
-      const_roi_filter_pixel_iterator operator ++( int )
+      const_roi_filter_pixel_iterator operator ++( int ) noexcept
       {
          const_roi_filter_pixel_iterator i0( *this );
          this->Increment();
@@ -5880,7 +5881,7 @@ public:
        * valid pixel in the iterated region of interest, then returns a
        * reference to this iterator.
        */
-      const_roi_filter_pixel_iterator& operator --()
+      const_roi_filter_pixel_iterator& operator --() noexcept
       {
          this->Decrement();
          this->JumpToPrevValidSample();
@@ -5892,7 +5893,7 @@ public:
        * valid pixel in the iterated region of interest. Returns a copy of the
        * iterator as it was before decrementing it.
        */
-      const_roi_filter_pixel_iterator operator --( int )
+      const_roi_filter_pixel_iterator operator --( int ) noexcept
       {
          const_roi_filter_pixel_iterator i0( *this );
          this->Decrement();
@@ -5909,7 +5910,7 @@ public:
        * and upwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      const_roi_filter_pixel_iterator& operator +=( distance_type delta )
+      const_roi_filter_pixel_iterator& operator +=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          return MoveBy( delta%w, delta/w );
@@ -5924,7 +5925,7 @@ public:
        * and downwards) by \a delta pixel samples. Returns a reference to this
        * iterator.
        */
-      const_roi_filter_pixel_iterator& operator -=( distance_type delta )
+      const_roi_filter_pixel_iterator& operator -=( distance_type delta ) noexcept
       {
          int w = this->m_rowEnd - this->m_rowBegin;
          return MoveBy( -delta%w, -delta/w );
@@ -5938,7 +5939,7 @@ public:
        * Positive (negative) \a dy increments move the iterator downwards
        * (upwards).
        */
-      const_roi_filter_pixel_iterator& MoveBy( int dx, int dy )
+      const_roi_filter_pixel_iterator& MoveBy( int dx, int dy ) noexcept
       {
          const sample* i0 = this->m_iterator[0];
          iterator_base::MoveBy( dx, dy );
@@ -5953,7 +5954,7 @@ public:
        * Scalar-to-iterator addition operator. Returns an iterator equivalent
        * to the specified iterator \a i incremented by a distance \a delta.
        */
-      friend const_roi_filter_pixel_iterator operator +( const const_roi_filter_pixel_iterator& i, distance_type delta )
+      friend const_roi_filter_pixel_iterator operator +( const const_roi_filter_pixel_iterator& i, distance_type delta ) noexcept
       {
          const_roi_filter_pixel_iterator j( i );
          j += delta;
@@ -5964,7 +5965,7 @@ public:
        * Iterator-to-scalar addition operator. This operator implements the
        * commutative property of scalar-to-iterator addition.
        */
-      friend const_roi_filter_pixel_iterator operator +( distance_type delta, const const_roi_filter_pixel_iterator& i )
+      friend const_roi_filter_pixel_iterator operator +( distance_type delta, const const_roi_filter_pixel_iterator& i ) noexcept
       {
          const_roi_filter_pixel_iterator j( i );
          j += delta;
@@ -5975,7 +5976,7 @@ public:
        * Scalar-to-iterator subtraction operator. Returns an iterator equal to
        * the specified iterator \a i decremented by a distance \a delta.
        */
-      friend const_roi_filter_pixel_iterator operator -( const const_roi_filter_pixel_iterator& i, distance_type delta )
+      friend const_roi_filter_pixel_iterator operator -( const const_roi_filter_pixel_iterator& i, distance_type delta ) noexcept
       {
          const_roi_filter_pixel_iterator j( i );
          j -= delta;
@@ -5986,7 +5987,7 @@ public:
        * Equality operator. Returns true if two iterators \a i and \a j point
        * to the same pixel.
        */
-      friend bool operator ==( const const_roi_filter_pixel_iterator& i, const const_roi_filter_pixel_iterator& j )
+      friend bool operator ==( const const_roi_filter_pixel_iterator& i, const const_roi_filter_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] == j.m_iterator[0];
       }
@@ -5995,7 +5996,7 @@ public:
        * Less than operator. Returns true if the specified iterator \a i
        * precedes another iterator \a j.
        */
-      friend bool operator <( const const_roi_filter_pixel_iterator& i, const const_roi_filter_pixel_iterator& j )
+      friend bool operator <( const const_roi_filter_pixel_iterator& i, const const_roi_filter_pixel_iterator& j ) noexcept
       {
          return i.m_iterator[0] < j.m_iterator[0];
       }
@@ -6007,7 +6008,7 @@ public:
     * Returns true iff this %GenericImage template instantiation uses floating
     * point pixel samples; returns false if it uses integer samples.
     */
-   static bool IsFloatSample()
+   static bool IsFloatSample() noexcept
    {
       return pixel_traits::IsFloatSample();
    }
@@ -6016,7 +6017,7 @@ public:
     * Returns true iff this %GenericImage template instantiation uses complex
     * pixel samples; returns false if it uses real samples.
     */
-   static bool IsComplexSample()
+   static bool IsComplexSample() noexcept
    {
       return pixel_traits::IsComplexSample();
    }
@@ -6025,7 +6026,7 @@ public:
     * Returns the number of 8-bit bytes required to store a pixel sample in
     * this %GenericImage template instantiation.
     */
-   static int BytesPerSample()
+   static int BytesPerSample() noexcept
    {
       return P::BytesPerSample();
    }
@@ -6034,7 +6035,7 @@ public:
     * Returns the number of bits in a pixel sample of this %GenericImage
     * template instantiation.
     */
-   static int BitsPerSample()
+   static int BitsPerSample() noexcept
    {
       return P::BitsPerSample();
    }
@@ -6047,7 +6048,7 @@ public:
     * \li Both images using integer, floating point real, or complex samples.
     */
    template <class P1>
-   bool SameSampleType( const GenericImage<P1>& image ) const
+   bool SameSampleType( const GenericImage<P1>& image ) const noexcept
    {
       return image.BitsPerSample() == BitsPerSample() &&
              image.IsFloatSample() == IsFloatSample() &&
@@ -6059,7 +6060,7 @@ public:
     * \a image, both of the same template instantiation, use the same pixel
     * sample type.
     */
-   bool SameSampleType( const GenericImage& image ) const
+   bool SameSampleType( const GenericImage& image ) const noexcept
    {
       return true;
    }
@@ -6343,7 +6344,7 @@ public:
     * you don't have to know whether you're working with a shared or a local
     * image; your code will be exactly the same under both situations.
     */
-   bool IsShared() const
+   bool IsShared() const noexcept
    {
       return m_data->IsShared();
    }
@@ -6358,7 +6359,7 @@ public:
     * in the local heap of the calling module, irrespective of whether the
     * pixel data is local or shared.
     */
-   bool IsUnique() const
+   bool IsUnique() const noexcept
    {
       return m_data->IsUnique();
    }
@@ -6387,7 +6388,7 @@ public:
          local->m_savedSelections = m_savedSelections;
          local->m_status = m_status;
          for ( int c = 0; c < m_numberOfChannels; ++c )
-            P::Copy( local->m_pixelData[c], m_pixelData[c], NumberOfPixels() );
+            P::Copy( (*local)[c], m_channelData( c ), NumberOfPixels() );
 
          local->m_data->Attach( this );
          DetachFromData();
@@ -6444,7 +6445,7 @@ public:
     * its public member functions for all allocations and deallocations of
     * pixel data.
     */
-   pixel_allocator& Allocator() const
+   pixel_allocator& Allocator() const noexcept
    {
       return m_allocator;
    }
@@ -6672,7 +6673,7 @@ public:
     * Returns the size in bytes of a row of pixels in this image (also known as
     * a <em>scan line</em>).
     */
-   size_type LineSize() const
+   size_type LineSize() const noexcept
    {
       return BytesPerSample() * size_type( m_width );
    }
@@ -6681,7 +6682,7 @@ public:
     * Returns the size in bytes of a channel of this image. This is equal to
     * the area in square pixels multiplied by BytesPerSample().
     */
-   size_type ChannelSize() const
+   size_type ChannelSize() const noexcept
    {
       return BytesPerSample() * NumberOfPixels();
    }
@@ -6692,7 +6693,7 @@ public:
     * equal to the area in square pixels multiplied by the number of channels,
     * multiplied by BytesPerSample().
     */
-   size_type ImageSize() const
+   size_type ImageSize() const noexcept
    {
       return ChannelSize() * size_type( m_numberOfChannels );
    }
@@ -6702,7 +6703,7 @@ public:
     * pixel data in the nominal channels of this image (i.e., \e excluding
     * alpha channels).
     */
-   size_type NominalSize() const
+   size_type NominalSize() const noexcept
    {
       return ChannelSize() * NumberOfNominalChannels();
    }
@@ -6712,7 +6713,7 @@ public:
     * pixel data in the alpha channels of this image (i.e., \e excluding
     * nominal channels). Returns zero if this image has no alpha channels.
     */
-   size_type AlphaSize() const
+   size_type AlphaSize() const noexcept
    {
       return ChannelSize() * NumberOfAlphaChannels();
    }
@@ -6735,7 +6736,7 @@ public:
    {
       PCL_PRECONDITION( 0 <= channel && channel < m_numberOfChannels )
       EnsureUnique();
-      return m_pixelData[channel];
+      return m_channelData( channel );
    }
 
    /*!
@@ -6744,16 +6745,16 @@ public:
     *
     * This member function is the immutable counterpart of PixelData( int ).
     */
-   const sample* PixelData( int channel = 0 ) const
+   const sample* PixelData( int channel = 0 ) const noexcept
    {
       PCL_PRECONDITION( 0 <= channel && channel < m_numberOfChannels )
-      return m_pixelData[channel];
+      return m_channelData( channel );
    }
 
    /*!
     * Returns true only is this is a valid, nonempty image.
     */
-   operator bool() const
+   operator bool() const noexcept
    {
       return m_data != nullptr && !m_data->IsEmpty();
    }
@@ -6780,7 +6781,7 @@ public:
     *
     * This operator function is the immutable counterpart of operator []( int ).
     */
-   const sample* operator []( int channel ) const
+   const sample* operator []( int channel ) const noexcept
    {
       PCL_PRECONDITION( 0 <= channel && channel < m_numberOfChannels )
       return PixelData( channel );
@@ -6805,7 +6806,7 @@ public:
     *
     * This operator function is the immutable counterpart of operator *().
     */
-   const sample* operator *() const
+   const sample* operator *() const noexcept
    {
       PCL_PRECONDITION( 0 < m_numberOfChannels )
       return PixelData( 0 );
@@ -6835,7 +6836,7 @@ public:
       PCL_PRECONDITION( 0 <= channel && channel < m_numberOfChannels )
       PCL_PRECONDITION( 0 <= y && y < m_height )
       EnsureUnique();
-      return m_pixelData[channel] + RowOffset( y );
+      return m_channelData( channel ) + RowOffset( y );
    }
 
    /*!
@@ -6844,11 +6845,11 @@ public:
     *
     * This member function is the immutable counterpart of ScanLine( int, int ).
     */
-   const sample* ScanLine( int y, int channel = 0 ) const
+   const sample* ScanLine( int y, int channel = 0 ) const noexcept
    {
       PCL_PRECONDITION( 0 <= channel && channel < m_numberOfChannels )
       PCL_PRECONDITION( 0 <= y && y < m_height )
-      return m_pixelData[channel] + RowOffset( y );
+      return m_channelData( channel ) + RowOffset( y );
    }
 
    /*!
@@ -6880,7 +6881,7 @@ public:
       PCL_PRECONDITION( 0 <= x && x < m_width )
       PCL_PRECONDITION( 0 <= y && y < m_height )
       EnsureUnique();
-      return m_pixelData[channel] + PixelOffset( x, y );
+      return m_channelData( channel ) + PixelOffset( x, y );
    }
 
    /*!
@@ -6889,12 +6890,12 @@ public:
     *
     * This member function is the immutable counterpart of PixelAddress( int, int, int ).
     */
-   const sample* PixelAddress( int x, int y, int channel = 0 ) const
+   const sample* PixelAddress( int x, int y, int channel = 0 ) const noexcept
    {
       PCL_PRECONDITION( 0 <= channel && channel < m_numberOfChannels )
       PCL_PRECONDITION( 0 <= x && x < m_width )
       PCL_PRECONDITION( 0 <= y && y < m_height )
-      return m_pixelData[channel] + PixelOffset( x, y );
+      return m_channelData( channel ) + PixelOffset( x, y );
    }
 
    /*!
@@ -6929,7 +6930,7 @@ public:
     * This member function is the immutable counterpart of
     * PixelAddress( const Point&, int ).
     */
-   const sample* PixelAddress( const Point& p, int channel = 0 ) const
+   const sample* PixelAddress( const Point& p, int channel = 0 ) const noexcept
    {
       return PixelAddress( p.x, p.y, channel );
    }
@@ -6975,7 +6976,7 @@ public:
     *                   the number of channels in this image, including nominal
     *                   and alpha channels. The default value is zero.
     */
-   sample operator ()( int x, int y, int channel = 0 ) const
+   sample operator ()( int x, int y, int channel = 0 ) const noexcept
    {
       return *PixelAddress( x, y, channel );
    }
@@ -7015,7 +7016,7 @@ public:
     *                   the number of channels in this image, including nominal
     *                   and alpha channels. The default value is zero.
     */
-   sample operator ()( const Point& p, int channel = 0 ) const
+   sample operator ()( const Point& p, int channel = 0 ) const noexcept
    {
       return *PixelAddress( p, channel );
    }
@@ -7039,7 +7040,7 @@ public:
     * \deprecated This member function has been deprecated. Use
     * GenericImage::operator()( int, int, int ) const in newly produced code.
     */
-   sample Pixel( int x, int y, int channel = 0 ) const
+   sample Pixel( int x, int y, int channel = 0 ) const noexcept
    {
       return operator()( x, y, channel );
    }
@@ -7064,7 +7065,7 @@ public:
     * GenericImage::operator()( const Point&, int ) const in newly produced
     * code.
     */
-   sample Pixel( const Point& p, int channel = 0 ) const
+   sample Pixel( const Point& p, int channel = 0 ) const noexcept
    {
       return operator()( p, channel );
    }
@@ -7183,11 +7184,11 @@ public:
 
       if ( r == image.Bounds() )
          for ( int c = 0; firstChannel <= lastChannel; ++c, ++firstChannel )
-            P::Copy( m_pixelData[c], image[firstChannel], NumberOfPixels() );
+            P::Copy( m_channelData( c ), image[firstChannel], NumberOfPixels() );
       else
          for ( int c = 0; firstChannel <= lastChannel; ++c, ++firstChannel )
          {
-            sample* f = m_pixelData[c];
+            sample* f = m_channelData( c );
             const typename P1::sample* g = image.PixelAddress( r.LeftTop(), firstChannel );
             for ( int y = 0; y < m_height; ++y, f += m_width, g += image.Width() )
                P::Copy( f, g, m_width );
@@ -7248,11 +7249,11 @@ public:
 
       if ( r == image.Bounds() )
          for ( int c = 0; firstChannel <= lastChannel; ++c, ++firstChannel )
-            P::Copy( m_pixelData[c], image.m_pixelData[firstChannel], NumberOfPixels() );
+            P::Copy( m_channelData( c ), image[firstChannel], NumberOfPixels() );
       else
          for ( int c = 0; firstChannel <= lastChannel; ++c, ++firstChannel )
          {
-            sample* f = m_pixelData[c];
+            sample* f = m_channelData( c );
             const sample* g = image.PixelAddress( r.LeftTop(), firstChannel );
             for ( int y = 0; y < m_height; ++y, f += m_width, g += image.m_width )
                P::Copy( f, g, m_width );
@@ -7356,7 +7357,7 @@ public:
    /*!
     * Exchanges two images \a x1 and \a x2 of the same template instantiation.
     */
-   friend void Swap( GenericImage& x1, GenericImage& x2 )
+   friend void Swap( GenericImage& x1, GenericImage& x2 ) noexcept
    {
       x1.AbstractImage::Swap( x2 );
       pcl::Swap( x1.m_data, x2.m_data );
@@ -7911,7 +7912,8 @@ public:
       else
          for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
          {
-            sample* f = PixelAddress( r.LeftTop(), i );
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), i );
+            PCL_IVDEP
             for ( int j = 0; j < h; ++j, f += m_width )
                P::Fill( f, v, w );
          }
@@ -7959,8 +7961,9 @@ public:
       else
          for ( int i = firstChannel, c = 0, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, ++c, m_status += N )
          {
-            sample* f = PixelAddress( r.LeftTop(), i );
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), i );
             sample v = (c < values.Length()) ? P::ToSample( values[c] ) : P::MinSampleValue();
+            PCL_IVDEP
             for ( int j = 0; j < h; ++j, f += m_width )
                P::Fill( f, v, w );
          }
@@ -8110,18 +8113,25 @@ public:
          m_status.Initialize( "Inverting pixel samples", N*(1 + lastChannel - firstChannel) );
 
       sample v = P::ToSample( scalar );
-
       if ( r == Bounds() )
          for ( int i = firstChannel; i <= lastChannel; ++i, m_status += N )
-            for ( sample* f = m_pixelData[i], * f1 = f+N; f < f1; ++f )
+         {
+            sample* __restrict__ f = m_pixelData[i];
+            PCL_IVDEP
+            for ( size_type j = 0; j < N; ++j, ++f )
                *f = v - *f;
+         }
       else
          for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
          {
-            sample* f = PixelAddress( r.LeftTop(), i );
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), i );
+            PCL_IVDEP
             for ( int j = 0; j < h; ++j, f += m_width-w )
-               for ( sample* f1 = f+w; f < f1; ++f )
+            {
+               PCL_IVDEP
+               for ( int k = 0; k < w; ++k, ++f )
                   *f = v - *f;
+            }
          }
 
       return *this;
@@ -8224,15 +8234,23 @@ public:
 
       if ( r == Bounds() )
          for ( int i = firstChannel; i <= lastChannel; ++i, m_status += N )
-            for ( sample* f = m_pixelData[i], * f1 = f+N; f < f1; ++f )
+         {
+            sample* __restrict__ f = m_pixelData[i];
+            PCL_IVDEP
+            for ( size_type j = 0; j < N; ++j, ++f )
                P::Not( *f );
+         }
       else
          for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
          {
-            sample* f = PixelAddress( r.LeftTop(), i );
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), i );
+            PCL_IVDEP
             for ( int j = 0; j < h; ++j, f += m_width-w )
-               for ( sample* f1 = f+w; f < f1; ++f )
+            {
+               PCL_IVDEP
+               for ( int k = 0; k < w; ++k, ++f )
                   P::Not( *f );
+            }
          }
 
       return *this;
@@ -8276,7 +8294,9 @@ public:
       if ( r == Bounds() )
          for ( int i = firstChannel; i <= lastChannel; ++i, m_status += N )
          {
-            for ( sample* f = m_pixelData[i], * f1 = f+N; f < f1; ++f )
+            sample* __restrict__ f = m_pixelData[i];
+            PCL_IVDEP
+            for ( size_type j = 0; j < N; ++j, ++f )
                if ( *f < b0 )
                   *f = b0;
                else if ( b1 < *f )
@@ -8285,13 +8305,17 @@ public:
       else
          for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
          {
-            sample* f = PixelAddress( r.LeftTop(), i );
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), i );
+            PCL_IVDEP
             for ( int j = 0; j < h; ++j, f += m_width-w )
-               for ( sample* f1 = f+w; f < f1; ++f )
+            {
+               PCL_IVDEP
+               for ( int k = 0; k < w; ++k, ++f )
                   if ( *f < b0 )
                      *f = b0;
                   else if ( b1 < *f )
                      *f = b1;
+            }
          }
 
       return *this;
@@ -8410,7 +8434,6 @@ public:
 
       sample v0, v1;
       GetExtremePixelValues( v0, v1, r, firstChannel, lastChannel );
-
       if ( v0 == b0 && v1 == b1 )
       {
          m_status += Ns;
@@ -8427,48 +8450,72 @@ public:
       if ( r == Bounds() )
          for ( int i = firstChannel; i <= lastChannel; ++i, m_status += N )
          {
-            if ( v0 != v1 )
-            {
-               if ( b0 != b1 )
-               {
-                  if ( b0 == sample( 0 ) )
-                     for ( sample* f = m_pixelData[i], * f1 = f+N; f < f1; ++f )
-                        *f = P::FloatToSample( d*(*f - v0) );
-                  else
-                     for ( sample* f = m_pixelData[i], * f1 = f+N; f < f1; ++f )
-                        *f = P::FloatToSample( d*(*f - v0) + b0 );
-               }
-               else
-                  P::Fill( m_pixelData[i], b0, N );
-            }
-            else
-               P::Fill( m_pixelData[i], pcl::Range( v0, b0, b1 ), N );
-         }
-      else
-         for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
-         {
-            sample* f = PixelAddress( r.LeftTop(), i );
+            sample* __restrict__ f = m_pixelData[i];
 
             if ( v0 != v1 )
             {
                if ( b0 != b1 )
                {
                   if ( b0 == sample( 0 ) )
-                     for ( int j = 0; j < h; ++j, f += m_width-w )
-                        for ( sample* f1 = f+w; f < f1; ++f )
-                           *f = P::FloatToSample( d*(*f - v0) );
+                  {
+                     PCL_IVDEP
+                     for ( size_type j = 0; j < N; ++j, ++f )
+                        *f = P::FloatToSample( d*(*f - v0) );
+                  }
                   else
-                     for ( int j = 0; j < h; ++j, f += m_width-w )
-                        for ( sample* f1 = f+w; f < f1; ++f )
-                           *f = P::FloatToSample( d*(*f - v0) + b0 );
+                  {
+                     PCL_IVDEP
+                     for ( size_type j = 0; j < N; ++j, ++f )
+                        *f = P::FloatToSample( d*(*f - v0) + b0 );
+                  }
                }
                else
+                  P::Fill( f, b0, N );
+            }
+            else
+               P::Fill( f, pcl::Range( v0, b0, b1 ), N );
+         }
+      else
+         for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
+         {
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), i );
+
+            if ( v0 != v1 )
+            {
+               if ( b0 != b1 )
+               {
+                  if ( b0 == sample( 0 ) )
+                  {
+                     PCL_IVDEP
+                     for ( int j = 0; j < h; ++j, f += m_width-w )
+                     {
+                        PCL_IVDEP
+                        for ( int k = 0; k < w; ++k, ++f )
+                           *f = P::FloatToSample( d*(*f - v0) );
+                     }
+                  }
+                  else
+                  {
+                     PCL_IVDEP
+                     for ( int j = 0; j < h; ++j, f += m_width-w )
+                     {
+                        PCL_IVDEP
+                        for ( int k = 0; k < w; ++k, ++f )
+                           *f = P::FloatToSample( d*(*f - v0) + b0 );
+                     }
+                  }
+               }
+               else
+               {
+                  PCL_IVDEP
                   for ( int j = 0; j < h; ++j, f += m_width )
                      P::Fill( f, b0, w );
+               }
             }
             else
             {
                sample v = pcl::Range( v0, b0, b1 );
+               PCL_IVDEP
                for ( int j = 0; j < h; ++j, f += m_width )
                   P::Fill( f, v, w );
             }
@@ -8608,48 +8655,72 @@ public:
       if ( r == Bounds() )
          for ( int i = firstChannel; i <= lastChannel; ++i, m_status += N )
          {
-            if ( v0 != v1 )
-            {
-               if ( b0 != b1 )
-               {
-                  if ( b0 == sample( 0 ) )
-                     for ( sample* f = m_pixelData[i], * f1 = f+N; f < f1; ++f )
-                        *f = P::FloatToSample( d*(*f - v0) );
-                  else
-                     for ( sample* f = m_pixelData[i], * f1 = f+N; f < f1; ++f )
-                        *f = P::FloatToSample( d*(*f - v0) + b0 );
-               }
-               else
-                  P::Fill( m_pixelData[i], b0, N );
-            }
-            else
-               P::Fill( m_pixelData[i], pcl::Range( v0, b0, b1 ), N );
-         }
-      else
-         for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
-         {
-            sample* f = PixelAddress( r.LeftTop(), i );
+            sample* __restrict__ f = m_pixelData[i];
 
             if ( v0 != v1 )
             {
                if ( b0 != b1 )
                {
                   if ( b0 == sample( 0 ) )
-                     for ( int j = 0; j < h; ++j, f += m_width-w )
-                        for ( sample* f1 = f+w; f < f1; ++f )
-                           *f = P::FloatToSample( d*(*f - v0) );
+                  {
+                     PCL_IVDEP
+                     for ( size_type j = 0; j < N; ++j, ++f )
+                        *f = P::FloatToSample( d*(*f - v0) );
+                  }
                   else
-                     for ( int j = 0; j < h; ++j, f += m_width-w )
-                        for ( sample* f1 = f+w; f < f1; ++f )
-                           *f = P::FloatToSample( d*(*f - v0) + b0 );
+                  {
+                     PCL_IVDEP
+                     for ( size_type j = 0; j < N; ++j, ++f )
+                        *f = P::FloatToSample( d*(*f - v0) + b0 );
+                  }
                }
                else
+                  P::Fill( f, b0, N );
+            }
+            else
+               P::Fill( f, pcl::Range( v0, b0, b1 ), N );
+         }
+      else
+         for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
+         {
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), i );
+
+            if ( v0 != v1 )
+            {
+               if ( b0 != b1 )
+               {
+                  if ( b0 == sample( 0 ) )
+                  {
+                     PCL_IVDEP
+                     for ( int j = 0; j < h; ++j, f += m_width-w )
+                     {
+                        PCL_IVDEP
+                        for ( int k = 0; k < w; ++k, ++f )
+                           *f = P::FloatToSample( d*(*f - v0) );
+                     }
+                  }
+                  else
+                  {
+                     PCL_IVDEP
+                     for ( int j = 0; j < h; ++j, f += m_width-w )
+                     {
+                        PCL_IVDEP
+                        for ( int k = 0; k < w; ++k, ++f )
+                           *f = P::FloatToSample( d*(*f - v0) + b0 );
+                     }
+                  }
+               }
+               else
+               {
+                  PCL_IVDEP
                   for ( int j = 0; j < h; ++j, f += m_width )
                      P::Fill( f, b0, w );
+               }
             }
             else
             {
                sample v = pcl::Range( v0, b0, b1 );
+               PCL_IVDEP
                for ( int j = 0; j < h; ++j, f += m_width )
                   P::Fill( f, v, w );
             }
@@ -8765,15 +8836,23 @@ public:
 
       if ( r == Bounds() )
          for ( int i = firstChannel; i <= lastChannel; ++i, m_status += N )
-            for ( sample* f = m_pixelData[i], * f1 = f+N; f < f1; ++f )
+         {
+            sample* __restrict__ f = m_pixelData[i];
+            PCL_IVDEP
+            for ( size_type j = 0; j < N; ++j, ++f )
                *f = (*f < t) ? P::MinSampleValue() : P::MaxSampleValue();
+         }
       else
          for ( int c = firstChannel, w = r.Width(), h = r.Height(); c <= lastChannel; ++c, m_status += N )
          {
-            sample* f = PixelAddress( r.LeftTop(), c );
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), c );
+            PCL_IVDEP
             for ( int j = 0; j < h; ++j, f += m_width-w )
-               for ( sample* f1 = f+w; f < f1; ++f )
+            {
+               PCL_IVDEP
+               for ( int k = 0; k < w; ++k, ++f )
                   *f = (*f < t) ? P::MinSampleValue() : P::MaxSampleValue();
+            }
          }
 
       return *this;
@@ -8864,15 +8943,23 @@ public:
 
       if ( r == Bounds() )
          for ( int i = firstChannel; i <= lastChannel; ++i, m_status += N )
-            for ( sample* f = m_pixelData[i], * f1 = f+N; f < f1; ++f )
+         {
+            sample* __restrict__ f = m_pixelData[i];
+            PCL_IVDEP
+            for ( size_type j = 0; j < N; ++j, ++f )
                *f = pcl::Abs( *f );
+         }
       else
          for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
          {
-            sample* f = PixelAddress( r.LeftTop(), i );
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), i );
+            PCL_IVDEP
             for ( int j = 0; j < h; ++j, f += m_width-w )
-               for ( sample* f1 = f+w; f < f1; ++f )
+            {
+               PCL_IVDEP
+               for ( int k = 0; k < w; ++k, ++f )
                   *f = pcl::Abs( *f );
+            }
          }
 
       return *this;
@@ -8933,9 +9020,10 @@ public:
       if ( r == Bounds() )
          for ( int i = firstChannel; i <= lastChannel; ++i, m_status += N )
          {
-            sample* f = m_pixelData[i];
+            sample* __restrict__ f = m_pixelData[i];
 #define ITERATE( Op )                                       \
-            for ( sample* f1 = f+N; f < f1; ++f )           \
+            PCL_IVDEP                                       \
+            for ( size_type j = 0; j < N; ++j, ++f )        \
                P::Op( *f, scalar )
             switch ( op )
             {
@@ -8973,11 +9061,15 @@ public:
       else
          for ( int i = firstChannel, w = r.Width(), h = r.Height(); i <= lastChannel; ++i, m_status += N )
          {
-            sample* f = PixelAddress( r.LeftTop(), i );
+            sample* __restrict__ f = PixelAddress( r.LeftTop(), i );
 #define ITERATE( Op )                                       \
+            PCL_IVDEP                                       \
             for ( int j = 0; j < h; ++j, f += m_width-w )   \
-               for ( sample* f1 = f+w; f < f1; ++f )        \
-                  P::Op( *f, scalar )
+            {                                               \
+               PCL_IVDEP                                    \
+               for ( int k = 0; k < w; ++k, ++f )           \
+                  P::Op( *f, scalar );                      \
+            }
             switch ( op )
             {
             case ImageOp::Mov:         ITERATE( Mov         ); break;
@@ -9197,11 +9289,12 @@ public:
       if ( r == Bounds() && r == image.Bounds() )
          for ( int i = channel, j = firstChannel; j <= lastChannel; ++i, ++j, m_status += N )
          {
-            sample* f = m_pixelData[i];
-            const typename P1::sample* g = image[j];
+            sample* __restrict__ f = m_pixelData[i];
+            const typename P1::sample* __restrict__ g = image[j];
 
-#define ITERATE( Op )                                       \
-            for ( sample* f1 = f+N; f < f1; ++f, ++g )      \
+#define ITERATE( Op )                                          \
+            PCL_IVDEP                                          \
+            for ( size_type k = 0; k < N; ++k, ++f, ++g )      \
                P::Op( *f, *g )
             switch ( op )
             {
@@ -9221,7 +9314,7 @@ public:
                case ImageOp::Sub:         ITERATE( Sub         ); break;
                case ImageOp::Mul:         ITERATE( Mul         ); break;
                case ImageOp::Div:
-                  for ( sample* f1 = f+N; f < f1; ++f, ++g )
+                  for ( size_type j = 0; j < N; ++j, ++f, ++g )
                      if ( *g != 0 )
                         P::Div( *f, *g );
                      else
@@ -9256,13 +9349,17 @@ public:
       else
          for ( int i = channel, j = firstChannel, w = r.Width(), h = r.Height(); j <= lastChannel; ++i, ++j, m_status += N )
          {
-            sample* f = PixelAddress( p, i );
-            const typename P1::sample* g = image.PixelAddress( r.LeftTop(), j );
+            sample* __restrict__ f = PixelAddress( p, i );
+            const typename P1::sample* __restrict__ g = image.PixelAddress( r.LeftTop(), j );
 
 #define ITERATE( Op )                                                            \
+            PCL_IVDEP                                                            \
             for ( int k = 0; k < h; ++k, f += m_width-w, g += image.Width()-w )  \
-               for ( sample* f1 = f+w; f < f1; ++f, ++g )                        \
-                  P::Op( *f, *g )
+            {                                                                    \
+               PCL_IVDEP                                                         \
+               for ( int l = 0; l < w; ++l, ++f, ++g )                           \
+                  P::Op( *f, *g );                                               \
+            }
             switch ( op )
             {
             case ImageOp::Mov:
@@ -9281,12 +9378,16 @@ public:
             case ImageOp::Sub:         ITERATE( Sub         ); break;
             case ImageOp::Mul:         ITERATE( Mul         ); break;
             case ImageOp::Div:
+               PCL_IVDEP
                for ( int k = 0; k < h; ++k, f += m_width-w, g += image.Width()-w )
-                  for ( sample* f1 = f+w; f < f1; ++f, ++g )
+               {
+                  PCL_IVDEP
+                  for ( int l = 0; l < w; ++l, ++f, ++g )
                      if ( *g != 0 )
                         P::Div( *f, *g );
                      else
                         *f = P::MaxSampleValue();
+               }
                break;
             case ImageOp::Pow:         ITERATE( Pow         ); break;
             case ImageOp::Dif:         ITERATE( Dif         ); break;
@@ -9524,7 +9625,10 @@ public:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Blending RGBA bitmap", size_type( w )*size_type( h ) );
 
-         sample* fR = 0, * fG = 0, * fB = 0, * fA = 0;
+         sample* __restrict__ fR = nullptr;
+         sample* __restrict__ fG = nullptr;
+         sample* __restrict__ fB = nullptr;
+         sample* __restrict__ fA = nullptr;
 
          for ( int i = 0; i < h; ++i, ++p.y, m_status += w )
          {
@@ -9534,7 +9638,7 @@ public:
             if ( hasAlpha )
                fA = PixelAddress( p, 3 );
 
-            const RGBA* g = bitmap.ScanLine( r.y0 + i ) + r.x0;
+            const RGBA* __restrict__ g = bitmap.ScanLine( r.y0 + i ) + r.x0;
 
             for ( int j = 0; j < w; ++j, ++fR, ++fG, ++fB, ++fA, ++g )
             {
@@ -9575,7 +9679,8 @@ public:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Blending grayscale bitmap", size_type( w )*size_type( h ) );
 
-         sample* fK = 0, * fA = 0;
+         sample* __restrict__ fK = nullptr;
+         sample* __restrict__ fA = nullptr;
 
          for ( int i = 0; i < h; ++i, ++p.y, m_status += w )
          {
@@ -9583,7 +9688,7 @@ public:
             if ( hasAlpha )
                fA = PixelAddress( p, 1 );
 
-            const RGBA* g = bitmap.ScanLine( r.y0 + i ) + r.x0;
+            const RGBA* __restrict__ g = bitmap.ScanLine( r.y0 + i ) + r.x0;
 
             for ( int j = 0; j < w; ++j, ++fK, ++fA, ++g )
             {
@@ -10666,9 +10771,10 @@ public:
       if ( r == Bounds() && r == image.Bounds() )
          for ( int i = channel, j = firstChannel; j <= lastChannel; ++i, ++j, m_status += N )
          {
-            sample* f = m_pixelData[i];
-            typename P1::sample* g = image[j];
-            for ( sample* f1 = f+N; f < f1; ++f, ++g )
+            sample* __restrict__ f = m_pixelData[i];
+            typename P1::sample* __restrict__ g = image[j];
+            PCL_IVDEP
+            for ( size_type k = 0; k < N; ++k, ++f, ++g )
             {
                sample t = *f;
                P1::FromSample( *f, *g );
@@ -10678,15 +10784,19 @@ public:
       else
          for ( int i = channel, j = firstChannel, w = r.Width(), h = r.Height(); j <= lastChannel; ++i, ++j, m_status += N )
          {
-            sample* f = PixelAddress( p, i );
-            typename P1::sample* g = image.PixelAddress( r.LeftTop(), j );
+            sample* __restrict__ f = PixelAddress( p, i );
+            typename P1::sample* __restrict__ g = image.PixelAddress( r.LeftTop(), j );
+            PCL_IVDEP
             for ( int k = 0; k < h; ++k, f += m_width-w, g += image.Width()-w )
-               for ( sample* f1 = f+w; f < f1; ++f, ++g )
+            {
+               PCL_IVDEP
+               for ( int l = 0; l < w; ++l, ++f, ++g )
                {
                   sample t = *f;
                   P1::FromSample( *f, *g );
                   P::FromSample( *g, t );
                }
+            }
          }
 
       return *this;
@@ -13274,11 +13384,11 @@ __madNextSide:
     * For information on the rest of parameters of this member function, see
     * the documentation for Fill().
     */
-   uint64 Hash64( int channel = -1, uint64 seed = 0 ) const
+   uint64 Hash64( int channel = -1, uint64 seed = 0 ) const noexcept
    {
       if ( !ParseChannel( channel ) )
          return 0;
-      return pcl::Hash64( m_pixelData[channel], ChannelSize(), seed );
+      return pcl::Hash64( m_channelData( channel ), ChannelSize(), seed );
    }
 
    /*!
@@ -13293,18 +13403,18 @@ __madNextSide:
     * For information on the rest of parameters of this member function, see
     * the documentation for Fill().
     */
-   uint32 Hash32( int channel = -1, uint32 seed = 0 ) const
+   uint32 Hash32( int channel = -1, uint32 seed = 0 ) const noexcept
    {
       if ( !ParseChannel( channel ) )
          return 0;
-      return pcl::Hash32( m_pixelData[channel], ChannelSize(), seed );
+      return pcl::Hash32( m_channelData( channel ), ChannelSize(), seed );
    }
 
    /*!
     * Returns a non-cryptographic hash value computed for the specified
     * \a channel of this image. This function is a synonym for Hash64().
     */
-   uint64 Hash( int channel = -1, uint64 seed = 0 ) const
+   uint64 Hash( int channel = -1, uint64 seed = 0 ) const noexcept
    {
       return Hash64( channel, seed );
    }
@@ -13524,15 +13634,19 @@ __madNextSide:
 
          for ( int c = 0; c < m_numberOfChannels; ++c, m_status += N )
          {
-            sample* f = newData[c] = m_allocator.AllocatePixels( N );
+            sample* __restrict__ f = newData[c] = m_allocator.AllocatePixels( N );
             sample v = (c < fillValues.Length()) ? P::ToSample( fillValues[c] ) : P::MinSampleValue();
 
             for ( int i = r.y0, j; i < r.y1; )
             {
                for ( ; i < 0; ++i )
+               {
+                  PCL_IVDEP
                   for ( int j = 0; j < width; ++j )
                      *f++ = v;
+               }
 
+               PCL_IVDEP
                for ( j = r.x0; j < 0; ++j )
                   *f++ = v;
 
@@ -13540,14 +13654,20 @@ __madNextSide:
                {
                   *f++ = *f0++;
                   if ( ++j == m_width )
+                  {
+                     PCL_IVDEP
                      for ( ; j < r.x1; ++j )
                         *f++ = v;
+                  }
                }
 
                if ( ++i == m_height )
                   for ( ; i < r.y1; ++i )
+                  {
+                     PCL_IVDEP
                      for ( int j = 0; j < width; ++j )
                         *f++ = v;
+                  }
             }
          }
 
@@ -14243,13 +14363,16 @@ __madNextSide:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Transferring pixel data", N );
 
-         typename GenericImage<P1>::sample* g = *Y;
+         typename GenericImage<P1>::sample* __restrict__ g = *Y;
          int cY = (m_colorSpace == ColorSpace::Gray) ? 0 : 1;
          if ( r == Bounds() )
-            P1::Copy( g, m_pixelData[cY], N );
+         {
+            const sample* __restrict__ f = m_pixelData[cY];
+            P1::Copy( g, f, N );
+         }
          else
          {
-            const sample* f = PixelAddress( r.LeftTop(), cY );
+            const sample* __restrict__ f = PixelAddress( r.LeftTop(), cY );
             for ( int i = 0; i < Y.Height(); ++i, f += m_width, g += Y.Width() )
                P1::Copy( g, f, Y.Width() );
          }
@@ -14374,10 +14497,13 @@ __madNextSide:
 
          typename GenericImage<P1>::sample* g = *L;
          if ( r == Bounds() )
-            P1::Copy( g, *m_pixelData, N );
+         {
+            const sample* __restrict__ f = *m_pixelData;
+            P1::Copy( g, f, N );
+         }
          else
          {
-            const sample* f = PixelAddress( r.LeftTop() );
+            const sample* __restrict__ f = PixelAddress( r.LeftTop() );
             for ( int i = 0; i < L.Height(); ++i, f += m_width, g += L.Width() )
                P1::Copy( g, f, L.Width() );
          }
@@ -14492,13 +14618,16 @@ __madNextSide:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Transferring pixel data", N );
 
-         typename GenericImage<P1>::sample* g = *I;
+         typename GenericImage<P1>::sample* __restrict__ g = *I;
          int cI = (m_colorSpace == ColorSpace::Gray) ? 0 : 2;
          if ( r == Bounds() )
-            P1::Copy( g, m_pixelData[cI], N );
+         {
+            const sample* __restrict__ f = m_pixelData[cI];
+            P1::Copy( g, f, N );
+         }
          else
          {
-            const sample* f = PixelAddress( r.LeftTop(), cI );
+            const sample* __restrict__ f = PixelAddress( r.LeftTop(), cI );
             for ( int i = 0; i < I.Height(); ++i, f += m_width, g += I.Width() )
                P1::Copy( g, f, I.Width() );
          }
@@ -14639,8 +14768,8 @@ __madNextSide:
             m_status.Initialize( "Transferring pixel data", N );
 
          int c0 = (Y.ColorSpace() == ColorSpace::Gray) ? 0 : 1;
-         const typename GenericImage<P1>::sample* g = Y.PixelAddress( r.LeftTop(), c0 );
-         sample* f = PixelAddress( p );
+         const typename GenericImage<P1>::sample* __restrict__ g = Y.PixelAddress( r.LeftTop(), c0 );
+         sample* __restrict__ f = PixelAddress( p );
          for ( int i = 0, w = r.Width(), h = r.Height(); i < h; ++i, f += m_width, g += Y.Width(), m_status += w )
             P::Copy( f, g, w );
       }
@@ -14780,8 +14909,8 @@ __madNextSide:
          if ( m_status.IsInitializationEnabled() )
             m_status.Initialize( "Transferring pixel data", N );
 
-         const typename GenericImage<P1>::sample* g = L.PixelAddress( r.LeftTop() );
-         sample* f = PixelAddress( p );
+         const typename GenericImage<P1>::sample* __restrict__ g = L.PixelAddress( r.LeftTop() );
+         sample* __restrict__ f = PixelAddress( p );
          for ( int i = 0, w = r.Width(), h = r.Height(); i < h; ++i, f += m_width, g += L.Width(), m_status += w )
             P::Copy( f, g, w );
       }
@@ -14864,7 +14993,7 @@ __madNextSide:
       if ( !ParseSelection( r, channel ) )
          return Compression::subblock_list();
       if ( r == Bounds() )
-         return compressor.Compress( m_pixelData[channel], ChannelSize(), perf );
+         return compressor.Compress( m_channelData( channel ), ChannelSize(), perf );
       GenericImage<P> subimage( *this, r, channel, channel );
       return compressor.Compress( subimage[0], subimage.ChannelSize(), perf );
    }
@@ -14953,12 +15082,12 @@ private:
             Deallocate();
       }
 
-      bool IsShared() const
+      bool IsShared() const noexcept
       {
          return allocator.IsShared();
       }
 
-      bool IsEmpty() const
+      bool IsEmpty() const noexcept
       {
          return data == nullptr;
       }
@@ -15234,7 +15363,16 @@ private:
       {
       }
 
-      void Run() override
+      virtual void Run() = 0;
+
+   protected:
+
+      const GenericImage& m_image;
+      const Rect&         m_rect;
+            int           m_ch1, m_ch2;
+            int           m_firstRow, m_endRow;
+
+      template <class F> void Execute( F process ) noexcept
       {
          int w = m_rect.Width();
          int dw = m_image.Width() - w;
@@ -15247,23 +15385,29 @@ private:
                sample clipHigh = P::ToSample( m_image.RangeClipHigh() );
                for ( int i = m_ch1; i <= m_ch2; ++i )
                {
-                  const sample* f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
+                  const sample* __restrict__ f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
                   for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
-                     for ( const sample* f1 = f+w; f < f1; ++f )
+                  {
+                     PCL_IVDEP
+                     for ( int k = 0; k < w; ++k, ++f )
                         if ( clipLow < *f )
                            if ( *f < clipHigh )
-                              Perform( f );
+                              process( f );
+                  }
                }
             }
             else
             {
                for ( int i = m_ch1; i <= m_ch2; ++i )
                {
-                  const sample* f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
+                  const sample* __restrict__ f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
                   for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
-                     for ( const sample* f1 = f+w; f < f1; ++f )
+                  {
+                     PCL_IVDEP
+                     for ( int k = 0; k < w; ++k, ++f )
                         if ( clipLow < *f )
-                           Perform( f );
+                           process( f );
+                  }
                }
             }
          }
@@ -15272,36 +15416,30 @@ private:
             sample clipHigh = P::ToSample( m_image.RangeClipHigh() );
             for ( int i = m_ch1; i <= m_ch2; ++i )
             {
-               const sample* f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
+               const sample* __restrict__ f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
                for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
-                  for ( const sample* f1 = f+w; f < f1; ++f )
+               {
+                  PCL_IVDEP
+                  for ( int k = 0; k < w; ++k, ++f )
                      if ( *f < clipHigh )
-                        Perform( f );
+                        process( f );
+               }
             }
          }
          else
          {
             for ( int i = m_ch1; i <= m_ch2; ++i )
             {
-               const sample* f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
+               const sample* __restrict__ f = m_image.PixelAddress( m_rect.x0, m_rect.y0+m_firstRow, i );
                for ( int j = m_firstRow; j < m_endRow; ++j, f += dw )
-                  for ( const sample* f1 = f+w; f < f1; ++f )
-                     Perform( f );
+               {
+                  PCL_IVDEP
+                  for ( int k = 0; k < w; ++k, ++f )
+                     process( f );
+               }
             }
          }
-
-         PostProcess();
       }
-
-   protected:
-
-      const GenericImage& m_image;
-      const Rect&         m_rect;
-            int           m_ch1, m_ch2;
-            int           m_firstRow, m_endRow;
-
-      virtual void Perform( const sample* ) {} // not pure because of VC++ 'peculiarities'
-      virtual void PostProcess() {}
    };
 
    // -------------------------------------------------------------------------
@@ -15317,7 +15455,7 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          /*
           * N.B. These threads are only used when range clipping is enabled.
@@ -15333,23 +15471,29 @@ private:
                sample clipHigh = P::ToSample( this->m_image.RangeClipHigh() );
                for ( int i = this->m_ch1; i <= this->m_ch2; ++i )
                {
-                  const sample* f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
+                  const sample* __restrict__ f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
                   for ( int j = this->m_firstRow; j < this->m_endRow; ++j, f += dw )
-                     for ( const sample* f1 = f+w; f < f1; ++f )
+                  {
+                     PCL_IVDEP
+                     for ( int k = 0; k < w; ++k, ++f )
                         if ( clipLow < *f )
                            if ( *f < clipHigh )
                               ++count;
+                  }
                }
             }
             else
             {
                for ( int i = this->m_ch1; i <= this->m_ch2; ++i )
                {
-                  const sample* f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
+                  const sample* __restrict__ f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
                   for ( int j = this->m_firstRow; j < this->m_endRow; ++j, f += dw )
-                     for ( const sample* f1 = f+w; f < f1; ++f )
+                  {
+                     PCL_IVDEP
+                     for ( int k = 0; k < w; ++k, ++f )
                         if ( clipLow < *f )
                            ++count;
+                  }
                }
             }
          }
@@ -15358,11 +15502,14 @@ private:
             sample clipHigh = P::ToSample( this->m_image.RangeClipHigh() );
             for ( int i = this->m_ch1; i <= this->m_ch2; ++i )
             {
-               const sample* f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
+               const sample* __restrict__ f = this->m_image.PixelAddress( this->m_rect.x0, this->m_rect.y0+this->m_firstRow, i );
                for ( int j = this->m_firstRow; j < this->m_endRow; ++j, f += dw )
-                  for ( const sample* f1 = f+w; f < f1; ++f )
+               {
+                  PCL_IVDEP
+                  for ( int k = 0; k < w; ++k, ++f )
                      if ( *f < clipHigh )
                         ++count;
+               }
             }
          }
          else // ?! this should not happen
@@ -15377,24 +15524,23 @@ private:
    public:
 
       sample min;
-      size_type count = 0;
+      size_type count;
 
       MinThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
-   private:
-
-      void Perform( const sample* f ) override
+      void Run() final
       {
-         if ( count++ > 0 )
-         {
-            if ( *f < min )
-               min = *f;
-         }
-         else
-            min = *f;
+         min = P::HighestSampleValue();
+         count = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               if ( *f < min )
+                  min = *f;
+               ++count;
+            } );
       }
    };
 
@@ -15405,24 +15551,23 @@ private:
    public:
 
       sample max;
-      size_type count = 0;
+      size_type count;
 
       MaxThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
-   private:
-
-      void Perform( const sample* f ) override
+      void Run() final
       {
-         if ( count++ > 0 )
-         {
-            if ( max < *f )
-               max = *f;
-         }
-         else
-            max = *f;
+         max = P::LowestSampleValue();
+         count = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               if ( max < *f )
+                  max = *f;
+               ++count;
+            } );
       }
    };
 
@@ -15434,26 +15579,26 @@ private:
 
       sample min;
       sample max;
-      size_type count = 0;
+      size_type count;
 
       MinMaxThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
-   private:
-
-      void Perform( const sample* f ) override
+      void Run() final
       {
-         if ( count++ > 0 )
-         {
-            if ( *f < min )
-               min = *f;
-            else if ( *f > max )
-               max = *f;
-         }
-         else
-            min = max = *f;
+         min = P::HighestSampleValue();
+         max = P::LowestSampleValue();
+         count = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               if ( *f < min )
+                  min = *f;
+               if ( max < *f )
+                  max = *f;
+               ++count;
+            } );
       }
    };
 
@@ -15465,20 +15610,19 @@ private:
 
       int cmin, cmax;
       Point pmin, pmax;
-      size_type count = 0;
+      size_type count;
 
       ExtremePosThreadBase( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
-   protected:
-
-      const sample* m_amin = nullptr;
-      const sample* m_amax = nullptr;
-
-      void PostProcess() override
+      void Run() final
       {
+         count = 0;
+         m_amin = m_amax = nullptr;
+         DoExecute();
+
          if ( count > 0 )
          {
             if ( m_amin != 0 )
@@ -15501,6 +15645,13 @@ private:
                   }
          }
       }
+
+   protected:
+
+      const sample* m_amin;
+      const sample* m_amax;
+
+      virtual void DoExecute() = 0;
    };
 
    // -------------------------------------------------------------------------
@@ -15518,15 +15669,15 @@ private:
 
    private:
 
-      void Perform( const sample* f ) override
+      void DoExecute() override
       {
-         if ( this->count++ > 0 )
-         {
-            if ( *f < min )
-               min = *(this->m_amin = f);
-         }
-         else
-            min = *(this->m_amin = f);
+         min = P::HighestSampleValue();
+         this->Execute( [=]( const sample* f )
+            {
+               if ( *f < min )
+                  min = *(this->m_amin = f);
+               ++this->count;
+            } );
       }
    };
 
@@ -15545,15 +15696,15 @@ private:
 
    private:
 
-      void Perform( const sample* f ) override
+      void DoExecute() override
       {
-         if ( this->count++ > 0 )
-         {
-            if ( max < *f )
-               max = *(this->m_amax = f);
-         }
-         else
-            max = *(this->m_amax = f);
+         max = P::LowestSampleValue();
+         this->Execute( [=]( const sample* f )
+            {
+               if ( max < *f )
+                  max = *(this->m_amax = f);
+               ++this->count;
+            } );
       }
    };
 
@@ -15572,17 +15723,18 @@ private:
 
    private:
 
-      void Perform( const sample* f ) override
+      void DoExecute() override
       {
-         if ( this->count++ > 0 )
-         {
-            if ( *f < min )
-               min = *(this->m_amin = f);
-            else if ( max < *f )
-               max = *(this->m_amax = f);
-         }
-         else
-            min = max = *(this->m_amin = this->m_amax = f);
+         min = P::HighestSampleValue();
+         max = P::LowestSampleValue();
+         this->Execute( [=]( const sample* f )
+            {
+               if ( *f < min )
+                  min = *(this->m_amin = f);
+               if ( max < *f )
+                  max = *(this->m_amax = f);
+               ++this->count;
+            } );
       }
    };
 
@@ -15592,19 +15744,26 @@ private:
    {
    public:
 
-      double s = 0;
-      size_type n = 0;
+      double s;
+      size_type n;
 
       SumThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
       {
       }
 
+      void Run() final
+      {
+         s = e = 0;
+         n = 0;
+         DoExecute();
+      }
+
    protected:
 
-      double e = 0;
+      double e;
 
-      void SumStep( double x )
+      void SumStep( double x ) noexcept
       {
          double y = x - e;
          double t = s + y;
@@ -15613,10 +15772,13 @@ private:
          ++n;
       }
 
-      void Perform( const sample* f ) override
+      virtual void DoExecute()
       {
-         double v; P::FromSample( v, *f );
-         SumStep( v );
+         this->Execute( [=]( const sample* f )
+            {
+               double v; P::FromSample( v, *f );
+               SumStep( v );
+            } );
       }
    };
 
@@ -15633,10 +15795,13 @@ private:
 
    private:
 
-      void Perform( const sample* f ) override
+      void DoExecute() override
       {
-         double v; P::FromSample( v, *f );
-         this->SumStep( v*v );
+         this->Execute( [=]( const sample* f )
+            {
+               double v; P::FromSample( v, *f );
+               this->SumStep( v*v );
+            } );
       }
    };
 
@@ -15653,10 +15818,13 @@ private:
 
    private:
 
-      void Perform( const sample* f ) override
+      void DoExecute() override
       {
-         double v; P::FromSample( v, *f );
-         this->SumStep( pcl::Abs( v ) );
+         this->Execute( [=]( const sample* f )
+            {
+               double v; P::FromSample( v, *f );
+               this->SumStep( pcl::Abs( v ) );
+            } );
       }
    };
 
@@ -15677,11 +15845,16 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          H = size_type( 0 );
          m_range = m_high - m_low;
-         RectThreadBase::Run();
+         this->Execute( [=]( const sample* f )
+            {
+               if ( *f >= m_low )
+                  if ( *f <= m_high )
+                     ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (double( *f ) - m_low)/m_range )];
+            } );
       }
 
    private:
@@ -15689,13 +15862,6 @@ private:
       const double& m_low;
       const double& m_high;
       double        m_range;
-
-      void Perform( const sample* f ) override
-      {
-         if ( *f >= m_low )
-            if ( *f <= m_high )
-               ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (double( *f ) - m_low)/m_range )];
-      }
    };
 
    // -------------------------------------------------------------------------
@@ -15705,7 +15871,7 @@ private:
    public:
 
       double minAbsDev, maxAbsDev;
-      size_type count = 0;
+      size_type count;
 
       ExtremeAbsDevThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow, double center )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
@@ -15713,24 +15879,26 @@ private:
       {
       }
 
+      void Run() final
+      {
+         minAbsDev = std::numeric_limits<double>::max();
+         maxAbsDev = 0;
+         count = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               double d; P::FromSample( d, *f );
+               d = pcl::Abs( d - m_center );
+               if ( d < minAbsDev )
+                  minAbsDev = d;
+               if ( d > maxAbsDev )
+                  maxAbsDev = d;
+               ++count;
+            } );
+      }
+
    private:
 
       double m_center;
-
-      void Perform( const sample* f ) override
-      {
-         double d; P::FromSample( d, *f );
-         d = pcl::Abs( d - m_center );
-         if ( count++ > 0 )
-         {
-            if ( d < minAbsDev )
-               minAbsDev = d;
-            else if ( d > maxAbsDev )
-               maxAbsDev = d;
-         }
-         else
-            minAbsDev = maxAbsDev = d;
-      }
    };
 
    // -------------------------------------------------------------------------
@@ -15739,9 +15907,9 @@ private:
    {
    public:
 
-      double minAbsDevLow = 0, minAbsDevHigh = 0;
-      double maxAbsDevLow = 0, maxAbsDevHigh = 0;
-      size_type nLow = 0, nHigh = 0;
+      double minAbsDevLow, minAbsDevHigh;
+      double maxAbsDevLow, maxAbsDevHigh;
+      size_type nLow, nHigh;
 
       TwoSidedExtremeAbsDevThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow, double center )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
@@ -15749,40 +15917,38 @@ private:
       {
       }
 
+      void Run() final
+      {
+         minAbsDevLow = minAbsDevHigh = std::numeric_limits<double>::max();
+         maxAbsDevLow = maxAbsDevHigh = 0;
+         nLow = nHigh = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               double x; P::FromSample( x, *f );
+               if ( x <= m_center )
+               {
+                  double d = m_center - x;
+                  if ( d < minAbsDevLow )
+                     minAbsDevLow = d;
+                  if ( d > maxAbsDevLow )
+                     maxAbsDevLow = d;
+                  ++nLow;
+               }
+               else
+               {
+                  double d = x - m_center;
+                  if ( d < minAbsDevHigh )
+                     minAbsDevHigh = d;
+                  if ( d > maxAbsDevHigh )
+                     maxAbsDevHigh = d;
+                  ++nHigh;
+               }
+            } );
+      }
+
    private:
 
       double m_center;
-
-      void Perform( const sample* f ) override
-      {
-         double x; P::FromSample( x, *f );
-         if ( x <= m_center )
-         {
-            double d = m_center - x;
-            if ( nLow++ > 0 )
-            {
-               if ( d < minAbsDevLow )
-                  minAbsDevLow = d;
-               else if ( d > maxAbsDevLow )
-                  maxAbsDevLow = d;
-            }
-            else
-               minAbsDevLow = maxAbsDevLow = d;
-         }
-         else
-         {
-            double d = x - m_center;
-            if ( nHigh++ > 0 )
-            {
-               if ( d < minAbsDevHigh )
-                  minAbsDevHigh = d;
-               else if ( d > maxAbsDevHigh )
-                  maxAbsDevHigh = d;
-            }
-            else
-               minAbsDevHigh = maxAbsDevHigh = d;
-         }
-      }
    };
 
    // -------------------------------------------------------------------------
@@ -15803,11 +15969,18 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          H = size_type( 0 );
          m_range = m_high - m_low;
-         RectThreadBase::Run();
+         this->Execute( [=]( const sample* f )
+            {
+               double d; P::FromSample( d, *f );
+               d = pcl::Abs( d - m_center );
+               if ( d >= m_low )
+                  if ( d <= m_high )
+                     ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (d - m_low)/m_range )];
+            } );
       }
 
    private:
@@ -15816,15 +15989,6 @@ private:
       const double& m_low;
       const double& m_high;
       double        m_range;
-
-      void Perform( const sample* f ) override
-      {
-         double d; P::FromSample( d, *f );
-         d = pcl::Abs( d - m_center );
-         if ( d >= m_low )
-            if ( d <= m_high )
-               ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (d - m_low)/m_range )];
-      }
    };
 
    // -------------------------------------------------------------------------
@@ -15846,11 +16010,21 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          H = size_type( 0 );
          m_range = m_high - m_low;
-         RectThreadBase::Run();
+         this->Execute( [=]( const sample* f )
+            {
+               double x; P::FromSample( x, *f );
+               if ( m_side > 0 == x > m_center )
+               {
+                  double d = m_side ? x - m_center : m_center - x;
+                  if ( d >= m_low )
+                     if ( d <= m_high )
+                        ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (d - m_low)/m_range )];
+               }
+            } );
       }
 
    private:
@@ -15860,18 +16034,6 @@ private:
       const double& m_low;
       const double& m_high;
       double        m_range;
-
-      void Perform( const sample* f ) override
-      {
-         double x; P::FromSample( x, *f );
-         if ( m_side > 0 == x > m_center )
-         {
-            double d = m_side ? x - m_center : m_center - x;
-            if ( d >= m_low )
-               if ( d <= m_high )
-                  ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (d - m_low)/m_range )];
-         }
-      }
    };
 
    // -------------------------------------------------------------------------
@@ -15880,7 +16042,7 @@ private:
    {
    public:
 
-      double var = 0, eps = 0;
+      double var, eps;
 
       VarThread( const GenericImage& image, double mean, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
@@ -15888,17 +16050,21 @@ private:
       {
       }
 
+      void Run() final
+      {
+         var = eps = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               double d; P::FromSample( d, *f );
+               d -= m_mean;
+               var += d*d;
+               eps += d;
+            } );
+      }
+
    private:
 
       double m_mean;
-
-      void Perform( const sample* f ) override
-      {
-         double d; P::FromSample( d, *f );
-         d -= m_mean;
-         var += d*d;
-         eps += d;
-      }
    };
 
    // -------------------------------------------------------------------------
@@ -15917,10 +16083,13 @@ private:
 
       double m_center;
 
-      void Perform( const sample* f ) override
+      void DoExecute() override
       {
-         double v; P::FromSample( v, *f );
-         this->SumStep( pcl::Abs( v - m_center ) );
+         this->Execute( [=]( const sample* f )
+            {
+               double v; P::FromSample( v, *f );
+               this->SumStep( pcl::Abs( v - m_center ) );
+            } );
       }
    };
 
@@ -15930,8 +16099,8 @@ private:
    {
    public:
 
-      double s0 = 0, s1 = 0;
-      size_type n0 = 0, n1 = 0;
+      double s0, s1;
+      size_type n0, n1;
 
       TwoSidedSumAbsDevThread( const GenericImage& image, double center,
                                const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
@@ -15940,24 +16109,29 @@ private:
       {
       }
 
+      void Run() final
+      {
+         s0 = s1 = 0;
+         n0 = n1 = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               double v; P::FromSample( v, *f );
+               if ( v <= m_center )
+               {
+                  s0 += m_center - v;
+                  ++n0;
+               }
+               else
+               {
+                  s1 += v - m_center;
+                  ++n1;
+               }
+            } );
+      }
+
    private:
 
       double m_center;
-
-      void Perform( const sample* f ) override
-      {
-         double v; P::FromSample( v, *f );
-         if ( v <= m_center )
-         {
-            s0 += m_center - v;
-            ++n0;
-         }
-         else
-         {
-            s1 += v - m_center;
-            ++n1;
-         }
-      }
    };
 
    // -------------------------------------------------------------------------
@@ -15966,8 +16140,8 @@ private:
    {
    public:
 
-      double num = 0, den = 0;
-      size_type n = 0, nr = 0;
+      double num, den;
+      size_type n, nr;
 
       BWMVThread( const GenericImage& image, double center, double kd,
                   const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
@@ -15977,25 +16151,30 @@ private:
       {
       }
 
+      void Run() final
+      {
+         num = den = 0;
+         n = nr = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               ++n;
+               double xc; P::FromSample( xc, *f ); xc -= m_center;
+               double y = xc/m_kd;
+               if ( pcl::Abs( y ) < 1 )
+               {
+                  double y2 = y*y;
+                  double y21 = 1 - y2;
+                  num += xc*xc * y21*y21*y21*y21;
+                  den += y21 * (1 - 5*y2);
+                  ++nr;
+               }
+            } );
+      }
+
    private:
 
       double m_center;
       double m_kd;
-
-      void Perform( const sample* f ) override
-      {
-         ++n;
-         double xc; P::FromSample( xc, *f ); xc -= m_center;
-         double y = xc/m_kd;
-         if ( pcl::Abs( y ) < 1 )
-         {
-            double y2 = y*y;
-            double y21 = 1 - y2;
-            num += xc*xc * y21*y21*y21*y21;
-            den += y21 * (1 - 5*y2);
-            ++nr;
-         }
-      }
    };
 
    // -------------------------------------------------------------------------
@@ -16004,9 +16183,9 @@ private:
    {
    public:
 
-      double num0 = 0, den0 = 0;
-      double num1 = 0, den1 = 0;
-      size_type n0 = 0, n1 = 0, nr0 = 0, nr1 = 0;
+      double num0, den0;
+      double num1, den1;
+      size_type n0, n1, nr0, nr1;
 
       TwoSidedBWMVThread( const GenericImage& image, double center, double kd0, double kd1,
                           const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
@@ -16017,42 +16196,47 @@ private:
       {
       }
 
+      void Run() final
+      {
+         num0 = den0 = num1 = den1 = 0;
+         n0 = n1 = nr0 = nr1 = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               double xc; P::FromSample( xc, *f ); xc -= m_center;
+               bool low = xc <= 0;
+               if ( low )
+                  ++n0;
+               else
+                  ++n1;
+
+               double y = xc/(low ? m_kd0 : m_kd1);
+               if ( pcl::Abs( y ) < 1 )
+               {
+                  double y2 = y*y;
+                  double y21 = 1 - y2;
+                  double num = xc*xc * y21*y21*y21*y21;
+                  double den = y21 * (1 - 5*y2);
+                  if ( low )
+                  {
+                     num0 += num;
+                     den0 += den;
+                     ++nr0;
+                  }
+                  else
+                  {
+                     num1 += num;
+                     den1 += den;
+                     ++nr1;
+                  }
+               }
+            } );
+      }
+
    private:
 
       double m_center;
       double m_kd0;
       double m_kd1;
-
-      void Perform( const sample* f ) override
-      {
-         double xc; P::FromSample( xc, *f ); xc -= m_center;
-         bool low = xc <= 0;
-         if ( low )
-            ++n0;
-         else
-            ++n1;
-
-         double y = xc/(low ? m_kd0 : m_kd1);
-         if ( pcl::Abs( y ) < 1 )
-         {
-            double y2 = y*y;
-            double y21 = 1 - y2;
-            double num = xc*xc * y21*y21*y21*y21;
-            double den = y21 * (1 - 5*y2);
-            if ( low )
-            {
-               num0 += num;
-               den0 += den;
-               ++nr0;
-            }
-            else
-            {
-               num1 += num;
-               den1 += den;
-               ++nr1;
-            }
-         }
-      }
    };
 
    // -------------------------------------------------------------------------
@@ -16062,7 +16246,7 @@ private:
    public:
 
       Array<sample> samples;
-      size_type n = 0;
+      size_type n;
 
       SmpThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
@@ -16073,11 +16257,13 @@ private:
          samples = Array<sample>( N );
       }
 
-   private:
-
-      void Perform( const sample* f ) override
+      void Run() final
       {
-         samples[n++] = *f;
+         n = 0;
+         this->Execute( [=]( const sample* f )
+            {
+               samples[n++] = *f;
+            } );
       }
    };
 
@@ -16088,7 +16274,7 @@ private:
    public:
 
       Array<double> values;
-      size_type n = 0;
+      size_type n;
 
       DSmpThread( const GenericImage& image, const Rect& rect, int ch1, int ch2, int firstRow, int endRow )
          : RectThreadBase( image, rect, ch1, ch2, firstRow, endRow )
@@ -16099,11 +16285,20 @@ private:
          values = Array<double>( N );
       }
 
-   private:
-
-      void Perform( const sample* f ) override
+      void Run() final
       {
-         P::FromSample( values[n++], *f );
+         n = 0;
+         DoExecute();
+      }
+
+   protected:
+
+      virtual void DoExecute()
+      {
+         this->Execute( [=]( const sample* f )
+            {
+               P::FromSample( values[n++], *f );
+            } );
       }
    };
 
@@ -16123,10 +16318,13 @@ private:
 
       double m_center;
 
-      void Perform( const sample* f ) override
+      void DoExecute() override
       {
-         double d; P::FromSample( d, *f );
-         this->values[this->n++] = pcl::Abs( d - m_center );
+         this->Execute( [=]( const sample* f )
+            {
+               double d; P::FromSample( d, *f );
+               this->values[this->n++] = pcl::Abs( d - m_center );
+            } );
       }
    };
 
@@ -16142,22 +16340,25 @@ private:
          : DSmpThread( image, rect, ch1, ch2, firstRow, endRow )
          , m_center( center )
       {
-         p = this->values.Begin();
-         q = this->values.End();
       }
 
    private:
 
       double m_center;
 
-      void Perform( const sample* f ) override
+      void DoExecute() override
       {
-         double x; P::FromSample( x, *f );
-         if ( x <= m_center )
-            *p++ = m_center - x;
-         else
-            *--q = x - m_center;
-         ++this->n;
+         p = this->values.Begin();
+         q = this->values.End();
+         this->Execute( [=]( const sample* f )
+            {
+               double x; P::FromSample( x, *f );
+               if ( x <= m_center )
+                  *p++ = m_center - x;
+               else
+                  *--q = x - m_center;
+               ++this->n;
+            } );
       }
    };
 
@@ -16177,7 +16378,7 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          INIT_THREAD_MONITOR()
 
@@ -16400,7 +16601,7 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          INIT_THREAD_MONITOR()
 
@@ -16490,7 +16691,7 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          INIT_THREAD_MONITOR()
 
@@ -16577,7 +16778,7 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          INIT_THREAD_MONITOR()
 
@@ -16657,7 +16858,7 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          INIT_THREAD_MONITOR()
 
@@ -16899,7 +17100,7 @@ private:
       {
       }
 
-      void Run() override
+      void Run() final
       {
          INIT_THREAD_MONITOR()
 
@@ -17124,6 +17325,7 @@ private:
 };
 
 #undef m_pixelData
+#undef m_channelData
 #undef m_allocator
 #undef m_width
 #undef m_height
@@ -17464,4 +17666,4 @@ typedef FComplexImage                     ComplexImage;
 #endif   // __PCL_Image_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Image.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Image.h - Released 2020-11-20T19:46:29Z

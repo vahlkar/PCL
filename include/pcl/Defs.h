@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Defs.h - Released 2020-10-12T19:24:41Z
+// pcl/Defs.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -476,7 +476,7 @@ template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
 #endif
 
 /*
- * Special GCC function optimizations
+ * Special GCC function optimizations.
  */
 #ifndef __PCL_NO_HOT_FUNCTIONS
 #  ifdef _MSC_VER
@@ -500,14 +500,51 @@ template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
 #endif
 
 /*
- * 16-byte aligned blocks for automatic vectorization.
+ * 16/32-byte aligned blocks for automatic vectorization.
  */
-#ifdef _MSC_VER               // Windows
-#  define PCL_ALIGNED16       __declspec(align(16))
-#  define PCL_ASSUME16( x )   x
-#else                         // GCC and Clang
-#  define PCL_ALIGNED16       __attribute__((aligned(16)))
-#  define PCL_ASSUME16( x )   __builtin_assume_aligned( x, 16 )
+#ifdef _MSC_VER                        // Windows
+#  define PCL_ALIGNED_16               __declspec(align(16))
+#  define PCL_ASSUME_ALIGNED_16( x )   x
+#  define PCL_ALIGNED_32               __declspec(align(32))
+#  define PCL_ASSUME_ALIGNED_32( x )   x
+#else                                  // GCC and Clang
+#  define PCL_ALIGNED_16               __attribute__((aligned(16)))
+#  define PCL_ASSUME_ALIGNED_16( x )   __builtin_assume_aligned( x, 16 )
+#  define PCL_ALIGNED_32               __attribute__((aligned(32)))
+#  define PCL_ASSUME_ALIGNED_32( x )   __builtin_assume_aligned( x, 32 )
+#endif
+
+/*
+ * Let the restrict type qualifier be the same for all supported C++ compilers.
+ */
+#ifdef _MSC_VER
+# define __restrict__ __restrict
+#endif
+
+/*
+ * Compiler pragmas to assume iteration independence for vectorization.
+ */
+#ifdef _MSC_VER
+#  define PCL_IVDEP     __pragma(loop( ivdep ))
+#else
+#  ifdef __GNUC__
+#     define PCL_IVDEP  _Pragma("GCC ivdep")
+#  else
+#     define PCL_IVDEP  _Pragma("ivdep")
+#  endif
+#endif
+
+
+/*
+ * Loop unrolling pragmas.
+ */
+#define PCL_PRAGMA( x )       _Pragma( #x )
+#ifdef __GNUC__
+#  define PCL_UNROLL( n )     PCL_PRAGMA( GCC unroll n )
+#else
+#  ifdef __clang__
+#    define PCL_UNROLL( n )   PCL_PRAGMA( clang loop unroll_count( n ) )
+#  endif
 #endif
 
 /*
@@ -1149,4 +1186,4 @@ typedef int64                 fsize_type;
 #endif   // __PCL_Defs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Defs.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Defs.h - Released 2020-11-20T19:46:29Z

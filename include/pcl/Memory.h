@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Memory.h - Released 2020-10-12T19:24:41Z
+// pcl/Memory.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -70,8 +70,6 @@ namespace pcl
 {
 
 // ----------------------------------------------------------------------------
-// void Fill( FI, FI, const T& )
-// ----------------------------------------------------------------------------
 
 template <class FI, class T> inline
 void Fill( FI i, FI j, const T& v )
@@ -81,8 +79,6 @@ void Fill( FI i, FI j, const T& v )
 }
 
 // ----------------------------------------------------------------------------
-// void Fill( FI, FI, const T&, F )
-// ----------------------------------------------------------------------------
 
 template <class FI, class T, class F> inline
 void Fill( FI i, FI j, const T& v, F f )
@@ -91,8 +87,6 @@ void Fill( FI i, FI j, const T& v, F f )
       f( *i, v );
 }
 
-// ----------------------------------------------------------------------------
-// FI1 Copy( FI1, FI2, FI2 )
 // ----------------------------------------------------------------------------
 
 template <class FI1, class FI2> inline
@@ -104,8 +98,6 @@ FI1 Copy( FI1 i1, FI2 i2, FI2 j2 )
 }
 
 // ----------------------------------------------------------------------------
-// FI1 Copy( FI1, FI2, FI2, F )
-// ----------------------------------------------------------------------------
 
 template <class FI1, class FI2, class F> inline
 FI1 Copy( FI1 i1, FI2 i2, FI2 j2, F f )
@@ -115,8 +107,6 @@ FI1 Copy( FI1 i1, FI2 i2, FI2 j2, F f )
    return i1;
 }
 
-// ----------------------------------------------------------------------------
-// BI1 CopyBackward( BI1, BI2, BI2 )
 // ----------------------------------------------------------------------------
 
 template <class BI1, class BI2> inline
@@ -128,8 +118,6 @@ BI1 CopyBackward( BI1 j1, BI2 i2, BI2 j2 )
 }
 
 // ----------------------------------------------------------------------------
-// BI1 CopyBackward( BI1, BI2, BI2, F )
-// ----------------------------------------------------------------------------
 
 template <class BI1, class BI2, class F> inline
 BI1 CopyBackward( BI1 j1, BI2 i2, BI2 j2, F f )
@@ -139,8 +127,6 @@ BI1 CopyBackward( BI1 j1, BI2 i2, BI2 j2, F f )
    return j1;
 }
 
-// ----------------------------------------------------------------------------
-// BI1 CopyReversed( BI1, FI2, FI2 )
 // ----------------------------------------------------------------------------
 
 template <class BI1, class FI2> inline
@@ -152,8 +138,6 @@ BI1 CopyReversed( BI1 j1, FI2 i2, FI2 j2 )
 }
 
 // ----------------------------------------------------------------------------
-// BI1 CopyReversed( BI1, FI2, FI2, F )
-// ----------------------------------------------------------------------------
 
 template <class BI1, class FI2, class F> inline
 BI1 CopyReversed( BI1 j1, FI2 i2, FI2 j2, F f )
@@ -163,8 +147,6 @@ BI1 CopyReversed( BI1 j1, FI2 i2, FI2 j2, F f )
    return j1;
 }
 
-// ----------------------------------------------------------------------------
-// RI1 Move( RI1, RI2, RI2 )
 // ----------------------------------------------------------------------------
 
 template <class RI1, class RI2> inline
@@ -182,8 +164,6 @@ RI1 Move( RI1 i1, RI2 i2, RI2 j2 )
 }
 
 // ----------------------------------------------------------------------------
-// RI1 Move( RI1, RI2, RI2, F )
-// ----------------------------------------------------------------------------
 
 template <class RI1, class RI2, class F> inline
 RI1 Move( RI1 i1, RI2 i2, RI2 j2, F f )
@@ -199,8 +179,6 @@ RI1 Move( RI1 i1, RI2 i2, RI2 j2, F f )
    return j1;
 }
 
-// ----------------------------------------------------------------------------
-// RI1 MoveBackward( RI1, RI2, RI2 )
 // ----------------------------------------------------------------------------
 
 template <class RI1, class RI2> inline
@@ -218,8 +196,6 @@ RI1 MoveBackward( RI1 j1, RI2 i2, RI2 j2 )
 }
 
 // ----------------------------------------------------------------------------
-// RI1 MoveBackward( RI1, RI2, RI2, F )
-// ----------------------------------------------------------------------------
 
 template <class RI1, class RI2, class F> inline
 RI1 MoveBackward( RI1 j1, RI2 i2, RI2 j2, F f )
@@ -236,8 +212,6 @@ RI1 MoveBackward( RI1 j1, RI2 i2, RI2 j2, F f )
 }
 
 // ----------------------------------------------------------------------------
-// void Replace( FI, FI, const T1&, const T2& )
-// ----------------------------------------------------------------------------
 
 template <class FI, class T1, class T2> inline
 void Replace( FI i, FI j, const T1& v1, const T2& v2 )
@@ -247,8 +221,6 @@ void Replace( FI i, FI j, const T1& v1, const T2& v2 )
          *i = v2;
 }
 
-// ----------------------------------------------------------------------------
-// void Replace( FI, FI, const T1&, const T2&, BP )
 // ----------------------------------------------------------------------------
 
 template <class FI, class T1, class T2, class BP> inline
@@ -266,4 +238,4 @@ void Replace( FI i, FI j, const T1& v1, const T2& v2, BP p )
 #endif  // __PCL_Memory_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Memory.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Memory.h - Released 2020-11-20T19:46:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasurementsInterface.cpp - Released 2020-10-12T19:25:16Z
+// SubframeSelectorMeasurementsInterface.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -53,7 +53,7 @@
 #include <pcl/Console.h>
 #include <pcl/FileDialog.h>
 #include <pcl/MetaModule.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 
 #include "SubframeSelectorExpressionsInterface.h"
 #include "SubframeSelectorMeasurementsInterface.h"
@@ -932,4 +932,4 @@ SubframeSelectorMeasurementsInterface::GUIData::GUIData( SubframeSelectorMeasure
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2020-10-12T19:25:16Z
+// EOF SubframeSelectorMeasurementsInterface.cpp - Released 2020-11-20T19:49:00Z

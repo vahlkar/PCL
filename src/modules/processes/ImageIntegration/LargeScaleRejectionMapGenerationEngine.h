@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// LargeScaleRejectionMapGenerationEngine.h - Released 2020-10-12T19:25:16Z
+// LargeScaleRejectionMapGenerationEngine.h - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -112,4 +112,4 @@ private:
 #endif   // __LargeScaleRejectionMapGenerationEngine_h
 
 // ----------------------------------------------------------------------------
-// EOF LargeScaleRejectionMapGenerationEngine.h - Released 2020-10-12T19:25:16Z
+// EOF LargeScaleRejectionMapGenerationEngine.h - Released 2020-11-20T19:49:00Z

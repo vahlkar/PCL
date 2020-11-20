@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.12
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2020-10-12T19:25:05Z
+// XISFInstance.cpp - Released 2020-11-20T19:48:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -778,6 +778,14 @@ void XISFInstance::ReadImage( UInt32Image& image )
 
 // ----------------------------------------------------------------------------
 
+bool XISFInstance::CanReadIncrementally() const
+{
+   CheckOpenStream( m_reader, "CanReadIncrementally" );
+   return m_reader->ImplementsIncrementalRead();
+}
+
+// ----------------------------------------------------------------------------
+
 template <class T>
 void ReadXISFSamples( T* buffer, int startRow, int rowCount, int channel, XISFReader* reader, const XISFStreamHints* hints )
 {
@@ -1141,4 +1149,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2020-10-12T19:25:05Z
+// EOF XISFInstance.cpp - Released 2020-11-20T19:48:45Z

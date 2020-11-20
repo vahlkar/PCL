@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/SharedPixelData.h - Released 2020-10-12T19:24:41Z
+// pcl/SharedPixelData.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -175,7 +175,7 @@ public:
     * Returns true iff this object represents the same shared image as another
     * object \a x, or if both objects represent local images.
     */
-   bool operator ==( const SharedPixelData& x ) const
+   bool operator ==( const SharedPixelData& x ) const noexcept
    {
       return m_handle == x.m_handle;
    }
@@ -184,7 +184,7 @@ public:
     * Returns the handle to the shared image represented by this object, or
     * zero (a null pointer) if this object represents a local image.
     */
-   void* Handle() const
+   void* Handle() const noexcept
    {
       return m_handle;
    }
@@ -194,7 +194,7 @@ public:
     * represents a local image. Shared images live in the PixInsight core
     * application. Local images live in the calling module.
     */
-   bool IsShared() const
+   bool IsShared() const noexcept
    {
       return m_handle != nullptr;
    }
@@ -246,4 +246,4 @@ protected:
 #endif   // __PCL_SharedPixelData_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SharedPixelData.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/SharedPixelData.h - Released 2020-11-20T19:46:29Z

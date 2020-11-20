@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/JulianDay.cpp - Released 2020-10-12T19:24:49Z
+// pcl/JulianDay.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -66,7 +66,7 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-void PCL_FUNC ComplexTimeToJD( int& jdi, double& jdf, int year, int month, int day, double dayf )
+void PCL_FUNC CalendarTimeToJD( int& jdi, double& jdf, int year, int month, int day, double dayf ) noexcept
 {
    if ( month <= 2 )
    {
@@ -97,7 +97,7 @@ void PCL_FUNC ComplexTimeToJD( int& jdi, double& jdf, int year, int month, int d
 
 // ----------------------------------------------------------------------------
 
-void PCL_FUNC JDToComplexTime( int& year, int& month, int& day, double& dayf, int jdi, double jdf )
+void PCL_FUNC JDToCalendarTime( int& year, int& month, int& day, double& dayf, int jdi, double jdf ) noexcept
 {
    dayf = jdf + 0.5;
    if ( dayf >= 1 )
@@ -136,4 +136,4 @@ void PCL_FUNC JDToComplexTime( int& year, int& month, int& day, double& dayf, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/JulianDay.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/JulianDay.cpp - Released 2020-11-20T19:46:37Z

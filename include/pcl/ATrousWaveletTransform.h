@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ATrousWaveletTransform.h - Released 2020-10-12T19:24:41Z
+// pcl/ATrousWaveletTransform.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -146,9 +146,13 @@ public:
     * implemented as the KernelFilter class, or a separable filter implemented
     * as SeparableFilter.
     *
-    * Separable filters are much better in terms of performance, since
-    * separable convolution has O(N) complexity, as opposed to O(N^2) for
-    * non-separable convolution.
+    * Separable filters can be better in terms of performance, since separable
+    * convolution has O(N) complexity, as opposed to O(N^2) for non-separable
+    * convolution. However, in current PCL versions separable convolutions are
+    * only faster for relatively large filter sizes as a resut of vectorization
+    * with SIMD instructions. See the SeparableConvolution class
+    * and the \ref convolution_limits_macros "convolution selection macros"
+    * section for more information.
     *
     * \sa KernelFilter, SeparableFilter
     */
@@ -678,4 +682,4 @@ typedef ATrousWaveletTransform   StarletTransform;
 #endif   // __PCL_ATrousWaveletTransform_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ATrousWaveletTransform.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/ATrousWaveletTransform.h - Released 2020-11-20T19:46:29Z

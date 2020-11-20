@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ReadWriteMutex.cpp - Released 2020-10-12T19:24:49Z
+// pcl/ReadWriteMutex.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -126,4 +126,4 @@ void* ReadWriteMutex::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReadWriteMutex.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/ReadWriteMutex.cpp - Released 2020-11-20T19:46:37Z

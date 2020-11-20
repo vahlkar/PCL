@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/WCSKeywords.h - Released 2020-10-12T19:24:41Z
+// pcl/WCSKeywords.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -91,7 +91,8 @@ public:
 
    Optional<double> objctra;   //!< Right ascension coordinate of the center of the image in degrees.
    Optional<double> objctdec;  //!< Declination coordinate of the center of the image in degrees.
-   Optional<double> equinox;   //!< Equinox in years for the celestial coordinate system.
+   IsoString        radesys;   //!< Reference system of celestial coordinates.
+   Optional<double> equinox;   //!< Equinox in years for the celestial coordinate system (not applicable if radesys = ICRS).
    Optional<double> dateobs;   //!< Observation start time as a Julian date, UTC timescale.
    Optional<double> dateend;   //!< Observation end time as a Julian date, UTC timescale.
    Optional<double> longobs;   //!< Geodetic longitude of the observation location in degrees. Reckoned positive east of the reference meridian.
@@ -103,10 +104,10 @@ public:
    Optional<double> crval2;    //!< WCS coordinate at the reference pixel, Y axis.
    Optional<double> crpix1;    //!< Image coordinate of the reference pixel on the X axis.
    Optional<double> crpix2;    //!< Image coordinate of the reference pixel on the Y axis.
-   Optional<double> cd1_1;     //!< Rotation and scaling matrix: CDELT1 * cos(CROTA2)
+   Optional<double> cd1_1;     //!< Rotation and scaling matrix:  CDELT1 * cos(CROTA2)
    Optional<double> cd1_2;     //!< Rotation and scaling matrix: -CDELT2 * sin(CROTA2)
-   Optional<double> cd2_1;     //!< Rotation and scaling matrix: CDELT1 * sin(CROTA2)
-   Optional<double> cd2_2;     //!< Rotation and scaling matrix: CDELT2 * cos(CROTA2)
+   Optional<double> cd2_1;     //!< Rotation and scaling matrix:  CDELT1 * sin(CROTA2)
+   Optional<double> cd2_2;     //!< Rotation and scaling matrix:  CDELT2 * cos(CROTA2)
    Optional<double> cdelt1;    //!< Plate scale in degrees per pixel at the reference pixel, X axis.
    Optional<double> cdelt2;    //!< Plate scale in degrees per pixel at the reference pixel, Y axis.
    Optional<double> crota1;    //!< Rotation angle around the reference pixel in degrees. Same as CROTA2, unused.
@@ -168,4 +169,4 @@ public:
 #endif   // __PCL_WCSKeywords_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/WCSKeywords.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/WCSKeywords.h - Released 2020-11-20T19:46:29Z

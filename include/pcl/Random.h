@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Random.h - Released 2020-10-12T19:24:41Z
+// pcl/Random.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -306,7 +306,7 @@ public:
     *                unique random seed will be generated automatically. The
     *                default value is zero.
     */
-   XorShift1024( uint64 seed = 0 )
+   XorShift1024( uint64 seed = 0 ) noexcept( false )
    {
       Initialize( seed );
    }
@@ -314,7 +314,7 @@ public:
    /*!
     * Returns a double precision uniform random deviate in the [0,1) range.
     */
-   double operator ()()
+   double operator ()() noexcept
    {
       return 5.4210108624275221703311e-20 * UI64(); // 1.0/(2^64 -1)
    }
@@ -322,7 +322,7 @@ public:
    /*!
     * Returns a 64-bit unsigned integer uniform random deviate.
     */
-   uint64 UI64()
+   uint64 UI64() noexcept
    {
       uint64 s0 = m_s[m_p];
       uint64 s1 = m_s[m_p = (m_p + 1) & 15];
@@ -335,7 +335,7 @@ public:
    /*!
     * Returns a 32-bit unsigned integer uniform random deviate.
     */
-   uint32 UI32()
+   uint32 UI32() noexcept
    {
       return uint32( UI64() );
    }
@@ -344,7 +344,7 @@ public:
     * Returns a 64-bit unsigned integer uniform random deviate in the range
     * [0,n-1].
     */
-   uint64 UI64N( uint64 n )
+   uint64 UI64N( uint64 n ) noexcept
    {
       return UI64() % n;
    }
@@ -352,7 +352,7 @@ public:
    /*!
     * Returns an unsigned integer uniform random deviate in the range [0,n-1].
     */
-   uint32 UIN( uint32 n )
+   uint32 UIN( uint32 n ) noexcept
    {
       return UI64() % n;
    }
@@ -360,7 +360,7 @@ public:
    /*!
     * A synonym for UIN().
     */
-   uint32 UI32N( uint32 n )
+   uint32 UI32N( uint32 n ) noexcept
    {
       return UIN( n );
    }
@@ -413,7 +413,7 @@ protected:
     * \internal
     * The left rotation function used by the generator.
     */
-   static uint64 RotL( const uint64 x, int k )
+   static uint64 RotL( const uint64 x, int k ) noexcept
    {
       return (x << k) | (x >> (64 - k));
    }
@@ -423,7 +423,7 @@ protected:
     * The SplitMix64 generator used for state space initialization, as
     * recommended by Blackman/Vigna.
     */
-   static uint64 SplitMix64( uint64& x )
+   static uint64 SplitMix64( uint64& x ) noexcept
    {
       uint64 z = (x += 0x9e3779b97f4a7c15);
       z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9;
@@ -437,7 +437,7 @@ protected:
     * uniform probability over the entire 53-bit significant digits.
     * See: http://prng.di.unimi.it/#remarks
     */
-   static double UI64ToDouble( uint64 x )
+   static double UI64ToDouble( uint64 x ) noexcept
    {
       return (x >> 11) * 0x1.0p-53;
    }
@@ -485,7 +485,7 @@ public:
     *                unique random seed will be generated automatically. The
     *                default value is zero.
     */
-   XoShiRo256ss( uint64 seed = 0 )
+   XoShiRo256ss( uint64 seed = 0 ) noexcept( false )
    {
       Initialize( seed );
    }
@@ -493,7 +493,7 @@ public:
    /*!
     * Returns a double precision uniform random deviate in the [0,1) range.
     */
-   double operator ()()
+   double operator ()() noexcept
    {
       return UI64ToDouble( UI64() );
    }
@@ -501,7 +501,7 @@ public:
    /*!
     * Returns a 64-bit unsigned integer uniform random deviate.
     */
-   uint64 UI64()
+   uint64 UI64() noexcept
    {
       const uint64 result = RotL( m_s[1]*5, 7 ) * 9;
       const uint64 t = m_s[1] << 17;
@@ -517,7 +517,7 @@ public:
    /*!
     * Returns a 32-bit unsigned integer uniform random deviate.
     */
-   uint32 UI32()
+   uint32 UI32() noexcept
    {
       return uint32( UI64() );
    }
@@ -526,7 +526,7 @@ public:
     * Returns a 64-bit unsigned integer uniform random deviate in the range
     * [0,n-1].
     */
-   uint64 UI64N( uint64 n )
+   uint64 UI64N( uint64 n ) noexcept
    {
       return UI64() % n;
    }
@@ -534,7 +534,7 @@ public:
    /*!
     * Returns an unsigned integer uniform random deviate in the range [0,n-1].
     */
-   uint32 UIN( uint32 n )
+   uint32 UIN( uint32 n ) noexcept
    {
       return UI64() % n;
    }
@@ -542,7 +542,7 @@ public:
    /*!
     * A synonym for UIN().
     */
-   uint32 UI32N( uint32 n )
+   uint32 UI32N( uint32 n ) noexcept
    {
       return UIN( n );
    }
@@ -609,7 +609,7 @@ public:
     *                unique random seed will be generated automatically. The
     *                default value is zero.
     */
-   XoRoShiRo1024ss( uint64 seed = 0 )
+   XoRoShiRo1024ss( uint64 seed = 0 ) noexcept( false )
    {
       Initialize( seed );
    }
@@ -617,7 +617,7 @@ public:
    /*!
     * Returns a double precision uniform random deviate in the [0,1) range.
     */
-   double operator ()()
+   double operator ()() noexcept
    {
       return UI64ToDouble( UI64() );
    }
@@ -625,7 +625,7 @@ public:
    /*!
     * Returns a 64-bit unsigned integer uniform random deviate.
     */
-   uint64 UI64()
+   uint64 UI64() noexcept
    {
       const int q = m_p;
       const uint64 s0 = m_s[m_p = (m_p + 1) & 15];
@@ -640,7 +640,7 @@ public:
    /*!
     * Returns a 32-bit unsigned integer uniform random deviate.
     */
-   uint32 UI32()
+   uint32 UI32() noexcept
    {
       return uint32( UI64() );
    }
@@ -649,7 +649,7 @@ public:
     * Returns a 64-bit unsigned integer uniform random deviate in the range
     * [0,n-1].
     */
-   uint64 UI64N( uint64 n )
+   uint64 UI64N( uint64 n ) noexcept
    {
       return UI64() % n;
    }
@@ -657,7 +657,7 @@ public:
    /*!
     * Returns an unsigned integer uniform random deviate in the range [0,n-1].
     */
-   uint32 UIN( uint32 n )
+   uint32 UIN( uint32 n ) noexcept
    {
       return UI64() % n;
    }
@@ -665,7 +665,7 @@ public:
    /*!
     * A synonym for UIN().
     */
-   uint32 UI32N( uint32 n )
+   uint32 UI32N( uint32 n ) noexcept
    {
       return UIN( n );
    }
@@ -708,7 +708,7 @@ public:
     * Constructs a %NormalRandomDeviates objects using the specified
     * pseudo-random number generator \a R.
     */
-   NormalRandomDeviates( RNG& R )
+   NormalRandomDeviates( RNG& R ) noexcept( false )
       : m_R( R )
    {
    }
@@ -717,7 +717,7 @@ public:
     * Returns a random deviate from a Gaussian distribution with zero mean and
     * unit standard deviation.
     */
-   double operator ()()
+   double operator ()() noexcept
    {
       /*
        * Marsaglia polar method.
@@ -769,7 +769,7 @@ public:
     * Constructs a %PoissonRandomDeviates objects using the specified
     * pseudo-random number generator \a R.
     */
-   PoissonRandomDeviates( RNG& R )
+   PoissonRandomDeviates( RNG& R ) noexcept( false )
       : m_R( R )
    {
    }
@@ -777,7 +777,7 @@ public:
    /*!
     * Returns a random Poisson deviate for the specified \a value.
     */
-   int operator ()( double value )
+   int operator ()( double value ) noexcept
    {
       if ( value < 30 )
       {
@@ -850,7 +850,7 @@ public:
     * Constructs a %GammaRandomDeviates objects using the specified
     * pseudo-random number generator \a R.
     */
-   GammaRandomDeviates( RNG& R, double shape = 1, double scale = 1 )
+   GammaRandomDeviates( RNG& R, double shape = 1, double scale = 1 ) noexcept( false )
       : m_R( R )
       , m_shape( shape )
       , m_scale( scale )
@@ -869,7 +869,7 @@ public:
     * Returns a random deviate from a Gaussian distribution with zero mean and
     * unit standard deviation.
     */
-   double operator ()()
+   double operator ()() noexcept
    {
       /*
        * Code adapted from 'Random number generation in C++', by John D. Cook:
@@ -918,4 +918,4 @@ private:
 #endif   // __PCL_Random_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Random.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Random.h - Released 2020-11-20T19:46:29Z

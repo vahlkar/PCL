@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// BlinkInterface.cpp - Released 2020-10-12T19:25:16Z
+// BlinkInterface.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -71,7 +71,7 @@
 #include <pcl/ProgressBarStatus.h>
 #include <pcl/Random.h>
 #include <pcl/Settings.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Version.h>
 #include <pcl/View.h>
 
@@ -2149,4 +2149,4 @@ BlinkInterface::GUIData::GUIData( BlinkInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkInterface.cpp - Released 2020-10-12T19:25:16Z
+// EOF BlinkInterface.cpp - Released 2020-11-20T19:49:00Z

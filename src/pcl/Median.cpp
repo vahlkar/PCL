@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Median.cpp - Released 2020-10-12T19:24:49Z
+// pcl/Median.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,13 +93,13 @@ public:
    {
       H = size_type( 0 );
       double range = m_high - m_low;
-      const T* a = m_A + m_start;
-      const T* b = m_A + m_stop;
+      const T* __restrict__ a = m_A + m_start;
+      const T* __restrict__ b = m_A + m_stop;
       do
       {
          if ( *a >= m_low )
             if ( *a <= m_high )
-               ++H[TruncInt( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (*a - m_low)/range )];
+               ++H[int( (__PCL_MEDIAN_HISTOGRAM_LENGTH - 1) * (*a - m_low)/range )];
       }
       while ( ++a < b );
    }
@@ -130,8 +130,8 @@ public:
 
    PCL_HOT_FUNCTION void Run() override
    {
-      const T* a = m_A + m_start;
-      const T* b = m_A + m_stop;
+      const T* __restrict__ a = m_A + m_start;
+      const T* __restrict__ b = m_A + m_stop;
       min = max = *a;
       while ( ++a < b )
          if ( *a < min )
@@ -150,7 +150,7 @@ private:
 // ----------------------------------------------------------------------------
 
 template <typename T>
-static double PCL_FastMedian( const T* begin, const T* end )
+static double PCL_FastMedian( const T* __restrict__ begin, const T* __restrict__ end )
 {
    distance_type N = end - begin;
    if ( N <= 2560000 )
@@ -1054,7 +1054,7 @@ static double PCL_SmallMedian( T* t, distance_type n )
 // ----------------------------------------------------------------------------
 
 template <typename T>
-static double PCL_Median( const T* i, const T* j )
+static double PCL_Median( const T* __restrict__ i, const T* __restrict__ j )
 {
    distance_type n = j - i;
    if ( n > 32 )
@@ -1070,72 +1070,72 @@ static double PCL_Median( const T* i, const T* j )
    return PCL_SmallMedian( A.Begin(), n );
 }
 
-double PCL_FUNC Median( const unsigned char* i, const unsigned char* j )
+double PCL_FUNC Median( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const signed char* i, const signed char* j )
+double PCL_FUNC Median( const signed char* __restrict__ i, const signed char* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const wchar_t* i, const wchar_t* j )
+double PCL_FUNC Median( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const unsigned short* i, const unsigned short* j )
+double PCL_FUNC Median( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const signed short* i, const signed short* j )
+double PCL_FUNC Median( const signed short* __restrict__ i, const signed short* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const unsigned int* i, const unsigned int* j )
+double PCL_FUNC Median( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const signed int* i, const signed int* j )
+double PCL_FUNC Median( const signed int* __restrict__ i, const signed int* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const unsigned long* i, const unsigned long* j )
+double PCL_FUNC Median( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const signed long* i, const signed long* j )
+double PCL_FUNC Median( const signed long* __restrict__ i, const signed long* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const unsigned long long* i, const unsigned long long* j )
+double PCL_FUNC Median( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const signed long long* i, const signed long long* j )
+double PCL_FUNC Median( const signed long long* __restrict__ i, const signed long long* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const float* i, const float* j )
+double PCL_FUNC Median( const float* __restrict__ i, const float* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const double* i, const double* j )
+double PCL_FUNC Median( const double* __restrict__ i, const double* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
 
-double PCL_FUNC Median( const long double* i, const long double* j )
+double PCL_FUNC Median( const long double* __restrict__ i, const long double* __restrict__ j )
 {
    return PCL_Median( i, j );
 }
@@ -1143,7 +1143,7 @@ double PCL_FUNC Median( const long double* i, const long double* j )
 // ----------------------------------------------------------------------------
 
 template <typename T>
-static double PCL_OrderStatistic( const T* begin, const T* end, distance_type k )
+static double PCL_OrderStatistic( const T* __restrict__ begin, const T* __restrict__ end, distance_type k )
 {
    distance_type N = end - begin;
    if ( k < 0 )
@@ -1239,72 +1239,72 @@ static double PCL_OrderStatistic( const T* begin, const T* end, distance_type k 
    }
 }
 
-double PCL_FUNC OrderStatistic( const unsigned char* i, const unsigned char* j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const signed char* i, const signed char* j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed char* __restrict__ i, const signed char* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const wchar_t* i, const wchar_t* j, distance_type k )
+double PCL_FUNC OrderStatistic( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const unsigned short* i, const unsigned short* j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const signed short* i, const signed short* j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed short* __restrict__ i, const signed short* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const unsigned int* i, const unsigned int* j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const signed int* i, const signed int* j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed int* __restrict__ i, const signed int* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const unsigned long* i, const unsigned long* j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const signed long* i, const signed long* j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed long* __restrict__ i, const signed long* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const unsigned long long* i, const unsigned long long* j, distance_type k )
+double PCL_FUNC OrderStatistic( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const signed long long* i, const signed long long* j, distance_type k )
+double PCL_FUNC OrderStatistic( const signed long long* __restrict__ i, const signed long long* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const float* i, const float* j, distance_type k )
+double PCL_FUNC OrderStatistic( const float* __restrict__ i, const float* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const double* i, const double* j, distance_type k )
+double PCL_FUNC OrderStatistic( const double* __restrict__ i, const double* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
 
-double PCL_FUNC OrderStatistic( const long double* i, const long double* j, distance_type k )
+double PCL_FUNC OrderStatistic( const long double* __restrict__ i, const long double* __restrict__ j, distance_type k )
 {
    return PCL_OrderStatistic( i, j, k );
 }
@@ -1335,8 +1335,8 @@ public:
    {
       H = size_type( 0 );
       double range = m_high - m_low;
-      const T* a = m_A + m_start;
-      const T* b = m_A + m_stop;
+      const T* __restrict__ a = m_A + m_start;
+      const T* __restrict__ b = m_A + m_stop;
       do
       {
          double d = pcl::Abs( double( *a ) - m_center );
@@ -1375,8 +1375,8 @@ public:
 
    PCL_HOT_FUNCTION void Run() override
    {
-      const T* a = m_A + m_start;
-      const T* b = m_A + m_stop;
+      const T* __restrict__ a = m_A + m_start;
+      const T* __restrict__ b = m_A + m_stop;
       min = max = pcl::Abs( double( *a ) - m_center );
       while ( ++a < b )
       {
@@ -1397,14 +1397,14 @@ private:
 };
 
 template <typename T>
-static double PCL_FastMAD( const T* begin, const T* end, double center )
+static double PCL_FastMAD( const T* __restrict__ begin, const T* __restrict__ end, double center )
 {
    distance_type N = end - begin;
    if ( N <= 2560000 )
    {
       double* d = new double[ N ];
-      double* p = d;
-      for ( const T* f = begin; f < end; ++f, ++p )
+      double* __restrict__ p = d;
+      for ( const T* __restrict__ f = begin; f < end; ++f, ++p )
          *p = Abs( double( *f ) - center );
       double m = *pcl::Select( d, p, N >> 1 );
       if ( (N & 1) == 0 )
@@ -1519,7 +1519,7 @@ static double PCL_FastMAD( const T* begin, const T* end, double center )
 // ----------------------------------------------------------------------------
 
 template <typename T>
-static double PCL_MAD( const T* i, const T* j, double center )
+static double PCL_MAD( const T* __restrict__ i, const T* __restrict__ j, double center )
 {
    distance_type n = j - i;
    if ( n > 32 )
@@ -1528,80 +1528,80 @@ static double PCL_MAD( const T* i, const T* j, double center )
       return 0;
 
    double* d = new double[ n ];
-   double* p = d;
-   for ( const T* f = i; f < j; ++f, ++p )
+   double* __restrict__ p = d;
+   for ( const T* __restrict__ f = i; f < j; ++f, ++p )
       *p = Abs( double( *f ) - center );
    double m = PCL_SmallMedian( d, n );
    delete [] d;
    return m;
 }
 
-double PCL_FUNC MAD( const unsigned char* i, const unsigned char* j, double center )
+double PCL_FUNC MAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const signed char* i, const signed char* j, double center )
+double PCL_FUNC MAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const wchar_t* i, const wchar_t* j, double center )
+double PCL_FUNC MAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const unsigned short* i, const unsigned short* j, double center )
+double PCL_FUNC MAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const signed short* i, const signed short* j, double center )
+double PCL_FUNC MAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const unsigned int* i, const unsigned int* j, double center )
+double PCL_FUNC MAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const signed int* i, const signed int* j, double center )
+double PCL_FUNC MAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const unsigned long* i, const unsigned long* j, double center )
+double PCL_FUNC MAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const signed long* i, const signed long* j, double center )
+double PCL_FUNC MAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const unsigned long long* i, const unsigned long long* j, double center )
+double PCL_FUNC MAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const signed long long* i, const signed long long* j, double center )
+double PCL_FUNC MAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const float* i, const float* j, double center )
+double PCL_FUNC MAD( const float* __restrict__ i, const float* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const double* i, const double* j, double center )
+double PCL_FUNC MAD( const double* __restrict__ i, const double* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
 
-double PCL_FUNC MAD( const long double* i, const long double* j, double center )
+double PCL_FUNC MAD( const long double* __restrict__ i, const long double* __restrict__ j, double center )
 {
    return PCL_MAD( i, j, center );
 }
@@ -1632,8 +1632,8 @@ public:
    {
       H = size_type( 0 );
       double range = m_high - m_low;
-      const T* a = m_A + m_start;
-      const T* b = m_A + m_stop;
+      const T* __restrict__ a = m_A + m_start;
+      const T* __restrict__ b = m_A + m_stop;
       do
       {
          double x = double( *a );
@@ -1679,8 +1679,8 @@ public:
 
    PCL_HOT_FUNCTION void Run() override
    {
-      const T* a = m_A + m_start;
-      const T* b = m_A + m_stop;
+      const T* __restrict__ a = m_A + m_start;
+      const T* __restrict__ b = m_A + m_stop;
       do
       {
          double x = double( *a );
@@ -1723,14 +1723,14 @@ private:
 };
 
 template <typename T>
-static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* begin, const T* end, double center )
+static TwoSidedEstimate PCL_TwoSidedFastMAD( const T* __restrict__ begin, const T* __restrict__ end, double center )
 {
    distance_type N = end - begin;
    if ( N <= 2560000 )
    {
       double* d = new double[ N ];
-      double* p = d;
-      double* q = d + N;
+      double* __restrict__ p = d;
+      double* __restrict__ q = d + N;
       do
       {
          double x = double( *begin++ );
@@ -1901,7 +1901,7 @@ __madNextSide:
 }
 
 template <typename T>
-static TwoSidedEstimate PCL_TwoSidedMAD( const T* i, const T* j, double center )
+static TwoSidedEstimate PCL_TwoSidedMAD( const T* __restrict__ i, const T* __restrict__ j, double center )
 {
    distance_type n = j - i;
    if ( n >= 2 )
@@ -1909,72 +1909,72 @@ static TwoSidedEstimate PCL_TwoSidedMAD( const T* i, const T* j, double center )
    return { 0, 0 };
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned char* i, const unsigned char* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned char* __restrict__ i, const unsigned char* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed char* i, const signed char* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed char* __restrict__ i, const signed char* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const wchar_t* i, const wchar_t* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const wchar_t* __restrict__ i, const wchar_t* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned short* i, const unsigned short* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned short* __restrict__ i, const unsigned short* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed short* i, const signed short* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed short* __restrict__ i, const signed short* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned int* i, const unsigned int* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned int* __restrict__ i, const unsigned int* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed int* i, const signed int* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed int* __restrict__ i, const signed int* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long* i, const unsigned long* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long* __restrict__ i, const unsigned long* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long* i, const signed long* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long* __restrict__ i, const signed long* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long long* i, const unsigned long long* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const unsigned long long* __restrict__ i, const unsigned long long* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long long* i, const signed long long* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const signed long long* __restrict__ i, const signed long long* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const float* i, const float* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const float* __restrict__ i, const float* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const double* i, const double* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const double* __restrict__ i, const double* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
 
-TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* i, const long double* j, double center )
+TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* __restrict__ i, const long double* __restrict__ j, double center )
 {
    return PCL_TwoSidedMAD( i, j, center );
 }
@@ -1984,4 +1984,4 @@ TwoSidedEstimate PCL_FUNC TwoSidedMAD( const long double* i, const long double* 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Median.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/Median.cpp - Released 2020-11-20T19:46:37Z

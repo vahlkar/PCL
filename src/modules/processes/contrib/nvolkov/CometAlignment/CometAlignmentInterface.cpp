@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentInterface.cpp - Released 2020-10-12T19:25:16Z
+// CometAlignmentInterface.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -62,7 +62,7 @@
 #include <pcl/FileFormatInstance.h>
 #include <pcl/Graphics.h>
 #include <pcl/MessageBox.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 
 #define IMAGELIST_MINHEIGHT( fnt ) RoundInt( 8.125 * fnt.Height() )
 
@@ -1798,4 +1798,4 @@ CometAlignmentInterface::GUIData::GUIData( CometAlignmentInterface& w )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInterface.cpp - Released 2020-10-12T19:25:16Z
+// EOF CometAlignmentInterface.cpp - Released 2020-11-20T19:49:00Z

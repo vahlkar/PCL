@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.4
+// Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// LinearFitInstance.cpp - Released 2020-10-12T19:25:16Z
+// LinearFitInstance.cpp - Released 2020-11-20T19:48:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -58,7 +58,7 @@
 #include <pcl/ImageWindow.h>
 #include <pcl/LinearFit.h>
 #include <pcl/SpinStatus.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Vector.h>
 #include <pcl/View.h>
 
@@ -403,4 +403,4 @@ size_type LinearFitInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF LinearFitInstance.cpp - Released 2020-11-20T19:48:59Z

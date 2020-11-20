@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/PixelTraits.h - Released 2020-10-12T19:24:41Z
+// pcl/PixelTraits.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -188,7 +188,7 @@ public:
    /*!
     * Returns the number of bytes necessary to store a pixel sample.
     */
-   static constexpr int BytesPerSample()
+   static constexpr int BytesPerSample() noexcept
    {
       return bytesPerSample;
    }
@@ -196,7 +196,7 @@ public:
    /*!
     * Returns the number of bits in a pixel sample.
     */
-   static constexpr int BitsPerSample()
+   static constexpr int BitsPerSample() noexcept
    {
       return bitsPerSample;
    }
@@ -205,136 +205,152 @@ public:
     * Returns the minimum valid sample value. This is usually a value of zero
     * in the numeric data type represented by \c sample.
     */
-   static constexpr sample MinSampleValue()
+   static constexpr sample MinSampleValue() noexcept
    {
       return sample( 0 );
    }
 };
 
-#define IMPLEMENT_TRANSFER_OPERATIONS                             \
-                                                                  \
-   template <typename T>                                          \
-   static void Fill( sample* f, T x, size_type n )                \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 )                                  \
-      sample v = ToSample( x );                                   \
-      for ( sample* fn = f+n; f != fn; ++f )                      \
-         *f = v;                                                  \
-   }                                                              \
-                                                                  \
-   static void Fill( sample* f, sample x, size_type n )           \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 )                                  \
-      for ( sample* fn = f+n; f < fn; ++f )                       \
-         *f = x;                                                  \
-   }                                                              \
-                                                                  \
-   template <typename T>                                          \
-   static void Get( T* f, const sample* g, size_type n )          \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( T* fn = f+n; f < fn; ++f, ++g )                       \
-         FromSample( *f, *g );                                    \
-   }                                                              \
-                                                                  \
-   static void Get( sample* f, const sample* g, size_type n )     \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      ::memcpy( f, g, n*BytesPerSample() );                       \
-   }                                                              \
-                                                                  \
-   template <typename T>                                          \
-   static void Copy( sample* f, const T* g, size_type n )         \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( sample* fn = f+n; f < fn; ++f, ++g )                  \
-         *f = ToSample( *g );                                     \
-   }                                                              \
-                                                                  \
-   static void Copy( sample* f, const sample* g, size_type n )    \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      ::memcpy( f, g, n*BytesPerSample() );                       \
-   }                                                              \
-                                                                  \
-   template <typename T>                                          \
-   static void GetMin( T* f, const sample* g, size_type n )       \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( T* fn = f+n; f < fn; ++f, ++g )                       \
-      {                                                           \
-         T h; FromSample( h, *g );                                \
-         if ( h < *f )                                            \
-            *f = h;                                               \
-      }                                                           \
-   }                                                              \
-                                                                  \
-   static void GetMin( sample* f, const sample* g, size_type n )  \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( sample* fn = f+n; f < fn; ++f, ++g )                  \
-         if ( *g < *f )                                           \
-            *f = *g;                                              \
-   }                                                              \
-                                                                  \
-   template <typename T>                                          \
-   static void CopyMin( sample* f, const T* g, size_type n )      \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( sample* fn = f+n; f < fn; ++f, ++g )                  \
-      {                                                           \
-         sample h = ToSample( *g );                               \
-         if ( h < *f )                                            \
-            *f = h;                                               \
-      }                                                           \
-   }                                                              \
-                                                                  \
-   static void CopyMin( sample* f, const sample* g, size_type n ) \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( sample* fn = f+n; f < fn; ++f, ++g )                  \
-         if ( *g < *f )                                           \
-            *f = *g;                                              \
-   }                                                              \
-                                                                  \
-   template <typename T>                                          \
-   static void GetMax( T* f, const sample* g, size_type n )       \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( T* fn = f+n; f < fn; ++f, ++g )                       \
-      {                                                           \
-         T h; FromSample( h, *g );                                \
-         if ( *f < h )                                            \
-            *f = h;                                               \
-      }                                                           \
-   }                                                              \
-                                                                  \
-   static void GetMax( sample* f, const sample* g, size_type n )  \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( sample* fn = f+n; f < fn; ++f, ++g )                  \
-         if ( *f < *g )                                           \
-            *f = *g;                                              \
-   }                                                              \
-                                                                  \
-   template <typename T>                                          \
-   static void CopyMax( sample* f, const T* g, size_type n )      \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( sample* fn = f+n; f < fn; ++f, ++g )                  \
-      {                                                           \
-         sample h = ToSample( *g );                               \
-         if ( *f < h )                                            \
-            *f = h;                                               \
-      }                                                           \
-   }                                                              \
-                                                                  \
-   static void CopyMax( sample* f, const sample* g, size_type n ) \
-   {                                                              \
-      PCL_PRECONDITION( f != 0 && g != 0 )                        \
-      for ( sample* fn = f+n; f < fn; ++f, ++g )                  \
-         if ( *f < *g )                                           \
-            *f = *g;                                              \
+#define IMPLEMENT_TRANSFER_OPERATIONS                                                                 \
+                                                                                                      \
+   template <typename T>                                                                              \
+   static void Fill( sample* __restrict__ f, T x, size_type n ) noexcept                              \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr )                                                                \
+      sample v = ToSample( x );                                                                       \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f )                                                                       \
+         *f = v;                                                                                      \
+   }                                                                                                  \
+                                                                                                      \
+   static void Fill( sample* __restrict__ f, sample x, size_type n ) noexcept                         \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr )                                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f )                                                                       \
+         *f = x;                                                                                      \
+   }                                                                                                  \
+                                                                                                      \
+   template <typename T>                                                                              \
+   static void Get( T* __restrict__ f, const sample* __restrict__ g, size_type n ) noexcept           \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+         FromSample( *f, *g );                                                                        \
+   }                                                                                                  \
+                                                                                                      \
+   static void Get( sample* __restrict__ f, const sample* __restrict__ g, size_type n )               \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+         *f = *g;                                                                                     \
+   }                                                                                                  \
+                                                                                                      \
+   template <typename T>                                                                              \
+   static void Copy( sample* __restrict__ f, const T* __restrict__ g, size_type n ) noexcept          \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+         *f = ToSample( *g );                                                                         \
+   }                                                                                                  \
+                                                                                                      \
+   static void Copy( sample* __restrict__ f, const sample* __restrict__ g, size_type n )              \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+         *f = *g;                                                                                     \
+   }                                                                                                  \
+                                                                                                      \
+   template <typename T>                                                                              \
+   static void GetMin( T* __restrict__ f, const sample* __restrict__ g, size_type n ) noexcept        \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+      {                                                                                               \
+         T h; FromSample( h, *g );                                                                    \
+         if ( h < *f )                                                                                \
+            *f = h;                                                                                   \
+      }                                                                                               \
+   }                                                                                                  \
+                                                                                                      \
+   static void GetMin( sample* __restrict__ f, const sample* __restrict__ g, size_type n ) noexcept   \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+         if ( *g < *f )                                                                               \
+            *f = *g;                                                                                  \
+   }                                                                                                  \
+                                                                                                      \
+   template <typename T>                                                                              \
+   static void CopyMin( sample* __restrict__ f, const T* __restrict__ g, size_type n ) noexcept       \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+      {                                                                                               \
+         sample h = ToSample( *g );                                                                   \
+         if ( h < *f )                                                                                \
+            *f = h;                                                                                   \
+      }                                                                                               \
+   }                                                                                                  \
+                                                                                                      \
+   static void CopyMin( sample* __restrict__ f, const sample* __restrict__ g, size_type n ) noexcept  \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+         if ( *g < *f )                                                                               \
+            *f = *g;                                                                                  \
+   }                                                                                                  \
+                                                                                                      \
+   template <typename T>                                                                              \
+   static void GetMax( T* __restrict__ f, const sample* __restrict__ g, size_type n ) noexcept        \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+      {                                                                                               \
+         T h; FromSample( h, *g );                                                                    \
+         if ( *f < h )                                                                                \
+            *f = h;                                                                                   \
+      }                                                                                               \
+   }                                                                                                  \
+                                                                                                      \
+   static void GetMax( sample* __restrict__ f, const sample* __restrict__ g, size_type n ) noexcept   \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+         if ( *f < *g )                                                                               \
+            *f = *g;                                                                                  \
+   }                                                                                                  \
+                                                                                                      \
+   template <typename T>                                                                              \
+   static void CopyMax( sample* __restrict__ f, const T* __restrict__ g, size_type n ) noexcept       \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+      {                                                                                               \
+         sample h = ToSample( *g );                                                                   \
+         if ( *f < h )                                                                                \
+            *f = h;                                                                                   \
+      }                                                                                               \
+   }                                                                                                  \
+                                                                                                      \
+   static void CopyMax( sample* __restrict__ f, const sample* __restrict__ g, size_type n ) noexcept  \
+   {                                                                                                  \
+      PCL_PRECONDITION( f != nullptr && g != nullptr )                                                \
+      PCL_IVDEP                                                                                       \
+      for ( ; n > 0; --n, ++f, ++g )                                                                  \
+         if ( *f < *g )                                                                               \
+            *f = *g;                                                                                  \
    }
 
 // ----------------------------------------------------------------------------
@@ -374,7 +390,7 @@ public:
     * Returns true iff this pixel traits class corresponds to a floating point
     * pixel sample type.
     */
-   static constexpr bool IsFloatSample()
+   static constexpr bool IsFloatSample() noexcept
    {
       return true;
    }
@@ -383,7 +399,7 @@ public:
     * Returns true if this pixel traits class corresponds to a complex pixel
     * sample type; false if it represents a real pixel sample type.
     */
-   static constexpr bool IsComplexSample()
+   static constexpr bool IsComplexSample() noexcept
    {
       return false;
    }
@@ -394,7 +410,7 @@ public:
     *
     * For %FloatPixelTraits, this member function returns "Float32".
     */
-   static constexpr const char* SampleFormat()
+   static constexpr const char* SampleFormat() noexcept
    {
       return "Float32";
    }
@@ -404,16 +420,38 @@ public:
     *
     * For %FloatPixelTraits, this member function returns 1.0F.
     */
-   static constexpr sample MaxSampleValue()
+   static constexpr sample MaxSampleValue() noexcept
    {
       return 1.0F;
+   }
+
+   /*!
+    * Returns the lowest finite value representable by this pixel sample type.
+    *
+    * For %FloatPixelTraits, this member function returns
+    * std::numeric_limits<float>::lowest().
+    */
+   static constexpr sample LowestSampleValue() noexcept
+   {
+      return std::numeric_limits<float>::lowest();
+   }
+
+   /*!
+    * Returns the highest finite value representable by this pixel sample type.
+    *
+    * For %FloatPixelTraits, this member function returns
+    * std::numeric_limits<float>::max().
+    */
+   static constexpr sample HighestSampleValue() noexcept
+   {
+      return std::numeric_limits<float>::max();
    }
 
    /*!
     * Conversion of any floating point value to a pixel sample value.
     */
    template <typename T>
-   static constexpr sample FloatToSample( T x )
+   static constexpr sample FloatToSample( T x ) noexcept
    {
       return sample( x );
    }
@@ -421,7 +459,7 @@ public:
    /*!
     * Conversion of an 8-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint8 x )
+   static sample ToSample( uint8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( x )/uint8_max;
@@ -433,7 +471,7 @@ public:
    /*!
     * Conversion of an 8-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int8 x )
+   static sample ToSample( int8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return (sample( x ) - int8_min)/uint8_max;
@@ -445,7 +483,7 @@ public:
    /*!
     * Conversion of a 16-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint16 x )
+   static sample ToSample( uint16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( x )/uint16_max;
@@ -457,7 +495,7 @@ public:
    /*!
     * Conversion of a 16-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int16 x )
+   static sample ToSample( int16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return (sample( x ) - int16_min)/uint16_max;
@@ -469,7 +507,7 @@ public:
    /*!
     * Conversion of a 32-bit unsigned integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( uint32 x )
+   static constexpr sample ToSample( uint32 x ) noexcept
    {
       return sample( double( x )/uint32_max );
    }
@@ -477,7 +515,7 @@ public:
    /*!
     * Conversion of a 32-bit signed integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( int32 x )
+   static constexpr sample ToSample( int32 x ) noexcept
    {
       return sample( (double( x ) - int32_min)/uint32_max );
    }
@@ -485,7 +523,7 @@ public:
    /*!
     * Conversion of a 32-bit floating point value to a pixel sample value.
     */
-   static constexpr sample ToSample( float x )
+   static constexpr sample ToSample( float x ) noexcept
    {
       return sample( x );
    }
@@ -493,7 +531,7 @@ public:
    /*!
     * Conversion of a 64-bit floating point value to a pixel sample value.
     */
-   static constexpr sample ToSample( double x )
+   static constexpr sample ToSample( double x ) noexcept
    {
       return sample( x );
    }
@@ -502,7 +540,7 @@ public:
     * Conversion of any complex value to a pixel sample value.
     */
    template <typename T>
-   static constexpr sample ToSample( const Complex<T>& x )
+   static constexpr sample ToSample( const Complex<T>& x ) noexcept
    {
       return sample( pcl::Abs( x ) );
    }
@@ -510,7 +548,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit unsigned integer.
     */
-   static void FromSample( uint8& a, sample b )
+   static void FromSample( uint8& a, sample b ) noexcept
    {
       a = uint8( RoundInt( b*uint8_max ) );
    }
@@ -518,7 +556,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSample( int8& a, sample b )
+   static void FromSample( int8& a, sample b ) noexcept
    {
       a = int8( RoundInt( b*uint8_max ) + int8_min );
    }
@@ -526,7 +564,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit unsigned integer.
     */
-   static void FromSample( uint16& a, sample b )
+   static void FromSample( uint16& a, sample b ) noexcept
    {
       a = uint16( RoundInt( b*uint16_max ) );
    }
@@ -534,7 +572,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit signed integer.
     */
-   static void FromSample( int16& a, sample b )
+   static void FromSample( int16& a, sample b ) noexcept
    {
       a = int16( RoundInt( b*uint16_max ) + int16_min );
    }
@@ -542,7 +580,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit unsigned integer.
     */
-   static void FromSample( uint32& a, sample b )
+   static void FromSample( uint32& a, sample b ) noexcept
    {
       a = uint32( Round( double( b )*uint32_max ) );
    }
@@ -550,7 +588,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit signed integer.
     */
-   static void FromSample( int32& a, sample b )
+   static void FromSample( int32& a, sample b ) noexcept
    {
       a = int32( Round( double( b )*uint32_max ) + int32_min );
    }
@@ -558,7 +596,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit floating point real.
     */
-   static void FromSample( float& a, sample b )
+   static void FromSample( float& a, sample b ) noexcept
    {
       a = float( b );
    }
@@ -566,7 +604,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 64-bit floating point real.
     */
-   static void FromSample( double& a, sample b )
+   static void FromSample( double& a, sample b ) noexcept
    {
       a = double( b );
    }
@@ -575,7 +613,7 @@ public:
     * Conversion of a pixel sample value to any complex type.
     */
    template <typename T>
-   static void FromSample( Complex<T>& a, sample b )
+   static void FromSample( Complex<T>& a, sample b ) noexcept
    {
       a = typename Complex<T>::component( b );
    }
@@ -585,7 +623,7 @@ public:
     * conversion from the source data type T to the pixel sample type.
     */
    template <typename T>
-   static void Mov( sample& a, T b )
+   static void Mov( sample& a, T b ) noexcept
    {
       a = ToSample( b );
    }
@@ -595,7 +633,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Add( sample& a, T b )
+   static void Add( sample& a, T b ) noexcept
    {
       a += ToSample( b );
    }
@@ -605,7 +643,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Sub( sample& a, T b )
+   static void Sub( sample& a, T b ) noexcept
    {
       a -= ToSample( b );
    }
@@ -615,7 +653,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Mul( sample& a, T b )
+   static void Mul( sample& a, T b ) noexcept
    {
       a *= ToSample( b );
    }
@@ -625,7 +663,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Div( sample& a, T b )
+   static void Div( sample& a, T b ) noexcept
    {
       a /= ToSample( b );
    }
@@ -635,7 +673,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Pow( sample& a, T b )
+   static void Pow( sample& a, T b ) noexcept
    {
       a = pcl::Pow( a, ToSample( b ) );
    }
@@ -645,7 +683,7 @@ public:
     * value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Dif( sample& a, T b )
+   static void Dif( sample& a, T b ) noexcept
    {
       a = pcl::Abs( a - ToSample( b ) );
    }
@@ -655,7 +693,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Min( sample& a, T b )
+   static void Min( sample& a, T b ) noexcept
    {
       a = pcl::Min( a, ToSample( b ) );
    }
@@ -665,7 +703,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Max( sample& a, T b )
+   static void Max( sample& a, T b ) noexcept
    {
       a = pcl::Max( a, ToSample( b ) );
    }
@@ -677,7 +715,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Or( sample& a, T b )
+   static void Or( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -691,7 +729,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Nor( sample& a, T b )
+   static void Nor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -705,7 +743,7 @@ public:
     * the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void And( sample& a, T b )
+   static void And( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -717,7 +755,7 @@ public:
     * performed after converting the operand to an 8-bit unsigned integer,
     * then the result is converted to the pixel sample type before assignment.
     */
-   static void Not( sample& a )
+   static void Not( sample& a ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       a = ToSample( uint8( ~ia ) );
@@ -730,7 +768,7 @@ public:
     * converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Not( sample& a, T b )
+   static void Not( sample& a, T b ) noexcept
    {
       uint8 ib; FromSample( ib, ToSample( b ) );
       a = ToSample( uint8( ~ib ) );
@@ -743,7 +781,7 @@ public:
     * the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Nand( sample& a, T b )
+   static void Nand( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -757,7 +795,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Xor( sample& a, T b )
+   static void Xor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -771,7 +809,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Xnor( sample& a, T b )
+   static void Xnor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -784,7 +822,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorBurn( sample& a, T b )
+   static void ColorBurn( sample& a, T b ) noexcept
    {
       a = 1 - pcl::Min( (1 - a)/pcl::Max( EPSILON_F, ToSample( b ) ), 1.0F );
    }
@@ -795,7 +833,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void LinearBurn( sample& a, T b )
+   static void LinearBurn( sample& a, T b ) noexcept
    {
       a = a + ToSample( b ) - 1;
    }
@@ -806,7 +844,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Screen( sample& a, T b )
+   static void Screen( sample& a, T b ) noexcept
    {
       a = 1 - (1 - a)*(1 - ToSample( b ));
    }
@@ -817,7 +855,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorDodge( sample& a, T b )
+   static void ColorDodge( sample& a, T b ) noexcept
    {
       a = pcl::Min( a/pcl::Max( EPSILON_F, (1 - ToSample( b )) ), 1.0F );
    }
@@ -828,7 +866,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Overlay( sample& a, T b )
+   static void Overlay( sample& a, T b ) noexcept
    {
       a = (a > 0.5F) ? 1 - ((1 - 2*(a - 0.5F)) * (1 - ToSample( b ))) : 2*a*ToSample( b );
    }
@@ -839,7 +877,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void SoftLight( sample& a, T b )
+   static void SoftLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5F) ? 1 - (1 - a)*(1 - fb - 0.5F) : a*(fb + 0.5F);
@@ -851,7 +889,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void HardLight( sample& a, T b )
+   static void HardLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5F) ? 1 - (1 - a)*(1 - 2*(fb - 0.5F)) : 2*a*fb;
@@ -863,7 +901,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void VividLight( sample& a, T b )
+   static void VividLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5F) ? 1 - pcl::Max( (1 - a)/(fb - 0.5F)/2, 1.0F ) : pcl::Min( a/pcl::Max( EPSILON_F, 1 - 2*fb ), 1.0F );
@@ -875,7 +913,7 @@ public:
     * with implicit data type conversion.
     */
    template <typename T>
-   static void LinearLight( sample& a, T b )
+   static void LinearLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5F) ? pcl::Max( a + 2*(fb - 0.5F), 1.0F ) : pcl::Max( a + 2*fb - 1, 1.0F );
@@ -887,7 +925,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void PinLight( sample& a, T b )
+   static void PinLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5F) ? pcl::Max( a, 2*(fb - 0.5F) ) : pcl::Min( a, 2*fb );
@@ -899,7 +937,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Exclusion( sample& a, T b )
+   static void Exclusion( sample& a, T b ) noexcept
    {
       a = pcl::Range( 0.5F - 2*(a - 0.5F)*(ToSample( b ) - 0.5F), 0.0F, 1.0F );
    }
@@ -946,7 +984,7 @@ public:
     * Returns true iff this pixel traits class corresponds to a floating point
     * pixel sample type.
     */
-   static constexpr bool IsFloatSample()
+   static constexpr bool IsFloatSample() noexcept
    {
       return true;
    }
@@ -955,7 +993,7 @@ public:
     * Returns true if this pixel traits class corresponds to a complex pixel
     * sample type; false if it represents a real pixel sample type.
     */
-   static constexpr bool IsComplexSample()
+   static constexpr bool IsComplexSample() noexcept
    {
       return false;
    }
@@ -966,7 +1004,7 @@ public:
     *
     * For %DoublePixelTraits, this member function returns "Float64".
     */
-   static constexpr const char* SampleFormat()
+   static constexpr const char* SampleFormat() noexcept
    {
       return "Float64";
    }
@@ -976,16 +1014,38 @@ public:
     *
     * For %DoublePixelTraits, this member function returns 1.0.
     */
-   static constexpr sample MaxSampleValue()
+   static constexpr sample MaxSampleValue() noexcept
    {
       return 1.0;
+   }
+
+   /*!
+    * Returns the lowest finite value representable by this pixel sample type.
+    *
+    * For %DoublePixelTraits, this member function returns
+    * std::numeric_limits<double>::lowest().
+    */
+   static constexpr sample LowestSampleValue() noexcept
+   {
+      return std::numeric_limits<double>::lowest();
+   }
+
+   /*!
+    * Returns the highest finite value representable by this pixel sample type.
+    *
+    * For %DoublePixelTraits, this member function returns
+    * std::numeric_limits<double>::max().
+    */
+   static constexpr sample HighestSampleValue() noexcept
+   {
+      return std::numeric_limits<double>::max();
    }
 
    /*!
     * Conversion of any floating point value to a pixel sample value.
     */
    template <typename T>
-   static constexpr sample FloatToSample( T x )
+   static constexpr sample FloatToSample( T x ) noexcept
    {
       return sample( x );
    }
@@ -993,7 +1053,7 @@ public:
    /*!
     * Conversion of an 8-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint8 x )
+   static sample ToSample( uint8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( x )/uint8_max;
@@ -1005,7 +1065,7 @@ public:
    /*!
     * Conversion of an 8-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int8 x )
+   static sample ToSample( int8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return (sample( x ) - int8_min)/uint8_max;
@@ -1017,7 +1077,7 @@ public:
    /*!
     * Conversion of a 16-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint16 x )
+   static sample ToSample( uint16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( x )/uint16_max;
@@ -1029,7 +1089,7 @@ public:
    /*!
     * Conversion of a 16-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int16 x )
+   static sample ToSample( int16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return (sample( x ) - int16_min)/uint16_max;
@@ -1041,7 +1101,7 @@ public:
    /*!
     * Conversion of a 32-bit unsigned integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( uint32 x )
+   static constexpr sample ToSample( uint32 x ) noexcept
    {
       return sample( x )/uint32_max;
    }
@@ -1049,7 +1109,7 @@ public:
    /*!
     * Conversion of a 32-bit signed integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( int32 x )
+   static constexpr sample ToSample( int32 x ) noexcept
    {
       return (sample( x ) - int32_min)/uint32_max;
    }
@@ -1057,7 +1117,7 @@ public:
    /*!
     * Conversion of a 32-bit floating point value to a pixel sample value.
     */
-   static constexpr sample ToSample( float x )
+   static constexpr sample ToSample( float x ) noexcept
    {
       return sample( x );
    }
@@ -1065,7 +1125,7 @@ public:
    /*!
     * Conversion of a 64-bit floating point value to a pixel sample value.
     */
-   static constexpr sample ToSample( double x )
+   static constexpr sample ToSample( double x ) noexcept
    {
       return sample( x );
    }
@@ -1074,7 +1134,7 @@ public:
     * Conversion of any complex value to a pixel sample value.
     */
    template <typename T>
-   static constexpr sample ToSample( const Complex<T>& x )
+   static constexpr sample ToSample( const Complex<T>& x ) noexcept
    {
       return sample( pcl::Abs( x ) );
    }
@@ -1082,7 +1142,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit unsigned integer.
     */
-   static void FromSample( uint8& a, sample b )
+   static void FromSample( uint8& a, sample b ) noexcept
    {
       a = uint8( RoundInt( b*uint8_max ) );
    }
@@ -1090,7 +1150,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSample( int8& a, sample b )
+   static void FromSample( int8& a, sample b ) noexcept
    {
       a = int8( RoundInt( b*uint8_max ) + int8_min );
    }
@@ -1098,7 +1158,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit unsigned integer.
     */
-   static void FromSample( uint16& a, sample b )
+   static void FromSample( uint16& a, sample b ) noexcept
    {
       a = uint16( RoundInt( b*uint16_max ) );
    }
@@ -1106,7 +1166,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit signed integer.
     */
-   static void FromSample( int16& a, sample b )
+   static void FromSample( int16& a, sample b ) noexcept
    {
       a = int16( RoundInt( b*uint16_max ) + int16_min );
    }
@@ -1114,7 +1174,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit unsigned integer.
     */
-   static void FromSample( uint32& a, sample b )
+   static void FromSample( uint32& a, sample b ) noexcept
    {
       a = uint32( Round( sample( b )*uint32_max ) );
    }
@@ -1122,7 +1182,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit signed integer.
     */
-   static void FromSample( int32& a, sample b )
+   static void FromSample( int32& a, sample b ) noexcept
    {
       a = int32( Round( sample( b )*uint32_max ) + int32_min );
    }
@@ -1130,7 +1190,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit floating point real.
     */
-   static void FromSample( float& a, sample b )
+   static void FromSample( float& a, sample b ) noexcept
    {
       a = float( b );
    }
@@ -1138,7 +1198,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 64-bit floating point real.
     */
-   static void FromSample( double& a, sample b )
+   static void FromSample( double& a, sample b ) noexcept
    {
       a = double( b );
    }
@@ -1147,7 +1207,7 @@ public:
     * Conversion of a pixel sample value to any complex type.
     */
    template <typename T>
-   static void FromSample( Complex<T>& a, sample b )
+   static void FromSample( Complex<T>& a, sample b ) noexcept
    {
       a = typename Complex<T>::component( b );
    }
@@ -1157,7 +1217,7 @@ public:
     * conversion from the source data type T to the pixel sample type.
     */
    template <typename T>
-   static void Mov( sample& a, T b )
+   static void Mov( sample& a, T b ) noexcept
    {
       a = ToSample( b );
    }
@@ -1167,7 +1227,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Add( sample& a, T b )
+   static void Add( sample& a, T b ) noexcept
    {
       a += ToSample( b );
    }
@@ -1177,7 +1237,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Sub( sample& a, T b )
+   static void Sub( sample& a, T b ) noexcept
    {
       a -= ToSample( b );
    }
@@ -1187,7 +1247,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Mul( sample& a, T b )
+   static void Mul( sample& a, T b ) noexcept
    {
       a *= ToSample( b );
    }
@@ -1197,7 +1257,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Div( sample& a, T b )
+   static void Div( sample& a, T b ) noexcept
    {
       a /= ToSample( b );
    }
@@ -1207,7 +1267,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Pow( sample& a, T b )
+   static void Pow( sample& a, T b ) noexcept
    {
       a = pcl::Pow( a, ToSample( b ) );
    }
@@ -1217,7 +1277,7 @@ public:
     * value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Dif( sample& a, T b )
+   static void Dif( sample& a, T b ) noexcept
    {
       a = pcl::Abs( a - ToSample( b ) );
    }
@@ -1227,7 +1287,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Min( sample& a, T b )
+   static void Min( sample& a, T b ) noexcept
    {
       a = pcl::Min( a, ToSample( b ) );
    }
@@ -1237,7 +1297,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Max( sample& a, T b )
+   static void Max( sample& a, T b ) noexcept
    {
       a = pcl::Max( a, ToSample( b ) );
    }
@@ -1249,7 +1309,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Or( sample& a, T b )
+   static void Or( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1263,7 +1323,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Nor( sample& a, T b )
+   static void Nor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1277,7 +1337,7 @@ public:
     * the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void And( sample& a, T b )
+   static void And( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1289,7 +1349,7 @@ public:
     * performed after converting the operand to an 8-bit unsigned integer,
     * then the result is converted to the pixel sample type before assignment.
     */
-   static void Not( sample& a )
+   static void Not( sample& a ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       a = ToSample( uint8( ~ia ) );
@@ -1302,7 +1362,7 @@ public:
     * converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Not( sample& a, T b )
+   static void Not( sample& a, T b ) noexcept
    {
       uint8 ib; FromSample( ib, ToSample( b ) );
       a = ToSample( uint8( ~ib ) );
@@ -1315,7 +1375,7 @@ public:
     * the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Nand( sample& a, T b )
+   static void Nand( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1329,7 +1389,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Xor( sample& a, T b )
+   static void Xor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1343,7 +1403,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Xnor( sample& a, T b )
+   static void Xnor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1356,7 +1416,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorBurn( sample& a, T b )
+   static void ColorBurn( sample& a, T b ) noexcept
    {
       a = 1 - pcl::Min( (1 - a)/pcl::Max( EPSILON_D, ToSample( b ) ), 1.0 );
    }
@@ -1367,7 +1427,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void LinearBurn( sample& a, T b )
+   static void LinearBurn( sample& a, T b ) noexcept
    {
       a = a + ToSample( b ) - 1;
    }
@@ -1378,7 +1438,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Screen( sample& a, T b )
+   static void Screen( sample& a, T b ) noexcept
    {
       a = 1 - (1 - a)*(1 - ToSample( b ));
    }
@@ -1389,7 +1449,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorDodge( sample& a, T b )
+   static void ColorDodge( sample& a, T b ) noexcept
    {
       a = pcl::Min( a/pcl::Max( EPSILON_D, (1 - ToSample( b )) ), 1.0 );
    }
@@ -1400,7 +1460,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Overlay( sample& a, T b )
+   static void Overlay( sample& a, T b ) noexcept
    {
       a = (a > 0.5) ? 1 - ((1 - 2*(a - 0.5)) * (1 - ToSample( b ))) : 2*a*ToSample( b );
    }
@@ -1411,7 +1471,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void SoftLight( sample& a, T b )
+   static void SoftLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5) ? 1 - (1 - a)*(1 - fb - 0.5) : a*(fb + 0.5);
@@ -1423,7 +1483,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void HardLight( sample& a, T b )
+   static void HardLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5) ? 1 - (1 - a)*(1 - 2*(fb - 0.5)) : 2*a*fb;
@@ -1435,7 +1495,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void VividLight( sample& a, T b )
+   static void VividLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5) ? 1 - pcl::Max( (1 - a)/(fb - 0.5)/2, 1.0 ) : pcl::Min( a/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 );
@@ -1447,7 +1507,7 @@ public:
     * with implicit data type conversion.
     */
    template <typename T>
-   static void LinearLight( sample& a, T b )
+   static void LinearLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5) ? pcl::Max( a + 2*(fb - 0.5), 1.0 ) : pcl::Max( a + 2*fb - 1, 1.0 );
@@ -1459,7 +1519,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void PinLight( sample& a, T b )
+   static void PinLight( sample& a, T b ) noexcept
    {
       sample fb = ToSample( b );
       a = (fb > 0.5) ? pcl::Max( a, 2*(fb - 0.5) ) : pcl::Min( a, 2*fb );
@@ -1471,7 +1531,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Exclusion( sample& a, T b )
+   static void Exclusion( sample& a, T b ) noexcept
    {
       a = pcl::Range( 0.5 - 2*(a - 0.5)*(ToSample( b ) - 0.5), 0.0, 1.0 );
    }
@@ -1513,7 +1573,7 @@ public:
     */
    typedef sample::component                    component;
 
-   static constexpr int BitsPerSample()
+   static constexpr int BitsPerSample() noexcept
    {
       return sizeof( component ) << 3;
    }
@@ -1522,7 +1582,7 @@ public:
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
-   static constexpr bool IsFloatSample()
+   static constexpr bool IsFloatSample() noexcept
    {
       return false;
    }
@@ -1531,7 +1591,7 @@ public:
     * Returns true if this pixel traits class corresponds to a complex pixel
     * sample type; false if it represents a real pixel sample type.
     */
-   static constexpr bool IsComplexSample()
+   static constexpr bool IsComplexSample() noexcept
    {
       return true;
    }
@@ -1542,7 +1602,7 @@ public:
     *
     * For %ComplexPixelTraits, this member function returns "Complex32".
     */
-   static constexpr const char* SampleFormat()
+   static constexpr const char* SampleFormat() noexcept
    {
       return "Complex32";
    }
@@ -1552,22 +1612,44 @@ public:
     *
     * For %ComplexPixelTraits, this member function returns {1.0F, 0.0F}.
     */
-   static sample MaxSampleValue()
+   static sample MaxSampleValue() noexcept
    {
       return sample( component( 1 ) );
+   }
+
+   /*!
+    * Returns the lowest finite value representable by this pixel sample type.
+    *
+    * For %ComplexPixelTraits, this member function returns
+    * {std::numeric_limits<double>::lowest(), 0.0F}.
+    */
+   static sample LowestSampleValue() noexcept
+   {
+      return sample( component( std::numeric_limits<component>::lowest() ) );
+   }
+
+   /*!
+    * Returns the highest finite value representable by this pixel sample type.
+    *
+    * For %ComplexPixelTraits, this member function returns
+    * {std::numeric_limits<double>::max(), 0.0F}.
+    */
+   static sample HighestSampleValue() noexcept
+   {
+      return sample( component( std::numeric_limits<component>::max() ) );
    }
 
    /*!
     * Conversion of any floating point value to a pixel sample value.
     */
    template <typename T>
-   static sample FloatToSample( T x )
+   static sample FloatToSample( T x ) noexcept
    {
       return sample( component( x ) );
    }
 
    template <typename T>
-   static sample FloatToSample( sample x )
+   static sample FloatToSample( sample x ) noexcept
    {
       return sample( x );
    }
@@ -1575,7 +1657,7 @@ public:
    /*!
     * Conversion of an 8-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint8 x )
+   static sample ToSample( uint8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( component( x )/uint8_max );
@@ -1587,7 +1669,7 @@ public:
    /*!
     * Conversion of an 8-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int8 x )
+   static sample ToSample( int8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( (component( x ) - int8_min)/uint8_max );
@@ -1599,7 +1681,7 @@ public:
    /*!
     * Conversion of a 16-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint16 x )
+   static sample ToSample( uint16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( component( x )/uint16_max );
@@ -1611,7 +1693,7 @@ public:
    /*!
     * Conversion of a 16-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int16 x )
+   static sample ToSample( int16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( (component( x ) - int16_min)/uint16_max );
@@ -1623,7 +1705,7 @@ public:
    /*!
     * Conversion of a 32-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint32 x )
+   static sample ToSample( uint32 x ) noexcept
    {
       return sample( component( double( x )/uint32_max ) );
    }
@@ -1631,7 +1713,7 @@ public:
    /*!
     * Conversion of a 32-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int32 x )
+   static sample ToSample( int32 x ) noexcept
    {
       return sample( component( (double( x ) - int32_min)/uint32_max ) );
    }
@@ -1639,7 +1721,7 @@ public:
    /*!
     * Conversion of a 32-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( float x )
+   static sample ToSample( float x ) noexcept
    {
       return sample( component( x ) );
    }
@@ -1647,7 +1729,7 @@ public:
    /*!
     * Conversion of a 64-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( double x )
+   static sample ToSample( double x ) noexcept
    {
       return sample( component( x ) );
    }
@@ -1656,7 +1738,7 @@ public:
     * Conversion of any complex value to a pixel sample value.
     */
    template <typename T>
-   static sample ToSample( const Complex<T>& x )
+   static sample ToSample( const Complex<T>& x ) noexcept
    {
       return sample( x );
    }
@@ -1664,7 +1746,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit unsigned integer.
     */
-   static void FromSample( uint8& a, sample b )
+   static void FromSample( uint8& a, sample b ) noexcept
    {
       a = uint8( RoundInt( pcl::Abs( b )*uint8_max ) );
    }
@@ -1672,7 +1754,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSampl( int8& a, sample b )
+   static void FromSampl( int8& a, sample b ) noexcept
    {
       a = int8( RoundInt( pcl::Abs( b )*uint8_max ) + int8_min );
    }
@@ -1680,7 +1762,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit unsigned integer.
     */
-   static void FromSample( uint16& a, sample b )
+   static void FromSample( uint16& a, sample b ) noexcept
    {
       a = uint16( RoundInt( pcl::Abs( b )*uint16_max ) );
    }
@@ -1688,7 +1770,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit signed integer.
     */
-   static void FromSample( int16& a, sample b )
+   static void FromSample( int16& a, sample b ) noexcept
    {
       a = int16( RoundInt( pcl::Abs( b )*uint16_max ) + int16_min );
    }
@@ -1696,7 +1778,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit unsigned integer.
     */
-   static void FromSample( uint32& a, sample b )
+   static void FromSample( uint32& a, sample b ) noexcept
    {
       a = uint32( Round( double( pcl::Abs( b ) )*uint32_max ) );
    }
@@ -1704,7 +1786,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit signed integer.
     */
-   static void FromSample( int32& a, sample b )
+   static void FromSample( int32& a, sample b ) noexcept
    {
       a = int32( Round( double( pcl::Abs( b ) )*uint32_max ) + int32_min );
    }
@@ -1712,7 +1794,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit floating point real.
     */
-   static void FromSample( float& a, sample b )
+   static void FromSample( float& a, sample b ) noexcept
    {
       a = float( pcl::Abs( b ) );
    }
@@ -1720,7 +1802,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 64-bit floating point real.
     */
-   static void FromSample( double& a, sample b )
+   static void FromSample( double& a, sample b ) noexcept
    {
       a = double( pcl::Abs( b ) );
    }
@@ -1729,7 +1811,7 @@ public:
     * Conversion of a pixel sample value to any complex type.
     */
    template <typename T>
-   static void FromSample( Complex<T>& a, sample b )
+   static void FromSample( Complex<T>& a, sample b ) noexcept
    {
       a = Complex<T>( b );
    }
@@ -1739,7 +1821,7 @@ public:
     * conversion from the source data type T to the pixel sample type.
     */
    template <typename T>
-   static void Mov( sample& a, T b )
+   static void Mov( sample& a, T b ) noexcept
    {
       a = ToSample( b );
    }
@@ -1749,7 +1831,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Add( sample& a, T b )
+   static void Add( sample& a, T b ) noexcept
    {
       a += ToSample( b );
    }
@@ -1759,7 +1841,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Sub( sample& a, T b )
+   static void Sub( sample& a, T b ) noexcept
    {
       a -= ToSample( b );
    }
@@ -1769,7 +1851,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Mul( sample& a, T b )
+   static void Mul( sample& a, T b ) noexcept
    {
       a *= ToSample( b );
    }
@@ -1779,7 +1861,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Div( sample& a, T b )
+   static void Div( sample& a, T b ) noexcept
    {
       a /= ToSample( b );
    }
@@ -1789,7 +1871,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Pow( sample& a, T b )
+   static void Pow( sample& a, T b ) noexcept
    {
       a = pcl::Pow( a, ToSample( b ) );
    }
@@ -1799,7 +1881,7 @@ public:
     * value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Dif( sample& a, T b )
+   static void Dif( sample& a, T b ) noexcept
    {
       a = pcl::Abs( a - ToSample( b ) );
    }
@@ -1809,7 +1891,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Min( sample& a, T b )
+   static void Min( sample& a, T b ) noexcept
    {
       a = pcl::Min( a, ToSample( b ) );
    }
@@ -1819,7 +1901,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Max( sample& a, T b )
+   static void Max( sample& a, T b ) noexcept
    {
       a = pcl::Max( a, ToSample( b ) );
    }
@@ -1831,7 +1913,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Or( sample& a, T b )
+   static void Or( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1845,7 +1927,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Nor( sample& a, T b )
+   static void Nor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1859,7 +1941,7 @@ public:
     * the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void And( sample& a, T b )
+   static void And( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1871,7 +1953,7 @@ public:
     * performed after converting the operand to an 8-bit unsigned integer,
     * then the result is converted to the pixel sample type before assignment.
     */
-   static void Not( sample& a )
+   static void Not( sample& a ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       a = ToSample( uint8( ~ia ) );
@@ -1884,7 +1966,7 @@ public:
     * converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Not( sample& a, T b )
+   static void Not( sample& a, T b ) noexcept
    {
       uint8 ib; FromSample( ib, ToSample( b ) );
       a = ToSample( uint8( ~ib ) );
@@ -1897,7 +1979,7 @@ public:
     * the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Nand( sample& a, T b )
+   static void Nand( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1911,7 +1993,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Xor( sample& a, T b )
+   static void Xor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1925,7 +2007,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Xnor( sample& a, T b )
+   static void Xnor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -1938,20 +2020,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorBurn( sample& a, T b )
+   static void ColorBurn( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_F, fb ), 1.0F ) );
    }
 
-   static void ColorBurn( sample& a, float b )
+   static void ColorBurn( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_F, b ), 1.0F ) );
    }
 
-   static void ColorBurn( sample& a, double b )
+   static void ColorBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_D, b ), 1.0 ) );
@@ -1963,20 +2045,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void LinearBurn( sample& a, T b )
+   static void LinearBurn( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( fa + fb - 1 );
    }
 
-   static void LinearBurn( sample& a, float b )
+   static void LinearBurn( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( fa + b - 1 );
    }
 
-   static void LinearBurn( sample& a, double b )
+   static void LinearBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa + b - 1 );
@@ -1988,20 +2070,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Screen( sample& a, T b )
+   static void Screen( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - (1 - fa)*(1 - fb) );
    }
 
-   static void Screen( sample& a, float b )
+   static void Screen( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - b) );
    }
 
-   static void Screen( sample& a, double b )
+   static void Screen( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - b) );
@@ -2013,20 +2095,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorDodge( sample& a, T b )
+   static void ColorDodge( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_F, 1 - fb ), 1.0F ) );
    }
 
-   static void ColorDodge( sample& a, float b )
+   static void ColorDodge( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_F, 1 - b ), 1.0F ) );
    }
 
-   static void ColorDodge( sample& a, double b )
+   static void ColorDodge( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_D, 1 - b ), 1.0 ) );
@@ -2038,20 +2120,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Overlay( sample& a, T b )
+   static void Overlay( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fa > 0.5F) ? 1 - ((1 - 2*(fa - 0.5F)) * (1 - fb)) : 2*a*fb );
    }
 
-   static void Overlay( sample& a, float b )
+   static void Overlay( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5F) ? 1 - ((1 - 2*(fa - 0.5F)) * (1 - b)) : 2*a*b );
    }
 
-   static void Overlay( sample& a, double b )
+   static void Overlay( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5) ? 1 - ((1 - 2*(fa - 0.5)) * (1 - b)) : 2*a*b );
@@ -2063,20 +2145,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void SoftLight( sample& a, T b )
+   static void SoftLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? 1 - (1 - fa)*(1 - fb - 0.5F) : a*(fb + 0.5F) );
    }
 
-   static void SoftLight( sample& a, float b )
+   static void SoftLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? 1 - (1 - fa)*(1 - b - 0.5F) : a*(b + 0.5F) );
    }
 
-   static void SoftLight( sample& a, double b )
+   static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
@@ -2088,20 +2170,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void HardLight( sample& a, T b )
+   static void HardLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? 1 - (1 - fa)*(1 - 2*(fb - 0.5F)) : 2*fa*fb );
    }
 
-   static void HardLight( sample& a, float b )
+   static void HardLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? 1 - (1 - fa)*(1 - 2*(b - 0.5F)) : 2*fa*b );
    }
 
-   static void HardLight( sample& a, double b )
+   static void HardLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - 2*(b - 0.5)) : 2*fa*b );
@@ -2113,20 +2195,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void VividLight( sample& a, T b )
+   static void VividLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*fb ), 1.0F ) );
    }
 
-   static void VividLight( sample& a, float b )
+   static void VividLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? 1 - pcl::Max( (1 - fa)/(b - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*b ), 1.0F ) );
    }
 
-   static void VividLight( sample& a, double b )
+   static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
@@ -2138,20 +2220,20 @@ public:
     * with implicit data type conversion.
     */
    template <typename T>
-   static void LinearLight( sample& a, T b )
+   static void LinearLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? pcl::Max( fa + 2*(fb - 0.5F), 1.0F ) : pcl::Max( fa + 2*fb - 1, 1.0F ) );
    }
 
-   static void LinearLight( sample& a, float b )
+   static void LinearLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? pcl::Max( fa + 2*(b - 0.5F), 1.0F ) : pcl::Max( fa + 2*b - 1, 1.0F ) );
    }
 
-   static void LinearLight( sample& a, double b )
+   static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
@@ -2163,20 +2245,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void PinLight( sample& a, T b )
+   static void PinLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? pcl::Max( fa, 2*(fb - 0.5F) ) : pcl::Min( fa, 2*fb ) );
    }
 
-   static void PinLight( sample& a, float b )
+   static void PinLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? pcl::Max( fa, 2*(b - 0.5F) ) : pcl::Min( fa, 2*b ) );
    }
 
-   static void PinLight( sample& a, double b )
+   static void PinLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa, 2*(b - 0.5) ) : pcl::Min( fa, 2*b ) );
@@ -2188,20 +2270,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Exclusion( sample& a, T b )
+   static void Exclusion( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Range( 0.5F - 2*(fa - 0.5F)*(fb - 0.5F), 0.0F, 1.0F ) );
    }
 
-   static void Exclusion( sample& a, float b )
+   static void Exclusion( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5F - 2*(fa - 0.5F)*(b - 0.5F), 0.0F, 1.0F ) );
    }
 
-   static void Exclusion( sample& a, double b )
+   static void Exclusion( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5 - 2*(fa - 0.5)*(b - 0.5), 0.0, 1.0 ) );
@@ -2246,7 +2328,7 @@ public:
 
    /*!
     */
-   static constexpr int BitsPerSample()
+   static constexpr int BitsPerSample() noexcept
    {
       return sizeof( component ) << 3;
    }
@@ -2255,7 +2337,7 @@ public:
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
-   static constexpr bool IsFloatSample()
+   static constexpr bool IsFloatSample() noexcept
    {
       return false;
    }
@@ -2264,7 +2346,7 @@ public:
     * Returns true if this pixel traits class corresponds to a complex pixel
     * sample type; false if it represents a real pixel sample type.
     */
-   static constexpr bool IsComplexSample()
+   static constexpr bool IsComplexSample() noexcept
    {
       return true;
    }
@@ -2275,7 +2357,7 @@ public:
     *
     * For %DComplexPixelTraits, this member function returns "Complex64".
     */
-   static constexpr const char* SampleFormat()
+   static constexpr const char* SampleFormat() noexcept
    {
       return "Complex64";
    }
@@ -2285,22 +2367,44 @@ public:
     *
     * For %DComplexPixelTraits, this member function returns {1.0, 0.0}.
     */
-   static sample MaxSampleValue()
+   static sample MaxSampleValue() noexcept
    {
       return sample( component( 1 ) );
+   }
+
+   /*!
+    * Returns the lowest finite value representable by this pixel sample type.
+    *
+    * For %DComplexPixelTraits, this member function returns
+    * {std::numeric_limits<double>::lowest(), 0.0F}.
+    */
+   static sample LowestSampleValue() noexcept
+   {
+      return sample( component( std::numeric_limits<component>::lowest() ) );
+   }
+
+   /*!
+    * Returns the highest finite value representable by this pixel sample type.
+    *
+    * For %DComplexPixelTraits, this member function returns
+    * {std::numeric_limits<double>::max(), 0.0F}.
+    */
+   static sample HighestSampleValue() noexcept
+   {
+      return sample( component( std::numeric_limits<component>::max() ) );
    }
 
    /*!
     * Conversion of any floating point value to a pixel sample value.
     */
    template <typename T>
-   static sample FloatToSample( T x )
+   static sample FloatToSample( T x ) noexcept
    {
       return sample( component( x ) );
    }
 
    template <typename T>
-   static sample FloatToSample( sample x )
+   static sample FloatToSample( sample x ) noexcept
    {
       return sample( x );
    }
@@ -2308,7 +2412,7 @@ public:
    /*!
     * Conversion of an 8-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint8 x )
+   static sample ToSample( uint8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( component( x )/uint8_max );
@@ -2320,7 +2424,7 @@ public:
    /*!
     * Conversion of an 8-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int8 x )
+   static sample ToSample( int8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( (component( x ) - int8_min)/uint8_max );
@@ -2332,7 +2436,7 @@ public:
    /*!
     * Conversion of a 16-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint16 x )
+   static sample ToSample( uint16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( component( x )/uint16_max );
@@ -2344,7 +2448,7 @@ public:
    /*!
     * Conversion of a 16-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int16 x )
+   static sample ToSample( int16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( (component( x ) - int16_min)/uint16_max );
@@ -2356,7 +2460,7 @@ public:
    /*!
     * Conversion of a 32-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint32 x )
+   static sample ToSample( uint32 x ) noexcept
    {
       return sample( component( x )/uint32_max );
    }
@@ -2364,7 +2468,7 @@ public:
    /*!
     * Conversion of a 32-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int32 x )
+   static sample ToSample( int32 x ) noexcept
    {
       return sample( (component( x ) - int32_min)/uint32_max );
    }
@@ -2372,7 +2476,7 @@ public:
    /*!
     * Conversion of a 32-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( float x )
+   static sample ToSample( float x ) noexcept
    {
       return sample( component( x ) );
    }
@@ -2380,7 +2484,7 @@ public:
    /*!
     * Conversion of a 64-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( double x )
+   static sample ToSample( double x ) noexcept
    {
       return sample( component( x ) );
    }
@@ -2389,7 +2493,7 @@ public:
     * Conversion of any complex value to a pixel sample value.
     */
    template <typename T>
-   static sample ToSample( const Complex<T>& x )
+   static sample ToSample( const Complex<T>& x ) noexcept
    {
       return sample( x );
    }
@@ -2397,7 +2501,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit unsigned integer.
     */
-   static void FromSample( uint8& a, sample b )
+   static void FromSample( uint8& a, sample b ) noexcept
    {
       a = uint8( RoundInt( pcl::Abs( b )*uint8_max ) );
    }
@@ -2405,7 +2509,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSample( int8& a, sample b )
+   static void FromSample( int8& a, sample b ) noexcept
    {
       a = int8( RoundInt( pcl::Abs( b )*uint8_max ) + int8_min );
    }
@@ -2413,7 +2517,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSample( uint16& a, sample b )
+   static void FromSample( uint16& a, sample b ) noexcept
    {
       a = uint16( RoundInt( pcl::Abs( b )*uint16_max ) );
    }
@@ -2421,7 +2525,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit signed integer.
     */
-   static void FromSample( int16& a, sample b )
+   static void FromSample( int16& a, sample b ) noexcept
    {
       a = int16( RoundInt( pcl::Abs( b )*uint16_max ) + int16_min );
    }
@@ -2429,7 +2533,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit unsigned integer.
     */
-   static void FromSample( uint32& a, sample b )
+   static void FromSample( uint32& a, sample b ) noexcept
    {
       a = uint32( Round( component( pcl::Abs( b ) )*uint32_max ) );
    }
@@ -2437,7 +2541,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit signed integer.
     */
-   static void FromSample( int32& a, sample b )
+   static void FromSample( int32& a, sample b ) noexcept
    {
       a = int32( Round( component( pcl::Abs( b ) )*uint32_max ) + int32_min );
    }
@@ -2445,7 +2549,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit floating point real.
     */
-   static void FromSample( float& a, sample b )
+   static void FromSample( float& a, sample b ) noexcept
    {
       a = float( pcl::Abs( b ) );
    }
@@ -2453,7 +2557,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 64-bit floating point real.
     */
-   static void FromSample( double& a, sample b )
+   static void FromSample( double& a, sample b ) noexcept
    {
       a = double( pcl::Abs( b ) );
    }
@@ -2462,7 +2566,7 @@ public:
     * Conversion of a pixel sample value to any complex type.
     */
    template <typename T>
-   static void FromSample( Complex<T>& a, sample b )
+   static void FromSample( Complex<T>& a, sample b ) noexcept
    {
       a = Complex<T>( b );
    }
@@ -2472,7 +2576,7 @@ public:
     * conversion from the source data type T to the pixel sample type.
     */
    template <typename T>
-   static void Mov( sample& a, T b )
+   static void Mov( sample& a, T b ) noexcept
    {
       a = ToSample( b );
    }
@@ -2482,7 +2586,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Add( sample& a, T b )
+   static void Add( sample& a, T b ) noexcept
    {
       a += ToSample( b );
    }
@@ -2492,7 +2596,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Sub( sample& a, T b )
+   static void Sub( sample& a, T b ) noexcept
    {
       a -= ToSample( b );
    }
@@ -2502,7 +2606,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Mul( sample& a, T b )
+   static void Mul( sample& a, T b ) noexcept
    {
       a *= ToSample( b );
    }
@@ -2512,7 +2616,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Div( sample& a, T b )
+   static void Div( sample& a, T b ) noexcept
    {
       a /= ToSample( b );
    }
@@ -2522,7 +2626,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Pow( sample& a, T b )
+   static void Pow( sample& a, T b ) noexcept
    {
       a = pcl::Pow( a, ToSample( b ) );
    }
@@ -2532,7 +2636,7 @@ public:
     * value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Dif( sample& a, T b )
+   static void Dif( sample& a, T b ) noexcept
    {
       a = pcl::Abs( a - ToSample( b ) );
    }
@@ -2542,7 +2646,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Min( sample& a, T b )
+   static void Min( sample& a, T b ) noexcept
    {
       a = pcl::Min( a, ToSample( b ) );
    }
@@ -2552,7 +2656,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Max( sample& a, T b )
+   static void Max( sample& a, T b ) noexcept
    {
       a = pcl::Max( a, ToSample( b ) );
    }
@@ -2564,7 +2668,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Or( sample& a, T b )
+   static void Or( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -2578,7 +2682,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Nor( sample& a, T b )
+   static void Nor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -2592,7 +2696,7 @@ public:
     * the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void And( sample& a, T b )
+   static void And( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -2604,7 +2708,7 @@ public:
     * performed after converting the operand to an 8-bit unsigned integer,
     * then the result is converted to the pixel sample type before assignment.
     */
-   static void Not( sample& a )
+   static void Not( sample& a ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       a = ToSample( uint8( ~ia ) );
@@ -2617,7 +2721,7 @@ public:
     * converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Not( sample& a, T b )
+   static void Not( sample& a, T b ) noexcept
    {
       uint8 ib; FromSample( ib, ToSample( b ) );
       a = ToSample( uint8( ~ib ) );
@@ -2630,7 +2734,7 @@ public:
     * the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Nand( sample& a, T b )
+   static void Nand( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -2644,7 +2748,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Xor( sample& a, T b )
+   static void Xor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -2658,7 +2762,7 @@ public:
     * result is converted to the pixel sample type and assigned to \a a.
     */
    template <typename T>
-   static void Xnor( sample& a, T b )
+   static void Xnor( sample& a, T b ) noexcept
    {
       uint8 ia; FromSample( ia, a );
       uint8 ib; FromSample( ib, ToSample( b ) );
@@ -2671,20 +2775,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorBurn( sample& a, T b )
+   static void ColorBurn( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_D, fb ), 1.0 ) );
    }
 
-   static void ColorBurn( sample& a, float b )
+   static void ColorBurn( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_D, double( b ) ), 1.0 ) );
    }
 
-   static void ColorBurn( sample& a, double b )
+   static void ColorBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_D, b ), 1.0 ) );
@@ -2696,20 +2800,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void LinearBurn( sample& a, T b )
+   static void LinearBurn( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( fa + fb - 1 );
    }
 
-   static void LinearBurn( sample& a, float b )
+   static void LinearBurn( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa + double( b ) - 1 );
    }
 
-   static void LinearBurn( sample& a, double b )
+   static void LinearBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa + b - 1 );
@@ -2721,20 +2825,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Screen( sample& a, T b )
+   static void Screen( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - (1 - fa)*(1 - fb) );
    }
 
-   static void Screen( sample& a, float b )
+   static void Screen( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - double( b )) );
    }
 
-   static void Screen( sample& a, double b )
+   static void Screen( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - b) );
@@ -2746,20 +2850,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorDodge( sample& a, T b )
+   static void ColorDodge( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_D, 1 - fb ), 1.0 ) );
    }
 
-   static void ColorDodge( sample& a, float b )
+   static void ColorDodge( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_D, 1 - double( b ) ), 1.0 ) );
    }
 
-   static void ColorDodge( sample& a, double b )
+   static void ColorDodge( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_D, 1 - b ), 1.0 ) );
@@ -2771,20 +2875,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Overlay( sample& a, T b )
+   static void Overlay( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fa > 0.5) ? 1 - ((1 - 2*(fa - 0.5)) * (1 - fb)) : 2*a*fb );
    }
 
-   static void Overlay( sample& a, float b )
+   static void Overlay( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5) ? 1 - ((1 - 2*(fa - 0.5)) * (1 - double( b ))) : 2*a*double( b ) );
    }
 
-   static void Overlay( sample& a, double b )
+   static void Overlay( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5) ? 1 - ((1 - 2*(fa - 0.5)) * (1 - b)) : 2*a*b );
@@ -2796,21 +2900,21 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void SoftLight( sample& a, T b )
+   static void SoftLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - fb - 0.5) : a*(fb + 0.5) );
    }
 
-   static void SoftLight( sample& a, float b )
+   static void SoftLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - fb - 0.5) : a*(fb + 0.5) );
    }
 
-   static void SoftLight( sample& a, double b )
+   static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
@@ -2822,21 +2926,21 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void HardLight( sample& a, T b )
+   static void HardLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - 2*(fb - 0.5)) : 2*fa*fb );
    }
 
-   static void HardLight( sample& a, float b )
+   static void HardLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - 2*(fb - 0.5)) : 2*fa*fb );
    }
 
-   static void HardLight( sample& a, double b )
+   static void HardLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - 2*(b - 0.5)) : 2*fa*b );
@@ -2848,21 +2952,21 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void VividLight( sample& a, T b )
+   static void VividLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 ) );
    }
 
-   static void VividLight( sample& a, float b )
+   static void VividLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 ) );
    }
 
-   static void VividLight( sample& a, double b )
+   static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
@@ -2874,21 +2978,21 @@ public:
     * with implicit data type conversion.
     */
    template <typename T>
-   static void LinearLight( sample& a, T b )
+   static void LinearLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? pcl::Max( fa + 2*(fb - 0.5), 1.0 ) : pcl::Max( fa + 2*fb - 1, 1.0 ) );
    }
 
-   static void LinearLight( sample& a, float b )
+   static void LinearLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? pcl::Max( fa + 2*(fb - 0.5), 1.0 ) : pcl::Max( fa + 2*fb - 1, 1.0 ) );
    }
 
-   static void LinearLight( sample& a, double b )
+   static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
@@ -2900,21 +3004,21 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void PinLight( sample& a, T b )
+   static void PinLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? pcl::Max( fa, 2*(fb - 0.5) ) : pcl::Min( fa, 2*fb ) );
    }
 
-   static void PinLight( sample& a, float b )
+   static void PinLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? pcl::Max( fa, 2*(fb - 0.5) ) : pcl::Min( fa, 2*fb ) );
    }
 
-   static void PinLight( sample& a, double b )
+   static void PinLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa, 2*(b - 0.5) ) : pcl::Min( fa, 2*b ) );
@@ -2926,20 +3030,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Exclusion( sample& a, T b )
+   static void Exclusion( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Range( 0.5 - 2*(fa - 0.5)*(fb - 0.5), 0.0, 1.0 ) );
    }
 
-   static void Exclusion( sample& a, float b )
+   static void Exclusion( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5 - 2*(fa - 0.5)*(double( b ) - 0.5), 0.0, 1.0 ) );
    }
 
-   static void Exclusion( sample& a, double b )
+   static void Exclusion( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5 - 2*(fa - 0.5)*(b - 0.5), 0.0, 1.0 ) );
@@ -2987,7 +3091,7 @@ public:
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
-   static constexpr bool IsFloatSample()
+   static constexpr bool IsFloatSample() noexcept
    {
       return false;
    }
@@ -2996,7 +3100,7 @@ public:
     * Returns true if this pixel traits class corresponds to a complex pixel
     * sample type; false if it represents a real pixel sample type.
     */
-   static constexpr bool IsComplexSample()
+   static constexpr bool IsComplexSample() noexcept
    {
       return false;
    }
@@ -3007,7 +3111,7 @@ public:
     *
     * For %UInt8PixelTraits, this member function returns "UInt8".
     */
-   static constexpr const char* SampleFormat()
+   static constexpr const char* SampleFormat() noexcept
    {
       return "UInt8";
    }
@@ -3017,7 +3121,27 @@ public:
     *
     * For %UInt8PixelTraits, this member function returns 255.
     */
-   static constexpr sample MaxSampleValue()
+   static constexpr sample MaxSampleValue() noexcept
+   {
+      return uint8_max;
+   }
+
+   /*!
+    * Returns the lowest finite value representable by this pixel sample type.
+    *
+    * For %UInt8PixelTraits, this member function returns 0.
+    */
+   static constexpr sample LowestSampleValue() noexcept
+   {
+      return sample( 0 );
+   }
+
+   /*!
+    * Returns the highest finite value representable by this pixel sample type.
+    *
+    * For %UInt8PixelTraits, this member function returns 255.
+    */
+   static constexpr sample HighestSampleValue() noexcept
    {
       return uint8_max;
    }
@@ -3026,7 +3150,7 @@ public:
     * Conversion of any floating point value to a pixel sample value.
     */
    template <typename T>
-   static sample FloatToSample( T x )
+   static sample FloatToSample( T x ) noexcept
    {
 #ifdef __PCL_ENFORCE_PIXTRAITS_FLOAT_RANGE
       return sample( pcl::Range( Round( x ), T( 0 ), T( uint8_max ) ) );
@@ -3039,7 +3163,7 @@ public:
    /*!
     * Conversion of an 8-bit unsigned integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( uint8 x )
+   static constexpr sample ToSample( uint8 x ) noexcept
    {
       return sample( x );
    }
@@ -3047,7 +3171,7 @@ public:
    /*!
     * Conversion of an 8-bit signed integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( int8 x )
+   static constexpr sample ToSample( int8 x ) noexcept
    {
       return sample( int32( x ) - int32( int8_min ) );
    }
@@ -3055,7 +3179,7 @@ public:
    /*!
     * Conversion of a 16-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint16 x )
+   static sample ToSample( uint16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( Round( double( x )*uint16_to_uint8 ) );
@@ -3067,7 +3191,7 @@ public:
    /*!
     * Conversion of a 16-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int16 x )
+   static sample ToSample( int16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( Round( (double( x ) - int16_min)*uint16_to_uint8 ) );
@@ -3079,7 +3203,7 @@ public:
    /*!
     * Conversion of a 32-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint32 x )
+   static sample ToSample( uint32 x ) noexcept
    {
       return sample( Round( double( x )*uint32_to_uint8 ) );
    }
@@ -3087,7 +3211,7 @@ public:
    /*!
     * Conversion of a 32-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int32 x )
+   static sample ToSample( int32 x ) noexcept
    {
       return sample( Round( (double( x ) - int32_min)*uint32_to_uint8 ) );
    }
@@ -3095,7 +3219,7 @@ public:
    /*!
     * Conversion of a 32-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( float x )
+   static sample ToSample( float x ) noexcept
    {
       return FloatToSample( x*uint8_max );
    }
@@ -3105,7 +3229,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( float x )
+   static sample ToSampleConstrained( float x ) noexcept
    {
       return FloatToSample( pcl::Range( x, 0.0F, 1.0F )*uint8_max );
    }
@@ -3113,7 +3237,7 @@ public:
    /*!
     * Conversion of a 64-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( double x )
+   static sample ToSample( double x ) noexcept
    {
       return FloatToSample( x*uint8_max );
    }
@@ -3123,7 +3247,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( double x )
+   static sample ToSampleConstrained( double x ) noexcept
    {
       return FloatToSample( pcl::Range( x, 0.0, 1.0 )*uint8_max );
    }
@@ -3132,7 +3256,7 @@ public:
     * Conversion of any complex value to a pixel sample value.
     */
    template <typename T>
-   static sample ToSample( const Complex<T>& x )
+   static sample ToSample( const Complex<T>& x ) noexcept
    {
       return ToSample( pcl::Abs( x ) );
    }
@@ -3140,7 +3264,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit unsigned integer.
     */
-   static void FromSample( uint8& a, sample b )
+   static void FromSample( uint8& a, sample b ) noexcept
    {
       a = uint8( b );
    }
@@ -3148,7 +3272,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSample( int8& a, sample b )
+   static void FromSample( int8& a, sample b ) noexcept
    {
       a = int8( int32( b ) + int32( int8_min ) );
    }
@@ -3156,7 +3280,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit unsigned integer.
     */
-   static void FromSample( uint16& a, sample b )
+   static void FromSample( uint16& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = uint16( b )*uint8_to_uint16;
@@ -3168,7 +3292,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit signed integer.
     */
-   static void FromSample( int16& a, sample b )
+   static void FromSample( int16& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = int16( int32( uint16( b )*uint8_to_uint16 ) + int32( int16_min ) );
@@ -3180,7 +3304,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit unsigned integer.
     */
-   static void FromSample( uint32& a, sample b )
+   static void FromSample( uint32& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = uint32( b )*uint8_to_uint32;
@@ -3192,7 +3316,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit signed integer.
     */
-   static void FromSample( int32& a, sample b )
+   static void FromSample( int32& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = int32( double( uint32( b )*uint8_to_uint32 ) + int32_min );
@@ -3204,7 +3328,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit floating point real.
     */
-   static void FromSample( float& a, sample b )
+   static void FromSample( float& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = float( b )/uint8_max;
@@ -3216,7 +3340,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 64-bit floating point real.
     */
-   static void FromSample( double& a, sample b )
+   static void FromSample( double& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = double( b )/uint8_max;
@@ -3229,7 +3353,7 @@ public:
     * Conversion of a pixel sample value to any complex type.
     */
    template <typename T>
-   static void FromSample( Complex<T>& a, sample b )
+   static void FromSample( Complex<T>& a, sample b ) noexcept
    {
       typename Complex<T>::component c;
       FromSample( c, b );
@@ -3241,7 +3365,7 @@ public:
     * conversion from the source data type T to the pixel sample type.
     */
    template <typename T>
-   static void Mov( sample& a, T b )
+   static void Mov( sample& a, T b ) noexcept
    {
       a = ToSample( b );
    }
@@ -3251,7 +3375,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Add( sample& a, T b )
+   static void Add( sample& a, T b ) noexcept
    {
       a = sample( pcl::Range( uint32( a ) + uint32( ToSample( b ) ),
                   uint32( 0 ), uint32( uint8_max ) ) );
@@ -3262,7 +3386,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Sub( sample& a, T b )
+   static void Sub( sample& a, T b ) noexcept
    {
       a = sample( pcl::Range( int32( a ) - int32( ToSample( b ) ),
                   int32( 0 ), int32( uint8_max ) ) );
@@ -3273,7 +3397,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Mul( sample& a, T b )
+   static void Mul( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
@@ -3282,7 +3406,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, float b )
+   static void Mul( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -3290,7 +3414,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, double b )
+   static void Mul( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -3298,7 +3422,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, pcl::Complex<float> b )
+   static void Mul( sample& a, pcl::Complex<float> b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -3306,7 +3430,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, pcl::Complex<double> b )
+   static void Mul( sample& a, pcl::Complex<double> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -3317,14 +3441,14 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Div( sample& a, T b )
+   static void Div( sample& a, T b ) noexcept
    {
       a = FloatToSample( float( a )/float( ToSample( b ) ) );
    }
 
    /*! #
     */
-   static void Div( sample& a, float b )
+   static void Div( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -3332,7 +3456,7 @@ public:
 
    /*! #
     */
-   static void Div( sample& a, double b )
+   static void Div( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -3340,7 +3464,7 @@ public:
 
    /*! #
     */
-   static void Div( sample& a, pcl::Complex<float> b )
+   static void Div( sample& a, pcl::Complex<float> b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -3348,7 +3472,7 @@ public:
 
    /*! #
     */
-   static void Div( sample& a, pcl::Complex<double> b )
+   static void Div( sample& a, pcl::Complex<double> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -3359,7 +3483,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Pow( sample& a, T b )
+   static void Pow( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
@@ -3368,7 +3492,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, float b )
+   static void Pow( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, b ) );
@@ -3376,7 +3500,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, double b )
+   static void Pow( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, b ) );
@@ -3384,7 +3508,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, pcl::Complex<float> b )
+   static void Pow( sample& a, pcl::Complex<float> b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, b ) );
@@ -3392,7 +3516,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, pcl::Complex<double> b )
+   static void Pow( sample& a, pcl::Complex<double> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, b ) );
@@ -3403,7 +3527,7 @@ public:
     * value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Dif( sample& a, T b )
+   static void Dif( sample& a, T b ) noexcept
    {
       a = sample( pcl::Range( pcl::Abs( int32( a ) - int32( ToSample( b ) ) ),
                   int32( 0 ), int32( uint8_max ) ) );
@@ -3414,7 +3538,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Min( sample& a, T b )
+   static void Min( sample& a, T b ) noexcept
    {
       a = pcl::Min( a, ToSample( b ) );
    }
@@ -3424,7 +3548,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Max( sample& a, T b )
+   static void Max( sample& a, T b ) noexcept
    {
       a = pcl::Max( a, ToSample( b ) );
    }
@@ -3435,7 +3559,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Or( sample& a, T b )
+   static void Or( sample& a, T b ) noexcept
    {
       a |= ToSample( b );
    }
@@ -3446,7 +3570,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Nor( sample& a, T b )
+   static void Nor( sample& a, T b ) noexcept
    {
       a = ~(a | ToSample( b ));
    }
@@ -3457,7 +3581,7 @@ public:
     * the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void And( sample& a, T b )
+   static void And( sample& a, T b ) noexcept
    {
       a &= ToSample( b );
    }
@@ -3465,7 +3589,7 @@ public:
    /*!
     * Negates (bitwise NOT operation) a pixel sample variable \a a.
     */
-   static void Not( sample& a )
+   static void Not( sample& a ) noexcept
    {
       a = sample( ~a );
    }
@@ -3476,7 +3600,7 @@ public:
     * converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Not( sample& a, T b )
+   static void Not( sample& a, T b ) noexcept
    {
       a = sample( ~ToSample( b ) );
    }
@@ -3487,7 +3611,7 @@ public:
     * the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Nand( sample& a, T b )
+   static void Nand( sample& a, T b ) noexcept
    {
       a = sample( ~(a & ToSample( b )) );
    }
@@ -3498,7 +3622,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Xor( sample& a, T b )
+   static void Xor( sample& a, T b ) noexcept
    {
       a ^= ToSample( b );
    }
@@ -3509,7 +3633,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Xnor( sample& a, T b )
+   static void Xnor( sample& a, T b ) noexcept
    {
       a = sample( ~(a ^ ToSample( b )) );
    }
@@ -3520,20 +3644,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorBurn( sample& a, T b )
+   static void ColorBurn( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_F, fb ), 1.0F ) );
    }
 
-   static void ColorBurn( sample& a, float b )
+   static void ColorBurn( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_F, b ), 1.0F ) );
    }
 
-   static void ColorBurn( sample& a, double b )
+   static void ColorBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_D, b ), 1.0 ) );
@@ -3545,20 +3669,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void LinearBurn( sample& a, T b )
+   static void LinearBurn( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( fa + fb - 1 );
    }
 
-   static void LinearBurn( sample& a, float b )
+   static void LinearBurn( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( fa + b - 1 );
    }
 
-   static void LinearBurn( sample& a, double b )
+   static void LinearBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa + b - 1 );
@@ -3570,20 +3694,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Screen( sample& a, T b )
+   static void Screen( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - (1 - fa)*(1 - fb) );
    }
 
-   static void Screen( sample& a, float b )
+   static void Screen( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - b) );
    }
 
-   static void Screen( sample& a, double b )
+   static void Screen( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - b) );
@@ -3595,20 +3719,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorDodge( sample& a, T b )
+   static void ColorDodge( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_F, 1 - fb ), 1.0F ) );
    }
 
-   static void ColorDodge( sample& a, float b )
+   static void ColorDodge( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_F, 1 - b ), 1.0F ) );
    }
 
-   static void ColorDodge( sample& a, double b )
+   static void ColorDodge( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_D, 1 - b ), 1.0 ) );
@@ -3620,20 +3744,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Overlay( sample& a, T b )
+   static void Overlay( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fa > 0.5F) ? 1 - ((1 - 2*(fa - 0.5F)) * (1 - fb)) : 2*a*fb );
    }
 
-   static void Overlay( sample& a, float b )
+   static void Overlay( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5F) ? 1 - ((1 - 2*(fa - 0.5F)) * (1 - b)) : 2*a*b );
    }
 
-   static void Overlay( sample& a, double b )
+   static void Overlay( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5) ? 1 - ((1 - 2*(fa - 0.5)) * (1 - b)) : 2*a*b );
@@ -3645,20 +3769,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void SoftLight( sample& a, T b )
+   static void SoftLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? 1 - (1 - fa)*(1 - fb - 0.5F) : a*(fb + 0.5F) );
    }
 
-   static void SoftLight( sample& a, float b )
+   static void SoftLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? 1 - (1 - fa)*(1 - b - 0.5F) : a*(b + 0.5F) );
    }
 
-   static void SoftLight( sample& a, double b )
+   static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
@@ -3670,20 +3794,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void HardLight( sample& a, T b )
+   static void HardLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? 1 - (1 - fa)*(1 - 2*(fb - 0.5F)) : 2*fa*fb );
    }
 
-   static void HardLight( sample& a, float b )
+   static void HardLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? 1 - (1 - fa)*(1 - 2*(b - 0.5F)) : 2*fa*b );
    }
 
-   static void HardLight( sample& a, double b )
+   static void HardLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - 2*(b - 0.5)) : 2*fa*b );
@@ -3695,20 +3819,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void VividLight( sample& a, T b )
+   static void VividLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*fb ), 1.0F ) );
    }
 
-   static void VividLight( sample& a, float b )
+   static void VividLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? 1 - pcl::Max( (1 - fa)/(b - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*b ), 1.0F ) );
    }
 
-   static void VividLight( sample& a, double b )
+   static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
@@ -3720,20 +3844,20 @@ public:
     * with implicit data type conversion.
     */
    template <typename T>
-   static void LinearLight( sample& a, T b )
+   static void LinearLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? pcl::Max( fa + 2*(fb - 0.5F), 1.0F ) : pcl::Max( fa + 2*fb - 1, 1.0F ) );
    }
 
-   static void LinearLight( sample& a, float b )
+   static void LinearLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? pcl::Max( fa + 2*(b - 0.5F), 1.0F ) : pcl::Max( fa + 2*b - 1, 1.0F ) );
    }
 
-   static void LinearLight( sample& a, double b )
+   static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
@@ -3745,20 +3869,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void PinLight( sample& a, T b )
+   static void PinLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? pcl::Max( fa, 2*(fb - 0.5F) ) : pcl::Min( fa, 2*fb ) );
    }
 
-   static void PinLight( sample& a, float b )
+   static void PinLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? pcl::Max( fa, 2*(b - 0.5F) ) : pcl::Min( fa, 2*b ) );
    }
 
-   static void PinLight( sample& a, double b )
+   static void PinLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa, 2*(b - 0.5) ) : pcl::Min( fa, 2*b ) );
@@ -3770,20 +3894,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Exclusion( sample& a, T b )
+   static void Exclusion( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Range( 0.5F - 2*(fa - 0.5F)*(fb - 0.5F), 0.0F, 1.0F ) );
    }
 
-   static void Exclusion( sample& a, float b )
+   static void Exclusion( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5F - 2*(fa - 0.5F)*(b - 0.5F), 0.0F, 1.0F ) );
    }
 
-   static void Exclusion( sample& a, double b )
+   static void Exclusion( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5 - 2*(fa - 0.5)*(b - 0.5), 0.0, 1.0 ) );
@@ -3831,7 +3955,7 @@ public:
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
-   static constexpr bool IsFloatSample()
+   static constexpr bool IsFloatSample() noexcept
    {
       return false;
    }
@@ -3840,7 +3964,7 @@ public:
     * Returns true if this pixel traits class corresponds to a complex pixel
     * sample type; false if it represents a real pixel sample type.
     */
-   static constexpr bool IsComplexSample()
+   static constexpr bool IsComplexSample() noexcept
    {
       return false;
    }
@@ -3851,7 +3975,7 @@ public:
     *
     * For %UInt16PixelTraits, this member function returns "UInt16".
     */
-   static constexpr const char* SampleFormat()
+   static constexpr const char* SampleFormat() noexcept
    {
       return "UInt16";
    }
@@ -3861,7 +3985,27 @@ public:
     *
     * For %UInt16PixelTraits, this member function returns 65535.
     */
-   static constexpr sample MaxSampleValue()
+   static constexpr sample MaxSampleValue() noexcept
+   {
+      return uint16_max;
+   }
+
+   /*!
+    * Returns the lowest finite value representable by this pixel sample type.
+    *
+    * For %UInt16PixelTraits, this member function returns 0.
+    */
+   static constexpr sample LowestSampleValue() noexcept
+   {
+      return sample( 0 );
+   }
+
+   /*!
+    * Returns the highest finite value representable by this pixel sample type.
+    *
+    * For %UInt16PixelTraits, this member function returns 255.
+    */
+   static constexpr sample HighestSampleValue() noexcept
    {
       return uint16_max;
    }
@@ -3870,7 +4014,7 @@ public:
     * Conversion of any floating point value to a pixel sample value.
     */
    template <typename T>
-   static sample FloatToSample( T x )
+   static sample FloatToSample( T x ) noexcept
    {
 #ifdef __PCL_ENFORCE_PIXTRAITS_FLOAT_RANGE
       return sample( pcl::Range( Round( x ), T( 0 ), T( uint16_max ) ) );
@@ -3883,7 +4027,7 @@ public:
    /*!
     * Conversion of an 8-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint8 x )
+   static sample ToSample( uint8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( x )*sample( uint8_to_uint16 );
@@ -3895,7 +4039,7 @@ public:
    /*!
     * Conversion of an 8-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int8 x )
+   static sample ToSample( int8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( (int32( x ) - int32( int8_min ))*int32( uint8_to_uint16 ) );
@@ -3907,7 +4051,7 @@ public:
    /*!
     * Conversion of a 16-bit unsigned integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( uint16 x )
+   static constexpr sample ToSample( uint16 x ) noexcept
    {
       return sample( x );
    }
@@ -3915,7 +4059,7 @@ public:
    /*!
     * Conversion of a 16-bit signed integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( int16 x )
+   static constexpr sample ToSample( int16 x ) noexcept
    {
       return sample( int32( x ) - int32( int16_min ) );
    }
@@ -3923,7 +4067,7 @@ public:
    /*!
     * Conversion of a 32-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint32 x )
+   static sample ToSample( uint32 x ) noexcept
    {
       return sample( Round( double( x )*uint32_to_uint16 ) );
    }
@@ -3931,7 +4075,7 @@ public:
    /*!
     * Conversion of a 32-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int32 x )
+   static sample ToSample( int32 x ) noexcept
    {
       return sample( Round( (double( x ) - int32_min)*uint32_to_uint16 ) );
    }
@@ -3939,7 +4083,7 @@ public:
    /*!
     * Conversion of a 32-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( float x )
+   static sample ToSample( float x ) noexcept
    {
       return FloatToSample( x*uint16_max );
    }
@@ -3949,7 +4093,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( float x )
+   static sample ToSampleConstrained( float x ) noexcept
    {
       return FloatToSample( pcl::Range( x, 0.0F, 1.0F )*uint16_max );
    }
@@ -3957,7 +4101,7 @@ public:
    /*!
     * Conversion of a 64-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( double x )
+   static sample ToSample( double x ) noexcept
    {
       return FloatToSample( x*uint16_max );
    }
@@ -3967,7 +4111,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( double x )
+   static sample ToSampleConstrained( double x ) noexcept
    {
       return FloatToSample( pcl::Range( x, 0.0, 1.0 )*uint16_max );
    }
@@ -3976,7 +4120,7 @@ public:
     * Conversion of any complex value to a pixel sample value.
     */
    template <typename T>
-   static constexpr sample ToSample( const Complex<T>& x )
+   static constexpr sample ToSample( const Complex<T>& x ) noexcept
    {
       return ToSample( pcl::Abs( x ) );
    }
@@ -3984,7 +4128,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit unsigned integer.
     */
-   static void FromSample( uint8& a, sample b )
+   static void FromSample( uint8& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = uint8( Round( double( b )*uint16_to_uint8 ) );
@@ -3996,7 +4140,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSample( int8& a, sample b )
+   static void FromSample( int8& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = int8( Round( double( b )*uint16_to_uint8 ) + int8_min );
@@ -4008,7 +4152,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit unsigned integer.
     */
-   static void FromSample( uint16& a, sample b )
+   static void FromSample( uint16& a, sample b ) noexcept
    {
       a = uint16( b );
    }
@@ -4016,7 +4160,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit signed integer.
     */
-   static void FromSample( int16& a, sample b )
+   static void FromSample( int16& a, sample b ) noexcept
    {
       a = int16( int32( b ) + int32( int16_min ) );
    }
@@ -4024,7 +4168,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit unsigned integer.
     */
-   static void FromSample( uint32& a, sample b )
+   static void FromSample( uint32& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = uint32( b )*uint16_to_uint32;
@@ -4036,7 +4180,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit signed integer.
     */
-   static void FromSample( int32& a, sample b )
+   static void FromSample( int32& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = int32( double( uint32( b )*uint16_to_uint32 ) + int32_min );
@@ -4048,7 +4192,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit floating point real.
     */
-   static void FromSample( float& a, sample b )
+   static void FromSample( float& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = float( b )/uint16_max;
@@ -4060,7 +4204,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 64-bit floating point real.
     */
-   static void FromSample( double& a, sample b )
+   static void FromSample( double& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = double( b )/uint16_max;
@@ -4073,7 +4217,7 @@ public:
     * Conversion of a pixel sample value to any complex type.
     */
    template <typename T>
-   static void FromSample( Complex<T>& a, sample b )
+   static void FromSample( Complex<T>& a, sample b ) noexcept
    {
       typename Complex<T>::component c;
       FromSample( c, b );
@@ -4085,7 +4229,7 @@ public:
     * conversion from the source data type T to the pixel sample type.
     */
    template <typename T>
-   static void Mov( sample& a, T b )
+   static void Mov( sample& a, T b ) noexcept
    {
       a = ToSample( b );
    }
@@ -4095,7 +4239,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Add( sample& a, T b )
+   static void Add( sample& a, T b ) noexcept
    {
       a = sample( pcl::Range( uint32( a ) + uint32( ToSample( b ) ),
                   uint32( 0 ), uint32( uint16_max ) ) );
@@ -4106,7 +4250,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Sub( sample& a, T b )
+   static void Sub( sample& a, T b ) noexcept
    {
       a = sample( pcl::Range( int32( a ) - int32( ToSample( b ) ),
                   int32( 0 ), int32( uint16_max ) ) );
@@ -4117,7 +4261,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Mul( sample& a, T b )
+   static void Mul( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
@@ -4126,7 +4270,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, float b )
+   static void Mul( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -4134,7 +4278,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, double b )
+   static void Mul( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -4142,7 +4286,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, pcl::Complex<float> b )
+   static void Mul( sample& a, pcl::Complex<float> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -4150,7 +4294,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, pcl::Complex<double> b )
+   static void Mul( sample& a, pcl::Complex<double> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -4161,14 +4305,14 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Div( sample& a, T b )
+   static void Div( sample& a, T b ) noexcept
    {
       a = FloatToSample( double( a )/double( ToSample( b ) ) );
    }
 
    /*! #
     */
-   static void Div( sample& a, float b )
+   static void Div( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -4176,7 +4320,7 @@ public:
 
    /*! #
     */
-   static void Div( sample& a, double b )
+   static void Div( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -4184,7 +4328,7 @@ public:
 
    /*! #
     */
-   static void Div( sample& a, pcl::Complex<float> b )
+   static void Div( sample& a, pcl::Complex<float> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -4192,7 +4336,7 @@ public:
 
    /*! #
     */
-   static void Div( sample& a, pcl::Complex<double> b )
+   static void Div( sample& a, pcl::Complex<double> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -4203,7 +4347,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Pow( sample& a, T b )
+   static void Pow( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
@@ -4212,7 +4356,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, float b )
+   static void Pow( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, double( b ) ) );
@@ -4220,7 +4364,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, double b )
+   static void Pow( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, b ) );
@@ -4228,7 +4372,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, pcl::Complex<float> b )
+   static void Pow( sample& a, pcl::Complex<float> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, pcl::Complex<double>( b ) ) );
@@ -4236,7 +4380,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, pcl::Complex<double> b )
+   static void Pow( sample& a, pcl::Complex<double> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, b ) );
@@ -4247,7 +4391,7 @@ public:
     * value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Dif( sample& a, T b )
+   static void Dif( sample& a, T b ) noexcept
    {
       a = sample( pcl::Range( pcl::Abs( int32( a ) - int32( ToSample( b ) ) ),
                   int32( 0 ), int32( uint16_max ) ) );
@@ -4258,7 +4402,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Min( sample& a, T b )
+   static void Min( sample& a, T b ) noexcept
    {
       a = pcl::Min( a, ToSample( b ) );
    }
@@ -4268,7 +4412,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Max( sample& a, T b )
+   static void Max( sample& a, T b ) noexcept
    {
       a = pcl::Max( a, ToSample( b ) );
    }
@@ -4279,7 +4423,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Or( sample& a, T b )
+   static void Or( sample& a, T b ) noexcept
    {
       a |= ToSample( b );
    }
@@ -4290,7 +4434,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Nor( sample& a, T b )
+   static void Nor( sample& a, T b ) noexcept
    {
       a = ~(a | ToSample( b ));
    }
@@ -4301,7 +4445,7 @@ public:
     * the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void And( sample& a, T b )
+   static void And( sample& a, T b ) noexcept
    {
       a &= ToSample( b );
    }
@@ -4309,7 +4453,7 @@ public:
    /*!
     * Negates (bitwise NOT operation) a pixel sample variable \a a.
     */
-   static void Not( sample& a )
+   static void Not( sample& a ) noexcept
    {
       a = sample( ~a );
    }
@@ -4320,7 +4464,7 @@ public:
     * converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Not( sample& a, T b )
+   static void Not( sample& a, T b ) noexcept
    {
       a = sample( ~ToSample( b ) );
    }
@@ -4331,7 +4475,7 @@ public:
     * the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Nand( sample& a, T b )
+   static void Nand( sample& a, T b ) noexcept
    {
       a = sample( ~(a & ToSample( b )) );
    }
@@ -4342,7 +4486,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Xor( sample& a, T b )
+   static void Xor( sample& a, T b ) noexcept
    {
       a ^= ToSample( b );
    }
@@ -4353,7 +4497,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Xnor( sample& a, T b )
+   static void Xnor( sample& a, T b ) noexcept
    {
       a = sample( ~(a ^ ToSample( b )) );
    }
@@ -4364,20 +4508,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorBurn( sample& a, T b )
+   static void ColorBurn( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_F, fb ), 1.0F ) );
    }
 
-   static void ColorBurn( sample& a, float b )
+   static void ColorBurn( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_F, b ), 1.0F ) );
    }
 
-   static void ColorBurn( sample& a, double b )
+   static void ColorBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_D, b ), 1.0 ) );
@@ -4389,20 +4533,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void LinearBurn( sample& a, T b )
+   static void LinearBurn( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( fa + fb - 1 );
    }
 
-   static void LinearBurn( sample& a, float b )
+   static void LinearBurn( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( fa + b - 1 );
    }
 
-   static void LinearBurn( sample& a, double b )
+   static void LinearBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa + b - 1 );
@@ -4414,20 +4558,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Screen( sample& a, T b )
+   static void Screen( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - (1 - fa)*(1 - fb) );
    }
 
-   static void Screen( sample& a, float b )
+   static void Screen( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - b) );
    }
 
-   static void Screen( sample& a, double b )
+   static void Screen( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - b) );
@@ -4439,20 +4583,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorDodge( sample& a, T b )
+   static void ColorDodge( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_F, 1 - fb ), 1.0F ) );
    }
 
-   static void ColorDodge( sample& a, float b )
+   static void ColorDodge( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_F, 1 - b ), 1.0F ) );
    }
 
-   static void ColorDodge( sample& a, double b )
+   static void ColorDodge( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_D, 1 - b ), 1.0 ) );
@@ -4464,20 +4608,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Overlay( sample& a, T b )
+   static void Overlay( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fa > 0.5F) ? 1 - ((1 - 2*(fa - 0.5F)) * (1 - fb)) : 2*a*fb );
    }
 
-   static void Overlay( sample& a, float b )
+   static void Overlay( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5F) ? 1 - ((1 - 2*(fa - 0.5F)) * (1 - b)) : 2*a*b );
    }
 
-   static void Overlay( sample& a, double b )
+   static void Overlay( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5) ? 1 - ((1 - 2*(fa - 0.5)) * (1 - b)) : 2*a*b );
@@ -4489,20 +4633,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void SoftLight( sample& a, T b )
+   static void SoftLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? 1 - (1 - fa)*(1 - fb - 0.5F) : a*(fb + 0.5F) );
    }
 
-   static void SoftLight( sample& a, float b )
+   static void SoftLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? 1 - (1 - fa)*(1 - b - 0.5F) : a*(b + 0.5F) );
    }
 
-   static void SoftLight( sample& a, double b )
+   static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
@@ -4514,20 +4658,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void HardLight( sample& a, T b )
+   static void HardLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? 1 - (1 - fa)*(1 - 2*(fb - 0.5F)) : 2*fa*fb );
    }
 
-   static void HardLight( sample& a, float b )
+   static void HardLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? 1 - (1 - fa)*(1 - 2*(b - 0.5F)) : 2*fa*b );
    }
 
-   static void HardLight( sample& a, double b )
+   static void HardLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - 2*(b - 0.5)) : 2*fa*b );
@@ -4539,20 +4683,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void VividLight( sample& a, T b )
+   static void VividLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*fb ), 1.0F ) );
    }
 
-   static void VividLight( sample& a, float b )
+   static void VividLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? 1 - pcl::Max( (1 - fa)/(b - 0.5F)/2, 1.0F ) : pcl::Min( fa/pcl::Max( EPSILON_F, 1 - 2*b ), 1.0F ) );
    }
 
-   static void VividLight( sample& a, double b )
+   static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
@@ -4564,20 +4708,20 @@ public:
     * with implicit data type conversion.
     */
    template <typename T>
-   static void LinearLight( sample& a, T b )
+   static void LinearLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? pcl::Max( fa + 2*(fb - 0.5F), 1.0F ) : pcl::Max( fa + 2*fb - 1, 1.0F ) );
    }
 
-   static void LinearLight( sample& a, float b )
+   static void LinearLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? pcl::Max( fa + 2*(b - 0.5F), 1.0F ) : pcl::Max( fa + 2*b - 1, 1.0F ) );
    }
 
-   static void LinearLight( sample& a, double b )
+   static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
@@ -4589,20 +4733,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void PinLight( sample& a, T b )
+   static void PinLight( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5F) ? pcl::Max( fa, 2*(fb - 0.5F) ) : pcl::Min( fa, 2*fb ) );
    }
 
-   static void PinLight( sample& a, float b )
+   static void PinLight( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( (b > 0.5F) ? pcl::Max( fa, 2*(b - 0.5F) ) : pcl::Min( fa, 2*b ) );
    }
 
-   static void PinLight( sample& a, double b )
+   static void PinLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa, 2*(b - 0.5) ) : pcl::Min( fa, 2*b ) );
@@ -4614,20 +4758,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Exclusion( sample& a, T b )
+   static void Exclusion( sample& a, T b ) noexcept
    {
       float fa; FromSample( fa, a );
       float fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Range( 0.5F - 2*(fa - 0.5F)*(fb - 0.5F), 0.0F, 1.0F ) );
    }
 
-   static void Exclusion( sample& a, float b )
+   static void Exclusion( sample& a, float b ) noexcept
    {
       float fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5F - 2*(fa - 0.5F)*(b - 0.5F), 0.0F, 1.0F ) );
    }
 
-   static void Exclusion( sample& a, double b )
+   static void Exclusion( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5 - 2*(fa - 0.5)*(b - 0.5), 0.0, 1.0 ) );
@@ -4675,7 +4819,7 @@ public:
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
-   static constexpr bool IsFloatSample()
+   static constexpr bool IsFloatSample() noexcept
    {
       return false;
    }
@@ -4684,7 +4828,7 @@ public:
     * Returns true if this pixel traits class corresponds to a complex pixel
     * sample type; false if it represents a real pixel sample type.
     */
-   static constexpr bool IsComplexSample()
+   static constexpr bool IsComplexSample() noexcept
    {
       return false;
    }
@@ -4695,7 +4839,7 @@ public:
     *
     * For %UInt32PixelTraits, this member function returns "UInt32".
     */
-   static constexpr const char* SampleFormat()
+   static constexpr const char* SampleFormat() noexcept
    {
       return "UInt32";
    }
@@ -4705,7 +4849,27 @@ public:
     *
     * For %UInt32PixelTraits, this member function returns 4294967295.
     */
-   static constexpr sample MaxSampleValue()
+   static constexpr sample MaxSampleValue() noexcept
+   {
+      return uint32_max;
+   }
+
+   /*!
+    * Returns the lowest finite value representable by this pixel sample type.
+    *
+    * For %UInt32PixelTraits, this member function returns 0.
+    */
+   static constexpr sample LowestSampleValue() noexcept
+   {
+      return sample( 0 );
+   }
+
+   /*!
+    * Returns the highest finite value representable by this pixel sample type.
+    *
+    * For %UInt32PixelTraits, this member function returns 4294967295.
+    */
+   static constexpr sample HighestSampleValue() noexcept
    {
       return uint32_max;
    }
@@ -4714,7 +4878,7 @@ public:
     * Conversion of any floating point value to a pixel sample value.
     */
    template <typename T>
-   static sample FloatToSample( T x )
+   static sample FloatToSample( T x ) noexcept
    {
 #ifdef __PCL_ENFORCE_PIXTRAITS_FLOAT_RANGE
       return sample( pcl::Range( Round( x ), T( 0 ), T( uint32_max ) ) );
@@ -4727,7 +4891,7 @@ public:
    /*!
     * Conversion of an 8-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint8 x )
+   static sample ToSample( uint8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( x )*sample( uint8_to_uint32 );
@@ -4739,7 +4903,7 @@ public:
    /*!
     * Conversion of an 8-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int8 x )
+   static sample ToSample( int8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( uint32( int32( x ) - int32( int8_min ) )*uint8_to_uint32 );
@@ -4751,7 +4915,7 @@ public:
    /*!
     * Conversion of a 16-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint16 x )
+   static sample ToSample( uint16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( x )*sample( uint16_to_uint32 );
@@ -4763,7 +4927,7 @@ public:
    /*!
     * Conversion of a 16-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int16 x )
+   static sample ToSample( int16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( uint32( int32( x ) - int32( int16_min ) )*uint16_to_uint32 );
@@ -4775,7 +4939,7 @@ public:
    /*!
     * Conversion of a 32-bit unsigned integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( uint32 x )
+   static constexpr sample ToSample( uint32 x ) noexcept
    {
       return sample( x );
    }
@@ -4783,7 +4947,7 @@ public:
    /*!
     * Conversion of a 32-bit signed integer value to a pixel sample value.
     */
-   static constexpr sample ToSample( int32 x )
+   static constexpr sample ToSample( int32 x ) noexcept
    {
       return sample( double( x ) - double( int32_min ) );
    }
@@ -4791,7 +4955,7 @@ public:
    /*!
     * Conversion of a 32-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( float x )
+   static sample ToSample( float x ) noexcept
    {
       return FloatToSample( double( x )*uint32_max );
    }
@@ -4801,7 +4965,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( float x )
+   static sample ToSampleConstrained( float x ) noexcept
    {
       return FloatToSample( pcl::Range( double( x ), 0.0, 1.0 )*uint32_max );
    }
@@ -4809,7 +4973,7 @@ public:
    /*!
     * Conversion of a 64-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( double x )
+   static sample ToSample( double x ) noexcept
    {
       return FloatToSample( x*uint32_max );
    }
@@ -4819,7 +4983,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( double x )
+   static sample ToSampleConstrained( double x ) noexcept
    {
       return FloatToSample( pcl::Range( x, 0.0, 1.0 )*uint32_max );
    }
@@ -4828,7 +4992,7 @@ public:
     * Conversion of any complex value to a pixel sample value.
     */
    template <typename T>
-   static sample ToSample( const Complex<T>& x )
+   static sample ToSample( const Complex<T>& x ) noexcept
    {
       return ToSample( pcl::Abs( x ) );
    }
@@ -4836,7 +5000,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit unsigned integer.
     */
-   static void FromSample( uint8& a, sample b )
+   static void FromSample( uint8& a, sample b ) noexcept
    {
       a = uint8( RoundInt( double( b )*uint32_to_uint8 ) );
    }
@@ -4844,7 +5008,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSample( int8& a, sample b )
+   static void FromSample( int8& a, sample b ) noexcept
    {
       a = int8( RoundInt( double( b )*uint32_to_uint8 ) + int8_min );
    }
@@ -4852,7 +5016,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit unsigned integer.
     */
-   static void FromSample( uint16& a, sample b )
+   static void FromSample( uint16& a, sample b ) noexcept
    {
       a = uint16( RoundInt( double( b )*uint32_to_uint16 ) );
    }
@@ -4860,7 +5024,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit signed integer.
     */
-   static void FromSample( int16& a, sample b )
+   static void FromSample( int16& a, sample b ) noexcept
    {
       a = int16( RoundInt( double( b )*uint32_to_uint16 ) + int16_min );
    }
@@ -4868,7 +5032,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit unsigned integer.
     */
-   static void FromSample( uint32& a, sample b )
+   static void FromSample( uint32& a, sample b ) noexcept
    {
       a = uint32( b );
    }
@@ -4876,7 +5040,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit signed integer.
     */
-   static void FromSample( int32& a, sample b )
+   static void FromSample( int32& a, sample b ) noexcept
    {
       a = TruncInt( double( b ) + int32_min );
    }
@@ -4884,7 +5048,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit floating point real.
     */
-   static void FromSample( float& a, sample b )
+   static void FromSample( float& a, sample b ) noexcept
    {
       a = float( double( b )/uint32_max );
    }
@@ -4892,7 +5056,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 64-bit floating point real.
     */
-   static void FromSample( double& a, sample b )
+   static void FromSample( double& a, sample b ) noexcept
    {
       a = double( b )/uint32_max;
    }
@@ -4901,7 +5065,7 @@ public:
     * Conversion of a pixel sample value to any complex type.
     */
    template <typename T>
-   static void FromSample( Complex<T>& a, sample b )
+   static void FromSample( Complex<T>& a, sample b ) noexcept
    {
       typename Complex<T>::component c;
       FromSample( c, b );
@@ -4913,7 +5077,7 @@ public:
     * conversion from the source data type T to the pixel sample type.
     */
    template <typename T>
-   static void Mov( sample& a, T b )
+   static void Mov( sample& a, T b ) noexcept
    {
       a = ToSample( b );
    }
@@ -4923,7 +5087,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Add( sample& a, T b )
+   static void Add( sample& a, T b ) noexcept
    {
       a = sample( pcl::Range( double( a ) + double( ToSample( b ) ),
                   0.0, double( uint32_max ) ) );
@@ -4934,7 +5098,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Sub( sample& a, T b )
+   static void Sub( sample& a, T b ) noexcept
    {
       a = sample( pcl::Range( double( a ) - double( ToSample( b ) ),
                   0.0, double( uint32_max ) ) );
@@ -4945,7 +5109,7 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Mul( sample& a, T b )
+   static void Mul( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
@@ -4954,7 +5118,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, float b )
+   static void Mul( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -4962,7 +5126,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, double b )
+   static void Mul( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -4970,7 +5134,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, pcl::Complex<float> b )
+   static void Mul( sample& a, pcl::Complex<float> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -4978,7 +5142,7 @@ public:
 
    /*! #
     */
-   static void Mul( sample& a, pcl::Complex<double> b )
+   static void Mul( sample& a, pcl::Complex<double> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa * b );
@@ -4989,14 +5153,14 @@ public:
     * data type conversion.
     */
    template <typename T>
-   static void Div( sample& a, T b )
+   static void Div( sample& a, T b ) noexcept
    {
       a = FloatToSample( double( a )/double( ToSample( b ) ) );
    }
 
    /*! #
     */
-   static void Div( sample& a, float b )
+   static void Div( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -5004,7 +5168,7 @@ public:
 
    /*! #
     */
-   static void Div( sample& a, double b )
+   static void Div( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -5012,7 +5176,7 @@ public:
 
    /*! #
     */
-   static void Div( sample& a, pcl::Complex<float> b )
+   static void Div( sample& a, pcl::Complex<float> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -5020,7 +5184,7 @@ public:
 
    /*! #
     */
-   static void Div( sample& a, pcl::Complex<double> b )
+   static void Div( sample& a, pcl::Complex<double> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa / b );
@@ -5031,7 +5195,7 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Pow( sample& a, T b )
+   static void Pow( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
@@ -5040,7 +5204,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, float b )
+   static void Pow( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, double( b ) ) );
@@ -5048,7 +5212,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, double b )
+   static void Pow( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, b ) );
@@ -5056,7 +5220,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, pcl::Complex<float> b )
+   static void Pow( sample& a, pcl::Complex<float> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, pcl::Complex<double>( b ) ) );
@@ -5064,7 +5228,7 @@ public:
 
    /*! #
     */
-   static void Pow( sample& a, pcl::Complex<double> b )
+   static void Pow( sample& a, pcl::Complex<double> b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Pow( fa, b ) );
@@ -5075,7 +5239,7 @@ public:
     * value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Dif( sample& a, T b )
+   static void Dif( sample& a, T b ) noexcept
    {
       a = sample( pcl::Range( pcl::Abs( double( a ) - double( ToSample( b ) ) ),
                   0.0, double( uint32_max ) ) );
@@ -5086,7 +5250,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Min( sample& a, T b )
+   static void Min( sample& a, T b ) noexcept
    {
       a = sample( pcl::Min( a, ToSample( b ) ) );
    }
@@ -5096,7 +5260,7 @@ public:
     * and a T value \a b, with implicit data type conversion.
     */
    template <typename T>
-   static void Max( sample& a, T b )
+   static void Max( sample& a, T b ) noexcept
    {
       a = sample( pcl::Max( a, ToSample( b ) ) );
    }
@@ -5107,7 +5271,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Or( sample& a, T b )
+   static void Or( sample& a, T b ) noexcept
    {
       a |= ToSample( b );
    }
@@ -5118,7 +5282,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Nor( sample& a, T b )
+   static void Nor( sample& a, T b ) noexcept
    {
       a = ~(a | ToSample( b ));
    }
@@ -5129,7 +5293,7 @@ public:
     * the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void And( sample& a, T b )
+   static void And( sample& a, T b ) noexcept
    {
       a &= ToSample( b );
    }
@@ -5137,7 +5301,7 @@ public:
    /*!
     * Negates (bitwise NOT operation) a pixel sample variable \a a.
     */
-   static void Not( sample& a )
+   static void Not( sample& a ) noexcept
    {
       a = sample( ~a );
    }
@@ -5148,7 +5312,7 @@ public:
     * converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Not( sample& a, T b )
+   static void Not( sample& a, T b ) noexcept
    {
       a = sample( ~ToSample( b ) );
    }
@@ -5159,7 +5323,7 @@ public:
     * the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Nand( sample& a, T b )
+   static void Nand( sample& a, T b ) noexcept
    {
       a = sample( ~(a & ToSample( b )) );
    }
@@ -5170,7 +5334,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Xor( sample& a, T b )
+   static void Xor( sample& a, T b ) noexcept
    {
       a ^= ToSample( b );
    }
@@ -5181,7 +5345,7 @@ public:
     * after converting the right-hand side operand \a b to the pixel sample type.
     */
    template <typename T>
-   static void Xnor( sample& a, T b )
+   static void Xnor( sample& a, T b ) noexcept
    {
       a = sample( ~(a ^ ToSample( b )) );
    }
@@ -5192,20 +5356,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorBurn( sample& a, T b )
+   static void ColorBurn( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_D, fb ), 1.0 ) );
    }
 
-   static void ColorBurn( sample& a, float b )
+   static void ColorBurn( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_D, double( b ) ), 1.0 ) );
    }
 
-   static void ColorBurn( sample& a, double b )
+   static void ColorBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - pcl::Min( (1 - fa)/pcl::Max( EPSILON_D, b ), 1.0 ) );
@@ -5217,20 +5381,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void LinearBurn( sample& a, T b )
+   static void LinearBurn( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( fa + fb - 1 );
    }
 
-   static void LinearBurn( sample& a, float b )
+   static void LinearBurn( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa + double( b ) - 1 );
    }
 
-   static void LinearBurn( sample& a, double b )
+   static void LinearBurn( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( fa + b - 1 );
@@ -5242,20 +5406,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Screen( sample& a, T b )
+   static void Screen( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( 1 - (1 - fa)*(1 - fb) );
    }
 
-   static void Screen( sample& a, float b )
+   static void Screen( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - double( b )) );
    }
 
-   static void Screen( sample& a, double b )
+   static void Screen( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( 1 - (1 - fa)*(1 - b) );
@@ -5267,20 +5431,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void ColorDodge( sample& a, T b )
+   static void ColorDodge( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_D, 1 - fb ), 1.0 ) );
    }
 
-   static void ColorDodge( sample& a, float b )
+   static void ColorDodge( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_D, 1 - double( b ) ), 1.0 ) );
    }
 
-   static void ColorDodge( sample& a, double b )
+   static void ColorDodge( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Min( fa/pcl::Max( EPSILON_D, 1 - b ), 1.0 ) );
@@ -5292,20 +5456,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Overlay( sample& a, T b )
+   static void Overlay( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fa > 0.5) ? 1 - ((1 - 2*(fa - 0.5)) * (1 - fb)) : 2*a*fb );
    }
 
-   static void Overlay( sample& a, float b )
+   static void Overlay( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5) ? 1 - ((1 - 2*(fa - 0.5)) * (1 - double( b ))) : 2*a*double( b ) );
    }
 
-   static void Overlay( sample& a, double b )
+   static void Overlay( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (fa > 0.5) ? 1 - ((1 - 2*(fa - 0.5)) * (1 - b)) : 2*a*b );
@@ -5317,21 +5481,21 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void SoftLight( sample& a, T b )
+   static void SoftLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - fb - 0.5) : a*(fb + 0.5) );
    }
 
-   static void SoftLight( sample& a, float b )
+   static void SoftLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - fb - 0.5) : a*(fb + 0.5) );
    }
 
-   static void SoftLight( sample& a, double b )
+   static void SoftLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - b - 0.5) : a*(b + 0.5) );
@@ -5343,21 +5507,21 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void HardLight( sample& a, T b )
+   static void HardLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - 2*(fb - 0.5)) : 2*fa*fb );
    }
 
-   static void HardLight( sample& a, float b )
+   static void HardLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? 1 - (1 - fa)*(1 - 2*(fb - 0.5)) : 2*fa*fb );
    }
 
-   static void HardLight( sample& a, double b )
+   static void HardLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - (1 - fa)*(1 - 2*(b - 0.5)) : 2*fa*b );
@@ -5369,21 +5533,21 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void VividLight( sample& a, T b )
+   static void VividLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 ) );
    }
 
-   static void VividLight( sample& a, float b )
+   static void VividLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? 1 - pcl::Max( (1 - fa)/(fb - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*fb ), 1.0 ) );
    }
 
-   static void VividLight( sample& a, double b )
+   static void VividLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? 1 - pcl::Max( (1 - fa)/(b - 0.5)/2, 1.0 ) : pcl::Min( fa/pcl::Max( EPSILON_D, 1 - 2*b ), 1.0 ) );
@@ -5395,21 +5559,21 @@ public:
     * with implicit data type conversion.
     */
    template <typename T>
-   static void LinearLight( sample& a, T b )
+   static void LinearLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? pcl::Max( fa + 2*(fb - 0.5), 1.0 ) : pcl::Max( fa + 2*fb - 1, 1.0 ) );
    }
 
-   static void LinearLight( sample& a, float b )
+   static void LinearLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? pcl::Max( fa + 2*(fb - 0.5), 1.0 ) : pcl::Max( fa + 2*fb - 1, 1.0 ) );
    }
 
-   static void LinearLight( sample& a, double b )
+   static void LinearLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa + 2*(b - 0.5), 1.0 ) : pcl::Max( fa + 2*b - 1, 1.0 ) );
@@ -5421,21 +5585,21 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void PinLight( sample& a, T b )
+   static void PinLight( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( (fb > 0.5) ? pcl::Max( fa, 2*(fb - 0.5) ) : pcl::Min( fa, 2*fb ) );
    }
 
-   static void PinLight( sample& a, float b )
+   static void PinLight( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb = double( b );
       a = ToSample( (fb > 0.5) ? pcl::Max( fa, 2*(fb - 0.5) ) : pcl::Min( fa, 2*fb ) );
    }
 
-   static void PinLight( sample& a, double b )
+   static void PinLight( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( (b > 0.5) ? pcl::Max( fa, 2*(b - 0.5) ) : pcl::Min( fa, 2*b ) );
@@ -5447,20 +5611,20 @@ public:
     * implicit data type conversion.
     */
    template <typename T>
-   static void Exclusion( sample& a, T b )
+   static void Exclusion( sample& a, T b ) noexcept
    {
       double fa; FromSample( fa, a );
       double fb; FromSample( fb, ToSample( b ) );
       a = ToSample( pcl::Range( 0.5 - 2*(fa - 0.5)*(fb - 0.5), 0.0, 1.0 ) );
    }
 
-   static void Exclusion( sample& a, float b )
+   static void Exclusion( sample& a, float b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5 - 2*(fa - 0.5)*(double( b ) - 0.5), 0.0, 1.0 ) );
    }
 
-   static void Exclusion( sample& a, double b )
+   static void Exclusion( sample& a, double b ) noexcept
    {
       double fa; FromSample( fa, a );
       a = ToSample( pcl::Range( 0.5 - 2*(fa - 0.5)*(b - 0.5), 0.0, 1.0 ) );
@@ -5510,7 +5674,7 @@ public:
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
-   static constexpr bool IsFloatSample()
+   static constexpr bool IsFloatSample() noexcept
    {
       return false;
    }
@@ -5519,7 +5683,7 @@ public:
     * Returns true if this pixel traits class corresponds to a complex pixel
     * sample type; false if it represents a real pixel sample type.
     */
-   static constexpr bool IsComplexSample()
+   static constexpr bool IsComplexSample() noexcept
    {
       return false;
    }
@@ -5530,7 +5694,7 @@ public:
     *
     * For %UInt20PixelTraits, this member function returns "UInt20".
     */
-   static constexpr const char* SampleFormat()
+   static constexpr const char* SampleFormat() noexcept
    {
       return "UInt20";
    }
@@ -5540,7 +5704,27 @@ public:
     *
     * For %UInt20PixelTraits, this member function returns 1048576.
     */
-   static constexpr sample MaxSampleValue()
+   static constexpr sample MaxSampleValue() noexcept
+   {
+      return uint20_max;
+   }
+
+   /*!
+    * Returns the lowest finite value representable by this pixel sample type.
+    *
+    * For %UInt20PixelTraits, this member function returns 0.
+    */
+   static constexpr sample LowestSampleValue() noexcept
+   {
+      return sample( 0 );
+   }
+
+   /*!
+    * Returns the highest finite value representable by this pixel sample type.
+    *
+    * For %UInt20PixelTraits, this member function returns 1048576.
+    */
+   static constexpr sample HighestSampleValue() noexcept
    {
       return uint20_max;
    }
@@ -5549,7 +5733,7 @@ public:
     * Conversion of any floating point value to a pixel sample value.
     */
    template <typename T>
-   static sample FloatToSample( T x )
+   static sample FloatToSample( T x ) noexcept
    {
 #ifdef __PCL_ENFORCE_PIXTRAITS_FLOAT_RANGE
       return sample( pcl::Range( Round( x ), T( 0 ), T( uint20_max ) ) );
@@ -5562,7 +5746,7 @@ public:
    /*!
     * Conversion of an 8-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint8 x )
+   static sample ToSample( uint8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( RoundInt( x * uint8_to_uint20 ) );
@@ -5574,7 +5758,7 @@ public:
    /*!
     * Conversion of an 8-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int8 x )
+   static sample ToSample( int8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( RoundInt( (int32( x ) - int32( int8_min ))*uint8_to_uint20 ) );
@@ -5586,7 +5770,7 @@ public:
    /*!
     * Conversion of a 16-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint16 x )
+   static sample ToSample( uint16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( RoundInt( x * uint16_to_uint20 ) );
@@ -5598,7 +5782,7 @@ public:
    /*!
     * Conversion of a 16-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int16 x )
+   static sample ToSample( int16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( RoundInt( (int32( x ) - int32( int16_min ))*uint16_to_uint20 ) );
@@ -5610,7 +5794,7 @@ public:
    /*!
     * Conversion of a 32-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint32 x )
+   static sample ToSample( uint32 x ) noexcept
    {
       return sample( RoundInt( x * uint32_to_uint20 ) );
    }
@@ -5618,7 +5802,7 @@ public:
    /*!
     * Conversion of a 32-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int32 x )
+   static sample ToSample( int32 x ) noexcept
    {
       return sample( RoundInt( (double( x ) - int32_min)*uint32_to_uint20 ) );
    }
@@ -5626,7 +5810,7 @@ public:
    /*!
     * Conversion of a 32-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( float x )
+   static sample ToSample( float x ) noexcept
    {
       return FloatToSample( x*uint20_max );
    }
@@ -5636,7 +5820,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( float x )
+   static sample ToSampleConstrained( float x ) noexcept
    {
       return FloatToSample( pcl::Range( x, 0.0F, 1.0F )*uint20_max );
    }
@@ -5644,7 +5828,7 @@ public:
    /*!
     * Conversion of a 64-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( double x )
+   static sample ToSample( double x ) noexcept
    {
       return FloatToSample( x*uint20_max );
    }
@@ -5654,7 +5838,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( double x )
+   static sample ToSampleConstrained( double x ) noexcept
    {
       return FloatToSample( pcl::Range( x, 0.0, 1.0 )*uint20_max );
    }
@@ -5663,7 +5847,7 @@ public:
     * Conversion of any complex value to a pixel sample value.
     */
    template <typename T>
-   static constexpr sample ToSample( const Complex<T>& x )
+   static constexpr sample ToSample( const Complex<T>& x ) noexcept
    {
       return ToSample( pcl::Abs( x ) );
    }
@@ -5671,7 +5855,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit unsigned integer.
     */
-   static void FromSample( uint8& a, sample b )
+   static void FromSample( uint8& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = uint8( RoundInt( b * uint20_to_uint8 ) );
@@ -5683,7 +5867,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSample( int8& a, sample b )
+   static void FromSample( int8& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = int8( RoundInt( b * uint20_to_uint8 ) + int8_min );
@@ -5695,7 +5879,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit unsigned integer.
     */
-   static void FromSample( uint16& a, sample b )
+   static void FromSample( uint16& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = uint16( RoundInt( b * uint20_to_uint16 ) );
@@ -5707,7 +5891,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit signed integer.
     */
-   static void FromSample( int16& a, sample b )
+   static void FromSample( int16& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = int16( RoundInt( b * uint20_to_uint16 ) + int16_min );
@@ -5719,7 +5903,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit unsigned integer.
     */
-   static void FromSample( uint32& a, sample b )
+   static void FromSample( uint32& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = uint32( RoundInt( b * uint20_to_uint32 ) );
@@ -5731,7 +5915,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit signed integer.
     */
-   static void FromSample( int32& a, sample b )
+   static void FromSample( int32& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = int32( RoundInt( b * uint20_to_uint32 ) + int32_min );
@@ -5743,7 +5927,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit floating point real.
     */
-   static void FromSample( float& a, sample b )
+   static void FromSample( float& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = float( b )/uint20_max;
@@ -5755,7 +5939,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 64-bit floating point real.
     */
-   static void FromSample( double& a, sample b )
+   static void FromSample( double& a, sample b ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       a = double( b )/uint20_max;
@@ -5768,7 +5952,7 @@ public:
     * Conversion of a pixel sample value to any complex type.
     */
    template <typename T>
-   static void FromSample( Complex<T>& a, sample b )
+   static void FromSample( Complex<T>& a, sample b ) noexcept
    {
       typename Complex<T>::component c;
       FromSample( c, b );
@@ -5815,7 +5999,7 @@ public:
     * Returns true iff this pixel traits class corresponds to a floating point
     * real pixel sample type.
     */
-   static constexpr bool IsFloatSample()
+   static constexpr bool IsFloatSample() noexcept
    {
       return false;
    }
@@ -5824,7 +6008,7 @@ public:
     * Returns true if this pixel traits class corresponds to a complex pixel
     * sample type; false if it represents a real pixel sample type.
     */
-   static constexpr bool IsComplexSample()
+   static constexpr bool IsComplexSample() noexcept
    {
       return false;
    }
@@ -5835,7 +6019,7 @@ public:
     *
     * For %UInt24PixelTraits, this member function returns "UInt24".
     */
-   static constexpr const char* SampleFormat()
+   static constexpr const char* SampleFormat() noexcept
    {
       return "UInt24";
    }
@@ -5843,9 +6027,29 @@ public:
    /*!
     * Returns the maximum valid pixel sample value.
     *
-    * For %UInt24PixelTraits, this member function returns 1048576.
+    * For %UInt24PixelTraits, this member function returns 16777216.
     */
-   static constexpr sample MaxSampleValue()
+   static constexpr sample MaxSampleValue() noexcept
+   {
+      return uint24_max;
+   }
+
+   /*!
+    * Returns the lowest finite value representable by this pixel sample type.
+    *
+    * For %UInt24PixelTraits, this member function returns 0.
+    */
+   static constexpr sample LowestSampleValue() noexcept
+   {
+      return sample( 0 );
+   }
+
+   /*!
+    * Returns the highest finite value representable by this pixel sample type.
+    *
+    * For %UInt24PixelTraits, this member function returns 16777216.
+    */
+   static constexpr sample HighestSampleValue() noexcept
    {
       return uint24_max;
    }
@@ -5854,7 +6058,7 @@ public:
     * Conversion of any floating point value to a pixel sample value.
     */
    template <typename T>
-   static sample FloatToSample( T x )
+   static sample FloatToSample( T x ) noexcept
    {
 #ifdef __PCL_ENFORCE_PIXTRAITS_FLOAT_RANGE
       return sample( pcl::Range( Round( x ), T( 0 ), T( uint24_max ) ) );
@@ -5867,7 +6071,7 @@ public:
    /*!
     * Conversion of an 8-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint8 x )
+   static sample ToSample( uint8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( x * uint8_to_uint24 );
@@ -5879,7 +6083,7 @@ public:
    /*!
     * Conversion of an 8-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int8 x )
+   static sample ToSample( int8 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( RoundInt( (int32( x ) - int32( int8_min ))*uint8_to_uint24 ) );
@@ -5891,7 +6095,7 @@ public:
    /*!
     * Conversion of a 16-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint16 x )
+   static sample ToSample( uint16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( RoundInt( x * uint16_to_uint24 ) );
@@ -5903,7 +6107,7 @@ public:
    /*!
     * Conversion of a 16-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int16 x )
+   static sample ToSample( int16 x ) noexcept
    {
 #ifdef __PCL_DONT_USE_PIXTRAITS_LUT
       return sample( RoundInt( (int32( x ) - int32( int16_min ))*uint16_to_uint24 ) );
@@ -5915,7 +6119,7 @@ public:
    /*!
     * Conversion of a 32-bit unsigned integer value to a pixel sample value.
     */
-   static sample ToSample( uint32 x )
+   static sample ToSample( uint32 x ) noexcept
    {
       return sample( RoundInt( x * uint32_to_uint24 ) );
    }
@@ -5923,7 +6127,7 @@ public:
    /*!
     * Conversion of a 32-bit signed integer value to a pixel sample value.
     */
-   static sample ToSample( int32 x )
+   static sample ToSample( int32 x ) noexcept
    {
       return sample( RoundInt( (double( x ) - int32_min)*uint32_to_uint24 ) );
    }
@@ -5931,7 +6135,7 @@ public:
    /*!
     * Conversion of a 32-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( float x )
+   static sample ToSample( float x ) noexcept
    {
       return FloatToSample( double( x )*uint24_max );
    }
@@ -5941,7 +6145,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( float x )
+   static sample ToSampleConstrained( float x ) noexcept
    {
       return FloatToSample( pcl::Range( double( x ), 0.0, 1.0 )*uint24_max );
    }
@@ -5949,7 +6153,7 @@ public:
    /*!
     * Conversion of a 64-bit floating point value to a pixel sample value.
     */
-   static sample ToSample( double x )
+   static sample ToSample( double x ) noexcept
    {
       return FloatToSample( x*uint24_max );
    }
@@ -5959,7 +6163,7 @@ public:
     * function guarantees that the result will never overflow as a result of an
     * out-of-range argument value.
     */
-   static sample ToSampleConstrained( double x )
+   static sample ToSampleConstrained( double x ) noexcept
    {
       return FloatToSample( pcl::Range( x, 0.0, 1.0 )*uint24_max );
    }
@@ -5968,7 +6172,7 @@ public:
     * Conversion of any complex value to a pixel sample value.
     */
    template <typename T>
-   static sample ToSample( const Complex<T>& x )
+   static sample ToSample( const Complex<T>& x ) noexcept
    {
       return ToSample( pcl::Abs( x ) );
    }
@@ -5976,7 +6180,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit unsigned integer.
     */
-   static void FromSample( uint8& a, sample b )
+   static void FromSample( uint8& a, sample b ) noexcept
    {
       a = uint8( RoundInt( b * uint24_to_uint8 ) );
    }
@@ -5984,7 +6188,7 @@ public:
    /*!
     * Conversion of a pixel sample value to an 8-bit signed integer.
     */
-   static void FromSample( int8& a, sample b )
+   static void FromSample( int8& a, sample b ) noexcept
    {
       a = int8( RoundInt( b * uint24_to_uint8 ) + int8_min );
    }
@@ -5992,7 +6196,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit unsigned integer.
     */
-   static void FromSample( uint16& a, sample b )
+   static void FromSample( uint16& a, sample b ) noexcept
    {
       a = uint16( RoundInt( b * uint24_to_uint16 ) );
    }
@@ -6000,7 +6204,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 16-bit signed integer.
     */
-   static void FromSample( int16& a, sample b )
+   static void FromSample( int16& a, sample b ) noexcept
    {
       a = int16( RoundInt( b * uint24_to_uint16 ) + int16_min );
    }
@@ -6008,7 +6212,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit unsigned integer.
     */
-   static void FromSample( uint32& a, sample b )
+   static void FromSample( uint32& a, sample b ) noexcept
    {
       a = uint32( RoundInt( b * uint24_to_uint32 ) );
    }
@@ -6016,7 +6220,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit signed integer.
     */
-   static void FromSample( int32& a, sample b )
+   static void FromSample( int32& a, sample b ) noexcept
    {
       a = int32( RoundInt( b * uint24_to_uint32 ) + int32_min );
    }
@@ -6024,7 +6228,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 32-bit floating point real.
     */
-   static void FromSample( float& a, sample b )
+   static void FromSample( float& a, sample b ) noexcept
    {
       a = float( b )/uint24_max;
    }
@@ -6032,7 +6236,7 @@ public:
    /*!
     * Conversion of a pixel sample value to a 64-bit floating point real.
     */
-   static void FromSample( double& a, sample b )
+   static void FromSample( double& a, sample b ) noexcept
    {
       a = double( b )/uint24_max;
    }
@@ -6041,7 +6245,7 @@ public:
     * Conversion of a pixel sample value to any complex type.
     */
    template <typename T>
-   static void FromSample( Complex<T>& a, sample b )
+   static void FromSample( Complex<T>& a, sample b ) noexcept
    {
       typename Complex<T>::component c;
       FromSample( c, b );
@@ -6087,4 +6291,4 @@ public:
 #endif   // __PCL_PixelTraits_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelTraits.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/PixelTraits.h - Released 2020-11-20T19:46:29Z

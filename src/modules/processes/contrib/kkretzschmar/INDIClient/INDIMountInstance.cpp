@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIMountInstance.cpp - Released 2020-10-12T19:25:16Z
+// INDIMountInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -66,7 +66,7 @@
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
 #include <pcl/Position.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 
 namespace pcl
 {
@@ -1247,4 +1247,4 @@ void AbstractINDIMountExecution::Abort()
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF INDIMountInstance.cpp - Released 2020-11-20T19:49:00Z

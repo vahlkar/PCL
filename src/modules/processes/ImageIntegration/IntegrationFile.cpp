@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationFile.cpp - Released 2020-10-12T19:25:16Z
+// IntegrationFile.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -307,9 +307,21 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
 
       s_availableMemory = Module->AvailablePhysicalMemory();
 
-      s_incremental = format.CanReadIncrementally();
-      if ( s_incremental )
+      s_incremental = false;
+      if ( !format.CanReadIncrementally() )
       {
+         console.WarningLn( "<end><cbr><br>** Warning: Incremental file reads disabled because of lack of file format support: "
+                            + format.Name() + "<br>" );
+      }
+      else if ( !m_file->CanReadIncrementally() )
+      {
+         console.WarningLn( "<end><cbr><br>** Warning: Incremental file reads are supported by the selected format, "
+                            "but have been disabled because they cannot be performed on this file: "
+                            "<raw>" + m_file->FilePath() + "</raw><br>" );
+      }
+      else
+      {
+         s_incremental = true;
          size_type bufferSize = 0;
          if ( instance.p_autoMemorySize )
             bufferSize = size_type( double( instance.p_autoMemoryLimit ) * s_availableMemory / s_files.Length() );
@@ -317,18 +329,17 @@ void IntegrationFile::Open( const String& path, const String& nmlPath, const Str
             bufferSize = size_type( instance.p_bufferSizeMB )*1024*1024;
          s_bufferRows = Range( int( bufferSize/(s_width * sizeof( float )) ), 1, s_roi.Height() );
       }
-      else
-      {
-         console.WarningLn( "<end><cbr><br>** Warning: Incremental file reading disabled because of lack of file format support: "
-                            + format.Name() + "<br>" );
+
+      if ( !s_incremental )
          s_bufferRows = s_roi.Height();
-      }
    }
    else
    {
       if ( s_incremental )
          if ( !format.CanReadIncrementally() )
             throw Error( "Invalid combination of file formats with and without incremental file read capabilities: " + format.Name() );
+         else if ( !m_file->CanReadIncrementally() )
+            throw Error( "Incremental file reads have been enabled, but they cannot be performed on this file: " + m_file->FilePath() );
 
       if ( s_width != images[0].info.width ||
            s_height != images[0].info.height ||
@@ -1003,4 +1014,4 @@ void IntegrationFile::OpenFileThread::Run()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationFile.cpp - Released 2020-10-12T19:25:16Z
+// EOF IntegrationFile.cpp - Released 2020-11-20T19:49:00Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/API.cpp - Released 2020-10-12T19:24:49Z
+// pcl/API.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -245,20 +245,21 @@ public:
          if ( description == nullptr )
             HackingError( "Invalid API identification call (phase 255)." );
 
+         String::allocator alloc = String().Allocator();
          if ( description->name != nullptr )
-            delete [] description->name;
+            alloc.DeallocateBlock( const_cast<char*>( description->name ) );
          if ( description->description != nullptr )
-            delete [] description->description;
+            alloc.DeallocateBlock( const_cast<char16_type*>( description->description ) );
          if ( description->company != nullptr )
-            delete [] description->company;
+            alloc.DeallocateBlock( const_cast<char16_type*>( description->company ) );
          if ( description->author != nullptr )
-            delete [] description->author;
+            alloc.DeallocateBlock( const_cast<char16_type*>( description->author ) );
          if ( description->copyright != nullptr )
-            delete [] description->copyright;
+            alloc.DeallocateBlock( const_cast<char16_type*>( description->copyright ) );
          if ( description->tradeMarks != nullptr )
-            delete [] description->tradeMarks;
+            alloc.DeallocateBlock( const_cast<char16_type*>( description->tradeMarks ) );
          if ( description->originalFileName != nullptr )
-            delete [] description->originalFileName;
+            alloc.DeallocateBlock( const_cast<char16_type*>( description->originalFileName ) );
 
          delete description;
          description = nullptr;
@@ -400,4 +401,4 @@ InitializePixInsightModule( api_handle        hModule,
 }
 
 // ----------------------------------------------------------------------------
-// EOF pcl/API.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/API.cpp - Released 2020-11-20T19:46:37Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/FileFormatInstance.cpp - Released 2020-10-12T19:24:49Z
+// pcl/FileFormatInstance.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -649,6 +649,13 @@ bool FileFormatInstance::ReadImage( UInt32Image& image )
 
 // ----------------------------------------------------------------------------
 
+bool FileFormatInstance::CanReadIncrementally() const
+{
+   return (*API->FileFormat->CanReadIncrementally)( handle ) != api_false;
+}
+
+// ----------------------------------------------------------------------------
+
 static bool ReadSamples( file_format_handle handle,
       void* buffer, int startRow, int rowCount, int channel, int bitsPerSample, bool floatSample )
 {
@@ -1126,6 +1133,13 @@ bool FileFormatInstance::WriteImage( const UInt32Image& image )
 
 // ----------------------------------------------------------------------------
 
+bool FileFormatInstance::CanWriteIncrementally() const
+{
+   return (*API->FileFormat->CanWriteIncrementally)( handle ) != api_false;
+}
+
+// ----------------------------------------------------------------------------
+
 bool FileFormatInstance::CreateImage( const ImageInfo& info )
 {
    api_image_info i;
@@ -1193,4 +1207,4 @@ void* FileFormatInstance::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormatInstance.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/FileFormatInstance.cpp - Released 2020-11-20T19:46:37Z

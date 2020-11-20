@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/IntegrationMetadata.h - Released 2020-10-12T19:24:41Z
+// pcl/IntegrationMetadata.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -384,6 +384,7 @@ public:
    ConsistentlyDefined<TimePoint> endTime;       // UTC
    ConsistentlyDefined<double>    ra;            // deg (-180,+180]
    ConsistentlyDefined<double>    dec;           // deg [-90,+90]
+   ConsistentlyDefined<IsoString> celCrdSys;     // ICRS, FK5
    ConsistentlyDefined<double>    equinox;       // yr
    ConsistentlyDefined<double>    longObs;       // deg (-180,+180]
    ConsistentlyDefined<double>    latObs;        // deg [-90,+90]
@@ -422,4 +423,4 @@ private:
 #endif   // __PCL_IntegrationMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegrationMetadata.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/IntegrationMetadata.h - Released 2020-11-20T19:46:29Z

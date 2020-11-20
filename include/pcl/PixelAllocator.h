@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/PixelAllocator.h - Released 2020-10-12T19:24:41Z
+// pcl/PixelAllocator.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -131,7 +131,7 @@ public:
     * has its own, independent allocator object. This responds to the
     * multithreaded nature of the PixInsight core application.
     */
-   bool operator ==( const PixelAllocator<P>& x ) const
+   bool operator ==( const PixelAllocator<P>& x ) const noexcept
    {
       return SharedPixelData::operator ==( x );
    }
@@ -248,4 +248,4 @@ private:
 #endif   // __PCL_PixelAllocator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PixelAllocator.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/PixelAllocator.h - Released 2020-11-20T19:46:29Z

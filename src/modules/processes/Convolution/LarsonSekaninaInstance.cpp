@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaInstance.cpp - Released 2020-10-12T19:25:16Z
+// LarsonSekaninaInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -57,7 +57,7 @@
 #include <pcl/Console.h>
 #include <pcl/Image.h>
 #include <pcl/PixelInterpolation.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
 namespace pcl
@@ -453,4 +453,4 @@ void* LarsonSekaninaInstance::LockParameter( const MetaParameter* p, size_type /
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF LarsonSekaninaInstance.cpp - Released 2020-11-20T19:49:00Z

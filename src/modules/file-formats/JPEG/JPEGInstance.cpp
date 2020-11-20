@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGInstance.cpp - Released 2020-10-12T19:25:05Z
+// JPEGInstance.cpp - Released 2020-11-20T19:48:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -54,7 +54,7 @@
 #include "JPEGFormat.h"
 #include "JPEGOptionsDialog.h"
 
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/ErrorHandler.h>
 
 namespace pcl
@@ -436,4 +436,4 @@ bool JPEGInstance::WasLossyWrite() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGInstance.cpp - Released 2020-10-12T19:25:05Z
+// EOF JPEGInstance.cpp - Released 2020-11-20T19:48:45Z

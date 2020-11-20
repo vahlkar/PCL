@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.cpp - Released 2020-10-12T19:24:49Z
+// pcl/SurfaceSpline.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -60,11 +60,11 @@ namespace pcl
  * Add the elements of vector q, each multiplied by k, to the vector z.
  */
 template <typename T> inline static
-void AddMulVector( int n, T k, const T* q, T* z )
+void AddMulVector( int n, T k, const T* __restrict__ q, T* __restrict__ z ) noexcept
 {
-   for ( ; n > 0; --n, ++q, ++z )
-      *z = std::fma( k, *q, *z );
-//       *z += k * *q;
+   PCL_UNROLL( 8 )
+   for ( ; n > 0; --n )
+      *z++ += k * *q++;
 }
 
 // ----------------------------------------------------------------------------
@@ -74,7 +74,7 @@ void AddMulVector( int n, T k, const T* q, T* z )
  * The return value is in [1,2,...,n], or 0 if n < 1.
  */
 template <typename T> inline static
-int IndexOfMaxAbsVectorElement( const T* v, int n )
+int IndexOfMaxAbsVectorElement( const T* __restrict__ v, int n ) noexcept
 {
    if ( n < 1 )
       return 0;
@@ -96,8 +96,9 @@ int IndexOfMaxAbsVectorElement( const T* v, int n )
  * Exchange the elements of two vectors v and w.
  */
 template <typename T> inline static
-void SwapVectorElements( int n, T* v, T* w )
+void SwapVectorElements( int n, T* __restrict__ v, T* __restrict__ w ) noexcept
 {
+   PCL_UNROLL( 8 )
    for ( ; n > 0; --n )
       pcl::Swap( *v++, *w++ );
 }
@@ -108,12 +109,12 @@ void SwapVectorElements( int n, T* v, T* w )
  * The scalar product v*w = v[0] * w[0] + ... + v[n-1] * w[n-1].
  */
 template <typename T> inline static
-T DotProduct( const T* v, const T* w, int n )
+T DotProduct( const T* __restrict__ v, const T* __restrict__ w, int n ) noexcept
 {
    T vdotw = T( 0 );
+   PCL_UNROLL( 8 )
    for ( ; n > 0; --n )
-      vdotw = std::fma( *v++, *w++, vdotw );
-//       vdotw += *v++ * *w++;
+      vdotw += *v++ * *w++;
    return vdotw;
 }
 
@@ -156,7 +157,7 @@ T DotProduct( const T* v, const T* w, int n )
  *               solve a system of equations.
  */
 template <typename T> static
-PCL_HOT_FUNCTION int Factorize( T* ap, int n, int* pvt )
+PCL_HOT_FUNCTION int Factorize( T* __restrict__ ap, int n, int* __restrict__ pvt )
 {
    // Constant used to choose a pivot block size.
    const T ALPHA = (1 + Sqrt( 17.0 ))/8;
@@ -207,7 +208,7 @@ PCL_HOT_FUNCTION int Factorize( T* ap, int n, int* pvt )
          if ( imax != 1 )
          {
             T m = pcl::Abs( ap[IndexOfMaxAbsVectorElement( ap+im+1, imax-1 ) + im] );
-            if ( m > rowmax)
+            if ( m > rowmax )
                rowmax = m;
          }
 
@@ -329,7 +330,7 @@ PCL_HOT_FUNCTION int Factorize( T* ap, int n, int* pvt )
  *          On exit, the solution vector x.
  */
 template <typename T> static
-PCL_HOT_FUNCTION void Solve( const T* ap, int n, const int* pvt, T* b )
+PCL_HOT_FUNCTION void Solve( const T* __restrict__ ap, int n, const int* __restrict__ pvt, T* __restrict__ b )
 {
    --ap; --pvt; --b;
 
@@ -373,7 +374,7 @@ PCL_HOT_FUNCTION void Solve( const T* ap, int n, const int* pvt, T* b )
          b[k]   = (akm1*bk - bkm1)/denom;
          b[k-1] = (ak*bkm1 - bk)/denom;
          k -= 2;
-         ik -= (k + 1) + k;
+         ik -= k+k + 1;
       }
    }
 
@@ -435,7 +436,8 @@ PCL_HOT_FUNCTION void Solve( const T* ap, int n, const int* pvt, T* b )
  *       begins at index 0.
  */
 template <typename T> static
-PCL_HOT_FUNCTION void KernelPart( int n, int m, const T* x, const T* y, float r, const float* w, T* a )
+PCL_HOT_FUNCTION void KernelPart( int n, int m, const T* __restrict__ x, const T* __restrict__ y,
+                                  float r, const float* __restrict__ w, T* __restrict__ a )
 {
    --x; --y; --a;
    if ( r > 0 )
@@ -449,7 +451,7 @@ PCL_HOT_FUNCTION void KernelPart( int n, int m, const T* x, const T* y, float r,
          double dx = x[k] - x[i];
          double dy = y[k] - y[i];
          double r2 = dx*dx + dy*dy;
-         if ( r2 != 0 )
+         if ( likely( r2 != 0 ) )
          {
             double E = pcl::Ln( r2 );
             for ( int j = m; --j > 0; )
@@ -500,7 +502,7 @@ PCL_HOT_FUNCTION void KernelPart( int n, int m, const T* x, const T* y, float r,
  * 0 if the next monomial must be multiplied by y: Monom[i+1] = Monom[ixy]*y
  */
 inline static
-int NextXYMonomial( int i, int* idx, int* idy, int& ixy )
+int NextXYMonomial( int i, int* __restrict__ idx, int* __restrict__ idy, int& ixy )
 {
    int n = idx[i] + idy[i];
    if ( idx[i] == 0 )
@@ -546,7 +548,7 @@ int NextXYMonomial( int i, int* idx, int* idy, int& ixy )
  *       P begins at index (n*(n + 1))/2.
  */
 template <typename T> static
-PCL_HOT_FUNCTION void PolynomialPart( int n, int m, const T* x, const T* y, T* a )
+PCL_HOT_FUNCTION void PolynomialPart( int n, int m, const T* __restrict__ x, const T* __restrict__ y, T* __restrict__ a )
 {
    int mm12 = m*(m + 1)/2;
 
@@ -560,8 +562,10 @@ PCL_HOT_FUNCTION void PolynomialPart( int n, int m, const T* x, const T* y, T* a
    a += (n*(n + 1))/2;
 
    // Set up the first monomial (= 1).
-   for ( T* a1 = a+1, * a2 = a1 + n; a1 < a2; ++a1 )
-      *a1 = 1;
+   T* __restrict__ a1 = a;
+   PCL_IVDEP
+   for ( int j = 0; j < n; ++j )
+      *++a1 = 1;
 
    idx[1] = idy[1] = 0;
    a[n+1] = 0;
@@ -571,14 +575,15 @@ PCL_HOT_FUNCTION void PolynomialPart( int n, int m, const T* x, const T* y, T* a
    {
       // Find index of monomial that is multiplied by x or y.
       int ixy = 0;
-      const T* xy = NextXYMonomial( i-1, idx, idy, ixy ) ? x : y;
+      const T* __restrict__ xy = NextXYMonomial( i-1, idx, idy, ixy ) ? x : y;
+      for ( int j = 1, kl = (ixy + n+n)*(ixy - 1)/2 + 1, klj = kli + 1; j <= n; ++j, ++kl, ++klj )
+         a[klj] = a[kl] * xy[j];
 
-      for ( int j = 1, kl = (ixy + n+n)*(ixy - 1)/2; j <= n; ++j )
-         a[kli + j] = a[kl + j] * xy[j];
-
-      // Set rest of matrix to zero
-      for ( T* a1 = a + kli + n + 1, * a2 = a1 + i; a1 < a2; ++a1 )
-         *a1 = 0;
+      // Set rest of matrix to zero.
+      a1 = a + kli + n;
+      PCL_IVDEP
+      for ( int j = 0; j < i; ++j )
+         *++a1 = 0;
    }
 }
 
@@ -597,7 +602,9 @@ PCL_HOT_FUNCTION void PolynomialPart( int n, int m, const T* x, const T* y, T* a
  * vector of n functional values.
  */
 template <typename T> static
-void GenerateSpline( T* cv, const T* x, const T* y, const T* z, int n, int m, float r, const float* w )
+void GenerateSpline( T* __restrict__ cv,
+                     const T* __restrict__ x, const T* __restrict__ y, const T* __restrict__ z,
+                     int n, int m, float r, const float* __restrict__ w )
 {
    // Size of the system matrix.
    int nm = n + (m*(m + 1))/2;
@@ -616,6 +623,14 @@ void GenerateSpline( T* cv, const T* x, const T* y, const T* z, int n, int m, fl
 
    /*
     * Compute matrix factorization: A = U*D*U^T
+    *
+    * N.B.: Factorize() is the bottleneck of this task. Example of execution
+    * times measured for 1933 interpolation nodes:
+    *
+    * PolynomialPart(): 15.700 us
+    * KernelPart():     51.536 ms
+    * Factorize():     736.969 ms
+    * Solve():           1.986 ms
     */
    if ( Factorize( *A, nm, *pvt ) != 0 )
       throw Error( "SurfaceSpline::Generate(): Singular matrix." );
@@ -637,16 +652,16 @@ void GenerateSpline( T* cv, const T* x, const T* y, const T* z, int n, int m, fl
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-void SurfaceSplineBase::Generate( float* cv,
-                                  const float* x, const float* y, const float* z,
-                                  int n, int m, float r, const float* w )
+void SurfaceSplineBase::Generate( float* __restrict__ cv,
+                                  const float* __restrict__ x, const float* __restrict__ y, const float* __restrict__ z,
+                                  int n, int m, float r, const float* __restrict__ w )
 {
    GenerateSpline( cv, x, y, z, n, m, r, w );
 }
 
-void SurfaceSplineBase::Generate( double* cv,
-                                  const double* x, const double* y, const double* z,
-                                  int n, int m, float r, const float* w )
+void SurfaceSplineBase::Generate( double* __restrict__ cv,
+                                  const double* __restrict__ x, const double* __restrict__ y, const double* __restrict__ z,
+                                  int n, int m, float r, const float* __restrict__ w )
 {
    GenerateSpline( cv, x, y, z, n, m, r, w );
 }
@@ -656,4 +671,4 @@ void SurfaceSplineBase::Generate( double* cv,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/SurfaceSpline.cpp - Released 2020-11-20T19:46:37Z

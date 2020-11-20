@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/CharTraits.cpp - Released 2020-10-12T19:24:49Z
+// pcl/CharTraits.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -111,12 +111,12 @@ const uint8* PCL_DATA PCL_toUppercaseLatin1 = s_toUppercaseLatin1;
 
 // ----------------------------------------------------------------------------
 
-int IsoCharTraits::Compare( const char* s1, size_type n1,
-                            const char* s2, size_type n2, bool caseSensitive, bool localeAware )
+int IsoCharTraits::Compare( const char* __restrict__ s1, size_type n1,
+                            const char* __restrict__ s2, size_type n2, bool caseSensitive, bool localeAware ) noexcept
 {
-   if ( n1 == 0 || s1 == 0 || *s1 == '\0' )
-      return (n2 == 0 || s2 == 0 || *s2 == '\0') ? 0 : -1;
-   if ( n2 == 0 || s2 == 0 || *s2 == '\0' )
+   if ( n1 == 0 || s1 == nullptr || *s1 == '\0' )
+      return (n2 == 0 || s2 == nullptr || *s2 == '\0') ? 0 : -1;
+   if ( n2 == 0 || s2 == nullptr || *s2 == '\0' )
       return +1;
 #ifdef __PCL_WINDOWS
    return ::CompareStringA(
@@ -206,12 +206,12 @@ int IsoCharTraits::Compare( const char* s1, size_type n1,
 
 // ----------------------------------------------------------------------------
 
-int CharTraits::Compare( const char16_type* s1, size_type n1,
-                         const char16_type* s2, size_type n2, bool caseSensitive, bool localeAware )
+int CharTraits::Compare( const char16_type* __restrict__ s1, size_type n1,
+                         const char16_type* __restrict__ s2, size_type n2, bool caseSensitive, bool localeAware ) noexcept
 {
-   if ( n1 == 0 || s1 == 0 || *s1 == char16_type( 0 ) )
-      return (n2 == 0 || s2 == 0 || *s2 == 0) ? 0 : -1;
-   if ( n2 == 0 || s2 == 0 || *s2 == char16_type( 0 ) )
+   if ( n1 == 0 || s1 == nullptr || *s1 == char16_type( 0 ) )
+      return (n2 == 0 || s2 == nullptr || *s2 == 0) ? 0 : -1;
+   if ( n2 == 0 || s2 == nullptr || *s2 == char16_type( 0 ) )
       return +1;
 #ifdef __PCL_WINDOWS
    return ::CompareStringW(
@@ -293,4 +293,4 @@ int CharTraits::Compare( const char16_type* s1, size_type n1,
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/CharTraits.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/CharTraits.cpp - Released 2020-11-20T19:46:37Z

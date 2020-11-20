@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInterface.cpp - Released 2020-10-12T19:25:16Z
+// StarGeneratorInterface.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -283,7 +283,7 @@ void StarGeneratorInterface::UpdateEpochControls()
 {
    int year, month, day;
    double dummy;
-   JDToComplexTime( year, month, day, dummy, instance.epoch );
+   JDToCalendarTime( year, month, day, dummy, instance.epoch );
 
    GUI->EpochYear_SpinBox.SetValue( year );
    GUI->EpochMonth_SpinBox.SetValue( month );
@@ -327,7 +327,7 @@ void StarGeneratorInterface::GetDec()
 
 void StarGeneratorInterface::GetEpoch()
 {
-   instance.epoch = ComplexTimeToJD( GUI->EpochYear_SpinBox.Value(),
+   instance.epoch = CalendarTimeToJD( GUI->EpochYear_SpinBox.Value(),
                                      GUI->EpochMonth_SpinBox.Value(),
                                      GUI->EpochDay_SpinBox.Value(),
                                      0.5 /*always at noon*/ );
@@ -760,4 +760,4 @@ StarGeneratorInterface::GUIData::GUIData( StarGeneratorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInterface.cpp - Released 2020-10-12T19:25:16Z
+// EOF StarGeneratorInterface.cpp - Released 2020-11-20T19:49:00Z

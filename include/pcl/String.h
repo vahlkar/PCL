@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/String.h - Released 2020-10-12T19:24:41Z
+// pcl/String.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -67,10 +67,17 @@
 #include <pcl/Math.h>
 #include <pcl/ReferenceCounter.h>
 #include <pcl/Sort.h>
-#include <pcl/StdAlloc.h>
 #include <pcl/Utility.h>
 
 #include <stdarg.h>
+
+#ifdef __PCL_ALIGNED_STRING_ALLOCATION
+#  include <pcl/AlignedAllocator.h>
+#  define PCL_STRING_ALLOCATOR   AlignedAllocator
+#else
+#  include <pcl/StandardAllocator.h>
+#  define PCL_STRING_ALLOCATOR   StandardAllocator
+#endif
 
 #ifndef __PCL_NO_STRING_COMPLEX
 #  include <pcl/Complex.h>
@@ -456,7 +463,7 @@ struct PCL_CLASS ISO8601ConversionOptions
  *
  * \sa String, IsoString, CharTraits, IsoCharTraits
  */
-template <class T, class R, class A = StandardAllocator>
+template <class T, class R, class A = PCL_STRING_ALLOCATOR>
 class PCL_CLASS GenericString : public DirectContainer<T>
 {
 public:
@@ -659,7 +666,7 @@ public:
     *
     * \sa EnsureUnique(), IsAliasOf()
     */
-   bool IsUnique() const
+   bool IsUnique() const noexcept
    {
       return m_data->IsUnique();
    }
@@ -671,7 +678,7 @@ public:
     *
     * \sa IsUnique(), EnsureUnique()
     */
-   bool IsAliasOf( const GenericString& s ) const
+   bool IsAliasOf( const GenericString& s ) const noexcept
    {
       return m_data == s.m_data;
    }
@@ -705,7 +712,7 @@ public:
     * This member function returns the R::BytesPerChar() static member function
     * of the char traits class R.
     */
-   static size_type BytesPerChar()
+   static size_type BytesPerChar() noexcept
    {
       return R::BytesPerChar();
    }
@@ -716,7 +723,7 @@ public:
     *
     * \sa Length(), Capacity()
     */
-   size_type Size() const
+   size_type Size() const noexcept
    {
       return Length()*BytesPerChar();
    }
@@ -727,7 +734,7 @@ public:
     *
     * \sa IsEmpty(), Available(), Capacity(), Size()
     */
-   size_type Length() const
+   size_type Length() const noexcept
    {
       return m_data->end - m_data->string;
    }
@@ -740,7 +747,7 @@ public:
     *
     * \sa Available(), Length(), Size()
     */
-   size_type Capacity() const
+   size_type Capacity() const noexcept
    {
       return m_data->capacity - m_data->string;
    }
@@ -752,7 +759,7 @@ public:
     *
     * \sa Capacity(), Length(), Size()
     */
-   size_type Available() const
+   size_type Available() const noexcept
    {
       return m_data->capacity - m_data->end;
    }
@@ -773,7 +780,7 @@ public:
     *
     * \sa IsEmpty()
     */
-   bool IsValid() const
+   bool IsValid() const noexcept
    {
       return m_data != nullptr;
    }
@@ -785,7 +792,7 @@ public:
     *
     * \sa IsValid(), Length(), Available(), Capacity(), Size()
     */
-   bool IsEmpty() const
+   bool IsEmpty() const noexcept
    {
       return m_data->string == m_data->end;
    }
@@ -798,7 +805,7 @@ public:
     *
     * \sa UpperBound(), Length()
     */
-   size_type LowerBound() const
+   size_type LowerBound() const noexcept
    {
       return 0;
    }
@@ -811,7 +818,7 @@ public:
     *
     * \sa LowerBound(), Length()
     */
-   size_type UpperBound() const
+   size_type UpperBound() const noexcept
    {
       PCL_PRECONDITION( !IsEmpty() )
       return Length()-1;
@@ -822,7 +829,7 @@ public:
     *
     * \sa SetAllocator()
     */
-   const allocator& GetAllocator() const
+   const allocator& Allocator() const noexcept
    {
       return m_data->alloc;
    }
@@ -834,7 +841,7 @@ public:
     * If this string is not unique, it is made unique before returning from
     * this member function.
     *
-    * \sa GetAllocator()
+    * \sa Allocator()
     */
    void SetAllocator( const allocator& a )
    {
@@ -870,7 +877,7 @@ public:
     *
     * \sa operator []( size_type ) const
     */
-   const_iterator At( size_type i ) const
+   const_iterator At( size_type i ) const noexcept
    {
       PCL_PRECONDITION( i < Length() )
       return m_data->string + i;
@@ -902,7 +909,7 @@ public:
     *
     * \sa At() const, operator *() const
     */
-   char_type operator []( size_type i ) const
+   char_type operator []( size_type i ) const noexcept
    {
       return *At( i );
    }
@@ -927,7 +934,7 @@ public:
     *
     * \sa operator []( size_type ) const, At()
     */
-   char_type operator *() const
+   char_type operator *() const noexcept
    {
       return *m_data->string;
    }
@@ -957,7 +964,7 @@ public:
     *
     * \sa End() const
     */
-   const_iterator Begin() const
+   const_iterator Begin() const noexcept
    {
       return m_data->string;
    }
@@ -987,7 +994,7 @@ public:
     *
     * \sa Begin() const
     */
-   const_iterator End() const
+   const_iterator End() const noexcept
    {
       return m_data->end;
    }
@@ -1021,7 +1028,7 @@ public:
     *
     * \sa ReverseEnd() const
     */
-   const_reverse_iterator ReverseBegin() const
+   const_reverse_iterator ReverseBegin() const noexcept
    {
       return (m_data->string < m_data->end) ? m_data->end-1 : nullptr;
    }
@@ -1055,7 +1062,7 @@ public:
     *
     * \sa ReverseBegin() const
     */
-   const_reverse_iterator ReverseEnd() const
+   const_reverse_iterator ReverseEnd() const noexcept
    {
       return (m_data->string < m_data->end) ? m_data->string-1 : nullptr;
    }
@@ -1070,7 +1077,7 @@ public:
     * iterator is specified, then this function, as well as any subsequent use
     * of the returned character index, may invoke undefined behavior.
     */
-   size_type IndexAt( const_iterator i ) const
+   size_type IndexAt( const_iterator i ) const noexcept
    {
       PCL_PRECONDITION( i >= m_data->string )
       return i - m_data->string;
@@ -1088,7 +1095,7 @@ public:
    /*!
     * STL-compatible iteration. Equivalent to Begin() const.
     */
-   const_iterator begin() const
+   const_iterator begin() const noexcept
    {
       return Begin();
    }
@@ -1104,7 +1111,7 @@ public:
    /*!
     * STL-compatible iteration. Equivalent to End() const.
     */
-   const_iterator end() const
+   const_iterator end() const noexcept
    {
       return End();
    }
@@ -1117,7 +1124,7 @@ public:
     * static, null-terminated, unmodifiable empty string (the "" C string).
     * This function always returns a valid pointer to existing character data.
     */
-   const_c_string c_str() const
+   const_c_string c_str() const noexcept
    {
       static const char_type theNullChar = char_traits::Null();
       return IsEmpty() ? &theNullChar : Begin();
@@ -1333,7 +1340,7 @@ public:
    /*!
     * Exchanges this string with another string \a s.
     */
-   void Swap( GenericString& s )
+   void Swap( GenericString& s ) noexcept
    {
       pcl::Swap( m_data, s.m_data );
    }
@@ -1415,7 +1422,7 @@ public:
     * other applications after calling this function, although it will continue
     * storing the same allocated data block.
     */
-   void SecureFill( char c = '\0' )
+   void SecureFill( char c = '\0' ) noexcept
    {
       volatile char* s = reinterpret_cast<volatile char*>( m_data->string );
       for ( size_type n = Capacity()*sizeof( char_type ); n > 0; --n )
@@ -1621,7 +1628,7 @@ public:
     * string (or Length()-i, whichever is less) to the \a dst array. Then a
     * null terminating character is appended to \a dst.
     */
-   void c_copy( iterator dst, size_type maxCharsToCopy, size_type i = 0 ) const
+   void c_copy( iterator dst, size_type maxCharsToCopy, size_type i = 0 ) const noexcept
    {
       if ( dst != nullptr )
          if ( maxCharsToCopy > 0 )
@@ -2777,7 +2784,7 @@ __Break_1:
     * Returns the first character in this string, or a <em>null character</em>
     * (R::Null()) if this string is empty.
     */
-   char_type FirstChar() const
+   char_type FirstChar() const noexcept
    {
       return (m_data->string != nullptr) ? *m_data->string : R::Null();
    }
@@ -2786,7 +2793,7 @@ __Break_1:
     * Returns the last character in this string, or a <em>null character</em>
     * (R::Null()) if this string is empty.
     */
-   char_type LastChar() const
+   char_type LastChar() const noexcept
    {
       return (m_data->string < m_data->end) ? *(m_data->end-1) : R::Null();
    }
@@ -2795,7 +2802,7 @@ __Break_1:
     * Returns true iff this string begins with the specified substring \a s.
     */
    template <class R1, class A1>
-   bool StartsWith( const GenericString<T,R1,A1>& s ) const
+   bool StartsWith( const GenericString<T,R1,A1>& s ) const noexcept
    {
       if ( s.IsEmpty() || Length() < s.Length() )
          return false;
@@ -2809,7 +2816,7 @@ __Break_1:
     * Returns true iff this string begins with the specified null-terminated
     * sequence \a t.
     */
-   bool StartsWith( const_c_string t ) const
+   bool StartsWith( const_c_string t ) const noexcept
    {
       size_type n = R::Length( t );
       if ( n == 0 || Length() < n )
@@ -2823,7 +2830,7 @@ __Break_1:
    /*!
     * Returns true iff this string begins with the specified character \a c.
     */
-   bool StartsWith( char_type c ) const
+   bool StartsWith( char_type c ) const noexcept
    {
       return m_data->string < m_data->end && *m_data->string == c;
    }
@@ -2833,7 +2840,7 @@ __Break_1:
     * performing case-insensitive character comparisons.
     */
    template <class R1, class A1>
-   bool StartsWithIC( const GenericString<T,R1,A1>& s ) const
+   bool StartsWithIC( const GenericString<T,R1,A1>& s ) const noexcept
    {
       if ( s.IsEmpty() || Length() < s.Length() )
          return false;
@@ -2847,7 +2854,7 @@ __Break_1:
     * Returns true iff this string begins with the specified null-terminated
     * sequence \a t, performing case-insensitive character comparisons.
     */
-   bool StartsWithIC( const_c_string t ) const
+   bool StartsWithIC( const_c_string t ) const noexcept
    {
       size_type n = R::Length( t );
       if ( n == 0 || Length() < n )
@@ -2862,7 +2869,7 @@ __Break_1:
     * Returns true iff this string begins with the specified character \a c,
     * performing a case-insensitive character comparison.
     */
-   bool StartsWithIC( char_type c ) const
+   bool StartsWithIC( char_type c ) const noexcept
    {
       return m_data->string < m_data->end && R::ToCaseFolded( *m_data->string ) == R::ToCaseFolded( c );
    }
@@ -2871,7 +2878,7 @@ __Break_1:
     * Returns true iff this string ends with the specified substring \a s.
     */
    template <class R1, class A1>
-   bool EndsWith( const GenericString<T,R1,A1>& s ) const
+   bool EndsWith( const GenericString<T,R1,A1>& s ) const noexcept
    {
       size_type n = s.Length();
       if ( n == 0 || Length() < n )
@@ -2886,7 +2893,7 @@ __Break_1:
     * Returns true iff this string ends with the specified null-terminated
     * string \a t.
     */
-   bool EndsWith( const_c_string t ) const
+   bool EndsWith( const_c_string t ) const noexcept
    {
       size_type n = R::Length( t );
       if ( n == 0 || Length() < n )
@@ -2900,7 +2907,7 @@ __Break_1:
    /*!
     * Returns true iff this string ends with the specified character \a c.
     */
-   bool EndsWith( char_type c ) const
+   bool EndsWith( char_type c ) const noexcept
    {
       return m_data->string < m_data->end && *(m_data->end-1) == c;
    }
@@ -2910,7 +2917,7 @@ __Break_1:
     * performing case-insensitive character comparisons.
     */
    template <class R1, class A1>
-   bool EndsWithIC( const GenericString<T,R1,A1>& s ) const
+   bool EndsWithIC( const GenericString<T,R1,A1>& s ) const noexcept
    {
       size_type n = s.Length();
       if ( n == 0 || Length() < n )
@@ -2925,7 +2932,7 @@ __Break_1:
     * Returns true iff this string ends with the specified null-terminated
     * string \a t, performing case-insensitive character comparisons.
     */
-   bool EndsWithIC( const_c_string t ) const
+   bool EndsWithIC( const_c_string t ) const noexcept
    {
       size_type n = R::Length( t );
       if ( n == 0 || Length() < n )
@@ -2940,7 +2947,7 @@ __Break_1:
     * Returns true iff this string ends with the specified character \a c,
     * performing a case-insensitive character comparison.
     */
-   bool EndsWithIC( char_type c ) const
+   bool EndsWithIC( char_type c ) const noexcept
    {
       return m_data->string < m_data->end && R::ToCaseFolded( *(m_data->end-1) ) == R::ToCaseFolded( c );
    }
@@ -2951,7 +2958,7 @@ __Break_1:
     * occurrence does not exist.
     */
    template <class R1, class A1>
-   size_type FindFirst( const GenericString<T,R1,A1>& s, size_type i = 0 ) const
+   size_type FindFirst( const GenericString<T,R1,A1>& s, size_type i = 0 ) const noexcept
    {
       size_type len = Length();
       i = SearchEngine( s.m_data->string, s.Length(), true/*case*/ )( m_data->string, i, len );
@@ -2963,7 +2970,7 @@ __Break_1:
     * null-terminated substring \a t in this string, such that \a k >= \a i.
     * Returns notFound if such occurrence does not exist.
     */
-   size_type FindFirst( const_c_string t, size_type i = 0 ) const
+   size_type FindFirst( const_c_string t, size_type i = 0 ) const noexcept
    {
       size_type len = Length();
       i = SearchEngine( t, R::Length( t ), true/*case*/ )( m_data->string, i, len );
@@ -2975,7 +2982,7 @@ __Break_1:
     * this string, such that \a k >= \a i. Returns notFound if such occurrence
     * does not exist.
     */
-   size_type FindFirst( char_type c, size_type i = 0 ) const
+   size_type FindFirst( char_type c, size_type i = 0 ) const noexcept
    {
       for ( const_iterator p = m_data->string+i; p < m_data->end; ++p )
          if ( *p == c )
@@ -2992,7 +2999,7 @@ __Break_1:
     * an instance of the substring \a s.
     */
    template <class R1, class A1>
-   size_type FindFirstIC( const GenericString<T,R1,A1>& s, size_type i = 0 ) const
+   size_type FindFirstIC( const GenericString<T,R1,A1>& s, size_type i = 0 ) const noexcept
    {
       size_type len = Length();
       i = SearchEngine( s.m_data->string, s.Length(), false/*case*/ )( m_data->string, i, len );
@@ -3007,7 +3014,7 @@ __Break_1:
     * This member function performs case-insensitive string comparisons to find
     * an instance of the substring \a s.
     */
-   size_type FindFirstIC( const_c_string t, size_type i = 0 ) const
+   size_type FindFirstIC( const_c_string t, size_type i = 0 ) const noexcept
    {
       size_type len = Length();
       i = SearchEngine( t, R::Length( t ), false/*case*/ )( m_data->string, i, len );
@@ -3022,7 +3029,7 @@ __Break_1:
     * This member function performs case-insensitive character comparisons to
     * find an instance of the character \a c.
     */
-   size_type FindFirstIC( char_type c, size_type i = 0 ) const
+   size_type FindFirstIC( char_type c, size_type i = 0 ) const noexcept
    {
       c = R::ToCaseFolded( c );
       for ( const_iterator p = m_data->string+i; p < m_data->end; ++p )
@@ -3035,7 +3042,7 @@ __Break_1:
     * A synonym for FindFirst( const GenericString<T,R1,A1>&, size_type ).
     */
    template <class R1, class A1>
-   size_type Find( const GenericString<T,R1,A1>& s, size_type i = 0 ) const
+   size_type Find( const GenericString<T,R1,A1>& s, size_type i = 0 ) const noexcept
    {
       return FindFirst( s, i );
    }
@@ -3043,7 +3050,7 @@ __Break_1:
    /*!
     * A synonym for FindFirst( const_c_string, size_type ).
     */
-   size_type Find( const_c_string t, size_type i = 0 ) const
+   size_type Find( const_c_string t, size_type i = 0 ) const noexcept
    {
       return FindFirst( t, i );
    }
@@ -3051,7 +3058,7 @@ __Break_1:
    /*!
     * A synonym for FindFirst( char_type, size_type ).
     */
-   size_type Find( char_type c, size_type i = 0 ) const
+   size_type Find( char_type c, size_type i = 0 ) const noexcept
    {
       return FindFirst( c, i );
    }
@@ -3060,7 +3067,7 @@ __Break_1:
     * A synonym for FindFirstIC( const GenericString<T,R1,A1>&, size_type ).
     */
    template <class R1, class A1>
-   size_type FindIC( const GenericString<T,R1,A1>& s, size_type i = 0 ) const
+   size_type FindIC( const GenericString<T,R1,A1>& s, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( s, i );
    }
@@ -3068,7 +3075,7 @@ __Break_1:
    /*!
     * A synonym for FindFirstIC( const_c_string, size_type ).
     */
-   size_type FindIC( const_c_string t, size_type i = 0 ) const
+   size_type FindIC( const_c_string t, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( t, i );
    }
@@ -3076,7 +3083,7 @@ __Break_1:
    /*!
     * A synonym for FindFirstIC( char_type, size_type ).
     */
-   size_type FindIC( char_type c, size_type i = 0 ) const
+   size_type FindIC( char_type c, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( c, i );
    }
@@ -3091,7 +3098,7 @@ __Break_1:
     * occurrence does not exist.
     */
    template <class R1, class A1>
-   size_type FindLast( const GenericString<T,R1,A1>& s, size_type r = maxPos ) const
+   size_type FindLast( const GenericString<T,R1,A1>& s, size_type r = maxPos ) const noexcept
    {
       r = pcl::Min( r, Length() );
       size_type i = SearchEngine( s.m_data->string, s.Length(), true/*case*/, true/*last*/ )( m_data->string, 0, r );
@@ -3107,7 +3114,7 @@ __Break_1:
     * where \a n is the length of the substring \a t. Returns notFound if such
     * occurrence does not exist.
     */
-   size_type FindLast( const_c_string t, size_type r = maxPos ) const
+   size_type FindLast( const_c_string t, size_type r = maxPos ) const noexcept
    {
       r = pcl::Min( r, Length() );
       size_type i = SearchEngine( t, R::Length( t ), true/*case*/, true/*last*/ )( m_data->string, 0, r );
@@ -3119,7 +3126,7 @@ __Break_1:
     * string, such that \a k < \a r. Returns notFound if such occurrence does
     * not exist.
     */
-   size_type FindLast( char_type c, size_type r = maxPos ) const
+   size_type FindLast( char_type c, size_type r = maxPos ) const noexcept
    {
       r = pcl::Min( r, Length() );
       for ( const_iterator p = m_data->string+r; r > 0; --r )
@@ -3141,7 +3148,7 @@ __Break_1:
     * find an instance of the specified substring \a s.
     */
    template <class R1, class A1>
-   size_type FindLastIC( const GenericString<T,R1,A1>& s, size_type r = maxPos ) const
+   size_type FindLastIC( const GenericString<T,R1,A1>& s, size_type r = maxPos ) const noexcept
    {
       r = pcl::Min( r, Length() );
       size_type i = SearchEngine( s.m_data->string, s.Length(), false/*case*/, true/*last*/ )( m_data->string, 0, r );
@@ -3160,7 +3167,7 @@ __Break_1:
     * This member function performs case-insensitive string comparisons to
     * find an instance of the specified substring \a t.
     */
-   size_type FindLastIC( const_c_string t, size_type r = maxPos ) const
+   size_type FindLastIC( const_c_string t, size_type r = maxPos ) const noexcept
    {
       r = pcl::Min( r, Length() );
       size_type i = SearchEngine( t, R::Length( t ), false/*case*/, true/*last*/ )( m_data->string, 0, r );
@@ -3175,7 +3182,7 @@ __Break_1:
     * This member function performs case-insensitive character comparisons to
     * find an instance of the specified character \a c.
     */
-   size_type FindLastIC( char_type c, size_type r = maxPos ) const
+   size_type FindLastIC( char_type c, size_type r = maxPos ) const noexcept
    {
       c = R::ToCaseFolded( c );
       r = pcl::Min( r, Length() );
@@ -3189,7 +3196,7 @@ __Break_1:
     * Returns true iff this string contains a substring \a s.
     */
    template <class R1, class A1>
-   bool Contains( const GenericString<T,R1,A1>& s ) const
+   bool Contains( const GenericString<T,R1,A1>& s ) const noexcept
    {
       return Find( s ) != notFound;
    }
@@ -3197,7 +3204,7 @@ __Break_1:
    /*!
     * Returns true iff this string contains a null-terminated substring \a t.
     */
-   bool Contains( const_c_string t ) const
+   bool Contains( const_c_string t ) const noexcept
    {
       return Find( t ) != notFound;
    }
@@ -3205,7 +3212,7 @@ __Break_1:
    /*!
     * Returns true iff this string contains a character \a c.
     */
-   bool Contains( char_type c ) const
+   bool Contains( char_type c ) const noexcept
    {
       return Find( c ) != notFound;
    }
@@ -3217,7 +3224,7 @@ __Break_1:
     * find an instance of the specified substring \a s.
     */
    template <class R1, class A1>
-   bool ContainsIC( const GenericString<T,R1,A1>& s ) const
+   bool ContainsIC( const GenericString<T,R1,A1>& s ) const noexcept
    {
       return FindIC( s ) != notFound;
    }
@@ -3228,7 +3235,7 @@ __Break_1:
     * This member function performs case-insensitive string comparisons to
     * find an instance of the specified substring \a t.
     */
-   bool ContainsIC( const_c_string t ) const
+   bool ContainsIC( const_c_string t ) const noexcept
    {
       return FindIC( t ) != notFound;
    }
@@ -3239,7 +3246,7 @@ __Break_1:
     * This member function performs case-insensitive character comparisons to
     * find an instance of the specified character \a c.
     */
-   bool ContainsIC( char_type c ) const
+   bool ContainsIC( char_type c ) const noexcept
    {
       return FindIC( c ) != notFound;
    }
@@ -3601,7 +3608,7 @@ __Break_1:
     * Unicode case folding transformation is applied to each character pair.
     */
    template <class R1, class A1>
-   int CompareCodePoints( const GenericString<T,R1,A1>& s, bool caseSensitive = true ) const
+   int CompareCodePoints( const GenericString<T,R1,A1>& s, bool caseSensitive = true ) const noexcept
    {
       return R::CompareCodePoints( m_data->string, Length(), s.m_data->string, s.Length(), caseSensitive );
    }
@@ -3630,7 +3637,7 @@ __Break_1:
     * code points exclusively. For case-insensitive comparisons, a standard
     * Unicode case folding transformation is applied to each character pair.
     */
-   int CompareCodePoints( const_c_string t, bool caseSensitive = true ) const
+   int CompareCodePoints( const_c_string t, bool caseSensitive = true ) const noexcept
    {
       return R::CompareCodePoints( m_data->string, Length(), t, R::Length( t ), caseSensitive );
    }
@@ -3662,7 +3669,7 @@ __Break_1:
     * code points exclusively. For case-insensitive comparisons, a standard
     * Unicode case folding transformation is applied to each character pair.
     */
-   int CompareCodePoints( char_type c, bool caseSensitive = true ) const
+   int CompareCodePoints( char_type c, bool caseSensitive = true ) const noexcept
    {
       return R::CompareCodePoints( m_data->string, Length(), &c, 1, caseSensitive );
    }
@@ -3695,7 +3702,7 @@ __Break_1:
     */
    template <class R1, class A1>
    int Compare( const GenericString<T,R1,A1>& s,
-                bool caseSensitive = true, bool localeAware = true ) const
+                bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return R::Compare( m_data->string, Length(), s.m_data->string, s.Length(), caseSensitive, localeAware );
    }
@@ -3727,7 +3734,7 @@ __Break_1:
     * \li +1 if this string postcedes the specified string \a t.
     * \li -1 if this string precedes the specified string \a t.
     */
-   int Compare( const_c_string t, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( const_c_string t, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return R::Compare( m_data->string, Length(), t, R::Length( t ), caseSensitive, localeAware );
    }
@@ -3761,7 +3768,7 @@ __Break_1:
     * with a fictitious string of length one, whose only character was equal to
     * the specified character \a c.
     */
-   int Compare( char_type c, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( char_type c, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return R::Compare( m_data->string, Length(), &c, 1, caseSensitive, localeAware );
    }
@@ -3787,7 +3794,7 @@ __Break_1:
     * \li -1 if this string precedes the specified string \a s.
     */
    template <class R1, class A1>
-   int CompareIC( const GenericString<T,R1,A1>& s, bool localeAware = true ) const
+   int CompareIC( const GenericString<T,R1,A1>& s, bool localeAware = true ) const noexcept
    {
       return R::Compare( m_data->string, Length(), s.m_data->string, s.Length(), false/*caseSensitive*/, localeAware );
    }
@@ -3813,7 +3820,7 @@ __Break_1:
     * \li +1 if this string postcedes the specified string \a s.
     * \li -1 if this string precedes the specified string \a s.
     */
-   int CompareIC( const_c_string t, bool localeAware = true ) const
+   int CompareIC( const_c_string t, bool localeAware = true ) const noexcept
    {
       return R::Compare( m_data->string, Length(), t, R::Length( t ), false/*caseSensitive*/, localeAware );
    }
@@ -3842,7 +3849,7 @@ __Break_1:
     * of this string with a fictitious string of length one, whose only
     * character was equal to \a c.
     */
-   int CompareIC( char_type c, bool localeAware = true ) const
+   int CompareIC( char_type c, bool localeAware = true ) const noexcept
    {
       return R::Compare( m_data->string, Length(), &c, 1, false/*caseSensitive*/, localeAware );
    }
@@ -3863,7 +3870,7 @@ __Break_1:
     * conventionally, even if the pattern is a single asterisk '*'.
     */
    template <class R1, class A1>
-   bool WildMatch( const GenericString<T,R1,A1>& pattern, bool caseSensitive = true ) const
+   bool WildMatch( const GenericString<T,R1,A1>& pattern, bool caseSensitive = true ) const noexcept
    {
       return R::WildMatch( m_data->string, Length(), pattern.m_data->string, pattern.Length(), caseSensitive );
    }
@@ -3882,7 +3889,7 @@ __Break_1:
     * conventionally, even if the pattern is a single asterisk '*'.
     */
    template <class R1, class A1>
-   bool WildMatchIC( const GenericString<T,R1,A1>& pattern ) const
+   bool WildMatchIC( const GenericString<T,R1,A1>& pattern ) const noexcept
    {
       return R::WildMatch( m_data->string, Length(), pattern.m_data->string, pattern.Length(), false/*caseSensitive*/ );
    }
@@ -3902,7 +3909,7 @@ __Break_1:
     * this string or the pattern is empty, this function always returns false
     * conventionally, even if the pattern is a single asterisk '*'.
     */
-   bool WildMatch( const_c_string pattern, bool caseSensitive = true ) const
+   bool WildMatch( const_c_string pattern, bool caseSensitive = true ) const noexcept
    {
       return R::WildMatch( m_data->string, Length(), pattern, R::Length( pattern ), caseSensitive );
    }
@@ -3921,7 +3928,7 @@ __Break_1:
     * this string or the pattern is empty, this function always returns false
     * conventionally, even if the pattern is a single asterisk '*'.
     */
-   bool WildMatchIC( const_c_string pattern ) const
+   bool WildMatchIC( const_c_string pattern ) const noexcept
    {
       return R::WildMatch( m_data->string, Length(), pattern, R::Length( pattern ), false/*caseSensitive*/ );
    }
@@ -3930,7 +3937,7 @@ __Break_1:
     * Returns true iff this string contains one or more wildcard characters
     * (asterisk '*' or question mark '?').
     */
-   bool HasWildcards() const
+   bool HasWildcards() const noexcept
    {
       for ( iterator i = m_data->string; i < m_data->end; ++i )
          if ( R::IsWildcard( *i ) )
@@ -4102,7 +4109,7 @@ __Break_1:
     * contains a \e valid numeric literal. It only checks for the \e role of
     * this string as a token in the context of a syntactic analysis.
     */
-   bool IsNumeral() const
+   bool IsNumeral() const noexcept
    {
       if ( IsEmpty() )
          return false;
@@ -4124,7 +4131,7 @@ __Break_1:
     * contains a \e valid symbol identifier. It only checks for the \e role of
     * this string as a token in the context of a syntactic analysis.
     */
-   bool IsSymbol() const
+   bool IsSymbol() const noexcept
    {
       if ( IsEmpty() )
          return false;
@@ -4147,7 +4154,7 @@ __Break_1:
     * equal to the index of the first offending character (the first character
     * that violates the above conditions).
     */
-   bool IsValidIdentifier( distance_type& pos ) const
+   bool IsValidIdentifier( distance_type& pos ) const noexcept
    {
       if ( IsEmpty() )
       {
@@ -4178,7 +4185,7 @@ __Break_1:
     * \li Its second and successive characters, if they exist, are all of them
     * either alphabetic characters, decimal digits, or underscores.
     */
-   bool IsValidIdentifier() const
+   bool IsValidIdentifier() const noexcept
    {
       if ( !IsEmpty() )
          if ( R::IsStartingSymbolDigit( *m_data->string ) )
@@ -4199,7 +4206,7 @@ __Break_1:
     * The \a seed parameter can be used to generate repeatable hash values. It
     * can also be set to a random value in compromised environments.
     */
-   uint64 Hash64( uint64 seed = 0 ) const
+   uint64 Hash64( uint64 seed = 0 ) const noexcept
    {
       return pcl::Hash64( m_data->string, Size(), seed );
    }
@@ -4212,7 +4219,7 @@ __Break_1:
     * The \a seed parameter can be used to generate repeatable hash values. It
     * can also be set to a random value in compromised environments.
     */
-   uint32 Hash32( uint32 seed = 0 ) const
+   uint32 Hash32( uint32 seed = 0 ) const noexcept
    {
       return pcl::Hash32( m_data->string, Size(), seed );
    }
@@ -4221,7 +4228,7 @@ __Break_1:
     * Returns a non-cryptographic hash value computed for this string. This
     * function is a synonym for Hash64().
     */
-   uint64 Hash( uint64 seed = 0 ) const
+   uint64 Hash( uint64 seed = 0 ) const noexcept
    {
       return Hash64( seed );
    }
@@ -4527,7 +4534,7 @@ protected:
        * We implement the <em>mismatched character heuristic</em> version of
        * the Boyer-Moore algorithm.
        */
-      size_type operator()( const_iterator text, size_type startIndex, size_type endIndex ) const
+      size_type operator()( const_iterator text, size_type startIndex, size_type endIndex ) const noexcept
       {
          if (    endIndex <= startIndex
               || m_patternLength <= 0
@@ -4730,7 +4737,7 @@ protected:
       bool           m_searchLast    : 1;
       bool           m_useBoyerMoore : 1;
 
-      void InitSkipList()
+      void InitSkipList() noexcept
       {
          ::memset( m_skipList, 0xff, sizeof( m_skipList ) ); // fill with -1
          if ( m_searchLast )
@@ -4869,7 +4876,7 @@ protected:
        * Returns true iff a reallocation of string data should happen in order
        * to change the string's length to \a len characters.
        */
-      bool ShouldReallocate( size_type len ) const
+      bool ShouldReallocate( size_type len ) const noexcept
       {
          size_type m = capacity - string;
          return m <= len || alloc.ReallocatedLength( m, len+1 ) < (m >> 1);
@@ -4879,7 +4886,7 @@ protected:
        * Sets the length of the string. Arranges internal pointers and writes a
        * null string terminating character.
        */
-      void SetLength( size_type len )
+      void SetLength( size_type len ) noexcept
       {
          *(end = (string + len)) = R::Null();
       }
@@ -4887,7 +4894,7 @@ protected:
       /*!
        * Sets all string pointers to \c nullptr.
        */
-      void Reset()
+      void Reset() noexcept
       {
          string = end = capacity = nullptr;
       }
@@ -4899,7 +4906,7 @@ protected:
        * This function is thread-safe.
        */
 #ifndef __PCL_NO_STRING_FREE_LIST
-      static Data* NextFree()
+      static Data* NextFree() noexcept
       {
          if ( freeLock.TestAndSet( 0, 1 ) )
          {
@@ -5042,7 +5049,7 @@ AtomicInt GenericString<T,R,A>::Data::freeLock;
  * Exchanges two strings.
  */
 template <class T, class R, class A> inline
-void Swap( GenericString<T,R,A>& s1, GenericString<T,R,A>& s2 )
+void Swap( GenericString<T,R,A>& s1, GenericString<T,R,A>& s2 ) noexcept
 {
    s1.Swap( s2 );
 }
@@ -5060,7 +5067,7 @@ void Swap( GenericString<T,R,A>& s1, GenericString<T,R,A>& s2 )
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R1, class A1, class R2, class A2> inline
-bool operator ==( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 )
+bool operator ==( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 ) noexcept
 {
    return s1.CompareCodePoints( s2 ) == 0;
 }
@@ -5073,7 +5080,7 @@ bool operator ==( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R1, class A1, class R2, class A2> inline
-bool operator  <( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 )
+bool operator  <( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 ) noexcept
 {
    return s1.CompareCodePoints( s2 ) < 0;
 }
@@ -5086,7 +5093,7 @@ bool operator  <( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R1, class A1, class R2, class A2> inline
-bool operator <=( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 )
+bool operator <=( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 ) noexcept
 {
    return s1.CompareCodePoints( s2 ) <= 0;
 }
@@ -5099,7 +5106,7 @@ bool operator <=( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R1, class A1, class R2, class A2> inline
-bool operator  >( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 )
+bool operator  >( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 ) noexcept
 {
    return s1.CompareCodePoints( s2 ) > 0;
 }
@@ -5112,7 +5119,7 @@ bool operator  >( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R1, class A1, class R2, class A2> inline
-bool operator >=( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 )
+bool operator >=( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>& s2 ) noexcept
 {
    return s1.CompareCodePoints( s2 ) >= 0;
 }
@@ -5124,7 +5131,7 @@ bool operator >=( const GenericString<T,R1,A1>& s1, const GenericString<T,R2,A2>
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator ==( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 )
+bool operator ==( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) == 0;
 }
@@ -5137,7 +5144,7 @@ bool operator ==( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator  <( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 )
+bool operator  <( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) < 0;
 }
@@ -5150,7 +5157,7 @@ bool operator  <( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator <=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 )
+bool operator <=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) <= 0;
 }
@@ -5163,7 +5170,7 @@ bool operator <=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator  >( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 )
+bool operator  >( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) > 0;
 }
@@ -5176,7 +5183,7 @@ bool operator  >( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator >=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 )
+bool operator >=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::const_c_string t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) >= 0;
 }
@@ -5188,7 +5195,7 @@ bool operator >=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator ==( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 )
+bool operator ==( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) == 0;
 }
@@ -5201,7 +5208,7 @@ bool operator ==( typename GenericString<T,R,A>::const_c_string t1, const Generi
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator  <( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 )
+bool operator  <( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) > 0;
 }
@@ -5214,7 +5221,7 @@ bool operator  <( typename GenericString<T,R,A>::const_c_string t1, const Generi
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator <=( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 )
+bool operator <=( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) >= 0;
 }
@@ -5227,7 +5234,7 @@ bool operator <=( typename GenericString<T,R,A>::const_c_string t1, const Generi
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator  >( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 )
+bool operator  >( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) < 0;
 }
@@ -5240,7 +5247,7 @@ bool operator  >( typename GenericString<T,R,A>::const_c_string t1, const Generi
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator >=( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 )
+bool operator >=( typename GenericString<T,R,A>::const_c_string t1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) <= 0;
 }
@@ -5252,7 +5259,7 @@ bool operator >=( typename GenericString<T,R,A>::const_c_string t1, const Generi
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator ==( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 )
+bool operator ==( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) == 0;
 }
@@ -5265,7 +5272,7 @@ bool operator ==( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator  <( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 )
+bool operator  <( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) < 0;
 }
@@ -5278,7 +5285,7 @@ bool operator  <( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator <=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 )
+bool operator <=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) <= 0;
 }
@@ -5291,7 +5298,7 @@ bool operator <=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator  >( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 )
+bool operator  >( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) > 0;
 }
@@ -5304,7 +5311,7 @@ bool operator  >( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator >=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 )
+bool operator >=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>::char_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) >= 0;
 }
@@ -5316,7 +5323,7 @@ bool operator >=( const GenericString<T,R,A>& s1, typename GenericString<T,R,A>:
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator ==( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 )
+bool operator ==( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) == 0;
 }
@@ -5329,7 +5336,7 @@ bool operator ==( typename GenericString<T,R,A>::char_type c1, const GenericStri
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator  <( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 )
+bool operator  <( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) > 0;
 }
@@ -5342,7 +5349,7 @@ bool operator  <( typename GenericString<T,R,A>::char_type c1, const GenericStri
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator <=( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 )
+bool operator <=( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) >= 0;
 }
@@ -5355,7 +5362,7 @@ bool operator <=( typename GenericString<T,R,A>::char_type c1, const GenericStri
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator  >( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 )
+bool operator  >( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) < 0;
 }
@@ -5368,7 +5375,7 @@ bool operator  >( typename GenericString<T,R,A>::char_type c1, const GenericStri
  * \ingroup genericstring_relational_ops
  */
 template <class T, class R, class A> inline
-bool operator >=( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 )
+bool operator >=( typename GenericString<T,R,A>::char_type c1, const GenericString<T,R,A>& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) <= 0;
 }
@@ -5387,14 +5394,14 @@ bool operator >=( typename GenericString<T,R,A>::char_type c1, const GenericStri
  *
  * \sa String
  */
-class PCL_CLASS IsoString : public GenericString<char, IsoCharTraits, StandardAllocator>
+class PCL_CLASS IsoString : public GenericString<char, IsoCharTraits, PCL_STRING_ALLOCATOR>
 {
 public:
 
    /*!
     * Base class of %IsoString.
     */
-   typedef GenericString<char, IsoCharTraits, StandardAllocator>
+   typedef GenericString<char, IsoCharTraits, PCL_STRING_ALLOCATOR>
                                                 string_base;
 
    /*!
@@ -5452,7 +5459,7 @@ public:
     * \note This type must be defined as the same template instantiation used
     * for the String class.
     */
-   typedef GenericString<char16_type, CharTraits, StandardAllocator>
+   typedef GenericString<char16_type, CharTraits, PCL_STRING_ALLOCATOR>
                                                 ustring_base;
 
    /*!
@@ -6682,7 +6689,7 @@ public:
     *
     * \sa ToBool()
     */
-   bool TryToBool( bool& value ) const;
+   bool TryToBool( bool& value ) const noexcept;
 
    /*!
     * Evaluates this string as a floating point numeric literal, and returns
@@ -6713,7 +6720,7 @@ public:
     *
     * \sa ToFloat()
     */
-   bool TryToFloat( float& value ) const;
+   bool TryToFloat( float& value ) const noexcept;
 
    /*!
     * Evaluates this string as a floating point literal, and returns the result
@@ -6754,7 +6761,7 @@ public:
     *
     * \sa ToDouble()
     */
-   bool TryToDouble( double& value ) const;
+   bool TryToDouble( double& value ) const noexcept;
 
    /*!
     * Evaluates this string as an integer literal, and returns the result as a
@@ -6801,7 +6808,7 @@ public:
     *
     * \sa ToInt()
     */
-   bool TryToInt( int& value ) const
+   bool TryToInt( int& value ) const noexcept
    {
       return TryToInt( value, 0 );
    }
@@ -6851,7 +6858,7 @@ public:
     *
     * \sa ToInt( int ) const
     */
-   bool TryToInt( int& value, int base ) const;
+   bool TryToInt( int& value, int base ) const noexcept;
 
    /*!
     * Evaluates this string as an unsigned integer literal, and returns the
@@ -6898,7 +6905,7 @@ public:
     *
     * \sa ToUInt()
     */
-   bool TryToUInt( unsigned& value ) const
+   bool TryToUInt( unsigned& value ) const noexcept
    {
       return TryToUInt( value, 0 );
    }
@@ -6938,7 +6945,7 @@ public:
     *
     * \sa ToUInt( int ) const
     */
-   bool TryToUInt( unsigned& value, int base ) const;
+   bool TryToUInt( unsigned& value, int base ) const noexcept;
 
    /*!
     * Evaluates this string as an integer literal, and returns the result as a
@@ -6983,7 +6990,7 @@ public:
     *
     * \sa ToInt64()
     */
-   bool TryToInt64( long long& value ) const
+   bool TryToInt64( long long& value ) const noexcept
    {
       return TryToInt64( value, 0 );
    }
@@ -7021,7 +7028,7 @@ public:
     *
     * \sa ToInt64( int ) const
     */
-   bool TryToInt64( long long& value, int base ) const;
+   bool TryToInt64( long long& value, int base ) const noexcept;
 
    /*!
     * Evaluates this string as an unsigned integer literal in the specified
@@ -7066,7 +7073,7 @@ public:
     *
     * \sa ToUInt64()
     */
-   bool TryToUInt64( unsigned long long& value ) const
+   bool TryToUInt64( unsigned long long& value ) const noexcept
    {
       return TryToUInt64( value, 0 );
    }
@@ -7104,7 +7111,7 @@ public:
     *
     * \sa ToUInt64( int ) const
     */
-   bool TryToUInt64( unsigned long long& value, int base ) const;
+   bool TryToUInt64( unsigned long long& value, int base ) const noexcept;
 
    /*!
     * Evaluates this string as a sexagesimal numeric literal representation,
@@ -7187,7 +7194,7 @@ public:
     * \ingroup sexagesimal_conversion
     * \sa SexagesimalToDouble(), ParseSexagesimal(), TryParseSexagesimal()
     */
-   bool TrySexagesimalToDouble( double& value, const IsoString& separator = ':' ) const
+   bool TrySexagesimalToDouble( double& value, const IsoString& separator = ':' ) const noexcept
    {
       int sign, s1, s2; double s3;
       if ( TryParseSexagesimal( sign, s1, s2, s3, separator ) )
@@ -7198,12 +7205,12 @@ public:
       return false;
    }
 
-   bool TrySexagesimalToDouble( double& value, char separator ) const
+   bool TrySexagesimalToDouble( double& value, char separator ) const noexcept
    {
       return TrySexagesimalToDouble( value, IsoString( separator ) );
    }
 
-   bool TrySexagesimalToDouble( double& value, const ustring_base& separator ) const
+   bool TrySexagesimalToDouble( double& value, const ustring_base& separator ) const noexcept
    {
       return TrySexagesimalToDouble( value, IsoString( separator ) );
    }
@@ -7220,7 +7227,7 @@ public:
     * \ingroup sexagesimal_conversion
     * \sa SexagesimalToDouble( const Array<>& )
     */
-   bool TrySexagesimalToDouble( double& value, const Array<char_type>& separators ) const
+   bool TrySexagesimalToDouble( double& value, const Array<char_type>& separators ) const noexcept
    {
       int sign, s1, s2; double s3;
       if ( TryParseSexagesimal( sign, s1, s2, s3, separators ) )
@@ -7299,14 +7306,14 @@ public:
     * \ingroup sexagesimal_conversion
     * \sa ParseSexagesimal(), SexagesimalToDouble(), TrySexagesimalToDouble()
     */
-   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const IsoString& separator = ':' ) const;
+   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const IsoString& separator = ':' ) const noexcept;
 
-   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, char separator ) const
+   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, char separator ) const noexcept
    {
       return TryParseSexagesimal( sign, s1, s2, s3, IsoString( separator ) );
    }
 
-   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const ustring_base& separator ) const
+   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const ustring_base& separator ) const noexcept
    {
       return TryParseSexagesimal( sign, s1, s2, s3, IsoString( separator ) );
    }
@@ -7324,7 +7331,7 @@ public:
     * \ingroup sexagesimal_conversion
     * \sa ParseSexagesimal( int&, int&, int&, double&, const Array<>& )
     */
-   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const Array<char_type>& separators ) const;
+   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const Array<char_type>& separators ) const noexcept;
 
    /*!
     * Returns a sexagesimal ASCII representation of the specified components
@@ -7406,7 +7413,7 @@ public:
     *
     * \sa ParseISO8601DateTime(), TimePoint::TryFromString()
     */
-   bool TryParseISO8601DateTime( int& year, int& month, int& day, double& dayf, double& tz ) const;
+   bool TryParseISO8601DateTime( int& year, int& month, int& day, double& dayf, double& tz ) const noexcept;
 
    /*!
     * Returns an ASCII representation of a date and time in ISO 8601 extended
@@ -7913,14 +7920,14 @@ inline std::ostream& operator <<( std::ostream& o, const IsoString& s )
  *
  * \sa IsoString
  */
-class PCL_CLASS String : public GenericString<char16_type, CharTraits, StandardAllocator>
+class PCL_CLASS String : public GenericString<char16_type, CharTraits, PCL_STRING_ALLOCATOR>
 {
 public:
 
    /*!
     * Base class of %String.
     */
-   typedef GenericString<char16_type, CharTraits, StandardAllocator>
+   typedef GenericString<char16_type, CharTraits, PCL_STRING_ALLOCATOR>
                                                 string_base;
 
    /*!
@@ -7990,7 +7997,7 @@ public:
     * \note This type must be defined as the same template instantiation used
     * for the IsoString class.
     */
-   typedef GenericString<char, IsoCharTraits, StandardAllocator>
+   typedef GenericString<char, IsoCharTraits, PCL_STRING_ALLOCATOR>
                                                 string8_base;
 
    /*!
@@ -9512,57 +9519,57 @@ public:
 
    // -------------------------------------------------------------------------
 
-   bool StartsWith( const String& s ) const
+   bool StartsWith( const String& s ) const noexcept
    {
       return string_base::StartsWith( s );
    }
 
-   bool StartsWith( const_iterator t ) const
+   bool StartsWith( const_iterator t ) const noexcept
    {
       return string_base::StartsWith( t );
    }
 
-   bool StartsWith( char_type c ) const
+   bool StartsWith( char_type c ) const noexcept
    {
       return string_base::StartsWith( c );
    }
 
-   bool StartsWithIC( const String& s ) const
+   bool StartsWithIC( const String& s ) const noexcept
    {
       return string_base::StartsWithIC( s );
    }
 
-   bool StartsWithIC( const_iterator t ) const
+   bool StartsWithIC( const_iterator t ) const noexcept
    {
       return string_base::StartsWithIC( t );
    }
 
-   bool StartsWithIC( char_type c ) const
+   bool StartsWithIC( char_type c ) const noexcept
    {
       return string_base::StartsWithIC( c );
    }
 
-   bool StartsWith( const char16_t* t ) const
+   bool StartsWith( const char16_t* t ) const noexcept
    {
       return string_base::StartsWith( reinterpret_cast<const_iterator>( t ) );
    }
 
-   bool StartsWith( char16_t c ) const
+   bool StartsWith( char16_t c ) const noexcept
    {
       return string_base::StartsWith( char_type( c ) );
    }
 
-   bool StartsWithIC( const char16_t* t ) const
+   bool StartsWithIC( const char16_t* t ) const noexcept
    {
       return string_base::StartsWithIC( reinterpret_cast<const_iterator>( t ) );
    }
 
-   bool StartsWithIC( char16_t c ) const
+   bool StartsWithIC( char16_t c ) const noexcept
    {
       return string_base::StartsWithIC( char_type( c ) );
    }
 
-   bool StartsWith( const wchar_t* t ) const
+   bool StartsWith( const wchar_t* t ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::StartsWith( reinterpret_cast<const_iterator>( t ) );
@@ -9571,12 +9578,12 @@ public:
 #endif
    }
 
-   bool StartsWith( wchar_t c ) const
+   bool StartsWith( wchar_t c ) const noexcept
    {
       return string_base::StartsWith( char_type( c ) );
    }
 
-   bool StartsWithIC( const wchar_t* t ) const
+   bool StartsWithIC( const wchar_t* t ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::StartsWithIC( reinterpret_cast<const_iterator>( t ) );
@@ -9585,12 +9592,12 @@ public:
 #endif
    }
 
-   bool StartsWithIC( wchar_t c ) const
+   bool StartsWithIC( wchar_t c ) const noexcept
    {
       return string_base::StartsWithIC( char_type( c ) );
    }
 
-   bool StartsWith( const_c_string8 t ) const
+   bool StartsWith( const_c_string8 t ) const noexcept
    {
       size_type n = char8_traits::Length( t );
       if ( n == 0 || Length() < n )
@@ -9601,12 +9608,12 @@ public:
       return true;
    }
 
-   bool StartsWith( char8_type c ) const
+   bool StartsWith( char8_type c ) const noexcept
    {
       return string_base::StartsWith( char_type( c ) );
    }
 
-   bool StartsWithIC( const_c_string8 t ) const
+   bool StartsWithIC( const_c_string8 t ) const noexcept
    {
       size_type n = char8_traits::Length( t );
       if ( n == 0 || Length() < n )
@@ -9617,64 +9624,64 @@ public:
       return true;
    }
 
-   bool StartsWithIC( char8_type c ) const
+   bool StartsWithIC( char8_type c ) const noexcept
    {
       return string_base::StartsWithIC( char_type( c ) );
    }
 
    // -------------------------------------------------------------------------
 
-   bool EndsWith( const String& s ) const
+   bool EndsWith( const String& s ) const noexcept
    {
       return string_base::EndsWith( s );
    }
 
-   bool EndsWith( const_iterator t ) const
+   bool EndsWith( const_iterator t ) const noexcept
    {
       return string_base::EndsWith( t );
    }
 
-   bool EndsWith( char_type c ) const
+   bool EndsWith( char_type c ) const noexcept
    {
       return string_base::EndsWith( c );
    }
 
-   bool EndsWithIC( const String& s ) const
+   bool EndsWithIC( const String& s ) const noexcept
    {
       return string_base::EndsWithIC( s );
    }
 
-   bool EndsWithIC( const_iterator t ) const
+   bool EndsWithIC( const_iterator t ) const noexcept
    {
       return string_base::EndsWithIC( t );
    }
 
-   bool EndsWithIC( char_type c ) const
+   bool EndsWithIC( char_type c ) const noexcept
    {
       return string_base::EndsWithIC( c );
    }
 
-   bool EndsWith( const char16_t* t ) const
+   bool EndsWith( const char16_t* t ) const noexcept
    {
       return string_base::EndsWith( reinterpret_cast<const_iterator>( t ) );
    }
 
-   bool EndsWith( char16_t c ) const
+   bool EndsWith( char16_t c ) const noexcept
    {
       return string_base::EndsWith( char_type( c ) );
    }
 
-   bool EndsWithIC( const char16_t* t ) const
+   bool EndsWithIC( const char16_t* t ) const noexcept
    {
       return string_base::EndsWithIC( reinterpret_cast<const_iterator>( t ) );
    }
 
-   bool EndsWithIC( char16_t c ) const
+   bool EndsWithIC( char16_t c ) const noexcept
    {
       return string_base::EndsWithIC( char_type( c ) );
    }
 
-   bool EndsWith( const wchar_t* t ) const
+   bool EndsWith( const wchar_t* t ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::EndsWith( reinterpret_cast<const_iterator>( t ) );
@@ -9683,12 +9690,12 @@ public:
 #endif
    }
 
-   bool EndsWith( wchar_t c ) const
+   bool EndsWith( wchar_t c ) const noexcept
    {
       return string_base::EndsWith( char_type( c ) );
    }
 
-   bool EndsWithIC( const wchar_t* t ) const
+   bool EndsWithIC( const wchar_t* t ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::EndsWithIC( reinterpret_cast<const_iterator>( t ) );
@@ -9697,12 +9704,12 @@ public:
 #endif
    }
 
-   bool EndsWithIC( wchar_t c ) const
+   bool EndsWithIC( wchar_t c ) const noexcept
    {
       return string_base::EndsWithIC( char_type( c ) );
    }
 
-   bool EndsWith( const_c_string8 t ) const
+   bool EndsWith( const_c_string8 t ) const noexcept
    {
       size_type n = char8_traits::Length( t );
       if ( n == 0 || Length() < n )
@@ -9713,12 +9720,12 @@ public:
       return true;
    }
 
-   bool EndsWith( char8_type c ) const
+   bool EndsWith( char8_type c ) const noexcept
    {
       return string_base::EndsWith( char_type( c ) );
    }
 
-   bool EndsWithIC( const_c_string8 t ) const
+   bool EndsWithIC( const_c_string8 t ) const noexcept
    {
       size_type n = char8_traits::Length( t );
       if ( n == 0 || Length() < n )
@@ -9729,64 +9736,64 @@ public:
       return true;
    }
 
-   bool EndsWithIC( char8_type c ) const
+   bool EndsWithIC( char8_type c ) const noexcept
    {
       return string_base::EndsWithIC( char_type( c ) );
    }
 
    // -------------------------------------------------------------------------
 
-   size_type FindFirst( const String& s, size_type i = 0 ) const
+   size_type FindFirst( const String& s, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirst( s, i );
    }
 
-   size_type FindFirst( const_iterator t, size_type i = 0 ) const
+   size_type FindFirst( const_iterator t, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirst( t, i );
    }
 
-   size_type FindFirst( char_type c, size_type i = 0 ) const
+   size_type FindFirst( char_type c, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirst( c, i );
    }
 
-   size_type FindFirstIC( const String& s, size_type i = 0 ) const
+   size_type FindFirstIC( const String& s, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirstIC( s, i );
    }
 
-   size_type FindFirstIC( const_iterator t, size_type i = 0 ) const
+   size_type FindFirstIC( const_iterator t, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirstIC( t, i );
    }
 
-   size_type FindFirstIC( char_type c, size_type i = 0 ) const
+   size_type FindFirstIC( char_type c, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirstIC( c, i );
    }
 
-   size_type FindFirst( const char16_t* t, size_type i = 0 ) const
+   size_type FindFirst( const char16_t* t, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirst( reinterpret_cast<const_iterator>( t ), i );
    }
 
-   size_type FindFirst( char16_t c, size_type i = 0 ) const
+   size_type FindFirst( char16_t c, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirst( char_type( c ), i );
    }
 
-   size_type FindFirstIC( const char16_t* t, size_type i = 0 ) const
+   size_type FindFirstIC( const char16_t* t, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirstIC( reinterpret_cast<const_iterator>( t ), i );
    }
 
-   size_type FindFirstIC( char16_t c, size_type i = 0 ) const
+   size_type FindFirstIC( char16_t c, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirstIC( char_type( c ), i );
    }
 
-   size_type FindFirst( const wchar_t* t, size_type i = 0 ) const
+   size_type FindFirst( const wchar_t* t, size_type i = 0 ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::FindFirst( reinterpret_cast<const_iterator>( t ), i );
@@ -9795,12 +9802,12 @@ public:
 #endif
    }
 
-   size_type FindFirst( wchar_t c, size_type i = 0 ) const
+   size_type FindFirst( wchar_t c, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirst( char_type( c ), i );
    }
 
-   size_type FindFirstIC( const wchar_t* t, size_type i = 0 ) const
+   size_type FindFirstIC( const wchar_t* t, size_type i = 0 ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::FindFirstIC( reinterpret_cast<const_iterator>( t ), i );
@@ -9809,176 +9816,176 @@ public:
 #endif
    }
 
-   size_type FindFirstIC( wchar_t c, size_type i = 0 ) const
+   size_type FindFirstIC( wchar_t c, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirstIC( char_type( c ), i );
    }
 
-   size_type FindFirst( const_c_string8 t, size_type i = 0 ) const
+   size_type FindFirst( const_c_string8 t, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirst( String( t ), i );
    }
 
-   size_type FindFirst( char8_type c, size_type i = 0 ) const
+   size_type FindFirst( char8_type c, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirst( char_type( c ), i );
    }
 
-   size_type FindFirstIC( const_c_string8 t, size_type i = 0 ) const
+   size_type FindFirstIC( const_c_string8 t, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirstIC( String( t ), i );
    }
 
-   size_type FindFirstIC( char8_type c, size_type i = 0 ) const
+   size_type FindFirstIC( char8_type c, size_type i = 0 ) const noexcept
    {
       return string_base::FindFirstIC( char_type( c ), i );
    }
 
    //
 
-   size_type Find( const String& s, size_type i = 0 ) const
+   size_type Find( const String& s, size_type i = 0 ) const noexcept
    {
       return FindFirst( s, i );
    }
 
-   size_type Find( const_iterator t, size_type i = 0 ) const
+   size_type Find( const_iterator t, size_type i = 0 ) const noexcept
    {
       return FindFirst( t, i );
    }
 
-   size_type Find( char_type c, size_type i = 0 ) const
+   size_type Find( char_type c, size_type i = 0 ) const noexcept
    {
       return FindFirst( c, i );
    }
 
-   size_type Find( const char16_t* t, size_type i = 0 ) const
+   size_type Find( const char16_t* t, size_type i = 0 ) const noexcept
    {
       return FindFirst( t, i );
    }
 
-   size_type Find( char16_t c, size_type i = 0 ) const
+   size_type Find( char16_t c, size_type i = 0 ) const noexcept
    {
       return FindFirst( c, i );
    }
 
-   size_type Find( const wchar_t* t, size_type i = 0 ) const
+   size_type Find( const wchar_t* t, size_type i = 0 ) const noexcept
    {
       return FindFirst( t, i );
    }
 
-   size_type Find( wchar_t c, size_type i = 0 ) const
+   size_type Find( wchar_t c, size_type i = 0 ) const noexcept
    {
       return FindFirst( c, i );
    }
 
-   size_type Find( const_c_string8 t, size_type i = 0 ) const
+   size_type Find( const_c_string8 t, size_type i = 0 ) const noexcept
    {
       return FindFirst( t, i );
    }
 
-   size_type Find( char8_type c, size_type i = 0 ) const
+   size_type Find( char8_type c, size_type i = 0 ) const noexcept
    {
       return FindFirst( c, i );
    }
 
-   size_type FindIC( const String& s, size_type i = 0 ) const
+   size_type FindIC( const String& s, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( s, i );
    }
 
-   size_type FindIC( const_iterator t, size_type i = 0 ) const
+   size_type FindIC( const_iterator t, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( t, i );
    }
 
-   size_type FindIC( char_type c, size_type i = 0 ) const
+   size_type FindIC( char_type c, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( c, i );
    }
 
-   size_type FindIC( const char16_t* t, size_type i = 0 ) const
+   size_type FindIC( const char16_t* t, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( t, i );
    }
 
-   size_type FindIC( char16_t c, size_type i = 0 ) const
+   size_type FindIC( char16_t c, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( c, i );
    }
 
-   size_type FindIC( const wchar_t* t, size_type i = 0 ) const
+   size_type FindIC( const wchar_t* t, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( t, i );
    }
 
-   size_type FindIC( wchar_t c, size_type i = 0 ) const
+   size_type FindIC( wchar_t c, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( c, i );
    }
 
-   size_type FindIC( const_c_string8 t, size_type i = 0 ) const
+   size_type FindIC( const_c_string8 t, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( t, i );
    }
 
-   size_type FindIC( char8_type c, size_type i = 0 ) const
+   size_type FindIC( char8_type c, size_type i = 0 ) const noexcept
    {
       return FindFirstIC( c, i );
    }
 
    // -------------------------------------------------------------------------
 
-   size_type FindLast( const String& s, size_type r = maxPos ) const
+   size_type FindLast( const String& s, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLast( s, r );
    }
 
-   size_type FindLast( const_iterator t, size_type r = maxPos ) const
+   size_type FindLast( const_iterator t, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLast( t, r );
    }
 
-   size_type FindLast( char_type c, size_type r = maxPos ) const
+   size_type FindLast( char_type c, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLast( c, r );
    }
 
-   size_type FindLastIC( const String& s, size_type r = maxPos ) const
+   size_type FindLastIC( const String& s, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLastIC( s, r );
    }
 
-   size_type FindLastIC( const_iterator t, size_type r = maxPos ) const
+   size_type FindLastIC( const_iterator t, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLastIC( t, r );
    }
 
-   size_type FindLastIC( char_type c, size_type r = maxPos ) const
+   size_type FindLastIC( char_type c, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLastIC( c, r );
    }
 
-   size_type FindLast( const char16_t* t, size_type r = maxPos ) const
+   size_type FindLast( const char16_t* t, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLast( reinterpret_cast<const_iterator>( t ), r );
    }
 
-   size_type FindLast( char16_t c, size_type r = maxPos ) const
+   size_type FindLast( char16_t c, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLast( char_type( c ), r );
    }
 
-   size_type FindLastIC( const char16_t* t, size_type r = maxPos ) const
+   size_type FindLastIC( const char16_t* t, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLastIC( reinterpret_cast<const_iterator>( t ), r );
    }
 
-   size_type FindLastIC( char16_t c, size_type r = maxPos ) const
+   size_type FindLastIC( char16_t c, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLastIC( char_type( c ), r );
    }
 
-   size_type FindLast( const wchar_t* t, size_type r = maxPos ) const
+   size_type FindLast( const wchar_t* t, size_type r = maxPos ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::FindLast( reinterpret_cast<const_iterator>( t ), r );
@@ -9987,12 +9994,12 @@ public:
 #endif
    }
 
-   size_type FindLast( wchar_t c, size_type r = maxPos ) const
+   size_type FindLast( wchar_t c, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLast( char_type( c ), r );
    }
 
-   size_type FindLastIC( const wchar_t* t, size_type r = maxPos ) const
+   size_type FindLastIC( const wchar_t* t, size_type r = maxPos ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::FindLastIC( reinterpret_cast<const_iterator>( t ), r );
@@ -10001,84 +10008,84 @@ public:
 #endif
    }
 
-   size_type FindLastIC( wchar_t c, size_type r = maxPos ) const
+   size_type FindLastIC( wchar_t c, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLastIC( char_type( c ), r );
    }
 
-   size_type FindLast( const_c_string8 t, size_type r = maxPos ) const
+   size_type FindLast( const_c_string8 t, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLast( String( t ), r );
    }
 
-   size_type FindLast( char8_type c, size_type r = maxPos ) const
+   size_type FindLast( char8_type c, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLast( char_type( c ), r );
    }
 
-   size_type FindLastIC( const_c_string8 t, size_type r = maxPos ) const
+   size_type FindLastIC( const_c_string8 t, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLastIC( String( t ), r );
    }
 
-   size_type FindLastIC( char8_type c, size_type r = maxPos ) const
+   size_type FindLastIC( char8_type c, size_type r = maxPos ) const noexcept
    {
       return string_base::FindLastIC( char_type( c ), r );
    }
 
    // -------------------------------------------------------------------------
 
-   bool Contains( const String& s ) const
+   bool Contains( const String& s ) const noexcept
    {
       return string_base::Contains( s );
    }
 
-   bool Contains( const_iterator t ) const
+   bool Contains( const_iterator t ) const noexcept
    {
       return string_base::Contains( t );
    }
 
-   bool Contains( char_type c ) const
+   bool Contains( char_type c ) const noexcept
    {
       return string_base::Contains( c );
    }
 
-   bool ContainsIC( const String& s ) const
+   bool ContainsIC( const String& s ) const noexcept
    {
       return string_base::ContainsIC( s );
    }
 
-   bool ContainsIC( const_iterator t ) const
+   bool ContainsIC( const_iterator t ) const noexcept
    {
       return string_base::ContainsIC( t );
    }
 
-   bool ContainsIC( char_type c ) const
+   bool ContainsIC( char_type c ) const noexcept
    {
       return string_base::ContainsIC( c );
    }
 
-   bool Contains( const char16_t* t ) const
+   bool Contains( const char16_t* t ) const noexcept
    {
       return string_base::Contains( reinterpret_cast<const_iterator>( t ) );
    }
 
-   bool Contains( char16_t c ) const
+   bool Contains( char16_t c ) const noexcept
    {
       return string_base::Contains( char_type( c ) );
    }
 
-   bool ContainsIC( const char16_t* t ) const
+   bool ContainsIC( const char16_t* t ) const noexcept
    {
       return string_base::ContainsIC( reinterpret_cast<const_iterator>( t ) );
    }
 
-   bool ContainsIC( char16_t c ) const
+   bool ContainsIC( char16_t c ) const noexcept
    {
       return string_base::ContainsIC( char_type( c ) );
    }
 
-   bool Contains( const wchar_t* t ) const
+   bool Contains( const wchar_t* t ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::Contains( reinterpret_cast<const_iterator>( t ) );
@@ -10087,12 +10094,12 @@ public:
 #endif
    }
 
-   bool Contains( wchar_t c ) const
+   bool Contains( wchar_t c ) const noexcept
    {
       return string_base::Contains( char_type( c ) );
    }
 
-   bool ContainsIC( const wchar_t* t ) const
+   bool ContainsIC( const wchar_t* t ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::ContainsIC( reinterpret_cast<const_iterator>( t ) );
@@ -10101,59 +10108,59 @@ public:
 #endif
    }
 
-   bool ContainsIC( wchar_t c ) const
+   bool ContainsIC( wchar_t c ) const noexcept
    {
       return string_base::ContainsIC( char_type( c ) );
    }
 
-   bool Contains( const_c_string8 t ) const
+   bool Contains( const_c_string8 t ) const noexcept
    {
       return string_base::Contains( String( t ) );
    }
 
-   bool Contains( char8_type c ) const
+   bool Contains( char8_type c ) const noexcept
    {
       return string_base::Contains( char_type( c ) );
    }
 
-   bool ContainsIC( const_c_string8 t ) const
+   bool ContainsIC( const_c_string8 t ) const noexcept
    {
       return string_base::ContainsIC( String( t ) );
    }
 
-   bool ContainsIC( char8_type c ) const
+   bool ContainsIC( char8_type c ) const noexcept
    {
       return string_base::ContainsIC( char_type( c ) );
    }
 
    // -------------------------------------------------------------------------
 
-   int CompareCodePoints( const String& s, bool caseSensitive = true ) const
+   int CompareCodePoints( const String& s, bool caseSensitive = true ) const noexcept
    {
       return string_base::CompareCodePoints( s, caseSensitive );
    }
 
-   int CompareCodePoints( const_iterator t, bool caseSensitive = true ) const
+   int CompareCodePoints( const_iterator t, bool caseSensitive = true ) const noexcept
    {
       return string_base::CompareCodePoints( t, caseSensitive );
    }
 
-   int CompareCodePoints( char_type c, bool caseSensitive = true ) const
+   int CompareCodePoints( char_type c, bool caseSensitive = true ) const noexcept
    {
       return string_base::CompareCodePoints( c, caseSensitive );
    }
 
-   int CompareCodePoints( const char16_t* t, bool caseSensitive = true ) const
+   int CompareCodePoints( const char16_t* t, bool caseSensitive = true ) const noexcept
    {
       return string_base::CompareCodePoints( reinterpret_cast<const_iterator>( t ), caseSensitive );
    }
 
-   int CompareCodePoints( char16_t c, bool caseSensitive = true ) const
+   int CompareCodePoints( char16_t c, bool caseSensitive = true ) const noexcept
    {
       return string_base::CompareCodePoints( char_type( c ), caseSensitive );
    }
 
-   int CompareCodePoints( const wchar_t* t, bool caseSensitive = true ) const
+   int CompareCodePoints( const wchar_t* t, bool caseSensitive = true ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::CompareCodePoints( reinterpret_cast<const_iterator>( t ), caseSensitive );
@@ -10162,74 +10169,74 @@ public:
 #endif
    }
 
-   int CompareCodePoints( wchar_t c, bool caseSensitive = true ) const
+   int CompareCodePoints( wchar_t c, bool caseSensitive = true ) const noexcept
    {
       return string_base::CompareCodePoints( char_type( c ), caseSensitive );
    }
 
-   int CompareCodePoints( const_c_string8 t, bool caseSensitive = true ) const
+   int CompareCodePoints( const_c_string8 t, bool caseSensitive = true ) const noexcept
    {
       return string_base::CompareCodePoints( String( t ), caseSensitive );
    }
 
-   int CompareCodePoints( char8_type c, bool caseSensitive = true ) const
+   int CompareCodePoints( char8_type c, bool caseSensitive = true ) const noexcept
    {
       return string_base::CompareCodePoints( char_type( c ), caseSensitive );
    }
 
    // -------------------------------------------------------------------------
 
-   int Compare( const String& s, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( const String& s, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return string_base::Compare( s, caseSensitive, localeAware );
    }
 
-   int Compare( const_iterator t, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( const_iterator t, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return string_base::Compare( t, caseSensitive, localeAware );
    }
 
-   int Compare( char_type c, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( char_type c, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return string_base::Compare( c, caseSensitive, localeAware );
    }
 
-   int CompareIC( const String& s, bool localeAware = true ) const
+   int CompareIC( const String& s, bool localeAware = true ) const noexcept
    {
       return string_base::CompareIC( s, localeAware );
    }
 
-   int CompareIC( const_iterator t, bool localeAware = true ) const
+   int CompareIC( const_iterator t, bool localeAware = true ) const noexcept
    {
       return string_base::CompareIC( t, localeAware );
    }
 
-   int CompareIC( char_type c, bool localeAware = true ) const
+   int CompareIC( char_type c, bool localeAware = true ) const noexcept
    {
       return string_base::CompareIC( c, localeAware );
    }
 
-   int Compare( const char16_t* t, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( const char16_t* t, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return string_base::Compare( reinterpret_cast<const_iterator>( t ), caseSensitive, localeAware );
    }
 
-   int Compare( char16_t c, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( char16_t c, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return string_base::Compare( char_type( c ), caseSensitive, localeAware );
    }
 
-   int CompareIC( const char16_t* t, bool localeAware = true ) const
+   int CompareIC( const char16_t* t, bool localeAware = true ) const noexcept
    {
       return string_base::CompareIC( reinterpret_cast<const_iterator>( t ), localeAware );
    }
 
-   int CompareIC( char16_t c, bool localeAware = true ) const
+   int CompareIC( char16_t c, bool localeAware = true ) const noexcept
    {
       return string_base::CompareIC( char_type( c ), localeAware );
    }
 
-   int Compare( const wchar_t* t, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( const wchar_t* t, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::Compare( reinterpret_cast<const_iterator>( t ), caseSensitive, localeAware );
@@ -10238,12 +10245,12 @@ public:
 #endif
    }
 
-   int Compare( wchar_t c, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( wchar_t c, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return string_base::Compare( char_type( c ), caseSensitive, localeAware );
    }
 
-   int CompareIC( const wchar_t* t, bool localeAware = true ) const
+   int CompareIC( const wchar_t* t, bool localeAware = true ) const noexcept
    {
 #ifdef __PCL_WINDOWS
       return string_base::CompareIC( reinterpret_cast<const_iterator>( t ), localeAware );
@@ -10252,69 +10259,69 @@ public:
 #endif
    }
 
-   int CompareIC( wchar_t c, bool localeAware = true ) const
+   int CompareIC( wchar_t c, bool localeAware = true ) const noexcept
    {
       return string_base::CompareIC( char_type( c ), localeAware );
    }
 
-   int Compare( const_c_string8 t, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( const_c_string8 t, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return string_base::Compare( String( t ), caseSensitive, localeAware );
    }
 
-   int Compare( char8_type c, bool caseSensitive = true, bool localeAware = true ) const
+   int Compare( char8_type c, bool caseSensitive = true, bool localeAware = true ) const noexcept
    {
       return string_base::Compare( char_type( c ), caseSensitive, localeAware );
    }
 
-   int CompareIC( const_c_string8 t, bool localeAware = true ) const
+   int CompareIC( const_c_string8 t, bool localeAware = true ) const noexcept
    {
       return string_base::CompareIC( String( t ), localeAware );
    }
 
-   int CompareIC( char8_type c, bool localeAware = true ) const
+   int CompareIC( char8_type c, bool localeAware = true ) const noexcept
    {
       return string_base::CompareIC( char_type( c ), localeAware );
    }
 
    // -------------------------------------------------------------------------
 
-   bool WildMatch( const String& pattern, bool caseSensitive = true ) const
+   bool WildMatch( const String& pattern, bool caseSensitive = true ) const noexcept
    {
       return string_base::WildMatch( pattern, caseSensitive );
    }
 
-   bool WildMatchIC( const String& pattern ) const
+   bool WildMatchIC( const String& pattern ) const noexcept
    {
       return string_base::WildMatchIC( pattern );
    }
 
-   bool WildMatch( const_iterator pattern, bool caseSensitive = true ) const
+   bool WildMatch( const_iterator pattern, bool caseSensitive = true ) const noexcept
    {
       return string_base::WildMatch( pattern, caseSensitive );
    }
 
-   bool WildMatchIC( const_iterator pattern ) const
+   bool WildMatchIC( const_iterator pattern ) const noexcept
    {
       return string_base::WildMatchIC( pattern );
    }
 
-   bool WildMatch( const string8_base& pattern, bool caseSensitive = true ) const
+   bool WildMatch( const string8_base& pattern, bool caseSensitive = true ) const noexcept
    {
       return char_traits::WildMatch( m_data->string, Length(), pattern.Begin(), pattern.Length(), caseSensitive );
    }
 
-   bool WildMatchIC( const string8_base& pattern ) const
+   bool WildMatchIC( const string8_base& pattern ) const noexcept
    {
       return char_traits::WildMatch( m_data->string, Length(), pattern.Begin(), pattern.Length(), false/*caseSensitive*/ );
    }
 
-   bool WildMatch( const_c_string8 pattern, bool caseSensitive = true ) const
+   bool WildMatch( const_c_string8 pattern, bool caseSensitive = true ) const noexcept
    {
       return char_traits::WildMatch( m_data->string, Length(), pattern, char8_traits::Length( pattern ), caseSensitive );
    }
 
-   bool WildMatchIC( const_c_string8 pattern ) const
+   bool WildMatchIC( const_c_string8 pattern ) const noexcept
    {
       return char_traits::WildMatch( m_data->string, Length(), pattern, char8_traits::Length( pattern ), false/*caseSensitive*/ );
    }
@@ -11240,7 +11247,7 @@ public:
     *
     * \sa ToBool()
     */
-   bool TryToBool( bool& value ) const;
+   bool TryToBool( bool& value ) const noexcept;
 
    /*!
     * Evaluates this string as a floating point numeric literal, and returns
@@ -11271,7 +11278,7 @@ public:
     *
     * \sa ToFloat()
     */
-   bool TryToFloat( float& value ) const;
+   bool TryToFloat( float& value ) const noexcept;
 
    /*!
     * Evaluates this string as a floating point literal, and returns the result
@@ -11312,7 +11319,7 @@ public:
     *
     * \sa ToDouble()
     */
-   bool TryToDouble( double& value ) const;
+   bool TryToDouble( double& value ) const noexcept;
 
    /*!
     * Evaluates this string as an integer literal, and returns the result as a
@@ -11358,7 +11365,7 @@ public:
     *
     * \sa ToInt()
     */
-   bool TryToInt( int& value ) const
+   bool TryToInt( int& value ) const noexcept
    {
       return TryToInt( value, 0 );
    }
@@ -11408,7 +11415,7 @@ public:
     *
     * \sa ToInt( int ) const
     */
-   bool TryToInt( int& value, int base ) const;
+   bool TryToInt( int& value, int base ) const noexcept;
 
    /*!
     * Evaluates this string as an unsigned integer literal, and returns the
@@ -11455,7 +11462,7 @@ public:
     *
     * \sa ToUInt()
     */
-   bool TryToUInt( unsigned& value ) const
+   bool TryToUInt( unsigned& value ) const noexcept
    {
       return TryToUInt( value, 0 );
    }
@@ -11495,7 +11502,7 @@ public:
     *
     * \sa ToUInt( int ) const
     */
-   bool TryToUInt( unsigned& value, int base ) const;
+   bool TryToUInt( unsigned& value, int base ) const noexcept;
 
    /*!
     * Evaluates this string as an integer literal, and returns the result as a
@@ -11540,7 +11547,7 @@ public:
     *
     * \sa ToInt64()
     */
-   bool TryToInt64( long long& value ) const
+   bool TryToInt64( long long& value ) const noexcept
    {
       return TryToInt64( value, 0 );
    }
@@ -11578,7 +11585,7 @@ public:
     *
     * \sa ToInt64( int ) const
     */
-   bool TryToInt64( long long& value, int base ) const;
+   bool TryToInt64( long long& value, int base ) const noexcept;
 
    /*!
     * Evaluates this string as an unsigned integer literal in the specified
@@ -11623,7 +11630,7 @@ public:
     *
     * \sa ToUInt64()
     */
-   bool TryToUInt64( unsigned long long& value ) const
+   bool TryToUInt64( unsigned long long& value ) const noexcept
    {
       return TryToUInt64( value, 0 );
    }
@@ -11661,7 +11668,7 @@ public:
     *
     * \sa ToUInt64( int ) const
     */
-   bool TryToUInt64( unsigned long long& value, int base ) const;
+   bool TryToUInt64( unsigned long long& value, int base ) const noexcept;
 
    /*!
     * Evaluates this string as a sexagesimal numeric literal representation,
@@ -11734,7 +11741,7 @@ public:
     * \ingroup sexagesimal_conversion
     * \sa SexagesimalToDouble(), ParseSexagesimal(), TryParseSexagesimal()
     */
-   bool TrySexagesimalToDouble( double& value, const String& separator = ':' ) const
+   bool TrySexagesimalToDouble( double& value, const String& separator = ':' ) const noexcept
    {
       int sign, s1, s2; double s3;
       if ( TryParseSexagesimal( sign, s1, s2, s3, separator ) )
@@ -11757,7 +11764,7 @@ public:
     * \ingroup sexagesimal_conversion
     * \sa SexagesimalToDouble( const Array<>& )
     */
-   bool TrySexagesimalToDouble( double& value, const Array<char_type>& separators ) const
+   bool TrySexagesimalToDouble( double& value, const Array<char_type>& separators ) const noexcept
    {
       int sign, s1, s2; double s3;
       if ( TryParseSexagesimal( sign, s1, s2, s3, separators ) )
@@ -11826,7 +11833,7 @@ public:
     * \ingroup sexagesimal_conversion
     * \sa ParseSexagesimal(), SexagesimalToDouble(), TrySexagesimalToDouble()
     */
-   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const String& separator = ':' ) const;
+   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const String& separator = ':' ) const noexcept;
 
    /*!
     * Attempts to evaluate this string as a sexagesimal numeric literal
@@ -11841,7 +11848,7 @@ public:
     * \ingroup sexagesimal_conversion
     * \sa ParseSexagesimal( int&, int&, int&, double&, const Array<>& )
     */
-   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const Array<char_type>& separators ) const;
+   bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const Array<char_type>& separators ) const noexcept;
 
    /*!
     * Returns a sexagesimal ASCII representation of the specified components
@@ -11923,7 +11930,7 @@ public:
     *
     * \sa ParseISO8601DateTime(), TimePoint::TryFromString()
     */
-   bool TryParseISO8601DateTime( int& year, int& month, int& day, double& dayf, double& tz ) const;
+   bool TryParseISO8601DateTime( int& year, int& month, int& day, double& dayf, double& tz ) const noexcept;
 
    /*!
     * Returns a string representation of a date and time in ISO 8601 extended
@@ -13012,7 +13019,7 @@ inline String& operator <<( String&& s1, String::char8_type c2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( const String& s1, const char16_t* t2 )
+inline bool operator ==( const String& s1, const char16_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) == 0;
 }
@@ -13023,7 +13030,7 @@ inline bool operator ==( const String& s1, const char16_t* t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( const String& s1, const char16_t* t2 )
+inline bool operator  <( const String& s1, const char16_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) < 0;
 }
@@ -13034,7 +13041,7 @@ inline bool operator  <( const String& s1, const char16_t* t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( const String& s1, const char16_t* t2 )
+inline bool operator <=( const String& s1, const char16_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) <= 0;
 }
@@ -13045,7 +13052,7 @@ inline bool operator <=( const String& s1, const char16_t* t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( const String& s1, const char16_t* t2 )
+inline bool operator  >( const String& s1, const char16_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) > 0;
 }
@@ -13056,7 +13063,7 @@ inline bool operator  >( const String& s1, const char16_t* t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( const String& s1, const char16_t* t2 )
+inline bool operator >=( const String& s1, const char16_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) >= 0;
 }
@@ -13067,7 +13074,7 @@ inline bool operator >=( const String& s1, const char16_t* t2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( const char16_t* t1, const String& s2 )
+inline bool operator ==( const char16_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) == 0;
 }
@@ -13078,7 +13085,7 @@ inline bool operator ==( const char16_t* t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( const char16_t* t1, const String& s2 )
+inline bool operator  <( const char16_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) > 0;
 }
@@ -13089,7 +13096,7 @@ inline bool operator  <( const char16_t* t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( const char16_t* t1, const String& s2 )
+inline bool operator <=( const char16_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) >= 0;
 }
@@ -13100,7 +13107,7 @@ inline bool operator <=( const char16_t* t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( const char16_t* t1, const String& s2 )
+inline bool operator  >( const char16_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) < 0;
 }
@@ -13111,7 +13118,7 @@ inline bool operator  >( const char16_t* t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( const char16_t* t1, const String& s2 )
+inline bool operator >=( const char16_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) <= 0;
 }
@@ -13122,7 +13129,7 @@ inline bool operator >=( const char16_t* t1, const String& s2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( const String& s1, char16_t c2 )
+inline bool operator ==( const String& s1, char16_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) == 0;
 }
@@ -13133,7 +13140,7 @@ inline bool operator ==( const String& s1, char16_t c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( const String& s1, char16_t c2 )
+inline bool operator  <( const String& s1, char16_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) < 0;
 }
@@ -13144,7 +13151,7 @@ inline bool operator  <( const String& s1, char16_t c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( const String& s1, char16_t c2 )
+inline bool operator <=( const String& s1, char16_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) <= 0;
 }
@@ -13155,7 +13162,7 @@ inline bool operator <=( const String& s1, char16_t c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( const String& s1, char16_t c2 )
+inline bool operator  >( const String& s1, char16_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) > 0;
 }
@@ -13166,7 +13173,7 @@ inline bool operator  >( const String& s1, char16_t c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( const String& s1, char16_t c2 )
+inline bool operator >=( const String& s1, char16_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) >= 0;
 }
@@ -13177,7 +13184,7 @@ inline bool operator >=( const String& s1, char16_t c2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( char16_t c1, const String& s2 )
+inline bool operator ==( char16_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) == 0;
 }
@@ -13188,7 +13195,7 @@ inline bool operator ==( char16_t c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( char16_t c1, const String& s2 )
+inline bool operator  <( char16_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) > 0;
 }
@@ -13199,7 +13206,7 @@ inline bool operator  <( char16_t c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( char16_t c1, const String& s2 )
+inline bool operator <=( char16_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) >= 0;
 }
@@ -13210,7 +13217,7 @@ inline bool operator <=( char16_t c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( char16_t c1, const String& s2 )
+inline bool operator  >( char16_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) < 0;
 }
@@ -13221,7 +13228,7 @@ inline bool operator  >( char16_t c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( char16_t c1, const String& s2 )
+inline bool operator >=( char16_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) <= 0;
 }
@@ -13232,7 +13239,7 @@ inline bool operator >=( char16_t c1, const String& s2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( const String& s1, const wchar_t* t2 )
+inline bool operator ==( const String& s1, const wchar_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) == 0;
 }
@@ -13243,7 +13250,7 @@ inline bool operator ==( const String& s1, const wchar_t* t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( const String& s1, const wchar_t* t2 )
+inline bool operator  <( const String& s1, const wchar_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) < 0;
 }
@@ -13254,7 +13261,7 @@ inline bool operator  <( const String& s1, const wchar_t* t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( const String& s1, const wchar_t* t2 )
+inline bool operator <=( const String& s1, const wchar_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) <= 0;
 }
@@ -13265,7 +13272,7 @@ inline bool operator <=( const String& s1, const wchar_t* t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( const String& s1, const wchar_t* t2 )
+inline bool operator  >( const String& s1, const wchar_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) > 0;
 }
@@ -13276,7 +13283,7 @@ inline bool operator  >( const String& s1, const wchar_t* t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( const String& s1, const wchar_t* t2 )
+inline bool operator >=( const String& s1, const wchar_t* t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) >= 0;
 }
@@ -13287,7 +13294,7 @@ inline bool operator >=( const String& s1, const wchar_t* t2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( const wchar_t* t1, const String& s2 )
+inline bool operator ==( const wchar_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) == 0;
 }
@@ -13298,7 +13305,7 @@ inline bool operator ==( const wchar_t* t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( const wchar_t* t1, const String& s2 )
+inline bool operator  <( const wchar_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) > 0;
 }
@@ -13309,7 +13316,7 @@ inline bool operator  <( const wchar_t* t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( const wchar_t* t1, const String& s2 )
+inline bool operator <=( const wchar_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) >= 0;
 }
@@ -13320,7 +13327,7 @@ inline bool operator <=( const wchar_t* t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( const wchar_t* t1, const String& s2 )
+inline bool operator  >( const wchar_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) < 0;
 }
@@ -13331,7 +13338,7 @@ inline bool operator  >( const wchar_t* t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( const wchar_t* t1, const String& s2 )
+inline bool operator >=( const wchar_t* t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) <= 0;
 }
@@ -13342,7 +13349,7 @@ inline bool operator >=( const wchar_t* t1, const String& s2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( const String& s1, wchar_t c2 )
+inline bool operator ==( const String& s1, wchar_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) == 0;
 }
@@ -13353,7 +13360,7 @@ inline bool operator ==( const String& s1, wchar_t c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( const String& s1, wchar_t c2 )
+inline bool operator  <( const String& s1, wchar_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) < 0;
 }
@@ -13364,7 +13371,7 @@ inline bool operator  <( const String& s1, wchar_t c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( const String& s1, wchar_t c2 )
+inline bool operator <=( const String& s1, wchar_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) <= 0;
 }
@@ -13375,7 +13382,7 @@ inline bool operator <=( const String& s1, wchar_t c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( const String& s1, wchar_t c2 )
+inline bool operator  >( const String& s1, wchar_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) > 0;
 }
@@ -13386,7 +13393,7 @@ inline bool operator  >( const String& s1, wchar_t c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( const String& s1, wchar_t c2 )
+inline bool operator >=( const String& s1, wchar_t c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) >= 0;
 }
@@ -13397,7 +13404,7 @@ inline bool operator >=( const String& s1, wchar_t c2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( wchar_t c1, const String& s2 )
+inline bool operator ==( wchar_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) == 0;
 }
@@ -13408,7 +13415,7 @@ inline bool operator ==( wchar_t c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( wchar_t c1, const String& s2 )
+inline bool operator  <( wchar_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) > 0;
 }
@@ -13419,7 +13426,7 @@ inline bool operator  <( wchar_t c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( wchar_t c1, const String& s2 )
+inline bool operator <=( wchar_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) >= 0;
 }
@@ -13430,7 +13437,7 @@ inline bool operator <=( wchar_t c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( wchar_t c1, const String& s2 )
+inline bool operator  >( wchar_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) < 0;
 }
@@ -13441,7 +13448,7 @@ inline bool operator  >( wchar_t c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( wchar_t c1, const String& s2 )
+inline bool operator >=( wchar_t c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) <= 0;
 }
@@ -13452,7 +13459,7 @@ inline bool operator >=( wchar_t c1, const String& s2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( const String& s1, String::const_c_string8 t2 )
+inline bool operator ==( const String& s1, String::const_c_string8 t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) == 0;
 }
@@ -13463,7 +13470,7 @@ inline bool operator ==( const String& s1, String::const_c_string8 t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( const String& s1, String::const_c_string8 t2 )
+inline bool operator  <( const String& s1, String::const_c_string8 t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) < 0;
 }
@@ -13474,7 +13481,7 @@ inline bool operator  <( const String& s1, String::const_c_string8 t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( const String& s1, String::const_c_string8 t2 )
+inline bool operator <=( const String& s1, String::const_c_string8 t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) <= 0;
 }
@@ -13485,7 +13492,7 @@ inline bool operator <=( const String& s1, String::const_c_string8 t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( const String& s1, String::const_c_string8 t2 )
+inline bool operator  >( const String& s1, String::const_c_string8 t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) > 0;
 }
@@ -13496,7 +13503,7 @@ inline bool operator  >( const String& s1, String::const_c_string8 t2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( const String& s1, String::const_c_string8 t2 )
+inline bool operator >=( const String& s1, String::const_c_string8 t2 ) noexcept
 {
    return s1.CompareCodePoints( t2 ) >= 0;
 }
@@ -13507,7 +13514,7 @@ inline bool operator >=( const String& s1, String::const_c_string8 t2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( String::const_c_string8 t1, const String& s2 )
+inline bool operator ==( String::const_c_string8 t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) == 0;
 }
@@ -13518,7 +13525,7 @@ inline bool operator ==( String::const_c_string8 t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( String::const_c_string8 t1, const String& s2 )
+inline bool operator  <( String::const_c_string8 t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) > 0;
 }
@@ -13529,7 +13536,7 @@ inline bool operator  <( String::const_c_string8 t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( String::const_c_string8 t1, const String& s2 )
+inline bool operator <=( String::const_c_string8 t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) >= 0;
 }
@@ -13540,7 +13547,7 @@ inline bool operator <=( String::const_c_string8 t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( String::const_c_string8 t1, const String& s2 )
+inline bool operator  >( String::const_c_string8 t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) < 0;
 }
@@ -13551,7 +13558,7 @@ inline bool operator  >( String::const_c_string8 t1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( String::const_c_string8 t1, const String& s2 )
+inline bool operator >=( String::const_c_string8 t1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( t1 ) <= 0;
 }
@@ -13562,7 +13569,7 @@ inline bool operator >=( String::const_c_string8 t1, const String& s2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( const String& s1, String::char8_type c2 )
+inline bool operator ==( const String& s1, String::char8_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) == 0;
 }
@@ -13573,7 +13580,7 @@ inline bool operator ==( const String& s1, String::char8_type c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( const String& s1, String::char8_type c2 )
+inline bool operator  <( const String& s1, String::char8_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) < 0;
 }
@@ -13584,7 +13591,7 @@ inline bool operator  <( const String& s1, String::char8_type c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( const String& s1, String::char8_type c2 )
+inline bool operator <=( const String& s1, String::char8_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) <= 0;
 }
@@ -13595,7 +13602,7 @@ inline bool operator <=( const String& s1, String::char8_type c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( const String& s1, String::char8_type c2 )
+inline bool operator  >( const String& s1, String::char8_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) > 0;
 }
@@ -13606,7 +13613,7 @@ inline bool operator  >( const String& s1, String::char8_type c2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( const String& s1, String::char8_type c2 )
+inline bool operator >=( const String& s1, String::char8_type c2 ) noexcept
 {
    return s1.CompareCodePoints( c2 ) >= 0;
 }
@@ -13617,7 +13624,7 @@ inline bool operator >=( const String& s1, String::char8_type c2 )
  * Equality operator.
  * \ingroup string_relational_ops
  */
-inline bool operator ==( String::char8_type c1, const String& s2 )
+inline bool operator ==( String::char8_type c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) == 0;
 }
@@ -13628,7 +13635,7 @@ inline bool operator ==( String::char8_type c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  <( String::char8_type c1, const String& s2 )
+inline bool operator  <( String::char8_type c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) > 0;
 }
@@ -13639,7 +13646,7 @@ inline bool operator  <( String::char8_type c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator <=( String::char8_type c1, const String& s2 )
+inline bool operator <=( String::char8_type c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) >= 0;
 }
@@ -13650,7 +13657,7 @@ inline bool operator <=( String::char8_type c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator  >( String::char8_type c1, const String& s2 )
+inline bool operator  >( String::char8_type c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) < 0;
 }
@@ -13661,7 +13668,7 @@ inline bool operator  >( String::char8_type c1, const String& s2 )
  * values. See GenericString<>::CompareCodePoints() for more information.
  * \ingroup string_relational_ops
  */
-inline bool operator >=( String::char8_type c1, const String& s2 )
+inline bool operator >=( String::char8_type c1, const String& s2 ) noexcept
 {
    return s2.CompareCodePoints( c1 ) <= 0;
 }
@@ -13694,4 +13701,4 @@ inline std::ostream& operator <<( std::ostream& o, const String& s )
 #endif   // __PCL_String_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/String.h - Released 2020-11-20T19:46:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// BlinkStatisticsDialog.cpp - Released 2020-10-12T19:25:16Z
+// BlinkStatisticsDialog.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -57,7 +57,7 @@
 #include <pcl/Console.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/MessageBox.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 
 #define ftb m_parent->GUI->Files_TreeBox
 
@@ -696,4 +696,4 @@ void BlinkStatisticsDialog::__Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkStatisticsDialog.cpp - Released 2020-10-12T19:25:16Z
+// EOF BlinkStatisticsDialog.cpp - Released 2020-11-20T19:49:00Z

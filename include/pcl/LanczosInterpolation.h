@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/LanczosInterpolation.h - Released 2020-10-12T19:24:41Z
+// pcl/LanczosInterpolation.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -358,7 +358,7 @@ public:
     *
     * \sa EnableClamping(), ClampingThreshold()
     */
-   bool IsClampingEnabled() const
+   bool IsClampingEnabled() const noexcept
    {
       return m_clamp;
    }
@@ -368,7 +368,7 @@ public:
     *
     * \sa IsClampingEnabled(), DisableClamping(), SetClampingThreshold()
     */
-   void EnableClamping( bool enable = true )
+   void EnableClamping( bool enable = true ) noexcept
    {
       m_clamp = enable;
    }
@@ -378,7 +378,7 @@ public:
     *
     * \sa IsClampingEnabled(), EnableClamping(), SetClampingThreshold()
     */
-   void DisableClamping( bool disable = true )
+   void DisableClamping( bool disable = true ) noexcept
    {
       EnableClamping( !disable );
    }
@@ -391,7 +391,7 @@ public:
     *
     * \sa SetClampingThreshold(), IsClampingEnabled(), EnableClamping()
     */
-   float ClampingThreshold() const
+   float ClampingThreshold() const noexcept
    {
       return m_clampTh;
    }
@@ -416,7 +416,7 @@ public:
     *
     * \sa ClampingThreshold(), IsClampingEnabled(), EnableClamping()
     */
-   void SetClampingThreshold( float clamp )
+   void SetClampingThreshold( float clamp ) noexcept
    {
       PCL_PRECONDITION( 0 <= clamp && clamp <= 1 )
       m_clampTh = Range( clamp, 0.0F, 1.0F );
@@ -434,7 +434,7 @@ private:
    /*
     * Sinc function for x > 0
     */
-   static double Sinc( double x )
+   static double Sinc( double x ) noexcept
    {
       x *= Const<double>::pi();
       return (x > 1.0e-07) ? Sin( x )/x : 1.0;
@@ -443,7 +443,7 @@ private:
    /*
     * Evaluate Lanczos function at x.
     */
-   double Lanczos( double x ) const
+   double Lanczos( double x ) const noexcept
    {
       if ( x < 0 )
          x = -x;
@@ -456,7 +456,7 @@ private:
     * Interpolate a row of pixels.
     * Can be either an unclipped row or a mirrored border row.
     */
-   void InterpolateRow( double& sp, double& sn, double& wp, double& wn, const T* f, int x0, double Ly ) const
+   void InterpolateRow( double& sp, double& sn, double& wp, double& wn, const T* f, int x0, double Ly ) const noexcept
    {
       int j, k;
 
@@ -495,7 +495,7 @@ private:
    /*
     * Interpolate a clipped pixel row with border filling.
     */
-   void FillRow( double& sp, double& sn, double& wp, double& wn, double Ly ) const
+   void FillRow( double& sp, double& sn, double& wp, double& wn, double Ly ) const noexcept
    {
       for ( int j = -m_n + 1, k = 0; j <= m_n; ++j, ++k )
       {
@@ -665,7 +665,7 @@ public:
     *
     * \sa EnableClamping(), ClampingThreshold()
     */
-   bool IsClampingEnabled() const
+   bool IsClampingEnabled() const noexcept
    {
       return m_clamp;
    }
@@ -675,7 +675,7 @@ public:
     *
     * \sa IsClampingEnabled(), DisableClamping(), SetClampingThreshold()
     */
-   void EnableClamping( bool enable = true )
+   void EnableClamping( bool enable = true ) noexcept
    {
       m_clamp = enable;
    }
@@ -685,7 +685,7 @@ public:
     *
     * \sa IsClampingEnabled(), EnableClamping(), SetClampingThreshold()
     */
-   void DisableClamping( bool disable = true )
+   void DisableClamping( bool disable = true ) noexcept
    {
       EnableClamping( !disable );
    }
@@ -698,7 +698,7 @@ public:
     *
     * \sa SetClampingThreshold(), IsClampingEnabled(), EnableClamping()
     */
-   float ClampingThreshold() const
+   float ClampingThreshold() const noexcept
    {
       return m_clampTh;
    }
@@ -723,7 +723,7 @@ public:
     *
     * \sa ClampingThreshold(), IsClampingEnabled(), EnableClamping()
     */
-   void SetClampingThreshold( float clamp )
+   void SetClampingThreshold( float clamp ) noexcept
    {
       PCL_PRECONDITION( 0 <= clamp && clamp <= 1 )
       m_clampTh = Range( clamp, 0.0F, 1.0F );
@@ -741,7 +741,7 @@ private:
     * Interpolate a row of pixels.
     * Can be either an unclipped row or a mirrored border row.
     */
-   void InterpolateRow( double& sp, double& sn, double& wp, double& wn, const T* f, int x0, float Ly ) const
+   void InterpolateRow( double& sp, double& sn, double& wp, double& wn, const T* f, int x0, float Ly ) const noexcept
    {
       int j, k;
 
@@ -780,7 +780,7 @@ private:
    /*
     * Interpolate a clipped pixel row with border filling.
     */
-   void FillRow( double& sp, double& sn, double& wp, double& wn, float Ly ) const
+   void FillRow( double& sp, double& sn, double& wp, double& wn, float Ly ) const noexcept
    {
       for ( int j = -m_n + 1, k = 0; j <= m_n; ++j, ++k )
       {
@@ -973,4 +973,4 @@ public:
 #endif   // __PCL_LanczosInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LanczosInterpolation.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/LanczosInterpolation.h - Released 2020-11-20T19:46:29Z

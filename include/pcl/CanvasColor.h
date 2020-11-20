@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/CanvasColor.h - Released 2020-10-12T19:24:41Z
+// pcl/CanvasColor.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -81,30 +81,17 @@ public:
    /*!
     * Constructs a %CanvasColor object with zero (black) color components.
     */
-   CanvasColor()
-   {
-      canvasColor[0] = canvasColor[1] = canvasColor[2] = canvasColor[3] = 0;
-   }
+   CanvasColor() = default;
 
    /*!
     * Copy constructor.
     */
-   CanvasColor( const CanvasColor& x )
-   {
-      (void)operator =( x );
-   }
+   CanvasColor( const CanvasColor& ) = default;
 
    /*!
-    * Assignment operator. Returns a reference to this object.
+    * Copy assignment operator. Returns a reference to this object.
     */
-   CanvasColor& operator =( const CanvasColor& x )
-   {
-      canvasColor[0] = x.canvasColor[0];
-      canvasColor[1] = x.canvasColor[1];
-      canvasColor[2] = x.canvasColor[2];
-      canvasColor[3] = x.canvasColor[3];
-      return *this;
-   }
+   CanvasColor& operator =( const CanvasColor& ) = default;
 
    /*!
     * Retrieves the current RGB sample values in this %CanvasColor object.
@@ -189,8 +176,8 @@ public:
 protected:
 
    // Normalized floating-point sample values. Note that to the purpose of this
-   // structure, float provides enough accuracy, even for DImage.
-   float canvasColor[ 4 ]; // red/gray, green, blue, alpha
+   // structure float provides enough accuracy, even for DImage.
+   float canvasColor[ 4 ] = {}; // red/gray, green, blue, alpha
 };
 
 // ----------------------------------------------------------------------------
@@ -200,4 +187,4 @@ protected:
 #endif   // __PCL_CanvasColor_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/CanvasColor.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/CanvasColor.h - Released 2020-11-20T19:46:29Z

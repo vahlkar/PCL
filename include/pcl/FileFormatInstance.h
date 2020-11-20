@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/FileFormatInstance.h - Released 2020-10-12T19:24:41Z
+// pcl/FileFormatInstance.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -611,6 +611,17 @@ public:
    }
 
    /*!
+    * Returns true iff this instance can perform incremental read operations.
+    *
+    * Do not confuse this member function with
+    * FileFormat::CanReadIncrementally(), which tells you if a given file
+    * format has the capability of performing incremental file reads in
+    * general. The value returned by this function refers specifically to this
+    * format instance (e.g., a particular file).
+    */
+   bool CanReadIncrementally() const;
+
+   /*!
     * Incremental read in 32-bit floating point sample format.
     *
     * \param[out] buffer      Address of the destination sample buffer.
@@ -629,9 +640,13 @@ public:
     * image files that don't fit in the available RAM.
     *
     * When a file format implements incremental reading, the corresponding
-    * FileFormat::CanReadIncrementally() returns true. Otherwise this function
-    * should not be invoked - it will throw an exception if called for a file
-    * format that doesn't support incremental reading.
+    * FileFormat::CanReadIncrementally() returns true. Furthermore, the
+    * CanReadIncrementally() member function of this class should also return
+    * true for this object, allowing incremental reads for this particular
+    * format instance. Otherwise this function must not be invoked - it will
+    * throw an exception if called for a format that does not support
+    * incremental reads, and will fail unexpectedly if called for an instance
+    * that does not allow them.
     */
    bool ReadSamples( FImage::sample* buffer, int startRow, int rowCount, int channel );
 
@@ -1028,6 +1043,17 @@ public:
    }
 
    /*!
+    * Returns true iff this instance can perform incremental write operations.
+    *
+    * Do not confuse this member function with
+    * FileFormat::CanWriteIncrementally(), which tells you if a given file
+    * format has the capability of performing incremental file writes in
+    * general. The value returned by this function refers specifically to this
+    * format instance (e.g., a particular file).
+    */
+   bool CanWriteIncrementally() const;
+
+   /*!
     * Creates a new image with the geometry and color space as specified by an
     * ImageInfo structure. The newly created image will be written by
     * subsequent incremental write operations.
@@ -1039,7 +1065,8 @@ public:
     * Returns true iff the image was successfully created.
     *
     * \note This member function should not be invoked for file formats that
-    * don't support incremental write operations.
+    * don't support incremental write operations, or for format instances that
+    * don't allow them.
     */
    bool CreateImage( const ImageInfo& info );
 
@@ -1074,9 +1101,13 @@ public:
     * don't fit in the available RAM.
     *
     * When a file format implements incremental writing, the corresponding
-    * FileFormat::CanWriteIncrementally() returns true. Otherwise this function
-    * should not be invoked - it will throw an exception if called for a file
-    * format that doesn't support incremental writing.
+    * FileFormat::CanWriteIncrementally() returns true. Furthermore, the
+    * CanWriteIncrementally() member function of this class should also return
+    * true for this object, allowing incremental writes for this particular
+    * format instance. Otherwise this function must not be invoked - it will
+    * throw an exception if called for a format that does not support
+    * incremental writes, and will fail unexpectedly if called for an instance
+    * that does not allow them.
     */
    bool WriteSamples( const FImage::sample* buffer, int startRow, int rowCount, int channel );
 
@@ -1146,4 +1177,4 @@ private:
 #endif   // __PCL_FileFormatInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormatInstance.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/FileFormatInstance.h - Released 2020-11-20T19:46:29Z

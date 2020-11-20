@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/BicubicFilterInterpolation.h - Released 2020-10-12T19:24:41Z
+// pcl/BicubicFilterInterpolation.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -132,7 +132,7 @@ public:
     * never be called for Abs( \a x ) >= 2.
     */
    PCL_HOT_FUNCTION
-   double operator()( double x ) const
+   double operator()( double x ) const noexcept
    {
       if ( x < 0 )
          x = -x;
@@ -148,7 +148,7 @@ public:
     * Mitchell-Netravali cubic filters are zero outside the range ]-2,+2[,
     * hence this function always returns 2.
     */
-   double Width() const
+   double Width() const noexcept
    {
       return 2.0;
    }
@@ -579,7 +579,7 @@ public:
    /*!
     * Returns the horizontal interpolation radius in pixels.
     */
-   int HorizontalRadius() const
+   int HorizontalRadius() const noexcept
    {
       return m_rx;
    }
@@ -587,7 +587,7 @@ public:
    /*!
     * Returns the vertical interpolation radius in pixels.
     */
-   int VerticalRadius() const
+   int VerticalRadius() const noexcept
    {
       return m_ry;
    }
@@ -623,7 +623,7 @@ public:
     * Returns a constant reference to the cubic filter being used by this
     * interpolation.
     */
-   const CubicFilter& Filter() const
+   const CubicFilter& Filter() const noexcept
    {
       return m_filter;
    }
@@ -667,4 +667,4 @@ protected:
 #endif   // __PCL_BicubicFilterInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/BicubicFilterInterpolation.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/BicubicFilterInterpolation.h - Released 2020-11-20T19:46:29Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/MultiscaleLinearTransform.cpp - Released 2020-10-12T19:24:49Z
+// pcl/MultiscaleLinearTransform.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -51,6 +51,7 @@
 
 #include <pcl/AutoLock.h>
 #include <pcl/AutoPointer.h>
+#include <pcl/Convolution.h>
 #include <pcl/Exception.h>
 #include <pcl/FFTConvolution.h>
 #include <pcl/GaussianFilter.h>
@@ -134,16 +135,25 @@ private:
       AutoPointer<KernelFilter> H( meanFilter ?
          static_cast<KernelFilter*>( new MeanFilter( n ) ) :
          static_cast<KernelFilter*>( new GaussianFilter( n ) ) );
-      if ( n >= PCL_FFT_CONVOLUTION_IS_FASTER_THAN_SEPARABLE_FILTER_SIZE || cj.Width() < n || cj.Height() < n  )
+
+      int nofThreads = Thread::NumberOfThreads( maxProcessors );
+
+      if ( n >= FFTConvolution::FasterThanSeparableFilterSize( nofThreads ) || cj.Width() < n || cj.Height() < n )
       {
          FFTConvolution Z( *H );
          Z.EnableParallelProcessing( parallel, maxProcessors );
          Z >> cj;
       }
-      else
+      else if ( n >= SeparableConvolution::FasterThanNonseparableFilterSize( nofThreads ) )
       {
          SeparableFilter S( H->AsSeparableFilter() );
          SeparableConvolution C( S );
+         C.EnableParallelProcessing( parallel, maxProcessors );
+         C >> cj;
+      }
+      else
+      {
+         Convolution C( *H );
          C.EnableParallelProcessing( parallel, maxProcessors );
          C >> cj;
       }
@@ -209,4 +219,4 @@ void MultiscaleLinearTransform::Transform( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MultiscaleLinearTransform.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/MultiscaleLinearTransform.cpp - Released 2020-11-20T19:46:37Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationInstance.cpp - Released 2020-10-12T19:25:16Z
+// CurvesTransformationInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -61,7 +61,7 @@
 #include <pcl/MuteStatus.h>
 #include <pcl/Mutex.h>
 #include <pcl/ReferenceArray.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Thread.h>
 #include <pcl/Vector.h>
 
@@ -179,15 +179,15 @@ public:
       if ( image.IsFloatSample() )
          switch ( image.BitsPerSample() )
          {
-         case 32 : Apply( static_cast<Image&>( *image ), instance, useLUT ); break;
-         case 64 : Apply( static_cast<DImage&>( *image ), instance, useLUT ); break;
+         case 32: Apply( static_cast<Image&>( *image ), instance, useLUT ); break;
+         case 64: Apply( static_cast<DImage&>( *image ), instance, useLUT ); break;
          }
       else
          switch ( image.BitsPerSample() )
          {
-         case  8 : Apply( static_cast<UInt8Image&>( *image ), instance, useLUT ); break;
-         case 16 : Apply( static_cast<UInt16Image&>( *image ), instance, useLUT ); break;
-         case 32 : Apply( static_cast<UInt32Image&>( *image ), instance, useLUT ); break;
+         case  8: Apply( static_cast<UInt8Image&>( *image ), instance, useLUT ); break;
+         case 16: Apply( static_cast<UInt16Image&>( *image ), instance, useLUT ); break;
+         case 32: Apply( static_cast<UInt32Image&>( *image ), instance, useLUT ); break;
          }
    }
 
@@ -934,4 +934,4 @@ size_type CurvesTransformationInstance::ParameterLength( const MetaParameter* p,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF CurvesTransformationInstance.cpp - Released 2020-11-20T19:49:00Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/AbstractImage.h - Released 2020-10-12T19:24:41Z
+// pcl/AbstractImage.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -144,7 +144,7 @@ public:
     * Returns the number of nominal channels corresponding to the current color
     * space of this image.
     */
-   int NumberOfNominalChannels() const
+   int NumberOfNominalChannels() const noexcept
    {
       return ColorSpace::NumberOfNominalChannels( m_colorSpace );
    }
@@ -153,7 +153,7 @@ public:
     * Returns the number of nominal samples in this image. This is equal to the
     * area in square pixels multiplied by the number of nominal channels.
     */
-   size_type NumberOfNominalSamples() const
+   size_type NumberOfNominalSamples() const noexcept
    {
       return NumberOfPixels() * NumberOfNominalChannels();
    }
@@ -164,7 +164,7 @@ public:
     * Alpha channels are those in excess of nominal channels, e.g. a fourth
     * channel in a RGB image, or a second channel in a grayscale image.
     */
-   bool HasAlphaChannels() const
+   bool HasAlphaChannels() const noexcept
    {
       PCL_PRECONDITION( NumberOfChannels() != 0 )
       return NumberOfChannels() > NumberOfNominalChannels();
@@ -173,7 +173,7 @@ public:
    /*!
     * Returns the number of existing alpha channels in this image.
     */
-   int NumberOfAlphaChannels() const
+   int NumberOfAlphaChannels() const noexcept
    {
       PCL_PRECONDITION( NumberOfChannels() != 0 )
       return NumberOfChannels() - NumberOfNominalChannels();
@@ -184,7 +184,7 @@ public:
     * value is equal to the number of alpha channels multiplied by the area of
     * the image in square pixels.
     */
-   size_type NumberOfAlphaSamples() const
+   size_type NumberOfAlphaSamples() const noexcept
    {
       return NumberOfPixels() * NumberOfAlphaChannels();
    }
@@ -197,7 +197,7 @@ public:
     * \param c    Channel index, 0 &le; \a c < \a n, where \a n is the total
     *             number of channels in this image, including alpha channels.
     */
-   void SelectChannel( int c ) const
+   void SelectChannel( int c ) const noexcept
    {
       PCL_PRECONDITION( 0 <= c && c < m_numberOfChannels )
       m_selected.channel = m_selected.lastChannel = c;
@@ -212,7 +212,7 @@ public:
     *
     * This function is a convenience synonym for FirstSelectedChannel().
     */
-   int SelectedChannel() const
+   int SelectedChannel() const noexcept
    {
       return m_selected.channel;
    }
@@ -224,7 +224,7 @@ public:
     * \param c0   Index of the first channel to select.
     * \param c1   Index of the last channel to select.
     */
-   void SelectChannelRange( int c0, int c1 ) const
+   void SelectChannelRange( int c0, int c1 ) const noexcept
    {
       PCL_PRECONDITION( 0 <= c0 && c0 < m_numberOfChannels )
       PCL_PRECONDITION( 0 <= c1 && c1 < m_numberOfChannels )
@@ -237,7 +237,7 @@ public:
     * Sets the current channel range selection to include all nominal channels
     * exclusively, excluding alpha channels.
     */
-   void SelectNominalChannels() const
+   void SelectNominalChannels() const noexcept
    {
       m_selected.channel = 0;
       m_selected.lastChannel = NumberOfNominalChannels()-1;
@@ -251,7 +251,7 @@ public:
     * \note If this image has no alpha channels, this function selects the last
     * nominal channel. The channel range selection cannot be empty by design.
     */
-   void SelectAlphaChannels() const
+   void SelectAlphaChannels() const noexcept
    {
       m_selected.channel = NumberOfNominalChannels();
       m_selected.lastChannel = m_numberOfChannels-1;
@@ -262,7 +262,7 @@ public:
     * Resets the channel range selection to include all existing channels (all
     * nominal and alpha channels) in this image.
     */
-   void ResetChannelRange() const
+   void ResetChannelRange() const noexcept
    {
       m_selected.channel = 0;
       m_selected.lastChannel = pcl::Max( 0, m_numberOfChannels-1 );
@@ -271,7 +271,7 @@ public:
    /*!
     * Returns the number of selected channels.
     */
-   int NumberOfSelectedChannels() const
+   int NumberOfSelectedChannels() const noexcept
    {
       return 1 + m_selected.lastChannel - m_selected.channel;
    }
@@ -279,7 +279,7 @@ public:
    /*!
     * Returns the channel index of the first selected channel.
     */
-   int FirstSelectedChannel() const
+   int FirstSelectedChannel() const noexcept
    {
       return m_selected.channel;
    }
@@ -287,7 +287,7 @@ public:
    /*!
     * Returns the channel index of the last selected channel.
     */
-   int LastSelectedChannel() const
+   int LastSelectedChannel() const noexcept
    {
       return m_selected.lastChannel;
    }
@@ -299,7 +299,7 @@ public:
     * \param[out] c0 Index of the first selected channel.
     * \param[out] c1 Index of the last selected channel.
     */
-   void GetSelectedChannelRange( int& c0, int& c1 ) const
+   void GetSelectedChannelRange( int& c0, int& c1 ) const noexcept
    {
       c0 = m_selected.channel;
       c1 = m_selected.lastChannel;
@@ -311,7 +311,7 @@ public:
     * \param x Horizontal coordinate of the new anchor point.
     * \param y Vertical coordinate of the new anchor point.
     */
-   void SelectPoint( int x, int y ) const
+   void SelectPoint( int x, int y ) const noexcept
    {
       m_selected.point.MoveTo( x, y );
    }
@@ -319,7 +319,7 @@ public:
    /*!
     * Selects a new anchor point \a p in image coordinates.
     */
-   void SelectPoint( const Point& p ) const
+   void SelectPoint( const Point& p ) const noexcept
    {
       m_selected.point = p;
    }
@@ -327,7 +327,7 @@ public:
    /*!
     * Resets the anchor point to the origin of image coordinates, i.e to x=y=0.
     */
-   void ResetPoint() const
+   void ResetPoint() const noexcept
    {
       m_selected.point = 0;
    }
@@ -335,7 +335,7 @@ public:
    /*!
     * Returns the current anchor point.
     */
-   const Point& SelectedPoint() const
+   const Point& SelectedPoint() const noexcept
    {
       return m_selected.point;
    }
@@ -353,7 +353,7 @@ public:
     * The resulting selection is constrained to stay within the image
     * boundaries.
     */
-   void SelectRectangle( int x0, int y0, int x1, int y1 ) const
+   void SelectRectangle( int x0, int y0, int x1, int y1 ) const noexcept
    {
       m_selected.rectangle.Set( x0, y0, x1, y1 );
       Clip( m_selected.rectangle );
@@ -367,7 +367,7 @@ public:
     *
     * \param p1   Position of the lower right corner of the new selection.
     */
-   void SelectRectangle( const Point& p0, const Point& p1 ) const
+   void SelectRectangle( const Point& p0, const Point& p1 ) const noexcept
    {
       SelectRectangle( p0.x, p0.y, p1.x, p1.y );
    }
@@ -376,7 +376,7 @@ public:
     * Defines the current rectangular selection as the specified rectangle \a r
     * in image coordinates.
     */
-   void SelectRectangle( const Rect& r ) const
+   void SelectRectangle( const Rect& r ) const noexcept
    {
       SelectRectangle( r.x0, r.y0, r.x1, r.y1 );
    }
@@ -384,7 +384,7 @@ public:
    /*!
     * Resets the rectangular selection to include the entire image boundaries.
     */
-   void ResetSelection() const
+   void ResetSelection() const noexcept
    {
       m_selected.rectangle.Set( 0, 0, m_width, m_height );
    }
@@ -392,7 +392,7 @@ public:
    /*!
     * Returns true iff the current selection is empty, i.e. if its area is zero.
     */
-   bool IsEmptySelection() const
+   bool IsEmptySelection() const noexcept
    {
       return m_selected.rectangle.IsPointOrLine();
    }
@@ -401,7 +401,7 @@ public:
     * Returns true iff the current rectangular selection comprises the entire
     * image.
     */
-   bool IsFullSelection() const
+   bool IsFullSelection() const noexcept
    {
       return m_selected.rectangle.x0 <= 0 &&
              m_selected.rectangle.y0 <= 0 &&
@@ -412,7 +412,7 @@ public:
    /*!
     * Returns the current rectangular selection.
     */
-   const Rect& SelectedRectangle() const
+   const Rect& SelectedRectangle() const noexcept
    {
       return m_selected.rectangle;
    }
@@ -425,7 +425,7 @@ public:
     * includes the whole image, and the current channel range selection
     * comprises all existing channels, including nominal and alpha channels.
     */
-   bool IsCompletelySelected() const
+   bool IsCompletelySelected() const noexcept
    {
       return m_selected.channel == 0 &&
              m_selected.lastChannel >= m_numberOfChannels-1 &&
@@ -439,7 +439,7 @@ public:
     * Returns the number of selected pixels. This is the area in square pixels
     * of the current selection rectangle.
     */
-   size_type NumberOfSelectedPixels() const
+   size_type NumberOfSelectedPixels() const noexcept
    {
       return size_type( m_selected.rectangle.Width() ) * size_type( m_selected.rectangle.Height() );
       // ### N.B. Rect::Area() cannot be used here because it performs a
@@ -452,7 +452,7 @@ public:
     * of the current selection rectangle multiplied by the number of selected
     * channels.
     */
-   size_type NumberOfSelectedSamples() const
+   size_type NumberOfSelectedSamples() const noexcept
    {
       return NumberOfSelectedPixels()*size_type( NumberOfSelectedChannels() );
    }
@@ -479,7 +479,7 @@ public:
     * The default clipping range is the normalized (0,1) range. Range clipping
     * is disabled by default.
     */
-   bool IsRangeClippingEnabled() const
+   bool IsRangeClippingEnabled() const noexcept
    {
       return m_selected.clippedLow || m_selected.clippedHigh;
    }
@@ -492,7 +492,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   bool IsLowRangeClippingEnabled() const
+   bool IsLowRangeClippingEnabled() const noexcept
    {
       return m_selected.clippedLow;
    }
@@ -505,7 +505,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   bool IsHighRangeClippingEnabled() const
+   bool IsHighRangeClippingEnabled() const noexcept
    {
       return m_selected.clippedHigh;
    }
@@ -515,7 +515,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void EnableRangeClipping( bool enableLow = true, bool enableHigh = true ) const
+   void EnableRangeClipping( bool enableLow = true, bool enableHigh = true ) const noexcept
    {
       m_selected.clippedLow = enableLow;
       m_selected.clippedHigh = enableHigh;
@@ -526,7 +526,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void DisableRangeClipping( bool disableLow = true, bool disableHigh = true ) const
+   void DisableRangeClipping( bool disableLow = true, bool disableHigh = true ) const noexcept
    {
       m_selected.clippedLow = !disableLow;
       m_selected.clippedHigh = !disableHigh;
@@ -537,7 +537,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   double RangeClipLow() const
+   double RangeClipLow() const noexcept
    {
       return m_selected.clipLow;
    }
@@ -547,7 +547,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   double RangeClipHigh() const
+   double RangeClipHigh() const noexcept
    {
       return m_selected.clipHigh;
    }
@@ -557,7 +557,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void SetRangeClipLow( double clipLow ) const
+   void SetRangeClipLow( double clipLow ) const noexcept
    {
       m_selected.clipLow = clipLow;
       if ( m_selected.clipHigh < m_selected.clipLow )
@@ -569,7 +569,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void SetRangeClipHigh( double clipHigh ) const
+   void SetRangeClipHigh( double clipHigh ) const noexcept
    {
       m_selected.clipHigh = clipHigh;
       if ( m_selected.clipHigh < m_selected.clipLow )
@@ -582,7 +582,7 @@ public:
     *
     * See IsRangeClippingEnabled() for more information on range clipping.
     */
-   void SetRangeClipping( double clipLow, double clipHigh ) const
+   void SetRangeClipping( double clipLow, double clipHigh ) const noexcept
    {
       if ( clipHigh < clipLow )
          pcl::Swap( clipLow, clipHigh );
@@ -598,7 +598,7 @@ public:
     * Clipping range upper bound = 1.0
     * Range clipping disabled
     */
-   void ResetRangeClipping() const
+   void ResetRangeClipping() const noexcept
    {
       m_selected.clipLow = 0;
       m_selected.clipHigh = 1;
@@ -623,7 +623,7 @@ public:
     * ResetRangeClipping();
     * \endcode
     */
-   void ResetSelections() const
+   void ResetSelections() const noexcept
    {
       ResetChannelRange();
       ResetPoint();
@@ -634,7 +634,7 @@ public:
    /*!
     * Returns a reference to the internal ImageSelections object in this image.
     */
-   ImageSelections& Selections() const
+   ImageSelections& Selections() const noexcept
    {
       return m_selected;
    }
@@ -671,7 +671,7 @@ public:
     * selection stack, that is, if the PopSelections() function can be called
     * to restore them.
     */
-   bool CanPopSelections() const
+   bool CanPopSelections() const noexcept
    {
       return !m_savedSelections.IsEmpty();
    }
@@ -688,7 +688,7 @@ public:
     *
     * Returns true iff the output rectangle is nonempty.
     */
-   bool ParseRect( Rect& rect ) const
+   bool ParseRect( Rect& rect ) const noexcept
    {
       if ( !rect.IsRect() )
       {
@@ -711,7 +711,7 @@ public:
     *
     * Returns true iff the output channel index is valid.
     */
-   bool ParseChannel( int& channel ) const
+   bool ParseChannel( int& channel ) const noexcept
    {
       if ( channel < 0 )
       {
@@ -749,7 +749,7 @@ public:
     * range is valid. When true is returned, this function ensures that
     * \a firstChannel &le; \a lastChannel.
     */
-   bool ParseSelection( Rect& rect, int& firstChannel, int& lastChannel ) const
+   bool ParseSelection( Rect& rect, int& firstChannel, int& lastChannel ) const noexcept
    {
       if ( !ParseRect( rect ) || !ParseChannel( firstChannel ) )
          return false;
@@ -786,7 +786,7 @@ public:
     * Returns true iff the output rectangle is nonempty and the output channel
     * index is valid.
     */
-   bool ParseSelection( Rect& rect, int& channel ) const
+   bool ParseSelection( Rect& rect, int& channel ) const noexcept
    {
       return ParseRect( rect ) && ParseChannel( channel );
    }
@@ -797,7 +797,7 @@ public:
     * Returns a reference to the status monitoring object associated with this
     * image.
     */
-   StatusMonitor& Status() const
+   StatusMonitor& Status() const noexcept
    {
       return m_status;
    }
@@ -806,7 +806,7 @@ public:
     * Returns the address of the status monitoring callback object currently
     * selected for this image.
     */
-   pcl::StatusCallback* StatusCallback() const
+   pcl::StatusCallback* StatusCallback() const noexcept
    {
       return m_status.Callback();
    }
@@ -816,7 +816,7 @@ public:
     * version of PCL to keep existing code functional. Use StatusCallback() in
     * newly produced code.
     */
-   pcl::StatusCallback* GetStatusCallback() const
+   pcl::StatusCallback* GetStatusCallback() const noexcept
    {
       return StatusCallback();
    }
@@ -825,7 +825,7 @@ public:
     * Specifies the address of an object that will be used to perform status
     * monitoring callbacks for this image.
     */
-   void SetStatusCallback( pcl::StatusCallback* callback ) const
+   void SetStatusCallback( pcl::StatusCallback* callback ) const noexcept
    {
       m_status.SetCallback( callback );
    }
@@ -856,7 +856,7 @@ public:
     *
     * \sa Thread::NumberOfThreads()
     */
-   int NumberOfThreads( size_type count, int maxProcessors = 0, size_type overheadLimit = 16u ) const
+   int NumberOfThreads( size_type count, int maxProcessors = 0, size_type overheadLimit = 16u ) const noexcept
    {
       return m_parallel ? pcl::Min( (maxProcessors > 0) ? maxProcessors : m_maxProcessors,
                                     Thread::NumberOfThreads( count, overheadLimit ) ) : 1;
@@ -894,7 +894,7 @@ public:
     *
     * \sa NumberOfThreads(), Thread::NumberOfThreads()
     */
-   int NumberOfThreadsForRows( int rowCount = 0, int rowWidth = 0, int maxProcessors = 0, size_type overheadLimitPx = 1024u ) const
+   int NumberOfThreadsForRows( int rowCount = 0, int rowWidth = 0, int maxProcessors = 0, size_type overheadLimitPx = 1024u ) const noexcept
    {
       return NumberOfThreads( (rowCount > 0) ? rowCount : Height(),
                               maxProcessors,
@@ -941,7 +941,7 @@ public:
     *
     * \sa Thread::OptimalThreadLoads()
     */
-   Array<size_type> OptimalThreadRows( int rowCount = 0, int rowWidth = 0, int maxProcessors = 0, size_type overheadLimitPx = 1024u ) const
+   Array<size_type> OptimalThreadRows( int rowCount = 0, int rowWidth = 0, int maxProcessors = 0, size_type overheadLimitPx = 1024u ) const noexcept
    {
       return Thread::OptimalThreadLoads( (rowCount > 0) ? rowCount : Height(),
                                          pcl::Max( size_type( 1 ), size_type( overheadLimitPx/((rowWidth > 0) ? rowWidth : Width()) ) ),
@@ -1157,7 +1157,7 @@ protected:
 
    AbstractImage& operator =( const AbstractImage& ) = default;
 
-   void Swap( AbstractImage& image )
+   void Swap( AbstractImage& image ) noexcept
    {
       ImageGeometry::Swap( image );
       ImageColor::Swap( image );
@@ -1167,7 +1167,7 @@ protected:
       pcl::Swap( m_status, image.m_status );
    }
 
-   void ValidateChannelRange() const
+   void ValidateChannelRange() const noexcept
    {
       if ( m_numberOfChannels > 0 )
       {
@@ -1425,4 +1425,4 @@ protected:
 #endif   // __PCL_AbstractImage_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AbstractImage.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/AbstractImage.h - Released 2020-11-20T19:46:29Z

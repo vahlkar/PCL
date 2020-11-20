@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/SurfaceSpline.h - Released 2020-10-12T19:24:41Z
+// pcl/SurfaceSpline.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -68,7 +68,7 @@
 
 #ifndef __PCL_BUILDING_PIXINSIGHT_APPLICATION
 #  include <pcl/Console.h>
-#  include <pcl/StdStatus.h>
+#  include <pcl/StandardStatus.h>
 #endif
 
 namespace pcl
@@ -140,16 +140,16 @@ protected:
    /*!
     * Surface spline generation, 32-bit floating point data.
     */
-   static void Generate( float* c,
-                         const float* x, const float* y, const float* z,
-                         int n, int m, float r, const float* w );
+   static void Generate( float* __restrict__ c,
+                         const float* __restrict__ x, const float* __restrict__ y, const float* __restrict__ z,
+                         int n, int m, float r, const float* __restrict__ w );
 
    /*!
     * Surface spline generation, 64-bit floating point data.
     */
-   static void Generate( double* c,
-                         const double* x, const double* y, const double* z,
-                         int n, int m, float r, const float* w );
+   static void Generate( double* __restrict__ c,
+                         const double* __restrict__ x, const double* __restrict__ y, const double* __restrict__ z,
+                         int n, int m, float r, const float* __restrict__ w );
 };
 
 // ----------------------------------------------------------------------------
@@ -1643,4 +1643,4 @@ private:
 #endif   // __PCL_SurfaceSpline_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SurfaceSpline.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/SurfaceSpline.h - Released 2020-11-20T19:46:29Z

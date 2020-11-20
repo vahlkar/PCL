@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard GaiaDR2 Process Module Version 1.0.0
+// Standard GaiaDR2 Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// GaiaDR2Parameters.h - Released 2020-10-12T19:25:16Z
+// GaiaDR2Parameters.h - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GaiaDR2 PixInsight module.
 //
@@ -624,4 +624,4 @@ PCL_END_LOCAL
 #endif   // __GaiaDR2Parameters_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaDR2Parameters.h - Released 2020-10-12T19:25:16Z
+// EOF GaiaDR2Parameters.h - Released 2020-11-20T19:49:00Z

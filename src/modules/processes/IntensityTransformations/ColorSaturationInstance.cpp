@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInstance.cpp - Released 2020-10-12T19:25:16Z
+// ColorSaturationInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -61,7 +61,7 @@
 #include <pcl/MuteStatus.h>
 #include <pcl/Mutex.h>
 #include <pcl/ReferenceArray.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Thread.h>
 #include <pcl/Vector.h>
 
@@ -367,4 +367,4 @@ size_type ColorSaturationInstance::ParameterLength( const MetaParameter* /*p*/, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF ColorSaturationInstance.cpp - Released 2020-11-20T19:49:00Z

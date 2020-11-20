@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Utility.h - Released 2020-10-12T19:24:41Z
+// pcl/Utility.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -87,7 +87,7 @@ namespace pcl
  * \ingroup utility_algorithms
  */
 template <typename T> inline constexpr
-const T& Min( const T& a, const T& b )
+const T& Min( const T& a, const T& b ) noexcept
 {
    return (b < a) ? b : a;
 }
@@ -102,7 +102,7 @@ const T& Min( const T& a, const T& b )
  * \ingroup utility_algorithms
  */
 template <typename T, class BP> inline
-const T& Min( const T& a, const T& b, BP p )
+const T& Min( const T& a, const T& b, BP p ) noexcept( noexcept( p ) )
 {
    return p( b, a ) ? b : a;
 }
@@ -116,7 +116,7 @@ const T& Min( const T& a, const T& b, BP p )
  * \ingroup utility_algorithms
  */
 template <typename T> inline constexpr
-const T& Max( const T& a, const T& b )
+const T& Max( const T& a, const T& b ) noexcept
 {
    return (a < b) ? b : a;
 }
@@ -131,7 +131,7 @@ const T& Max( const T& a, const T& b )
  * \ingroup utility_algorithms
  */
 template <typename T, class BP> inline
-const T& Max( const T& a, const T& b, BP p )
+const T& Max( const T& a, const T& b, BP p ) noexcept( noexcept( p ) )
 {
    return p( a, b ) ? b : a;
 }
@@ -148,7 +148,7 @@ const T& Max( const T& a, const T& b, BP p )
  * \ingroup utility_algorithms
  */
 template <typename T> inline constexpr
-const T& Median( const T& a, const T& b, const T& c )
+const T& Median( const T& a, const T& b, const T& c ) noexcept
 {
    return (a < b) ? ((b < c) ? b : ((a < c) ? c : a)) :
                     ((a < c) ? a : ((b < c) ? c : b));
@@ -167,7 +167,7 @@ const T& Median( const T& a, const T& b, const T& c )
  * \ingroup utility_algorithms
  */
 template <typename T, class BP> inline
-const T& Median( const T& a, const T& b, const T& c, BP p )
+const T& Median( const T& a, const T& b, const T& c, BP p ) noexcept( noexcept( p ) )
 {
    return p( a, b ) ? (p( b, c ) ? b : (p( a, c ) ? c : a)) :
                       (p( a, c ) ? a : (p( b, c ) ? c : b));
@@ -187,7 +187,7 @@ const T& Median( const T& a, const T& b, const T& c, BP p )
  * \ingroup utility_algorithms
  */
 template <typename T> inline constexpr
-const T& Range( const T& x, const T& a, const T& b )
+const T& Range( const T& x, const T& a, const T& b ) noexcept
 {
    PCL_PRECONDITION( a < b )
    return (x < a) ? a : ((b < x) ? b : x);
@@ -207,7 +207,7 @@ const T& Range( const T& x, const T& a, const T& b )
  * \ingroup utility_algorithms
  */
 template <typename T, class BP> inline
-const T& Range( const T& x, const T& a, const T& b, BP p )
+const T& Range( const T& x, const T& a, const T& b, BP p ) noexcept( noexcept( p ) )
 {
    PCL_PRECONDITION( p( a, b ) )
    return p( x, a ) ? a : (p( b, x ) ? b : x);
@@ -246,7 +246,7 @@ void Swap( T& a, T& b ) noexcept( std::is_nothrow_copy_constructible<T>::value
  * \ingroup utility_algorithms
  */
 template <class FI, class F> inline
-void Apply( FI i, FI j, F f )
+void Apply( FI i, FI j, F f ) noexcept( noexcept( f ) )
 {
    for( ; i != j; ++i )
       f( *i );
@@ -262,7 +262,7 @@ void Apply( FI i, FI j, F f )
  * \ingroup utility_algorithms
  */
 template <class FI, class F, typename T1> inline
-void Apply( FI i, FI j, F f, T1 x )
+void Apply( FI i, FI j, F f, T1 x ) noexcept( noexcept( f ) )
 {
    for( ; i != j; ++i )
       f( *i, x );
@@ -279,7 +279,7 @@ void Apply( FI i, FI j, F f, T1 x )
  * \ingroup utility_algorithms
  */
 template <class FI, class F, class UP> inline
-void ApplyIf( FI i, FI j, F f, UP p )
+void ApplyIf( FI i, FI j, F f, UP p ) noexcept( noexcept( f ) && noexcept( p ) )
 {
    for( ; i != j; ++i )
       if ( p( *i ) )
@@ -297,7 +297,7 @@ void ApplyIf( FI i, FI j, F f, UP p )
  * \ingroup utility_algorithms
  */
 template <class FI, class F, class UP, typename T1> inline
-void ApplyIf( FI i, FI j, F f, UP p, T1 x )
+void ApplyIf( FI i, FI j, F f, UP p, T1 x ) noexcept( noexcept( f ) && noexcept( p ) )
 {
    for( ; i != j; ++i )
       if ( p( *i ) )
@@ -313,7 +313,7 @@ void ApplyIf( FI i, FI j, F f, UP p, T1 x )
  * \ingroup utility_algorithms
  */
 template <class FI, class UP> inline
-FI FirstThat( FI i, FI j, UP p )
+FI FirstThat( FI i, FI j, UP p ) noexcept( noexcept( p ) )
 {
    for ( ; i != j; ++i )
       if ( p( *i ) )
@@ -330,7 +330,7 @@ FI FirstThat( FI i, FI j, UP p )
  * \ingroup utility_algorithms
  */
 template <class FI, class UP, typename T1> inline
-FI FirstThat( FI i, FI j, UP p, T1 x )
+FI FirstThat( FI i, FI j, UP p, T1 x ) noexcept( noexcept( p ) )
 {
    for ( ; i != j; ++i )
       if ( p( *i, x ) )
@@ -347,7 +347,7 @@ FI FirstThat( FI i, FI j, UP p, T1 x )
  * \ingroup utility_algorithms
  */
 template <class BI, class UP> inline
-BI LastThat( BI i, BI j, UP p )
+BI LastThat( BI i, BI j, UP p ) noexcept( noexcept( p ) )
 {
    for ( BI k = j; i != k; )
       if ( p( *--k ) )
@@ -364,7 +364,7 @@ BI LastThat( BI i, BI j, UP p )
  * \ingroup utility_algorithms
  */
 template <class BI, class UP, typename T1> inline
-BI LastThat( BI i, BI j, UP p, T1 x )
+BI LastThat( BI i, BI j, UP p, T1 x ) noexcept( noexcept( p ) )
 {
    for ( BI k = j; i != k; )
       if ( p( *--k, x ) )
@@ -381,7 +381,7 @@ BI LastThat( BI i, BI j, UP p, T1 x )
  * \ingroup utility_algorithms
  */
 template <class FI, typename T> inline
-size_type Count( FI i, FI j, const T& v )
+size_type Count( FI i, FI j, const T& v ) noexcept
 {
    size_type N = 0;
    for( ; i != j; ++i )
@@ -401,7 +401,7 @@ size_type Count( FI i, FI j, const T& v )
  * \ingroup utility_algorithms
  */
 template <class FI, typename T, class BP> inline
-size_type Count( FI i, FI j, const T& v, BP p )
+size_type Count( FI i, FI j, const T& v, BP p ) noexcept( noexcept( p ) )
 {
    size_type N = 0;
    for( ; i != j; ++i )
@@ -420,7 +420,7 @@ size_type Count( FI i, FI j, const T& v, BP p )
  * \ingroup utility_algorithms
  */
 template <class FI, class UP> inline
-size_type CountIf( FI i, FI j, UP p )
+size_type CountIf( FI i, FI j, UP p ) noexcept( noexcept( p ) )
 {
    size_type N = 0;
    for( ; i != j; ++i )
@@ -438,7 +438,7 @@ size_type CountIf( FI i, FI j, UP p )
  * \ingroup utility_algorithms
  */
 template <class FI> inline
-FI MinItem( FI i, FI j )
+FI MinItem( FI i, FI j ) noexcept
 {
    FI k = i;
    if ( i != j )
@@ -457,7 +457,7 @@ FI MinItem( FI i, FI j )
  * \ingroup utility_algorithms
  */
 template <class FI, class BP> inline
-FI MinItem( FI i, FI j, BP p )
+FI MinItem( FI i, FI j, BP p ) noexcept( noexcept( p ) )
 {
    FI k = i;
    if ( i != j )
@@ -476,7 +476,7 @@ FI MinItem( FI i, FI j, BP p )
  * \ingroup utility_algorithms
  */
 template <class FI> inline
-FI MaxItem( FI i, FI j )
+FI MaxItem( FI i, FI j ) noexcept
 {
    FI k = i;
    if ( i != j )
@@ -495,7 +495,7 @@ FI MaxItem( FI i, FI j )
  * \ingroup utility_algorithms
  */
 template <class FI, class BP> inline
-FI MaxItem( FI i, FI j, BP p )
+FI MaxItem( FI i, FI j, BP p ) noexcept( noexcept( p ) )
 {
    FI k = i;
    if ( i != j )
@@ -514,7 +514,7 @@ FI MaxItem( FI i, FI j, BP p )
  * \ingroup utility_algorithms
  */
 template <class FI> inline
-void FindExtremeItems( FI& kmin, FI& kmax, FI i, FI j )
+void FindExtremeItems( FI& kmin, FI& kmax, FI i, FI j ) noexcept
 {
    kmin = kmax = i;
    if ( i != j )
@@ -536,7 +536,7 @@ void FindExtremeItems( FI& kmin, FI& kmax, FI i, FI j )
  * \ingroup utility_algorithms
  */
 template <class FI, class BP> inline
-void FindExtremeItems( FI& kmin, FI& kmax, FI i, FI j, BP p )
+void FindExtremeItems( FI& kmin, FI& kmax, FI i, FI j, BP p ) noexcept( noexcept( p ) )
 {
    kmin = kmax = i;
    if ( i != j )
@@ -558,7 +558,7 @@ void FindExtremeItems( FI& kmin, FI& kmax, FI i, FI j, BP p )
  * \ingroup utility_algorithms
  */
 template <class FI1, class FI2> inline
-Association<FI1, FI2> FindNotEqual( FI1 i1, FI2 i2, FI2 j2 )
+Association<FI1, FI2> FindNotEqual( FI1 i1, FI2 i2, FI2 j2 ) noexcept
 {
    for ( ; i2 != j2 && *i1 == *i2; ++i1, ++i2 ) {}
    return Associate( i1, i2 );
@@ -573,7 +573,7 @@ Association<FI1, FI2> FindNotEqual( FI1 i1, FI2 i2, FI2 j2 )
  * \ingroup utility_algorithms
  */
 template <class FI1, class FI2, class BP> inline
-Association<FI1, FI2> FindNotEqual( FI1 i1, FI2 i2, FI2 j2, BP p )
+Association<FI1, FI2> FindNotEqual( FI1 i1, FI2 i2, FI2 j2, BP p ) noexcept
 {
    for ( ; i2 != j2 && p( *i1, *i2 ); ++i1, ++i2 ) {}
    return Associate( i1, i2 );
@@ -589,7 +589,7 @@ Association<FI1, FI2> FindNotEqual( FI1 i1, FI2 i2, FI2 j2, BP p )
  * \ingroup utility_algorithms
  */
 template <class FI1, class FI2> inline
-bool Equal( FI1 i1, FI2 i2, FI2 j2 )
+bool Equal( FI1 i1, FI2 i2, FI2 j2 ) noexcept
 {
    return FindNotEqual( i1, i2, j2 ).second == j2;
 }
@@ -604,7 +604,7 @@ bool Equal( FI1 i1, FI2 i2, FI2 j2 )
  * \ingroup utility_algorithms
  */
 template <class FI1, class FI2, class BP> inline
-bool Equal( FI1 i1, FI2 i2, FI2 j2, BP p )
+bool Equal( FI1 i1, FI2 i2, FI2 j2, BP p ) noexcept( noexcept( p ) )
 {
    return FindNotEqual( i1, i2, j2, p ).second == j2;
 }
@@ -636,7 +636,7 @@ bool Equal( FI1 i1, FI2 i2, FI2 j2, BP p )
  * \ingroup utility_algorithms
  */
 template <class FI1, class FI2> inline
-int Compare( FI1 i1, FI1 j1, FI2 i2, FI2 j2 )
+int Compare( FI1 i1, FI1 j1, FI2 i2, FI2 j2 ) noexcept
 {
    for ( ; ; ++i1, ++i2 )
    {
@@ -680,7 +680,7 @@ int Compare( FI1 i1, FI1 j1, FI2 i2, FI2 j2 )
  * \ingroup utility_algorithms
  */
 template <class FI1, class FI2, class BP> inline
-int Compare( FI1 i1, FI1 j1, FI2 i2, FI2 j2, BP p )
+int Compare( FI1 i1, FI1 j1, FI2 i2, FI2 j2, BP p ) noexcept( noexcept( p ) )
 {
    for ( ; ; ++i1, ++i2 )
    {
@@ -702,4 +702,4 @@ int Compare( FI1 i1, FI1 j1, FI2 i2, FI2 j2, BP p )
 #endif  // __PCL_Utility_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Utility.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Utility.h - Released 2020-11-20T19:46:29Z

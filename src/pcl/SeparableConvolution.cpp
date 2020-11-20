@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/SeparableConvolution.cpp - Released 2020-10-12T19:24:49Z
+// pcl/SeparableConvolution.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -198,8 +198,8 @@ private:
    struct OneDimensionalConvolution
    {
       static PCL_HOT_FUNCTION
-      void Convolve1D( typename P::sample* f, typename P::sample* t, int N, int d, int dn2,
-                       const SeparableFilter::coefficient* H, int n )
+      void Convolve1D( typename P::sample* __restrict__ f, typename P::sample* __restrict__ t, int N, int d, int dn2,
+                       const SeparableFilter::coefficient* H, int n ) noexcept
       {
          // dn2 = (N + (N - 1)*(d - 1)) >> 1;
 
@@ -209,14 +209,49 @@ private:
          for ( int i = N+dn2+dn2, j = N-dn2; j < N; )
             t[--i] = f[j++];
 
-         const SeparableFilter::coefficient* Hn = H + n;
-         for ( const typename P::sample* fN = f + N; f < fN; ++f, ++t )
+         if ( d == 1 )
          {
-            double r = 0;
-            const typename P::sample* u = t;
-            for ( const SeparableFilter::coefficient* h = H; h < Hn; ++h, u += d )
-               r += *u * *h;
-            *f = P::FloatToSample( r );
+            /*
+             * Compact separable convolution
+             */
+            for ( int i = 0; i < N; ++i, ++f, ++t )
+            {
+               const typename P::sample* __restrict__ u = t;
+               const SeparableFilter::coefficient* __restrict__ h = H;
+               double r = 0;
+               PCL_UNROLL( 8 )
+               for ( int k = 0; k < n; ++k, ++h, ++u )
+                  r += *u * *h;
+               *f = P::FloatToSample( r );
+            }
+         }
+         else
+         {
+            /*
+             * Interlaced separable convolution (e.g., the à trous algorithm)
+             */
+            alignas( 32 ) typename P::sample v[ n ];
+            for ( int i = 0; i < N; ++i, ++f, ++t )
+            {
+               // Gather all sparse samples into a contiguous array.
+               PCL_UNROLL( 8 )
+               for ( int k = 0, l = 0; k < n; ++k, l += d )
+                  v[k] = t[l];
+               // The convolution loop is now vectorizable just as in the
+               // compact case.
+               const typename P::sample* __restrict__ u = v;
+               const SeparableFilter::coefficient* __restrict__ h = H;
+               double r = 0;
+               PCL_UNROLL( 8 )
+               for ( int k = 0; k < n; ++k, ++h, ++u )
+                  r += *u * *h;
+               *f = P::FloatToSample( r );
+
+               // The original, not vectorizable loop.
+//                for ( int k = 0; k < n; ++k, ++h, u += d )
+//                   r += *u * *h;
+//                *f = P::FloatToSample( r );
+            }
          }
       }
    };
@@ -299,14 +334,14 @@ private:
 
          coefficient_vector hv = m_data.convolution.Filter( 1 );
 
-         typename P::sample* g = gv.DataPtr();
+         typename P::sample* __restrict__ g = gv.DataPtr();
          typename P::sample* t = tv.DataPtr();
          const SeparableFilter::coefficient* h = hv.DataPtr();
          int n = hv.Length();
 
          for ( int c = m_data.image.FirstSelectedChannel(); c <= m_data.image.LastSelectedChannel(); ++c )
          {
-            typename P::sample* f = m_data.image.PixelAddress( m_firstCol, r.y0, c );
+            typename P::sample* __restrict__ f = m_data.image.PixelAddress( m_firstCol, r.y0, c );
             for ( int i = m_firstCol; i < m_endCol; ++i, ++f )
             {
                for ( int i = 0, j = 0; i < height; ++i, j += width )
@@ -380,4 +415,4 @@ void SeparableConvolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableConvolution.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/SeparableConvolution.cpp - Released 2020-11-20T19:46:37Z

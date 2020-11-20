@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentInstance.h - Released 2020-10-12T19:25:16Z
+// CometAlignmentInstance.h - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -145,7 +145,7 @@ private:
                throw 0;
 
             double dayf = ( 3600.0 * h + 60.0 * m + s ) / 86400;
-            return ComplexTimeToJD( year, month, day, dayf );
+            return CalendarTimeToJD( year, month, day, dayf );
          }
          catch ( ... )
          {
@@ -202,4 +202,4 @@ private:
 #endif // __CometAlignmentInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInstance.h - Released 2020-10-12T19:25:16Z
+// EOF CometAlignmentInstance.h - Released 2020-11-20T19:49:00Z

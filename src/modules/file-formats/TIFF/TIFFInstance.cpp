@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFInstance.cpp - Released 2020-10-12T19:25:05Z
+// TIFFInstance.cpp - Released 2020-11-20T19:48:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -55,7 +55,7 @@
 #include "TIFFOptionsDialog.h"
 #include "TIFFRangeOptionsDialog.h"
 
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Version.h>
 #include <pcl/ErrorHandler.h>
 
@@ -704,4 +704,4 @@ void TIFFInstance::WriteImage( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFInstance.cpp - Released 2020-10-12T19:25:05Z
+// EOF TIFFInstance.cpp - Released 2020-11-20T19:48:45Z

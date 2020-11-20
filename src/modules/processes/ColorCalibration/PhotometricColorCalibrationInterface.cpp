@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.4
+// Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2020-10-12T19:25:16Z
+// PhotometricColorCalibrationInterface.cpp - Released 2020-11-20T19:48:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -563,7 +563,7 @@ void PhotometricColorCalibrationInterface::e_EditCompleted( Edit& sender )
          int year, month = 1, day = 1;
          double dayf = 0, tz = 0;
          if ( text.TryParseISO8601DateTime( year, month, day, dayf, tz ) )
-            m_instance.p_epochJD = ComplexTimeToJD( year, month, day, dayf - tz/24 );
+            m_instance.p_epochJD = CalendarTimeToJD( year, month, day, dayf - tz/24 );
          else
          {
             try
@@ -584,7 +584,7 @@ void PhotometricColorCalibrationInterface::e_EditCompleted( Edit& sender )
                default:
                   throw Error( "Too many date items." );
                }
-               m_instance.p_epochJD = ComplexTimeToJD( year, month, day, dayf );
+               m_instance.p_epochJD = CalendarTimeToJD( year, month, day, dayf );
             }
             ERROR_HANDLER
          }
@@ -2057,4 +2057,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-10-12T19:25:16Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-11-20T19:48:59Z

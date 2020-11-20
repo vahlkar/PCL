@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard GaiaDR2 Process Module Version 1.0.0
+// Standard GaiaDR2 Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// GaiaDR2Instance.cpp - Released 2020-10-12T19:25:16Z
+// GaiaDR2Instance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GaiaDR2 PixInsight module.
 //
@@ -56,7 +56,7 @@
 
 #include <pcl/Console.h>
 #include <pcl/ElapsedTime.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Thread.h>
 
 namespace pcl
@@ -687,4 +687,4 @@ size_type GaiaDR2Instance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaDR2Instance.cpp - Released 2020-10-12T19:25:16Z
+// EOF GaiaDR2Instance.cpp - Released 2020-11-20T19:49:00Z

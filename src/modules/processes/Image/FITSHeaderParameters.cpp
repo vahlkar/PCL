@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderParameters.cpp - Released 2020-10-12T19:25:16Z
+// FITSHeaderParameters.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -115,4 +115,4 @@ IsoString FITSKeywordComment::Id() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderParameters.cpp - Released 2020-10-12T19:25:16Z
+// EOF FITSHeaderParameters.cpp - Released 2020-11-20T19:49:00Z

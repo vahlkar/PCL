@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInterface.cpp - Released 2020-10-12T19:25:16Z
+// CosmeticCorrectionInterface.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -63,7 +63,7 @@
 #include <pcl/MorphologicalTransformation.h>
 #include <pcl/RealTimePreview.h>
 #include <pcl/SpinStatus.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 
 namespace pcl
 {
@@ -2623,4 +2623,4 @@ CosmeticCorrectionInterface::GUIData::GUIData( CosmeticCorrectionInterface& w )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInterface.cpp - Released 2020-10-12T19:25:16Z
+// EOF CosmeticCorrectionInterface.cpp - Released 2020-11-20T19:49:00Z

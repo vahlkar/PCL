@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.cpp - Released 2020-10-12T19:24:49Z
+// pcl/TimePoint.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -110,7 +110,7 @@ TimePoint::TimePoint( time_t time )
       volatile AutoLock lock( mutex );
       ut = *::gmtime( &time );
    }
-   ComplexTimeToJD( m_jdi, m_jdf,
+   CalendarTimeToJD( m_jdi, m_jdf,
       ut.tm_year+1900, ut.tm_mon+1, ut.tm_mday, (ut.tm_hour + (ut.tm_min + ut.tm_sec/60.0)/60)/24 );
 }
 
@@ -118,7 +118,7 @@ TimePoint::TimePoint( time_t time )
 
 TimePoint::TimePoint( const FileTime& fileTime )
 {
-   ComplexTimeToJD( m_jdi, m_jdf, fileTime.year, fileTime.month, fileTime.day,
+   CalendarTimeToJD( m_jdi, m_jdf, fileTime.year, fileTime.month, fileTime.day,
                     (fileTime.hour + (fileTime.minute + (fileTime.second + 0.001*fileTime.milliseconds)/60)/60)/24 );
 }
 
@@ -210,7 +210,7 @@ double TimePoint::DeltaT() const
     */
    int year, month, dum1;
    double dum2;
-   GetComplexTime( year, month, dum1, dum2 );
+   GetCalendarTime( year, month, dum1, dum2 );
    double y = year + (month - 0.5)/12;
 
    if ( year > 2005 )
@@ -373,8 +373,8 @@ double TimePoint::SystemOffsetFromUTC() const
          if ( ut.tm_mday == lt.tm_mday )
             return ldh - udh;
 
-   return Round( 24 * (ComplexTimeToJD( lt.tm_year+1900, lt.tm_mon+1, lt.tm_mday, ldh/24 )
-                     - ComplexTimeToJD( ut.tm_year+1900, ut.tm_mon+1, ut.tm_mday, udh/24 )), 6 );
+   return Round( 24 * (CalendarTimeToJD( lt.tm_year+1900, lt.tm_mon+1, lt.tm_mday, ldh/24 )
+                     - CalendarTimeToJD( ut.tm_year+1900, ut.tm_mon+1, ut.tm_mday, udh/24 )), 6 );
 }
 
 // ----------------------------------------------------------------------------
@@ -401,7 +401,7 @@ static S Format( const TimePoint& t, const S& format )
 
    int year, month, day, hour, minute;
    double seconds;
-   t.GetComplexTime( year, month, day, hour, minute, seconds );
+   t.GetCalendarTime( year, month, day, hour, minute, seconds );
 
    S result;
    for ( typename S::const_iterator i = format.Begin(); i < format.End(); ++i )
@@ -494,4 +494,4 @@ String TimePoint::ToString( const String& format ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/TimePoint.cpp - Released 2020-11-20T19:46:37Z

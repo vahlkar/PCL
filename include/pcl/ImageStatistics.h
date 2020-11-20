@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ImageStatistics.h - Released 2020-10-12T19:24:41Z
+// pcl/ImageStatistics.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -223,7 +223,7 @@ public:
    }
 
    /*!
-    * Assignment operator. Returns a reference to this object.
+    * Copy assignment operator. Returns a reference to this object.
     */
    ImageStatistics& operator =( const ImageStatistics& ) = default;
 
@@ -997,4 +997,4 @@ protected:
 #endif   // __PCL_ImageStatistics_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageStatistics.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/ImageStatistics.h - Released 2020-11-20T19:46:29Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/StringList.h - Released 2020-10-12T19:24:41Z
+// pcl/StringList.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -149,4 +149,4 @@ typedef SortedArray<IsoStringKeyValue> SortedIsoStringKeyValueList;
 #endif   // __PCL_StringList_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StringList.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/StringList.h - Released 2020-11-20T19:46:29Z

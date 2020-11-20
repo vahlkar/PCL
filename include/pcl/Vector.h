@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Vector.h - Released 2020-10-12T19:24:41Z
+// pcl/Vector.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -158,7 +158,10 @@ public:
    GenericVector( const component& x, int len )
    {
       m_data = new Data( len );
-      for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
+            iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+      PCL_IVDEP
+      for ( ; i < j; ++i )
          *i = x;
    }
 
@@ -177,8 +180,14 @@ public:
    {
       m_data = new Data( len );
       if ( a != nullptr )
-         for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
-            *i = component( *a++ );
+      {
+               iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+         const T1*      __restrict__ k = a;
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *i = component( *k );
+      }
    }
 
    /*!
@@ -358,7 +367,7 @@ public:
     * This function is efficient because it simply swaps the internal vector
     * data pointers owned by the objects.
     */
-   friend void Swap( GenericVector& x1, GenericVector& x2 )
+   friend void Swap( GenericVector& x1, GenericVector& x2 ) noexcept
    {
       pcl::Swap( x1.m_data, x2.m_data );
    }
@@ -379,8 +388,10 @@ public:
          DetachFromData();
          m_data = newData;
       }
-
-      for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
+            iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+      PCL_IVDEP
+      for ( ; i < j; ++i )
          *i = x;
       return *this;
    }
@@ -403,9 +414,12 @@ public:
       if ( x.Length() < Length() )
          throw Error( "Invalid vector addition." );
       EnsureUnique();
-      const_iterator s = x.Begin();
-      for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i, ++s )
-         *i += *s;
+            iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+      const_iterator __restrict__ k = x.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *i += *k;
       return *this;
    }
 
@@ -427,9 +441,12 @@ public:
       if ( x.Length() < Length() )
          throw Error( "Invalid vector subtraction." );
       EnsureUnique();
-      const_iterator s = x.Begin();
-      for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i, ++s )
-         *i -= *s;
+            iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+      const_iterator __restrict__ k = x.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *i -= *k;
       return *this;
    }
 
@@ -451,9 +468,12 @@ public:
       if ( x.Length() < Length() )
          throw Error( "Invalid vector multiplication." );
       EnsureUnique();
-      const_iterator s = x.Begin();
-      for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i, ++s )
-         *i *= *s;
+            iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+      const_iterator __restrict__ k = x.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *i *= *k;
       return *this;
    }
 
@@ -479,22 +499,32 @@ public:
       if ( x.Length() < Length() )
          throw Error( "Invalid vector division." );
       EnsureUnique();
-      const_iterator s = x.Begin();
-      for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i, ++s )
-         *i /= *s;
+            iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+      const_iterator __restrict__ k = x.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *i /= *k;
       return *this;
    }
 
 #define IMPLEMENT_SCALAR_ASSIGN_OP( op )                                      \
       if ( IsUnique() )                                                       \
       {                                                                       \
-         for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )  \
+               iterator __restrict__ i = m_data->Begin();                     \
+         const_iterator __restrict__ j = m_data->End();                       \
+         PCL_IVDEP                                                            \
+         for ( ; i < j; ++i )                                                 \
             *i op##= x;                                                       \
       }                                                                       \
       else                                                                    \
       {                                                                       \
          Data* newData = new Data( m_data->Length() );                        \
-         for ( iterator i = m_data->Begin(), j = m_data->End(), k = newData->Begin(); i < j; ++i, ++k ) \
+         const_iterator __restrict__ i = m_data->Begin();                     \
+         const_iterator __restrict__ j = m_data->End();                       \
+               iterator __restrict__ k = newData->Begin();                    \
+         PCL_IVDEP                                                            \
+         for ( ; i < j; ++i, ++k )                                            \
             *k = *i op x;                                                     \
          DetachFromData();                                                    \
          m_data = newData;                                                    \
@@ -565,13 +595,20 @@ public:
    {
       if ( IsUnique() )
       {
-         for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
+               iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+         PCL_IVDEP
+         for ( ; i < j; ++i )
             *i = pcl::Pow( *i, x );
       }
       else
       {
          Data* newData = new Data( m_data->Length() );
-         for ( iterator i = m_data->Begin(), j = m_data->End(), k = newData->Begin(); i < j; ++i, ++k )
+         const_iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+               iterator __restrict__ k = newData->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
             *k = pcl::Pow( *i, x );
          DetachFromData();
          m_data = newData;
@@ -589,12 +626,16 @@ public:
     * vector. If that condition does not hold, this function will invoke
     * undefined behavior.
     */
-   double Dot( const GenericVector& v ) const
+   double Dot( const GenericVector& v ) const noexcept
    {
       PCL_PRECONDITION( v.Length() >= Length() )
       double r = 0;
-      for ( const_iterator a = m_data->Begin(), b = v.Begin(), a1 = m_data->End(); a < a1; ++a, ++b )
-         r += double( *a ) * double( *b );
+      const_iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+      const_iterator __restrict__ k = v.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         r += double( *i ) * double( *k );
       return r;
    }
 
@@ -627,9 +668,12 @@ public:
    GenericVector Sqr() const
    {
       GenericVector R( m_data->Length() );
-      iterator r = R.Begin();
-      for ( const_iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
-         *r++ = *i * *i;
+      const_iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+            iterator __restrict__ k = R.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *k = *i * *i;
       return R;
    }
 
@@ -643,13 +687,20 @@ public:
    {
       if ( IsUnique() )
       {
-         for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
+               iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+         PCL_IVDEP
+         for ( ; i < j; ++i )
             *i *= *i;
       }
       else
       {
          Data* newData = new Data( m_data->Length() );
-         for ( iterator i = m_data->Begin(), j = m_data->End(), k = newData->Begin(); i < j; ++i, ++k )
+         const_iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+               iterator __restrict__ k = newData->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
             *k = *i * *i;
          DetachFromData();
          m_data = newData;
@@ -664,9 +715,12 @@ public:
    GenericVector Sqrt() const
    {
       GenericVector R( m_data->Length() );
-      iterator r = R.Begin();
-      for ( const_iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
-         *r++ = pcl::Sqrt( *i );
+      const_iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+            iterator __restrict__ k = R.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *k = pcl::Sqrt( *i );
       return R;
    }
 
@@ -680,13 +734,19 @@ public:
    {
       if ( IsUnique() )
       {
-         for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
+               iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+         for ( ; i < j; ++i )
             *i = pcl::Sqrt( *i );
       }
       else
       {
          Data* newData = new Data( m_data->Length() );
-         for ( iterator i = m_data->Begin(), j = m_data->End(), k = newData->Begin(); i < j; ++i, ++k )
+         const_iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+               iterator __restrict__ k = newData->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
             *k = pcl::Sqrt( *i );
          DetachFromData();
          m_data = newData;
@@ -701,9 +761,12 @@ public:
    GenericVector Abs() const
    {
       GenericVector R( m_data->Length() );
-      iterator r = R.Begin();
-      for ( const_iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
-         *r++ = pcl::Abs( *i );
+      const_iterator __restrict__ i = m_data->Begin();
+      const_iterator __restrict__ j = m_data->End();
+            iterator __restrict__ k = R.Begin();
+      PCL_IVDEP
+      for ( ; i < j; ++i, ++k )
+         *k = pcl::Abs( *i );
       return R;
    }
 
@@ -717,13 +780,20 @@ public:
    {
       if ( IsUnique() )
       {
-         for ( iterator i = m_data->Begin(), j = m_data->End(); i < j; ++i )
+               iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+         PCL_IVDEP
+         for ( ; i < j; ++i )
             *i = pcl::Abs( *i );
       }
       else
       {
          Data* newData = new Data( m_data->Length() );
-         for ( iterator i = m_data->Begin(), j = m_data->End(), k = newData->Begin(); i < j; ++i, ++k )
+         const_iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+               iterator __restrict__ k = newData->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
             *k = pcl::Abs( *i );
          DetachFromData();
          m_data = newData;
@@ -740,7 +810,7 @@ public:
     *
     * \sa L1Norm(), L2Norm()
     */
-   double Norm( double p ) const
+   double Norm( double p ) const noexcept
    {
       return pcl::Norm( m_data->Begin(), m_data->End(), p );
    }
@@ -749,7 +819,7 @@ public:
     * Returns the L1 norm (or Manhattan norm) of this vector. The L1 norm is
     * the sum of the absolute values of all vector components.
     */
-   double L1Norm() const
+   double L1Norm() const noexcept
    {
       return pcl::L1Norm( m_data->Begin(), m_data->End() );
    }
@@ -758,7 +828,7 @@ public:
     * Returns the L2 norm (or Euclidean norm) of this vector. The L2 norm is
     * the square root of the sum of squared vector components.
     */
-   double L2Norm() const
+   double L2Norm() const noexcept
    {
       return pcl::L2Norm( m_data->Begin(), m_data->End() );
    }
@@ -767,7 +837,7 @@ public:
     * Returns the L2 norm (or Euclidean norm) of this vector. This function is
     * a synonym for L2Norm().
     */
-   double Norm() const
+   double Norm() const noexcept
    {
       return L2Norm();
    }
@@ -864,7 +934,7 @@ public:
     * Returns the index of the first vector element with the specified value
     * \a x, or -1 if this vector does not contain such value.
     */
-   int Find( const component& x ) const
+   int Find( const component& x ) const noexcept
    {
       const_iterator p = pcl::LinearSearch( m_data->Begin(), m_data->End(), x );
       return (p != m_data->End()) ? int( p - m_data->Begin() ) : -1;
@@ -875,7 +945,7 @@ public:
     * \a x, or -1 if this vector does not contain such value.
     * This function is an alias to Find().
     */
-   int FindFirst( const component& x ) const
+   int FindFirst( const component& x ) const noexcept
    {
       return Find( x );
    }
@@ -884,7 +954,7 @@ public:
     * Returns the index of the last vector element with the specified value
     * \a x, or -1 if this vector does not contain such value.
     */
-   int FindLast( const component& x ) const
+   int FindLast( const component& x ) const noexcept
    {
       const_iterator p = pcl::LinearSearchLast( m_data->Begin(), m_data->End(), x );
       return (p != m_data->End()) ? int( p - m_data->Begin() ) : -1;
@@ -893,7 +963,7 @@ public:
    /*!
     * Returns true iff this vector contains the specified value \a x.
     */
-   bool Contains( const component& x ) const
+   bool Contains( const component& x ) const noexcept
    {
       return pcl::LinearSearch( m_data->Begin(), m_data->End(), x ) != m_data->End();
    }
@@ -907,7 +977,7 @@ public:
     * smallest component occurs more than once, this function returns the index
     * of the first occurrence.
     */
-   int IndexOfSmallestComponent() const
+   int IndexOfSmallestComponent() const noexcept
    {
       return int( pcl::MinItem( m_data->Begin(), m_data->End() ) - m_data->Begin() );
    }
@@ -919,7 +989,7 @@ public:
     * largest component occurs more than once, this function returns the index
     * of the first occurrence.
     */
-   int IndexOfLargestComponent() const
+   int IndexOfLargestComponent() const noexcept
    {
       return int( pcl::MaxItem( m_data->Begin(), m_data->End() ) - m_data->Begin() );
    }
@@ -932,7 +1002,7 @@ public:
     * smallest component occurs more than once, this function returns the index
     * of the last occurrence.
     */
-   int IndexOfLastSmallestComponent() const
+   int IndexOfLastSmallestComponent() const noexcept
    {
       iterator i = m_data->Begin();
       if ( m_data->Length() > 0 )
@@ -950,7 +1020,7 @@ public:
     * largest component occurs more than once, this function returns the index
     * of the last occurrence.
     */
-   int IndexOfLastLargestComponent() const
+   int IndexOfLastLargestComponent() const noexcept
    {
       iterator i = m_data->Begin();
       if ( m_data->Length() > 0 )
@@ -967,7 +1037,7 @@ public:
     * smallest nonzero component occurs more than once, this function returns
     * the index of the first occurrence.
     */
-   int IndexOfSmallestNonzeroComponent() const
+   int IndexOfSmallestNonzeroComponent() const noexcept
    {
       iterator i = m_data->Begin();
       if ( m_data->Length() > 0 )
@@ -986,7 +1056,7 @@ public:
     * smallest nonzero component occurs more than once, this function returns
     * the index of the last occurrence.
     */
-   int IndexOfLastSmallestNonzeroComponent() const
+   int IndexOfLastSmallestNonzeroComponent() const noexcept
    {
       iterator i = m_data->Begin();
       if ( m_data->Length() > 0 )
@@ -1001,7 +1071,7 @@ public:
     * Returns the value of the smallest vector component.
     * For empty vectors, this function returns zero conventionally.
     */
-   component MinComponent() const
+   component MinComponent() const noexcept
    {
       if ( m_data->Length() > 0 )
          return *pcl::MinItem( m_data->Begin(), m_data->End() );
@@ -1012,7 +1082,7 @@ public:
     * Returns the value of the largest vector component.
     * For empty vectors, this function returns zero conventionally.
     */
-   component MaxComponent() const
+   component MaxComponent() const noexcept
    {
       if ( m_data->Length() > 0 )
          return *pcl::MaxItem( m_data->Begin(), m_data->End() );
@@ -1067,7 +1137,7 @@ public:
     * Returns the sum of vector components.
     * For empty vectors, this function returns zero.
     */
-   double Sum() const
+   double Sum() const noexcept
    {
       return pcl::Sum( m_data->Begin(), m_data->End() );
    }
@@ -1078,7 +1148,7 @@ public:
     *
     * For empty vectors, this function returns zero.
     */
-   double StableSum() const
+   double StableSum() const noexcept
    {
       return pcl::StableSum( m_data->Begin(), m_data->End() );
    }
@@ -1087,7 +1157,7 @@ public:
     * Returns the sum of the absolute values of all vector components.
     * For empty vectors, this function returns zero.
     */
-   double Modulus() const
+   double Modulus() const noexcept
    {
       return pcl::Modulus( m_data->Begin(), m_data->End() );
    }
@@ -1098,7 +1168,7 @@ public:
     *
     * For empty vectors, this function returns zero.
     */
-   double StableModulus() const
+   double StableModulus() const noexcept
    {
       return pcl::StableModulus( m_data->Begin(), m_data->End() );
    }
@@ -1107,7 +1177,7 @@ public:
     * Computes the sum of the squares of all vector components.
     * For empty vectors, this function returns zero.
     */
-   double SumOfSquares() const
+   double SumOfSquares() const noexcept
    {
       return pcl::SumOfSquares( m_data->Begin(), m_data->End() );
    }
@@ -1118,7 +1188,7 @@ public:
     *
     * For empty vectors, this function returns zero.
     */
-   double StableSumOfSquares() const
+   double StableSumOfSquares() const noexcept
    {
       return pcl::StableSumOfSquares( m_data->Begin(), m_data->End() );
    }
@@ -1138,7 +1208,7 @@ public:
     *
     * For empty vectors, this function returns zero.
     */
-   double StableMean() const
+   double StableMean() const noexcept
    {
       return pcl::StableMean( m_data->Begin(), m_data->End() );
    }
@@ -1150,7 +1220,7 @@ public:
     *
     * For empty vectors, this function returns zero.
     */
-   double TrimmedMean( distance_type l = 1, distance_type h = 1 ) const
+   double TrimmedMean( distance_type l = 1, distance_type h = 1 ) const noexcept
    {
       return pcl::TrimmedMean( m_data->Begin(), m_data->End(), l, h );
    }
@@ -1162,7 +1232,7 @@ public:
     *
     * For empty vectors, this function returns zero.
     */
-   double TrimmedMeanOfSquares( distance_type l = 1, distance_type h = 1 ) const
+   double TrimmedMeanOfSquares( distance_type l = 1, distance_type h = 1 ) const noexcept
    {
       return pcl::TrimmedMeanOfSquares( m_data->Begin(), m_data->End(), l, h );
    }
@@ -1172,7 +1242,7 @@ public:
     *
     * For vectors with less than two components, this function returns zero.
     */
-   double Variance() const
+   double Variance() const noexcept
    {
       return pcl::Variance( m_data->Begin(), m_data->End() );
    }
@@ -1183,7 +1253,7 @@ public:
     *
     * For vectors with less than two components, this function returns zero.
     */
-   double StdDev() const
+   double StdDev() const noexcept
    {
       return pcl::StdDev( m_data->Begin(), m_data->End() );
    }
@@ -1212,7 +1282,7 @@ public:
     * with the standard deviation of a normal distribution, it must be
     * multiplied by the constant 1.2533.
     */
-   double AvgDev( double center ) const
+   double AvgDev( double center ) const noexcept
    {
       return pcl::AvgDev( m_data->Begin(), m_data->End(), center );
    }
@@ -1232,7 +1302,7 @@ public:
     * with the standard deviation of a normal distribution, it must be
     * multiplied by the constant 1.2533.
     */
-   double StableAvgDev( double center ) const
+   double StableAvgDev( double center ) const noexcept
    {
       return pcl::StableAvgDev( m_data->Begin(), m_data->End(), center );
    }
@@ -1278,7 +1348,7 @@ public:
     *
     * See AvgDev( double ) for more information.
     */
-   TwoSidedEstimate TwoSidedAvgDev( double center ) const
+   TwoSidedEstimate TwoSidedAvgDev( double center ) const noexcept
    {
       return pcl::TwoSidedAvgDev( m_data->Begin(), m_data->End(), center );
    }
@@ -1379,7 +1449,7 @@ public:
     * Rand R. Wilcox (2017), <em>Introduction to Robust Estimation and
     * Hypothesis Testing, 4th Edition</em>, Elsevier Inc., Section 3.12.1.
     */
-   double BiweightMidvariance( double center, double sigma, int k = 9, bool reducedLength = false ) const
+   double BiweightMidvariance( double center, double sigma, int k = 9, bool reducedLength = false ) const noexcept
    {
       return pcl::BiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k, reducedLength );
    }
@@ -1433,7 +1503,7 @@ public:
     * on the rest of parameters and references.
     */
    TwoSidedEstimate TwoSidedBiweightMidvariance( double center, const TwoSidedEstimate& sigma,
-                                                 int k = 9, bool reducedLength = false ) const
+                                                 int k = 9, bool reducedLength = false ) const noexcept
    {
       return pcl::TwoSidedBiweightMidvariance( m_data->Begin(), m_data->End(), center, sigma, k, reducedLength );
    }
@@ -1568,7 +1638,7 @@ public:
     * The \a seed parameter can be used to generate repeatable hash values. It
     * can also be set to a random value in compromised environments.
     */
-   uint64 Hash64( uint64 seed = 0 ) const
+   uint64 Hash64( uint64 seed = 0 ) const noexcept
    {
       return pcl::Hash64( m_data->Begin(), m_data->Size(), seed );
    }
@@ -1581,7 +1651,7 @@ public:
     * The \a seed parameter can be used to generate repeatable hash values. It
     * can also be set to a random value in compromised environments.
     */
-   uint32 Hash32( uint32 seed = 0 ) const
+   uint32 Hash32( uint32 seed = 0 ) const noexcept
    {
       return pcl::Hash32( m_data->Begin(), m_data->Size(), seed );
    }
@@ -1590,7 +1660,7 @@ public:
     * Returns a non-cryptographic hash value computed for this vector. This
     * function is a synonym for Hash64().
     */
-   uint64 Hash( uint64 seed = 0 ) const
+   uint64 Hash( uint64 seed = 0 ) const noexcept
    {
       return Hash64( seed );
    }
@@ -1598,7 +1668,7 @@ public:
    /*!
     * Returns true iff this instance uniquely references its vector data.
     */
-   bool IsUnique() const
+   bool IsUnique() const noexcept
    {
       return m_data->IsUnique();
    }
@@ -1607,7 +1677,7 @@ public:
     * Returns true iff this instance references (shares) the same vector data as
     * another instance \a x.
     */
-   bool IsAliasOf( const GenericVector& x ) const
+   bool IsAliasOf( const GenericVector& x ) const noexcept
    {
       return m_data == x.m_data;
    }
@@ -1624,9 +1694,12 @@ public:
       if ( !IsUnique() )
       {
          Data* newData = new Data( m_data->Length() );
-         const_iterator a = m_data->Begin();
-         for ( iterator i = newData->Begin(), j = newData->End(); i < j; ++i, ++a )
-            *i = component( *a );
+         const_iterator __restrict__ i = m_data->Begin();
+         const_iterator __restrict__ j = m_data->End();
+               iterator __restrict__ k = newData->Begin();
+         PCL_IVDEP
+         for ( ; i < j; ++i, ++k )
+            *k = *i;
          DetachFromData();
          m_data = newData;
       }
@@ -1636,7 +1709,7 @@ public:
     * Returns the number of components in this vector. If this object is an
     * empty vector, this member function returns zero.
     */
-   int Length() const
+   int Length() const noexcept
    {
       return m_data->Length();
    }
@@ -1645,7 +1718,7 @@ public:
     * Returns the total number of bytes required to store the data contained in
     * this vector.
     */
-   size_type Size() const
+   size_type Size() const noexcept
    {
       return m_data->Size();
    }
@@ -1664,7 +1737,7 @@ public:
     * immediately. Invalid vectors are always destroyed automatically during
     * move construction and move assignment operations.
     */
-   bool IsValid() const
+   bool IsValid() const noexcept
    {
       return m_data != nullptr;
    }
@@ -1673,7 +1746,7 @@ public:
     * Returns true iff this is an empty vector. An empty vector has no
     * components, and hence its length is zero.
     */
-   bool IsEmpty() const
+   bool IsEmpty() const noexcept
    {
       return Length() == 0;
    }
@@ -1683,7 +1756,7 @@ public:
     *
     * \code !IsEmpty(); \endcode
     */
-   operator bool() const
+   operator bool() const noexcept
    {
       return !IsEmpty();
    }
@@ -1693,7 +1766,7 @@ public:
     * \a x. Two vectors are equal if both have the same length and identical
     * component values.
     */
-   bool operator ==( const GenericVector& x ) const
+   bool operator ==( const GenericVector& x ) const noexcept
    {
       return IsAliasOf( x ) || SameLength( x ) && pcl::Equal( Begin(), x.Begin(), x.End() );
    }
@@ -1707,7 +1780,7 @@ public:
     * or until the end of one of the vectors is reached. In the latter case,
     * the shortest vector is the lesser one.
     */
-   bool operator <( const GenericVector& x ) const
+   bool operator <( const GenericVector& x ) const noexcept
    {
       return !IsAliasOf( x ) && pcl::Compare( Begin(), End(), x.Begin(), x.End() ) < 0;
    }
@@ -1715,7 +1788,7 @@ public:
    /*!
     * Returns true iff this vector has the same length as other vector \a x.
     */
-   bool SameLength( const GenericVector& x ) const
+   bool SameLength( const GenericVector& x ) const noexcept
    {
       return Length() == x.Length();
    }
@@ -1737,7 +1810,7 @@ public:
     * Returns an immutable vector iterator pointing to the \a i-th component of
     * this vector.
     */
-   const_iterator At( int i ) const
+   const_iterator At( int i ) const noexcept
    {
       return m_data->At( i );
    }
@@ -1765,7 +1838,7 @@ public:
     * All vector components are guaranteed to be stored at consecutive
     * locations addressable from the iterator returned by this function.
     */
-   const_iterator Begin() const
+   const_iterator Begin() const noexcept
    {
       return m_data->Begin();
    }
@@ -1773,7 +1846,7 @@ public:
    /*!
     * A synonym for Begin() const.
     */
-   const_iterator ConstBegin() const
+   const_iterator ConstBegin() const noexcept
    {
       return Begin();
    }
@@ -1795,7 +1868,7 @@ public:
     *
     * This member function is a convenience alias to Begin() const.
     */
-   const_iterator operator *() const
+   const_iterator operator *() const noexcept
    {
       return Begin();
    }
@@ -1825,7 +1898,7 @@ public:
     * consecutive locations addressable from the iterator returned by this
     * function.
     */
-   const_iterator End() const
+   const_iterator End() const noexcept
    {
       return m_data->End();
    }
@@ -1833,7 +1906,7 @@ public:
    /*!
     * A synonym for End() const.
     */
-   const_iterator ConstEnd() const
+   const_iterator ConstEnd() const noexcept
    {
       return End();
    }
@@ -1854,7 +1927,7 @@ public:
     * Returns a reference to the immutable vector component at the specified
     * index \a i. Vector indices are relative to zero.
     */
-   const component& operator []( int i ) const
+   const component& operator []( int i ) const noexcept
    {
       return *At( i );
    }
@@ -1877,7 +1950,7 @@ public:
     * copies are not necessary. Typically this happens when two or more threads
     * work simultaneously on non-overlapping regions of the same vector.
     */
-   iterator DataPtr()
+   iterator DataPtr() noexcept
    {
       return m_data->v;
    }
@@ -1892,7 +1965,7 @@ public:
     * vector is unique. See DataPtr() for more information on how to use this
     * member function.
     */
-   iterator ComponentPtr( int i )
+   iterator ComponentPtr( int i ) noexcept
    {
       return m_data->At( i );
    }
@@ -1909,7 +1982,7 @@ public:
    /*!
     * STL-compatible iteration. Equivalent to Begin() const.
     */
-   const_iterator begin() const
+   const_iterator begin() const noexcept
    {
       return Begin();
    }
@@ -1925,7 +1998,7 @@ public:
    /*!
     * STL-compatible iteration. Equivalent to End() const.
     */
-   const_iterator end() const
+   const_iterator end() const noexcept
    {
       return End();
    }
@@ -1953,7 +2026,7 @@ public:
     * \sa ToSpherical2Pi(), FromSpherical()
     */
    template <typename T1, typename T2>
-   void ToSpherical( T1& lon, T2& lat ) const
+   void ToSpherical( T1& lon, T2& lat ) const noexcept
    {
       PCL_PRECONDITION( Length() >= 3 )
       double x = *At( 0 );
@@ -1973,7 +2046,7 @@ public:
     * \sa ToSpherical(), FromSpherical()
     */
    template <typename T1, typename T2>
-   void ToSpherical2Pi( T1& lon, T2& lat ) const
+   void ToSpherical2Pi( T1& lon, T2& lat ) const noexcept
    {
       ToSpherical( lon, lat );
       if ( lon < 0 )
@@ -2033,7 +2106,7 @@ public:
     * For performance reasons, this condition is not verified; if it doesn't
     * hold, this function will invoke undefined behavior.
     */
-   double Angle2D( const GenericVector& v ) const
+   double Angle2D( const GenericVector& v ) const noexcept
    {
       /*
        * https://stackoverflow.com/questions/14066933/direct-way-of-computing-clockwise-angle-between-2-vectors
@@ -2057,7 +2130,7 @@ public:
     * components. For performance reasons, this condition is not verified; if
     * it doesn't hold, this function will invoke undefined behavior.
     */
-   double Angle3D( const GenericVector& v ) const
+   double Angle3D( const GenericVector& v ) const noexcept
    {
       /*
        * https://stackoverflow.com/questions/14066933/direct-way-of-computing-clockwise-angle-between-2-vectors
@@ -2231,40 +2304,56 @@ private:
          Deallocate();
       }
 
-      int Length() const
+      int Length() const noexcept
       {
          return n;
       }
 
-      size_type Size() const
+      size_type Size() const noexcept
       {
          return size_type( n )*sizeof( component );
       }
 
-      iterator At( int i ) const
+      iterator At( int i ) const noexcept
       {
          return v + i;
       }
 
-      iterator Begin() const
+      iterator Begin() const noexcept
       {
+//          if ( likely( std::is_scalar<component>::value ) )
+//             return reinterpret_cast<iterator>( PCL_ASSUME_ALIGNED_32( v ) );
          return v;
       }
 
-      iterator End() const
+      iterator End() const noexcept
       {
-         return v + n;
+         return At( n );
       }
 
       void Allocate( int len )
       {
-         v = new component[ n = len ];
+         n = len;
+         if ( likely( std::is_scalar<component>::value ) )
+         {
+            v = reinterpret_cast<component*>( PCL_ALIGNED_MALLOC( Size(), 32 ) );
+            if ( unlikely( v == nullptr ) )
+            {
+               n = 0;
+               throw std::bad_alloc();
+            }
+         }
+         else
+            v = new component[ len ];
       }
 
       void Deallocate()
       {
          PCL_PRECONDITION( refCount == 0 )
-         delete [] v;
+         if ( likely( std::is_scalar<component>::value ) )
+            PCL_ALIGNED_FREE( v );
+         else
+            delete [] v;
          v = nullptr;
          n = 0;
       }
@@ -2310,9 +2399,22 @@ GenericVector<T> operator +( const GenericVector<T>& A, const GenericVector<T>& 
    if ( B.Length() < n )
       throw Error( "Invalid vector addition." );
    GenericVector<T> R( n );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), b = B.Begin(), a1 = A.End(); a < a1; ++a, ++b )
-      *r++ = *a + *b;
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   if ( likely( !A.IsAliasOf( B ) ) )
+   {
+      typename GenericVector<T>::const_iterator __restrict__ b = B.Begin();
+      PCL_IVDEP
+      for ( ; a < c; ++a, ++b, ++r )
+         *r = *a + *b;
+   }
+   else
+   {
+      PCL_IVDEP
+      for ( ; a < c; ++a, ++r )
+         *r = *a + *a;
+   }
    return R;
 }
 
@@ -2367,9 +2469,12 @@ template <typename T> inline
 GenericVector<T> operator +( const GenericVector<T>& A, const T& x )
 {
    GenericVector<T> R( A.Length() );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
-      *r++ = *a + x;
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a, ++r )
+      *r = *a + x;
    return R;
 }
 
@@ -2426,10 +2531,24 @@ GenericVector<T> operator -( const GenericVector<T>& A, const GenericVector<T>& 
    int n = A.Length();
    if ( B.Length() < n )
       throw Error( "Invalid vector subtraction." );
+
    GenericVector<T> R( n );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), b = B.Begin(), a1 = A.End(); a < a1; ++a, ++b )
-      *r++ = *a - *b;
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   if ( likely( !A.IsAliasOf( B ) ) )
+   {
+      typename GenericVector<T>::const_iterator __restrict__ b = B.Begin();
+      PCL_IVDEP
+      for ( ; a < c; ++a, ++b, ++r )
+         *r = *a - *b;
+   }
+   else
+   {
+      PCL_IVDEP
+      for ( ; a < c; ++a, ++r )
+         *r = *a - *a;
+   }
    return R;
 }
 
@@ -2461,8 +2580,12 @@ GenericVector<T> operator -( const GenericVector<T>& A, GenericVector<T>&& B )
 {
    if ( A.Length() < B.Length() )
       throw Error( "Invalid vector subtraction." );
-   typename GenericVector<T>::const_iterator a = A.Begin();
-   for ( typename GenericVector<T>::iterator b = B.Begin(), b1 = B.End(); b < b1; ++a, ++b )
+
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::iterator       __restrict__ b = B.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = B.End();
+   PCL_IVDEP
+   for ( ; b < c; ++a, ++b )
       *b = *a - *b;
    return std::move( B );
 }
@@ -2490,9 +2613,12 @@ template <typename T> inline
 GenericVector<T> operator -( const GenericVector<T>& A, const T& x )
 {
    GenericVector<T> R( A.Length() );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
-      *r++ = *a - x;
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a, ++r )
+      *r = *a - x;
    return R;
 }
 
@@ -2520,9 +2646,12 @@ template <typename T> inline
 GenericVector<T> operator -( const T& x, const GenericVector<T>& A )
 {
    GenericVector<T> R( A.Length() );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
-      *r++ = x - *a;
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a, ++r )
+      *r = x - *a;
    return R;
 }
 
@@ -2538,7 +2667,10 @@ GenericVector<T> operator -( const T& x, const GenericVector<T>& A )
 template <typename T> inline
 GenericVector<T> operator -( const T& x, GenericVector<T>&& A )
 {
-   for ( typename GenericVector<T>::iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
+   typename GenericVector<T>::iterator       __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a )
       *a = x - *a;
    return std::move( A );
 }
@@ -2631,12 +2763,25 @@ GenericVector<T> operator ^( GenericVector<T>&& A, GenericVector<T>&& B )
  * \ingroup vector_operators
  */
 template <typename T> inline
-T operator *( const GenericVector<T>& A, const GenericVector<T>& B )
+T operator *( const GenericVector<T>& A, const GenericVector<T>& B ) noexcept
 {
    PCL_PRECONDITION( B.Length() >= A.Length() )
-   T r = 0;
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), b = B.Begin(), a1 = A.End(); a < a1; ++a, ++b )
-      r += *a * *b;
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   T r = T( 0 );
+   if ( likely( !A.IsAliasOf( B ) ) )
+   {
+      typename GenericVector<T>::const_iterator __restrict__ b = B.Begin();
+      PCL_IVDEP
+      for ( ; a < c; ++a, ++b )
+         r += *a * *b;
+   }
+   else
+   {
+      PCL_IVDEP
+      for ( ; a < c; ++a )
+         r += *a * *a;
+   }
    return r;
 }
 
@@ -2650,9 +2795,12 @@ template <typename T> inline
 GenericVector<T> operator *( const GenericVector<T>& A, const T& x )
 {
    GenericVector<T> R( A.Length() );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
-      *r++ = *a * x;
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a, ++r )
+      *r = *a * x;
    return R;
 }
 
@@ -2704,9 +2852,12 @@ template <typename T> inline
 GenericVector<T> operator /( const GenericVector<T>& A, const T& x )
 {
    GenericVector<T> R( A.Length() );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
-      *r++ = *a / x;
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a, ++r )
+      *r = *a / x;
    return R;
 }
 
@@ -2733,9 +2884,12 @@ template <typename T> inline
 GenericVector<T> operator /( const T& x, const GenericVector<T>& A )
 {
    GenericVector<T> R( A.Length() );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
-      *r++ = x / *a;
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a, ++r )
+      *r = x / *a;
    return R;
 }
 
@@ -2750,25 +2904,43 @@ GenericVector<T> operator /( const T& x, const GenericVector<T>& A )
 template <typename T> inline
 GenericVector<T> operator /( const T& x, GenericVector<T>&& A )
 {
-   for ( typename GenericVector<T>::iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
+   typename GenericVector<T>::iterator       __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a )
       *a = x / *a;
    return std::move( A );
 }
 
 /*!
- * Returns the result of the element-wise division of a vector \a A by another
+ * Returns the result of the element wise division of a vector \a A by another
  * vector \a B.
  * \ingroup vector_operators
  */
 template <typename T> inline
 GenericVector<T> operator /( const GenericVector<T>& A, const GenericVector<T>& B )
 {
-   if ( A.Length() > B.Length() )
+   int n = A.Length();
+   if ( B.Length() < n )
       throw Error( "Invalid vector division." );
-   GenericVector<T> R( A.Length() );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), a1 = A.End(), b = B.Begin(); a < a1; ++a, ++b )
-      *r++ = *a / *b;
+
+   GenericVector<T> R( n );
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   if ( likely( !A.IsAliasOf( B ) ) )
+   {
+      typename GenericVector<T>::const_iterator __restrict__ b = B.Begin();
+      PCL_IVDEP
+      for ( ; a < c; ++a, ++b, ++r )
+         *r = *a / *b;
+   }
+   else
+   {
+      PCL_IVDEP
+      for ( ; a < c; ++a, ++r )
+         *r = *a / *a;
+   }
    return R;
 }
 
@@ -2793,9 +2965,12 @@ template <typename T> inline
 GenericVector<T> operator ^( const GenericVector<T>& A, const T& x )
 {
    GenericVector<T> R( A.Length() );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
-      *r++ = pcl::Pow( *a, x );
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a, ++r )
+      *r = pcl::Pow( *a, x );
    return R;
 }
 
@@ -2822,9 +2997,12 @@ template <typename T> inline
 GenericVector<T> operator ^( const T& x, const GenericVector<T>& A )
 {
    GenericVector<T> R( A.Length() );
-   typename GenericVector<T>::iterator r = R.Begin();
-   for ( typename GenericVector<T>::const_iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
-      *r++ = pcl::Pow( x, *a );
+   typename GenericVector<T>::iterator       __restrict__ r = R.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a, ++r )
+      *r = pcl::Pow( x, *a );
    return R;
 }
 
@@ -2839,7 +3017,10 @@ GenericVector<T> operator ^( const T& x, const GenericVector<T>& A )
 template <typename T> inline
 GenericVector<T> operator ^( const T& x, GenericVector<T>&& A )
 {
-   for ( typename GenericVector<T>::iterator a = A.Begin(), a1 = A.End(); a < a1; ++a )
+   typename GenericVector<T>::iterator       __restrict__ a = A.Begin();
+   typename GenericVector<T>::const_iterator __restrict__ c = A.End();
+   PCL_IVDEP
+   for ( ; a < c; ++a )
       *a = pcl::Pow( x, *a );
    return std::move( A );
 }
@@ -3078,4 +3259,4 @@ typedef F80Vector                   LDVector;
 #endif   // __PCL_Vector_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Vector.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Vector.h - Released 2020-11-20T19:46:29Z

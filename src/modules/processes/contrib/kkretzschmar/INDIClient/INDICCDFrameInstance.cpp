@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDICCDFrameInstance.cpp - Released 2020-10-12T19:25:16Z
+// INDICCDFrameInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -68,7 +68,7 @@
 #include <pcl/MetaModule.h>
 #include <pcl/Position.h>
 #include <pcl/SpinStatus.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Version.h>
 
 namespace pcl
@@ -967,7 +967,7 @@ ImageMetadataFromFITSKeywords( const FITSKeywordArray& keywords )
       {
          double x = value.SexagesimalToDouble( Array<char>() << ' ' << ':' );
          // The "RA" keyword must be expressed in hours when it
-         // is a complex angular value (HH MM SS.sss), or in
+         // is a compound angular value (HH MM SS.sss), or in
          // degrees when it is a scalar.
          if ( value.Contains( ' ' ) || value.Contains( ':' ) )
             x *= 15;
@@ -1718,4 +1718,4 @@ int AbstractINDICCDFrameExecution::s_numberOfChannels = 0;
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF INDICCDFrameInstance.cpp - Released 2020-11-20T19:49:00Z

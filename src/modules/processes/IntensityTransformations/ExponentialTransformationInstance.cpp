@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInstance.cpp - Released 2020-10-12T19:25:16Z
+// ExponentialTransformationInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -59,7 +59,8 @@
 #include <pcl/Mutex.h>
 #include <pcl/ReferenceArray.h>
 #include <pcl/SeparableConvolution.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
+#include <pcl/Thread.h>
 #include <pcl/View.h>
 
 namespace pcl
@@ -130,15 +131,15 @@ public:
       if ( image.IsFloatSample() )
          switch ( image.BitsPerSample() )
          {
-         case 32 : Apply( static_cast<Image&>( *image ), instance ); break;
-         case 64 : Apply( static_cast<DImage&>( *image ), instance ); break;
+         case 32: Apply( static_cast<Image&>( *image ), instance ); break;
+         case 64: Apply( static_cast<DImage&>( *image ), instance ); break;
          }
       else
          switch ( image.BitsPerSample() )
          {
-         case  8 : Apply( static_cast<UInt8Image&>( *image ), instance ); break;
-         case 16 : Apply( static_cast<UInt16Image&>( *image ), instance ); break;
-         case 32 : Apply( static_cast<UInt32Image&>( *image ), instance ); break;
+         case  8: Apply( static_cast<UInt8Image&>( *image ), instance ); break;
+         case 16: Apply( static_cast<UInt16Image&>( *image ), instance ); break;
+         case 32: Apply( static_cast<UInt32Image&>( *image ), instance ); break;
          }
    }
 
@@ -156,7 +157,7 @@ public:
          mask->Status().DisableInitialization();
          mask->SelectNominalChannels();
          GaussianFilter G( instance.sigma );
-         if ( G.Size() < PCL_FFT_CONVOLUTION_IS_FASTER_THAN_SEPARABLE_FILTER_SIZE )
+         if ( G.Size() < FFTConvolution::FasterThanSeparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) )
             SeparableConvolution( G.AsSeparableFilter() ) >> *mask;
          else
             FFTConvolution( G ) >> *mask;
@@ -382,4 +383,4 @@ String ExponentialTransformationInstance::TypeAsString() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF ExponentialTransformationInstance.cpp - Released 2020-11-20T19:49:00Z

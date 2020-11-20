@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ReferenceSortedArray.h - Released 2020-10-12T19:24:41Z
+// pcl/ReferenceSortedArray.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -62,7 +62,7 @@
 #include <pcl/Iterator.h>
 #include <pcl/ReferenceArray.h>
 #include <pcl/SortedArray.h>
-#include <pcl/StdAlloc.h>
+#include <pcl/StandardAllocator.h>
 
 namespace pcl
 {
@@ -323,9 +323,9 @@ public:
    /*!
     * Returns a reference to the allocator object used by this reference array.
     */
-   const allocator& GetAllocator() const
+   const allocator& Allocator() const
    {
-      return m_array.GetAllocator();
+      return m_array.Allocator();
    }
 
    /*!
@@ -1549,4 +1549,4 @@ ReferenceSortedArray<T,A>& operator <<( ReferenceSortedArray<T,A>&& x1, const Re
 #endif   // __PCL_ReferenceSortedArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ReferenceSortedArray.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/ReferenceSortedArray.h - Released 2020-11-20T19:46:29Z

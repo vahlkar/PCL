@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.8
 // ----------------------------------------------------------------------------
-// FITS.cpp - Released 2020-10-12T19:25:05Z
+// FITS.cpp - Released 2020-11-20T19:48:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -59,7 +59,7 @@
 #include <pcl/ErrorHandler.h>
 #include <pcl/ICCProfile.h>
 #include <pcl/MetaModule.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/Version.h>
 
 // Tell fitsio.h that we do support 64-bit integers.
@@ -2726,4 +2726,4 @@ void FITSWriter::WriteExtensionHDU( const FITSExtensionData& ext )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITS.cpp - Released 2020-10-12T19:25:05Z
+// EOF FITS.cpp - Released 2020-11-20T19:48:45Z

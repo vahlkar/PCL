@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2020-10-12T19:24:49Z
+// pcl/AstrometricMetadata.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -471,18 +471,20 @@ void AstrometricMetadata::UpdateBasicKeywords( FITSKeywordArray& keywords ) cons
       RemoveKeyword( keywords, "PIXSIZE" );
    }
 
+   ModifyKeyword( keywords, "TIMESYS", "UTC", "Time scale: Universal Time, Coordinated" );
+
    if ( m_obsStartTime.IsDefined() )
    {
       ModifyKeyword( keywords, "DATE-OBS",
             m_obsStartTime().ToIsoString( 3/*timeItems*/, 3/*precision*/, 0/*tz*/, false/*timeZone*/ ).SingleQuoted(),
-            "Date/time of start of observation (UTC)" );
+            "Start date/time of observation (UTC)" );
       RemoveKeyword( keywords, "DATE-BEG" );
    }
 
    if ( m_obsEndTime.IsDefined() )
       ModifyKeyword( keywords, "DATE-END",
             m_obsEndTime().ToIsoString( 3/*timeItems*/, 3/*precision*/, 0/*tz*/, false/*timeZone*/ ).SingleQuoted(),
-            "Date/time of end of observation (UTC)" );
+            "End date/time of observation (UTC)" );
 
    if ( m_geoLongitude.IsDefined() && m_geoLatitude.IsDefined() )
    {
@@ -525,7 +527,9 @@ void AstrometricMetadata::UpdateBasicKeywords( FITSKeywordArray& keywords ) cons
 
 void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
 {
+   RemoveKeyword( keywords, "RADESYS" );
    RemoveKeyword( keywords, "EQUINOX" );
+   RemoveKeyword( keywords, "EPOCH" );
    RemoveKeyword( keywords, "CTYPE1" );
    RemoveKeyword( keywords, "CTYPE2" );
    RemoveKeyword( keywords, "CRPIX1" );
@@ -534,12 +538,18 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
    RemoveKeyword( keywords, "CRVAL2" );
    RemoveKeyword( keywords, "PV1_1" );
    RemoveKeyword( keywords, "PV1_2" );
+   RemoveKeyword( keywords, "PV1_3" );
+   RemoveKeyword( keywords, "PV1_4" );
    RemoveKeyword( keywords, "LONPOLE" );
    RemoveKeyword( keywords, "LATPOLE" );
    RemoveKeyword( keywords, "CD1_1" );
    RemoveKeyword( keywords, "CD1_2" );
    RemoveKeyword( keywords, "CD2_1" );
    RemoveKeyword( keywords, "CD2_2" );
+   RemoveKeyword( keywords, "PC1_1" );
+   RemoveKeyword( keywords, "PC1_2" );
+   RemoveKeyword( keywords, "PC2_1" );
+   RemoveKeyword( keywords, "PC2_2" );
    RemoveKeyword( keywords, "REFSPLIN" );
    RemoveKeyword( keywords, "REFSPLINE" ); // N.B. 9-char keyword name written by old versions, not FITS-compliant.
    RemoveKeyword( keywords, "CDELT1" );
@@ -551,8 +561,31 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
    {
       WCSKeywords wcs = ComputeWCSKeywords();
 
-      keywords << FITSHeaderKeyword( "EQUINOX", "2000.0", "Coordinates referred to ICRS / J2000.0" )
-               << FITSHeaderKeyword( "CTYPE1", wcs.ctype1, "Axis1 projection: " + m_projection->Name() )
+      if ( wcs.radesys.IsEmpty() )
+      {
+         if ( wcs.equinox.IsDefined() )
+         {
+            keywords << FITSHeaderKeyword( "RADESYS", (wcs.equinox() >= 1984.0) ? "FK5" : "FK4", "Reference system of celestial coordinates" );
+            keywords << FITSHeaderKeyword( "EQUINOX", IsoString( wcs.equinox() ), "Epoch of the mean equator and equinox (years)" );
+         }
+         else
+            keywords << FITSHeaderKeyword( "RADESYS", "ICRS", "Coordinates referred to ICRS / J2000.0" );
+      }
+      else
+      {
+         if ( wcs.radesys == "ICRS" )
+            keywords << FITSHeaderKeyword( "RADESYS", "ICRS", "Coordinates referred to ICRS / J2000.0" );
+         else if ( wcs.radesys == "GAPPT" )
+            keywords << FITSHeaderKeyword( "RADESYS", "GAPPT", "Geocentric apparent coordinates / J2000.0" );
+         else
+         {
+            keywords << FITSHeaderKeyword( "RADESYS", wcs.radesys, "Reference system of celestial coordinates" );
+            if ( wcs.equinox.IsDefined() )
+               keywords << FITSHeaderKeyword( "EQUINOX", IsoString( wcs.equinox() ), "Epoch of the mean equator and equinox (years)" );
+         }
+      }
+
+      keywords << FITSHeaderKeyword( "CTYPE1", wcs.ctype1, "Axis1 projection: " + m_projection->Name() )
                << FITSHeaderKeyword( "CTYPE2", wcs.ctype2, "Axis2 projection: " + m_projection->Name() )
                << FITSHeaderKeyword( "CRPIX1", IsoString().Format( "%.16g", wcs.crpix1() ), "Axis1 reference pixel" )
                << FITSHeaderKeyword( "CRPIX2", IsoString().Format( "%.16g", wcs.crpix2() ), "Axis2 reference pixel" );
@@ -598,7 +631,9 @@ void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords )
    RemoveKeyword( keywords, "XPIXSZ" );
    RemoveKeyword( keywords, "YPIXSZ" );
    RemoveKeyword( keywords, "PIXSIZE" );
+   RemoveKeyword( keywords, "RADESYS" );
    RemoveKeyword( keywords, "EQUINOX" );
+   RemoveKeyword( keywords, "EPOCH" );
    RemoveKeyword( keywords, "CTYPE1" );
    RemoveKeyword( keywords, "CTYPE2" );
    RemoveKeyword( keywords, "CRVAL1" );
@@ -609,6 +644,10 @@ void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords )
    RemoveKeyword( keywords, "CD1_2" );
    RemoveKeyword( keywords, "CD2_1" );
    RemoveKeyword( keywords, "CD2_2" );
+   RemoveKeyword( keywords, "PC1_1" );
+   RemoveKeyword( keywords, "PC1_2" );
+   RemoveKeyword( keywords, "PC2_1" );
+   RemoveKeyword( keywords, "PC2_2" );
    RemoveKeyword( keywords, "CDELT1" );
    RemoveKeyword( keywords, "CDELT2" );
    RemoveKeyword( keywords, "CROTA1" );
@@ -616,8 +655,8 @@ void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords )
    RemoveKeyword( keywords, "PV1_1" );
    RemoveKeyword( keywords, "PV1_2" );
    RemoveKeyword( keywords, "PV1_3" );
-   RemoveKeyword( keywords, "LONPOLE" );
    RemoveKeyword( keywords, "PV1_4" );
+   RemoveKeyword( keywords, "LONPOLE" );
    RemoveKeyword( keywords, "LATPOLE" );
    RemoveKeyword( keywords, "REFSPLIN" );
    RemoveKeyword( keywords, "REFSPLINE" ); // N.B. 9-char keyword name written by old versions, not FITS-compliant.
@@ -923,4 +962,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2020-11-20T19:46:37Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/MetaFileFormat.cpp - Released 2020-10-12T19:24:49Z
+// pcl/MetaFileFormat.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -582,7 +582,7 @@ public:
          else
             switch ( bitsPerSample )
             {
-            case  8:
+            case 8:
                UInt8Image( hImage ).Assign( thumbnail );
                break;
             case 16:
@@ -1177,37 +1177,37 @@ public:
          if ( isFloat )
             switch ( bitsPerSample )
             {
-            case 32 :
+            case 32:
                {
                   pcl::Image image( hImage );
                   instance->ReadImage( image );
                }
                break;
-            case 64 :
+            case 64:
                {
                   pcl::DImage image( hImage );
                   instance->ReadImage( image );
                }
                break;
-            default :
+            default:
                return api_false;
             }
          else
             switch ( bitsPerSample )
             {
-            case  8 :
+            case 8:
                {
                   UInt8Image image( hImage );
                   instance->ReadImage( image );
                }
                break;
-            case 16 :
+            case 16:
                {
                   UInt16Image image( hImage );
                   instance->ReadImage( image );
                }
                break;
-            case 32 :
+            case 32:
                {
                   UInt32Image image( hImage );
                   instance->ReadImage( image );
@@ -1218,6 +1218,18 @@ public:
             }
 
          return api_true;
+      }
+      ERROR_HANDLER
+      return api_false;
+   }
+
+   // -------------------------------------------------------------------------
+
+   static api_bool api_func AllowIncrementalRead( const_file_format_handle hf )
+   {
+      try
+      {
+         return (api_bool)constInstance->CanReadIncrementally();
       }
       ERROR_HANDLER
       return api_false;
@@ -1236,28 +1248,28 @@ public:
          if ( isFloat )
             switch ( bitsPerSample )
             {
-            case 32 :
+            case 32:
                instance->ReadSamples( (float*)destination, startRow, numRows, channel );
                break;
-            case 64 :
+            case 64:
                instance->ReadSamples( (double*)destination, startRow, numRows, channel );
                break;
-            default :
+            default:
                return api_false;
             }
          else
             switch ( bitsPerSample )
             {
-            case  8 :
+            case 8:
                instance->ReadSamples( (uint8*)destination, startRow, numRows, channel );
                break;
-            case 16 :
+            case 16:
                instance->ReadSamples( (uint16*)destination, startRow, numRows, channel );
                break;
-            case 32 :
+            case 32:
                instance->ReadSamples( (uint32*)destination, startRow, numRows, channel );
                break;
-            default :
+            default:
                return api_false;
             }
 
@@ -1478,28 +1490,28 @@ public:
          if ( isFloat )
             switch ( bitsPerSample )
             {
-            case 32 :
+            case 32:
                thumbnail.Assign( pcl::Image( const_cast<image_handle>( hImage ) ) );
                break;
-            case 64 :
+            case 64:
                thumbnail.Assign( pcl::DImage( const_cast<image_handle>( hImage ) ) );
                break;
-            default :
+            default:
                return api_false;
             }
          else
             switch ( bitsPerSample )
             {
-            case  8 :
+            case 8:
                thumbnail.Assign( UInt8Image( const_cast<image_handle>( hImage ) ) );
                break;
-            case 16 :
+            case 16:
                thumbnail.Assign( UInt16Image( const_cast<image_handle>( hImage ) ) );
                break;
-            case 32 :
+            case 32:
                thumbnail.Assign( UInt32Image( const_cast<image_handle>( hImage ) ) );
                break;
-            default :
+            default:
                return api_false;
             }
 
@@ -1535,32 +1547,44 @@ public:
          if ( isFloat )
             switch ( bitsPerSample )
             {
-            case 32 :
+            case 32:
                instance->WriteImage( pcl::Image( const_cast<image_handle>( hImage ) ) );
                break;
-            case 64 :
+            case 64:
                instance->WriteImage( pcl::DImage( const_cast<image_handle>( hImage ) ) );
                break;
-            default :
+            default:
                return api_false;
             }
          else
             switch ( bitsPerSample )
             {
-            case  8 :
+            case 8:
                instance->WriteImage( UInt8Image( const_cast<image_handle>( hImage ) ) );
                break;
-            case 16 :
+            case 16:
                instance->WriteImage( UInt16Image( const_cast<image_handle>( hImage ) ) );
                break;
-            case 32 :
+            case 32:
                instance->WriteImage( UInt32Image( const_cast<image_handle>( hImage ) ) );
                break;
-            default :
+            default:
                return api_false;
             }
 
          return api_true;
+      }
+      ERROR_HANDLER
+      return api_false;
+   }
+
+   // -------------------------------------------------------------------------
+
+   static api_bool api_func AllowIncrementalWrite( const_file_format_handle hf )
+   {
+      try
+      {
+         return (api_bool)constInstance->CanWriteIncrementally();
       }
       ERROR_HANDLER
       return api_false;
@@ -1579,28 +1603,28 @@ public:
          if ( isFloat )
             switch ( bitsPerSample )
             {
-            case 32 :
+            case 32:
                instance->WriteSamples( (const float*)source, startRow, numRows, channel );
                break;
-            case 64 :
+            case 64:
                instance->WriteSamples( (const double*)source, startRow, numRows, channel );
                break;
-            default :
+            default:
                return api_false;
             }
          else
             switch ( bitsPerSample )
             {
-            case  8 :
+            case 8:
                instance->WriteSamples( (const uint8*)source, startRow, numRows, channel );
                break;
-            case 16 :
+            case 16:
                instance->WriteSamples( (const uint16*)source, startRow, numRows, channel );
                break;
-            case 32 :
+            case 32:
                instance->WriteSamples( (const uint32*)source, startRow, numRows, channel );
                break;
-            default :
+            default:
                return api_false;
             }
 
@@ -1824,6 +1848,7 @@ void MetaFileFormat::PerformAPIDefinitions() const
    (*API->FileFormatDefinition->SetFileFormatSetImageColorFilterArrayRoutine)( FileFormatDispatcher::SetImageColorFilterArray );
    (*API->FileFormatDefinition->SetFileFormatEndColorFilterArrayEmbeddingRoutine)( FileFormatDispatcher::EndColorFilterArrayEmbedding );
    (*API->FileFormatDefinition->SetFileFormatReadImageRoutine)( FileFormatDispatcher::ReadImage );
+   (*API->FileFormatDefinition->SetFileFormatAllowIncrementalReadRoutine)( FileFormatDispatcher::AllowIncrementalRead );
    (*API->FileFormatDefinition->SetFileFormatReadSamplesRoutine)( FileFormatDispatcher::ReadSamples );
    (*API->FileFormatDefinition->SetFileFormatQueryOptionsRoutine)( FileFormatDispatcher::QueryImageFileOptions );
    (*API->FileFormatDefinition->SetFileFormatCreateRoutine)( FileFormatDispatcher::Create );
@@ -1841,6 +1866,7 @@ void MetaFileFormat::PerformAPIDefinitions() const
    (*API->FileFormatDefinition->SetFileFormatSetThumbnailRoutine)( FileFormatDispatcher::SetThumbnail );
    (*API->FileFormatDefinition->SetFileFormatEndThumbnailEmbeddingRoutine)( FileFormatDispatcher::EndThumbnailEmbedding );
    (*API->FileFormatDefinition->SetFileFormatWriteImageRoutine)( FileFormatDispatcher::WriteImage );
+   (*API->FileFormatDefinition->SetFileFormatAllowIncrementalWriteRoutine)( FileFormatDispatcher::AllowIncrementalWrite );
    (*API->FileFormatDefinition->SetFileFormatWriteSamplesRoutine)( FileFormatDispatcher::WriteSamples );
    (*API->FileFormatDefinition->SetFileFormatQueryInexactReadRoutine)( FileFormatDispatcher::QueryInexactRead );
    (*API->FileFormatDefinition->SetFileFormatQueryLossyWriteRoutine)( FileFormatDispatcher::QueryLossyWrite );
@@ -1856,4 +1882,4 @@ void MetaFileFormat::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaFileFormat.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/MetaFileFormat.cpp - Released 2020-11-20T19:46:37Z

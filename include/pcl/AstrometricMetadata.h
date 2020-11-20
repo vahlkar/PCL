@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2020-10-12T19:24:41Z
+// pcl/AstrometricMetadata.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -744,11 +744,12 @@ public:
     * LAT-OBS
     * OBSGEO-H
     * ALT-OBS
-    * EQUINOX
     * FOCALLEN
     * XPIXSZ
     * YPIXSZ
     * PIXSIZE
+    * EQUINOX
+    * RADESYS
     * </pre>
     *
     * Keywords are updated when the corresponding metadata items are available.
@@ -760,7 +761,9 @@ public:
     * header keywords:
     *
     * <pre>
+    * RADESYS
     * EQUINOX
+    * EPOCH
     * CTYPE1
     * CTYPE2
     * CRVAL1
@@ -771,6 +774,10 @@ public:
     * CD1_2
     * CD2_1
     * CD2_2
+    * PC1_1
+    * PC1_2
+    * PC2_1
+    * PC2_2
     * CDELT1
     * CDELT2
     * CROTA1
@@ -778,8 +785,8 @@ public:
     * PV1_1
     * PV1_2
     * PV1_3
-    * LONPOLE
     * PV1_4
+    * LONPOLE
     * LATPOLE
     * </pre>
     *
@@ -852,7 +859,9 @@ public:
     * XPIXSZ
     * YPIXSZ
     * PIXSIZE
+    * RADESYS
     * EQUINOX
+    * EPOCH
     * CTYPE1
     * CTYPE2
     * CRVAL1
@@ -863,6 +872,10 @@ public:
     * CD1_2
     * CD2_1
     * CD2_2
+    * PC1_1
+    * PC1_2
+    * PC2_1
+    * PC2_2
     * CDELT1
     * CDELT2
     * CROTA1
@@ -870,8 +883,8 @@ public:
     * PV1_1
     * PV1_2
     * PV1_3
-    * LONPOLE
     * PV1_4
+    * LONPOLE
     * LATPOLE
     * REFSPLIN
     * </pre>
@@ -957,4 +970,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/AstrometricMetadata.h - Released 2020-11-20T19:46:29Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorInstance.cpp - Released 2020-10-12T19:25:16Z
+// NoiseGeneratorInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -56,7 +56,7 @@
 #include <pcl/HistogramTransformation.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/Random.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
 namespace pcl
@@ -224,4 +224,4 @@ void* NoiseGeneratorInstance::LockParameter( const MetaParameter* p, size_type /
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF NoiseGeneratorInstance.cpp - Released 2020-11-20T19:49:00Z

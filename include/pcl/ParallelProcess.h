@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ParallelProcess.h - Released 2020-10-12T19:24:41Z
+// pcl/ParallelProcess.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -95,7 +95,7 @@ public:
     * Returns true iff this process is allowed to use multiple parallel
     * execution threads, when multiple threads are permitted and available.
     */
-   bool IsParallelProcessingEnabled() const
+   bool IsParallelProcessingEnabled() const noexcept
    {
       return m_parallel;
    }
@@ -110,7 +110,7 @@ public:
     *                instance. If \a enable is false this parameter is ignored.
     *                A value &le; 0 is ignored. The default value is zero.
     */
-   void EnableParallelProcessing( bool enable = true, int maxProcessors = 0 )
+   void EnableParallelProcessing( bool enable = true, int maxProcessors = 0 ) noexcept
    {
       m_parallel = enable;
       if ( m_parallel )
@@ -125,7 +125,7 @@ public:
     *
     * \code EnableParallelProcessing( !disable ) \endcode
     */
-   void DisableParallelProcessing( bool disable = true )
+   void DisableParallelProcessing( bool disable = true ) noexcept
    {
       EnableParallelProcessing( !disable );
    }
@@ -139,7 +139,7 @@ public:
     * the "Process/MaxProcessors" global variable. Refer to the GlobalSettings
     * class for information on global variables.
     */
-   int MaxProcessors() const
+   int MaxProcessors() const noexcept
    {
       return m_maxProcessors;
    }
@@ -157,7 +157,7 @@ public:
     * the "Process/MaxProcessors" global variable. Refer to the GlobalSettings
     * class for information on global variables.
     */
-   void SetMaxProcessors( int maxProcessors )
+   void SetMaxProcessors( int maxProcessors ) noexcept
    {
       m_maxProcessors = Range( maxProcessors, 1, PCL_MAX_PROCESSORS );
    }
@@ -165,7 +165,7 @@ public:
    /*!
     * Exchanges two %ParallelProcess instances.
     */
-   void Swap( ParallelProcess& process )
+   void Swap( ParallelProcess& process ) noexcept
    {
       pcl::Swap( m_maxProcessors, process.m_maxProcessors );
       pcl::Swap( m_parallel, process.m_parallel );
@@ -184,4 +184,4 @@ protected:
 #endif   // __PCL_ParallelProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ParallelProcess.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/ParallelProcess.h - Released 2020-11-20T19:46:29Z

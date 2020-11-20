@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Convolution.cpp - Released 2020-10-12T19:24:49Z
+// pcl/Convolution.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -246,6 +246,7 @@ private:
          int w = r.Width();
          int dw = m_data.image.Width() - w;
 
+         int m = m_data.convolution.Filter().Size();
          int n = m_data.convolution.OverlappingDistance();
          int n2 = n >> 1;
          int nf0 = w + (n2 << 1);
@@ -294,18 +295,20 @@ private:
             {
                typename raw_data::vector_iterator f0i = *f0[i];
                typename raw_data::vector_iterator f1i = f0i + n2+n2;
+               PCL_UNROLL( 8 )
                do
                   *f0i++ = *f1i--;
                while ( f0i < f1i );
 
                f0i = f0[i].At( w-1 );
                f1i = f0i + n2+n2;
+               PCL_UNROLL( 8 )
                do
                   *f1i-- = *f0i++;
                while ( f0i < f1i );
             }
 
-            for ( int y = m_firstRow; ; )
+            for ( int y = m_firstRow;; )
             {
                for ( int x = 0; x < w; ++x )
                {
@@ -314,25 +317,35 @@ private:
                      DVector::component* f = hf.DataPtr();
                      if ( compactFilter )
                      {
-                        for ( typename raw_data::const_iterator i = f0.Begin(); i < f0.End(); ++i )
-                        {
-                           typename raw_data::const_vector_iterator fi = i->At( x ), fn = fi + n;
-                           do
-                              *f++ = *h++ * *fi++;
-                           while ( fi < fn );
-                        }
+                        /*
+                         * Compact convolution.
+                         */
+                        InnerLoop_Compact( f0.Begin(), f0.End(), h, f, x, m );
+
+//                         for ( typename raw_data::const_iterator i = f0.Begin(); i < f0.End(); ++i )
+//                         {
+//                            typename raw_data::const_vector_iterator fi = i->At( x ), fn = fi + n;
+//                            do
+//                               *f++ = *h++ * *fi++;
+//                            while ( fi < fn );
+//                         }
                      }
                      else
                      {
-                        for ( typename raw_data::const_iterator i = f0.Begin();
-                              i < f0.End();
-                              i += m_data.convolution.InterlacingDistance() )
-                        {
-                           typename raw_data::const_vector_iterator fi = i->At( x ), fn = fi + n;
-                           do
-                              *f++ = *h++ * *fi;
-                           while ( (fi += m_data.convolution.InterlacingDistance()) < fn );
-                        }
+                        /*
+                         * Interlaced convolution (e.g., the à trous algorithm).
+                         */
+                        InnerLoop_Interlaced( f0.Begin(), f0.End(), h, f, x, m, m_data.convolution.InterlacingDistance() );
+
+//                         for ( typename raw_data::const_iterator i = f0.Begin();
+//                               i < f0.End();
+//                               i += m_data.convolution.InterlacingDistance() )
+//                         {
+//                            typename raw_data::const_vector_iterator fi = i->At( x ), fn = fi + n;
+//                            do
+//                               *f++ = *h++ * *fi;
+//                            while ( (fi += m_data.convolution.InterlacingDistance()) < fn );
+//                         }
                      }
                   }
 
@@ -404,12 +417,14 @@ private:
 
                   typename raw_data::vector_iterator f0n = *f0[n-1];
                   typename raw_data::vector_iterator f1n = f0n + n2+n2;
+                  PCL_UNROLL( 8 )
                   do
                      *f0n++ = *f1n--;
                   while ( f0n < f1n );
 
                   f0n = f0[n-1].At( w-1 );
                   f1n = f0n + n2+n2;
+                  PCL_UNROLL( 8 )
                   do
                      *f1n-- = *f0n++;
                   while ( f0n < f1n );
@@ -446,6 +461,42 @@ private:
       region         m_lowerOvRgn;
       bool           m_haveUpperOvRgn;
       bool           m_haveLowerOvRgn;
+
+      static void InnerLoop_Compact( typename raw_data::const_iterator i,
+                                     typename raw_data::const_iterator j,
+                                     const KernelFilter::coefficient* __restrict__ h,
+                                     DVector::component* __restrict__ f,
+                                     int x, int n ) noexcept
+      {
+         /*
+          * Vectorizable using 32 byte vectors.
+          */
+         for ( ; i < j; ++i )
+         {
+            typename raw_data::const_vector_iterator __restrict__ fi = i->At( x );
+            PCL_UNROLL( 24 )
+            for ( int k = 0; k < n; ++k )
+               *f++ = *h++ * *fi++;
+         }
+      }
+
+      static void InnerLoop_Interlaced( typename raw_data::const_iterator i,
+                                        typename raw_data::const_iterator j,
+                                        const KernelFilter::coefficient* __restrict__ h,
+                                        DVector::component* __restrict__ f,
+                                        int x, int n, int d ) noexcept
+      {
+         /*
+          * Vectorizable using 16 and 32 byte vectors.
+          */
+         for ( ; i < j; i += d )
+         {
+            typename raw_data::const_vector_iterator __restrict__ fi = i->At( x );
+            PCL_UNROLL( 24 )
+            for ( int k = 0, l = 0; k < n; ++k, l += d )
+               *f++ = *h++ * fi[l];
+         }
+      }
    };
 };
 
@@ -499,4 +550,4 @@ void Convolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Convolution.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/Convolution.cpp - Released 2020-11-20T19:46:37Z

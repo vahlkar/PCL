@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ImageGeometry.h - Released 2020-10-12T19:24:41Z
+// pcl/ImageGeometry.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -87,7 +87,7 @@ public:
    /*!
     * Returns the width of this image in pixels.
     */
-   int Width() const
+   int Width() const noexcept
    {
       return m_width;
    }
@@ -95,7 +95,7 @@ public:
    /*!
     * Returns the height of this image in pixels.
     */
-   int Height() const
+   int Height() const noexcept
    {
       return m_height;
    }
@@ -104,7 +104,7 @@ public:
     * Returns the total number of channels in this image, including nominal and
     * alpha channels.
     */
-   int NumberOfChannels() const
+   int NumberOfChannels() const noexcept
    {
       return m_numberOfChannels;
    }
@@ -115,7 +115,7 @@ public:
     * corresponding to a nominal or alpha channel. If this image is empty, this
     * function returns -1.
     */
-   int LastChannel() const
+   int LastChannel() const noexcept
    {
       return m_numberOfChannels-1;
    }
@@ -124,7 +124,7 @@ public:
     * Returns true iff the specified channel index \a c is valid. A valid
     * channel index corresponds to an existing channel in this image.
     */
-   bool IsValidChannelIndex( int c ) const
+   bool IsValidChannelIndex( int c ) const noexcept
    {
       return c >= 0 && c < m_numberOfChannels;
    }
@@ -132,7 +132,7 @@ public:
    /*!
     * Returns true iff this image is empty, i.e. if its area is zero.
     */
-   bool IsEmpty() const
+   bool IsEmpty() const noexcept
    {
       return m_width <= 0 || m_height <= 0 || m_numberOfChannels <= 0;
    }
@@ -142,7 +142,7 @@ public:
     * the returned rectangle (x0, y0) is always (0,0). The lower right corner
     * coordinates (x1, y1) correspond to the width and height of the image.
     */
-   Rect Bounds() const
+   Rect Bounds() const noexcept
    {
       return Rect( m_width, m_height );
    }
@@ -152,7 +152,7 @@ public:
     * coordinates.
     */
    template <typename T>
-   bool Includes( const GenericPoint<T>& p ) const
+   bool Includes( const GenericPoint<T>& p ) const noexcept
    {
       return Includes( p.x, p.y );
    }
@@ -162,7 +162,7 @@ public:
     * coordinates.
     */
    template <typename T>
-   bool Includes( const GenericRectangle<T>& r ) const
+   bool Includes( const GenericRectangle<T>& r ) const noexcept
    {
       return Includes( r.x0, r.y0, r.x1, r.y1 );
    }
@@ -175,7 +175,7 @@ public:
     * \param x1,y1   Lower right corner coordinates (horizontal, vertical).
     */
    template <typename T>
-   bool Includes( T x0, T y0, T x1, T y1 ) const
+   bool Includes( T x0, T y0, T x1, T y1 ) const noexcept
    {
       pcl::OrderRect( x0, y0, x1, y1 );
       return Includes( x0, y0 ) && Includes( x1-T( 1 ), y1-T( 1 ) );
@@ -189,7 +189,7 @@ public:
     * \param y    Vertical coordinate.
     */
    template <typename T>
-   bool Includes( T x, T y ) const
+   bool Includes( T x, T y ) const noexcept
    {
       return x < m_width && y < m_height && x >= 0 && y >= 0;
    }
@@ -199,7 +199,7 @@ public:
     * in image coordinates.
     */
    template <typename T>
-   bool Intersects( const pcl::GenericRectangle<T>& r ) const
+   bool Intersects( const pcl::GenericRectangle<T>& r ) const noexcept
    {
       return Intersects( r.x0, r.y0, r.x1, r.y1 );
    }
@@ -212,7 +212,7 @@ public:
     * \param x1,y1  Lower right corner coordinates (horizontal, vertical).
     */
    template <typename T>
-   bool Intersects( T x0, T y0, T x1, T y1 ) const
+   bool Intersects( T x0, T y0, T x1, T y1 ) const noexcept
    {
       pcl::OrderRect( x0, y0, x1, y1 );
       return x0 < m_width && y0 < m_height && x1 > T( 0 ) && y1 > T( 0 );
@@ -223,7 +223,7 @@ public:
     * Returns true iff the original point location is included in this image.
     */
    template <typename T>
-   bool Clip( pcl::GenericPoint<T>& p ) const
+   bool Clip( pcl::GenericPoint<T>& p ) const noexcept
    {
       return Clip( p.x, p.y );
    }
@@ -238,7 +238,7 @@ public:
     * Returns true iff the original point location is included in this image.
     */
    template <typename T>
-   bool Clip( T& x, T& y ) const
+   bool Clip( T& x, T& y ) const noexcept
    {
       bool in = false;
 
@@ -261,7 +261,7 @@ public:
     * Returns true iff the original rectangle intersects this image.
     */
    template <typename T>
-   bool Clip( pcl::GenericRectangle<T>& r ) const
+   bool Clip( pcl::GenericRectangle<T>& r ) const noexcept
    {
       return Clip( r.x0, r.y0, r.x1, r.y1 );
    }
@@ -280,7 +280,7 @@ public:
     * Returns true iff the original rectangle intersects the image.
     */
    template <typename T>
-   bool Clip( T& x0, T& y0, T& x1, T& y1 ) const
+   bool Clip( T& x0, T& y0, T& x1, T& y1 ) const noexcept
    {
       pcl::OrderRect( x0, y0, x1, y1 );
 
@@ -304,7 +304,7 @@ public:
    /*!
     * Returns the number of pixels in this image, or its area in square pixels.
     */
-   size_type NumberOfPixels() const
+   size_type NumberOfPixels() const noexcept
    {
       return size_type( m_width )*size_type( m_height );
    }
@@ -313,7 +313,7 @@ public:
     * Returns the total number of samples in this image, or the area in square
     * pixels multiplied by the number of channels, including alpha channels.
     */
-   size_type NumberOfSamples() const
+   size_type NumberOfSamples() const noexcept
    {
       return NumberOfPixels()*size_type( m_numberOfChannels );
    }
@@ -322,7 +322,7 @@ public:
     * Returns the offset of a given pixel row \a y (also known as <em>scan
     * line</em>) from the beginning of a channel's data block.
     */
-   distance_type RowOffset( int y ) const
+   distance_type RowOffset( int y ) const noexcept
    {
       return distance_type( y )*distance_type( m_width );
    }
@@ -334,7 +334,7 @@ public:
     * \param x    Horizontal pixel coordinate.
     * \param y    Vertical pixel coordinate.
     */
-   distance_type PixelOffset( int x, int y ) const
+   distance_type PixelOffset( int x, int y ) const noexcept
    {
       return RowOffset( y ) + distance_type( x );
    }
@@ -353,19 +353,19 @@ protected:
       Geometry() = default;
       Geometry( const Geometry& ) = default;
 
-      size_type NumberOfPixels() const
+      size_type NumberOfPixels() const noexcept
       {
          return size_type( width )*size_type( height );
       }
 
-      void Assign( const Geometry& x )
+      void Assign( const Geometry& x ) noexcept
       {
          width = x.width;
          height = x.height;
          numberOfChannels = x.numberOfChannels;
       }
 
-      void Reset()
+      void Reset() noexcept
       {
          width = height = numberOfChannels = 0;
       }
@@ -382,7 +382,7 @@ protected:
       m_geometry = nullptr;
    }
 
-   void Swap( ImageGeometry& image )
+   void Swap( ImageGeometry& image ) noexcept
    {
       pcl::Swap( m_geometry, image.m_geometry );
    }
@@ -401,4 +401,4 @@ protected:
 #endif   // __PCL_ImageGeometry_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageGeometry.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/ImageGeometry.h - Released 2020-11-20T19:46:29Z

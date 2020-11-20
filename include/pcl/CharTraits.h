@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/CharTraits.h - Released 2020-10-12T19:24:41Z
+// pcl/CharTraits.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -324,7 +324,7 @@ public:
    /*!
     * Number of bytes per character.
     */
-   static constexpr size_type BytesPerChar()
+   static constexpr size_type BytesPerChar() noexcept
    {
       return sizeof( char_type );
    }
@@ -336,9 +336,9 @@ public:
     * The returned value is the length of the initial contiguous sequence of
     * characters that are not equal to Null().
     */
-   static size_type Length( const char_type* s )
+   static size_type Length( const char_type* s ) noexcept
    {
-      const char_type* t = s;
+      const char_type* __restrict__ t = s;
       if ( s != nullptr )
          for ( ; *t != Null(); ++t ) {}
       return size_type( t - s );
@@ -351,7 +351,7 @@ public:
     * \param c    Constant value to fill with.
     * \param n    Number of characters to fill.
     */
-   static void Fill( char_type* s, char_type c, size_type n )
+   static void Fill( char_type* __restrict__ s, char_type c, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       for ( ; n > 0; --n )
@@ -369,7 +369,7 @@ public:
     * If the source and destination regions overlap, this routine will produce
     * an unpredictable result. CopyOverlapped() should be used in these cases.
     */
-   static void Copy( char_type* dst, const char_type* src, size_type n )
+   static void Copy( char_type* __restrict__ dst, const char_type* __restrict__ src, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || dst != nullptr && src != nullptr )
       ::memcpy( dst, src, n*sizeof( char_type ) );
@@ -383,7 +383,7 @@ public:
     * \param src  Initial address of the sequence of source characters.
     * \param n    Number of characters to copy.
     */
-   static void CopyOverlapped( char_type* dst, const char_type* src, size_type n )
+   static void CopyOverlapped( char_type* dst, const char_type* src, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || dst != nullptr && src != nullptr )
       ::memmove( dst, src, n*sizeof( char_type ) );
@@ -415,8 +415,8 @@ public:
     * 0xC0-0xD6 and 0xD8-0xDE are considered identical to its counterparts in
     * the ranges 0x61-0x7A, 0xE0-0xF6 and 0xF8-0xFE, respectively.
     */
-   static int CompareCodePoints( const char_type* s1, size_type n1,
-                                 const char_type* s2, size_type n2, bool caseSensitive = true )
+   static int CompareCodePoints( const char_type* __restrict__ s1, size_type n1,
+                                 const char_type* __restrict__ s2, size_type n2, bool caseSensitive = true ) noexcept
    {
       PCL_COMPARE_CODE_POINTS();
    }
@@ -453,8 +453,8 @@ public:
     * locale-aware Unicode implementations of this static function, see the
     * IsoCharTraits and CharTraits classes.
     */
-   static int Compare( const char_type* s1, size_type n1,
-                       const char_type* s2, size_type n2, bool caseSensitive = true, bool localeAware = true )
+   static int Compare( const char_type* __restrict__ s1, size_type n1,
+                       const char_type* __restrict__ s2, size_type n2, bool caseSensitive = true, bool localeAware = true ) noexcept
    {
       return CompareCodePoints( s1, n1, s2, n2, caseSensitive );
    }
@@ -481,8 +481,8 @@ public:
     * one of the strings is empty, this function always returns false
     * conventionally, even if the pattern is a single asterisk '*'.
     */
-   static bool WildMatch( const char_type* t, size_type nt,
-                          const char_type* p, size_type np, bool caseSensitive = true )
+   static bool WildMatch( const char_type* __restrict__ t, size_type nt,
+                          const char_type* __restrict__ p, size_type np, bool caseSensitive = true ) noexcept
    {
       if ( caseSensitive )
          return pcl::WildMatch( t, nt, p, np );
@@ -500,7 +500,7 @@ public:
     * character set. For a comprehensive Unicode implementation see the
     * CharTraits class.
     */
-   static char_type ToCaseFolded( char_type c )
+   static char_type ToCaseFolded( char_type c ) noexcept
    {
       return ToLowercase( c );
    }
@@ -512,7 +512,7 @@ public:
     * character set. For a comprehensive Unicode implementation see the
     * CharTraits class.
     */
-   static constexpr char_type ToLowercase( char_type c )
+   static constexpr char_type ToLowercase( char_type c ) noexcept
    {
       return (c >= char_type(  65 ) && c <= char_type(  90 )
            || c >= char_type( 192 ) && c <= char_type( 214 )
@@ -526,7 +526,7 @@ public:
     * character set. For a comprehensive Unicode implementation see the
     * CharTraits class.
     */
-   static constexpr char_type ToUppercase( char_type c )
+   static constexpr char_type ToUppercase( char_type c ) noexcept
    {
       return (c >= char_type(  97 ) && c <= char_type( 122 )
            || c >= char_type( 224 ) && c <= char_type( 246 )
@@ -540,7 +540,7 @@ public:
     * character set. For a comprehensive Unicode implementation see the
     * CharTraits class.
     */
-   static void ToLowercase( char_type* s, size_type n )
+   static void ToLowercase( char_type* __restrict__ s, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       for ( ; n > 0; --n, ++s )
@@ -554,7 +554,7 @@ public:
     * character set. For a comprehensive Unicode implementation see the
     * CharTraits class.
     */
-   static void ToUppercase( char_type* s, size_type n )
+   static void ToUppercase( char_type* __restrict__ s, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       for ( ; n > 0; --n, ++s )
@@ -564,7 +564,7 @@ public:
    /*!
     * Returns the null string termination character '\\0'.
     */
-   static constexpr char_type Null()
+   static constexpr char_type Null() noexcept
    {
       return char_type( 0 );
    }
@@ -572,7 +572,7 @@ public:
    /*!
     * Returns the blank space character (white space).
     */
-   static constexpr char_type Blank()
+   static constexpr char_type Blank() noexcept
    {
       return char_type( ' ' );
    }
@@ -580,7 +580,7 @@ public:
    /*!
     * Returns the horizontal tab control character '\\t'.
     */
-   static constexpr char_type Tab()
+   static constexpr char_type Tab() noexcept
    {
       return char_type( '\t' );
    }
@@ -588,7 +588,7 @@ public:
    /*!
     * Returns the carriage return control character '\\r'.
     */
-   static constexpr char_type CR()
+   static constexpr char_type CR() noexcept
    {
       return char_type( '\r' );
    }
@@ -596,7 +596,7 @@ public:
    /*!
     * Returns the line feed control character '\\n'.
     */
-   static constexpr char_type LF()
+   static constexpr char_type LF() noexcept
    {
       return char_type( '\n' );
    }
@@ -604,7 +604,7 @@ public:
    /*!
     * Returns the comma punctuator character ','.
     */
-   static constexpr char_type Comma()
+   static constexpr char_type Comma() noexcept
    {
       return char_type( ',' );
    }
@@ -612,7 +612,7 @@ public:
    /*!
     * Returns the colon punctuator character ':'.
     */
-   static constexpr char_type Colon()
+   static constexpr char_type Colon() noexcept
    {
       return char_type( ':' );
    }
@@ -620,7 +620,7 @@ public:
    /*!
     * Returns the semicolon punctuator character ';'.
     */
-   static constexpr char_type Semicolon()
+   static constexpr char_type Semicolon() noexcept
    {
       return char_type( ';' );
    }
@@ -628,7 +628,7 @@ public:
    /*!
     * Returns the hyphen punctuator character '-'.
     */
-   static constexpr char_type Hyphen()
+   static constexpr char_type Hyphen() noexcept
    {
       return char_type( '-' );
    }
@@ -636,7 +636,7 @@ public:
    /*!
     * Returns the plus sign character '+'.
     */
-   static constexpr char_type PlusSign()
+   static constexpr char_type PlusSign() noexcept
    {
       return char_type( '+' );
    }
@@ -644,7 +644,7 @@ public:
    /*!
     * Returns the minus sign character '-'.
     */
-   static constexpr char_type MinusSign()
+   static constexpr char_type MinusSign() noexcept
    {
       return char_type( '-' );
    }
@@ -652,7 +652,7 @@ public:
    /*!
     * Returns the decimal separator character '.'.
     */
-   static constexpr char_type DecimalSeparator()
+   static constexpr char_type DecimalSeparator() noexcept
    {
       return char_type( '.' );
    }
@@ -660,7 +660,7 @@ public:
    /*!
     * Returns the exponent delimiter character 'e'.
     */
-   static constexpr char_type ExponentDelimiter()
+   static constexpr char_type ExponentDelimiter() noexcept
    {
       return char_type( 'e' );
    }
@@ -668,7 +668,7 @@ public:
    /*!
     * Returns the underscore character '_'.
     */
-   static constexpr char_type Underscore()
+   static constexpr char_type Underscore() noexcept
    {
       return char_type( '_' );
    }
@@ -676,7 +676,7 @@ public:
    /*!
     * Returns the single quote character "'".
     */
-   static constexpr char_type SingleQuote()
+   static constexpr char_type SingleQuote() noexcept
    {
       return char_type( '\'' );
    }
@@ -684,7 +684,7 @@ public:
    /*!
     * Returns the double quote character '"'.
     */
-   static constexpr char_type DoubleQuote()
+   static constexpr char_type DoubleQuote() noexcept
    {
       return char_type( '\"' );
    }
@@ -692,7 +692,7 @@ public:
    /*!
     * Returns true iff a character \a c is a null string terminator.
     */
-   static constexpr bool IsNull( char_type c )
+   static constexpr bool IsNull( char_type c ) noexcept
    {
       return c == Null();
    }
@@ -700,7 +700,7 @@ public:
    /*!
     * Returns true iff a character \a c is a white space character.
     */
-   static constexpr bool IsSpace( char_type c )
+   static constexpr bool IsSpace( char_type c ) noexcept
    {
       return c == Blank() || c == Tab() || c == CR() || c == LF();
    }
@@ -709,7 +709,7 @@ public:
     * Returns true iff a character \a c is a trimable character. Generally
     * equivalent to IsSpace().
     */
-   static constexpr bool IsTrimable( char_type c )
+   static constexpr bool IsTrimable( char_type c ) noexcept
    {
       return IsSpace( c );
    }
@@ -718,7 +718,7 @@ public:
     * Returns true iff a character \a c is a decimal digit. Decimal digits are
     * in the range [0-9].
     */
-   static constexpr bool IsDigit( char_type c )
+   static constexpr bool IsDigit( char_type c ) noexcept
    {
       return c >= char_type( '0' ) && c <= char_type( '9' );
    }
@@ -727,7 +727,7 @@ public:
     * Returns true iff a character \a c is an hexadecimal digit. Hexadecimal
     * digits are in the range [a-fA-F].
     */
-   static constexpr bool IsHexDigit( char_type c )
+   static constexpr bool IsHexDigit( char_type c ) noexcept
    {
       return IsDigit( c ) || c >= char_type( 'A' ) && c <= char_type( 'F' ) ||
                              c >= char_type( 'a' ) && c <= char_type( 'f' );
@@ -736,7 +736,7 @@ public:
    /*!
     * Returns true iff a character \a c is in the range [a-zA-Z].
     */
-   static constexpr bool IsAlpha( char_type c )
+   static constexpr bool IsAlpha( char_type c ) noexcept
    {
       return IsLowercaseAlpha( c ) || IsUppercaseAlpha( c );
    }
@@ -744,7 +744,7 @@ public:
    /*!
     * Returns true iff a character \a c is in the range [a-z].
     */
-   static constexpr bool IsLowercaseAlpha( char_type c )
+   static constexpr bool IsLowercaseAlpha( char_type c ) noexcept
    {
       return c >= char_type( 'a' ) && c <= char_type( 'z' );
    }
@@ -752,7 +752,7 @@ public:
    /*!
     * Returns true iff a character \a c is in the range [A-Z].
     */
-   static constexpr bool IsUppercaseAlpha( char_type c )
+   static constexpr bool IsUppercaseAlpha( char_type c ) noexcept
    {
       return c >= char_type( 'A' ) && c <= char_type( 'Z' );
    }
@@ -760,7 +760,7 @@ public:
    /*!
     * Returns true iff a character \a c is the underscore character '_'.
     */
-   static constexpr bool IsUnderscore( char_type c )
+   static constexpr bool IsUnderscore( char_type c ) noexcept
    {
       return c == Underscore();
    }
@@ -769,7 +769,7 @@ public:
     * Returns true iff a character \a c is a valid symbol element. Symbol digits
     * are in the range [a-zA-Z0-9_].
     */
-   static constexpr bool IsSymbolDigit( char_type c )
+   static constexpr bool IsSymbolDigit( char_type c ) noexcept
    {
       return IsAlpha( c ) || IsDigit( c ) || IsUnderscore( c );
    }
@@ -778,7 +778,7 @@ public:
     * Returns true iff a character \a c is a valid starting symbol digit. A
     * starting symbol digit is in the range [a-zA-Z_].
     */
-   static constexpr bool IsStartingSymbolDigit( char_type c )
+   static constexpr bool IsStartingSymbolDigit( char_type c ) noexcept
    {
       return IsAlpha( c ) || IsUnderscore( c );
    }
@@ -786,7 +786,7 @@ public:
    /*!
     * Returns true iff a character \a c is a numerical sign, either '+' or '-'.
     */
-   static constexpr bool IsSign( char_type c )
+   static constexpr bool IsSign( char_type c ) noexcept
    {
       return c == MinusSign() || c == PlusSign();
    }
@@ -794,7 +794,7 @@ public:
    /*!
     * Returns true iff a character \a c is the decimal separator '.'.
     */
-   static constexpr bool IsDecimalSeparator( char_type c )
+   static constexpr bool IsDecimalSeparator( char_type c ) noexcept
    {
       return c == DecimalSeparator();
    }
@@ -804,7 +804,7 @@ public:
     * delimiters are in the range [eEdD]. The [dD] pair allows for FORTRAN
     * compatibility.
     */
-   static constexpr bool IsExponentDelimiter( char_type c )
+   static constexpr bool IsExponentDelimiter( char_type c ) noexcept
    {
       return c == char_type( 'e' ) || c == char_type( 'E' ) || c == char_type( 'd' ) || c == char_type( 'D' );
    }
@@ -813,7 +813,7 @@ public:
     * Returns true iff a character \a c is a wildcard. The wildcards are the
     * asterisk '*' and question mark '?' characters.
     */
-   static constexpr bool IsWildcard( char_type c )
+   static constexpr bool IsWildcard( char_type c ) noexcept
    {
       return c == char_type( '*' ) || c == char_type( '?' );
    }
@@ -823,7 +823,7 @@ public:
     * contiguous characters defined by the range [i,j) of pointers.
     */
    template <typename Ptr1, typename Ptr2>
-   static Ptr1 SearchTrimLeft( Ptr1 i, Ptr2 j )
+   static Ptr1 SearchTrimLeft( Ptr1 i, Ptr2 j ) noexcept
    {
       for ( ; i < j && IsTrimable( *i ); ++i ) {}
       return i;
@@ -838,7 +838,7 @@ public:
     * function returns the ending pointer \a j.
     */
    template <typename Ptr1, typename Ptr2>
-   static Ptr2 SearchTrimRight( Ptr1 i, Ptr2 j )
+   static Ptr2 SearchTrimRight( Ptr1 i, Ptr2 j ) noexcept
    {
       for ( ; i < j && IsTrimable( *(j-1) ); --j ) {}
       return j;
@@ -876,7 +876,7 @@ public:
     * The returned value is the length of the initial contiguous sequence of
     * characters that are not equal to Null().
     */
-   static constexpr size_type Length( const char_type* s )
+   static constexpr size_type Length( const char_type* __restrict__ s ) noexcept
    {
       return (s != nullptr) ? ::strlen( s ) : 0;
    }
@@ -888,7 +888,7 @@ public:
     * \param c    Constant value to fill with.
     * \param n    Number of characters to fill.
     */
-   static void Fill( char_type* s, char_type c, size_type n )
+   static void Fill( char_type* __restrict__ s, char_type c, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       ::memset( s, c, n );
@@ -905,7 +905,7 @@ public:
     * If the source and destination regions overlap, this routine will produce
     * an unpredictable result. CopyOverlapped() should be used in these cases.
     */
-   static void Copy( char_type* dst, const char_type* src, size_type n )
+   static void Copy( char_type* __restrict__ dst, const char_type* __restrict__ src, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || dst != nullptr && src != nullptr )
       ::memcpy( dst, src, n );
@@ -919,7 +919,7 @@ public:
     * \param src  Initial address of the sequence of source characters.
     * \param n    Number of characters to copy.
     */
-   static void CopyOverlapped( char_type* dst, const char_type* src, size_type n )
+   static void CopyOverlapped( char_type* dst, const char_type* src, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || dst != nullptr && src != nullptr )
       ::memmove( dst, src, n );
@@ -945,8 +945,8 @@ public:
     * \li -1 if \a s1 is less than \a s2
     * \li +1 if \a s1 is greater than \a s2
     */
-   static int CompareCodePoints( const char_type* s1, size_type n1,
-                                 const char_type* s2, size_type n2, bool caseSensitive = true )
+   static int CompareCodePoints( const char_type* __restrict__ s1, size_type n1,
+                                 const char_type* __restrict__ s2, size_type n2, bool caseSensitive = true ) noexcept
    {
       PCL_COMPARE_CODE_POINTS();
    }
@@ -1006,8 +1006,8 @@ public:
     * setlocale( LC_CTYPE, "" );
     * \endcode
     */
-   static int Compare( const char_type* s1, size_type n1,
-                       const char_type* s2, size_type n2, bool caseSensitive = true, bool localeAware = true );
+   static int Compare( const char_type* __restrict__ s1, size_type n1,
+                       const char_type* __restrict__ s2, size_type n2, bool caseSensitive = true, bool localeAware = true ) noexcept;
 
    /*!
     * Wildcard string matching algorithm.
@@ -1031,8 +1031,8 @@ public:
     * one of the strings is empty, this function always returns false
     * conventionally, even if the pattern is a single asterisk '*'.
     */
-   static bool WildMatch( const char_type* t, size_type nt,
-                          const char_type* p, size_type np, bool caseSensitive = true )
+   static bool WildMatch( const char_type* __restrict__ t, size_type nt,
+                          const char_type* __restrict__ p, size_type np, bool caseSensitive = true ) noexcept
    {
       if ( caseSensitive )
          return pcl::WildMatch( t, nt, p, np );
@@ -1051,7 +1051,7 @@ public:
     * For more information on case folding, see Section 3.13 Default Case
     * Algorithms in The Unicode Standard.
     */
-   static char_type ToCaseFolded( char_type c )
+   static char_type ToCaseFolded( char_type c ) noexcept
    {
       return ToLowercase( c );
    }
@@ -1060,7 +1060,7 @@ public:
     * Returns the lowercase equivalent character for the specified
     * ISO/IEC-8859-1 code point \a c.
     */
-   static char_type ToLowercase( char_type c )
+   static char_type ToLowercase( char_type c ) noexcept
    {
       return char_type( PCL_toLowercaseLatin1[uint8( c )] );
    }
@@ -1069,7 +1069,7 @@ public:
     * Returns the uppercase equivalent character for the specified
     * ISO/IEC-8859-1 code point \a c.
     */
-   static char_type ToUppercase( char_type c )
+   static char_type ToUppercase( char_type c ) noexcept
    {
       return char_type( PCL_toUppercaseLatin1[uint8( c )] );
    }
@@ -1077,7 +1077,7 @@ public:
    /*!
     * Transforms a string to case folded.
     */
-   static void ToCaseFolded( char_type* s, size_type n )
+   static void ToCaseFolded( char_type* s, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       for ( ; n > 0; --n, ++s )
@@ -1087,7 +1087,7 @@ public:
    /*!
     * Transforms a string to lowercase.
     */
-   static void ToLowercase( char_type* s, size_type n )
+   static void ToLowercase( char_type* s, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       for ( ; n > 0; --n, ++s )
@@ -1097,7 +1097,7 @@ public:
    /*!
     * Transforms a string to uppercase.
     */
-   static void ToUppercase( char_type* s, size_type n )
+   static void ToUppercase( char_type* s, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       for ( ; n > 0; --n, ++s )
@@ -1136,10 +1136,10 @@ public:
     * The returned value is the length of the initial contiguous sequence of
     * characters that are not equal to Null().
     */
-   static size_type Length( const char_type* s )
+   static size_type Length( const char_type* __restrict__ s ) noexcept
    {
 #ifdef __PCL_WINDOWS
-      return (s != nullptr) ? ::wcslen( reinterpret_cast<const wchar_t*>( s ) ) : 0;
+      return (s != nullptr) ? ::wcslen( reinterpret_cast<const wchar_t*>( s ) ) : 0u;
 #else
       return traits_base::Length( s );
 #endif
@@ -1156,7 +1156,7 @@ public:
     * If the source and destination regions overlap, this routine will produce
     * an unpredictable result. CopyOverlapped() should be used in these cases.
     */
-   static void Copy( char_type* dst, const char_type* src, size_type n )
+   static void Copy( char_type* __restrict__ dst, const char_type* __restrict__ src, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || dst != nullptr && src != nullptr )
       ::memcpy( dst, src, n << 1 );
@@ -1170,7 +1170,7 @@ public:
     * \param src  Initial address of the sequence of source characters.
     * \param n    Number of characters to copy.
     */
-   static void CopyOverlapped( char_type* dst, const char_type* src, size_type n )
+   static void CopyOverlapped( char_type* dst, const char_type* src, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || dst != nullptr && src != nullptr )
       ::memmove( dst, src, n << 1 );
@@ -1196,8 +1196,8 @@ public:
     * \li -1 if \a s1 is less than \a s2
     * \li +1 if \a s1 is greater than \a s2
     */
-   static int CompareCodePoints( const char_type* s1, size_type n1,
-                                 const char_type* s2, size_type n2, bool caseSensitive = true )
+   static int CompareCodePoints( const char_type* __restrict__ s1, size_type n1,
+                                 const char_type* __restrict__ s2, size_type n2, bool caseSensitive = true ) noexcept
    {
       PCL_COMPARE_CODE_POINTS();
    }
@@ -1257,8 +1257,8 @@ public:
     * setlocale( LC_CTYPE, "" );
     * \endcode
     */
-   static int Compare( const char_type* s1, size_type n1,
-                       const char_type* s2, size_type n2, bool caseSensitive = true, bool localeAware = true );
+   static int Compare( const char_type* __restrict__ s1, size_type n1,
+                       const char_type* __restrict__ s2, size_type n2, bool caseSensitive = true, bool localeAware = true ) noexcept;
 
    /*!
     * Wildcard string matching algorithm.
@@ -1282,8 +1282,8 @@ public:
     * one of the strings is empty, this function always returns false
     * conventionally, even if the pattern is a single asterisk '*'.
     */
-   static bool WildMatch( const char_type* t, size_type nt,
-                          const char_type* p, size_type np, bool caseSensitive = true )
+   static bool WildMatch( const char_type* __restrict__ t, size_type nt,
+                          const char_type* __restrict__ p, size_type np, bool caseSensitive = true ) noexcept
    {
       if ( caseSensitive )
          return pcl::WildMatch( t, nt, p, np );
@@ -1296,8 +1296,8 @@ public:
     * Wildcard string matching algorithm - overloaded version with 8-bit
     * pattern string.
     */
-   static bool WildMatch( const char_type* t, size_type nt,
-                          const char* p, size_type np, bool caseSensitive = true )
+   static bool WildMatch( const char_type* __restrict__ t, size_type nt,
+                          const char* __restrict__ p, size_type np, bool caseSensitive = true ) noexcept
    {
       if ( caseSensitive )
          return pcl::WildMatch( t, nt, p, np );
@@ -1317,7 +1317,7 @@ public:
     * exclusively. For more information on case folding, see Section 3.13
     * Default Case Algorithms in The Unicode Standard.
     */
-   static char_type ToCaseFolded( char_type c )
+   static char_type ToCaseFolded( char_type c ) noexcept
    {
       if ( c < 256 )
       {
@@ -1332,7 +1332,7 @@ public:
     * Returns the lowercase equivalent character for the specified UTF-16 code
     * point \a c.
     */
-   static char_type ToLowercase( char_type c )
+   static char_type ToLowercase( char_type c ) noexcept
    {
       if ( c < 256 )
       {
@@ -1347,7 +1347,7 @@ public:
     * Returns the uppercase equivalent character for the specified UTF-16 code
     * point \a c.
     */
-   static char_type ToUppercase( char_type c )
+   static char_type ToUppercase( char_type c ) noexcept
    {
       if ( c < 256 )
       {
@@ -1361,7 +1361,7 @@ public:
    /*!
     * Transforms a string to case folded.
     */
-   static void ToCaseFolded( char_type* s, size_type n )
+   static void ToCaseFolded( char_type* s, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       for ( ; n > 0; --n, ++s )
@@ -1371,7 +1371,7 @@ public:
    /*!
     * Transforms a string to lowercase.
     */
-   static void ToLowercase( char_type* s, size_type n )
+   static void ToLowercase( char_type* s, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       for ( ; n > 0; --n, ++s )
@@ -1381,7 +1381,7 @@ public:
    /*!
     * Transforms a string to uppercase.
     */
-   static void ToUppercase( char_type* s, size_type n )
+   static void ToUppercase( char_type* s, size_type n ) noexcept
    {
       PCL_PRECONDITION( n == 0 || s != nullptr )
       for ( ; n > 0; --n, ++s )
@@ -1394,7 +1394,7 @@ public:
     * forming a UTF-32 code point). High surrogates have values between 0xD800
     * and 0xDBFF.
     */
-   static constexpr bool IsHighSurrogate( char_type c16 )
+   static constexpr bool IsHighSurrogate( char_type c16 ) noexcept
    {
       return (c16 & 0xFC00) == 0xD800;
    }
@@ -1405,7 +1405,7 @@ public:
     * since surrogates only exist outside the Basic Multilingual Plane of
     * Unicode.
     */
-   static constexpr char_type HighSurrogate( char32_type c32 )
+   static constexpr char_type HighSurrogate( char32_type c32 ) noexcept
    {
       return char_type( (c32 >> 10) + 0xD7C0 );
    }
@@ -1416,7 +1416,7 @@ public:
     * forming a UTF-32 code point). Low surrogates have values between 0xDC00
     * and 0xDFFF.
     */
-   static constexpr bool IsLowSurrogate( char_type c16 )
+   static constexpr bool IsLowSurrogate( char_type c16 ) noexcept
    {
       return (c16 & 0xFC00) == 0xDC00;
    }
@@ -1427,7 +1427,7 @@ public:
     * since surrogates only exist outside the Basic Multilingual Plane of
     * Unicode.
     */
-   static constexpr char_type LowSurrogate( char32_type c32 )
+   static constexpr char_type LowSurrogate( char32_type c32 ) noexcept
    {
       return char_type( (c32%0x400) + 0xDC00 );
    }
@@ -1437,7 +1437,7 @@ public:
     * specified surrogate words must pertain to a valid Unicode code point
     * outside the Basic Multilingual Plane (from 0x010000 to 0x10FFFF).
     */
-   static constexpr char32_type SurrogatePairToUTF32( char_type high, char_type low )
+   static constexpr char32_type SurrogatePairToUTF32( char_type high, char_type low ) noexcept
    {
       return (char32_type( high ) << 10) + low - 0x035FDC00;
    }
@@ -1450,4 +1450,4 @@ public:
 #endif   // __PCL_CharTraits_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/CharTraits.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/CharTraits.h - Released 2020-11-20T19:46:29Z

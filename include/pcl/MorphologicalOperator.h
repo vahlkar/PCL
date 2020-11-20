@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/MorphologicalOperator.h - Released 2020-10-12T19:24:41Z
+// pcl/MorphologicalOperator.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -262,9 +262,13 @@ public:
 private:
 
    template <typename T>
-   static T Operate( T* f, size_type n )
+   static T Operate( T* __restrict__ f, size_type n )
    {
-      return *pcl::MinItem( f, f+n );
+      T x = *f++;
+      for ( ; --n > 0; ++f )
+         if ( *f < x )
+            x = *f;
+      return x;
    }
 };
 
@@ -350,9 +354,13 @@ public:
 private:
 
    template <typename T>
-   static T Operate( T* f, size_type n )
+   static T Operate( T* __restrict__ f, size_type n )
    {
-      return *pcl::MaxItem( f, f+n );
+      T x = *f++;
+      for ( ; --n > 0; ++f )
+         if ( x < *f )
+            x = *f;
+      return x;
    }
 };
 
@@ -437,10 +445,10 @@ private:
    P::FloatToSample( (double( a ) + double( b ))/2 )
 
    template <typename T, class P>
-   static T Operate( T* f, size_type n, P* )
+   static T Operate( T* __restrict__ f, size_type n, P* )
    {
       /*
-       * Use fast, hard-coded selection networks for n <= 32:
+       * Use fast, hard-coded selection networks for n <= 24:
        *
        * Knuth, D. E., The Art of Computer Programming, volume 3: Sorting and
        * Searching, Addison Wesley, 1973.
@@ -452,7 +460,7 @@ private:
        * Hugues Juille, Evolution of Non-Deterministic Incremental Algorithms
        * as a New Approach for Search in State Spaces, 1995.
        *
-       * Use a quick selection algorithm for n > 32:
+       * Use a quick selection algorithm for n > 24:
        *
        * William H. Press et al., Numerical Recipes 3rd Edition: The Art of
        * Scientific Computing, Cambridge University Press, 2007, Section 8.5.
@@ -856,383 +864,6 @@ private:
          CMPXCHG(  7, 14 ); CMPXCHG(  9, 16 ); CMPXCHG( 11, 18 );
          CMPXCHG(  9, 12 ); CMPXCHG( 11, 14 );
          return MEAN( f[11], f[12] );
-      case 25:
-         CMPXCHG(  0,  1 ); CMPXCHG(  3,  4 ); CMPXCHG(  2,  4 );
-         CMPXCHG(  2,  3 ); CMPXCHG(  6,  7 ); CMPXCHG(  5,  7 );
-         CMPXCHG(  5,  6 ); CMPXCHG(  9, 10 ); CMPXCHG(  8, 10 );
-         CMPXCHG(  8,  9 ); CMPXCHG( 12, 13 ); CMPXCHG( 11, 13 );
-         CMPXCHG( 11, 12 ); CMPXCHG( 15, 16 ); CMPXCHG( 14, 16 );
-         CMPXCHG( 14, 15 ); CMPXCHG( 18, 19 ); CMPXCHG( 17, 19 );
-         CMPXCHG( 17, 18 ); CMPXCHG( 21, 22 ); CMPXCHG( 20, 22 );
-         CMPXCHG( 20, 21 ); CMPXCHG( 23, 24 ); CMPXCHG(  2,  5 );
-         CMPXCHG(  3,  6 ); CMPXCHG(  0,  6 ); CMPXCHG(  0,  3 );
-         CMPXCHG(  4,  7 ); CMPXCHG(  1,  7 ); CMPXCHG(  1,  4 );
-         CMPXCHG( 11, 14 ); CMPXCHG(  8, 14 ); CMPXCHG(  8, 11 );
-         CMPXCHG( 12, 15 ); CMPXCHG(  9, 15 ); CMPXCHG(  9, 12 );
-         CMPXCHG( 13, 16 ); CMPXCHG( 10, 16 ); CMPXCHG( 10, 13 );
-         CMPXCHG( 20, 23 ); CMPXCHG( 17, 23 ); CMPXCHG( 17, 20 );
-         CMPXCHG( 21, 24 ); CMPXCHG( 18, 24 ); CMPXCHG( 18, 21 );
-         CMPXCHG( 19, 22 ); CMPXCHG(  8, 17 ); CMPXCHG(  9, 18 );
-         CMPXCHG(  0, 18 ); CMPXCHG(  0,  9 ); CMPXCHG( 10, 19 );
-         CMPXCHG(  1, 19 ); CMPXCHG(  1, 10 ); CMPXCHG( 11, 20 );
-         CMPXCHG(  2, 20 ); CMPXCHG(  2, 11 ); CMPXCHG( 12, 21 );
-         CMPXCHG(  3, 21 ); CMPXCHG(  3, 12 ); CMPXCHG( 13, 22 );
-         CMPXCHG(  4, 22 ); CMPXCHG(  4, 13 ); CMPXCHG( 14, 23 );
-         CMPXCHG(  5, 23 ); CMPXCHG(  5, 14 ); CMPXCHG( 15, 24 );
-         CMPXCHG(  6, 24 ); CMPXCHG(  6, 15 ); CMPXCHG(  7, 16 );
-         CMPXCHG(  7, 19 ); CMPXCHG( 13, 21 ); CMPXCHG( 15, 23 );
-         CMPXCHG(  7, 13 ); CMPXCHG(  7, 15 ); CMPXCHG(  1,  9 );
-         CMPXCHG(  3, 11 ); CMPXCHG(  5, 17 ); CMPXCHG( 11, 17 );
-         CMPXCHG(  9, 17 ); CMPXCHG(  4, 10 ); CMPXCHG(  6, 12 );
-         CMPXCHG(  7, 14 ); CMPXCHG(  4,  6 ); CMPXCHG(  4,  7 );
-         CMPXCHG( 12, 14 ); CMPXCHG( 10, 14 ); CMPXCHG(  6,  7 );
-         CMPXCHG( 10, 12 ); CMPXCHG(  6, 10 ); CMPXCHG(  6, 17 );
-         CMPXCHG( 12, 17 ); CMPXCHG(  7, 17 ); CMPXCHG(  7, 10 );
-         CMPXCHG( 12, 18 ); CMPXCHG(  7, 12 ); CMPXCHG( 10, 18 );
-         CMPXCHG( 12, 20 ); CMPXCHG( 10, 20 );
-         return pcl::Max( f[10], f[12] );
-      case 26:
-         CMPXCHG(  0, 16 ); CMPXCHG(  1, 17 ); CMPXCHG(  2, 18 );
-         CMPXCHG(  3, 19 ); CMPXCHG(  4, 20 ); CMPXCHG(  5, 21 );
-         CMPXCHG(  6, 22 ); CMPXCHG(  7, 23 ); CMPXCHG(  8, 24 );
-         CMPXCHG(  9, 25 ); CMPXCHG(  0,  8 ); CMPXCHG(  1,  9 );
-         CMPXCHG(  2, 10 ); CMPXCHG(  3, 11 ); CMPXCHG(  4, 12 );
-         CMPXCHG(  5, 13 ); CMPXCHG(  6, 14 ); CMPXCHG(  7, 15 );
-         CMPXCHG( 16, 24 ); CMPXCHG( 17, 25 ); CMPXCHG(  8, 16 );
-         CMPXCHG(  9, 17 ); CMPXCHG( 10, 18 ); CMPXCHG( 11, 19 );
-         CMPXCHG( 12, 20 ); CMPXCHG( 13, 21 ); CMPXCHG( 14, 22 );
-         CMPXCHG( 15, 23 ); CMPXCHG(  0,  4 ); CMPXCHG(  1,  5 );
-         CMPXCHG(  2,  6 ); CMPXCHG(  3,  7 ); CMPXCHG(  8, 12 );
-         CMPXCHG(  9, 13 ); CMPXCHG( 10, 14 ); CMPXCHG( 11, 15 );
-         CMPXCHG( 16, 20 ); CMPXCHG( 17, 21 ); CMPXCHG( 18, 22 );
-         CMPXCHG( 19, 23 ); CMPXCHG(  4, 16 ); CMPXCHG(  5, 17 );
-         CMPXCHG(  6, 18 ); CMPXCHG(  7, 19 ); CMPXCHG( 12, 24 );
-         CMPXCHG( 13, 25 ); CMPXCHG(  4,  8 ); CMPXCHG(  5,  9 );
-         CMPXCHG(  6, 10 ); CMPXCHG(  7, 11 ); CMPXCHG( 12, 16 );
-         CMPXCHG( 13, 17 ); CMPXCHG( 14, 18 ); CMPXCHG( 15, 19 );
-         CMPXCHG( 20, 24 ); CMPXCHG( 21, 25 ); CMPXCHG(  0,  2 );
-         CMPXCHG(  1,  3 ); CMPXCHG(  4,  6 ); CMPXCHG(  5,  7 );
-         CMPXCHG(  8, 10 ); CMPXCHG(  9, 11 ); CMPXCHG( 12, 14 );
-         CMPXCHG( 13, 15 ); CMPXCHG( 16, 18 ); CMPXCHG( 17, 19 );
-         CMPXCHG( 20, 22 ); CMPXCHG( 21, 23 ); CMPXCHG(  2, 16 );
-         CMPXCHG(  3, 17 ); CMPXCHG(  6, 20 ); CMPXCHG(  7, 21 );
-         CMPXCHG( 10, 24 ); CMPXCHG( 11, 25 ); CMPXCHG(  2,  8 );
-         CMPXCHG(  3,  9 ); CMPXCHG(  6, 12 ); CMPXCHG(  7, 13 );
-         CMPXCHG( 10, 16 ); CMPXCHG( 11, 17 ); CMPXCHG( 14, 20 );
-         CMPXCHG( 15, 21 ); CMPXCHG( 18, 24 ); CMPXCHG( 19, 25 );
-         CMPXCHG(  2,  4 ); CMPXCHG(  3,  5 ); CMPXCHG(  6,  8 );
-         CMPXCHG(  7,  9 ); CMPXCHG( 10, 12 ); CMPXCHG( 11, 13 );
-         CMPXCHG( 14, 16 ); CMPXCHG( 15, 17 ); CMPXCHG( 18, 20 );
-         CMPXCHG( 19, 21 ); CMPXCHG( 22, 24 ); CMPXCHG( 23, 25 );
-         CMPXCHG(  0,  1 ); CMPXCHG(  2,  3 ); CMPXCHG(  4,  5 );
-         CMPXCHG(  6,  7 ); CMPXCHG(  8,  9 ); CMPXCHG( 10, 11 );
-         CMPXCHG( 12, 13 ); CMPXCHG( 14, 15 ); CMPXCHG( 16, 17 );
-         CMPXCHG( 18, 19 ); CMPXCHG( 20, 21 ); CMPXCHG( 22, 23 );
-         CMPXCHG( 24, 25 ); CMPXCHG(  1, 16 ); CMPXCHG(  3, 18 );
-         CMPXCHG(  5, 20 ); CMPXCHG(  7, 22 ); CMPXCHG(  9, 24 );
-         CMPXCHG(  5, 12 ); CMPXCHG(  7, 14 ); CMPXCHG(  9, 16 );
-         CMPXCHG( 11, 18 ); CMPXCHG( 13, 20 ); CMPXCHG(  9, 12 );
-         CMPXCHG( 11, 14 ); CMPXCHG( 13, 16 ); CMPXCHG( 11, 12 );
-         CMPXCHG( 13, 14 );
-         return MEAN( f[12], f[13] );
-      case 27:
-         CMPXCHG( 0, 16 ); CMPXCHG( 1, 17 ); CMPXCHG( 2, 18 );
-         CMPXCHG(  3, 19 ); CMPXCHG(  4, 20 ); CMPXCHG(  5, 21 );
-         CMPXCHG(  6, 22 ); CMPXCHG(  7, 23 ); CMPXCHG(  8, 24 );
-         CMPXCHG(  9, 25 ); CMPXCHG( 10, 26 ); CMPXCHG(  0,  8 );
-         CMPXCHG(  1,  9 ); CMPXCHG(  2, 10 ); CMPXCHG(  3, 11 );
-         CMPXCHG(  4, 12 ); CMPXCHG(  5, 13 ); CMPXCHG(  6, 14 );
-         CMPXCHG(  7, 15 ); CMPXCHG( 16, 24 ); CMPXCHG( 17, 25 );
-         CMPXCHG( 18, 26 ); CMPXCHG(  8, 16 ); CMPXCHG(  9, 17 );
-         CMPXCHG( 10, 18 ); CMPXCHG( 11, 19 ); CMPXCHG( 12, 20 );
-         CMPXCHG( 13, 21 ); CMPXCHG( 14, 22 ); CMPXCHG( 15, 23 );
-         CMPXCHG(  0,  4 ); CMPXCHG(  1,  5 ); CMPXCHG(  2,  6 );
-         CMPXCHG(  3,  7 ); CMPXCHG(  8, 12 ); CMPXCHG(  9, 13 );
-         CMPXCHG( 10, 14 ); CMPXCHG( 11, 15 ); CMPXCHG( 16, 20 );
-         CMPXCHG( 17, 21 ); CMPXCHG( 18, 22 ); CMPXCHG( 19, 23 );
-         CMPXCHG(  4, 16 ); CMPXCHG(  5, 17 ); CMPXCHG(  6, 18 );
-         CMPXCHG(  7, 19 ); CMPXCHG( 12, 24 ); CMPXCHG( 13, 25 );
-         CMPXCHG( 14, 26 ); CMPXCHG(  4,  8 ); CMPXCHG(  5,  9 );
-         CMPXCHG(  6, 10 ); CMPXCHG(  7, 11 ); CMPXCHG( 12, 16 );
-         CMPXCHG( 13, 17 ); CMPXCHG( 14, 18 ); CMPXCHG( 15, 19 );
-         CMPXCHG( 20, 24 ); CMPXCHG( 21, 25 ); CMPXCHG( 22, 26 );
-         CMPXCHG(  0,  2 ); CMPXCHG(  1,  3 ); CMPXCHG(  4,  6 );
-         CMPXCHG(  5,  7 ); CMPXCHG(  8, 10 ); CMPXCHG(  9, 11 );
-         CMPXCHG( 12, 14 ); CMPXCHG( 13, 15 ); CMPXCHG( 16, 18 );
-         CMPXCHG( 17, 19 ); CMPXCHG( 20, 22 ); CMPXCHG( 21, 23 );
-         CMPXCHG( 24, 26 ); CMPXCHG(  2, 16 ); CMPXCHG(  3, 17 );
-         CMPXCHG(  6, 20 ); CMPXCHG(  7, 21 ); CMPXCHG( 10, 24 );
-         CMPXCHG( 11, 25 ); CMPXCHG(  2,  8 ); CMPXCHG(  3,  9 );
-         CMPXCHG(  6, 12 ); CMPXCHG(  7, 13 ); CMPXCHG( 10, 16 );
-         CMPXCHG( 11, 17 ); CMPXCHG( 14, 20 ); CMPXCHG( 15, 21 );
-         CMPXCHG( 18, 24 ); CMPXCHG( 19, 25 ); CMPXCHG(  2,  4 );
-         CMPXCHG(  3,  5 ); CMPXCHG(  6,  8 ); CMPXCHG(  7,  9 );
-         CMPXCHG( 10, 12 ); CMPXCHG( 11, 13 ); CMPXCHG( 14, 16 );
-         CMPXCHG( 15, 17 ); CMPXCHG( 18, 20 ); CMPXCHG( 19, 21 );
-         CMPXCHG( 22, 24 ); CMPXCHG( 23, 25 ); CMPXCHG(  0,  1 );
-         CMPXCHG(  2,  3 ); CMPXCHG(  4,  5 ); CMPXCHG(  6,  7 );
-         CMPXCHG(  8,  9 ); CMPXCHG( 10, 11 ); CMPXCHG( 12, 13 );
-         CMPXCHG( 14, 15 ); CMPXCHG( 16, 17 ); CMPXCHG( 18, 19 );
-         CMPXCHG( 20, 21 ); CMPXCHG( 22, 23 ); CMPXCHG( 24, 25 );
-         CMPXCHG(  1, 16 ); CMPXCHG(  3, 18 ); CMPXCHG(  5, 20 );
-         CMPXCHG(  7, 22 ); CMPXCHG(  9, 24 ); CMPXCHG( 11, 26 );
-         CMPXCHG(  7, 14 ); CMPXCHG(  9, 16 ); CMPXCHG( 11, 18 );
-         CMPXCHG( 13, 20 ); CMPXCHG( 11, 14 ); CMPXCHG( 13, 16 );
-         return pcl::Min( f[13], f[14] );
-      case 28:
-         CMPXCHG(  0, 16 ); CMPXCHG(  1, 17 ); CMPXCHG(  2, 18 );
-         CMPXCHG(  3, 19 ); CMPXCHG(  4, 20 ); CMPXCHG(  5, 21 );
-         CMPXCHG(  6, 22 ); CMPXCHG(  7, 23 ); CMPXCHG(  8, 24 );
-         CMPXCHG(  9, 25 ); CMPXCHG( 10, 26 ); CMPXCHG( 11, 27 );
-         CMPXCHG(  0,  8 ); CMPXCHG(  1,  9 ); CMPXCHG(  2, 10 );
-         CMPXCHG(  3, 11 ); CMPXCHG(  4, 12 ); CMPXCHG(  5, 13 );
-         CMPXCHG(  6, 14 ); CMPXCHG(  7, 15 ); CMPXCHG( 16, 24 );
-         CMPXCHG( 17, 25 ); CMPXCHG( 18, 26 ); CMPXCHG( 19, 27 );
-         CMPXCHG(  8, 16 ); CMPXCHG(  9, 17 ); CMPXCHG( 10, 18 );
-         CMPXCHG( 11, 19 ); CMPXCHG( 12, 20 ); CMPXCHG( 13, 21 );
-         CMPXCHG( 14, 22 ); CMPXCHG( 15, 23 ); CMPXCHG(  0,  4 );
-         CMPXCHG(  1,  5 ); CMPXCHG(  2,  6 ); CMPXCHG(  3,  7 );
-         CMPXCHG(  8, 12 ); CMPXCHG(  9, 13 ); CMPXCHG( 10, 14 );
-         CMPXCHG( 11, 15 ); CMPXCHG( 16, 20 ); CMPXCHG( 17, 21 );
-         CMPXCHG( 18, 22 ); CMPXCHG( 19, 23 ); CMPXCHG(  4, 16 );
-         CMPXCHG(  5, 17 ); CMPXCHG(  6, 18 ); CMPXCHG(  7, 19 );
-         CMPXCHG( 12, 24 ); CMPXCHG( 13, 25 ); CMPXCHG( 14, 26 );
-         CMPXCHG( 15, 27 ); CMPXCHG(  4,  8 ); CMPXCHG(  5,  9 );
-         CMPXCHG(  6, 10 ); CMPXCHG(  7, 11 ); CMPXCHG( 12, 16 );
-         CMPXCHG( 13, 17 ); CMPXCHG( 14, 18 ); CMPXCHG( 15, 19 );
-         CMPXCHG( 20, 24 ); CMPXCHG( 21, 25 ); CMPXCHG( 22, 26 );
-         CMPXCHG( 23, 27 ); CMPXCHG(  0,  2 ); CMPXCHG(  1,  3 );
-         CMPXCHG(  4,  6 ); CMPXCHG(  5,  7 ); CMPXCHG(  8, 10 );
-         CMPXCHG(  9, 11 ); CMPXCHG( 12, 14 ); CMPXCHG( 13, 15 );
-         CMPXCHG( 16, 18 ); CMPXCHG( 17, 19 ); CMPXCHG( 20, 22 );
-         CMPXCHG( 21, 23 ); CMPXCHG( 24, 26 ); CMPXCHG( 25, 27 );
-         CMPXCHG(  2, 16 ); CMPXCHG(  3, 17 ); CMPXCHG(  6, 20 );
-         CMPXCHG(  7, 21 ); CMPXCHG( 10, 24 ); CMPXCHG( 11, 25 );
-         CMPXCHG(  2,  8 ); CMPXCHG(  3,  9 ); CMPXCHG(  6, 12 );
-         CMPXCHG(  7, 13 ); CMPXCHG( 10, 16 ); CMPXCHG( 11, 17 );
-         CMPXCHG( 14, 20 ); CMPXCHG( 15, 21 ); CMPXCHG( 18, 24 );
-         CMPXCHG( 19, 25 ); CMPXCHG(  2,  4 ); CMPXCHG(  3,  5 );
-         CMPXCHG(  6,  8 ); CMPXCHG(  7,  9 ); CMPXCHG( 10, 12 );
-         CMPXCHG( 11, 13 ); CMPXCHG( 14, 16 ); CMPXCHG( 15, 17 );
-         CMPXCHG( 18, 20 ); CMPXCHG( 19, 21 ); CMPXCHG( 22, 24 );
-         CMPXCHG( 23, 25 ); CMPXCHG(  0,  1 ); CMPXCHG(  2,  3 );
-         CMPXCHG(  4,  5 ); CMPXCHG(  6,  7 ); CMPXCHG(  8,  9 );
-         CMPXCHG( 10, 11 ); CMPXCHG( 12, 13 ); CMPXCHG( 14, 15 );
-         CMPXCHG( 16, 17 ); CMPXCHG( 18, 19 ); CMPXCHG( 20, 21 );
-         CMPXCHG( 22, 23 ); CMPXCHG( 24, 25 ); CMPXCHG( 26, 27 );
-         CMPXCHG(  1, 16 ); CMPXCHG(  3, 18 ); CMPXCHG(  5, 20 );
-         CMPXCHG(  7, 22 ); CMPXCHG(  9, 24 ); CMPXCHG( 11, 26 );
-         CMPXCHG(  7, 14 ); CMPXCHG(  9, 16 ); CMPXCHG( 11, 18 );
-         CMPXCHG( 13, 20 ); CMPXCHG( 11, 14 ); CMPXCHG( 13, 16 );
-         return MEAN( f[13], f[14] );
-      case 29:
-         CMPXCHG(  0, 16 ); CMPXCHG(  1, 17 ); CMPXCHG(  2, 18 );
-         CMPXCHG(  3, 19 ); CMPXCHG(  4, 20 ); CMPXCHG(  5, 21 );
-         CMPXCHG(  6, 22 ); CMPXCHG(  7, 23 ); CMPXCHG(  8, 24 );
-         CMPXCHG(  9, 25 ); CMPXCHG( 10, 26 ); CMPXCHG( 11, 27 );
-         CMPXCHG( 12, 28 ); CMPXCHG(  0,  8 ); CMPXCHG(  1,  9 );
-         CMPXCHG(  2, 10 ); CMPXCHG(  3, 11 ); CMPXCHG(  4, 12 );
-         CMPXCHG(  5, 13 ); CMPXCHG(  6, 14 ); CMPXCHG(  7, 15 );
-         CMPXCHG( 16, 24 ); CMPXCHG( 17, 25 ); CMPXCHG( 18, 26 );
-         CMPXCHG( 19, 27 ); CMPXCHG( 20, 28 ); CMPXCHG(  8, 16 );
-         CMPXCHG(  9, 17 ); CMPXCHG( 10, 18 ); CMPXCHG( 11, 19 );
-         CMPXCHG( 12, 20 ); CMPXCHG( 13, 21 ); CMPXCHG( 14, 22 );
-         CMPXCHG( 15, 23 ); CMPXCHG(  0,  4 ); CMPXCHG(  1,  5 );
-         CMPXCHG(  2,  6 ); CMPXCHG(  3,  7 ); CMPXCHG(  8, 12 );
-         CMPXCHG(  9, 13 ); CMPXCHG( 10, 14 ); CMPXCHG( 11, 15 );
-         CMPXCHG( 16, 20 ); CMPXCHG( 17, 21 ); CMPXCHG( 18, 22 );
-         CMPXCHG( 19, 23 ); CMPXCHG( 24, 28 ); CMPXCHG(  4, 16 );
-         CMPXCHG(  5, 17 ); CMPXCHG(  6, 18 ); CMPXCHG(  7, 19 );
-         CMPXCHG( 12, 24 ); CMPXCHG( 13, 25 ); CMPXCHG( 14, 26 );
-         CMPXCHG( 15, 27 ); CMPXCHG(  4,  8 ); CMPXCHG(  5,  9 );
-         CMPXCHG(  6, 10 ); CMPXCHG(  7, 11 ); CMPXCHG( 12, 16 );
-         CMPXCHG( 13, 17 ); CMPXCHG( 14, 18 ); CMPXCHG( 15, 19 );
-         CMPXCHG( 20, 24 ); CMPXCHG( 21, 25 ); CMPXCHG( 22, 26 );
-         CMPXCHG( 23, 27 ); CMPXCHG(  0,  2 ); CMPXCHG(  1,  3 );
-         CMPXCHG(  4,  6 ); CMPXCHG(  5,  7 ); CMPXCHG(  8, 10 );
-         CMPXCHG(  9, 11 ); CMPXCHG( 12, 14 ); CMPXCHG( 13, 15 );
-         CMPXCHG( 16, 18 ); CMPXCHG( 17, 19 ); CMPXCHG( 20, 22 );
-         CMPXCHG( 21, 23 ); CMPXCHG( 24, 26 ); CMPXCHG( 25, 27 );
-         CMPXCHG(  2, 16 ); CMPXCHG(  3, 17 ); CMPXCHG(  6, 20 );
-         CMPXCHG(  7, 21 ); CMPXCHG( 10, 24 ); CMPXCHG( 11, 25 );
-         CMPXCHG( 14, 28 ); CMPXCHG(  2,  8 ); CMPXCHG(  3,  9 );
-         CMPXCHG(  6, 12 ); CMPXCHG(  7, 13 ); CMPXCHG( 10, 16 );
-         CMPXCHG( 11, 17 ); CMPXCHG( 14, 20 ); CMPXCHG( 15, 21 );
-         CMPXCHG( 18, 24 ); CMPXCHG( 19, 25 ); CMPXCHG( 22, 28 );
-         CMPXCHG(  2,  4 ); CMPXCHG(  3,  5 ); CMPXCHG(  6,  8 );
-         CMPXCHG(  7,  9 ); CMPXCHG( 10, 12 ); CMPXCHG( 11, 13 );
-         CMPXCHG( 14, 16 ); CMPXCHG( 15, 17 ); CMPXCHG( 18, 20 );
-         CMPXCHG( 19, 21 ); CMPXCHG( 22, 24 ); CMPXCHG( 23, 25 );
-         CMPXCHG( 26, 28 ); CMPXCHG(  0,  1 ); CMPXCHG(  2,  3 );
-         CMPXCHG(  4,  5 ); CMPXCHG(  6,  7 ); CMPXCHG(  8,  9 );
-         CMPXCHG( 10, 11 ); CMPXCHG( 12, 13 ); CMPXCHG( 14, 15 );
-         CMPXCHG( 16, 17 ); CMPXCHG( 18, 19 ); CMPXCHG( 20, 21 );
-         CMPXCHG( 22, 23 ); CMPXCHG( 24, 25 ); CMPXCHG( 26, 27 );
-         CMPXCHG(  1, 16 ); CMPXCHG(  3, 18 ); CMPXCHG(  5, 20 );
-         CMPXCHG(  7, 22 ); CMPXCHG(  9, 24 ); CMPXCHG( 11, 26 );
-         CMPXCHG( 13, 28 ); CMPXCHG(  7, 14 ); CMPXCHG(  9, 16 );
-         CMPXCHG( 11, 18 ); CMPXCHG( 13, 20 ); CMPXCHG( 11, 14 );
-         CMPXCHG( 13, 16 );
-         return pcl::Max( f[13], f[14] );
-      case 30:
-         CMPXCHG(  0, 16 ); CMPXCHG(  1, 17 ); CMPXCHG(  2, 18 );
-         CMPXCHG(  3, 19 ); CMPXCHG(  4, 20 ); CMPXCHG(  5, 21 );
-         CMPXCHG(  6, 22 ); CMPXCHG(  7, 23 ); CMPXCHG(  8, 24 );
-         CMPXCHG(  9, 25 ); CMPXCHG( 10, 26 ); CMPXCHG( 11, 27 );
-         CMPXCHG( 12, 28 ); CMPXCHG( 13, 29 ); CMPXCHG(  0,  8 );
-         CMPXCHG(  1,  9 ); CMPXCHG(  2, 10 ); CMPXCHG(  3, 11 );
-         CMPXCHG(  4, 12 ); CMPXCHG(  5, 13 ); CMPXCHG(  6, 14 );
-         CMPXCHG(  7, 15 ); CMPXCHG( 16, 24 ); CMPXCHG( 17, 25 );
-         CMPXCHG( 18, 26 ); CMPXCHG( 19, 27 ); CMPXCHG( 20, 28 );
-         CMPXCHG( 21, 29 ); CMPXCHG(  8, 16 ); CMPXCHG(  9, 17 );
-         CMPXCHG( 10, 18 ); CMPXCHG( 11, 19 ); CMPXCHG( 12, 20 );
-         CMPXCHG( 13, 21 ); CMPXCHG( 14, 22 ); CMPXCHG( 15, 23 );
-         CMPXCHG(  0,  4 ); CMPXCHG(  1,  5 ); CMPXCHG(  2,  6 );
-         CMPXCHG(  3,  7 ); CMPXCHG(  8, 12 ); CMPXCHG(  9, 13 );
-         CMPXCHG( 10, 14 ); CMPXCHG( 11, 15 ); CMPXCHG( 16, 20 );
-         CMPXCHG( 17, 21 ); CMPXCHG( 18, 22 ); CMPXCHG( 19, 23 );
-         CMPXCHG( 24, 28 ); CMPXCHG( 25, 29 ); CMPXCHG(  4, 16 );
-         CMPXCHG(  5, 17 ); CMPXCHG(  6, 18 ); CMPXCHG(  7, 19 );
-         CMPXCHG( 12, 24 ); CMPXCHG( 13, 25 ); CMPXCHG( 14, 26 );
-         CMPXCHG( 15, 27 ); CMPXCHG(  4,  8 ); CMPXCHG(  5,  9 );
-         CMPXCHG(  6, 10 ); CMPXCHG(  7, 11 ); CMPXCHG( 12, 16 );
-         CMPXCHG( 13, 17 ); CMPXCHG( 14, 18 ); CMPXCHG( 15, 19 );
-         CMPXCHG( 20, 24 ); CMPXCHG( 21, 25 ); CMPXCHG( 22, 26 );
-         CMPXCHG( 23, 27 ); CMPXCHG(  0,  2 ); CMPXCHG(  1,  3 );
-         CMPXCHG(  4,  6 ); CMPXCHG(  5,  7 ); CMPXCHG(  8, 10 );
-         CMPXCHG(  9, 11 ); CMPXCHG( 12, 14 ); CMPXCHG( 13, 15 );
-         CMPXCHG( 16, 18 ); CMPXCHG( 17, 19 ); CMPXCHG( 20, 22 );
-         CMPXCHG( 21, 23 ); CMPXCHG( 24, 26 ); CMPXCHG( 25, 27 );
-         CMPXCHG(  2, 16 ); CMPXCHG(  3, 17 ); CMPXCHG(  6, 20 );
-         CMPXCHG(  7, 21 ); CMPXCHG( 10, 24 ); CMPXCHG( 11, 25 );
-         CMPXCHG( 14, 28 ); CMPXCHG( 15, 29 ); CMPXCHG(  2,  8 );
-         CMPXCHG(  3,  9 ); CMPXCHG(  6, 12 ); CMPXCHG(  7, 13 );
-         CMPXCHG( 10, 16 ); CMPXCHG( 11, 17 ); CMPXCHG( 14, 20 );
-         CMPXCHG( 15, 21 ); CMPXCHG( 18, 24 ); CMPXCHG( 19, 25 );
-         CMPXCHG( 22, 28 ); CMPXCHG( 23, 29 ); CMPXCHG(  2,  4 );
-         CMPXCHG(  3,  5 ); CMPXCHG(  6,  8 ); CMPXCHG(  7,  9 );
-         CMPXCHG( 10, 12 ); CMPXCHG( 11, 13 ); CMPXCHG( 14, 16 );
-         CMPXCHG( 15, 17 ); CMPXCHG( 18, 20 ); CMPXCHG( 19, 21 );
-         CMPXCHG( 22, 24 ); CMPXCHG( 23, 25 ); CMPXCHG( 26, 28 );
-         CMPXCHG( 27, 29 ); CMPXCHG(  0,  1 ); CMPXCHG(  2,  3 );
-         CMPXCHG(  4,  5 ); CMPXCHG(  6,  7 ); CMPXCHG(  8,  9 );
-         CMPXCHG( 10, 11 ); CMPXCHG( 12, 13 ); CMPXCHG( 14, 15 );
-         CMPXCHG( 16, 17 ); CMPXCHG( 18, 19 ); CMPXCHG( 20, 21 );
-         CMPXCHG( 22, 23 ); CMPXCHG( 24, 25 ); CMPXCHG( 26, 27 );
-         CMPXCHG( 28, 29 ); CMPXCHG(  1, 16 ); CMPXCHG(  3, 18 );
-         CMPXCHG(  5, 20 ); CMPXCHG(  7, 22 ); CMPXCHG(  9, 24 );
-         CMPXCHG( 11, 26 ); CMPXCHG( 13, 28 ); CMPXCHG(  7, 14 );
-         CMPXCHG(  9, 16 ); CMPXCHG( 11, 18 ); CMPXCHG( 13, 20 );
-         CMPXCHG( 15, 22 ); CMPXCHG( 11, 14 ); CMPXCHG( 13, 16 );
-         CMPXCHG( 15, 18 ); CMPXCHG( 13, 14 ); CMPXCHG( 15, 16 );
-         return MEAN( f[14], f[15] );
-      case 31:
-         CMPXCHG(  0, 16 ); CMPXCHG(  1, 17 ); CMPXCHG(  2, 18 );
-         CMPXCHG(  3, 19 ); CMPXCHG(  4, 20 ); CMPXCHG(  5, 21 );
-         CMPXCHG(  6, 22 ); CMPXCHG(  7, 23 ); CMPXCHG(  8, 24 );
-         CMPXCHG(  9, 25 ); CMPXCHG( 10, 26 ); CMPXCHG( 11, 27 );
-         CMPXCHG( 12, 28 ); CMPXCHG( 13, 29 ); CMPXCHG( 14, 30 );
-         CMPXCHG(  0,  8 ); CMPXCHG(  1,  9 ); CMPXCHG(  2, 10 );
-         CMPXCHG(  3, 11 ); CMPXCHG(  4, 12 ); CMPXCHG(  5, 13 );
-         CMPXCHG(  6, 14 ); CMPXCHG(  7, 15 ); CMPXCHG( 16, 24 );
-         CMPXCHG( 17, 25 ); CMPXCHG( 18, 26 ); CMPXCHG( 19, 27 );
-         CMPXCHG( 20, 28 ); CMPXCHG( 21, 29 ); CMPXCHG( 22, 30 );
-         CMPXCHG(  8, 16 ); CMPXCHG(  9, 17 ); CMPXCHG( 10, 18 );
-         CMPXCHG( 11, 19 ); CMPXCHG( 12, 20 ); CMPXCHG( 13, 21 );
-         CMPXCHG( 14, 22 ); CMPXCHG( 15, 23 ); CMPXCHG(  0,  4 );
-         CMPXCHG(  1,  5 ); CMPXCHG(  2,  6 ); CMPXCHG(  3,  7 );
-         CMPXCHG(  8, 12 ); CMPXCHG(  9, 13 ); CMPXCHG( 10, 14 );
-         CMPXCHG( 11, 15 ); CMPXCHG( 16, 20 ); CMPXCHG( 17, 21 );
-         CMPXCHG( 18, 22 ); CMPXCHG( 19, 23 ); CMPXCHG( 24, 28 );
-         CMPXCHG( 25, 29 ); CMPXCHG( 26, 30 ); CMPXCHG(  4, 16 );
-         CMPXCHG(  5, 17 ); CMPXCHG(  6, 18 ); CMPXCHG(  7, 19 );
-         CMPXCHG( 12, 24 ); CMPXCHG( 13, 25 ); CMPXCHG( 14, 26 );
-         CMPXCHG( 15, 27 ); CMPXCHG(  4,  8 ); CMPXCHG(  5,  9 );
-         CMPXCHG(  6, 10 ); CMPXCHG(  7, 11 ); CMPXCHG( 12, 16 );
-         CMPXCHG( 13, 17 ); CMPXCHG( 14, 18 ); CMPXCHG( 15, 19 );
-         CMPXCHG( 20, 24 ); CMPXCHG( 21, 25 ); CMPXCHG( 22, 26 );
-         CMPXCHG( 23, 27 ); CMPXCHG(  0,  2 ); CMPXCHG(  1,  3 );
-         CMPXCHG(  4,  6 ); CMPXCHG(  5,  7 ); CMPXCHG(  8, 10 );
-         CMPXCHG(  9, 11 ); CMPXCHG( 12, 14 ); CMPXCHG( 13, 15 );
-         CMPXCHG( 16, 18 ); CMPXCHG( 17, 19 ); CMPXCHG( 20, 22 );
-         CMPXCHG( 21, 23 ); CMPXCHG( 24, 26 ); CMPXCHG( 25, 27 );
-         CMPXCHG( 28, 30 ); CMPXCHG(  2, 16 ); CMPXCHG(  3, 17 );
-         CMPXCHG(  6, 20 ); CMPXCHG(  7, 21 ); CMPXCHG( 10, 24 );
-         CMPXCHG( 11, 25 ); CMPXCHG( 14, 28 ); CMPXCHG( 15, 29 );
-         CMPXCHG(  2,  8 ); CMPXCHG(  3,  9 ); CMPXCHG(  6, 12 );
-         CMPXCHG(  7, 13 ); CMPXCHG( 10, 16 ); CMPXCHG( 11, 17 );
-         CMPXCHG( 14, 20 ); CMPXCHG( 15, 21 ); CMPXCHG( 18, 24 );
-         CMPXCHG( 19, 25 ); CMPXCHG( 22, 28 ); CMPXCHG( 23, 29 );
-         CMPXCHG(  2,  4 ); CMPXCHG(  3,  5 ); CMPXCHG(  6,  8 );
-         CMPXCHG(  7,  9 ); CMPXCHG( 10, 12 ); CMPXCHG( 11, 13 );
-         CMPXCHG( 14, 16 ); CMPXCHG( 15, 17 ); CMPXCHG( 18, 20 );
-         CMPXCHG( 19, 21 ); CMPXCHG( 22, 24 ); CMPXCHG( 23, 25 );
-         CMPXCHG( 26, 28 ); CMPXCHG( 27, 29 ); CMPXCHG(  0,  1 );
-         CMPXCHG(  2,  3 ); CMPXCHG(  4,  5 ); CMPXCHG(  6,  7 );
-         CMPXCHG(  8,  9 ); CMPXCHG( 10, 11 ); CMPXCHG( 12, 13 );
-         CMPXCHG( 14, 15 ); CMPXCHG( 16, 17 ); CMPXCHG( 18, 19 );
-         CMPXCHG( 20, 21 ); CMPXCHG( 22, 23 ); CMPXCHG( 24, 25 );
-         CMPXCHG( 26, 27 ); CMPXCHG( 28, 29 ); CMPXCHG(  1, 16 );
-         CMPXCHG(  3, 18 ); CMPXCHG(  5, 20 ); CMPXCHG(  7, 22 );
-         CMPXCHG(  9, 24 ); CMPXCHG( 11, 26 ); CMPXCHG( 13, 28 );
-         CMPXCHG( 15, 30 ); CMPXCHG(  9, 16 ); CMPXCHG( 11, 18 );
-         CMPXCHG( 13, 20 ); CMPXCHG( 15, 22 ); CMPXCHG( 13, 16 );
-         CMPXCHG( 15, 18 ); CMPXCHG( 15, 16 );
-         return pcl::Min( f[15], f[16] );
-      case 32:
-         CMPXCHG(  0, 16 ); CMPXCHG(  1, 17 ); CMPXCHG(  2, 18 );
-         CMPXCHG(  3, 19 ); CMPXCHG(  4, 20 ); CMPXCHG(  5, 21 );
-         CMPXCHG(  6, 22 ); CMPXCHG(  7, 23 ); CMPXCHG(  8, 24 );
-         CMPXCHG(  9, 25 ); CMPXCHG( 10, 26 ); CMPXCHG( 11, 27 );
-         CMPXCHG( 12, 28 ); CMPXCHG( 13, 29 ); CMPXCHG( 14, 30 );
-         CMPXCHG( 15, 31 ); CMPXCHG(  0,  8 ); CMPXCHG(  1,  9 );
-         CMPXCHG(  2, 10 ); CMPXCHG(  3, 11 ); CMPXCHG(  4, 12 );
-         CMPXCHG(  5, 13 ); CMPXCHG(  6, 14 ); CMPXCHG(  7, 15 );
-         CMPXCHG( 16, 24 ); CMPXCHG( 17, 25 ); CMPXCHG( 18, 26 );
-         CMPXCHG( 19, 27 ); CMPXCHG( 20, 28 ); CMPXCHG( 21, 29 );
-         CMPXCHG( 22, 30 ); CMPXCHG( 23, 31 ); CMPXCHG(  8, 16 );
-         CMPXCHG(  9, 17 ); CMPXCHG( 10, 18 ); CMPXCHG( 11, 19 );
-         CMPXCHG( 12, 20 ); CMPXCHG( 13, 21 ); CMPXCHG( 14, 22 );
-         CMPXCHG( 15, 23 ); CMPXCHG(  0,  4 ); CMPXCHG(  1,  5 );
-         CMPXCHG(  2,  6 ); CMPXCHG(  3,  7 ); CMPXCHG(  8, 12 );
-         CMPXCHG(  9, 13 ); CMPXCHG( 10, 14 ); CMPXCHG( 11, 15 );
-         CMPXCHG( 16, 20 ); CMPXCHG( 17, 21 ); CMPXCHG( 18, 22 );
-         CMPXCHG( 19, 23 ); CMPXCHG( 24, 28 ); CMPXCHG( 25, 29 );
-         CMPXCHG( 26, 30 ); CMPXCHG( 27, 31 ); CMPXCHG(  4, 16 );
-         CMPXCHG(  5, 17 ); CMPXCHG(  6, 18 ); CMPXCHG(  7, 19 );
-         CMPXCHG( 12, 24 ); CMPXCHG( 13, 25 ); CMPXCHG( 14, 26 );
-         CMPXCHG( 15, 27 ); CMPXCHG(  4,  8 ); CMPXCHG(  5,  9 );
-         CMPXCHG(  6, 10 ); CMPXCHG(  7, 11 ); CMPXCHG( 12, 16 );
-         CMPXCHG( 13, 17 ); CMPXCHG( 14, 18 ); CMPXCHG( 15, 19 );
-         CMPXCHG( 20, 24 ); CMPXCHG( 21, 25 ); CMPXCHG( 22, 26 );
-         CMPXCHG( 23, 27 ); CMPXCHG(  0,  2 ); CMPXCHG(  1,  3 );
-         CMPXCHG(  4,  6 ); CMPXCHG(  5,  7 ); CMPXCHG(  8, 10 );
-         CMPXCHG(  9, 11 ); CMPXCHG( 12, 14 ); CMPXCHG( 13, 15 );
-         CMPXCHG( 16, 18 ); CMPXCHG( 17, 19 ); CMPXCHG( 20, 22 );
-         CMPXCHG( 21, 23 ); CMPXCHG( 24, 26 ); CMPXCHG( 25, 27 );
-         CMPXCHG( 28, 30 ); CMPXCHG( 29, 31 ); CMPXCHG(  2, 16 );
-         CMPXCHG(  3, 17 ); CMPXCHG(  6, 20 ); CMPXCHG(  7, 21 );
-         CMPXCHG( 10, 24 ); CMPXCHG( 11, 25 ); CMPXCHG( 14, 28 );
-         CMPXCHG( 15, 29 ); CMPXCHG(  2,  8 ); CMPXCHG(  3,  9 );
-         CMPXCHG(  6, 12 ); CMPXCHG(  7, 13 ); CMPXCHG( 10, 16 );
-         CMPXCHG( 11, 17 ); CMPXCHG( 14, 20 ); CMPXCHG( 15, 21 );
-         CMPXCHG( 18, 24 ); CMPXCHG( 19, 25 ); CMPXCHG( 22, 28 );
-         CMPXCHG( 23, 29 ); CMPXCHG(  2,  4 ); CMPXCHG(  3,  5 );
-         CMPXCHG(  6,  8 ); CMPXCHG(  7,  9 ); CMPXCHG( 10, 12 );
-         CMPXCHG( 11, 13 ); CMPXCHG( 14, 16 ); CMPXCHG( 15, 17 );
-         CMPXCHG( 18, 20 ); CMPXCHG( 19, 21 ); CMPXCHG( 22, 24 );
-         CMPXCHG( 23, 25 ); CMPXCHG( 26, 28 ); CMPXCHG( 27, 29 );
-         CMPXCHG(  0,  1 ); CMPXCHG(  2,  3 ); CMPXCHG(  4,  5 );
-         CMPXCHG(  6,  7 ); CMPXCHG(  8,  9 ); CMPXCHG( 10, 11 );
-         CMPXCHG( 12, 13 ); CMPXCHG( 14, 15 ); CMPXCHG( 16, 17 );
-         CMPXCHG( 18, 19 ); CMPXCHG( 20, 21 ); CMPXCHG( 22, 23 );
-         CMPXCHG( 24, 25 ); CMPXCHG( 26, 27 ); CMPXCHG( 28, 29 );
-         CMPXCHG( 30, 31 ); CMPXCHG(  1, 16 ); CMPXCHG(  3, 18 );
-         CMPXCHG(  5, 20 ); CMPXCHG(  7, 22 ); CMPXCHG(  9, 24 );
-         CMPXCHG( 11, 26 ); CMPXCHG( 13, 28 ); CMPXCHG( 15, 30 );
-         CMPXCHG(  9, 16 ); CMPXCHG( 11, 18 ); CMPXCHG( 13, 20 );
-         CMPXCHG( 15, 22 ); CMPXCHG( 13, 16 ); CMPXCHG( 15, 18 );
-         return MEAN( f[15], f[16] );
       default:
          {
             distance_type n2 = distance_type( n >> 1 );
@@ -1603,4 +1234,4 @@ private:
 #endif   // __PCL_MorphologicalOperator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MorphologicalOperator.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/MorphologicalOperator.h - Released 2020-11-20T19:46:29Z

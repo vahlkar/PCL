@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageModule.cpp - Released 2020-10-12T19:25:16Z
+// ImageModule.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -57,8 +57,8 @@
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     10
-#define MODULE_RELEASE_DAY       12
+#define MODULE_RELEASE_MONTH     11
+#define MODULE_RELEASE_DAY       20
 
 #include "CreateAlphaChannelsInterface.h"
 #include "CreateAlphaChannelsProcess.h"
@@ -205,4 +205,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageModule.cpp - Released 2020-10-12T19:25:16Z
+// EOF ImageModule.cpp - Released 2020-11-20T19:49:00Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorInterface.cpp - Released 2020-10-12T19:25:16Z
+// SubframeSelectorInterface.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -62,7 +62,7 @@
 #include <pcl/FileFormat.h>
 #include <pcl/MetaModule.h>
 #include <pcl/PreviewSelectionDialog.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/ViewList.h>
 
 #define IMAGELIST_MINHEIGHT( fnt )  (12*fnt.Height() + 2)
@@ -1414,4 +1414,4 @@ SubframeSelectorInterface::GUIData::GUIData( SubframeSelectorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorInterface.cpp - Released 2020-10-12T19:25:16Z
+// EOF SubframeSelectorInterface.cpp - Released 2020-11-20T19:49:00Z

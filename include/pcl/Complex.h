@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Complex.h - Released 2020-10-12T19:24:41Z
+// pcl/Complex.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -93,24 +93,22 @@ public:
     * Constructs an uninitialized complex number. The real and imaginary
     * components will have unpredictable values.
     */
-   Complex()
-   {
-   }
+   Complex() = default;
 
    /*!
     * Constructs a complex number with the specified real and imaginary parts.
     */
-   Complex( T r, T i = 0 )
+   Complex( T r, T i = 0 ) noexcept
    {
       real = r;
       imag = i;
    }
 
    /*!
-    * Copy constructor.
+    * Nontrivial copy constructor.
     */
    template <typename T1>
-   Complex( const Complex<T1>& c )
+   Complex( const Complex<T1>& c ) noexcept
    {
       real = T( c.Real() );
       imag = T( c.Imag() );
@@ -119,7 +117,7 @@ public:
    /*!
     * Returns a copy of the real component of this complex number.
     */
-   constexpr T Real() const
+   constexpr T Real() const noexcept
    {
       return real;
    }
@@ -127,7 +125,7 @@ public:
    /*!
     * Returns a reference to the real component of this complex number.
     */
-   T& Real()
+   T& Real() noexcept
    {
       return real;
    }
@@ -135,7 +133,7 @@ public:
    /*!
     * Returns a copy of the imaginary component of this complex number.
     */
-   constexpr T Imag() const
+   constexpr T Imag() const noexcept
    {
       return imag;
    }
@@ -143,7 +141,7 @@ public:
    /*!
     * Returns a reference to the imaginary component of this complex number.
     */
-   T& Imag()
+   T& Imag() noexcept
    {
       return imag;
    }
@@ -151,7 +149,7 @@ public:
    /*!
     * Returns true iff the imaginary part of this complex number is zero.
     */
-   constexpr bool IsReal() const
+   constexpr bool IsReal() const noexcept
    {
       return imag == 0;
    }
@@ -160,7 +158,7 @@ public:
     * Assignment operator. Returns a reference to this complex number.
     */
    template <typename T1>
-   Complex<T>& operator =( const Complex<T1>& c )
+   Complex<T>& operator =( const Complex<T1>& c ) noexcept
    {
       real = T( c.Real() ), imag = T( c.Imag() );
       return *this;
@@ -171,7 +169,7 @@ public:
     * Returns a reference to this complex number.
     */
    template <typename T1>
-   Complex<T>& operator +=( const Complex<T1>& c )
+   Complex<T>& operator +=( const Complex<T1>& c ) noexcept
    {
       real += c.Real(), imag += c.Imag();
       return *this;
@@ -182,7 +180,7 @@ public:
     * from this. Returns a reference to this complex number.
     */
    template <typename T1>
-   Complex<T>& operator -=( const Complex<T1>& c )
+   Complex<T>& operator -=( const Complex<T1>& c ) noexcept
    {
       real -= c.Real(), imag -= c.Imag();
       return *this;
@@ -193,7 +191,7 @@ public:
     * specified complex \a c. Returns a reference to this complex number.
     */
    template <typename T1>
-   Complex<T>& operator *=( const Complex<T1>& c )
+   Complex<T>& operator *=( const Complex<T1>& c ) noexcept
    {
       T t = T( real*c.Real() - imag*c.Imag() );
       imag = T( imag*c.Real() + real*c.Imag() );
@@ -206,7 +204,7 @@ public:
     * complex \a c. Returns a reference to this complex number.
     */
    template <typename T1>
-   Complex<T>& operator /=( const Complex<T1>& c )
+   Complex<T>& operator /=( const Complex<T1>& c ) noexcept
    {
       T r, d, t;
       if ( pcl::Abs( c.Real() ) >= pcl::Abs( c.Imag() ) )
@@ -235,7 +233,7 @@ public:
     * zero. Returns a reference to this complex number.
     */
    template <typename T1>
-   Complex<T>& operator =( T1 x )
+   Complex<T>& operator =( T1 x ) noexcept
    {
       real = x, imag = 0;
       return *this;
@@ -246,7 +244,7 @@ public:
     * added to the real component. Returns a reference to this complex number.
     */
    template <typename T1>
-   Complex<T>& operator +=( T1 x )
+   Complex<T>& operator +=( T1 x ) noexcept
    {
       real += x;
       return *this;
@@ -258,7 +256,7 @@ public:
     * complex number.
     */
    template <typename T1>
-   Complex<T>& operator -=( T1 x )
+   Complex<T>& operator -=( T1 x ) noexcept
    {
       real -= x;
       return *this;
@@ -270,7 +268,7 @@ public:
     * complex number.
     */
    template <typename T1>
-   Complex<T>& operator *=( T1 x )
+   Complex<T>& operator *=( T1 x ) noexcept
    {
       real *= x, imag *= x;
       return *this;
@@ -282,7 +280,7 @@ public:
     * number.
     */
    template <typename T1>
-   Complex<T>& operator /=( T1 x )
+   Complex<T>& operator /=( T1 x ) noexcept
    {
       PCL_PRECONDITION( x != 0 )
       real /= x, imag /= x;
@@ -292,7 +290,7 @@ public:
    /*!
     * Unary plus operator. Returns a copy of this complex number.
     */
-   Complex<T> operator +() const
+   Complex<T> operator +() const noexcept
    {
       return *this;
    }
@@ -303,7 +301,7 @@ public:
     * This function is equivalent to:
     * Complex<T>( -Real(), -Imag() )
     */
-   Complex<T> operator -() const
+   Complex<T> operator -() const noexcept
    {
       return Complex<T>( -real, -imag );
    }
@@ -312,7 +310,7 @@ public:
     * Complex conjugate. This function is equivalent to:
     * Complex<T>( Real(), -Imag() )
     */
-   Complex<T> Conj() const
+   Complex<T> Conj() const noexcept
    {
       return Complex<T>( real, -imag );
    }
@@ -320,7 +318,7 @@ public:
    /*!
     * Complex conjugate. This operator is a synonym for Conj().
     */
-   Complex<T> operator ~() const
+   Complex<T> operator ~() const noexcept
    {
       return Conj();
    }
@@ -329,7 +327,7 @@ public:
     * Assigns to this complex number its complex conjugate. This function
     * changes the sign of the imaginary part of this complex number.
     */
-   void SetConj()
+   void SetConj() noexcept
    {
       imag = -imag;
    }
@@ -340,7 +338,7 @@ public:
     * Accurate results are guaranteed even for large ratios between the real
     * and complex components.
     */
-   T Mag() const
+   T Mag() const noexcept
    {
       T r = pcl::Abs( real );
       T i = pcl::Abs( imag );
@@ -364,7 +362,7 @@ public:
     * Returns the complex magnitude or modulus of this complex number, so this
     * operator is equivalent to Mag() const.
     */
-   explicit operator double() const
+   explicit operator double() const noexcept
    {
       return double( Mag() );
    }
@@ -373,7 +371,7 @@ public:
     * Complex norm.
     * This function is equivalent to: Real()*Real() + Imag()*Imag().
     */
-   constexpr T Norm() const
+   constexpr T Norm() const noexcept
    {
       return real*real + imag*imag;
    }
@@ -383,7 +381,7 @@ public:
     * Returns the arc whose tangent is Imag()/Real(). When both real and
     * imaginary components are zero, this function returns zero.
     */
-   constexpr T Arg() const
+   constexpr T Arg() const noexcept
    {
       // Degenerate cases (real=0) are correctly handled by real ArcTan(). For
       // the undefined case real=imag=0, we silently return zero. Should we
@@ -428,7 +426,7 @@ struct PCL_AssertComplexSize
  * \ingroup complex_basic_functions
  */
 template <typename T> inline
-T Abs( const Complex<T>& c )
+T Abs( const Complex<T>& c ) noexcept
 {
    return c.Mag();
 }
@@ -440,7 +438,7 @@ T Abs( const Complex<T>& c )
  * \ingroup complex_basic_functions
  */
 template <typename T> inline
-Complex<T> Polar( T r, T stheta, T ctheta )
+Complex<T> Polar( T r, T stheta, T ctheta ) noexcept
 {
    return Complex<T>( r*ctheta, r*stheta );
 }
@@ -451,7 +449,7 @@ Complex<T> Polar( T r, T stheta, T ctheta )
  * \ingroup complex_basic_functions
  */
 template <typename T> inline
-Complex<T> Polar( T r, T theta )
+Complex<T> Polar( T r, T theta ) noexcept
 {
    return Polar( r, pcl::Sin( theta ), pcl::Cos( theta ) );
 }
@@ -463,7 +461,7 @@ Complex<T> Polar( T r, T theta )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T1> operator +( const Complex<T1>& c1, const Complex<T2>& c2 )
+Complex<T1> operator +( const Complex<T1>& c1, const Complex<T2>& c2 ) noexcept
 {
    return Complex<T1>( T1( c1.Real() + c2.Real() ),
                        T1( c1.Imag() + c2.Imag() ) );
@@ -478,7 +476,7 @@ Complex<T1> operator +( const Complex<T1>& c1, const Complex<T2>& c2 )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T1> operator +( const Complex<T1>& c, T2 x )
+Complex<T1> operator +( const Complex<T1>& c, T2 x ) noexcept
 {
    return Complex<T1>( T1( c.Real()+x ), c.Imag() );
 }
@@ -492,7 +490,7 @@ Complex<T1> operator +( const Complex<T1>& c, T2 x )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T2> operator +( T1 x, const Complex<T2>& c )
+Complex<T2> operator +( T1 x, const Complex<T2>& c ) noexcept
 {
    return c + x;
 }
@@ -503,7 +501,7 @@ Complex<T2> operator +( T1 x, const Complex<T2>& c )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T1> operator -( const Complex<T1>& c1, const Complex<T2>& c2 )
+Complex<T1> operator -( const Complex<T1>& c1, const Complex<T2>& c2 ) noexcept
 {
    return Complex<T1>( T1( c1.Real() - c2.Real() ),
                        T1( c1.Imag() - c2.Imag() ) );
@@ -520,7 +518,7 @@ Complex<T1> operator -( const Complex<T1>& c1, const Complex<T2>& c2 )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T1> operator -( const Complex<T1>& c, T2 x )
+Complex<T1> operator -( const Complex<T1>& c, T2 x ) noexcept
 {
    return Complex<T1>( T1( c.Real()-x ), c.Imag() );
 }
@@ -536,7 +534,7 @@ Complex<T1> operator -( const Complex<T1>& c, T2 x )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T2> operator -( T1 x, const Complex<T2>& c )
+Complex<T2> operator -( T1 x, const Complex<T2>& c ) noexcept
 {
    return Complex<T2>( T2( x-c.Real() ), -c.Imag() );
 }
@@ -547,7 +545,7 @@ Complex<T2> operator -( T1 x, const Complex<T2>& c )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T1> operator *( const Complex<T1>& c1, const Complex<T2>& c2 )
+Complex<T1> operator *( const Complex<T1>& c1, const Complex<T2>& c2 ) noexcept
 {
    return Complex<T1>( T1( c1.Real()*c2.Real() - c1.Imag()*c2.Imag() ),
                        T1( c1.Imag()*c2.Real() + c1.Real()*c2.Imag() ) );
@@ -564,7 +562,7 @@ Complex<T1> operator *( const Complex<T1>& c1, const Complex<T2>& c2 )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T1> operator *( const Complex<T1>& c, T2 x )
+Complex<T1> operator *( const Complex<T1>& c, T2 x ) noexcept
 {
    return Complex<T1>( T1( c.Real()*x ), c.Imag()*x );
 }
@@ -580,7 +578,7 @@ Complex<T1> operator *( const Complex<T1>& c, T2 x )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T2> operator *( T1 x, const Complex<T2>& c )
+Complex<T2> operator *( T1 x, const Complex<T2>& c ) noexcept
 {
    return c * x;
 }
@@ -591,7 +589,7 @@ Complex<T2> operator *( T1 x, const Complex<T2>& c )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T1> operator /( const Complex<T1>& c1, const Complex<T2>& c2 )
+Complex<T1> operator /( const Complex<T1>& c1, const Complex<T2>& c2 ) noexcept
 {
    Complex<T1> c;
    T2 r, d;
@@ -625,7 +623,7 @@ Complex<T1> operator /( const Complex<T1>& c1, const Complex<T2>& c2 )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T1> operator /( const Complex<T1>& c, T2 x )
+Complex<T1> operator /( const Complex<T1>& c, T2 x ) noexcept
 {
    PCL_PRECONDITION( x != 0 )
    return Complex<T1>( T1( c.Real()/x ), T1( c.Imag()/x ) );
@@ -642,7 +640,7 @@ Complex<T1> operator /( const Complex<T1>& c, T2 x )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T2> operator /( T1 x, const Complex<T2>& c )
+Complex<T2> operator /( T1 x, const Complex<T2>& c ) noexcept
 {
    // return Complex( x, 0 )/c;
    Complex<T2> c3;
@@ -673,7 +671,7 @@ Complex<T2> operator /( T1 x, const Complex<T2>& c )
  * \ingroup complex_basic_functions
  */
 template <typename T> inline
-Complex<T> Sqrt( const Complex<T>& c )
+Complex<T> Sqrt( const Complex<T>& c ) noexcept
 {
    if ( c.Real() == 0 && c.Imag() == 0 )
       return Complex<T>( 0 );
@@ -713,7 +711,7 @@ Complex<T> Sqrt( const Complex<T>& c )
  * \ingroup complex_basic_functions
  */
 template <typename T> inline
-Complex<T> Exp( const Complex<T>& c )
+Complex<T> Exp( const Complex<T>& c ) noexcept
 {
    T x = pcl::Exp( c.Real() );
    return Complex<T>( x*pcl::Cos( c.Imag() ), x*pcl::Sin( c.Imag() ) );
@@ -724,7 +722,7 @@ Complex<T> Exp( const Complex<T>& c )
  * \ingroup complex_basic_functions
  */
 template <typename T> inline
-Complex<T> Ln( const Complex<T>& c )
+Complex<T> Ln( const Complex<T>& c ) noexcept
 {
    return Complex<T>( pcl::Ln( c.Mag() ), c.Arg() );
 }
@@ -734,7 +732,7 @@ Complex<T> Ln( const Complex<T>& c )
  * \ingroup complex_basic_functions
  */
 template <typename T> inline
-Complex<T> Log( const Complex<T>& c )
+Complex<T> Log( const Complex<T>& c ) noexcept
 {
    return pcl::Const<T>::log10e() * pcl::Ln( c );
 }
@@ -746,7 +744,7 @@ Complex<T> Log( const Complex<T>& c )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T1> Pow( const Complex<T1>& c, T2 x )
+Complex<T1> Pow( const Complex<T1>& c, T2 x ) noexcept
 {
    if ( c.Imag() == 0 )
       return Complex<T1>( pcl::Pow( c.Real(), T1( x ) ) );
@@ -759,7 +757,7 @@ Complex<T1> Pow( const Complex<T1>& c, T2 x )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T1, class T2> inline
-Complex<T2> Pow( T1 x, const Complex<T2>& c )
+Complex<T2> Pow( T1 x, const Complex<T2>& c ) noexcept
 {
    if ( c.Imag() == 0 )
       return Complex<T2>( pcl::Pow( T2( x ), c.Real() ) );
@@ -773,7 +771,7 @@ Complex<T2> Pow( T1 x, const Complex<T2>& c )
  * \ingroup complex_arithmetic_ops
  */
 template <typename T> inline
-Complex<T> Pow( const Complex<T>& c1, const Complex<T>& c2 )
+Complex<T> Pow( const Complex<T>& c1, const Complex<T>& c2 ) noexcept
 {
    if ( c2.Imag() == 0 )
       return pcl::Pow( c1, c2.Real() );
@@ -794,7 +792,7 @@ Complex<T> Pow( const Complex<T>& c1, const Complex<T>& c2 )
  * \ingroup complex_transcendental_ops
  */
 template <typename T> inline
-Complex<T> Sin( const Complex<T>& c )
+Complex<T> Sin( const Complex<T>& c ) noexcept
 {
    return Complex<T>( pcl::Sin( c.Real() )*pcl::Cosh( c.Imag() ),
                       pcl::Cos( c.Real() )*pcl::Sinh( c.Imag() ) );
@@ -805,7 +803,7 @@ Complex<T> Sin( const Complex<T>& c )
  * \ingroup complex_transcendental_ops
  */
 template <typename T> inline
-Complex<T> Cos( const Complex<T>& c )
+Complex<T> Cos( const Complex<T>& c ) noexcept
 {
    return Complex<T>( pcl::Cos( c.Real() )*pcl::Cosh( c.Imag() ),
                      -pcl::Sin( c.Real() )*pcl::Sinh( c.Imag() ) );
@@ -816,7 +814,7 @@ Complex<T> Cos( const Complex<T>& c )
  * \ingroup complex_transcendental_ops
  */
 template <typename T> inline
-Complex<T> Tan( const Complex<T>& c )
+Complex<T> Tan( const Complex<T>& c ) noexcept
 {
    return pcl::Sin( c )/pcl::Cos( c );
 }
@@ -826,7 +824,7 @@ Complex<T> Tan( const Complex<T>& c )
  * \ingroup complex_transcendental_ops
  */
 template <typename T> inline
-Complex<T> Sinh( const Complex<T>& c )
+Complex<T> Sinh( const Complex<T>& c ) noexcept
 {
    return Complex<T>( pcl::Sinh( c.Real() )*pcl::Cos( c.Imag() ),
                       pcl::Cosh( c.Real() )*pcl::Sin( c.Imag() ) );
@@ -837,7 +835,7 @@ Complex<T> Sinh( const Complex<T>& c )
  * \ingroup complex_transcendental_ops
  */
 template <typename T> inline
-Complex<T> Cosh( const Complex<T>& c )
+Complex<T> Cosh( const Complex<T>& c ) noexcept
 {
    return Complex<T>( pcl::Cosh( c.Real() )*pcl::Cos( c.Imag() ),
                       pcl::Sinh( c.Real() )*pcl::Sin( c.Imag() ) );
@@ -848,7 +846,7 @@ Complex<T> Cosh( const Complex<T>& c )
  * \ingroup complex_transcendental_ops
  */
 template <typename T> inline
-Complex<T> Tanh( const Complex<T>& c )
+Complex<T> Tanh( const Complex<T>& c ) noexcept
 {
    return pcl::Sinh( c )/pcl::Cosh( c );
 }
@@ -870,7 +868,7 @@ Complex<T> Tanh( const Complex<T>& c )
  * \ingroup complex_relational_ops
  */
 template <typename T1, class T2> inline
-bool operator ==( const Complex<T1>& c1, const Complex<T2>& c2 )
+bool operator ==( const Complex<T1>& c1, const Complex<T2>& c2 ) noexcept
 {
    return c1.Real() == c2.Real() && c1.Imag() == c2.Imag();
 }
@@ -880,7 +878,7 @@ bool operator ==( const Complex<T1>& c1, const Complex<T2>& c2 )
  * \ingroup complex_relational_ops
  */
 template <typename T1, class T2> inline
-bool operator ==( const Complex<T1>& c, T2 x )
+bool operator ==( const Complex<T1>& c, T2 x ) noexcept
 {
    return c.Real() == x && c.Imag() == T1( 0 );
 }
@@ -890,7 +888,7 @@ bool operator ==( const Complex<T1>& c, T2 x )
  * \ingroup complex_relational_ops
  */
 template <typename T1, class T2> inline
-bool operator ==( T1 x, const Complex<T2>& c )
+bool operator ==( T1 x, const Complex<T2>& c ) noexcept
 {
    return c == x;
 }
@@ -900,7 +898,7 @@ bool operator ==( T1 x, const Complex<T2>& c )
  * \ingroup complex_relational_ops
  */
 template <typename T1, class T2> inline
-bool operator <( const Complex<T1>& c1, const Complex<T2>& c2 )
+bool operator <( const Complex<T1>& c1, const Complex<T2>& c2 ) noexcept
 {
    return c1.Mag() < c2.Mag();
 }
@@ -910,7 +908,7 @@ bool operator <( const Complex<T1>& c1, const Complex<T2>& c2 )
  * \ingroup complex_relational_ops
  */
 template <typename T1, class T2> inline
-bool operator <( const Complex<T1>& c, T2 x )
+bool operator <( const Complex<T1>& c, T2 x ) noexcept
 {
    return c.Mag() < pcl::Abs( x );
 }
@@ -920,7 +918,7 @@ bool operator <( const Complex<T1>& c, T2 x )
  * \ingroup complex_relational_ops
  */
 template <typename T1, class T2> inline
-bool operator <( T1 x, const Complex<T2>& c )
+bool operator <( T1 x, const Complex<T2>& c ) noexcept
 {
    return pcl::Abs( x ) < c.Mag();
 }
@@ -937,7 +935,7 @@ bool operator <( T1 x, const Complex<T2>& c )
  * \ingroup complex_rounding_functions
  */
 template <typename T> inline
-Complex<T> Round( const Complex<T>& c )
+Complex<T> Round( const Complex<T>& c ) noexcept
 {
    return Complex<T>( pcl::Round( c.Real() ), pcl::Round( c.Imag() ) );
 }
@@ -949,7 +947,7 @@ Complex<T> Round( const Complex<T>& c )
  * \ingroup complex_rounding_functions
  */
 template <typename T> inline
-Complex<T> Round( const Complex<T>& c, int n )
+Complex<T> Round( const Complex<T>& c, int n ) noexcept
 {
    PCL_PRECONDITION( n >= 0 )
    return Complex<T>( pcl::Round( c.Real(), n ), pcl::Round( c.Imag(), n ) );
@@ -982,7 +980,7 @@ Complex<T> Round( const Complex<T>& c, int n )
  * \ingroup phase_matrices
  */
 template <typename T> inline
-void PhaseCorrelationMatrix( Complex<T>* i, const Complex<T>* j, const Complex<T>* a, const Complex<T>* b )
+void PhaseCorrelationMatrix( Complex<T>* i, const Complex<T>* j, const Complex<T>* a, const Complex<T>* b ) noexcept
 {
    const T tiny = T( 1.0e-20 );
    for ( ; i < j; ++i, ++a, ++b )
@@ -1013,7 +1011,7 @@ void PhaseCorrelationMatrix( Complex<T>* i, const Complex<T>* j, const Complex<T
  * \ingroup phase_matrices
  */
 template <typename T> inline
-void CrossPowerSpectrumMatrix( Complex<T>* i, const Complex<T>* j, const Complex<T>* a, const Complex<T>* b )
+void CrossPowerSpectrumMatrix( Complex<T>* i, const Complex<T>* j, const Complex<T>* a, const Complex<T>* b ) noexcept
 {
    const T tiny = T( 1.0e-20 );
    for ( ; i < j; ++i, ++a, ++b )
@@ -1107,4 +1105,4 @@ typedef dcomplex              complex;
 #endif   // __PCL_Complex_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Complex.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/Complex.h - Released 2020-11-20T19:46:29Z

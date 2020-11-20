@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.h - Released 2020-10-12T19:24:41Z
+// pcl/TimePoint.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -142,7 +142,7 @@ public:
     */
    TimePoint( int year, int month, double days )
    {
-      ComplexTimeToJD( m_jdi, m_jdf, year, month, TruncInt( days ), Frac( days ) );
+      CalendarTimeToJD( m_jdi, m_jdf, year, month, TruncInt( days ), Frac( days ) );
    }
 
    /*!
@@ -151,7 +151,7 @@ public:
     */
    TimePoint( int year, int month, int day, double dayFraction )
    {
-      ComplexTimeToJD( m_jdi, m_jdf, year, month, day, dayFraction );
+      CalendarTimeToJD( m_jdi, m_jdf, year, month, day, dayFraction );
    }
 
    /*!
@@ -159,7 +159,7 @@ public:
     */
    TimePoint( int year, int month, int day, int hour, int minute, double seconds )
    {
-      ComplexTimeToJD( m_jdi, m_jdf, year, month, day, (hour + (minute + seconds/60)/60)/24 );
+      CalendarTimeToJD( m_jdi, m_jdf, year, month, day, (hour + (minute + seconds/60)/60)/24 );
    }
 
    /*!
@@ -176,7 +176,7 @@ public:
       int year, month, day;
       double dayf, tz;
       dateTime.ParseISO8601DateTime( year, month, day, dayf, tz );
-      ComplexTimeToJD( m_jdi, m_jdf, year, month, day, dayf - tz/24 );
+      CalendarTimeToJD( m_jdi, m_jdf, year, month, day, dayf - tz/24 );
    }
 
    /*!
@@ -193,7 +193,7 @@ public:
       int year, month, day;
       double dayf, tz;
       dateTime.ParseISO8601DateTime( year, month, day, dayf, tz );
-      ComplexTimeToJD( m_jdi, m_jdf, year, month, day, dayf - tz/24 );
+      CalendarTimeToJD( m_jdi, m_jdf, year, month, day, dayf - tz/24 );
    }
 
    /*!
@@ -245,10 +245,10 @@ public:
     * \param[out] day      Reference to a variable that will receive the day
     *                      component of this time point, in the range [1,31].
     */
-   void GetComplexTime( int& year, int& month, int& day ) const
+   void GetCalendarTime( int& year, int& month, int& day ) const
    {
       double dum;
-      JDToComplexTime( year, month, day, dum, m_jdi, m_jdf );
+      JDToCalendarTime( year, month, day, dum, m_jdi, m_jdf );
    }
 
    /*!
@@ -267,9 +267,9 @@ public:
     *                      fraction component of this time point, in the range
     *                      [0,1).
     */
-   void GetComplexTime( int& year, int& month, int& day, double& dayf ) const
+   void GetCalendarTime( int& year, int& month, int& day, double& dayf ) const
    {
-      JDToComplexTime( year, month, day, dayf, m_jdi, m_jdf );
+      JDToCalendarTime( year, month, day, dayf, m_jdi, m_jdf );
    }
 
    /*!
@@ -294,10 +294,10 @@ public:
     *                      seconds component of this time point, in the range
     *                      [0,60).
     */
-   void GetComplexTime( int& year, int& month, int& day, int& hour, int& minute, double& seconds ) const
+   void GetCalendarTime( int& year, int& month, int& day, int& hour, int& minute, double& seconds ) const
    {
       double dayf;
-      JDToComplexTime( year, month, day, dayf, m_jdi, m_jdf );
+      JDToCalendarTime( year, month, day, dayf, m_jdi, m_jdf );
       double h = Frac( dayf )*24;
       double m = Frac( h )*60;
       seconds = Frac( m )*60;
@@ -311,7 +311,7 @@ public:
    int Year() const
    {
       int year, foo; double bar;
-      JDToComplexTime( year, foo, foo, bar, m_jdi, m_jdf );
+      JDToCalendarTime( year, foo, foo, bar, m_jdi, m_jdf );
       return year;
    }
 
@@ -321,7 +321,7 @@ public:
    int Month() const
    {
       int foo, month; double bar;
-      JDToComplexTime( foo, month, foo, bar, m_jdi, m_jdf );
+      JDToCalendarTime( foo, month, foo, bar, m_jdi, m_jdf );
       return month;
    }
 
@@ -331,7 +331,7 @@ public:
    int Day() const
    {
       int foo, day; double bar;
-      JDToComplexTime( foo, foo, day, bar, m_jdi, m_jdf );
+      JDToCalendarTime( foo, foo, day, bar, m_jdi, m_jdf );
       return day;
    }
 
@@ -341,7 +341,7 @@ public:
    double DayFraction() const
    {
       int foobar; double dayf;
-      JDToComplexTime( foobar, foobar, foobar, dayf, m_jdi, m_jdf );
+      JDToCalendarTime( foobar, foobar, foobar, dayf, m_jdi, m_jdf );
       return dayf;
    }
 
@@ -1065,7 +1065,7 @@ private:
       {
          int year, month, day;
          double dayf;
-         JDToComplexTime( year, month, day, dayf, m_jdi, m_jdf );
+         JDToCalendarTime( year, month, day, dayf, m_jdi, m_jdf );
          return S::ToISO8601DateTime( year, month, day, dayf, tz, options );
       }
       return S();
@@ -1207,4 +1207,4 @@ inline TimePoint operator -( const TimePoint& t, double d )
 #endif   // __PCL_TimePoint_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/TimePoint.h - Released 2020-11-20T19:46:29Z

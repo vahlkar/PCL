@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.12
 // ----------------------------------------------------------------------------
-// XISFInstance.h - Released 2020-10-12T19:25:05Z
+// XISFInstance.h - Released 2020-11-20T19:48:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -101,6 +101,8 @@ public:
    void ReadImage( UInt16Image& ) override;
    void ReadImage( UInt32Image& ) override;
 
+   bool CanReadIncrementally() const override;
+
    void ReadSamples( Image::sample* buffer, int startRow, int rowCount, int channel ) override;
    void ReadSamples( DImage::sample* buffer, int startRow, int rowCount, int channel ) override;
    void ReadSamples( UInt8Image::sample* buffer, int startRow, int rowCount, int channel ) override;
@@ -168,4 +170,4 @@ private:
 #endif   // __XISFInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.h - Released 2020-10-12T19:25:05Z
+// EOF XISFInstance.h - Released 2020-11-20T19:48:45Z

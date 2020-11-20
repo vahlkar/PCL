@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// MaskedStretchInstance.cpp - Released 2020-10-12T19:25:16Z
+// MaskedStretchInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -57,7 +57,7 @@
 #include <pcl/Histogram.h>
 #include <pcl/HistogramTransformation.h>
 #include <pcl/RGBColorSystem.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
 namespace pcl
@@ -495,4 +495,4 @@ size_type MaskedStretchInstance::ParameterLength( const MetaParameter* p, size_t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF MaskedStretchInstance.cpp - Released 2020-11-20T19:49:00Z

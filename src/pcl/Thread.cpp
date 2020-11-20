@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Thread.cpp - Released 2020-10-12T19:24:49Z
+// pcl/Thread.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -470,12 +470,21 @@ int Thread::NumberOfThreads( size_type N, size_type overheadLimit )
 
          processorsAvailable -= NumberOfRunningThreads();
          if ( processorsAvailable > 1 )
-            if ( PixInsightSettings::GlobalFlag( "Process/EnableParallelModuleProcessing" ) )
-               if ( PixInsightSettings::GlobalFlag( "Process/EnableParallelProcessing" ) )
-               {
-                  size_type threadsAvailable = Min( processorsAvailable, PixInsightSettings::GlobalInteger( "Process/MaxProcessors" ) );
-                  return Max( 1, int( Min( threadsAvailable, N/Max( overheadLimit, N/threadsAvailable ) ) ) );
-               }
+         {
+            size_type threadsAvailable = Min( processorsAvailable, (*API->Global->MaxProcessorsAllowedForModule)( ModuleHandle(), 0u/*flags*/ ) );
+            return Max( 1, int( Min( threadsAvailable, N/Max( overheadLimit, N/threadsAvailable ) ) ) );
+         }
+
+         /*
+          * Equivalent, but slower, code based on platform settings.
+          */
+//          if ( processorsAvailable > 1 )
+//             if ( PixInsightSettings::GlobalFlag( "Process/EnableParallelModuleProcessing" ) )
+//                if ( PixInsightSettings::GlobalFlag( "Process/EnableParallelProcessing" ) )
+//                {
+//                   size_type threadsAvailable = Min( processorsAvailable, PixInsightSettings::GlobalInteger( "Process/MaxProcessors" ) );
+//                   return Max( 1, int( Min( threadsAvailable, N/Max( overheadLimit, N/threadsAvailable ) ) ) );
+//                }
       }
 
    return 1;
@@ -529,4 +538,4 @@ void PCL_FUNC Sleep( unsigned ms )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Thread.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/Thread.cpp - Released 2020-11-20T19:46:37Z

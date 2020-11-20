@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2020-10-12T19:24:41Z
+// pcl/APIInterface.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0168
+#define PCL_API_Version 0x0169
 
 extern "C"
 {
@@ -226,6 +226,11 @@ struct api_context GlobalContext
     * Access to the global PixelTraits LUT
     */
    const ::api_pixtraits_lut* (api_func* GetPixelTraitsLUT)( uint32 version ); // version must be zero
+
+   /*
+    * Fast module thread control (since core version 1.8.8-7)
+    */
+   int32       (api_func* MaxProcessorsAllowedForModule)( api_handle, uint32 flags/*unused*/ );
 };
 
 // ----------------------------------------------------------------------------
@@ -535,6 +540,7 @@ struct api_context FileFormatDefinitionContext
    void           (api_func* SetFileFormatSetImageColorFilterArrayRoutine)( pcl::format_set_image_color_filter_array_routine );
    void           (api_func* SetFileFormatEndColorFilterArrayEmbeddingRoutine)( pcl::format_end_embedding_routine );
    void           (api_func* SetFileFormatReadImageRoutine)( pcl::format_read_image_routine );
+   void           (api_func* SetFileFormatAllowIncrementalReadRoutine)( pcl::format_allow_incremental_op_routine );
    void           (api_func* SetFileFormatReadSamplesRoutine)( pcl::format_read_pixels_routine );
    void           (api_func* SetFileFormatQueryOptionsRoutine)( pcl::format_query_options_routine );
    void           (api_func* SetFileFormatCreateRoutine)( pcl::format_create_routine );
@@ -552,6 +558,7 @@ struct api_context FileFormatDefinitionContext
    void           (api_func* SetFileFormatSetThumbnailRoutine)( pcl::format_set_thumbnail_routine );
    void           (api_func* SetFileFormatEndThumbnailEmbeddingRoutine)( pcl::format_end_embedding_routine );
    void           (api_func* SetFileFormatWriteImageRoutine)( pcl::format_write_image_routine );
+   void           (api_func* SetFileFormatAllowIncrementalWriteRoutine)( pcl::format_allow_incremental_op_routine );
    void           (api_func* SetFileFormatWriteSamplesRoutine)( pcl::format_write_pixels_routine );
    void           (api_func* SetFileFormatQueryInexactReadRoutine)( pcl::format_query_inexact_read_routine );
    void           (api_func* SetFileFormatQueryLossyWriteRoutine)( pcl::format_query_lossy_write_routine );
@@ -797,6 +804,7 @@ struct api_context FileFormatContext
 
    api_bool             (api_func* ReadImage)( file_format_handle, image_handle );
 
+   api_bool             (api_func* CanReadIncrementally)( const_file_format_handle );
    api_bool             (api_func* ReadSamples)( file_format_handle, void*, uint32, uint32, uint32, uint32, api_bool, api_bool );
 
    api_bool             (api_func* QueryImageFileOptions)( file_format_handle, api_image_options*, const void**, uint32 );
@@ -821,6 +829,7 @@ struct api_context FileFormatContext
 
    api_bool             (api_func* WriteImage)( file_format_handle, const_image_handle );
 
+   api_bool             (api_func* CanWriteIncrementally)( const_file_format_handle );
    api_bool             (api_func* CreateImage)( file_format_handle, const api_image_info* );
    api_bool             (api_func* WriteSamples)( file_format_handle, const void*, uint32, uint32, uint32, uint32, api_bool, api_bool );
    api_bool             (api_func* CloseImage)( file_format_handle );
@@ -3043,4 +3052,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/APIInterface.h - Released 2020-11-20T19:46:29Z

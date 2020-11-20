@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard ColorSpaces Process Module Version 1.1.1
+// Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// LRGBCombinationInstance.cpp - Released 2020-10-12T19:25:16Z
+// LRGBCombinationInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -58,7 +58,7 @@
 #include <pcl/AutoViewLock.h>
 #include <pcl/HistogramTransformation.h>
 #include <pcl/ImageWindow.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/View.h>
 
 namespace pcl
@@ -256,17 +256,19 @@ static void CIELchToRGB( const RGBColorSystem& rgbws,
    rgbws.CIELchToRGB( R, G, B, L, c, h );
 }
 
-static const float s_3x3Linear[] = { 0.50F, 1.00F, 0.50F };
+const float g_3x3Linear[] =
+{
+   0.25F, 0.50F, 0.25F,
+   0.50F, 1.00F, 0.50F,
+   0.25F, 0.50F, 0.25F
+};
 
 #ifdef __GNUC__
 __attribute__((noinline))
 #endif
 static void WvltNR2( Image& a, Image& b, int n )
 {
-   ATrousWaveletTransform::WaveletScalingFunction H;
-   H.Set( SeparableFilter( s_3x3Linear, s_3x3Linear, 3 ) );
-
-   ATrousWaveletTransform W( H );
+   ATrousWaveletTransform W( KernelFilter( g_3x3Linear, 3 ) );
    W.SetDyadicScalingSequence();
    W.SetNumberOfLayers( n );
 
@@ -313,7 +315,7 @@ static void WvltNRMask( UInt8Image& mask, const GenericImage<P>& img )
       *fc++ = rgbws.CIEc( r, g, b );
    }
 
-   ATrousWaveletTransform W( SeparableFilter( s_3x3Linear, s_3x3Linear, 3 ) );
+   ATrousWaveletTransform W( KernelFilter( g_3x3Linear, 3 ) );
    W.SetDyadicScalingSequence();
    W.SetNumberOfLayers( 8 );
    W.DisableLayer( 3 );
@@ -1166,4 +1168,4 @@ size_type LRGBCombinationInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF LRGBCombinationInstance.cpp - Released 2020-11-20T19:49:00Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/String.cpp - Released 2020-10-12T19:24:49Z
+// pcl/String.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -590,7 +590,7 @@ bool IsoString::ToBool() const
    PCL_TO_BOOL_BODY();
 }
 
-bool IsoString::TryToBool( bool& value ) const
+bool IsoString::TryToBool( bool& value ) const noexcept
 {
    PCL_TRY_TO_BOOL_BODY();
 }
@@ -614,7 +614,7 @@ float IsoString::ToFloat() const
    return val;
 }
 
-bool IsoString::TryToFloat( float& value ) const
+bool IsoString::TryToFloat( float& value ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 < End() )
@@ -651,7 +651,7 @@ double IsoString::ToDouble() const
    return val;
 }
 
-bool IsoString::TryToDouble( double& value ) const
+bool IsoString::TryToDouble( double& value ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 < End() )
@@ -688,7 +688,7 @@ long IsoString::ToInt( int base ) const
    return val;
 }
 
-bool IsoString::TryToInt( int& value, int base ) const
+bool IsoString::TryToInt( int& value, int base ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 == End() )
@@ -724,7 +724,7 @@ unsigned long IsoString::ToUInt( int base ) const
    return val;
 }
 
-bool IsoString::TryToUInt( unsigned& value, int base ) const
+bool IsoString::TryToUInt( unsigned& value, int base ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 == End() )
@@ -765,7 +765,7 @@ long long IsoString::ToInt64( int base ) const
    return val;
 }
 
-bool IsoString::TryToInt64( long long& value, int base ) const
+bool IsoString::TryToInt64( long long& value, int base ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 == End() )
@@ -811,7 +811,7 @@ unsigned long long IsoString::ToUInt64( int base ) const
    return val;
 }
 
-bool IsoString::TryToUInt64( unsigned long long& value, int base ) const
+bool IsoString::TryToUInt64( unsigned long long& value, int base ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 == End() )
@@ -1158,7 +1158,7 @@ bool String::ToBool() const
    PCL_TO_BOOL_BODY();
 }
 
-bool String::TryToBool( bool& value ) const
+bool String::TryToBool( bool& value ) const noexcept
 {
    PCL_TRY_TO_BOOL_BODY();
 }
@@ -1193,7 +1193,7 @@ float String::ToFloat() const
    return val;
 }
 
-bool String::TryToFloat( float& value ) const
+bool String::TryToFloat( float& value ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 < End() )
@@ -1247,7 +1247,7 @@ double String::ToDouble() const
    return val;
 }
 
-bool String::TryToDouble( double& value ) const
+bool String::TryToDouble( double& value ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 < End() )
@@ -1301,7 +1301,7 @@ long String::ToInt( int base ) const
    return val;
 }
 
-bool String::TryToInt( int& value, int base ) const
+bool String::TryToInt( int& value, int base ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 < End() )
@@ -1355,7 +1355,7 @@ unsigned long String::ToUInt( int base ) const
    return val;
 }
 
-bool String::TryToUInt( unsigned& value, int base ) const
+bool String::TryToUInt( unsigned& value, int base ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 < End() )
@@ -1410,7 +1410,7 @@ long long String::ToInt64( int base ) const
    return val;
 }
 
-bool String::TryToInt64( long long& value, int base ) const
+bool String::TryToInt64( long long& value, int base ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 < End() )
@@ -1466,7 +1466,7 @@ unsigned long long String::ToUInt64( int base ) const
    return val;
 }
 
-bool String::TryToUInt64( unsigned long long& value, int base ) const
+bool String::TryToUInt64( unsigned long long& value, int base ) const noexcept
 {
    const_iterator p1 = char_traits::SearchTrimLeft( Begin(), End() );
    if ( p1 < End() )
@@ -2008,7 +2008,7 @@ void IsoString::ParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const
 // ----------------------------------------------------------------------------
 
 template <class T, class S> static
-bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const S& separator, const T& str )
+bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const S& separator, const T& str ) noexcept
 {
    Array<T> tokens;
    str.Break( tokens, separator, true/*trim*/ );
@@ -2065,22 +2065,22 @@ bool TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const S& sepa
    return true;
 }
 
-bool String::TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const String& separator ) const
+bool String::TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const String& separator ) const noexcept
 {
    return pcl::TryParseSexagesimal( sign, s1, s2, s3, separator, *this );
 }
 
-bool String::TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const Array<char_type>& separators ) const
+bool String::TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const Array<char_type>& separators ) const noexcept
 {
    return pcl::TryParseSexagesimal( sign, s1, s2, s3, separators, *this );
 }
 
-bool IsoString::TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const IsoString& separator ) const
+bool IsoString::TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const IsoString& separator ) const noexcept
 {
    return pcl::TryParseSexagesimal( sign, s1, s2, s3, separator, *this );
 }
 
-bool IsoString::TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const Array<char_type>& separators ) const
+bool IsoString::TryParseSexagesimal( int& sign, int& s1, int& s2, double& s3, const Array<char_type>& separators ) const noexcept
 {
    return pcl::TryParseSexagesimal( sign, s1, s2, s3, separators, *this );
 }
@@ -2282,7 +2282,7 @@ void IsoString::ParseISO8601DateTime( int& year, int& month, int& day, double& d
 // ----------------------------------------------------------------------------
 
 template <class T> static
-bool TryParseISO8601DateTime( int& _year, int& _month, int& _day, double& _dayf, double& _tz, const T& str )
+bool TryParseISO8601DateTime( int& _year, int& _month, int& _day, double& _dayf, double& _tz, const T& str ) noexcept
 {
    // Position of the time separator
    size_type t = str.Find( 'T' );
@@ -2424,12 +2424,12 @@ bool TryParseISO8601DateTime( int& _year, int& _month, int& _day, double& _dayf,
    return true;
 }
 
-bool String::TryParseISO8601DateTime( int& year, int& month, int& day, double& dayf, double& tz ) const
+bool String::TryParseISO8601DateTime( int& year, int& month, int& day, double& dayf, double& tz ) const noexcept
 {
    return pcl::TryParseISO8601DateTime( year, month, day, dayf, tz, *this );
 }
 
-bool IsoString::TryParseISO8601DateTime( int& year, int& month, int& day, double& dayf, double& tz ) const
+bool IsoString::TryParseISO8601DateTime( int& year, int& month, int& day, double& dayf, double& tz ) const noexcept
 {
    return pcl::TryParseISO8601DateTime( year, month, day, dayf, tz, *this );
 }
@@ -2518,7 +2518,7 @@ T ToISO8601DateTime( int year, int month, int day, double dayf, double tz, const
          }
    }
 
-   JDToComplexTime( year, month, day, dayf, ComplexTimeToJD( year, month, day ) );
+   JDToCalendarTime( year, month, day, dayf, CalendarTimeToJD( year, month, day ) );
 
    return T().Format( "%d-%02d-%02d", year, month, day ) + time;
 }
@@ -2598,4 +2598,4 @@ IsoString IsoString::CurrentLocalISO8601DateTime( const ISO8601ConversionOptions
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/String.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/String.cpp - Released 2020-11-20T19:46:37Z

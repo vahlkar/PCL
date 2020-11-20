@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/SeparableConvolution.h - Released 2020-10-12T19:24:41Z
+// pcl/SeparableConvolution.h - Released 2020-11-20T19:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -71,9 +71,13 @@ namespace pcl
 
 /*!
  * \class SeparableConvolution
- * \brief Discrete two-dimensional separable convolution
+ * \brief Discrete two-dimensional separable convolution in the spatial domain
  *
- * ### TODO: Write a detailed description for %SeparableConvolution.
+ * %SeparableConvolution implements a fully multithreaded, two-dimensional
+ * discrete separable convolution algorithm. It performs automatic fixing of
+ * border artifacts by applying Neumann boundary conditions (mirroring).
+ *
+ * \sa Convolution, FFTConvolution, SeparableFilter
  */
 class PCL_CLASS SeparableConvolution : public InterlacedTransformation,
                                        public ParallelProcess
@@ -377,6 +381,51 @@ public:
       return m_filter->Size() + (m_filter->Size() - 1)*(InterlacingDistance() - 1);
    }
 
+   /*!
+    * Returns the minimum filter size in pixels for which separable convolution
+    * is consistently faster than nonseparable convolution on the current
+    * PixInsight/PCL platform, for the specified number of parallel execution
+    * threads.
+    *
+    * The values returned by this function have been determined experimentally
+    * on reference hardware for optimized execution on machines and builds with
+    * and without AVX2/FMA3 processor instruction support.
+    *
+    * \ingroup convolution_speed_limits
+    */
+   static constexpr int FasterThanNonseparableFilterSize( int numThreads )
+   {
+#ifdef __PCL_AVX2
+
+      if ( numThreads >= 32 )
+         return 23;
+      if ( numThreads >= 24 )
+         return 19;
+      if ( numThreads >= 16 )
+         return 15;
+      if ( numThreads >= 8 )
+         return 13;
+      if ( numThreads >= 4 )
+         return 11;
+      if ( numThreads >= 2 )
+         return 9;
+      return 7;
+
+#else
+
+      if ( numThreads >= 32 )
+         return 15;
+      if ( numThreads >= 16 )
+         return 11;
+      if ( numThreads >= 8 )
+         return 9;
+      if ( numThreads >= 4 )
+         return 7;
+      return 5;
+
+#endif
+   }
+
 protected:
 
    /*
@@ -430,4 +479,4 @@ private:
 #endif   // __PCL_SeparableConvolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableConvolution.h - Released 2020-10-12T19:24:41Z
+// EOF pcl/SeparableConvolution.h - Released 2020-11-20T19:46:29Z

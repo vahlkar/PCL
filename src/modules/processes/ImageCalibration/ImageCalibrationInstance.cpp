@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2020-10-12T19:25:16Z
+// ImageCalibrationInstance.cpp - Released 2020-11-20T19:49:00Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -60,6 +60,7 @@
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
 #include <pcl/MuteStatus.h>
+#include <pcl/SeparableConvolution.h>
 #include <pcl/SpinStatus.h>
 #include <pcl/Version.h>
 
@@ -79,10 +80,22 @@ namespace pcl
  *   3.0/128, 3.0/32, 9.0/64,  3.0/32, 3.0/128,
  *   1.0/64,  1.0/16, 3.0/32,  1.0/16, 1.0/64,
  *   1.0/256, 1.0/64, 3.0/128, 1.0/64, 1.0/256
- *
- * Note that we use this scaling function as a separable filter (row and column
- * vectors) for performance reasons.
  */
+static const float g_5x5B3Spline[] =
+{
+   0.003906F, 0.015625F, 0.023438F, 0.015625F, 0.003906F,
+   0.015625F, 0.062500F, 0.093750F, 0.062500F, 0.015625F,
+   0.023438F, 0.093750F, 0.140625F, 0.093750F, 0.023438F,
+   0.015625F, 0.062500F, 0.093750F, 0.062500F, 0.015625F,
+   0.003906F, 0.015625F, 0.023438F, 0.015625F, 0.003906F
+};
+static const float g_5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
+static const float g_5x5B3Spline_kj[] =
+{ 0.8907F, 0.2007F, 0.0856F, 0.0413F, 0.0205F, 0.0103F, 0.0052F, 0.0026F, 0.0013F, 0.0007F };
+
+
+
+
 // Separable filter coefficients
 const float __5x5B3Spline_hv[] = { 0.0625F, 0.25F, 0.375F, 0.25F, 0.0625F };
 // Gaussian noise scaling factors
@@ -629,12 +642,16 @@ static double TestDarkOptimization( float k, const Image& target, const Image& d
 
    SubtractOneChannelDark( t, 0, dark, Min( target.SelectedChannel(), dark.NumberOfChannels()-1 ), k );
 
-   SeparableFilter H( __5x5B3Spline_hv, __5x5B3Spline_hv, 5 );
-   ATrousWaveletTransform W( H, 1 );
-   W.DisableParallelProcessing();
+   ATrousWaveletTransform::WaveletScalingFunction H;
+   if ( SeparableConvolution::FasterThanNonseparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) > 5 )
+      H.Set( KernelFilter( g_5x5B3Spline, 5 ) );
+   else
+      H.Set( SeparableFilter( g_5x5B3Spline_hv, g_5x5B3Spline_hv, 5 ) );
+
+   ATrousWaveletTransform W( H );
    W.DisableLayer( 1 );
    W << t;
-   return W.NoiseKSigma( 0 ) /*/__5x5B3Spline_kj[0]*/; // we can work with unscaled noise estimates here
+   return W.NoiseKSigma( 0 ) /*/g_5x5B3Spline_kj[0]*/; // we can work with unscaled noise estimates here.
 }
 
 // ----------------------------------------------------------------------------
@@ -929,7 +946,11 @@ static void EvaluateNoise( FVector& noiseEstimates, FVector& noiseFractions, Str
    noiseFractions = FVector( 0.0F, target.NumberOfChannels() );
    noiseAlgorithms = StringList( target.NumberOfChannels(), String() );
 
-   SeparableFilter H( __5x5B3Spline_hv, __5x5B3Spline_hv, 5 );
+   ATrousWaveletTransform::WaveletScalingFunction H;
+   if ( SeparableConvolution::FasterThanNonseparableFilterSize( Thread::NumberOfThreads( PCL_MAX_PROCESSORS ) ) > 5 )
+      H.Set( KernelFilter( g_5x5B3Spline, 5 ) );
+   else
+      H.Set( SeparableFilter( g_5x5B3Spline_hv, g_5x5B3Spline_hv, 5 ) );
 
    for ( int c = 0; c < target.NumberOfChannels(); ++c )
    {
@@ -2875,4 +2896,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2020-10-12T19:25:16Z
+// EOF ImageCalibrationInstance.cpp - Released 2020-11-20T19:49:00Z

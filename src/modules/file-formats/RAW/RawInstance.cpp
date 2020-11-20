@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.5
 // ----------------------------------------------------------------------------
-// RawInstance.cpp - Released 2020-10-12T19:25:05Z
+// RawInstance.cpp - Released 2020-11-20T19:48:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #include <pcl/FastRotation.h>
 #include <pcl/FITSHeaderKeyword.h>
-#include <pcl/StdStatus.h>
+#include <pcl/StandardStatus.h>
 #include <pcl/TimePoint.h>
 #include <pcl/Version.h>
 
@@ -1509,4 +1509,4 @@ UInt8Image RawInstance::ReadThumbnail()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.cpp - Released 2020-10-12T19:25:05Z
+// EOF RawInstance.cpp - Released 2020-11-20T19:48:45Z

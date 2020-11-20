@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.1
+// /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/IntegrationMetadata.cpp - Released 2020-10-12T19:24:49Z
+// pcl/IntegrationMetadata.cpp - Released 2020-11-20T19:46:37Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -103,6 +103,8 @@ IntegrationMetadata::IntegrationMetadata( const PropertyArray& properties, const
             ra = p.Value().ToDouble();
          else if ( p.Id() == "Observation:Center:Dec" )
             dec = p.Value().ToDouble();
+         else if ( p.Id() == "Observation:CelestialReferenceSystem" )
+            celCrdSys = p.Value().ToIsoString();
          else if ( p.Id() == "Observation:Equinox" )
             equinox = p.Value().ToDouble();
          else if ( p.Id() == "Observation:Time:Start" )
@@ -216,6 +218,8 @@ IntegrationMetadata::IntegrationMetadata( const PropertyArray& properties, const
                throw Error( "Declination value out of range: '" + value + '\'' );
             dec = x;
          }
+         else if ( !celCrdSys.IsDefined() && k.name == "RADESYS" )
+            celCrdSys = value.Uppercase();
          else if ( !equinox.IsDefined() && k.name == "EQUINOX" )
             equinox = value.ToDouble();
          else if ( !longObs.IsDefined() && k.name == "OBSGEO-L" )
@@ -335,10 +339,21 @@ IntegrationMetadata::IntegrationMetadata( const PropertyArray& properties, const
       }
    }
 
-   if ( !equinox.IsDefined() )
+   if ( equinox.IsDefined() )
+   {
+      if ( celCrdSys.IsDefined() )
+         if ( celCrdSys() == "ICRS" || celCrdSys() == "GAPPT" )
+            equinox.Undefine();
+   }
+   else
+   {
       if ( ra.IsDefined() )
          if ( dec.IsDefined() )
-            equinox = 2000.0;
+            if ( celCrdSys.IsDefined() && celCrdSys() != "ICRS" && celCrdSys() != "GAPPT" )
+               equinox = 2000.0; // assume FK5 / J2000.0
+            else
+               celCrdSys = "ICRS";
+   }
 
    if ( !endTime.IsDefined() )
       if ( startTime.IsDefined() )
@@ -425,6 +440,8 @@ IntegrationMetadata::IntegrationMetadata( const String& serialization )
                ra = tokens[1].ToDouble();
             else if ( tokens[0] == "dec" )
                dec = tokens[1].ToDouble();
+            else if ( tokens[0] == "celCrdSys" )
+               celCrdSys = IsoString( tokens[1] );
             else if ( tokens[0] == "equinox" )
                equinox = tokens[1].ToDouble();
             else if ( tokens[0] == "longObs" )
@@ -482,6 +499,7 @@ String IntegrationMetadata::Serialize() const
                      << ItemSeparator << "endTime"         << TokenSeparator << endTime.ToString()
                      << ItemSeparator << "ra"              << TokenSeparator << ra.ToString()
                      << ItemSeparator << "dec"             << TokenSeparator << dec.ToString()
+                     << ItemSeparator << "celCrdSys"       << TokenSeparator << celCrdSys.ToString()
                      << ItemSeparator << "equinox"         << TokenSeparator << equinox.ToString()
                      << ItemSeparator << "longObs"         << TokenSeparator << longObs.ToString()
                      << ItemSeparator << "latObs"          << TokenSeparator << latObs.ToString()
@@ -697,12 +715,20 @@ void IntegrationMetadata::UpdatePropertiesAndKeywords( PropertyArray& properties
                                      "Declination (deg) (compatibility)" );
    }
 
+   if ( celCrdSys.IsConsistentlyDefined( "Observation:CelestialReferenceSystem (RADESYS keyword)" ) )
+   {
+      properties << Property( "Observation:CelestialReferenceSystem", celCrdSys() );
+      keywords << FITSHeaderKeyword( "RADESYS",
+                                     celCrdSys(),
+                                     "Reference system of celestial coordinates" );
+   }
+
    if ( equinox.IsConsistentlyDefined( "Observation:Equinox (EQUINOX keyword)" ) )
    {
       properties << Property( "Observation:Equinox", equinox() );
       keywords << FITSHeaderKeyword( "EQUINOX",
                                      IsoString( equinox() ),
-                                     "Equinox of celestial coordinates" );
+                                     "Epoch of the mean equator and equinox (years)" );
    }
 
    if ( startTime.IsConsistentlyDefined( "Observation:Time:Start (DATE-OBS / DATE-BEG keywords)" ) )
@@ -792,6 +818,7 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
             summary.aperture         = metadata.aperture;
             summary.apertureArea     = metadata.apertureArea;
             summary.objectName       = metadata.objectName;
+            summary.celCrdSys        = metadata.celCrdSys;
             summary.equinox          = metadata.equinox;
 
             if ( metadata.ra.IsDefined() )
@@ -893,4 +920,4 @@ IntegrationMetadata IntegrationMetadata::Summary( const Array<IntegrationMetadat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegrationMetadata.cpp - Released 2020-10-12T19:24:49Z
+// EOF pcl/IntegrationMetadata.cpp - Released 2020-11-20T19:46:37Z
