@@ -146,13 +146,14 @@ public:
     * implemented as the KernelFilter class, or a separable filter implemented
     * as SeparableFilter.
     *
-    * Separable filters can be better in terms of performance, since separable
-    * convolution has O(N) complexity, as opposed to O(N^2) for non-separable
-    * convolution. However, in current PCL versions separable convolutions are
-    * only faster for relatively large filter sizes as a resut of vectorization
-    * with SIMD instructions. See the SeparableConvolution class
-    * and the \ref convolution_limits_macros "convolution selection macros"
-    * section for more information.
+    * Separable filters should be better in terms of performance, since
+    * separable convolution has O(N) complexity, as opposed to O(N^2) for
+    * non-separable convolution. However, in current PCL versions separable
+    * convolutions are only faster for relatively large filter sizes as a resut
+    * of vectorization with SIMD processor instructions. See the
+    * SeparableConvolution class and the \ref convolution_speed_limits "Helper
+    * Functions for Selection of Convolution Algorithms" section for more
+    * information.
     *
     * \sa KernelFilter, SeparableFilter
     */

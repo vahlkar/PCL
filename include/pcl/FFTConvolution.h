@@ -69,7 +69,7 @@ namespace pcl
 
 /*!
  * \defgroup convolution_speed_limits Helper Functions for Selection of
- * FFT-based, Separable and Nonseparable Convolution Algorithms
+ * Convolution Algorithms
  */
 
 /*!
