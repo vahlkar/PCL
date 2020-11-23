@@ -271,12 +271,11 @@ private:
          bool tz0 = 1 + th0 == 1;
          bool tz1 = 1 + th1 == 1;
          bool tz = tz0 && tz1;
-
          bool unitWeight = m_data.convolution.FilterWeight() == 1;
-         bool compactFilter = !m_data.convolution.IsInterlaced();
 
-         int nc = m_data.convolution.Filter().NumberOfCoefficients();
-         DVector hf( nc );
+         double (*innerLoop)( typename raw_data::const_iterator, typename raw_data::const_iterator,
+                              const KernelFilter::coefficient* __restrict__, int, int, int ) noexcept
+            = m_data.convolution.IsInterlaced() ? InnerLoop_Interlaced : InnerLoop_Compact;
 
          raw_data f0( P::MinSampleValue(), n, nf0 );
 
@@ -310,51 +309,30 @@ private:
 
             for ( int y = m_firstRow;; )
             {
-               for ( int x = 0; x < w; ++x )
+               if ( likely( tz ) )
                {
+                  for ( int x = 0; x < w; ++x, ++f )
                   {
-                     const KernelFilter::coefficient* h = m_data.convolution.Filter().Begin();
-                     DVector::component* f = hf.DataPtr();
-                     if ( compactFilter )
-                     {
-                        /*
-                         * Compact convolution.
-                         */
-                        InnerLoop_Compact( f0.Begin(), f0.End(), h, f, x, m );
+                     double r = (*innerLoop)( f0.Begin(), f0.End(), m_data.convolution.Filter().Begin(),
+                                              x, m, m_data.convolution.InterlacingDistance() );
+                     if ( !unitWeight )
+                        r /= m_data.convolution.FilterWeight();
 
-//                         for ( typename raw_data::const_iterator i = f0.Begin(); i < f0.End(); ++i )
-//                         {
-//                            typename raw_data::const_vector_iterator fi = i->At( x ), fn = fi + n;
-//                            do
-//                               *f++ = *h++ * *fi++;
-//                            while ( fi < fn );
-//                         }
-                     }
+                     if ( g == nullptr )
+                        *f = P::FloatToSample( r );
                      else
-                     {
-                        /*
-                         * Interlaced convolution (e.g., the à trous algorithm).
-                         */
-                        InnerLoop_Interlaced( f0.Begin(), f0.End(), h, f, x, m, m_data.convolution.InterlacingDistance() );
-
-//                         for ( typename raw_data::const_iterator i = f0.Begin();
-//                               i < f0.End();
-//                               i += m_data.convolution.InterlacingDistance() )
-//                         {
-//                            typename raw_data::const_vector_iterator fi = i->At( x ), fn = fi + n;
-//                            do
-//                               *f++ = *h++ * *fi;
-//                            while ( (fi += m_data.convolution.InterlacingDistance()) < fn );
-//                         }
-                     }
+                        *g++ = P::FloatToSample( r );
                   }
-
-                  double r = hf.Sum();
-                  if ( !unitWeight )
-                     r /= m_data.convolution.FilterWeight();
-
-                  if ( !tz )
+               }
+               else
+               {
+                  for ( int x = 0; x < w; ++x, ++f )
                   {
+                     double r = (*innerLoop)( f0.Begin(), f0.End(), m_data.convolution.Filter().Begin(),
+                                              x, m, m_data.convolution.InterlacingDistance() );
+                     if ( !unitWeight )
+                        r /= m_data.convolution.FilterWeight();
+
                      if ( r < *f )
                      {
                         if ( !tz0 )
@@ -379,16 +357,12 @@ private:
                            }
                         }
                      }
+
+                     if ( g == nullptr )
+                        *f = P::FloatToSample( r );
+                     else
+                        *g++ = P::FloatToSample( r );
                   }
-
-                  if ( g == nullptr )
-                     *f = P::FloatToSample( r );
-                  else
-                     *g++ = P::FloatToSample( r );
-
-                  ++f;
-
-                  UPDATE_THREAD_MONITOR( 65536 )
                }
 
                if ( ++y == m_endRow )
@@ -439,6 +413,8 @@ private:
                   //f0[n-1] = f0[n-2];
                }
             }
+
+            UPDATE_THREAD_MONITOR( 1024 )
          }
       }
 
@@ -462,40 +438,42 @@ private:
       bool           m_haveUpperOvRgn;
       bool           m_haveLowerOvRgn;
 
-      static void InnerLoop_Compact( typename raw_data::const_iterator i,
-                                     typename raw_data::const_iterator j,
-                                     const KernelFilter::coefficient* __restrict__ h,
-                                     DVector::component* __restrict__ f,
-                                     int x, int n ) noexcept
+      /*
+       * Compact convolution.
+       */
+      static double InnerLoop_Compact( typename raw_data::const_iterator i,
+                                       typename raw_data::const_iterator j,
+                                       const KernelFilter::coefficient* __restrict__ h,
+                                       int x, int n, int ) noexcept
       {
-         /*
-          * Vectorizable using 32 byte vectors.
-          */
+         double r = 0;
          for ( ; i < j; ++i )
          {
             typename raw_data::const_vector_iterator __restrict__ fi = i->At( x );
             PCL_UNROLL( 24 )
             for ( int k = 0; k < n; ++k )
-               *f++ = *h++ * *fi++;
+               r += *h++ * *fi++;
          }
+         return r;
       }
 
-      static void InnerLoop_Interlaced( typename raw_data::const_iterator i,
-                                        typename raw_data::const_iterator j,
-                                        const KernelFilter::coefficient* __restrict__ h,
-                                        DVector::component* __restrict__ f,
-                                        int x, int n, int d ) noexcept
+      /*
+       * Interlaced convolution (e.g., the à trous algorithm).
+       */
+      static double InnerLoop_Interlaced( typename raw_data::const_iterator i,
+                                          typename raw_data::const_iterator j,
+                                          const KernelFilter::coefficient* __restrict__ h,
+                                          int x, int n, int d ) noexcept
       {
-         /*
-          * Vectorizable using 16 and 32 byte vectors.
-          */
+         double r = 0;
          for ( ; i < j; i += d )
          {
             typename raw_data::const_vector_iterator __restrict__ fi = i->At( x );
             PCL_UNROLL( 24 )
             for ( int k = 0, l = 0; k < n; ++k, l += d )
-               *f++ = *h++ * fi[l];
+               r += *h++ * fi[l];
          }
+         return r;
       }
    };
 };
