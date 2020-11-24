@@ -81,9 +81,9 @@ public:
 
             if ( y0 != y1 )
             {
-               int x0 = 0, x1 = image.Width()-1;
-
+               int x0 = 0, x1 = image.Width() - 1;
                PCL_IVDEP
+               PCL_UNROLL( 16 )
                while ( x0 < x1 )
                {
                   pcl::Swap( f0[x0], f1[x1] );
@@ -91,14 +91,16 @@ public:
                   ++x0;
                   --x1;
                }
-
                if ( x0 == x1 )
                   pcl::Swap( f0[x0], f1[x0] );
             }
             else
             {
+               typename P::sample* __restrict__ f = f0;
+               typename P::sample* __restrict__ g = f0 + image.Width() - 1;
                PCL_IVDEP
-               for ( typename P::sample* __restrict__ f = f0, * __restrict__ g = f0+image.Width()-1; f < g; )
+               PCL_UNROLL( 24 )
+               while ( f < g )
                   pcl::Swap( *f++, *g-- );
             }
          }
@@ -134,7 +136,7 @@ public:
             typename P::sample* __restrict__ t = tmp.Begin();
             ::memcpy( t, f, N*P::BytesPerSample() );
             for ( int y = 0; y < h; ++y )
-               for ( int x = 0, h1y = h1-y; x < w; ++x, ++t )
+               for ( int x = 0, h1y = h1 - y; x < w; ++x, ++t )
                   f[x*h + h1y] = *t;
          }
 
@@ -185,7 +187,7 @@ public:
             ::memcpy( t, f, N*P::BytesPerSample() );
             for ( int y = 0; y < h; ++y )
                for ( int x = 0; x < w; ++x, ++t )
-                  f[(w1-x)*h + y] = *t;
+                  f[(w1 - x)*h + y] = *t;
          }
 
          image.ImportData( f0, h, w, n, cs0 ).Status() = status;
@@ -218,12 +220,12 @@ public:
       for ( int c = 0; c < n; ++c, image.Status() += N )
          for ( int y = 0; y < image.Height(); ++y )
          {
+            typename P::sample* __restrict__ f = image.ScanLine( y, c );
+            typename P::sample* __restrict__ g = f + image.Width() - 1;
             PCL_IVDEP
-            for ( typename P::sample* __restrict__ f = image.ScanLine( y, c ),
-                                    * __restrict__ g = f + image.Width()-1; f < g; )
-            {
+            PCL_UNROLL( 24 )
+            while ( f < g )
                pcl::Swap( *f++, *g-- );
-            }
          }
    }
 
@@ -243,14 +245,12 @@ public:
          PCL_IVDEP
          for ( int y0 = 0, y1 = image.Height()-1; y0 < y1; ++y0, --y1 )
          {
+            typename P::sample* __restrict__ f0 = image.ScanLine( y0, c );
+            typename P::sample* __restrict__ f1 = image.ScanLine( y1, c );
             PCL_IVDEP
-            for ( typename P::sample* __restrict__ f0 = image.ScanLine( y0, c ),
-                                    * __restrict__ f1 = image.ScanLine( y1, c ),
-                                    * __restrict__ fw = f0 + image.Width();
-                  f0 < fw; )
-            {
+            PCL_UNROLL( 24 )
+            for ( int x0 = 0, x1 = image.Width(); x0 < x1; ++x0 )
                pcl::Swap( *f0++, *f1++ );
-            }
          }
       }
    }
