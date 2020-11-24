@@ -398,11 +398,13 @@ public:
 #ifdef __PCL_AVX2
 
       if ( numThreads >= 32 )
-         return 23;
+         return 29;
+      if ( numThreads >= 28 )
+         return 25;
       if ( numThreads >= 24 )
-         return 19;
+         return 21;
       if ( numThreads >= 16 )
-         return 15;
+         return 19;
       if ( numThreads >= 8 )
          return 13;
       if ( numThreads >= 4 )
