@@ -229,7 +229,7 @@ public:
    private:
 
       AutoPointer<BidimensionalInterpolation<sample>> m_interpolation;
-                                                      bool m_unclipped;
+                                                 bool m_unclipped;
    };
 
    // -------------------------------------------------------------------------
@@ -261,7 +261,7 @@ public:
     * contexts.
     *
     * A thread-safe interpolator can be used concurrently by multiple threads
-    * without needing to lock the interpolated data.
+    * without needing to lock access to the interpolated data.
     *
     * \note The default implementation returns true, so pixel interpolations
     * are considered thread-safe by default.

@@ -980,7 +980,8 @@ Complex<T> Round( const Complex<T>& c, int n ) noexcept
  * \ingroup phase_matrices
  */
 template <typename T> inline
-void PhaseCorrelationMatrix( Complex<T>* i, const Complex<T>* j, const Complex<T>* a, const Complex<T>* b ) noexcept
+void PhaseCorrelationMatrix( Complex<T>* __restrict__ i, const Complex<T>* __restrict__ j,
+                             const Complex<T>* __restrict__ a, const Complex<T>* __restrict__ b ) noexcept
 {
    const T tiny = T( 1.0e-20 );
    for ( ; i < j; ++i, ++a, ++b )
@@ -1011,7 +1012,8 @@ void PhaseCorrelationMatrix( Complex<T>* i, const Complex<T>* j, const Complex<T
  * \ingroup phase_matrices
  */
 template <typename T> inline
-void CrossPowerSpectrumMatrix( Complex<T>* i, const Complex<T>* j, const Complex<T>* a, const Complex<T>* b ) noexcept
+void CrossPowerSpectrumMatrix( Complex<T>* __restrict__ i, const Complex<T>* __restrict__ j,
+                               const Complex<T>* __restrict__ a, const Complex<T>* __restrict__ b ) noexcept
 {
    const T tiny = T( 1.0e-20 );
    for ( ; i < j; ++i, ++a, ++b )

@@ -142,11 +142,6 @@ void Resample::GetNewSizes( int& width, int& height ) const
 
 // ----------------------------------------------------------------------------
 
-// #if !defined( _MSC_VER ) && !defined( __clang__ )
-// #pragma GCC push_options
-// #pragma GCC optimize ("O2")
-// #endif
-
 class PCL_ResampleEngine
 {
 public:
@@ -272,17 +267,14 @@ private:
       {
          INIT_THREAD_MONITOR()
 
-         typename P::sample* f = m_data.f + size_type( m_firstRow )*size_type( m_data.width );
-
+         typename P::sample* __restrict__ f = m_data.f + size_type( m_firstRow )*size_type( m_data.width );
          for ( int i = m_firstRow; i < m_endRow; ++i )
          {
             double i_ry = i*m_data.yRatio;
+            for ( int j = 0; j < m_data.width; ++j )
+               *f++ = (*m_interpolator)( j*m_data.xRatio, i_ry );
 
-            for ( int j = 0; j < m_data.width; ++j, ++f )
-            {
-               *f = (*m_interpolator)( j*m_data.xRatio, i_ry );
-               UPDATE_THREAD_MONITOR( 65536 )
-            }
+            UPDATE_THREAD_MONITOR( 1024 )
          }
       }
 
@@ -294,10 +286,6 @@ private:
       AutoPointer<interpolator_type> m_interpolator;
    };
 };
-
-// #if !defined( _MSC_VER ) && !defined( __clang__ )
-// #pragma GCC pop_options
-// #endif
 
 // ----------------------------------------------------------------------------
 

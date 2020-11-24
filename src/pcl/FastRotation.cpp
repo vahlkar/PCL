@@ -76,13 +76,14 @@ public:
       for ( int c = 0; c < n; ++c, image.Status() += N )
          for ( int y0 = 0, y1 = image.Height()-1; y0 <= y1; ++y0, --y1 )
          {
-            typename P::sample* f0 = image.ScanLine( y0, c );
-            typename P::sample* f1 = image.ScanLine( y1, c );
+            typename P::sample* __restrict__ f0 = image.ScanLine( y0, c );
+            typename P::sample* __restrict__ f1 = image.ScanLine( y1, c );
 
             if ( y0 != y1 )
             {
                int x0 = 0, x1 = image.Width()-1;
 
+               PCL_IVDEP
                while ( x0 < x1 )
                {
                   pcl::Swap( f0[x0], f1[x1] );
@@ -95,8 +96,11 @@ public:
                   pcl::Swap( f0[x0], f1[x0] );
             }
             else
-               for ( typename P::sample* f = f0, * g = f0+image.Width()-1; f < g; )
+            {
+               PCL_IVDEP
+               for ( typename P::sample* __restrict__ f = f0, * __restrict__ g = f0+image.Width()-1; f < g; )
                   pcl::Swap( *f++, *g-- );
+            }
          }
    }
 
@@ -126,8 +130,8 @@ public:
 
          for ( int c = 0; c < n; ++c, status += N )
          {
-            typename P::sample* f = f0[c];
-            typename P::sample* t = tmp.Begin();
+            typename P::sample* __restrict__ f = f0[c];
+            typename P::sample* __restrict__ t = tmp.Begin();
             ::memcpy( t, f, N*P::BytesPerSample() );
             for ( int y = 0; y < h; ++y )
                for ( int x = 0, h1y = h1-y; x < w; ++x, ++t )
@@ -176,8 +180,8 @@ public:
 
          for ( int c = 0; c < n; ++c, status += N )
          {
-            typename P::sample* f = f0[c];
-            typename P::sample* t = tmp.Begin();
+            typename P::sample* __restrict__ f = f0[c];
+            typename P::sample* __restrict__ t = tmp.Begin();
             ::memcpy( t, f, N*P::BytesPerSample() );
             for ( int y = 0; y < h; ++y )
                for ( int x = 0; x < w; ++x, ++t )
@@ -213,11 +217,14 @@ public:
 
       for ( int c = 0; c < n; ++c, image.Status() += N )
          for ( int y = 0; y < image.Height(); ++y )
-            for ( typename P::sample* f = image.ScanLine( y, c ),
-                                    * g = f + image.Width()-1; f < g; )
+         {
+            PCL_IVDEP
+            for ( typename P::sample* __restrict__ f = image.ScanLine( y, c ),
+                                    * __restrict__ g = f + image.Width()-1; f < g; )
             {
                pcl::Swap( *f++, *g-- );
             }
+         }
    }
 
    template <class P> static
@@ -232,14 +239,20 @@ public:
          image.Status().Initialize( "Vertical mirror", n*N );
 
       for ( int c = 0; c < n; ++c, image.Status() += N )
+      {
+         PCL_IVDEP
          for ( int y0 = 0, y1 = image.Height()-1; y0 < y1; ++y0, --y1 )
-            for ( typename P::sample* f0 = image.ScanLine( y0, c ),
-                                    * f1 = image.ScanLine( y1, c ),
-                                    * fw = f0 + image.Width();
+         {
+            PCL_IVDEP
+            for ( typename P::sample* __restrict__ f0 = image.ScanLine( y0, c ),
+                                    * __restrict__ f1 = image.ScanLine( y1, c ),
+                                    * __restrict__ fw = f0 + image.Width();
                   f0 < fw; )
             {
                pcl::Swap( *f0++, *f1++ );
             }
+         }
+      }
    }
 };
 

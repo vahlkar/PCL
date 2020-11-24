@@ -1948,7 +1948,7 @@ private:
       /*!
        * Constructs array elements with default values in the range [i,j).
        */
-      void Initialize( iterator i, iterator j )
+      void Initialize( iterator __restrict__ i, iterator __restrict__ j )
       {
          for ( ; i < j; ++i )
             pcl::Construct( i, alloc );
@@ -1958,7 +1958,7 @@ private:
        * Constructs \a n consecutive array elements with default values,
        * starting from the element pointed to by \a i.
        */
-      void Initialize( iterator i, size_type n )
+      void Initialize( iterator __restrict__ i, size_type n )
       {
          for ( ; n > 0; ++i, --n )
             pcl::Construct( i, alloc );
@@ -1968,7 +1968,7 @@ private:
        * Constructs array elements with the specified value \a v in the range
        * [i,j).
        */
-      void Initialize( iterator i, iterator j, const T& v )
+      void Initialize( iterator __restrict__ i, iterator __restrict__ j, const T& v )
       {
          for ( ; i < j; ++i )
             pcl::Construct( i, v, alloc );
@@ -1978,7 +1978,7 @@ private:
        * Constructs \a n consecutive array elements with the specified value
        * \a v, starting from the element pointed to by \a i.
        */
-      void Initialize( iterator i, size_type n, const T& v )
+      void Initialize( iterator __restrict__ i, size_type n, const T& v )
       {
          for ( ; n > 0; ++i, --n )
             pcl::Construct( i, v, alloc );
@@ -1990,7 +1990,7 @@ private:
        * iterator after the last constructed element.
        */
       template <class FI>
-      iterator Build( iterator i, FI p, FI q )
+      iterator Build( iterator __restrict__ i, FI p, FI q )
       {
          for ( ; p != q; ++i, ++p )
             pcl::Construct( i, *p, alloc );
@@ -2025,7 +2025,7 @@ private:
                      {
                         do
                            *--j2 = *--j1;
-                        while ( j1 != i );
+                        while ( j1 > i );
                         break;
                      }
                   }

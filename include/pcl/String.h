@@ -8681,6 +8681,7 @@ public:
       {
          MaybeReallocate( n );
          const_char8_iterator t = s.Begin();
+         PCL_IVDEP
          for ( iterator i = m_data->string; i < m_data->end; ++i, ++t )
             *i = char_type( uint8( *t ) );
       }
@@ -8698,6 +8699,7 @@ public:
       if ( n > 0 )
       {
          MaybeReallocate( n );
+         PCL_IVDEP
          for ( iterator i = m_data->string; i < m_data->end; ++i, ++t )
             *i = char_type( uint8( *t ) );
       }
@@ -8718,6 +8720,7 @@ public:
          n = pcl::Min( n, len-i );
          MaybeReallocate( n );
          t += i;
+         PCL_IVDEP
          for ( iterator i = m_data->string; i < m_data->end; ++i, ++t )
             *i = char_type( uint8( *t ) );
       }
@@ -8734,6 +8737,7 @@ public:
       if ( p < q )
       {
          MaybeReallocate( q - p );
+         PCL_IVDEP
          for ( iterator i = m_data->string; i < m_data->end; ++i, ++p )
             *i = char_type( uint8( *p ) );
       }
@@ -8819,6 +8823,7 @@ public:
       {
          UninitializedGrow( i, n ); // -> 0 <= i <= len
          const_char8_iterator t = s.Begin();
+         PCL_IVDEP
          for ( iterator p = m_data->string+i, q = p+n; p < q; ++p, ++t )
             *p = char_type( uint8( *t ) );
       }
@@ -8831,6 +8836,7 @@ public:
       {
          UninitializedGrow( i, n ); // -> 0 <= i <= len
          const_char8_iterator t = s.Begin();
+         PCL_IVDEP
          for ( iterator p = m_data->string+i, q = p+n; p < q; ++p, ++t )
             *p = char_type( uint8( *t ) );
       }
@@ -8842,6 +8848,7 @@ public:
       if ( n > 0 )
       {
          UninitializedGrow( i, n ); // -> 0 <= i <= len
+         PCL_IVDEP
          for ( iterator p = m_data->string+i, q = p+n; p < q; ++p, ++t )
             *p = char_type( uint8( *t ) );
       }
@@ -8853,6 +8860,7 @@ public:
       if ( n > 0 )
       {
          UninitializedGrow( i, n ); // -> 0 <= i <= len
+         PCL_IVDEP
          for ( iterator p = m_data->string+i, q = p+n; p < q; ++p, ++t )
             *p = char_type( uint8( *t ) );
       }
@@ -8864,6 +8872,7 @@ public:
       {
          size_type n = q - p;
          UninitializedGrow( i, n ); // -> 0 <= i <= len
+         PCL_IVDEP
          for ( iterator r = m_data->string+i, s = r+n; r < s; ++r, ++p )
             *r = char_type( uint8( *p ) );
       }
@@ -9294,6 +9303,7 @@ public:
                   else
                      EnsureUnique();
 
+                  PCL_IVDEP
                   for ( iterator p = m_data->string+i, q = p+nt; p < q; ++p, ++t )
                      *p = char_type( *t );
                }

@@ -311,8 +311,8 @@ public:
 
 private:
 
-   bool     m_fastGrowth : 1;
-   bool     m_canShrink  : 1;
+   bool m_fastGrowth : 1;
+   bool m_canShrink  : 1;
 };
 
 } // pcl
