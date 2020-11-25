@@ -565,7 +565,9 @@ template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
  * library functions, such as std::numeric_limits<>::max().
  */
 #ifdef _MSC_VER
-#  define NOMINMAX 1
+#  ifndef NOMINMAX
+#    define NOMINMAX 1 // needs to be defined before #include windows.h
+#  endif
 #  ifdef max
 #    undef max
 #  endif
