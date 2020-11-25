@@ -274,8 +274,37 @@ private:
          bool unitWeight = m_data.convolution.FilterWeight() == 1;
 
          double (*innerLoop)( typename raw_data::const_iterator, typename raw_data::const_iterator,
-                              const KernelFilter::coefficient* __restrict__, int, int, int ) noexcept
-            = m_data.convolution.IsInterlaced() ? InnerLoop_Interlaced : InnerLoop_Compact;
+                              const KernelFilter::coefficient* __restrict__, int, int, int ) noexcept;
+         if ( m_data.convolution.IsInterlaced() )
+         {
+            switch ( m )
+            {
+            case 3:
+               innerLoop = InnerLoop_Interlaced_3x3;
+               break;
+            case 5:
+               innerLoop = InnerLoop_Interlaced_5x5;
+               break;
+            default:
+               innerLoop = InnerLoop_Interlaced;
+               break;
+            }
+         }
+         else
+         {
+            switch ( m )
+            {
+            case 3:
+               innerLoop = InnerLoop_Compact_3x3;
+               break;
+            case 5:
+               innerLoop = InnerLoop_Compact_5x5;
+               break;
+            default:
+               innerLoop = InnerLoop_Compact;
+               break;
+            }
+         }
 
          raw_data f0( P::MinSampleValue(), n, nf0 );
 
@@ -444,16 +473,51 @@ private:
       static double InnerLoop_Compact( typename raw_data::const_iterator i,
                                        typename raw_data::const_iterator j,
                                        const KernelFilter::coefficient* __restrict__ h,
-                                       int x, int n, int ) noexcept
+                                       int x, int n, int/*d*/ ) noexcept
       {
          double r = 0;
          for ( ; i < j; ++i )
          {
             typename raw_data::const_vector_iterator __restrict__ fi = i->At( x );
-            PCL_UNROLL( 24 )
             for ( int k = 0; k < n; ++k )
                r += *h++ * *fi++;
          }
+         return r;
+      }
+
+      static double InnerLoop_Compact_3x3( typename raw_data::const_iterator i,
+                                           typename raw_data::const_iterator /*j*/,
+                                           const KernelFilter::coefficient* __restrict__ h,
+                                           int x, int/*n*/, int/*d*/ ) noexcept
+      {
+         typename P::sample f[ 9 ] =
+            {
+               i[0][x  ], i[1][x  ], i[2][x  ],
+               i[0][x+1], i[1][x+1], i[2][x+1],
+               i[0][x+2], i[1][x+2], i[2][x+2]
+            };
+         double r = 0;
+         for ( int k = 0; k < 9; ++k )
+            r += *h++ * f[k];
+         return r;
+      }
+
+      static double InnerLoop_Compact_5x5( typename raw_data::const_iterator i,
+                                           typename raw_data::const_iterator /*j*/,
+                                           const KernelFilter::coefficient* __restrict__ h,
+                                           int x, int/*n*/, int/*d*/ ) noexcept
+      {
+         typename P::sample f[ 25 ] =
+            {
+               i[0][x  ], i[1][x  ], i[2][x  ], i[3][x  ], i[4][x  ],
+               i[0][x+1], i[1][x+1], i[2][x+1], i[3][x+1], i[4][x+1],
+               i[0][x+2], i[1][x+2], i[2][x+2], i[3][x+2], i[4][x+2],
+               i[0][x+3], i[1][x+3], i[2][x+3], i[3][x+3], i[4][x+3],
+               i[0][x+4], i[1][x+4], i[2][x+4], i[3][x+4], i[4][x+4]
+            };
+         double r = 0;
+         for ( int k = 0; k < 25; ++k )
+            r += *h++ * f[k];
          return r;
       }
 
@@ -469,10 +533,47 @@ private:
          for ( ; i < j; i += d )
          {
             typename raw_data::const_vector_iterator __restrict__ fi = i->At( x );
-            PCL_UNROLL( 24 )
             for ( int k = 0, l = 0; k < n; ++k, l += d )
                r += *h++ * fi[l];
          }
+         return r;
+      }
+
+      static double InnerLoop_Interlaced_3x3( typename raw_data::const_iterator i,
+                                              typename raw_data::const_iterator /*j*/,
+                                              const KernelFilter::coefficient* __restrict__ h,
+                                              int x, int/*n*/, int d ) noexcept
+      {
+         int d2 = 2*d;
+         typename P::sample f[ 9 ] =
+            {
+               i[0][x   ], i[d][x   ], i[2*d][x   ],
+               i[0][x+d ], i[d][x+d ], i[2*d][x+d ],
+               i[0][x+d2], i[d][x+d2], i[2*d][x+d2]
+            };
+         double r = 0;
+         for ( int k = 0; k < 9; ++k )
+            r += *h++ * f[k];
+         return r;
+      }
+
+      static double InnerLoop_Interlaced_5x5( typename raw_data::const_iterator i,
+                                              typename raw_data::const_iterator /*j*/,
+                                              const KernelFilter::coefficient* __restrict__ h,
+                                              int x, int/*n*/, int d ) noexcept
+      {
+         int d2 = 2*d, d3 = 3*d, d4 = 4*d;
+         typename P::sample f[ 25 ] =
+            {
+               i[0][x   ], i[d][x   ], i[d2][x   ], i[d3][x   ], i[d4][x   ],
+               i[0][x+d ], i[d][x+d ], i[d2][x+d ], i[d3][x+d ], i[d4][x+d ],
+               i[0][x+d2], i[d][x+d2], i[d2][x+d2], i[d3][x+d2], i[d4][x+d2],
+               i[0][x+d3], i[d][x+d3], i[d2][x+d3], i[d3][x+d3], i[d4][x+d3],
+               i[0][x+d4], i[d][x+d4], i[d2][x+d4], i[d3][x+d4], i[d4][x+d4]
+            };
+         double r = 0;
+         for ( int k = 0; k < 25; ++k )
+            r += *h++ * f[k];
          return r;
       }
    };
