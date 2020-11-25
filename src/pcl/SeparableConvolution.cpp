@@ -230,7 +230,8 @@ private:
             /*
              * Interlaced separable convolution (e.g., the à trous algorithm)
              */
-            alignas( 32 ) typename P::sample v[ n ];
+            alignas( 32 ) typename P::sample* __restrict__ v =
+               reinterpret_cast<typename P::sample*>( PCL_ALIGNED_MALLOC( n*P::BytesPerSample(), 32 ) );
             for ( int i = 0; i < N; ++i, ++f, ++t )
             {
                // Gather all sparse samples into a contiguous array.
@@ -252,6 +253,7 @@ private:
 //                   r += *u * *h;
 //                *f = P::FloatToSample( r );
             }
+            PCL_ALIGNED_FREE( v );
          }
       }
    };
