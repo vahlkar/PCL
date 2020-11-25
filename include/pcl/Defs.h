@@ -538,12 +538,16 @@ template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
 /*
  * Loop unrolling pragmas.
  */
-#define PCL_PRAGMA( x )       _Pragma( #x )
-#ifdef __GNUC__
-#  define PCL_UNROLL( n )     PCL_PRAGMA( GCC unroll n )
+#define PCL_PRAGMA( x ) _Pragma( #x )
+#ifdef _MSC_VER
+#  define PCL_UNROLL( n )
 #else
-#  ifdef __clang__
-#    define PCL_UNROLL( n )   PCL_PRAGMA( clang loop unroll_count( n ) )
+#  ifdef __GNUC__
+#    define PCL_UNROLL( n )   PCL_PRAGMA( GCC unroll n )
+#  else
+#    ifdef __clang__
+#      define PCL_UNROLL( n ) PCL_PRAGMA( clang loop unroll_count( n ) )
+#    endif
 #  endif
 #endif
 
@@ -557,22 +561,26 @@ template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
 #endif
 
 /*
+ * MSVC defines 'max' and 'min' macros that conflict with several standard
+ * library functions, such as std::numeric_limits<>::max().
+ */
+#ifdef _MSC_VER
+#  define NOMINMAX 1
+#  ifdef max
+#    undef max
+#  endif
+#  ifdef min
+#    undef min
+#  endif
+#endif
+
+/*
  * Minimum Win32 versions supported.
  */
 #ifdef __PCL_WINDOWS
 #  ifndef __PCL_NO_WIN32_MINIMUM_VERSIONS
 #    define WINVER            0x0601 // Windows 7
 #    define _WIN32_WINNT      0x0601
-#  endif
-#endif
-
-/*
- * C++11 features not supported by Visual Studio 2013.
- */
-#ifdef _MSC_VER
-#  if _MSC_VER < 1900
-#    define constexpr
-#    define noexcept
 #  endif
 #endif
 
