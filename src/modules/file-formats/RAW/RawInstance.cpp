@@ -457,6 +457,42 @@ void RawInstance::CheckLibRawReturnCode( int errorCode )
 
 // ----------------------------------------------------------------------------
 
+#define EXIF_TAG_OffsetTime            36880
+#define EXIF_TAG_OffsetTimeOriginal    36881
+#define EXIF_TAG_OffsetTimeDigitized   36882
+
+void RawInstance::LibRawEXIFCallback( void* context, int tag, int type, int len, unsigned int ord, void* ifp, int64 base )
+{
+   RawInstance* instance = reinterpret_cast<RawInstance*>( context );
+
+   if ( tag == EXIF_TAG_OffsetTime
+     || tag == EXIF_TAG_OffsetTimeOriginal
+     || tag == EXIF_TAG_OffsetTimeDigitized && instance->m_timeOffset == RAW_TIMEOFFSET_UNKNOWN )
+   {
+      LibRaw_abstract_datastream* data = reinterpret_cast<LibRaw_abstract_datastream*>( ifp );
+      IsoString value( '\0', size_type( len ) );
+      data->read( value.Begin(), len, 1 );
+      if ( value[3] == ':' && (value[0] == '-' || value[0] == '+') )
+      {
+         int hours;
+         if ( value.Substring( 1, 2 ).TryToInt( hours, 10 ) )
+            if ( hours >= 0 && hours <= 24 )
+            {
+               int minutes;
+               if ( value.Substring( 4, 2 ).TryToInt( minutes, 10 ) )
+                  if ( minutes >= 0 && minutes <= 60 )
+                  {
+                     instance->m_timeOffset = hours*60 + minutes;
+                     if ( value[0] == '-' )
+                        instance->m_timeOffset = -instance->m_timeOffset;
+                  }
+            }
+      }
+   }
+}
+
+// ----------------------------------------------------------------------------
+
 static String EnabledOrDisabled( bool x )
 {
    return x ? "enabled" : "disabled";
@@ -495,6 +531,8 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
       if ( m_verbosity > 1 )
          m_progress = new RawProgress( *this );
 
+      m_raw->set_exifparser_handler( LibRawEXIFCallback, this );
+
       IsoString filePath8 =
 #ifdef __PCL_WINDOWS
          File::UnixPathToWindows( filePath ).ToMBS();
@@ -505,7 +543,6 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
 
       /*
       ByteArray data = File::ReadFile( filePath );
-
       CheckLibRawReturnCode( m_raw->open_buffer( data.Begin(), data.Length() ) );
       //CheckLibRawReturnCode( m_raw->adjust_sizes_info_only() );
       */
@@ -569,34 +606,22 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
 
                if ( dy )
                {
-#ifdef _MSC_VER
                   char* t = new char[ 6*dy ];
-#else
-                  char t[ 6*dy ];
-#endif
                   memcpy( t, p, 6*dy );
                   memcpy( p, p + 6*dy, 36 - 6*dy );
                   memcpy( p + 36 - 6*dy, t, 6*dy );
-#ifdef _MSC_VER
                   delete [] t;
-#endif
                }
                if ( dx )
                {
-#ifdef _MSC_VER
                   char* t = new char[ dx ];
-#else
-                  char t[ dx ];
-#endif
                   for ( int i = 0; i < 6; ++i, p += 6 )
                   {
                      memcpy( t, p, dx );
                      memcpy( p, p + dx, 6-dx );
                      memcpy( p + 6-dx, t, dx );
                   }
-#ifdef _MSC_VER
                   delete [] t;
-#endif
                }
             }
             else
@@ -683,11 +708,42 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
             m_sRGBConversionMatrix[i][j] = color.rgb_cam[i][j];
 
       /*
-       * Camera timestamp, exposure in seconds, ISO speed, focal length in mm
-       * and f/d aperture.
+       * Camera timestamp.
        */
       if ( other.timestamp != 0 )
          m_timestamp = TimePoint( other.timestamp );
+      if ( m_timeOffset != RAW_TIMEOFFSET_UNKNOWN )
+         m_timestamp -= m_timeOffset/1440.0;
+
+      /*
+       * GPS geodetic coordinates.
+       */
+      if ( other.parsed_gps.gpsparsed )
+         if ( other.parsed_gps.longitude[0] != 0 || other.parsed_gps.longitude[1] != 0 || other.parsed_gps.longitude[2] != 0
+           || other.parsed_gps.latitude[0] != 0 || other.parsed_gps.latitude[1] != 0 || other.parsed_gps.latitude[2] != 0
+           || other.parsed_gps.altitude != 0 )
+         {
+            m_gpsLongitude = other.parsed_gps.longitude[0]
+                           + other.parsed_gps.longitude[1]/60.0
+                           + other.parsed_gps.longitude[2]/3600.0;
+            if ( other.parsed_gps.longref == 'W' )
+               m_gpsLongitude = -m_gpsLongitude;
+
+            m_gpsLatitude  = other.parsed_gps.latitude[0]
+                           + other.parsed_gps.latitude[1]/60.0
+                           + other.parsed_gps.latitude[2]/3600.0;
+            if ( other.parsed_gps.latref == 'S' )
+               m_gpsLatitude = -m_gpsLatitude;
+
+            m_gpsAltitude = other.parsed_gps.altitude;
+            if ( other.parsed_gps.altref == 1 )
+               m_gpsAltitude = -m_gpsAltitude;
+         }
+
+      /*
+       * Exposure time in seconds, ISO speed, focal length in mm, and f/d
+       * aperture.
+       */
       m_exposure = other.shutter;
       m_isoSpeed = other.iso_speed;
       m_focalLength = other.focal_len;
@@ -773,34 +829,57 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
          Console console;
          console.WriteLn( "<end><cbr>" );
          if ( !m_cameraModel.IsEmpty() )
-            console.WriteLn(                     "Camera ........... <raw>" + m_cameraManufacturer + ' ' + m_cameraModel + "</raw>" );
+            console.WriteLn(                     "Camera ............ <raw>" + m_cameraManufacturer + ' ' + m_cameraModel + "</raw>" );
          if ( m_timestamp.IsValid() )
-            console.WriteLn(                     "Timestamp ........ " + m_timestamp.ToString( 3/*timeItems*/, 0/*precision*/ ) );
+            console.WriteLn(                     "Timestamp ......... " + m_timestamp.ToString( 3/*timeItems*/, 0/*precision*/ ) );
+         if ( m_timeOffset != RAW_TIMEOFFSET_UNKNOWN )
+            console.WriteLn(                     "Time offset ....... " + String().Format( "%c%02d:%02d",
+                                                 (m_timeOffset < 0) ? '-' : '+', Abs( m_timeOffset )/60, Abs( m_timeOffset )%60 ) );
+         if ( m_gpsLongitude != RAW_GPS_UNKNOWN )
+            console.WriteLn(                     "GPS coordinates ... " + String().ToSexagesimal( Abs( m_gpsLongitude ),
+                                                                           SexagesimalConversionOptions( 3/*items*/,
+                                                                                                         2/*precision*/,
+                                                                                                         false/*sign*/,
+                                                                                                         0/*width*/,
+                                                                                                         ' '/*separator*/ ) )
+                                                 + ' ' + ((m_gpsLongitude < 0) ? 'W' : 'E')
+                                                 + "  " + String().ToSexagesimal( Abs( m_gpsLatitude ),
+                                                                           SexagesimalConversionOptions( 3/*items*/,
+                                                                                                         2/*precision*/,
+                                                                                                         false/*sign*/,
+                                                                                                         0/*width*/,
+                                                                                                         ' '/*separator*/ ) )
+                                                 + ' ' + ((m_gpsLatitude < 0) ? 'S' : 'N')
+                                                 + String().Format( "  %.2f m", m_gpsAltitude ) );
          if ( m_exposure > 0 )
-            console.WriteLn(                     "Exposure ......... " + ExposureAsText() );
+            console.WriteLn(                     "Exposure .......... " + ExposureAsText() );
          if ( m_isoSpeed > 0 )
-            console.WriteLn( String().Format(    "ISO speed ........ %d", m_isoSpeed ) );
+            console.WriteLn( String().Format(    "ISO speed ......... %d", m_isoSpeed ) );
          if ( m_focalLength > 0 )
          {
-            console.WriteLn( String().Format(    "Focal length ..... %.2f mm%s",
+            console.WriteLn( String().Format(    "Focal length ...... %.2f mm%s",
                                                  m_focalLength,
                                                  m_preferences.forceFocalLength ? " (forced)" : "" ) );
             if ( m_aperture > 0 )
-               console.WriteLn( String().Format( "Aperture ......... f/%.2f = %.2f mm%s",
+               console.WriteLn( String().Format( "Aperture .......... f/%.2f = %.2f mm%s",
                                                  m_aperture,
                                                  m_focalLength/m_aperture,
                                                  m_preferences.forceAperture ? " (forced)" : "" ) );
          }
          if ( o.embedICCProfile )
-            console.WriteLn(                     "ICC profile ...... <raw>" + reinterpret_cast<const ICCProfile*>( color.profile )->Description() + "</raw>" );
+            console.WriteLn(                     "ICC profile ....... <raw>"
+                                                 + reinterpret_cast<const ICCProfile*>( color.profile )->Description() + "</raw>" );
          if ( !m_author.IsEmpty() )
-            console.WriteLn(                     "Author ........... <raw>" + m_author + "</raw>" );
+            console.WriteLn(                     "Author ............ <raw>" + m_author + "</raw>" );
          if ( !m_rawCFAPattern.IsEmpty() )
-            console.WriteLn(                     "CFA pattern ...... " + m_cfaPatternName + ' ' + m_rawCFAPattern + ((m_cfaPattern != m_rawCFAPattern) ? " (" + m_cfaPattern + ")" : IsoString()) );
-         console.WriteLn( String().Format(       "Raw dimensions ... w=%d h=%d", sizes.raw_width, sizes.raw_height ) );
-         console.WriteLn( String().Format(       "Image geometry ... x=%d y=%d w=%d h=%d", sizes.left_margin, sizes.top_margin, sizes.width, sizes.height ) );
+            console.WriteLn(                     "CFA pattern ....... "
+                                                 + m_cfaPatternName + ' ' + m_rawCFAPattern
+                                                 + ((m_cfaPattern != m_rawCFAPattern) ? " (" + m_cfaPattern + ")" : IsoString()) );
+         console.WriteLn( String().Format(       "Raw dimensions .... w=%d h=%d", sizes.raw_width, sizes.raw_height ) );
+         console.WriteLn( String().Format(       "Image geometry .... x=%d y=%d w=%d h=%d",
+                                                 sizes.left_margin, sizes.top_margin, sizes.width, sizes.height ) );
          if ( sizes.flip > 0 )
-            console.WriteLn( String().Format(    "Image rotation ... %d deg", (sizes.flip == 5) ? 90 : ((sizes.flip == 6) ? 270 : 180) ) );
+            console.WriteLn( String().Format(    "Image rotation .... %d deg", (sizes.flip == 5) ? 90 : ((sizes.flip == 6) ? 270 : 180) ) );
          console.WriteLn( "<end><cbr>" );
       }
 
@@ -808,14 +887,14 @@ ImageDescriptionArray RawInstance::Open( const String& filePath, const IsoString
       {
          Console console;
          console.WriteLn( "<end><cbr>Raw decoding parameters:" );
-         console.WriteLn(          "Output mode ............... " + m_preferences.OutputModeAsString() );
+         console.WriteLn(                  "Output mode ............... " + m_preferences.OutputModeAsString() );
          if ( raw )
          {
-            console.WriteLn(       "Auto crop ................. " + EnabledOrDisabled( !noAutoCrop ) );
+            console.WriteLn(               "Auto crop ................. " + EnabledOrDisabled( !noAutoCrop ) );
          }
          else
          {
-            console.Write(         "Interpolation ............. " );
+            console.Write(                 "Interpolation ............. " );
             if ( xtrans )
                console.WriteLn( "X-Trans" );
             else if ( foveon )
@@ -882,6 +961,8 @@ void RawInstance::Close()
    m_cameraManufacturer = m_cameraModel = m_cfaPattern = m_rawCFAPattern = m_cfaPatternName = IsoString();
    m_sRGBConversionMatrix = F32Matrix();
    m_timestamp = TimePoint();
+   m_timeOffset = RAW_TIMEOFFSET_UNKNOWN;
+   m_gpsLongitude = m_gpsLatitude = m_gpsAltitude = RAW_GPS_UNKNOWN;
    m_exposure = m_isoSpeed = m_focalLength = m_aperture = 0;
 }
 
@@ -936,7 +1017,15 @@ FITSKeywordArray RawInstance::ReadFITSKeywords()
 
    if ( m_timestamp.IsValid() )
       keywords << FITSHeaderKeyword( "DATE-OBS", '\'' + m_timestamp.ToIsoString(
-                              3/*timeItems*/, 0/*precision*/, 0/*tz*/, false/*timeZone*/ ) + '\'', "Camera timestamp" );
+                              3/*timeItems*/, 0/*precision*/, 0/*tz*/, false/*timeZone*/ ) + '\'', "Camera timestamp (UTC)" );
+
+   if ( m_gpsLongitude != RAW_GPS_UNKNOWN && m_gpsLatitude != RAW_GPS_UNKNOWN && m_gpsAltitude != RAW_GPS_UNKNOWN &&
+        (m_gpsLongitude != 0 || m_gpsLatitude != 0 || m_gpsAltitude != 0) )
+   {
+      keywords.Add( FITSHeaderKeyword( "OBSGEO-L", IsoString().Format( "%.10g", m_gpsLongitude ), "GPS longitude (deg)" ) );
+      keywords.Add( FITSHeaderKeyword( "OBSGEO-B", IsoString().Format( "%.10g", m_gpsLatitude ), "GPS latitude (deg)" ) );
+      keywords.Add( FITSHeaderKeyword( "OBSGEO-H", IsoString().Format( "%.0f", m_gpsAltitude ), "GPS altitude (m)" ) );
+   }
 
    if ( m_exposure > 0 )
       keywords.Add( FITSHeaderKeyword( "EXPTIME", IsoString().Format( "%.6f", m_exposure ), "Exposure time in seconds" ) );
@@ -966,8 +1055,8 @@ PropertyDescriptionArray RawInstance::ImageProperties()
       descriptions << PropertyDescription( "PCL:CFASourcePattern", VariantType::IsoString );
       if ( m_rawCFAPattern != m_cfaPattern )
          descriptions << PropertyDescription( "PCL:RawCFASourcePattern", VariantType::IsoString );
-      descriptions << PropertyDescription( "PCL:CFASourcePatternName", VariantType::IsoString );
-      descriptions << PropertyDescription( "PCL:sRGBConversionMatrix", VariantType::F32Matrix );
+      descriptions << PropertyDescription( "PCL:CFASourcePatternName", VariantType::IsoString )
+                   << PropertyDescription( "PCL:sRGBConversionMatrix", VariantType::F32Matrix );
    }
    if ( !m_cameraModel.IsEmpty() )
       descriptions << PropertyDescription( "Instrument:Camera:Name", VariantType::String );
@@ -985,6 +1074,13 @@ PropertyDescriptionArray RawInstance::ImageProperties()
       descriptions << PropertyDescription( "Observation:Description", VariantType::String );
    if ( m_timestamp.IsValid() )
       descriptions << PropertyDescription( "Observation:Time:Start", VariantType::TimePoint );
+   if ( m_gpsLongitude != RAW_GPS_UNKNOWN && m_gpsLatitude != RAW_GPS_UNKNOWN && m_gpsAltitude != RAW_GPS_UNKNOWN &&
+        (m_gpsLongitude != 0 || m_gpsLatitude != 0 || m_gpsAltitude != 0) )
+   {
+      descriptions << PropertyDescription( "Observation:Location:Longitude", VariantType::Float64 )
+                   << PropertyDescription( "Observation:Location:Latitude", VariantType::Float64 )
+                   << PropertyDescription( "Observation:Location:Elevation", VariantType::Float32 );
+   }
    if ( !m_author.IsEmpty() )
       descriptions << PropertyDescription( "Observer:Name", VariantType::String );
 
@@ -1019,6 +1115,12 @@ Variant RawInstance::ReadImageProperty( const IsoString& property )
       return m_description;
    if ( property == "Observation:Time:Start" )
       return m_timestamp;
+   if ( property == "Observation:Location:Longitude" )
+      return m_gpsLongitude;
+   if ( property == "Observation:Location:Latitude" )
+      return m_gpsLatitude;
+   if ( property == "Observation:Location:Elevation" )
+      return m_gpsAltitude;
    if ( property == "Observer:Name" )
       return m_author;
 

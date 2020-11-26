@@ -59,7 +59,9 @@
 
 class LibRaw;
 
-#define RAW_DEFAULT_VERBOSITY 2
+#define RAW_DEFAULT_VERBOSITY    2
+#define RAW_TIMEOFFSET_UNKNOWN   int32_min
+#define RAW_GPS_UNKNOWN          -1000
 
 namespace pcl
 {
@@ -117,6 +119,10 @@ private:
    IsoString                m_cfaPatternName;
    F32Matrix                m_sRGBConversionMatrix;
    TimePoint                m_timestamp;
+   int                      m_timeOffset = RAW_TIMEOFFSET_UNKNOWN; // in minutes
+   double                   m_gpsLongitude = RAW_GPS_UNKNOWN; // in degrees
+   double                   m_gpsLatitude = RAW_GPS_UNKNOWN; // in degrees
+   float                    m_gpsAltitude = RAW_GPS_UNKNOWN; // in meters
    float                    m_exposure = 0;
    int                      m_isoSpeed = 0;
    float                    m_focalLength = 0;
@@ -127,6 +133,7 @@ private:
    void CheckOpenStream( const String& ) const;
 
    static void CheckLibRawReturnCode( int );
+   static void LibRawEXIFCallback( void*, int, int, int, unsigned, void*, int64 );
 
    friend class RawReadHints;
    friend class RawProgress;
