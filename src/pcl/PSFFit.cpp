@@ -87,7 +87,7 @@ public:
    /*
     * Elliptical Gaussian PSF.
     */
-   static int FitGaussian( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   static int FitGaussian( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A*Exp(-(a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2))
@@ -113,12 +113,13 @@ public:
       int w = F->S.Cols();
       double w2x0 = (w >> 1) + x0;
       double h2y0 = (h >> 1) + y0;
-      const double* s = F->S.Begin();
+      const double* __restrict__ s = F->S.Begin();
       for ( int y = 0; y < h; ++y )
       {
          double dy = y - h2y0;
          double twop2dy = 2*p2*dy;
          double p3dy2 = p3*dy*dy;
+         PCL_IVDEP
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
@@ -131,7 +132,7 @@ public:
    /*
     * Elliptical Moffat PSF, variable beta exponent.
     */
-   static int FitMoffat( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   static int FitMoffat( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
@@ -159,12 +160,13 @@ public:
       int w = F->S.Cols();
       double w2x0 = (w >> 1) + x0;
       double h2y0 = (h >> 1) + y0;
-      const double* s = F->S.Begin();
+      const double* __restrict__ s = F->S.Begin();
       for ( int y = 0; y < h; ++y )
       {
          double dy = y - h2y0;
          double twop2dy = 2*p2*dy;
          double p3dy2 = p3*dy*dy;
+         PCL_IVDEP
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
@@ -180,7 +182,7 @@ public:
    /*
     * Elliptical Moffat PSF, prescribed beta exponent.
     */
-   static int FitMoffatWithFixedBeta( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   static int FitMoffatWithFixedBeta( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A/(1 + a*(x - x0)^2 + 2*b*(x - x0)*(y - y0) + c*(y - y0)^2)^beta
@@ -206,12 +208,13 @@ public:
       int w = F->S.Cols();
       double w2x0 = (w >> 1) + x0;
       double h2y0 = (h >> 1) + y0;
-      const double* s = F->S.Begin();
+      const double* __restrict__ s = F->S.Begin();
       for ( int y = 0; y < h; ++y )
       {
          double dy = y - h2y0;
          double twop2dy = 2*p2*dy;
          double p3dy2 = p3*dy*dy;
+         PCL_IVDEP
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
@@ -224,7 +227,7 @@ public:
    /*
     * Elliptical variable shape PSF.
     */
-   static int FitVShape( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   static int FitVShape( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A*Exp( -((dx^k)/(k*sx^k) + (dy^k)/(k*sy^k)) )
@@ -244,12 +247,13 @@ public:
       int w = F->S.Cols();
       double w2x0 = (w >> 1) + x0;
       double h2y0 = (h >> 1) + y0;
-      const double* s = F->S.Begin();
+      const double* __restrict__ s = F->S.Begin();
       for ( int y = 0; y < h; ++y )
       {
          double dy = y - h2y0;
          double dyst = dy*st;
          double dyct = dy*ct;
+         PCL_IVDEP
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
@@ -286,7 +290,7 @@ public:
    /*
     * Circular Gaussian PSF.
     */
-   static int FitCircularGaussian( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   static int FitCircularGaussian( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A*Exp( -((x - x0)^2 + (y - y0)^2)/(2*sigma^2) )
@@ -303,11 +307,12 @@ public:
       int w = F->S.Cols();
       double w2x0 = (w >> 1) + x0;
       double h2y0 = (h >> 1) + y0;
-      const double* s = F->S.Begin();
+      const double* __restrict__ s = F->S.Begin();
       for ( int y = 0; y < h; ++y )
       {
          double dy = y - h2y0;
          double dy2 = dy*dy;
+         PCL_IVDEP
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
@@ -320,7 +325,7 @@ public:
    /*
     * Circular Moffat PSF, variable beta exponent.
     */
-   static int FitCircularMoffat( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   static int FitCircularMoffat( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
@@ -339,11 +344,12 @@ public:
       int w = F->S.Cols();
       double w2x0 = (w >> 1) + x0;
       double h2y0 = (h >> 1) + y0;
-      const double* s = F->S.Begin();
+      const double* __restrict__ s = F->S.Begin();
       for ( int y = 0; y < h; ++y )
       {
          double dy = y - h2y0;
          double dy2 = dy*dy;
+         PCL_IVDEP
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
@@ -359,7 +365,7 @@ public:
    /*
     * Circular Moffat PSF, prescribed beta exponent.
     */
-   static int FitCircularMoffatWithFixedBeta( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   static int FitCircularMoffatWithFixedBeta( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A/(1 + ((x - x0)^2 + (y - y0)^2)/sigma^2)^beta
@@ -376,11 +382,12 @@ public:
       int w = F->S.Cols();
       double w2x0 = (w >> 1) + x0;
       double h2y0 = (h >> 1) + y0;
-      const double* s = F->S.Begin();
+      const double* __restrict__ s = F->S.Begin();
       for ( int y = 0; y < h; ++y )
       {
          double dy = y - h2y0;
          double dy2 = dy*dy;
+         PCL_IVDEP
          for ( int x = 0; x < w; ++x )
          {
             double dx = x - w2x0;
@@ -393,7 +400,7 @@ public:
    /*
     * Circular variable shape PSF.
     */
-   static int FitCircularVShape( void* p, int m, int n, const double* a, double* fvec, int iflag )
+   static int FitCircularVShape( void* p, int m, int n, const double* __restrict__ a, double* __restrict__ fvec, int iflag )
    {
       /*
        * f(x,y) = B + A*Exp( -((x - x0)^k + (y - y0)^k)/(k*sigma^k) )
@@ -410,10 +417,11 @@ public:
       int w = F->S.Cols();
       double w2x0 = (w >> 1) + x0;
       double h2y0 = (h >> 1) + y0;
-      const double* s = F->S.Begin();
+      const double* __restrict__ s = F->S.Begin();
       for ( int y = 0; y < h; ++y )
       {
          double dyk = Pow( Abs( y - h2y0 ), beta );
+         PCL_IVDEP
          for ( int x = 0; x < w; ++x )
             *fvec++ = *s++ - B - A*Exp( -(Pow( Abs( x - w2x0 ), beta ) + dyk)/ksxk );
       }
