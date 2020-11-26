@@ -488,8 +488,8 @@ bool DynamicCropInstance::ExecuteOn( View& view )
    if ( image.IsComplexSample() )
       return false;
 
-   DeleteAstrometryMetadataAndPreviewsAndMask( window );
-
+   DeleteAstrometryMetadataAndPreviewsAndMask( window, false/*deleteCenterMetadata*/,
+                                               p_scaleX != 1 || p_scaleY != 1/*deleteScaleMetadata*/ );
    Console().EnableAbort();
 
    StandardStatus status;

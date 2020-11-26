@@ -178,7 +178,7 @@ bool RotationInstance::ExecuteOn( View& view )
       return true;
    }
 
-   DeleteAstrometryMetadataAndPreviewsAndMask( window );
+   DeleteAstrometryMetadataAndPreviewsAndMask( window, false/*deleteCenterMetadata*/, false/*deleteScaleMetadata*/ );
 
    console.EnableAbort();
 

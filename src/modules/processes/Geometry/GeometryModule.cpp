@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     2
-#define MODULE_VERSION_REVISION  2
+#define MODULE_VERSION_REVISION  3
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_DAY       26
 
 #include <pcl/AstrometricMetadata.h>
 #include <pcl/Console.h>
@@ -227,24 +227,24 @@ bool WarnOnAstrometryMetadataOrPreviewsOrMask( const ImageWindow& window, const 
 
 // ----------------------------------------------------------------------------
 
-void DeleteAstrometryMetadataAndPreviewsAndMask( ImageWindow& window )
+void DeleteAstrometryMetadataAndPreviewsAndMask( ImageWindow& window, bool deleteCenterMetadata, bool deleteScaleMetadata )
 {
-   DeleteAstrometryMetadataAndPreviews( window );
+   DeleteAstrometryMetadataAndPreviews( window, deleteCenterMetadata, deleteScaleMetadata );
    window.RemoveMaskReferences();
    window.RemoveMask();
 }
 
 // ----------------------------------------------------------------------------
 
-void DeleteAstrometryMetadataAndPreviews( ImageWindow& window )
+void DeleteAstrometryMetadataAndPreviews( ImageWindow& window, bool deleteCenterMetadata, bool deleteScaleMetadata )
 {
    window.ClearAstrometricSolution();
 
    FITSKeywordArray keywords = window.Keywords();
-   AstrometricMetadata::RemoveKeywords( keywords );
+   AstrometricMetadata::RemoveKeywords( keywords, deleteCenterMetadata, deleteScaleMetadata );
    window.SetKeywords( keywords );
 
-   AstrometricMetadata::RemoveProperties( window );
+   AstrometricMetadata::RemoveProperties( window, deleteCenterMetadata, deleteScaleMetadata );
 
    window.DeletePreviews();
 }

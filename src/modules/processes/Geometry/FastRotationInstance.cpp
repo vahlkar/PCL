@@ -140,9 +140,9 @@ bool FastRotationInstance::ExecuteOn( View& view )
    ImageVariant image = view.Image();
 
    if ( (p_mode == FRMode::Rotate90CW || p_mode == FRMode::Rotate90CCW) && image.Width() != image.Height() )
-      DeleteAstrometryMetadataAndPreviewsAndMask( window );
+      DeleteAstrometryMetadataAndPreviewsAndMask( window, false/*deleteCenterMetadata*/, false/*deleteScaleMetadata*/ );
    else
-      DeleteAstrometryMetadataAndPreviews( window );
+      DeleteAstrometryMetadataAndPreviews( window, false/*deleteCenterMetadata*/, false/*deleteScaleMetadata*/ );
 
    Console().EnableAbort();
 

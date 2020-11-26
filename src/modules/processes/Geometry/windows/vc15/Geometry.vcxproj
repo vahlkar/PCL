@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.120
+# PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-20T20:29:44.158Z
+# Generated on .... 2020-11-25T15:51:26.328Z
 # Project id ...... Geometry
 # Project type .... Module
 # Platform ........ Windows/vc15
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{371019AD-39F3-4613-9E07-D6C5A7F133F4}</ProjectGuid>
+    <ProjectGuid>{A7E488CF-75F7-4D07-81E4-3695D54E293F}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -109,7 +109,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <PrecompiledHeader></PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat></DebugInformationFormat>
@@ -148,7 +148,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <PrecompiledHeader></PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat></DebugInformationFormat>

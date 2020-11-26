@@ -81,8 +81,8 @@ public:
 class PCL_CLASS ImageWindow;
 
 bool WarnOnAstrometryMetadataOrPreviewsOrMask( const ImageWindow&, const IsoString& processId, bool noGUIMessages );
-void DeleteAstrometryMetadataAndPreviewsAndMask( ImageWindow& );
-void DeleteAstrometryMetadataAndPreviews( ImageWindow& );
+void DeleteAstrometryMetadataAndPreviewsAndMask( ImageWindow&, bool deleteCenterMetadata, bool deleteScaleMetadata );
+void DeleteAstrometryMetadataAndPreviews( ImageWindow&, bool deleteCenterMetadata, bool deleteScaleMetadata );
 
 // ----------------------------------------------------------------------------
 

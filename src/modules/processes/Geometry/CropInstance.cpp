@@ -195,7 +195,7 @@ bool CropInstance::ExecuteOn( View& view )
             throw Error( "Crop: Invalid operation: The resulting image would require more than 4 GiB" );
       }
 
-      DeleteAstrometryMetadataAndPreviewsAndMask( window );
+      DeleteAstrometryMetadataAndPreviewsAndMask( window, false/*deleteCenterMetadata*/, false/*deleteScaleMetadata*/ );
 
       console.EnableAbort();
 

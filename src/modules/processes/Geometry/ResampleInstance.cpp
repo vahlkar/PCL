@@ -207,7 +207,7 @@ bool ResampleInstance::ExecuteOn( View& view )
          AutoPointer<PixelInterpolation> interpolation( NewInterpolation(
             p_interpolation, width, height, w0, h0, false, p_clampingThreshold, p_smoothness, image ) );
 
-         DeleteAstrometryMetadataAndPreviewsAndMask( window );
+         DeleteAstrometryMetadataAndPreviewsAndMask( window, false/*deleteCenterMetadata*/, true/*deleteScaleMetadata*/ );
 
          console.EnableAbort();
 

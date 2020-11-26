@@ -182,7 +182,7 @@ bool IntegerResampleInstance::ExecuteOn( View& view )
                throw Error( "IntegerResample: Invalid operation: The resulting image would require more than 4 GiB" );
          }
 
-         DeleteAstrometryMetadataAndPreviewsAndMask( window );
+         DeleteAstrometryMetadataAndPreviewsAndMask( window, false/*deleteCenterMetadata*/, true/*deleteScaleMetadata*/ );
 
          console.EnableAbort();
 
