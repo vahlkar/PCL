@@ -621,19 +621,27 @@ void AstrometricMetadata::UpdateWCSKeywords( FITSKeywordArray& keywords ) const
 
 // ----------------------------------------------------------------------------
 
-void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords )
+void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords, bool removeCenterKeywords, bool removeScaleKeywords )
 {
-   RemoveKeyword( keywords, "RA" );
-   RemoveKeyword( keywords, "OBJCTRA" );
-   RemoveKeyword( keywords, "DEC" );
-   RemoveKeyword( keywords, "OBJCTDEC" );
-   RemoveKeyword( keywords, "FOCALLEN" );
-   RemoveKeyword( keywords, "XPIXSZ" );
-   RemoveKeyword( keywords, "YPIXSZ" );
-   RemoveKeyword( keywords, "PIXSIZE" );
-   RemoveKeyword( keywords, "RADESYS" );
-   RemoveKeyword( keywords, "EQUINOX" );
-   RemoveKeyword( keywords, "EPOCH" );
+   if ( removeCenterKeywords )
+   {
+      RemoveKeyword( keywords, "RA" );
+      RemoveKeyword( keywords, "OBJCTRA" );
+      RemoveKeyword( keywords, "DEC" );
+      RemoveKeyword( keywords, "OBJCTDEC" );
+      RemoveKeyword( keywords, "RADESYS" );
+      RemoveKeyword( keywords, "EQUINOX" );
+      RemoveKeyword( keywords, "EPOCH" );
+   }
+
+   if ( removeScaleKeywords )
+   {
+      RemoveKeyword( keywords, "FOCALLEN" );
+      RemoveKeyword( keywords, "XPIXSZ" );
+      RemoveKeyword( keywords, "YPIXSZ" );
+      RemoveKeyword( keywords, "PIXSIZE" );
+   }
+
    RemoveKeyword( keywords, "CTYPE1" );
    RemoveKeyword( keywords, "CTYPE2" );
    RemoveKeyword( keywords, "CRVAL1" );
@@ -735,32 +743,49 @@ void AstrometricMetadata::UpdateProperties( PropertyArray& properties ) const
 
 // ----------------------------------------------------------------------------
 
-void AstrometricMetadata::RemoveProperties( PropertyArray& properties )
+void AstrometricMetadata::RemoveProperties( PropertyArray& properties, bool removeCenterProperties, bool removeScaleProperties )
 {
-   RemoveProperty( properties, "Instrument:Telescope:FocalLength" );
-   RemoveProperty( properties, "Instrument:Sensor:XPixelSize" );
-   RemoveProperty( properties, "Instrument:Sensor:YPixelSize" );
-   RemoveProperty( properties, "Observation:Center:RA" );
-   RemoveProperty( properties, "Observation:Center:Dec" );
-   RemoveProperty( properties, "Observation:Center:X" );
-   RemoveProperty( properties, "Observation:Center:Y" );
-   RemoveProperty( properties, "Observation:CelestialReferenceSystem" );
-   RemoveProperty( properties, "Observation:Equinox" );
+   if ( removeCenterProperties )
+   {
+      RemoveProperty( properties, "Observation:Center:RA" );
+      RemoveProperty( properties, "Observation:Center:Dec" );
+      RemoveProperty( properties, "Observation:Center:X" );
+      RemoveProperty( properties, "Observation:Center:Y" );
+      RemoveProperty( properties, "Observation:CelestialReferenceSystem" );
+      RemoveProperty( properties, "Observation:Equinox" );
+   }
+
+   if ( removeScaleProperties )
+   {
+      RemoveProperty( properties, "Instrument:Telescope:FocalLength" );
+      RemoveProperty( properties, "Instrument:Sensor:XPixelSize" );
+      RemoveProperty( properties, "Instrument:Sensor:YPixelSize" );
+   }
+
    RemoveProperty( properties, "Transformation_ImageToProjection" );
 }
 
-void AstrometricMetadata::RemoveProperties( ImageWindow& window )
+void AstrometricMetadata::RemoveProperties( ImageWindow& window, bool removeCenterProperties, bool removeScaleProperties )
 {
    View view = window.MainView();
-   view.DeletePropertyIfExists( "Instrument:Telescope:FocalLength" );
-   view.DeletePropertyIfExists( "Instrument:Sensor:XPixelSize" );
-   view.DeletePropertyIfExists( "Instrument:Sensor:YPixelSize" );
-   view.DeletePropertyIfExists( "Observation:Center:RA" );
-   view.DeletePropertyIfExists( "Observation:Center:Dec" );
-   view.DeletePropertyIfExists( "Observation:Center:X" );
-   view.DeletePropertyIfExists( "Observation:Center:Y" );
-   view.DeletePropertyIfExists( "Observation:CelestialReferenceSystem" );
-   view.DeletePropertyIfExists( "Observation:Equinox" );
+
+   if ( removeCenterProperties )
+   {
+      view.DeletePropertyIfExists( "Observation:Center:RA" );
+      view.DeletePropertyIfExists( "Observation:Center:Dec" );
+      view.DeletePropertyIfExists( "Observation:Center:X" );
+      view.DeletePropertyIfExists( "Observation:Center:Y" );
+      view.DeletePropertyIfExists( "Observation:CelestialReferenceSystem" );
+      view.DeletePropertyIfExists( "Observation:Equinox" );
+   }
+
+   if ( removeScaleProperties )
+   {
+      view.DeletePropertyIfExists( "Instrument:Telescope:FocalLength" );
+      view.DeletePropertyIfExists( "Instrument:Sensor:XPixelSize" );
+      view.DeletePropertyIfExists( "Instrument:Sensor:YPixelSize" );
+   }
+
    view.DeletePropertyIfExists( "Transformation_ImageToProjection" );
 }
 

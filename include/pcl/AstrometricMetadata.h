@@ -851,17 +851,6 @@ public:
     * observational keywords, as well as the following keywords:
     *
     * <pre>
-    * RA
-    * OBJCTRA
-    * DEC
-    * OBJCTDEC
-    * FOCALLEN
-    * XPIXSZ
-    * YPIXSZ
-    * PIXSIZE
-    * RADESYS
-    * EQUINOX
-    * EPOCH
     * CTYPE1
     * CTYPE2
     * CRVAL1
@@ -888,18 +877,41 @@ public:
     * LATPOLE
     * REFSPLIN
     * </pre>
+    *
+    * If \a removeCenterKeywords is true, the following keywords will also be
+    * removed:
+    *
+    * <pre>
+    * RA
+    * OBJCTRA
+    * DEC
+    * OBJCTDEC
+    * RADESYS
+    * EQUINOX
+    * EPOCH
+    * </pre>
+    *
+    * If \a removeScaleKeywords is true, the following keywords will also be
+    * removed:
+    *
+    * <pre>
+    * FOCALLEN
+    * XPIXSZ
+    * YPIXSZ
+    * PIXSIZE
+    * </pre>
+    *
     */
-   static void RemoveKeywords( FITSKeywordArray& keywords );
+   static void RemoveKeywords( FITSKeywordArray& keywords, bool removeCenterKeywords = true, bool removeScaleKeywords = true );
 
    /*!
     * Removes astrometry-related XISF properties from the specified
-    * \a properties array. This includes some basic instrumental and
-    * observational XISF properties:
+    * \a properties array.
+    *
+    * If \a removeCenterProperties is true, the following properties will also
+    * be removed:
     *
     * <pre>
-    * Instrument:Telescope:FocalLength
-    * Instrument:Sensor:XPixelSize
-    * Instrument:Sensor:YPixelSize
     * Observation:Center:RA
     * Observation:Center:Dec
     * Observation:Center:X
@@ -908,20 +920,29 @@ public:
     * Observation:Equinox
     * </pre>
     *
+    * If \a removeScaleProperties is true, the following properties will also
+    * be removed:
+    *
+    * <pre>
+    * Instrument:Telescope:FocalLength
+    * Instrument:Sensor:XPixelSize
+    * Instrument:Sensor:YPixelSize
+    * </pre>
+    *
     * In addition, the following nonstandard property, used by platform image
     * plate solving scripts, will be removed:
     *
     * \c Transformation_ImageToProjection
     */
-   static void RemoveProperties( PropertyArray& properties );
+   static void RemoveProperties( PropertyArray& properties, bool removeCenterProperties = true, bool removeScaleProperties = true );
 
    /*!
     * Removes astrometry-related XISF properties from the specified \a window's
     * main view.
     *
-    * See RemoveProperties( PropertyArray& ) for detailed information.
+    * See RemoveProperties( PropertyArray&, bool, bool ) for detailed information.
     */
-   static void RemoveProperties( ImageWindow& window );
+   static void RemoveProperties( ImageWindow& window, bool removeCenterProperties = true, bool removeScaleProperties = true );
 
    /*!
     * Returns a printable textual representation of the metadata properties and
