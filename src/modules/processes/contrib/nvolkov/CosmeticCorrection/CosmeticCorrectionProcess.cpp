@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionProcess.cpp - Released 2020-11-20T19:49:00Z
+// CosmeticCorrectionProcess.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -165,4 +165,4 @@ ProcessImplementation* CosmeticCorrectionProcess::Clone( const ProcessImplementa
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionProcess.cpp - Released 2020-11-20T19:49:00Z
+// EOF CosmeticCorrectionProcess.cpp - Released 2020-11-27T11:02:59Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/GaussianFilter.h - Released 2020-11-20T19:46:29Z
+// pcl/GaussianFilter.h - Released 2020-11-27T16:25:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -450,7 +450,7 @@ private:
       if ( size == 0 )
          return;
 
-      float* h = *coefficients;
+      float* __restrict__ h = *coefficients;
       double sx = m_sigma;
       double sy = m_rho * sx;
 
@@ -495,4 +495,4 @@ private:
 #endif   // __PCL_GaussianFilter_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GaussianFilter.h - Released 2020-11-20T19:46:29Z
+// EOF pcl/GaussianFilter.h - Released 2020-11-27T16:25:23Z

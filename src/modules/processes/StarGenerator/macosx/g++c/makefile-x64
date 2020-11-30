@@ -1,0 +1,75 @@
+######################################################################
+# PixInsight Makefile Generator Script v1.121
+# Copyright (C) 2009-2020 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2020-11-30T20:00:12.169Z
+# Project id ...... StarGenerator
+# Project type .... Module
+# Platform ........ MacOSX/g++ (compatibility)
+# Configuration ... Release/x64
+######################################################################
+
+OBJ_DIR="$(PCLSRCDIR)/modules/processes/StarGenerator/macosx/g++c/x64/Release"
+
+.PHONY: all
+all: $(OBJ_DIR)/StarGenerator-pxm.dylib
+
+#
+# Source files
+#
+
+SRC_FILES= \
+../../Projection.cpp \
+../../StarGeneratorInstance.cpp \
+../../StarGeneratorInterface.cpp \
+../../StarGeneratorModule.cpp \
+../../StarGeneratorParameters.cpp \
+../../StarGeneratorProcess.cpp
+
+#
+# Object files
+#
+
+OBJ_FILES= \
+./x64/Release/Projection.o \
+./x64/Release/StarGeneratorInstance.o \
+./x64/Release/StarGeneratorInterface.o \
+./x64/Release/StarGeneratorModule.o \
+./x64/Release/StarGeneratorParameters.o \
+./x64/Release/StarGeneratorProcess.o
+
+#
+# Dependency files
+#
+
+DEP_FILES= \
+./x64/Release/Projection.d \
+./x64/Release/StarGeneratorInstance.d \
+./x64/Release/StarGeneratorInterface.d \
+./x64/Release/StarGeneratorModule.d \
+./x64/Release/StarGeneratorParameters.d \
+./x64/Release/StarGeneratorProcess.d
+
+#
+# Rules
+#
+
+-include $(DEP_FILES)
+
+$(OBJ_DIR)/StarGenerator-pxm.dylib: $(OBJ_FILES)
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/StarGenerator-pxm.dylib -L"$(PCLLIBDIR64C)" -o $(OBJ_DIR)/StarGenerator-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/StarGenerator-pxm.dylib
+
+.PHONY: post-build
+post-build:
+	cp $(OBJ_DIR)/StarGenerator-pxm.dylib $(PCLBINDIR64C)
+	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64C)/StarGenerator-pxm.dylib
+
+./x64/Release/%.o: ../../%.cpp
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mssse3 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+

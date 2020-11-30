@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GaiaDR2 Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// GaiaDR2Process.cpp - Released 2020-11-20T19:49:00Z
+// GaiaDR2Process.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GaiaDR2 PixInsight module.
 //
@@ -421,4 +421,4 @@ void GaiaDR2Process::SavePreferences()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaDR2Process.cpp - Released 2020-11-20T19:49:00Z
+// EOF GaiaDR2Process.cpp - Released 2020-11-27T11:02:59Z

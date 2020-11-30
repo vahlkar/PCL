@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceInterface.h - Released 2020-11-20T19:49:00Z
+// RGBWorkingSpaceInterface.h - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -180,4 +180,4 @@ PCL_END_LOCAL
 #endif   // __RGBWorkingSpaceInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceInterface.h - Released 2020-11-20T19:49:00Z
+// EOF RGBWorkingSpaceInterface.h - Released 2020-11-27T11:02:58Z

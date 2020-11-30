@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaicParameters.h - Released 2020-11-20T19:49:00Z
+// GradientsMergeMosaicParameters.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -183,4 +183,4 @@ PCL_END_LOCAL
 #endif
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaicParameters.h - Released 2020-11-20T19:49:00Z
+// EOF GradientsMergeMosaicParameters.h - Released 2020-11-27T11:02:59Z

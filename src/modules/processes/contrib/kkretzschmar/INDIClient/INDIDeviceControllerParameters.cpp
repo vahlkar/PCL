@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerParameters.cpp - Released 2020-11-20T19:49:00Z
+// INDIDeviceControllerParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -436,4 +436,4 @@ IsoString IDCNewPropertyValue::Id() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF INDIDeviceControllerParameters.cpp - Released 2020-11-27T11:02:59Z

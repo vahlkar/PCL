@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesAction.cpp - Released 2020-11-20T19:49:00Z
+// PreferencesAction.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -84,4 +84,4 @@ void PreferencesAction::Execute()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesAction.cpp - Released 2020-11-20T19:49:00Z
+// EOF PreferencesAction.cpp - Released 2020-11-27T11:02:59Z

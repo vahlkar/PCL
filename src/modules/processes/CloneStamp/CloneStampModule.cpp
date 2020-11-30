@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampModule.cpp - Released 2020-11-20T19:48:59Z
+// CloneStampModule.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_DAY       27
 
 #include "CloneStampInterface.h"
 #include "CloneStampModule.h"
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampModule.cpp - Released 2020-11-20T19:48:59Z
+// EOF CloneStampModule.cpp - Released 2020-11-27T11:02:58Z

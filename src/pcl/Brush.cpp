@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Brush.cpp - Released 2020-11-20T19:46:37Z
+// pcl/Brush.cpp - Released 2020-11-27T16:25:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -285,4 +285,4 @@ void ConicalGradientBrush::GetParameters( double& cx, double& cy, double& a ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Brush.cpp - Released 2020-11-20T19:46:37Z
+// EOF pcl/Brush.cpp - Released 2020-11-27T16:25:32Z

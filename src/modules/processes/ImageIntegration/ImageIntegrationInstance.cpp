@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2020-11-20T19:49:00Z
+// ImageIntegrationInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1778,4 +1778,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF ImageIntegrationInstance.cpp - Released 2020-11-27T11:02:59Z

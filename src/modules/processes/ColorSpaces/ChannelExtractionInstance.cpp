@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelExtractionInstance.cpp - Released 2020-11-20T19:49:00Z
+// ChannelExtractionInstance.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -211,7 +211,7 @@ static void ExtractChannels( const GenericImage<P>& img, const View& view,
             targetWindow[i].SetRGBWS( rgbws );
             targetWindow[i].SetResolution( xRes, yRes, metric );
             targetWindow[i].SetKeywords( keywords );
-            targetWindow[i].MainView().SetProperties( properties, true/*notify*/, ViewPropertyAttribute::Storable );
+            targetWindow[i].MainView().SetStorableProperties( properties );
 
             targetImage[i] = targetWindow[i].MainView().Image();
             if ( !targetImage[i] )
@@ -503,4 +503,4 @@ size_type ChannelExtractionInstance::ParameterLength( const MetaParameter* p, si
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF ChannelExtractionInstance.cpp - Released 2020-11-27T11:02:58Z

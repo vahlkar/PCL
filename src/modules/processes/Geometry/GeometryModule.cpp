@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.2
+// Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// GeometryModule.cpp - Released 2020-11-20T19:49:00Z
+// GeometryModule.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       26
+#define MODULE_RELEASE_DAY       27
 
 #include <pcl/AstrometricMetadata.h>
 #include <pcl/Console.h>
@@ -227,24 +227,32 @@ bool WarnOnAstrometryMetadataOrPreviewsOrMask( const ImageWindow& window, const 
 
 // ----------------------------------------------------------------------------
 
-void DeleteAstrometryMetadataAndPreviewsAndMask( ImageWindow& window, bool deleteCenterMetadata, bool deleteScaleMetadata )
+void DeleteAstrometryMetadataAndPreviewsAndMask( ImageWindow& window,
+                                                 bool deleteCenterMetadata, bool deleteScaleMetadata, double pixelSizeScalingFactor )
 {
-   DeleteAstrometryMetadataAndPreviews( window, deleteCenterMetadata, deleteScaleMetadata );
+   DeleteAstrometryMetadataAndPreviews( window, deleteCenterMetadata, deleteScaleMetadata, pixelSizeScalingFactor );
    window.RemoveMaskReferences();
    window.RemoveMask();
 }
 
 // ----------------------------------------------------------------------------
 
-void DeleteAstrometryMetadataAndPreviews( ImageWindow& window, bool deleteCenterMetadata, bool deleteScaleMetadata )
+void DeleteAstrometryMetadataAndPreviews( ImageWindow& window,
+                                          bool deleteCenterMetadata, bool deleteScaleMetadata, double pixelSizeScalingFactor )
 {
    window.ClearAstrometricSolution();
 
    FITSKeywordArray keywords = window.Keywords();
    AstrometricMetadata::RemoveKeywords( keywords, deleteCenterMetadata, deleteScaleMetadata );
+   if ( !deleteScaleMetadata )
+      if ( pixelSizeScalingFactor != 1 )
+         AstrometricMetadata::RescalePixelSizeKeywords( keywords, pixelSizeScalingFactor );
    window.SetKeywords( keywords );
 
    AstrometricMetadata::RemoveProperties( window, deleteCenterMetadata, deleteScaleMetadata );
+   if ( !deleteScaleMetadata )
+      if ( pixelSizeScalingFactor != 1 )
+         AstrometricMetadata::RescalePixelSizeProperties( window, pixelSizeScalingFactor );
 
    window.DeletePreviews();
 }
@@ -281,4 +289,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GeometryModule.cpp - Released 2020-11-20T19:49:00Z
+// EOF GeometryModule.cpp - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// LinearFitInstance.h - Released 2020-11-20T19:48:59Z
+// LinearFitInstance.h - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -93,4 +93,4 @@ private:
 #endif   // __LinearFitInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInstance.h - Released 2020-11-20T19:48:59Z
+// EOF LinearFitInstance.h - Released 2020-11-27T11:02:58Z

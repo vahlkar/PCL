@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CloneStamp Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// CloneStampProcess.h - Released 2020-11-20T19:48:59Z
+// CloneStampProcess.h - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CloneStamp PixInsight module.
 //
@@ -90,4 +90,4 @@ PCL_END_LOCAL
 #endif   // __CloneStampProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF CloneStampProcess.h - Released 2020-11-20T19:48:59Z
+// EOF CloneStampProcess.h - Released 2020-11-27T11:02:58Z

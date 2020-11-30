@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Control.h - Released 2020-11-20T19:46:29Z
+// pcl/Control.h - Released 2020-11-27T16:25:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1866,4 +1866,4 @@ int CanonicalControlHeightImplementation()
 #endif   // __PCL_Control_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Control.h - Released 2020-11-20T19:46:29Z
+// EOF pcl/Control.h - Released 2020-11-27T16:25:23Z

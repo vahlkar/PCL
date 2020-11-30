@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelCombinationInstance.h - Released 2020-11-20T19:49:00Z
+// ChannelCombinationInstance.h - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -112,4 +112,4 @@ private:
 #endif   // __ChannelCombinationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInstance.h - Released 2020-11-20T19:49:00Z
+// EOF ChannelCombinationInstance.h - Released 2020-11-27T11:02:58Z

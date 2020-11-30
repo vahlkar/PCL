@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// Alignment.cpp - Released 2020-11-20T19:49:00Z
+// Alignment.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -930,4 +930,4 @@ void GeneralAnalyticalPointingModel::PrintParameters()
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF Alignment.cpp - Released 2020-11-20T19:49:00Z
+// EOF Alignment.cpp - Released 2020-11-27T11:02:59Z

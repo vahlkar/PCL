@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceInstance.cpp - Released 2020-11-20T19:49:00Z
+// RGBWorkingSpaceInstance.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -238,4 +238,4 @@ size_type RGBWorkingSpaceInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF RGBWorkingSpaceInstance.cpp - Released 2020-11-27T11:02:58Z

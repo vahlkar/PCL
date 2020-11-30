@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ColorManagementSetupAction.h - Released 2020-11-20T19:49:00Z
+// ColorManagementSetupAction.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -76,4 +76,4 @@ public:
 #endif   // __ColorManagementSetupActions_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupAction.h - Released 2020-11-20T19:49:00Z
+// EOF ColorManagementSetupAction.h - Released 2020-11-27T11:02:59Z

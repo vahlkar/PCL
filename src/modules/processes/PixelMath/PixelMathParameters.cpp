@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// PixelMathParameters.cpp - Released 2020-11-20T19:49:00Z
+// PixelMathParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -679,4 +679,4 @@ int PMOutputGlobalVariableB::Precision() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF PixelMathParameters.cpp - Released 2020-11-27T11:02:59Z

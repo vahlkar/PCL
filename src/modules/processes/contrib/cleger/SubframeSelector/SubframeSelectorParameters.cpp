@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorParameters.cpp - Released 2020-11-20T19:49:00Z
+// SubframeSelectorParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -2126,4 +2126,4 @@ double SSMeasurementStarResidualMeanDev::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF SubframeSelectorParameters.cpp - Released 2020-11-27T11:02:59Z

@@ -1,0 +1,105 @@
+######################################################################
+# PixInsight Makefile Generator Script v1.121
+# Copyright (C) 2009-2020 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2020-11-30T20:00:02.443Z
+# Project id ...... Global
+# Project type .... Module
+# Platform ........ MacOSX/g++ (compatibility)
+# Configuration ... Release/x64
+######################################################################
+
+OBJ_DIR="$(PCLSRCDIR)/modules/processes/Global/macosx/g++c/x64/Release"
+
+.PHONY: all
+all: $(OBJ_DIR)/Global-pxm.dylib
+
+#
+# Source files
+#
+
+SRC_FILES= \
+../../ColorManagementSetupAction.cpp \
+../../ColorManagementSetupInstance.cpp \
+../../ColorManagementSetupInterface.cpp \
+../../ColorManagementSetupParameters.cpp \
+../../ColorManagementSetupProcess.cpp \
+../../GlobalModule.cpp \
+../../PreferencesAction.cpp \
+../../PreferencesInstance.cpp \
+../../PreferencesInterface.cpp \
+../../PreferencesParameters.cpp \
+../../PreferencesProcess.cpp \
+../../ReadoutOptionsAction.cpp \
+../../ReadoutOptionsInstance.cpp \
+../../ReadoutOptionsInterface.cpp \
+../../ReadoutOptionsParameters.cpp \
+../../ReadoutOptionsProcess.cpp
+
+#
+# Object files
+#
+
+OBJ_FILES= \
+./x64/Release/ColorManagementSetupAction.o \
+./x64/Release/ColorManagementSetupInstance.o \
+./x64/Release/ColorManagementSetupInterface.o \
+./x64/Release/ColorManagementSetupParameters.o \
+./x64/Release/ColorManagementSetupProcess.o \
+./x64/Release/GlobalModule.o \
+./x64/Release/PreferencesAction.o \
+./x64/Release/PreferencesInstance.o \
+./x64/Release/PreferencesInterface.o \
+./x64/Release/PreferencesParameters.o \
+./x64/Release/PreferencesProcess.o \
+./x64/Release/ReadoutOptionsAction.o \
+./x64/Release/ReadoutOptionsInstance.o \
+./x64/Release/ReadoutOptionsInterface.o \
+./x64/Release/ReadoutOptionsParameters.o \
+./x64/Release/ReadoutOptionsProcess.o
+
+#
+# Dependency files
+#
+
+DEP_FILES= \
+./x64/Release/ColorManagementSetupAction.d \
+./x64/Release/ColorManagementSetupInstance.d \
+./x64/Release/ColorManagementSetupInterface.d \
+./x64/Release/ColorManagementSetupParameters.d \
+./x64/Release/ColorManagementSetupProcess.d \
+./x64/Release/GlobalModule.d \
+./x64/Release/PreferencesAction.d \
+./x64/Release/PreferencesInstance.d \
+./x64/Release/PreferencesInterface.d \
+./x64/Release/PreferencesParameters.d \
+./x64/Release/PreferencesProcess.d \
+./x64/Release/ReadoutOptionsAction.d \
+./x64/Release/ReadoutOptionsInstance.d \
+./x64/Release/ReadoutOptionsInterface.d \
+./x64/Release/ReadoutOptionsParameters.d \
+./x64/Release/ReadoutOptionsProcess.d
+
+#
+# Rules
+#
+
+-include $(DEP_FILES)
+
+$(OBJ_DIR)/Global-pxm.dylib: $(OBJ_FILES)
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/Global-pxm.dylib -L"$(PCLLIBDIR64C)" -o $(OBJ_DIR)/Global-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/Global-pxm.dylib
+
+.PHONY: post-build
+post-build:
+	cp $(OBJ_DIR)/Global-pxm.dylib $(PCLBINDIR64C)
+	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64C)/Global-pxm.dylib
+
+./x64/Release/%.o: ../../%.cpp
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mssse3 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+

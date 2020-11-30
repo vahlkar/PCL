@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierInterface.h - Released 2020-11-20T19:49:00Z
+// ImageIdentifierInterface.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -123,4 +123,4 @@ PCL_END_LOCAL
 #endif   // __ImageIdentifierInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInterface.h - Released 2020-11-20T19:49:00Z
+// EOF ImageIdentifierInterface.h - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentParameters.cpp - Released 2020-11-20T19:49:00Z
+// CometAlignmentParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -650,4 +650,4 @@ double CALinearClampingThreshold::MaximumValue() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF CometAlignmentParameters.cpp - Released 2020-11-27T11:02:59Z

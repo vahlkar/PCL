@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ImageCalibrationModule.h - Released 2020-11-20T19:49:00Z
+// ImageCalibrationModule.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __ImageCalibrationModule_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationModule.h - Released 2020-11-20T19:49:00Z
+// EOF ImageCalibrationModule.h - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// LinearFitInterface.cpp - Released 2020-11-20T19:48:59Z
+// LinearFitInterface.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -370,4 +370,4 @@ LinearFitInterface::GUIData::GUIData( LinearFitInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInterface.cpp - Released 2020-11-20T19:48:59Z
+// EOF LinearFitInterface.cpp - Released 2020-11-27T11:02:58Z

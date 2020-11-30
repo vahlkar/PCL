@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrInstance.cpp - Released 2020-11-20T19:49:00Z
+// GradientsHdrInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -249,4 +249,4 @@ size_type GradientsHdrInstance::ParameterLength( const MetaParameter* p, size_ty
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF GradientsHdrInstance.cpp - Released 2020-11-27T11:02:59Z

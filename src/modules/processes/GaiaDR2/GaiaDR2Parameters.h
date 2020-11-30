@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GaiaDR2 Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// GaiaDR2Parameters.h - Released 2020-11-20T19:49:00Z
+// GaiaDR2Parameters.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GaiaDR2 PixInsight module.
 //
@@ -624,4 +624,4 @@ PCL_END_LOCAL
 #endif   // __GaiaDR2Parameters_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaDR2Parameters.h - Released 2020-11-20T19:49:00Z
+// EOF GaiaDR2Parameters.h - Released 2020-11-27T11:02:59Z

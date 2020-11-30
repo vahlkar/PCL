@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierInstance.cpp - Released 2020-11-20T19:49:00Z
+// ImageIdentifierInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -181,4 +181,4 @@ size_type ImageIdentifierInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF ImageIdentifierInstance.cpp - Released 2020-11-27T11:02:59Z

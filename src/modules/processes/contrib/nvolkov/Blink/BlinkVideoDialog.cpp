@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// BlinkVideoDialog.cpp - Released 2020-11-20T19:49:00Z
+// BlinkVideoDialog.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -646,4 +646,4 @@ BlinkVideoDialog::BlinkVideoDialog( BlinkInterface* parent )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BlinkVideoDialog.cpp - Released 2020-11-20T19:49:00Z
+// EOF BlinkVideoDialog.cpp - Released 2020-11-27T11:02:59Z

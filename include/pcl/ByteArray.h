@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/ByteArray.h - Released 2020-11-20T19:46:29Z
+// pcl/ByteArray.h - Released 2020-11-27T16:25:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -97,4 +97,4 @@ typedef SortedArray<uint8>    SortedByteArray;
 #endif   // __PCL_ByteArray_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ByteArray.h - Released 2020-11-20T19:46:29Z
+// EOF pcl/ByteArray.h - Released 2020-11-27T16:25:23Z

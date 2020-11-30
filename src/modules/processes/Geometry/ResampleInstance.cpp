@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.2
+// Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// ResampleInstance.cpp - Released 2020-11-20T19:49:00Z
+// ResampleInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -207,8 +207,12 @@ bool ResampleInstance::ExecuteOn( View& view )
          AutoPointer<PixelInterpolation> interpolation( NewInterpolation(
             p_interpolation, width, height, w0, h0, false, p_clampingThreshold, p_smoothness, image ) );
 
-         DeleteAstrometryMetadataAndPreviewsAndMask( window, false/*deleteCenterMetadata*/, true/*deleteScaleMetadata*/ );
-
+         double pixelScaleX = double( w0 )/width;
+         double pixelScaleY = double( h0 )/height;
+         DeleteAstrometryMetadataAndPreviewsAndMask( window,
+                                 false,                                   /*deleteCenterMetadata*/
+                                 Abs( pixelScaleX - pixelScaleY ) > 0.01, /*deleteScaleMetadata*/
+                                 pixelScaleX                              /*pixelSizeScalingFactor*/ );
          console.EnableAbort();
 
          StandardStatus status;
@@ -272,4 +276,4 @@ void* ResampleInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ResampleInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF ResampleInstance.cpp - Released 2020-11-27T11:02:59Z

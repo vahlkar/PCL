@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Convolution.cpp - Released 2020-11-20T19:46:37Z
+// pcl/Convolution.cpp - Released 2020-11-27T16:25:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -547,9 +547,9 @@ private:
          int d2 = 2*d;
          typename P::sample f[ 9 ] =
             {
-               i[0][x   ], i[d][x   ], i[2*d][x   ],
-               i[0][x+d ], i[d][x+d ], i[2*d][x+d ],
-               i[0][x+d2], i[d][x+d2], i[2*d][x+d2]
+               i[0][x   ], i[d][x   ], i[d2][x   ],
+               i[0][x+d ], i[d][x+d ], i[d2][x+d ],
+               i[0][x+d2], i[d][x+d2], i[d2][x+d2]
             };
          double r = 0;
          for ( int k = 0; k < 9; ++k )
@@ -629,4 +629,4 @@ void Convolution::ValidateFilter() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Convolution.cpp - Released 2020-11-20T19:46:37Z
+// EOF pcl/Convolution.cpp - Released 2020-11-27T16:25:32Z

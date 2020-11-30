@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationParameters.cpp - Released 2020-11-20T19:49:00Z
+// AnnotationParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -298,4 +298,4 @@ double AnnotationOpacity::DefaultValue() const
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF AnnotationParameters.cpp - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGenerationModule.cpp - Released 2020-11-20T19:49:00Z
+// NoiseGenerationModule.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_DAY       27
 
 #include "NoiseGenerationModule.h"
 #include "NoiseGeneratorInterface.h"
@@ -177,4 +177,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGenerationModule.cpp - Released 2020-11-20T19:49:00Z
+// EOF NoiseGenerationModule.cpp - Released 2020-11-27T11:02:59Z

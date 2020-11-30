@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// Structure.h - Released 2020-11-20T19:49:00Z
+// Structure.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -365,4 +365,4 @@ private:
 #endif   // __Structure_h
 
 // ----------------------------------------------------------------------------
-// EOF Structure.h - Released 2020-11-20T19:49:00Z
+// EOF Structure.h - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.cpp - Released 2020-11-20T19:49:00Z
+// LocalNormalizationParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -887,4 +887,4 @@ String LNGraphOutputDirectory::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF LocalNormalizationParameters.cpp - Released 2020-11-27T11:02:59Z

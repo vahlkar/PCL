@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDICCDFrameParameters.h - Released 2020-11-20T19:49:00Z
+// INDICCDFrameParameters.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -555,4 +555,4 @@ PCL_END_LOCAL
 #endif // __INDICCDFrameParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameParameters.h - Released 2020-11-20T19:49:00Z
+// EOF INDICCDFrameParameters.h - Released 2020-11-27T11:02:59Z

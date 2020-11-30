@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// DefectMapInstance.h - Released 2020-11-20T19:49:00Z
+// DefectMapInstance.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -95,4 +95,4 @@ private:
 #endif   // __DefectMapInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapInstance.h - Released 2020-11-20T19:49:00Z
+// EOF DefectMapInstance.h - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// LRGBCombinationInstance.cpp - Released 2020-11-20T19:49:00Z
+// LRGBCombinationInstance.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -1168,4 +1168,4 @@ size_type LRGBCombinationInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF LRGBCombinationInstance.cpp - Released 2020-11-27T11:02:58Z

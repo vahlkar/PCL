@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.2
+// Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// DynamicCropProcess.cpp - Released 2020-11-20T19:49:00Z
+// DynamicCropProcess.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -189,4 +189,4 @@ ProcessImplementation* DynamicCropProcess::Clone( const ProcessImplementation& p
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropProcess.cpp - Released 2020-11-20T19:49:00Z
+// EOF DynamicCropProcess.cpp - Released 2020-11-27T11:02:59Z

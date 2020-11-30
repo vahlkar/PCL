@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentModule.cpp - Released 2020-11-20T19:49:00Z
+// CometAlignmentModule.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -59,7 +59,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_DAY       27
 
 #include "CometAlignmentModule.h"
 #include "CometAlignmentInterface.h"
@@ -174,4 +174,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentModule.cpp - Released 2020-11-20T19:49:00Z
+// EOF CometAlignmentModule.cpp - Released 2020-11-27T11:02:59Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/Defs.h - Released 2020-11-20T19:46:29Z
+// pcl/Defs.h - Released 2020-11-27T16:25:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -525,15 +525,16 @@ template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
  * Compiler pragmas to assume iteration independence for vectorization.
  */
 #ifdef _MSC_VER
-#  define PCL_IVDEP     __pragma(loop( ivdep ))
+#  define PCL_IVDEP       __pragma(loop( ivdep ))
 #else
-#  ifdef __GNUC__
-#     define PCL_IVDEP  _Pragma("GCC ivdep")
+#  ifdef __clang__
+#    define PCL_IVDEP
 #  else
-#     define PCL_IVDEP  _Pragma("ivdep")
+#    ifdef __GNUC__
+#       define PCL_IVDEP  _Pragma("GCC ivdep")
+#    endif
 #  endif
 #endif
-
 
 /*
  * Loop unrolling pragmas.
@@ -542,11 +543,11 @@ template <typename... Args> inline void __pcl_unused__( Args&&... ) {}
 #ifdef _MSC_VER
 #  define PCL_UNROLL( n )
 #else
-#  ifdef __GNUC__
-#    define PCL_UNROLL( n )   PCL_PRAGMA( GCC unroll n )
+#  ifdef __clang__
+#    define PCL_UNROLL( n )   PCL_PRAGMA( clang loop unroll_count( n ) )
 #  else
-#    ifdef __clang__
-#      define PCL_UNROLL( n ) PCL_PRAGMA( clang loop unroll_count( n ) )
+#    ifdef __GNUC__
+#      define PCL_UNROLL( n ) PCL_PRAGMA( GCC unroll n )
 #    endif
 #  endif
 #endif
@@ -1196,4 +1197,4 @@ typedef int64                 fsize_type;
 #endif   // __PCL_Defs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Defs.h - Released 2020-11-20T19:46:29Z
+// EOF pcl/Defs.h - Released 2020-11-27T16:25:23Z

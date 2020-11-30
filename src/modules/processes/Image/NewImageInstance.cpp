@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageInstance.cpp - Released 2020-11-20T19:49:00Z
+// NewImageInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -385,4 +385,4 @@ size_type NewImageInstance::ParameterLength( const MetaParameter* p, size_type t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF NewImageInstance.cpp - Released 2020-11-27T11:02:59Z

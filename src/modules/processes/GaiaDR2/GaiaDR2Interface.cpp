@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GaiaDR2 Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// GaiaDR2Interface.cpp - Released 2020-11-20T19:49:00Z
+// GaiaDR2Interface.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GaiaDR2 PixInsight module.
 //
@@ -1392,4 +1392,4 @@ GaiaDR2Interface::GUIData::GUIData( GaiaDR2Interface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaDR2Interface.cpp - Released 2020-11-20T19:49:00Z
+// EOF GaiaDR2Interface.cpp - Released 2020-11-27T11:02:59Z

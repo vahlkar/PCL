@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SuperbiasParameters.h - Released 2020-11-20T19:49:00Z
+// SuperbiasParameters.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -183,4 +183,4 @@ extern SBSuperbiasViewId1* TheSBSuperbiasViewId1Parameter;
 #endif   // __SuperbiasParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasParameters.h - Released 2020-11-20T19:49:00Z
+// EOF SuperbiasParameters.h - Released 2020-11-27T11:02:59Z

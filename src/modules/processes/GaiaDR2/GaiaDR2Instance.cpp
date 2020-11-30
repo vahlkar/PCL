@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GaiaDR2 Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// GaiaDR2Instance.cpp - Released 2020-11-20T19:49:00Z
+// GaiaDR2Instance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GaiaDR2 PixInsight module.
 //
@@ -687,4 +687,4 @@ size_type GaiaDR2Instance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaDR2Instance.cpp - Released 2020-11-20T19:49:00Z
+// EOF GaiaDR2Instance.cpp - Released 2020-11-27T11:02:59Z

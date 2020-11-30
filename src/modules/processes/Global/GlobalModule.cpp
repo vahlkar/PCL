@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// GlobalModule.cpp - Released 2020-11-20T19:49:00Z
+// GlobalModule.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_DAY       27
 
 #include "ColorManagementSetupAction.h"
 #include "ColorManagementSetupInterface.h"
@@ -193,4 +193,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF GlobalModule.cpp - Released 2020-11-20T19:49:00Z
+// EOF GlobalModule.cpp - Released 2020-11-27T11:02:59Z

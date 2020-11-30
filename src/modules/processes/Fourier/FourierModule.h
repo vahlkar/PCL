@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierModule.h - Released 2020-11-20T19:49:00Z
+// FourierModule.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __FourierModule_h
 
 // ----------------------------------------------------------------------------
-// EOF FourierModule.h - Released 2020-11-20T19:49:00Z
+// EOF FourierModule.h - Released 2020-11-27T11:02:59Z

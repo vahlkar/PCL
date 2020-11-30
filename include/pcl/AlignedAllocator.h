@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/AlignedAllocator.h - Released 2020-11-20T19:46:29Z
+// pcl/AlignedAllocator.h - Released 2020-11-27T16:25:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -175,4 +175,4 @@ inline void operator delete( void* p, void*, pcl::AlignedAllocator& )
 #endif  // __PCL_AlignedAllocator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AlignedAllocator.h - Released 2020-11-20T19:46:29Z
+// EOF pcl/AlignedAllocator.h - Released 2020-11-27T16:25:23Z

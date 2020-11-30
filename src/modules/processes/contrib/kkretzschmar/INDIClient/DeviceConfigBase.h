@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// DeviceConfigBase.h - Released 2020-11-20T19:49:00Z
+// DeviceConfigBase.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -94,4 +94,4 @@ protected:
 #endif // __DeviceConfigBase_h
 
 // ----------------------------------------------------------------------------
-// EOF DeviceConfigBase.h - Released 2020-11-20T19:49:00Z
+// EOF DeviceConfigBase.h - Released 2020-11-27T11:02:59Z

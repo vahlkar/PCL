@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationInstance.cpp - Released 2020-11-20T19:49:00Z
+// DrizzleIntegrationInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -2248,4 +2248,4 @@ size_type DrizzleIntegrationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF DrizzleIntegrationInstance.cpp - Released 2020-11-27T11:02:59Z

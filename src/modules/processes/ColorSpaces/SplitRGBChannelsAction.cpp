@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// SplitRGBChannelsAction.cpp - Released 2020-11-20T19:49:00Z
+// SplitRGBChannelsAction.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -190,4 +190,4 @@ bool ExtractBlueChannelAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitRGBChannelsAction.cpp - Released 2020-11-20T19:49:00Z
+// EOF SplitRGBChannelsAction.cpp - Released 2020-11-27T11:02:58Z

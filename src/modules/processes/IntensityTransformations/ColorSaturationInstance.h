@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ColorSaturationInstance.h - Released 2020-11-20T19:49:00Z
+// ColorSaturationInstance.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -165,4 +165,4 @@ private:
 #endif   // __ColorSaturationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorSaturationInstance.h - Released 2020-11-20T19:49:00Z
+// EOF ColorSaturationInstance.h - Released 2020-11-27T11:02:59Z

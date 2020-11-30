@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// ModuleParameterRegistration.h - Released 2020-11-20T19:49:00Z
+// ModuleParameterRegistration.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -330,4 +330,4 @@
 #endif // __ModuleParameterRegistration_h
 
 // ----------------------------------------------------------------------------
-// EOF ModuleParameterRegistration.h - Released 2020-11-20T19:49:00Z
+// EOF ModuleParameterRegistration.h - Released 2020-11-27T11:02:59Z

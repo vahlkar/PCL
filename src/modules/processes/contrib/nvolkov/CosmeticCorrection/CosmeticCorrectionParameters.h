@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionParameters.h - Released 2020-11-20T19:49:00Z
+// CosmeticCorrectionParameters.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -376,4 +376,4 @@ PCL_END_LOCAL
 #endif // __CosmeticCorrectionParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionParameters.h - Released 2020-11-20T19:49:00Z
+// EOF CosmeticCorrectionParameters.h - Released 2020-11-27T11:02:59Z

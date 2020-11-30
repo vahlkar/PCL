@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformParameters.h - Released 2020-11-20T19:49:00Z
+// InverseFourierTransformParameters.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -118,4 +118,4 @@ extern IFTOnOutOfRangeResult* TheIFTOnOutOfRangeResultParameter;
 #endif   // __InverseFourierTransformParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformParameters.h - Released 2020-11-20T19:49:00Z
+// EOF InverseFourierTransformParameters.h - Released 2020-11-27T11:02:59Z

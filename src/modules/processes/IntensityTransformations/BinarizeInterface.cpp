@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeInterface.cpp - Released 2020-11-20T19:49:00Z
+// BinarizeInterface.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -489,4 +489,4 @@ BinarizeInterface::GUIData::GUIData( BinarizeInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeInterface.cpp - Released 2020-11-20T19:49:00Z
+// EOF BinarizeInterface.cpp - Released 2020-11-27T11:02:59Z

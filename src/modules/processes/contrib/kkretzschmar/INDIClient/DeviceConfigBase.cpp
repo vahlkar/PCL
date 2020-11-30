@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// DeviceConfigBase.cpp - Released 2020-11-20T19:49:00Z
+// DeviceConfigBase.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -139,4 +139,4 @@ void ConfigDialogBase::e_Click( Button& sender, bool checked )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF DeviceConfigBase.cpp - Released 2020-11-20T19:49:00Z
+// EOF DeviceConfigBase.cpp - Released 2020-11-27T11:02:59Z

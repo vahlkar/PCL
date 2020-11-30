@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// ColorCalibrationModule.cpp - Released 2020-11-20T19:48:59Z
+// ColorCalibrationModule.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_DAY       27
 
 #include "ColorCalibrationModule.h"
 #include "BackgroundNeutralizationProcess.h"
@@ -194,4 +194,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationModule.cpp - Released 2020-11-20T19:48:59Z
+// EOF ColorCalibrationModule.cpp - Released 2020-11-27T11:02:58Z

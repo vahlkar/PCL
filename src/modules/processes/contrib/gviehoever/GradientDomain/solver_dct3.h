@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// solver_dct3.h - Released 2020-11-20T19:49:00Z
+// solver_dct3.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -241,4 +241,4 @@ void SolvePoisson( ImageVariant& L )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF solver_dct3.h - Released 2020-11-20T19:49:00Z
+// EOF solver_dct3.h - Released 2020-11-27T11:02:59Z

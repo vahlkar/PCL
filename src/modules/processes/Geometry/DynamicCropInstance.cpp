@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// Standard Geometry Process Module Version 1.2.2
+// Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.cpp - Released 2020-11-20T19:49:00Z
+// DynamicCropInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -147,6 +147,12 @@ bool DynamicCropInstance::CanExecuteOn( const View& v, String& whyNot ) const
    if ( v.IsPreview() )
    {
       whyNot = "DynamicCrop cannot be executed on previews.";
+      return false;
+   }
+
+   if ( 1 + p_scaleX == 1 || 1 + p_scaleY == 1 )
+   {
+      whyNot = "This DynamicCrop instance defines zero or insignificant scaling factors.";
       return false;
    }
 
@@ -488,8 +494,10 @@ bool DynamicCropInstance::ExecuteOn( View& view )
    if ( image.IsComplexSample() )
       return false;
 
-   DeleteAstrometryMetadataAndPreviewsAndMask( window, false/*deleteCenterMetadata*/,
-                                               p_scaleX != 1 || p_scaleY != 1/*deleteScaleMetadata*/ );
+   DeleteAstrometryMetadataAndPreviewsAndMask( window,
+                                               false,                /*deleteCenterMetadata*/
+                                               p_scaleX != p_scaleY, /*deleteScaleMetadata*/
+                                               1/p_scaleX            /*pixelSizeScalingFactor*/ );
    Console().EnableAbort();
 
    StandardStatus status;
@@ -571,4 +579,4 @@ void* DynamicCropInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF DynamicCropInstance.cpp - Released 2020-11-27T11:02:59Z

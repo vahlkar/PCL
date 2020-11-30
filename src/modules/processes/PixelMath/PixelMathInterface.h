@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// PixelMathInterface.h - Released 2020-11-20T19:49:00Z
+// PixelMathInterface.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -202,4 +202,4 @@ PCL_END_LOCAL
 #endif   // __PixelMathInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInterface.h - Released 2020-11-20T19:49:00Z
+// EOF PixelMathInterface.h - Released 2020-11-27T11:02:59Z

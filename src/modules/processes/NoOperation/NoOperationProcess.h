@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoOperation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// NoOperationProcess.h - Released 2020-11-20T19:49:00Z
+// NoOperationProcess.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoOperation PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif   // __NoOperationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF NoOperationProcess.h - Released 2020-11-20T19:49:00Z
+// EOF NoOperationProcess.h - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// SuperbiasProcess.cpp - Released 2020-11-20T19:49:00Z
+// SuperbiasProcess.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -140,4 +140,4 @@ ProcessImplementation* SuperbiasProcess::Clone( const ProcessImplementation& p )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasProcess.cpp - Released 2020-11-20T19:49:00Z
+// EOF SuperbiasProcess.cpp - Released 2020-11-27T11:02:59Z

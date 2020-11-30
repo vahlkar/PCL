@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// FlowControl.h - Released 2020-11-20T19:49:00Z
+// FlowControl.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -313,4 +313,4 @@ private:
 #endif   // __FlowControl_h
 
 // ----------------------------------------------------------------------------
-// EOF FlowControl.h - Released 2020-11-20T19:49:00Z
+// EOF FlowControl.h - Released 2020-11-27T11:02:59Z

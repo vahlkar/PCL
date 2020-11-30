@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ColorManagementSetupParameters.cpp - Released 2020-11-20T19:49:00Z
+// ColorManagementSetupParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -405,4 +405,4 @@ double CMSGamutWarningColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF ColorManagementSetupParameters.cpp - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetInterface.cpp - Released 2020-11-20T19:49:00Z
+// StarNetInterface.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -520,4 +520,4 @@ StarNetInterface::GUIData::GUIData( StarNetInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInterface.cpp - Released 2020-11-20T19:49:00Z
+// EOF StarNetInterface.cpp - Released 2020-11-27T11:02:59Z

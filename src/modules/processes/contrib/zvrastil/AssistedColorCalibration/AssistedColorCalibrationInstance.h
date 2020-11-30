@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationInstance.h - Released 2020-11-20T19:49:00Z
+// AssistedColorCalibrationInstance.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
@@ -109,4 +109,4 @@ private:
 #endif // __AssistedColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationInstance.h - Released 2020-11-20T19:49:00Z
+// EOF AssistedColorCalibrationInstance.h - Released 2020-11-27T11:02:59Z

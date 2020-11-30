@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAProcess.cpp - Released 2020-11-20T19:49:00Z
+// SplitCFAProcess.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -149,4 +149,4 @@ ProcessImplementation* SplitCFAProcess::Clone( const ProcessImplementation& p ) 
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAProcess.cpp - Released 2020-11-20T19:49:00Z
+// EOF SplitCFAProcess.cpp - Released 2020-11-27T11:02:59Z

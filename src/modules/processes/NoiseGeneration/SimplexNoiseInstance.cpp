@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SimplexNoiseInstance.cpp - Released 2020-11-20T19:49:00Z
+// SimplexNoiseInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -390,4 +390,4 @@ void* SimplexNoiseInstance::LockParameter( const MetaParameter* p, size_type /*t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SimplexNoiseInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF SimplexNoiseInstance.cpp - Released 2020-11-27T11:02:59Z

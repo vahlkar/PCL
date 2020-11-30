@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// LinearFitProcess.h - Released 2020-11-20T19:48:59Z
+// LinearFitProcess.h - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __LinearFitProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitProcess.h - Released 2020-11-20T19:48:59Z
+// EOF LinearFitProcess.h - Released 2020-11-27T11:02:58Z

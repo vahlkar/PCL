@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// RGBWorkingSpaceProcess.cpp - Released 2020-11-20T19:49:00Z
+// RGBWorkingSpaceProcess.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -168,4 +168,4 @@ bool RGBWorkingSpaceProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RGBWorkingSpaceProcess.cpp - Released 2020-11-20T19:49:00Z
+// EOF RGBWorkingSpaceProcess.cpp - Released 2020-11-27T11:02:58Z

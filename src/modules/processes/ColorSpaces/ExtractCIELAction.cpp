@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ExtractCIELAction.cpp - Released 2020-11-20T19:49:00Z
+// ExtractCIELAction.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -103,4 +103,4 @@ bool ExtractCIELAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExtractCIELAction.cpp - Released 2020-11-20T19:49:00Z
+// EOF ExtractCIELAction.cpp - Released 2020-11-27T11:02:58Z

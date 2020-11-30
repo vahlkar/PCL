@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// OutputFileData.h - Released 2020-11-20T19:49:00Z
+// OutputFileData.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -139,4 +139,4 @@ struct OutputFileData
 #endif   // __OutputFileData_h
 
 // ----------------------------------------------------------------------------
-// EOF OutputFileData.h - Released 2020-11-20T19:49:00Z
+// EOF OutputFileData.h - Released 2020-11-27T11:02:59Z

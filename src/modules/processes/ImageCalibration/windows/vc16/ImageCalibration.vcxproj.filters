@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 ######################################################################
-# PixInsight Makefile Generator Script v1.120
+# PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-20T20:29:45.947Z
+# Generated on .... 2020-11-30T20:00:03.996Z
 # Project id ...... ImageCalibration
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>4da31d8d-e662-4d1c-9277-4f83c8db3dd3</UniqueIdentifier>
+      <UniqueIdentifier>95971790-1526-4beb-8c90-b5fca683586b</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>45026156-504e-4ee2-bafc-662233f225e0</UniqueIdentifier>
+      <UniqueIdentifier>37804e75-b832-4b09-8bbd-cb42ea346707</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>e2d070db-1415-46f5-bf89-5b2a4d7fca1d</UniqueIdentifier>
+      <UniqueIdentifier>e8f7bc70-6db2-4a38-b7c4-9987c655483e</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

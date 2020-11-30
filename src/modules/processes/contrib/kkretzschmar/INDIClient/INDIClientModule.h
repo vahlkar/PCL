@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIClientModule.h - Released 2020-11-20T19:49:00Z
+// INDIClientModule.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif // __INDIClientModule_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIClientModule.h - Released 2020-11-20T19:49:00Z
+// EOF INDIClientModule.h - Released 2020-11-27T11:02:59Z

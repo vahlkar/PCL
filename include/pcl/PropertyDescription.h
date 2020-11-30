@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/PropertyDescription.h - Released 2020-11-20T19:46:29Z
+// pcl/PropertyDescription.h - Released 2020-11-27T16:25:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -161,4 +161,4 @@ typedef Array<PropertyDescription>  PropertyDescriptionArray;
 #endif   // __PCL_PropertyDescription_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PropertyDescription.h - Released 2020-11-20T19:46:29Z
+// EOF pcl/PropertyDescription.h - Released 2020-11-27T16:25:23Z

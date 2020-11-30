@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationProcess.cpp - Released 2020-11-20T19:49:00Z
+// HistogramTransformationProcess.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -184,4 +184,4 @@ ProcessImplementation* HistogramTransformationProcess::Clone( const ProcessImple
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationProcess.cpp - Released 2020-11-20T19:49:00Z
+// EOF HistogramTransformationProcess.cpp - Released 2020-11-27T11:02:59Z

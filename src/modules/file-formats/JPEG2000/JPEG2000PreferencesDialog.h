@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG2000 File Format Module Version 1.0.3
 // ----------------------------------------------------------------------------
-// JPEG2000PreferencesDialog.h - Released 2020-11-20T19:48:45Z
+// JPEG2000PreferencesDialog.h - Released 2020-11-27T11:02:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG2000 PixInsight module.
 //
@@ -81,4 +81,4 @@ private:
 #endif   // __JPEG2000PreferencesDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEG2000PreferencesDialog.h - Released 2020-11-20T19:48:45Z
+// EOF JPEG2000PreferencesDialog.h - Released 2020-11-27T11:02:45Z

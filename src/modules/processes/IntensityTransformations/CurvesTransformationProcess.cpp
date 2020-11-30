@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationProcess.cpp - Released 2020-11-20T19:49:00Z
+// CurvesTransformationProcess.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -239,4 +239,4 @@ bool CurvesTransformationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationProcess.cpp - Released 2020-11-20T19:49:00Z
+// EOF CurvesTransformationProcess.cpp - Released 2020-11-27T11:02:59Z

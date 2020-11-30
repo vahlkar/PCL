@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.8
 // ----------------------------------------------------------------------------
-// FITSOptionsDialog.h - Released 2020-11-20T19:48:45Z
+// FITSOptionsDialog.h - Released 2020-11-27T11:02:45Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -114,4 +114,4 @@ private:
 #endif   // __FITSOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSOptionsDialog.h - Released 2020-11-20T19:48:45Z
+// EOF FITSOptionsDialog.h - Released 2020-11-27T11:02:45Z

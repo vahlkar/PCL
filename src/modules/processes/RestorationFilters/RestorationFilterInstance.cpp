@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RestorationFilters Process Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// RestorationFilterInstance.cpp - Released 2020-11-20T19:49:00Z
+// RestorationFilterInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RestorationFilters PixInsight module.
 //
@@ -750,4 +750,4 @@ bool RestorationFilterInstance::CreatePSF( Image& psf ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RestorationFilterInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF RestorationFilterInstance.cpp - Released 2020-11-27T11:02:59Z

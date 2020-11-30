@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// IntensityTransformationsModule.h - Released 2020-11-20T19:49:00Z
+// IntensityTransformationsModule.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __IntensityTransformationsModule_h
 
 // ----------------------------------------------------------------------------
-// EOF IntensityTransformationsModule.h - Released 2020-11-20T19:49:00Z
+// EOF IntensityTransformationsModule.h - Released 2020-11-27T11:02:59Z

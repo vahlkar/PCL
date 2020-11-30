@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDICCDFrameInstance.cpp - Released 2020-11-20T19:49:00Z
+// INDICCDFrameInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -1611,8 +1611,7 @@ void AbstractINDICCDFrameExecution::Perform()
                   inputFile.Close();
 
                   for ( auto property : properties )
-                     view.SetPropertyValue( property.key, property.value, false /*notify*/,
-                        ViewPropertyAttribute::Storable | ViewPropertyAttribute::Permanent );
+                     view.SetPropertyValue( property.key, property.value, false/*notify*/, ViewPropertyAttribute::Storable );
 
                   window.SetKeywords( keywords );
 
@@ -1718,4 +1717,4 @@ int AbstractINDICCDFrameExecution::s_numberOfChannels = 0;
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF INDICCDFrameInstance.cpp - Released 2020-11-27T11:02:59Z

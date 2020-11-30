@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelCombinationProcess.cpp - Released 2020-11-20T19:49:00Z
+// ChannelCombinationProcess.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -136,4 +136,4 @@ bool ChannelCombinationProcess::NeedsValidation() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationProcess.cpp - Released 2020-11-20T19:49:00Z
+// EOF ChannelCombinationProcess.cpp - Released 2020-11-27T11:02:58Z

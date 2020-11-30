@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologyModule.h - Released 2020-11-20T19:49:00Z
+// MorphologyModule.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __MorphologyModule_h
 
 // ----------------------------------------------------------------------------
-// EOF MorphologyModule.h - Released 2020-11-20T19:49:00Z
+// EOF MorphologyModule.h - Released 2020-11-27T11:02:59Z

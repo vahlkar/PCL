@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaInterface.cpp - Released 2020-11-20T19:49:00Z
+// LarsonSekaninaInterface.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -621,4 +621,4 @@ LarsonSekaninaInterface::GUIData::GUIData( LarsonSekaninaInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaInterface.cpp - Released 2020-11-20T19:49:00Z
+// EOF LarsonSekaninaInterface.cpp - Released 2020-11-27T11:02:59Z

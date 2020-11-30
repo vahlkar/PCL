@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// StarDetector.cpp - Released 2020-11-20T19:49:00Z
+// StarDetector.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -299,4 +299,4 @@ StarDetector::StarDetector( const ImageVariant& image, int channel,
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarDetector.cpp - Released 2020-11-20T19:49:00Z
+// EOF StarDetector.cpp - Released 2020-11-27T11:02:59Z

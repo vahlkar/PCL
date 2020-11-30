@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInterface.h - Released 2020-11-20T19:49:00Z
+// StarGeneratorInterface.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -184,4 +184,4 @@ PCL_END_LOCAL
 #endif   // __StarGeneratorInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInterface.h - Released 2020-11-20T19:49:00Z
+// EOF StarGeneratorInterface.h - Released 2020-11-27T11:02:59Z

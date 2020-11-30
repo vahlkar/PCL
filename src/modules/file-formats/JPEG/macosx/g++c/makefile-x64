@@ -1,0 +1,78 @@
+######################################################################
+# PixInsight Makefile Generator Script v1.121
+# Copyright (C) 2009-2020 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2020-11-30T19:59:52.222Z
+# Project id ...... JPEG
+# Project type .... Module
+# Platform ........ MacOSX/g++ (compatibility)
+# Configuration ... Release/x64
+# --------------------------------------------------------------------
+# Additional libraries:
+# jpeg-pxi
+######################################################################
+
+OBJ_DIR="$(PCLSRCDIR)/modules/file-formats/JPEG/macosx/g++c/x64/Release"
+
+.PHONY: all
+all: $(OBJ_DIR)/JPEG-pxm.dylib
+
+#
+# Source files
+#
+
+SRC_FILES= \
+../../JPEG.cpp \
+../../JPEGFormat.cpp \
+../../JPEGInstance.cpp \
+../../JPEGModule.cpp \
+../../JPEGOptionsDialog.cpp \
+../../JPEGPreferencesDialog.cpp
+
+#
+# Object files
+#
+
+OBJ_FILES= \
+./x64/Release/JPEG.o \
+./x64/Release/JPEGFormat.o \
+./x64/Release/JPEGInstance.o \
+./x64/Release/JPEGModule.o \
+./x64/Release/JPEGOptionsDialog.o \
+./x64/Release/JPEGPreferencesDialog.o
+
+#
+# Dependency files
+#
+
+DEP_FILES= \
+./x64/Release/JPEG.d \
+./x64/Release/JPEGFormat.d \
+./x64/Release/JPEGInstance.d \
+./x64/Release/JPEGModule.d \
+./x64/Release/JPEGOptionsDialog.d \
+./x64/Release/JPEGPreferencesDialog.d
+
+#
+# Rules
+#
+
+-include $(DEP_FILES)
+
+$(OBJ_DIR)/JPEG-pxm.dylib: $(OBJ_FILES)
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/JPEG-pxm.dylib -L"$(PCLLIBDIR64C)" -o $(OBJ_DIR)/JPEG-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -ljpeg-pxi
+	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/JPEG-pxm.dylib
+
+.PHONY: post-build
+post-build:
+	cp $(OBJ_DIR)/JPEG-pxm.dylib $(PCLBINDIR64C)
+	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64C)/JPEG-pxm.dylib
+
+./x64/Release/%.o: ../../%.cpp
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mssse3 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+

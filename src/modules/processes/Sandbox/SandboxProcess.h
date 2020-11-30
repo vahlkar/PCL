@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Sandbox Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// SandboxProcess.h - Released 2020-11-20T19:49:00Z
+// SandboxProcess.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Sandbox PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __SandboxProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF SandboxProcess.h - Released 2020-11-20T19:49:00Z
+// EOF SandboxProcess.h - Released 2020-11-27T11:02:59Z

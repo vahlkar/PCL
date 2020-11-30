@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// PreferencesParameters.cpp - Released 2020-11-20T19:49:00Z
+// PreferencesParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -225,4 +225,4 @@ IMPLEMENT_BOOLEAN_METAPARAMETER ( Process, enableLaunchStatistics )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF PreferencesParameters.cpp - Released 2020-11-27T11:02:59Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2020-11-20T19:46:37Z
+// pcl/AstrometricMetadata.cpp - Released 2020-11-27T16:25:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -672,6 +672,19 @@ void AstrometricMetadata::RemoveKeywords( FITSKeywordArray& keywords, bool remov
 
 // ----------------------------------------------------------------------------
 
+void AstrometricMetadata::RescalePixelSizeKeywords( FITSKeywordArray& keywords, double scalingFactor )
+{
+   for ( FITSHeaderKeyword& keyword : keywords )
+      if ( keyword.name == "XPIXSZ" || keyword.name == "YPIXSZ" || keyword.name == "PIXSIZE" )
+      {
+         double size;
+         if ( keyword.StripValueDelimiters().TryToDouble( size ) )
+            keyword.value = IsoString().Format( "%.6g", size*scalingFactor );
+      }
+}
+
+// ----------------------------------------------------------------------------
+
 static void ModifyProperty( PropertyArray& properties, const IsoString& id, const Variant& value )
 {
    PropertyArray::iterator i = properties.Search( id );
@@ -787,6 +800,29 @@ void AstrometricMetadata::RemoveProperties( ImageWindow& window, bool removeCent
    }
 
    view.DeletePropertyIfExists( "Transformation_ImageToProjection" );
+}
+
+// ----------------------------------------------------------------------------
+
+void AstrometricMetadata::RescalePixelSizeProperties( PropertyArray& properties, double scalingFactor )
+{
+   PropertyArray::iterator i = properties.Search( IsoString( "Instrument:Sensor:XPixelSize" ) );
+   if ( i != properties.End() )
+      i->SetValue( i->Value().ToDouble()*scalingFactor );
+   i = properties.Search( IsoString( "Instrument:Sensor:YPixelSize" ) );
+   if ( i != properties.End() )
+      i->SetValue( i->Value().ToDouble()*scalingFactor );
+}
+
+void AstrometricMetadata::RescalePixelSizeProperties( ImageWindow& window, double scalingFactor )
+{
+   View view = window.MainView();
+   if ( view.HasProperty( "Instrument:Sensor:XPixelSize" ) )
+      view.SetPropertyValue( "Instrument:Sensor:XPixelSize",
+                             view.PropertyValue( "Instrument:Sensor:XPixelSize" ).ToDouble()*scalingFactor );
+   if ( view.HasProperty( "Instrument:Sensor:YPixelSize" ) )
+      view.SetPropertyValue( "Instrument:Sensor:YPixelSize",
+                             view.PropertyValue( "Instrument:Sensor:YPixelSize" ).ToDouble()*scalingFactor );
 }
 
 // ----------------------------------------------------------------------------
@@ -987,4 +1023,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2020-11-20T19:46:37Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2020-11-27T16:25:32Z

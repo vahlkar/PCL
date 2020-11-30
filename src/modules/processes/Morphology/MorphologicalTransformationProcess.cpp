@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationProcess.cpp - Released 2020-11-20T19:49:00Z
+// MorphologicalTransformationProcess.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -143,4 +143,4 @@ ProcessImplementation* MorphologicalTransformationProcess::Clone( const ProcessI
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationProcess.cpp - Released 2020-11-20T19:49:00Z
+// EOF MorphologicalTransformationProcess.cpp - Released 2020-11-27T11:02:59Z

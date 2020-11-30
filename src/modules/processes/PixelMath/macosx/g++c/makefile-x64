@@ -1,0 +1,96 @@
+######################################################################
+# PixInsight Makefile Generator Script v1.121
+# Copyright (C) 2009-2020 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2020-11-30T20:00:10.494Z
+# Project id ...... PixelMath
+# Project type .... Module
+# Platform ........ MacOSX/g++ (compatibility)
+# Configuration ... Release/x64
+######################################################################
+
+OBJ_DIR="$(PCLSRCDIR)/modules/processes/PixelMath/macosx/g++c/x64/Release"
+
+.PHONY: all
+all: $(OBJ_DIR)/PixelMath-pxm.dylib
+
+#
+# Source files
+#
+
+SRC_FILES= \
+../../Data.cpp \
+../../Expression.cpp \
+../../ExpressionEditorDialog.cpp \
+../../Function.cpp \
+../../Functional.cpp \
+../../Operator.cpp \
+../../PixelMathInstance.cpp \
+../../PixelMathInterface.cpp \
+../../PixelMathModule.cpp \
+../../PixelMathParameters.cpp \
+../../PixelMathProcess.cpp \
+../../Symbol.cpp \
+../../Token.cpp
+
+#
+# Object files
+#
+
+OBJ_FILES= \
+./x64/Release/Data.o \
+./x64/Release/Expression.o \
+./x64/Release/ExpressionEditorDialog.o \
+./x64/Release/Function.o \
+./x64/Release/Functional.o \
+./x64/Release/Operator.o \
+./x64/Release/PixelMathInstance.o \
+./x64/Release/PixelMathInterface.o \
+./x64/Release/PixelMathModule.o \
+./x64/Release/PixelMathParameters.o \
+./x64/Release/PixelMathProcess.o \
+./x64/Release/Symbol.o \
+./x64/Release/Token.o
+
+#
+# Dependency files
+#
+
+DEP_FILES= \
+./x64/Release/Data.d \
+./x64/Release/Expression.d \
+./x64/Release/ExpressionEditorDialog.d \
+./x64/Release/Function.d \
+./x64/Release/Functional.d \
+./x64/Release/Operator.d \
+./x64/Release/PixelMathInstance.d \
+./x64/Release/PixelMathInterface.d \
+./x64/Release/PixelMathModule.d \
+./x64/Release/PixelMathParameters.d \
+./x64/Release/PixelMathProcess.d \
+./x64/Release/Symbol.d \
+./x64/Release/Token.d
+
+#
+# Rules
+#
+
+-include $(DEP_FILES)
+
+$(OBJ_DIR)/PixelMath-pxm.dylib: $(OBJ_FILES)
+	clang++ -arch x86_64 -fPIC -headerpad_max_install_names -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -stdlib=libc++ -Wl,-dead_strip -rdynamic -dynamiclib -install_name @executable_path/PixelMath-pxm.dylib -L"$(PCLLIBDIR64C)" -o $(OBJ_DIR)/PixelMath-pxm.dylib $(OBJ_FILES) -framework CoreFoundation -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/PixelMath-pxm.dylib
+
+.PHONY: post-build
+post-build:
+	cp $(OBJ_DIR)/PixelMath-pxm.dylib $(PCLBINDIR64C)
+	codesign --deep --options=runtime -s pleiades -f -v --timestamp $(PCLBINDIR64C)/PixelMath-pxm.dylib
+
+./x64/Release/%.o: ../../%.cpp
+	clang++ -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mssse3 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -stdlib=libc++ -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+

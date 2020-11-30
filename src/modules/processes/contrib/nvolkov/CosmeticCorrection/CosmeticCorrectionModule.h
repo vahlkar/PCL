@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionModule.h - Released 2020-11-20T19:49:00Z
+// CosmeticCorrectionModule.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif // __CosmeticCorrectionModule_h
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionModule.h - Released 2020-11-20T19:49:00Z
+// EOF CosmeticCorrectionModule.h - Released 2020-11-27T11:02:59Z

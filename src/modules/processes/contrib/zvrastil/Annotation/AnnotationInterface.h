@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationInterface.h - Released 2020-11-20T19:49:00Z
+// AnnotationInterface.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -201,4 +201,4 @@ PCL_END_LOCAL
 #endif // __AnnotationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationInterface.h - Released 2020-11-20T19:49:00Z
+// EOF AnnotationInterface.h - Released 2020-11-27T11:02:59Z

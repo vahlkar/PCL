@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.2.8
 // ----------------------------------------------------------------------------
-// ReadoutOptionsInterface.cpp - Released 2020-11-20T19:49:00Z
+// ReadoutOptionsInterface.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -760,4 +760,4 @@ ReadoutOptionsInterface::GUIData::GUIData( ReadoutOptionsInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsInterface.cpp - Released 2020-11-20T19:49:00Z
+// EOF ReadoutOptionsInterface.cpp - Released 2020-11-27T11:02:59Z

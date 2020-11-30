@@ -1,0 +1,71 @@
+######################################################################
+# PixInsight Makefile Generator Script v1.121
+# Copyright (C) 2009-2020 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2020-11-30T19:59:56.167Z
+# Project id ...... CloneStamp
+# Project type .... Module
+# Platform ........ Linux/g++ (compatibility)
+# Configuration ... Release/x64
+######################################################################
+
+OBJ_DIR="$(PCLSRCDIR)/modules/processes/CloneStamp/linux/g++c/x64/Release"
+
+.PHONY: all
+all: $(OBJ_DIR)/CloneStamp-pxm.so
+
+#
+# Source files
+#
+
+SRC_FILES= \
+../../CloneStampInstance.cpp \
+../../CloneStampInterface.cpp \
+../../CloneStampModule.cpp \
+../../CloneStampParameters.cpp \
+../../CloneStampProcess.cpp
+
+#
+# Object files
+#
+
+OBJ_FILES= \
+./x64/Release/CloneStampInstance.o \
+./x64/Release/CloneStampInterface.o \
+./x64/Release/CloneStampModule.o \
+./x64/Release/CloneStampParameters.o \
+./x64/Release/CloneStampProcess.o
+
+#
+# Dependency files
+#
+
+DEP_FILES= \
+./x64/Release/CloneStampInstance.d \
+./x64/Release/CloneStampInterface.d \
+./x64/Release/CloneStampModule.d \
+./x64/Release/CloneStampParameters.d \
+./x64/Release/CloneStampProcess.d
+
+#
+# Rules
+#
+
+-include $(DEP_FILES)
+
+$(OBJ_DIR)/CloneStamp-pxm.so: $(OBJ_FILES)
+	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -rdynamic -shared -L"$(PCLLIBDIR64C)" -L"$(PCLBINDIR64C)/lib" -o $(OBJ_DIR)/CloneStamp-pxm.so $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi
+	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/CloneStamp-pxm.so
+
+.PHONY: post-build
+post-build:
+	cp $(OBJ_DIR)/CloneStamp-pxm.so $(PCLBINDIR64C)
+
+./x64/Release/%.o: ../../%.cpp
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mfpmath=sse -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/PSFFit.cpp - Released 2020-11-20T19:46:37Z
+// pcl/PSFFit.cpp - Released 2020-11-27T16:25:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -995,7 +995,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
             double twosx2 = 2*sx*sx;
             for ( int y = 0, i = 0; y < h; ++y )
             {
-               double dy = y - h2y0;
+               double dy  = y - h2y0;
                double dy2 = dy*dy;
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
@@ -1024,7 +1024,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
             double sx2 = sx*sx;
             for ( int y = 0, i = 0; y < h; ++y )
             {
-               double dy = y - h2y0;
+               double dy  = y - h2y0;
                double dy2 = dy*dy;
                for ( int x = 0; x < w; ++x, ++i, ++s )
                {
@@ -1150,7 +1150,7 @@ Vector PSFFit::GoodnessOfFit( psf_function function, bool circular ) const
             double ksyk = beta*Pow( Abs( sy ), beta );
             for ( int y = 0, i = 0; y < h; ++y )
             {
-               double dy = y - h2y0;
+               double dy   = y - h2y0;
                double dyst = dy*st;
                double dyct = dy*ct;
                for ( int x = 0; x < w; ++x, ++i, ++s )
@@ -1263,4 +1263,4 @@ String PSFData::StatusText() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PSFFit.cpp - Released 2020-11-20T19:46:37Z
+// EOF pcl/PSFFit.cpp - Released 2020-11-27T16:25:32Z

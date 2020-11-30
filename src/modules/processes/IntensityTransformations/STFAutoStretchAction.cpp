@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// STFAutoStretchAction.cpp - Released 2020-11-20T19:49:00Z
+// STFAutoStretchAction.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -224,4 +224,4 @@ STFAutoStretchToolBarBoostAction::STFAutoStretchToolBarBoostAction()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF STFAutoStretchAction.cpp - Released 2020-11-20T19:49:00Z
+// EOF STFAutoStretchAction.cpp - Released 2020-11-27T11:02:59Z

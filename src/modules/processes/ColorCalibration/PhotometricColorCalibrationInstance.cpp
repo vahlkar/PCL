@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2020-11-20T19:48:59Z
+// PhotometricColorCalibrationInstance.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -1183,10 +1183,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
          }
 
          view.Window().SetKeywords( keywords );
-
-         view.Window().MainView().SetProperties( properties,
-                                                 true/*notify*/,
-                        ViewPropertyAttribute::Storable | ViewPropertyAttribute::Permanent/* | ViewPropertyAttribute::WriteProtected*/ );
+         view.Window().MainView().SetStorableProperties( properties );
 
          if ( doPlateSolve )
             view.Window().RegenerateAstrometricSolution( false/*allowGUIMessages*/ );
@@ -1401,4 +1398,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-11-20T19:48:59Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-11-27T11:02:58Z

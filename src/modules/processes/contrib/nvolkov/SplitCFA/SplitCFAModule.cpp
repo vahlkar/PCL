@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAModule.cpp - Released 2020-11-20T19:49:00Z
+// SplitCFAModule.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -59,7 +59,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     11
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_DAY       27
 
 #include "MergeCFAInterface.h"
 #include "MergeCFAProcess.h"
@@ -178,4 +178,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAModule.cpp - Released 2020-11-20T19:49:00Z
+// EOF SplitCFAModule.cpp - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// BinarizeInstance.cpp - Released 2020-11-20T19:49:00Z
+// BinarizeInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -187,4 +187,4 @@ void* BinarizeInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BinarizeInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF BinarizeInstance.cpp - Released 2020-11-27T11:02:59Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/IntegerResample.h - Released 2020-11-20T19:46:29Z
+// pcl/IntegerResample.h - Released 2020-11-27T16:25:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -141,13 +141,25 @@ public:
     * <tr align="center"><td>3</td>  <td>3:1 (x3 magnification)</td></tr>
     * </table>
     *
-    * Zoom factors 0 and -1 should not be used explicitly; they are reserved
-    * for internal use, and there is no guarantee that future versions of PCL
-    * will continue accepting them.
+    * \note Zoom factors 0 and -1 should not be used explicitly; they are
+    * reserved for internal use, and there is no guarantee that future versions
+    * of PCL will continue accepting them.
     */
    void SetZoomFactor( int zoom )
    {
       m_zoomFactor = (zoom < -1 || zoom > +1) ? zoom : +1;
+   }
+
+   /*!
+    * Returns the pixel scaling factor applied by this instance, or the
+    * equivalent image resampling ratio. See SetZoomFactor() for the
+    * correspondence between zoom factors and resampling ratios.
+    */
+   double ScalingFactor() const
+   {
+      if ( m_zoomFactor == 0 )
+         return 1;
+      return (m_zoomFactor < 0) ? 1.0/(-m_zoomFactor) : double( m_zoomFactor );
    }
 
    /*!
@@ -205,4 +217,4 @@ protected:
 #endif   // __PCL_IntegerResample_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/IntegerResample.h - Released 2020-11-20T19:46:29Z
+// EOF pcl/IntegerResample.h - Released 2020-11-27T16:25:23Z

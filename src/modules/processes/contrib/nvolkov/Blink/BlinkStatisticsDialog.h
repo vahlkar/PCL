@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Blink Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// BlinkStatisticsDialog.h - Released 2020-11-20T19:49:00Z
+// BlinkStatisticsDialog.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Blink PixInsight module.
 //
@@ -134,4 +134,4 @@ private:
 #endif   // __BlinkStatisticsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF BlinkStatisticsDialog.h - Released 2020-11-20T19:49:00Z
+// EOF BlinkStatisticsDialog.h - Released 2020-11-27T11:02:59Z

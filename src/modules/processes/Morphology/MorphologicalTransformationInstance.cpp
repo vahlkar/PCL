@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// MorphologicalTransformationInstance.cpp - Released 2020-11-20T19:49:00Z
+// MorphologicalTransformationInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -359,4 +359,4 @@ size_type MorphologicalTransformationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MorphologicalTransformationInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF MorphologicalTransformationInstance.cpp - Released 2020-11-27T11:02:59Z

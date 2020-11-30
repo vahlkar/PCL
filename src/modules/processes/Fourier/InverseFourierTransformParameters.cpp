@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformParameters.cpp - Released 2020-11-20T19:49:00Z
+// InverseFourierTransformParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -148,4 +148,4 @@ size_type IFTOnOutOfRangeResult::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF InverseFourierTransformParameters.cpp - Released 2020-11-27T11:02:59Z

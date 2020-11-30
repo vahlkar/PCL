@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.h - Released 2020-11-20T19:46:29Z
+// pcl/AstrometricMetadata.h - Released 2020-11-27T16:25:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -900,9 +900,26 @@ public:
     * YPIXSZ
     * PIXSIZE
     * </pre>
-    *
     */
    static void RemoveKeywords( FITSKeywordArray& keywords, bool removeCenterKeywords = true, bool removeScaleKeywords = true );
+
+   /*!
+    * Rescales the values of existing FITS header keywords defining physical
+    * pixel dimensions in the specified \a keywords array.
+    *
+    * This function multiplies the values of the following keywords by the
+    * specified \a scalingFactor:
+    *
+    * <pre>
+    * XPIXSZ
+    * YPIXSZ
+    * PIXSIZE
+    * </pre>
+    *
+    * This is useful in cases where a geometric transformation has to be
+    * applied to an image to modify its scale, such as a resampling operation.
+    */
+   static void RescalePixelSizeKeywords( FITSKeywordArray& keywords, double scalingFactor );
 
    /*!
     * Removes astrometry-related XISF properties from the specified
@@ -932,7 +949,9 @@ public:
     * In addition, the following nonstandard property, used by platform image
     * plate solving scripts, will be removed:
     *
-    * \c Transformation_ImageToProjection
+    * <pre>
+    * Transformation_ImageToProjection
+    * </pre>
     */
    static void RemoveProperties( PropertyArray& properties, bool removeCenterProperties = true, bool removeScaleProperties = true );
 
@@ -940,9 +959,36 @@ public:
     * Removes astrometry-related XISF properties from the specified \a window's
     * main view.
     *
-    * See RemoveProperties( PropertyArray&, bool, bool ) for detailed information.
+    * See RemoveProperties( PropertyArray&, bool, bool ) for detailed
+    * information.
     */
    static void RemoveProperties( ImageWindow& window, bool removeCenterProperties = true, bool removeScaleProperties = true );
+
+   /*!
+    * Rescales the values of existing XISF properties defining physical pixel
+    * dimensions in the specified \a properties array.
+    *
+    * This function multiplies the values of the following properties by the
+    * specified \a scalingFactor:
+    *
+    * <pre>
+    * Instrument:Sensor:XPixelSize
+    * Instrument:Sensor:YPixelSize
+    * </pre>
+    *
+    * This is useful in cases where a geometric transformation has to be
+    * applied to an image to modify its scale, such as a resampling operation.
+    */
+   static void RescalePixelSizeProperties( PropertyArray& properties, double scalingFactor );
+
+   /*!
+    * Rescales the values of existing XISF properties defining physical pixel
+    * dimensions for the specified \a window's main view.
+    *
+    * See RescalePixelSizeProperties( PropertyArray&, double ) for detailed
+    * information.
+    */
+   static void RescalePixelSizeProperties( ImageWindow& window, double scalingFactor );
 
    /*!
     * Returns a printable textual representation of the metadata properties and
@@ -991,4 +1037,4 @@ private:
 #endif // __AstrometricMetadata_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.h - Released 2020-11-20T19:46:29Z
+// EOF pcl/AstrometricMetadata.h - Released 2020-11-27T16:25:23Z

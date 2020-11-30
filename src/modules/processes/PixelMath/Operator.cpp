@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// Operator.cpp - Released 2020-11-20T19:49:00Z
+// Operator.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1383,4 +1383,4 @@ void AssignmentLogicalOrOperator::operator()( Pixel& r, pixel_set::const_iterato
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Operator.cpp - Released 2020-11-20T19:49:00Z
+// EOF Operator.cpp - Released 2020-11-27T11:02:59Z

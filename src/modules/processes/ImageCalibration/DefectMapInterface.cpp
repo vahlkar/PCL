@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// DefectMapInterface.cpp - Released 2020-11-20T19:49:00Z
+// DefectMapInterface.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -368,4 +368,4 @@ DefectMapInterface::GUIData::GUIData( DefectMapInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapInterface.cpp - Released 2020-11-20T19:49:00Z
+// EOF DefectMapInterface.cpp - Released 2020-11-27T11:02:59Z

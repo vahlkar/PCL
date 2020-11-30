@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CometAlignment Process Module Version 1.2.6
 // ----------------------------------------------------------------------------
-// CometAlignmentInstance.cpp - Released 2020-11-20T19:49:00Z
+// CometAlignmentInstance.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CometAlignment PixInsight module.
 //
@@ -1715,4 +1715,4 @@ size_type CometAlignmentInstance::ParameterLength( const MetaParameter* p, size_
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CometAlignmentInstance.cpp - Released 2020-11-20T19:49:00Z
+// EOF CometAlignmentInstance.cpp - Released 2020-11-27T11:02:59Z

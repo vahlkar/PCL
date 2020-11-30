@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/LinearTransformation.h - Released 2020-11-20T19:46:29Z
+// pcl/LinearTransformation.h - Released 2020-11-27T16:25:23Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -284,4 +284,4 @@ private:
 #endif   // __PCL_LinearTransformation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LinearTransformation.h - Released 2020-11-20T19:46:29Z
+// EOF pcl/LinearTransformation.h - Released 2020-11-27T16:25:23Z

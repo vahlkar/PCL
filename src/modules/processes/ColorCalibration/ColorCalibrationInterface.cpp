@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// ColorCalibrationInterface.cpp - Released 2020-11-20T19:48:59Z
+// ColorCalibrationInterface.cpp - Released 2020-11-27T11:02:58Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -977,4 +977,4 @@ ColorCalibrationInterface::GUIData::GUIData( ColorCalibrationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationInterface.cpp - Released 2020-11-20T19:48:59Z
+// EOF ColorCalibrationInterface.cpp - Released 2020-11-27T11:02:58Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.3
 // ----------------------------------------------------------------------------
-// pcl/TimePoint.cpp - Released 2020-11-20T19:46:37Z
+// pcl/TimePoint.cpp - Released 2020-11-27T16:25:32Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -494,4 +494,4 @@ String TimePoint::ToString( const String& format ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/TimePoint.cpp - Released 2020-11-20T19:46:37Z
+// EOF pcl/TimePoint.cpp - Released 2020-11-27T16:25:32Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// LargeScaleRejectionMapGenerationEngine.h - Released 2020-11-20T19:49:00Z
+// LargeScaleRejectionMapGenerationEngine.h - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -112,4 +112,4 @@ private:
 #endif   // __LargeScaleRejectionMapGenerationEngine_h
 
 // ----------------------------------------------------------------------------
-// EOF LargeScaleRejectionMapGenerationEngine.h - Released 2020-11-20T19:49:00Z
+// EOF LargeScaleRejectionMapGenerationEngine.h - Released 2020-11-27T11:02:59Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageParameters.cpp - Released 2020-11-20T19:49:00Z
+// NewImageParameters.cpp - Released 2020-11-27T11:02:59Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -371,4 +371,4 @@ double NewImageVA::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageParameters.cpp - Released 2020-11-20T19:49:00Z
+// EOF NewImageParameters.cpp - Released 2020-11-27T11:02:59Z
