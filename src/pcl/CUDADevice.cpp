@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.4
 // ----------------------------------------------------------------------------
-// pcl/EndianConversions.h - Released 2020-12-01T21:25:03Z
+// pcl/CUDADevice.cpp - Released 2020-12-01T21:25:11Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,120 +49,117 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#ifndef __PCL_EndianConversions_h
-#define __PCL_EndianConversions_h
+#ifdef __PCL_HAVE_CUDA
+#  undef __PCL_HAVE_CUDA
+#endif
+#ifndef __PCL_COMPATIBILITY
+#  ifdef __PCL_LINUX // ### FIXME - Only available on Linux
+#    define __PCL_HAVE_CUDA
+#  endif
+#endif
 
-/// \file pcl/EndianConversions.h
+#ifdef __PCL_HAVE_CUDA
+#  include <cuda.h>
+#  include <cuda_runtime_api.h>
+#endif
 
-#include <pcl/Defs.h>
+#include <pcl/Atomic.h>
+#include <pcl/AutoLock.h>
+#include <pcl/CUDADevice.h>
 
-#include <pcl/Math.h>
+#include <pcl/api/APIException.h>
+#include <pcl/api/APIInterface.h>
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-/*!
- * \defgroup endianness_conversion_and_detection Endianness Conversion and Detection Functions
- */
+static ::cuda_device_handle s_deviceHandle = 0;
+static AtomicInt s_initialized;
+static Mutex s_mutex;
 
-/*!
- * Converts a 16-bit unsigned integer from big endian to little endian byte
- * storage order.
- *
- * \ingroup endianness_conversion_and_detection
- */
-inline uint16 BigToLittleEndian( uint16 x )
+static void EnsureInitialized() noexcept
 {
-   return (x << 8) | (x >> 8);
-}
+#ifdef __PCL_HAVE_CUDA
 
-/*!
- * Converts a 32-bit unsigned integer from big endian to little endian byte
- * storage order.
- *
- * \ingroup endianness_conversion_and_detection
- */
-inline uint32 BigToLittleEndian( uint32 x )
-{
-   return (RotL( x, 8 ) & 0x00ff00ffu) | (RotR( x, 8 ) & 0xff00ff00u);
+   if ( !s_initialized )
+   {
+      volatile AutoLock lock( s_mutex );
+      if ( s_initialized.Load() == 0 )
+      {
+         if ( (*API->GPU->IsCUDADeviceAvailable)( ModuleHandle() ) )
+            s_deviceHandle = (*API->GPU->GetCUDASelectedDevice)( ModuleHandle() );
+         s_initialized.Store( 1 );
+      }
+   }
 
-}
-
-/*!
- * Converts a 64-bit unsigned integer from big endian to little endian byte
- * storage order.
- *
- * \ingroup endianness_conversion_and_detection
- */
-inline uint64 BigToLittleEndian( uint64 x )
-{
-   return (uint64( BigToLittleEndian( uint32( x ) ) ) << 32) | uint64( BigToLittleEndian( uint32( x >> 32 ) ) );
-}
-
-/*!
- * A convenience synonym function for little-to-big endian conversions, which
- * we define for the sake of code legibility. It is obviously equivalent to
- * BigToLittleEndian( x ).
- *
- * \ingroup endianness_conversion_and_detection
- */
-template <typename T> inline T LittleToBigEndian( T x )
-{
-   return BigToLittleEndian( x );
+#endif
 }
 
 // ----------------------------------------------------------------------------
 
-union __pcl_endian_check__ { uint32 w; uint8 b[ sizeof( uint32 ) ]; };
-
-constexpr __pcl_endian_check__ __pcl_endian_check_sample__ = { 0xdeadbeef };
-
-#ifdef __clang__
-
-inline bool IsLittleEndianMachine()
+bool CUDADevice::IsAvailable() noexcept
 {
-   return __pcl_endian_check_sample__.b[0] == 0xef;
+   EnsureInitialized();
+   return s_deviceHandle != 0;
 }
 
-inline bool IsBigEndianMachine()
+// ----------------------------------------------------------------------------
+
+IsoString CUDADevice::Name()
 {
-   return __pcl_endian_check_sample__.b[0] == 0xde;
-}
+#ifdef __PCL_HAVE_CUDA
+
+   EnsureInitialized();
+   if ( s_deviceHandle == 0 )
+      return IsoString();
+   cudaDeviceProp properties;
+   if ( (*API->GPU->GetCUDADeviceProperties)( ModuleHandle(), s_deviceHandle, &properties, sizeof( cudaDeviceProp ) ) == api_false )
+      throw APIFunctionError( "GetCUDADeviceProperties" );
+
+   return IsoString( properties.name );
 
 #else
 
-// Clang fails here with "read of member 'b' of union with active member 'w' is
-// not allowed in a constant expression".
+   return IsoString();
 
-/*!
- * Returns true iff the caller is running on a little-endian architecture.
- *
- * \ingroup endianness_conversion_and_detection
- */
-constexpr bool IsLittleEndianMachine()
-{
-   return __pcl_endian_check_sample__.b[0] == 0xef;
+#endif
 }
 
-/*!
- * Returns true iff the caller is running on a big-endian architecture.
- *
- * \ingroup endianness_conversion_and_detection
- */
-constexpr bool IsBigEndianMachine()
+// ----------------------------------------------------------------------------
+
+size_type CUDADevice::TotalGlobalMemory() noexcept
 {
-   return __pcl_endian_check_sample__.b[0] == 0xde;
+   EnsureInitialized();
+   if ( s_deviceHandle == 0 )
+      return 0;
+   return (*API->GPU->GetCUDADeviceTotalGlobalMem)( ModuleHandle(), s_deviceHandle );
 }
 
-#endif // __clang__
+// ----------------------------------------------------------------------------
+
+size_type CUDADevice::SharedMemoryPerBlock() noexcept
+{
+   EnsureInitialized();
+   if ( s_deviceHandle == 0 )
+      return 0;
+   return (*API->GPU->GetCUDADeviceSharedMemoryPerBlock)( ModuleHandle(), s_deviceHandle );
+}
+
+// ----------------------------------------------------------------------------
+
+int CUDADevice::MaxThreadsPerBlock() noexcept
+{
+   EnsureInitialized();
+   if ( s_deviceHandle == 0 )
+      return 0;
+   return (*API->GPU->GetCUDADeviceMaxThreadsPerBlock)( ModuleHandle(), s_deviceHandle );
+}
 
 // ----------------------------------------------------------------------------
 
 } // pcl
 
-#endif   // __PCL_EndianConversions_h
-
 // ----------------------------------------------------------------------------
-// EOF pcl/EndianConversions.h - Released 2020-12-01T21:25:03Z
+// EOF pcl/CUDADevice.cpp - Released 2020-12-01T21:25:11Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.4
 // ----------------------------------------------------------------------------
-// pcl/ShepardInterpolation.h - Released 2020-11-27T16:25:23Z
+// pcl/ShepardInterpolation.h - Released 2020-12-01T21:25:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -839,4 +839,4 @@ private:
 #endif   // __PCL_ShepardInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ShepardInterpolation.h - Released 2020-11-27T16:25:23Z
+// EOF pcl/ShepardInterpolation.h - Released 2020-12-01T21:25:03Z

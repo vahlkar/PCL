@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.4
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2020-11-27T16:25:23Z
+// pcl/APIDefs.h - Released 2020-12-01T21:25:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -646,6 +646,11 @@ typedef const_api_handle   const_external_process_handle;
 typedef api_handle         network_transfer_handle;
 typedef const_api_handle   const_network_transfer_handle;
 
+/*
+ * Handle to a CUDA device
+ */
+typedef const_api_handle   cuda_device_handle;
+
 // end global namespace
 
 // ----------------------------------------------------------------------------
@@ -683,6 +688,7 @@ typedef api_bool              (api_func* view_enumeration_callback)             
 typedef api_bool              (api_func* font_enumeration_callback)                   ( const char16_type*, void* );
 typedef api_bool              (api_func* font_size_enumeration_callback)              ( const double*, void* );
 typedef api_bool              (api_func* environment_enumeration_callback)            ( const char16_type*, void* );
+typedef api_bool              (api_func* cuda_device_enumeration_callback)            ( cuda_device_handle, void*, void* );
 
 /*
  * Module definition context
@@ -948,4 +954,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2020-11-27T16:25:23Z
+// EOF pcl/APIDefs.h - Released 2020-12-01T21:25:03Z

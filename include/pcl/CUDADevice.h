@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.4
 // ----------------------------------------------------------------------------
-// pcl/EndianConversions.h - Released 2020-12-01T21:25:03Z
+// pcl/CUDADevice.h - Released 2020-12-01T21:25:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -49,14 +49,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#ifndef __PCL_EndianConversions_h
-#define __PCL_EndianConversions_h
+#ifndef __PCL_CUDADevice_h
+#define __PCL_CUDADevice_h
 
-/// \file pcl/EndianConversions.h
+/// \file pcl/CUDADevice.h
 
 #include <pcl/Defs.h>
+#include <pcl/Diagnostics.h>
 
-#include <pcl/Math.h>
+#include <pcl/String.h>
 
 namespace pcl
 {
@@ -64,105 +65,66 @@ namespace pcl
 // ----------------------------------------------------------------------------
 
 /*!
- * \defgroup endianness_conversion_and_detection Endianness Conversion and Detection Functions
- */
-
-/*!
- * Converts a 16-bit unsigned integer from big endian to little endian byte
- * storage order.
+ * \class CUDADevice
+ * \brief Access to core CUDA device services
  *
- * \ingroup endianness_conversion_and_detection
  */
-inline uint16 BigToLittleEndian( uint16 x )
+class PCL_CLASS CUDADevice
 {
-   return (x << 8) | (x >> 8);
-}
+public:
 
-/*!
- * Converts a 32-bit unsigned integer from big endian to little endian byte
- * storage order.
- *
- * \ingroup endianness_conversion_and_detection
- */
-inline uint32 BigToLittleEndian( uint32 x )
-{
-   return (RotL( x, 8 ) & 0x00ff00ffu) | (RotR( x, 8 ) & 0xff00ff00u);
+   /*!
+    * Default constructor - deleted, not an instantiable class.
+    */
+   CUDADevice() = delete;
 
-}
+   /*!
+    * Copy constructor - deleted, not an instantiable class.
+    */
+   CUDADevice( const CUDADevice& ) = delete;
 
-/*!
- * Converts a 64-bit unsigned integer from big endian to little endian byte
- * storage order.
- *
- * \ingroup endianness_conversion_and_detection
- */
-inline uint64 BigToLittleEndian( uint64 x )
-{
-   return (uint64( BigToLittleEndian( uint32( x ) ) ) << 32) | uint64( BigToLittleEndian( uint32( x >> 32 ) ) );
-}
+   /*!
+    * Copy assignment operator - deleted, not an instantiable class.
+    */
+   CUDADevice& operator =( CUDADevice& ) = delete;
 
-/*!
- * A convenience synonym function for little-to-big endian conversions, which
- * we define for the sake of code legibility. It is obviously equivalent to
- * BigToLittleEndian( x ).
- *
- * \ingroup endianness_conversion_and_detection
- */
-template <typename T> inline T LittleToBigEndian( T x )
-{
-   return BigToLittleEndian( x );
-}
+   /*!
+    * Returns true iff a valid and operational CUDA device is currently
+    * available on the running PixInsight platform.
+    */
+   static bool IsAvailable() noexcept;
 
-// ----------------------------------------------------------------------------
+   /*!
+    * Returns the identifying name of the active CUDA device, or an empty
+    * string if there is no valid CUDA device available on the running
+    * PixInsight platform.
+    */
+   static IsoString Name();
 
-union __pcl_endian_check__ { uint32 w; uint8 b[ sizeof( uint32 ) ]; };
+   /*!
+    * Returns the total global memory available on the active CUDA device in
+    * bytes, or zero if no valid CUDA device is available.
+    */
+   static size_type TotalGlobalMemory() noexcept;
 
-constexpr __pcl_endian_check__ __pcl_endian_check_sample__ = { 0xdeadbeef };
+   /*!
+    * Returns the total shared memory available per block on the active CUDA
+    * device in bytes, or zero if no valid CUDA device is available.
+    */
+   static size_type SharedMemoryPerBlock() noexcept;
 
-#ifdef __clang__
-
-inline bool IsLittleEndianMachine()
-{
-   return __pcl_endian_check_sample__.b[0] == 0xef;
-}
-
-inline bool IsBigEndianMachine()
-{
-   return __pcl_endian_check_sample__.b[0] == 0xde;
-}
-
-#else
-
-// Clang fails here with "read of member 'b' of union with active member 'w' is
-// not allowed in a constant expression".
-
-/*!
- * Returns true iff the caller is running on a little-endian architecture.
- *
- * \ingroup endianness_conversion_and_detection
- */
-constexpr bool IsLittleEndianMachine()
-{
-   return __pcl_endian_check_sample__.b[0] == 0xef;
-}
-
-/*!
- * Returns true iff the caller is running on a big-endian architecture.
- *
- * \ingroup endianness_conversion_and_detection
- */
-constexpr bool IsBigEndianMachine()
-{
-   return __pcl_endian_check_sample__.b[0] == 0xde;
-}
-
-#endif // __clang__
+   /*!
+    * Returns the maximum number of threads per block available in the active
+    * CUDA device, or zero if no valid CUDA device is available.
+    */
+   static int MaxThreadsPerBlock() noexcept;
+};
 
 // ----------------------------------------------------------------------------
 
 } // pcl
 
-#endif   // __PCL_EndianConversions_h
+#endif  // __PCL_CUDADevice_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/EndianConversions.h - Released 2020-12-01T21:25:03Z
+// EOF pcl/CUDADevice.h - Released 2020-12-01T21:25:03Z

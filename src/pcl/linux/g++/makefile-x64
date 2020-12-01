@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-30T19:59:35.945Z
+# Generated on .... 2020-12-01T21:22:05.292Z
 # Project id ...... PCL
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
@@ -35,6 +35,7 @@ SRC_FILES= \
 ../../Button.cpp \
 ../../CFAType.cpp \
 ../../CRC32.cpp \
+../../CUDADevice.cpp \
 ../../CharTraits.cpp \
 ../../CheckBox.cpp \
 ../../CodeEditor.cpp \
@@ -219,6 +220,7 @@ OBJ_FILES= \
 ./x64/Release/Button.o \
 ./x64/Release/CFAType.o \
 ./x64/Release/CRC32.o \
+./x64/Release/CUDADevice.o \
 ./x64/Release/CharTraits.o \
 ./x64/Release/CheckBox.o \
 ./x64/Release/CodeEditor.o \
@@ -403,6 +405,7 @@ DEP_FILES= \
 ./x64/Release/Button.d \
 ./x64/Release/CFAType.d \
 ./x64/Release/CRC32.d \
+./x64/Release/CUDADevice.d \
 ./x64/Release/CharTraits.d \
 ./x64/Release/CheckBox.d \
 ./x64/Release/CodeEditor.d \
@@ -585,6 +588,6 @@ post-build:
 	cp $(OBJ_DIR)/libPCL-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

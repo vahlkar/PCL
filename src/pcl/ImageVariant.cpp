@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.4
 // ----------------------------------------------------------------------------
-// pcl/ImageVariant.cpp - Released 2020-11-27T16:25:32Z
+// pcl/ImageVariant.cpp - Released 2020-12-01T21:25:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1370,4 +1370,4 @@ void ImageVariant::MaskImage( const ImageVariant& src, const ImageVariant& mask,
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageVariant.cpp - Released 2020-11-27T16:25:32Z
+// EOF pcl/ImageVariant.cpp - Released 2020-12-01T21:25:12Z

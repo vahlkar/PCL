@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.4
 // ----------------------------------------------------------------------------
-// pcl/ProcessInstance.cpp - Released 2020-11-27T16:25:32Z
+// pcl/ProcessInstance.cpp - Released 2020-12-01T21:25:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -545,4 +545,4 @@ void* ProcessInstance::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ProcessInstance.cpp - Released 2020-11-27T16:25:32Z
+// EOF pcl/ProcessInstance.cpp - Released 2020-12-01T21:25:12Z

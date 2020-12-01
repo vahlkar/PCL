@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.4
 // ----------------------------------------------------------------------------
-// pcl/APIInterface.h - Released 2020-11-27T16:25:23Z
+// pcl/APIInterface.h - Released 2020-12-01T21:25:03Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -56,7 +56,7 @@
 
 // Global namespace
 
-#define PCL_API_Version 0x0169
+#define PCL_API_Version 0x0170
 
 extern "C"
 {
@@ -130,7 +130,7 @@ struct api_context GlobalContext
     * Tool tip window
     */
    void        (api_func* ShowToolTipWindow)( int32 x, int32 y, const char16_type*,
-                                                const_control_handle, int32, int32, int32, int32 );
+                                              const_control_handle, int32, int32, int32, int32 );
    void        (api_func* HideToolTipWindow)();
    api_bool    (api_func* GetToolTipWindowText)( char16_type*, size_type* );
 
@@ -2292,6 +2292,24 @@ struct api_context NumericalContext
 
 // ----------------------------------------------------------------------------
 
+struct api_context GPUContext
+{
+   api_bool       (api_func* InitCUDARuntime)( api_handle, uint32 /*flags*/ );
+
+   api_bool       (api_func* IsCUDADeviceAvailable)( api_handle );
+   api_bool       (api_func* EnumerateCUDADevices)( api_handle, pcl::cuda_device_enumeration_callback,
+                                                    void* deviceProps/*cudaDeviceProp*/, size_type structSize, void* data );
+
+   cuda_device_handle (api_func* GetCUDASelectedDevice)( api_handle );
+
+   api_bool       (api_func* GetCUDADeviceProperties)( api_handle, cuda_device_handle, void* deviceProps, size_type structSize );
+   size_type      (api_func* GetCUDADeviceTotalGlobalMem)( api_handle, cuda_device_handle );
+   int32          (api_func* GetCUDADeviceMaxThreadsPerBlock)( api_handle, cuda_device_handle );
+   size_type      (api_func* GetCUDADeviceSharedMemoryPerBlock)( api_handle, cuda_device_handle );
+};
+
+// ----------------------------------------------------------------------------
+
 struct api_context SharedImageContext
 {
    image_handle   (api_func* CreateImage)( uint32 w, uint32 h, uint32 n, uint32 nbits, api_bool flt, uint32 cs, void* );
@@ -3001,6 +3019,7 @@ struct APIInterface
    GraphicsContext*              Graphics = nullptr;
    RealTimePreviewContext*       RealTimePreview = nullptr;
    NumericalContext*             Numerical = nullptr;
+   GPUContext*                   GPU = nullptr;
    SharedImageContext*           SharedImage = nullptr;
    ViewContext*                  View = nullptr;
    ImageWindowContext*           ImageWindow = nullptr;
@@ -3052,4 +3071,4 @@ extern "C" void* api_func APIFunctionResolver( const char* );
 #endif   // __PCL_API_APIInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIInterface.h - Released 2020-11-27T16:25:23Z
+// EOF pcl/APIInterface.h - Released 2020-12-01T21:25:03Z
