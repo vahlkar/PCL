@@ -197,7 +197,7 @@ namespace GlobalVariableType
  * <tr><td>MainWindow/WindowButtonsOnTheLeft</td><td></td></tr>
  * <tr><td>Process/AlertOnProcessCompleted</td><td></td></tr>
  * <tr><td>Process/BackupFiles</td><td></td></tr>
- * <tr><td>Process/EnableCUDAProcessing</td><td></td></tr>
+ * <tr><td>Process/EnableCUDAAcceleration</td><td></td></tr>
  * <tr><td>Process/EnableExecutionStatistics</td><td></td></tr>
  * <tr><td>Process/EnableLaunchStatistics</td><td></td></tr>
  * <tr><td>Process/EnableParallelCoreColorManagement</td><td></td></tr>
