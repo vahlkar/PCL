@@ -225,6 +225,8 @@ struct ProcessPreferences
    pcl_bool    enableThreadCPUAffinity;
    int32       maxModuleThreadPriority;
    int32       maxProcessors;
+   pcl_bool    enableCUDAAcceleration;
+   pcl_bool    initCUDARuntimeAtStartup;
    pcl_bool    backupFiles; // for PSM files
    pcl_bool    generateScriptComments;
    int32       maxConsoleLines;

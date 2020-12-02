@@ -384,6 +384,8 @@ DECLARE_BOOLEAN_METAPARAMETER ( Process, enableParallelModuleProcessing,       t
 DECLARE_BOOLEAN_METAPARAMETER ( Process, enableThreadCPUAffinity,              true )
 DECLARE_INT32_METAPARAMETER   ( Process, maxModuleThreadPriority,              ThreadPriority::TimeCritical, ThreadPriority::Lowest, ThreadPriority::TimeCritical ) // ### Warning: DO NOT change these numbers
 DECLARE_INT32_METAPARAMETER   ( Process, maxProcessors,                        int_max, 1, int_max )
+DECLARE_BOOLEAN_METAPARAMETER ( Process, enableCUDAAcceleration,               true )
+DECLARE_BOOLEAN_METAPARAMETER ( Process, initCUDARuntimeAtStartup,             true )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, backupFiles,                          false )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, generateScriptComments,               true )
 DECLARE_INT32_METAPARAMETER   ( Process, maxConsoleLines,                      1000, 0, int_max )

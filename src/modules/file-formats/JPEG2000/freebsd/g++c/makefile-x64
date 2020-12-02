@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-30T19:59:52.790Z
+# Generated on .... 2020-12-02T20:27:03.815Z
 # Project id ...... JPEG2000
 # Project type .... Module
 # Platform ........ FreeBSD/g++ (compatibility)
@@ -69,6 +69,6 @@ post-build:
 	cp $(OBJ_DIR)/JPEG2000-pxm.so $(PCLBINDIR64C)
 
 ./x64/Release/%.o: ../../%.cpp
-	clang++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -D__PCL_COMPATIBILITY -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fvisibility=hidden -fvisibility-inlines-hidden -std=c++17 -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

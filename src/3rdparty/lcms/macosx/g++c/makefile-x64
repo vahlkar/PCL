@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-30T19:59:39.502Z
+# Generated on .... 2020-12-02T20:26:50.448Z
 # Project id ...... lcms
 # Project type .... StaticLibrary
 # Platform ........ MacOSX/g++ (compatibility)
@@ -129,6 +129,6 @@ post-build:
 	cp $(OBJ_DIR)/liblcms-pxi.a $(PCLLIBDIR64C)
 
 ./x64/Release/%.o: ../../%.c
-	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -D_REENTRANT -D__PCL_MACOSX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mssse3 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang -c -pipe -pthread -arch x86_64 -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk -mmacosx-version-min=10.13 -D_REENTRANT -D__PCL_MACOSX -D__PCL_COMPATIBILITY -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mssse3 -minline-all-stringops -O3 -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

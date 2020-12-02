@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-30T19:59:39.974Z
+# Generated on .... 2020-12-02T20:26:51.028Z
 # Project id ...... libtiff
 # Project type .... StaticLibrary
 # Platform ........ FreeBSD/g++ (compatibility)
@@ -175,9 +175,9 @@ post-build:
 	cp $(OBJ_DIR)/liblibtiff-pxi.a $(PCLLIBDIR64C)
 
 ./x64/Release/%.o: ../../%.cxx
-	clang++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -std=c++17 -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -D__PCL_COMPATIBILITY -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -std=c++17 -Wall -Wno-parentheses -Wno-extern-c-compat -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 ./x64/Release/%.o: ../../%.c
-	clang -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	clang -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_FREEBSD -D__PCL_COMPATIBILITY -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

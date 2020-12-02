@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-30T19:59:50.567Z
+# Generated on .... 2020-12-02T20:27:01.779Z
 # Project id ...... installer
 # Project type .... X11Installer
 # Platform ........ Linux/g++ (compatibility)
@@ -54,6 +54,6 @@ post-build:
 	cp $(OBJ_DIR)/installer $(PCLBINDIR64C)/../..
 
 ./x64/Release/%.o: ../../%.cpp
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mfpmath=sse -mssse3 -minline-all-stringops -Os -fomit-frame-pointer -ffunction-sections -fdata-sections -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_COMPATIBILITY -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -mfpmath=sse -mssse3 -minline-all-stringops -Os -fomit-frame-pointer -ffunction-sections -fdata-sections -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

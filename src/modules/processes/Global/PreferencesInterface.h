@@ -792,6 +792,8 @@ public:
    GlobalSetControl           MaxModuleThreadPriority_Set;
    GlobalIntegerControl       MaxProcessors_Integer;
    CheckBox                   UseAllAvailableProcessors_CheckBox;
+   GlobalFlagControl          EnableCUDAAcceleration_Flag;
+   GlobalFlagControl          InitCUDARuntimeAtStartup_Flag;
 
    void __UseAllAvailableProcessors_ButtonClick( Button& sender, bool checked );
 };

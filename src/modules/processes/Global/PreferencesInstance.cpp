@@ -257,6 +257,8 @@ bool PreferencesInstance::ExecuteGlobal()
       PixInsightSettings::SetGlobalFlag    ( "Process/EnableThreadCPUAffinity",                 process.enableThreadCPUAffinity );
       PixInsightSettings::SetGlobalInteger ( "Process/MaxModuleThreadPriority",                 process.maxModuleThreadPriority );
       PixInsightSettings::SetGlobalInteger ( "Process/MaxProcessors",                           process.maxProcessors );
+      PixInsightSettings::SetGlobalFlag    ( "Process/EnableCUDAAcceleration",                    process.enableCUDAAcceleration );
+      PixInsightSettings::SetGlobalFlag    ( "Process/InitCUDARuntimeAtStartup",                process.initCUDARuntimeAtStartup );
       PixInsightSettings::SetGlobalFlag    ( "Process/BackupFiles",                             process.backupFiles );
       PixInsightSettings::SetGlobalFlag    ( "Process/GenerateScriptComments",                  process.generateScriptComments );
       PixInsightSettings::SetGlobalInteger ( "Process/MaxConsoleLines",                         process.maxConsoleLines );
@@ -567,6 +569,10 @@ void* PreferencesInstance::LockParameter( const MetaParameter* p, size_type tabl
       return &process.maxModuleThreadPriority;
    if ( p == METAPARAMETER_INSTANCE_ID( Process, maxProcessors ) )
       return &process.maxProcessors;
+   if ( p == METAPARAMETER_INSTANCE_ID( Process, enableCUDAAcceleration ) )
+      return &process.enableCUDAAcceleration;
+   if ( p == METAPARAMETER_INSTANCE_ID( Process, initCUDARuntimeAtStartup ) )
+      return &process.initCUDARuntimeAtStartup;
    if ( p == METAPARAMETER_INSTANCE_ID( Process, backupFiles ) )
       return &process.backupFiles;
    if ( p == METAPARAMETER_INSTANCE_ID( Process, generateScriptComments ) )
@@ -783,6 +789,8 @@ void PreferencesInstance::LoadDefaultSettings()
    process.enableThreadCPUAffinity              =         METAPARAMETER_INSTANCE_ID( Process, enableThreadCPUAffinity              )->DefaultValue();
    process.maxModuleThreadPriority              =  int32( METAPARAMETER_INSTANCE_ID( Process, maxModuleThreadPriority              )->DefaultValue() );
    process.maxProcessors                        =  int32( METAPARAMETER_INSTANCE_ID( Process, maxProcessors                        )->DefaultValue() );
+   process.enableCUDAAcceleration                 =         METAPARAMETER_INSTANCE_ID( Process, enableCUDAAcceleration                 )->DefaultValue();
+   process.initCUDARuntimeAtStartup             =         METAPARAMETER_INSTANCE_ID( Process, initCUDARuntimeAtStartup             )->DefaultValue();
    process.backupFiles                          =         METAPARAMETER_INSTANCE_ID( Process, backupFiles                          )->DefaultValue();
    process.generateScriptComments               =         METAPARAMETER_INSTANCE_ID( Process, generateScriptComments               )->DefaultValue();
    process.maxConsoleLines                      =  int32( METAPARAMETER_INSTANCE_ID( Process, maxConsoleLines                      )->DefaultValue() );
@@ -939,6 +947,8 @@ void PreferencesInstance::LoadCurrentSettings()
    process.enableThreadCPUAffinity              = PixInsightSettings::GlobalFlag    ( "Process/EnableThreadCPUAffinity" );
    process.maxModuleThreadPriority              = PixInsightSettings::GlobalInteger ( "Process/MaxModuleThreadPriority" );
    process.maxProcessors                        = PixInsightSettings::GlobalInteger ( "Process/MaxProcessors" );
+   process.enableCUDAAcceleration                 = PixInsightSettings::GlobalFlag    ( "Process/EnableCUDAAcceleration" );
+   process.initCUDARuntimeAtStartup             = PixInsightSettings::GlobalFlag    ( "Process/InitCUDARuntimeAtStartup" );
    process.backupFiles                          = PixInsightSettings::GlobalFlag    ( "Process/BackupFiles" );
    process.generateScriptComments               = PixInsightSettings::GlobalFlag    ( "Process/GenerateScriptComments" );
    process.maxConsoleLines                      = PixInsightSettings::GlobalInteger ( "Process/MaxConsoleLines" );

@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-30T19:59:37.890Z
+# Generated on .... 2020-12-02T20:26:48.685Z
 # Project id ...... jasper
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
@@ -162,15 +162,15 @@ post-build:
 	cp $(OBJ_DIR)/libjasper-pxi.a $(PCLLIBDIR64)
 
 ./x64/Release/base/%.o: ../../base/%.c
-	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -D__PCL_CUDA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 ./x64/Release/%.o: ../../%.c
-	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -D__PCL_CUDA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 ./x64/Release/jp2/%.o: ../../jp2/%.c
-	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -D__PCL_CUDA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 ./x64/Release/jpc/%.o: ../../jpc/%.c
-	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -D__PCL_CUDA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

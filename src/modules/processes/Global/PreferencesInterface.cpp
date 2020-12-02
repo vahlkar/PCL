@@ -2449,6 +2449,24 @@ ParallelProcessingPreferencesPage::ParallelProcessingPreferencesPage( Preference
    UseAllAvailableProcessors_CheckBox.SetButtonColor( MaxProcessors_Integer.BackgroundColor() );
    MaxProcessors_Integer.sizer.Add( UseAllAvailableProcessors_CheckBox );
 
+   EnableCUDAAcceleration_Flag.checkBox.SetText( "Enable CUDA acceleration" );
+   EnableCUDAAcceleration_Flag.item = &instance.process.enableCUDAAcceleration;
+   EnableCUDAAcceleration_Flag.SetToolTip(
+      "<p>Enable acceleration with CUDA GPU devices when available. This applies to all image processing, image "
+      "analysis, numerical computation and image rendition tasks performed by the PixInsight core application and "
+      "all installed modules, as applicable.</p>"
+      "<p>This option is only operational on Linux and Windows. It is always ignored on FreeBSD and macOS, where "
+      "CUDA acceleration is not available.</p>" );
+
+   InitCUDARuntimeAtStartup_Flag.checkBox.SetText( "Initialize CUDA runtime at startup" );
+   InitCUDARuntimeAtStartup_Flag.item = &instance.process.enableCUDAAcceleration;
+   InitCUDARuntimeAtStartup_Flag.SetToolTip(
+      "<p>Perform an initialization of the NVIDIA CUDA runtime upon application startup. This includes scanning for "
+      "all CUDA-capable GPU devices available, device selection based on performance criteria, and an initial device "
+      "warm up kernel execution.</p>"
+      "<p>This option is only operational on Linux and Windows. It is always ignored on FreeBSD and macOS, where "
+      "CUDA acceleration is not available.</p>" );
+
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( EnableParallelProcessing_Flag );
    Page_Sizer.Add( EnableParallelCoreRendering_Flag );
@@ -2457,6 +2475,8 @@ ParallelProcessingPreferencesPage::ParallelProcessingPreferencesPage( Preference
    Page_Sizer.Add( EnableThreadCPUAffinity_Flag );
    Page_Sizer.Add( MaxModuleThreadPriority_Set );
    Page_Sizer.Add( MaxProcessors_Integer );
+   Page_Sizer.Add( EnableCUDAAcceleration_Flag );
+   Page_Sizer.Add( InitCUDARuntimeAtStartup_Flag );
    Page_Sizer.AddStretch();
 
    SetSizer( Page_Sizer );
@@ -2471,6 +2491,8 @@ void ParallelProcessingPreferencesPage::TransferSettings( PreferencesInstance& t
    to.process.enableThreadCPUAffinity           = from.process.enableThreadCPUAffinity;
    to.process.maxModuleThreadPriority           = from.process.maxModuleThreadPriority;
    to.process.maxProcessors                     = from.process.maxProcessors;
+   to.process.enableCUDAAcceleration            = from.process.enableCUDAAcceleration;
+   to.process.initCUDARuntimeAtStartup          = from.process.initCUDARuntimeAtStartup;
 }
 
 void ParallelProcessingPreferencesPage::PerformAdditionalUpdates()

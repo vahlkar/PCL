@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-30T20:00:01.188Z
+# Generated on .... 2020-12-02T20:27:12.065Z
 # Project id ...... GaiaDR2
 # Project type .... Module
 # Platform ........ Linux/g++ (compatibility)

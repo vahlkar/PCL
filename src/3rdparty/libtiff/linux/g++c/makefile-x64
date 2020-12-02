@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-30T19:59:40.014Z
+# Generated on .... 2020-12-02T20:26:51.076Z
 # Project id ...... libtiff
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++ (compatibility)
@@ -175,9 +175,9 @@ post-build:
 	cp $(OBJ_DIR)/liblibtiff-pxi.a $(PCLLIBDIR64C)
 
 ./x64/Release/%.o: ../../%.cxx
-	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mfpmath=sse -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_COMPATIBILITY -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mfpmath=sse -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 ./x64/Release/%.o: ../../%.c
-	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mfpmath=sse -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_COMPATIBILITY -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(PCLSRCDIR)/3rdparty/jpeg" -I"$(PCLSRCDIR)/3rdparty/zlib" -mfpmath=sse -mssse3 -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c99 -Wall -Wno-parentheses -Wno-error=implicit-function-declaration -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo ' '
 

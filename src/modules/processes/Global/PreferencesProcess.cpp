@@ -224,6 +224,8 @@ PreferencesProcess::PreferencesProcess()
    new METAPARAMETER_ID( Process, enableThreadCPUAffinity )( this );
    new METAPARAMETER_ID( Process, maxModuleThreadPriority )( this );
    new METAPARAMETER_ID( Process, maxProcessors )( this );
+   new METAPARAMETER_ID( Process, enableCUDAAcceleration )( this );
+   new METAPARAMETER_ID( Process, initCUDARuntimeAtStartup )( this );
    new METAPARAMETER_ID( Process, backupFiles )( this );
    new METAPARAMETER_ID( Process, generateScriptComments )( this );
    new METAPARAMETER_ID( Process, maxConsoleLines )( this );

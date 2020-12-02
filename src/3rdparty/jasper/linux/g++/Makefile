@@ -2,7 +2,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-11-30T19:59:37.904Z
+# Generated on .... 2020-12-02T20:26:48.702Z
 # Project id ...... jasper
 # Project type .... StaticLibrary
 # Platform ........ Linux/g++
