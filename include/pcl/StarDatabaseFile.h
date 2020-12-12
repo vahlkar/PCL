@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.4
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// pcl/StarDatabaseFile.h - Released 2020-12-01T21:25:03Z
+// pcl/StarDatabaseFile.h - Released 2020-12-12T20:51:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -140,6 +140,60 @@ public:
       float    medianLeafLength = 0;  //!< The median of quadtree leaf node lengths.
       uint32   minimumLeafLength = 0; //!< Minimum quadtree leaf node length.
       uint32   maximumLeafLength = 0; //!< Maximum quadtree leaf node length.
+   };
+
+   /*!
+    * \struct SearchData
+    * \brief Data items and parameters for catalog search operations.
+    *
+    * The StarData template parameter represents a catalog-specific structure
+    * to hold the data associated with a point source extracted during a
+    * database search operation.
+    *
+    * \ingroup point_source_databases
+    */
+   template <class StarData>
+   struct SearchData
+   {
+      double          centerRA = 0;             //!< Field center right ascension coordinate in degrees (search parameter).
+      double          centerDec = 0;            //!< Field center declination coordinate in degrees (search parameter).
+      double          radius = 1;               //!< Field radius in degrees (search parameter).
+      float           magnitudeLow = -1.5;      /*!< Low magnitude (search parameter). Only stars of magnitude greater
+                                                     than or equal to this value will be included in the stars list. */
+      float           magnitudeHigh = 26;       /*!< High magnitude (search parameter). Only stars of magnitude less
+                                                     than or equal to this value will be included in the stars list. */
+      uint32          sourceLimit = uint32_max; /*!< The search will not include more objects than this limit
+                                                     in the stars list (search parameter). */
+      uint32          requiredFlags = 0u;       /*!< Required flags (search parameter). If non-zero, only stars with
+                                                     \e all of these flags set will be included in the stars list. */
+      uint32          inclusionFlags = 0u;      /*!< Inclusion flags (search parameter). If non-zero, only stars with
+                                                     \e any of these flags set will be included in the stars list. */
+      uint32          exclusionFlags = 0u;      /*!< Exclusion flags (search parameter). Stars with \e any of these flags
+                                                         set will \e not be included in the stars list. */
+
+      Array<StarData> stars;                    //!< The list of stars found by the search operation (output data).
+      uint32          excessCount = 0u;         /*!< When \a sourceLimit is exceeded, this is the number of
+                                                     additional objects found but not included in the stars list (output data). */
+      uint32          rejectCount = 0u;         /*!< Total number of rejected objects (output data). This refers to
+                                                     point sources that have been tested for inclusion in the search
+                                                     result, but have not matched the search criteria. */
+      double          timeTotal = 0;            //!< Total search time in seconds (output data).
+      double          timeIO = 0;               //!< Time consumed by I/O operations in seconds (output data).
+      uint32          countIO = 0u;             //!< Total number of I/O operations performed (output data).
+      double          timeUncompress = 0;       //!< Time consumed by data uncompression in seconds (output data).
+      double          timeDecode = 0;           //!< Time consumed by data decoding in seconds (output data).
+
+      /*!
+       * Sets all search result data items to null values.
+       */
+      void ResetSearchResults()
+      {
+         stars.Clear();
+         excessCount = rejectCount = 0u;
+         timeTotal = timeIO = 0;
+         countIO = 0u;
+         timeUncompress = timeDecode = 0;
+      }
    };
 
 protected:
@@ -689,4 +743,4 @@ XPSD::IndexTree::SearchRecursive( uint32 nodeIndex, double ra, double dec, doubl
 #endif  // __PCL_StarDatabaseFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/StarDatabaseFile.h - Released 2020-12-01T21:25:03Z
+// EOF pcl/StarDatabaseFile.h - Released 2020-12-12T20:51:09Z

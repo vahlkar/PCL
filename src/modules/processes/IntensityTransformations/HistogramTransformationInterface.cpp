@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationInterface.cpp - Released 2020-11-27T11:02:59Z
+// HistogramTransformationInterface.cpp - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -3167,4 +3167,4 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationInterface.cpp - Released 2020-11-27T11:02:59Z
+// EOF HistogramTransformationInterface.cpp - Released 2020-12-12T20:51:40Z

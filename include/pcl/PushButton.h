@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.4
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// pcl/PushButton.h - Released 2020-12-01T21:25:03Z
+// pcl/PushButton.h - Released 2020-12-12T20:51:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -133,4 +133,4 @@ public:
 #endif   // __PCL_PushButton_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PushButton.h - Released 2020-12-01T21:25:03Z
+// EOF pcl/PushButton.h - Released 2020-12-12T20:51:09Z

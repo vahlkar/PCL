@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.4
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// pcl/Console.h - Released 2020-12-01T21:25:03Z
+// pcl/Console.h - Released 2020-12-12T20:51:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -709,7 +709,7 @@ public:
     * exception will be thrown and nothing will be executed. In current
     * versions of the PixInsight platform, scripts can only be executed from
     * the root thread. The main reason for this limitation is that the
-    * JavaScript and command-line execution engined are not reentrant.
+    * JavaScript and command-line execution engines are not reentrant.
     */
    void ExecuteScript( const String& filePath, const StringKeyValueList& arguments = StringKeyValueList() );
 
@@ -826,4 +826,4 @@ inline Console& operator >>( Console& o, String& s )
 #endif   // __PCL_Console_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Console.h - Released 2020-12-01T21:25:03Z
+// EOF pcl/Console.h - Released 2020-12-12T20:51:09Z

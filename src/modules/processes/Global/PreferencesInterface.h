@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.2.8
+// Standard Global Process Module Version 1.2.9
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2020-11-27T11:02:59Z
+// PreferencesInterface.h - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -946,4 +946,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2020-11-27T11:02:59Z
+// EOF PreferencesInterface.h - Released 2020-12-12T20:51:40Z

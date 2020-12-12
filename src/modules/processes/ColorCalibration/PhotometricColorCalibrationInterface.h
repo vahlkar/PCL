@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.5
+// Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.h - Released 2020-11-27T11:02:58Z
+// PhotometricColorCalibrationInterface.h - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -196,6 +196,8 @@ private:
          SectionBar        PhotometryParameters_SectionBar;
          Control           PhotometryParameters_Control;
          VerticalSizer     PhotometryParameters_Sizer;
+            HorizontalSizer   PhotometryAutoCatalog_Sizer;
+               CheckBox          PhotometryAutoCatalog_CheckBox;
             HorizontalSizer   PhotometryCatalog_Sizer;
                Label             PhotometryCatalog_Label;
                ComboBox          PhotometryCatalog_ComboBox;
@@ -280,4 +282,4 @@ PCL_END_LOCAL
 #endif   // __PhotometricColorCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.h - Released 2020-11-27T11:02:58Z
+// EOF PhotometricColorCalibrationInterface.h - Released 2020-12-12T20:51:40Z

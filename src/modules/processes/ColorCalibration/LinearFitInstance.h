@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.5
+// Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// LinearFitInstance.h - Released 2020-11-27T11:02:58Z
+// LinearFitInstance.h - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -93,4 +93,4 @@ private:
 #endif   // __LinearFitInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LinearFitInstance.h - Released 2020-11-27T11:02:58Z
+// EOF LinearFitInstance.h - Released 2020-12-12T20:51:40Z

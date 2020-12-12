@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// HDRCompositionInstance.cpp - Released 2020-11-27T11:02:59Z
+// HDRCompositionInstance.cpp - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -976,4 +976,4 @@ size_type HDRCompositionInstance::ParameterLength( const MetaParameter* p, size_
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInstance.cpp - Released 2020-11-27T11:02:59Z
+// EOF HDRCompositionInstance.cpp - Released 2020-12-12T20:51:40Z

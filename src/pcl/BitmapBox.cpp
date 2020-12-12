@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.4
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// pcl/BitmapBox.cpp - Released 2020-12-01T21:25:11Z
+// pcl/BitmapBox.cpp - Released 2020-12-12T20:51:19Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -113,4 +113,4 @@ void BitmapBox::EnableAutoFit( bool enable )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/BitmapBox.cpp - Released 2020-12-01T21:25:11Z
+// EOF pcl/BitmapBox.cpp - Released 2020-12-12T20:51:19Z

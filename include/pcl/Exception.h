@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.4
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// pcl/Exception.h - Released 2020-12-01T21:25:03Z
+// pcl/Exception.h - Released 2020-12-12T20:51:09Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -668,4 +668,4 @@ PCL_DECLARE_EXCEPTION_CLASS( ProcessAborted, "Process aborted", String() );
 #endif   // __PCL_Exception_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Exception.h - Released 2020-12-01T21:25:03Z
+// EOF pcl/Exception.h - Released 2020-12-12T20:51:09Z

@@ -2,6 +2,9 @@
 
 BASEDIR=$PCLSRCDIR/modules/processes
 
+cd $BASEDIR/APASS/linux/g++
+make -j$(nproc)
+
 # cd $BASEDIR/BackgroundModelization/linux/g++
 # make -j$(nproc)
 
@@ -32,7 +35,7 @@ make -j$(nproc)
 cd $BASEDIR/Fourier/linux/g++
 make -j$(nproc)
 
-cd $BASEDIR/GaiaDR2/linux/g++
+cd $BASEDIR/Gaia/linux/g++
 make -j$(nproc)
 
 cd $BASEDIR/Geometry/linux/g++

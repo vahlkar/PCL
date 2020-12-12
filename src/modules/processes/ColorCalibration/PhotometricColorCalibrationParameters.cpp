@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.5
+// Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.cpp - Released 2020-11-27T11:02:58Z
+// PhotometricColorCalibrationParameters.cpp - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -98,6 +98,7 @@ PCCSolverSplineSmoothing*          ThePCCSolverSplineSmoothingParameter = nullpt
 PCCSolverProjection*               ThePCCSolverProjectionParameter = nullptr;
 
 PCCPhotCatalogName*                ThePCCPhotCatalogNameParameter = nullptr;
+PCCPhotAutoCatalog*                ThePCCPhotAutoCatalogParameter = nullptr;
 PCCPhotLimitMagnitude*             ThePCCPhotLimitMagnitudeParameter = nullptr;
 PCCPhotAutoLimitMagnitude*         ThePCCPhotAutoLimitMagnitudeParameter = nullptr;
 PCCPhotAutoLimitMagnitudeFactor*   ThePCCPhotAutoLimitMagnitudeFactorParameter= nullptr;
@@ -926,7 +927,7 @@ double PCCSolverSplineSmoothing::MaximumValue() const
 
 double PCCSolverSplineSmoothing::DefaultValue() const
 {
-   return 0.025;
+   return 0.015;
 }
 
 // ----------------------------------------------------------------------------
@@ -986,6 +987,23 @@ IsoString PCCPhotCatalogName::Id() const
 String PCCPhotCatalogName::DefaultValue() const
 {
    return "APASS";
+}
+
+// ----------------------------------------------------------------------------
+
+PCCPhotAutoCatalog::PCCPhotAutoCatalog( MetaProcess* P ) : MetaBoolean( P )
+{
+   ThePCCPhotAutoCatalogParameter = this;
+}
+
+IsoString PCCPhotAutoCatalog::Id() const
+{
+   return "photAutoCatalog";
+}
+
+bool PCCPhotAutoCatalog::DefaultValue() const
+{
+   return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -1431,4 +1449,4 @@ double PCCBackgroundROIY1::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.cpp - Released 2020-11-27T11:02:58Z
+// EOF PhotometricColorCalibrationParameters.cpp - Released 2020-12-12T20:51:40Z

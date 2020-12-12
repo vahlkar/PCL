@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// RotationInterface.cpp - Released 2020-11-27T11:02:59Z
+// RotationInterface.cpp - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -576,4 +576,4 @@ RotationInterface::GUIData::GUIData( RotationInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInterface.cpp - Released 2020-11-27T11:02:59Z
+// EOF RotationInterface.cpp - Released 2020-12-12T20:51:40Z

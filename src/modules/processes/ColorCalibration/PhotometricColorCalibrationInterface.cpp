@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.5
+// Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2020-11-27T11:02:58Z
+// PhotometricColorCalibrationInterface.cpp - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -102,15 +102,18 @@ static void InitializeData()
                       << ServerData{ "SAAO, South Africa", "http://viziersaao.chpc.ac.za/" };
 
       s_solverCatalogs.Clear();
-      s_solverCatalogs << CatalogData{ "GaiaDR2", "Gaia Data Release 2 (Gaia collaboration, 2018, 1,692,919,135 sources)" }
+      s_solverCatalogs << CatalogData{ "GaiaEDR3_XPSD", "Gaia Early Data Release 3 - Local XPSD Server (Gaia collaboration, 2020, 1,806,254,432 sources)" }
                        << CatalogData{ "GaiaDR2_XPSD", "Gaia Data Release 2 - Local XPSD Server (Gaia collaboration, 2018, 1,692,919,135 sources)" }
+                       << CatalogData{ "GaiaDR2", "Gaia Data Release 2 - Online Vizier Service (Gaia collaboration, 2018, 1,692,919,135 sources)" }
                        << CatalogData{ "PPMXL", "PPMXL catalog (910,469,430 objects)" }
                        << CatalogData{ "UCAC3", "UCAC3 catalog (100,765,502 objects)" }
                        << CatalogData{ "TYCHO-2", "Tycho-2 catalog (2,539,913 stars)" }
                        << CatalogData{ "Bright Stars", "Bright Star Catalog, 5th ed. (Hoffleit+, 9110 stars)" };
 
       s_photometryCatalogs.Clear();
-      s_photometryCatalogs << CatalogData{ "APASS", "AAVSO Photometric All Sky Survey DR9 (Henden+, 2016, 62 million stars)" };
+      s_photometryCatalogs << CatalogData{ "APASS", "AAVSO Photometric All Sky Survey DR9 - Online Vizier Service (Henden+, 2016, 62 million stars)" }
+                           << CatalogData{ "APASSDR9_XPSD", "AAVSO Photometric All Sky Survey DR9 - Local XPSD Server (Henden+, 2016, 62 million stars)" }
+                           << CatalogData{ "APASSDR10_XPSD", "AAVSO Photometric All Sky Survey DR10 - Local XPSD Server (Henden+, 2018, 128 million stars)" };
 
       s_dataInitialized = true;
    }
@@ -359,6 +362,8 @@ void PhotometricColorCalibrationInterface::UpdateControls()
 
    GUI->SplineSmoothing_NumericControl.SetValue( m_instance.p_solverSplineSmoothing );
 
+   GUI->PhotometryAutoCatalog_CheckBox.SetChecked( m_instance.p_photAutoCatalog );
+
    itemIndex = -1;
    for ( size_type i = 0; i < s_photometryCatalogs.Length(); ++i )
       if ( m_instance.p_photCatalogName == s_photometryCatalogs[i].name )
@@ -375,6 +380,9 @@ void PhotometricColorCalibrationInterface::UpdateControls()
    else
       GUI->PhotometryCatalog_ComboBox.SetToolTip( s_photometryCatalogs[itemIndex].description );
    GUI->PhotometryCatalog_ComboBox.SetCurrentItem( itemIndex );
+
+   GUI->PhotometryCatalog_Label.Enable( !m_instance.p_photAutoCatalog );
+   GUI->PhotometryCatalog_ComboBox.Enable( !m_instance.p_photAutoCatalog );
 
    GUI->PhotometryAutoLimitMagnitude_CheckBox.SetChecked( m_instance.p_photAutoLimitMagnitude );
 
@@ -743,6 +751,11 @@ void PhotometricColorCalibrationInterface::e_Click( Button& sender, bool checked
    else if ( sender == GUI->IgnorePositionAndScale_CheckBox )
    {
       m_instance.p_ignorePositionAndScale = checked;
+   }
+   else if ( sender == GUI->PhotometryAutoCatalog_CheckBox )
+   {
+      m_instance.p_photAutoCatalog = checked;
+      UpdateControls();
    }
    else if ( sender == GUI->ResetSolverConfiguration_ToolButton )
    {
@@ -1167,8 +1180,13 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    //
 
    const char* serverToolTip = "<p>PhotometricColorCalibration, as well as the scripts that it uses internally, "
-      "depend on the VizieR service to access online astronomical catalogs and databases. This option allows you "
-      "to select the best VizieR mirror server, typically the closest one to your location.</p>";
+      "may depend on the VizieR service to access online astronomical catalogs and databases. This option allows you "
+      "to select the best VizieR mirror server, typically the closest one to your location.</p>"
+      "<p>Note that you can also use local databases (in XPSD format) for the astrometric and photometric catalogs "
+      "required by this process and its supporting scripts. The Gaia and APASS processes can be configured with XPSD "
+      "database files implementing the Gaia DR2 and EDR3 catalogs for astrometry, as well as the APASS DR9 and DR10 "
+      "catalogs for photometry. In such case the PhotometricColorCalibration tool does not require any online service, "
+      "and hence does not need an Internet connection.</p>";
 
    Server_Label.SetText( "Database server:" );
    Server_Label.SetFixedWidth( labelWidth1 );
@@ -1387,7 +1405,8 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    SolverAutoCatalog_CheckBox.SetText( "Automatic catalog" );
    SolverAutoCatalog_CheckBox.SetToolTip( "<p>When this option is enabled, PhotometricColorCalibration will select an optimal "
-      "astrometric catalog for the field of view of the target image. Enabling this option is recommended under normal working conditions.</p>" );
+      "astrometric catalog for the field of view of the target image.</p>"
+      "<p>Enabling this option is recommended under normal working conditions.</p>" );
    SolverAutoCatalog_CheckBox.OnClick( (Button::click_event_handler)&PhotometricColorCalibrationInterface::e_Click, w );
 
    SolverAutoCatalog_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
@@ -1649,10 +1668,26 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 
    //
 
+   PhotometryAutoCatalog_CheckBox.SetText( "Automatic catalog" );
+   PhotometryAutoCatalog_CheckBox.SetToolTip( "<p>When this option is enabled, PhotometricColorCalibration will select an optimal "
+      "photometric catalog automatically. If an APASS XPSD server is available and properly configured with local XPSD database files, "
+      "it will be selected for the APASS DR10 or DR9 catalog, depending on database availability. Otherwise the APASS DR9 catalog will "
+      "be used through an online Vizier service.</p>"
+      "<p>Enabling this option is recommended under normal working conditions.</p>" );
+   PhotometryAutoCatalog_CheckBox.OnClick( (Button::click_event_handler)&PhotometricColorCalibrationInterface::e_Click, w );
+
+   PhotometryAutoCatalog_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   PhotometryAutoCatalog_Sizer.Add( PhotometryAutoCatalog_CheckBox );
+   PhotometryAutoCatalog_Sizer.AddStretch();
+
+   //
+
    const char* photometryCatalogToolTip = "<p>This is the catalog used to acquire photometric data of stars.</p>"
       "<p>As of releasing this version of the PhotometricColorCalibration tool, the only catalog providing enough data for "
       "the implemented algorithms is the AAVSO Photometric All-Sky Survey (APASS). Future versions will support more "
-      "catalogs as they become available and we manage to analyze them and adapt our algorithms as necessary.</p>";
+      "catalogs as they become available and we manage to analyze them and adapt our algorithms as necessary.</p>"
+      "<p>Under normal working conditions, you should enable the <i>Automatic catalog</i> option to use an optimal APASS "
+      "catalog implementation selected as a function of database availability.</p>";
 
    PhotometryCatalog_Label.SetText( "Photometry catalog:" );
    PhotometryCatalog_Label.SetFixedWidth( labelWidth1 );
@@ -1814,6 +1849,7 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
    //
 
    PhotometryParameters_Sizer.SetSpacing( 4 );
+   PhotometryParameters_Sizer.Add( PhotometryAutoCatalog_Sizer );
    PhotometryParameters_Sizer.Add( PhotometryCatalog_Sizer );
    PhotometryParameters_Sizer.Add( PhotometryAutoLimitMagnitude_Sizer );
    PhotometryParameters_Sizer.Add( PhotometryLimitMagnitude_Sizer );
@@ -2057,4 +2093,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-11-27T11:02:58Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-12-12T20:51:40Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.5
+// Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2020-11-27T11:02:58Z
+// PhotometricColorCalibrationInstance.cpp - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -123,6 +123,7 @@ PhotometricColorCalibrationInstance::PhotometricColorCalibrationInstance( const 
    , p_solverSplineSmoothing( ThePCCSolverSplineSmoothingParameter->DefaultValue() )
    , p_solverProjection( PCCSolverProjection::Default )
    , p_photCatalogName( ThePCCPhotCatalogNameParameter->DefaultValue() )
+   , p_photAutoCatalog( ThePCCPhotAutoCatalogParameter->DefaultValue() )
    , p_photLimitMagnitude( ThePCCPhotLimitMagnitudeParameter->DefaultValue() )
    , p_photAutoLimitMagnitude( ThePCCPhotAutoLimitMagnitudeParameter->DefaultValue() )
    , p_photAutoLimitMagnitudeFactor( ThePCCPhotAutoLimitMagnitudeFactorParameter->DefaultValue() )
@@ -190,6 +191,7 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
       p_solverSplineSmoothing          = x->p_solverSplineSmoothing;
       p_solverProjection               = x->p_solverProjection;
       p_photCatalogName                = x->p_photCatalogName;
+      p_photAutoCatalog                = x->p_photAutoCatalog;
       p_photLimitMagnitude             = x->p_photLimitMagnitude;
       p_photAutoLimitMagnitude         = x->p_photAutoLimitMagnitude;
       p_photAutoLimitMagnitudeFactor   = x->p_photAutoLimitMagnitudeFactor;
@@ -517,6 +519,69 @@ struct FromKeyword
 
 // ----------------------------------------------------------------------------
 
+static String BestAvailableXPSDServerCatalog()
+{
+   String scriptPath = File::UniqueFileName( File::SystemTempDirectory(), 12, "PCC_", ".js" );
+   String catalogName;
+   try
+   {
+      File::WriteTextFile( scriptPath,
+R"JS_SOURCE( var __PJSR_APASS_DR = -1;
+if ( (typeof APASS) != 'undefined' )
+{
+   let xpsd = new APASS;
+   xpsd.command = "get-info";
+   xpsd.dataRelease = APASS.prototype.DataRelease_BestAvailable;
+   xpsd.verbosity = 0;
+   xpsd.executeGlobal();
+   if ( xpsd.databaseFilePaths.length > 0 )
+      switch ( xpsd.outputDataRelease )
+      {
+      case APASS.prototype.DataRelease_10:
+         __PJSR_APASS_DR = 10;
+         break;
+      case APASS.prototype.DataRelease_9:
+         __PJSR_APASS_DR = 9;
+         break;
+      default:
+         break;
+      }
+} )JS_SOURCE" );
+
+      Console().ExecuteScript( scriptPath );
+
+      Variant result = Module->EvaluateScript( "__PJSR_APASS_DR" );
+      if ( result.IsValid() )
+         switch ( result.ToInt() )
+         {
+         case 10:
+            catalogName = "APASSDR10_XPSD";
+            break;
+         case 9:
+            catalogName = "APASSDR9_XPSD";
+            break;
+         default:
+            break;
+         }
+   }
+   catch ( ... )
+   {
+   }
+
+   try
+   {
+      if ( File::Exists( scriptPath ) )
+         File::Remove( scriptPath );
+   }
+   catch ( ... )
+   {
+   }
+
+   return catalogName;
+}
+
+// ----------------------------------------------------------------------------
+
 bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
 {
    {
@@ -625,7 +690,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                              << StringKeyValue( "solver_catalog", p_solverCatalogName )
                                              << StringKeyValue( "solver_catalogMode", p_solverAutoCatalog ? "2" : "1" )
                                              << StringKeyValue( "solver_magnitude", String( p_solverLimitMagnitude ) )
-                                             << StringKeyValue( "solver_autoMagnitude", p_solverAutoLimitMagnitude ? "true" : "false" )
+                                             << StringKeyValue( "solver_autoMagnitude", String( bool( p_solverAutoLimitMagnitude ) ) )
                                              << StringKeyValue( "solver_sensitivity", String( p_solverStarSensitivity ) )
                                              << StringKeyValue( "solver_noiseLayers", String( p_solverNoiseLayers ) )
                                              << StringKeyValue( "solver_alignAlgorithm", String( p_solverAlignmentDevice ) )
@@ -687,13 +752,23 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
 
       String fluxFilePath;
 
+      String photCatalogName = p_photCatalogName;
+      bool hasXPSDServer = false;
+      if ( p_photAutoCatalog )
+      {
+         String xpsdCatalog = BestAvailableXPSDServerCatalog();
+         hasXPSDServer = !xpsdCatalog.IsEmpty();
+         photCatalogName = hasXPSDServer ? xpsdCatalog : "APASS";
+         console.NoteLn( "<end><cbr><br>* Using the automatically selected " + photCatalogName + " catalog." );
+      }
+
       /*
        * Perform photometry.
        */
       {
          int minAperture = p_photAperture;
          int limitMagnitude = p_photLimitMagnitude;
-         if ( p_photAutoAperture || p_photAutoLimitMagnitude )
+         if ( p_photAutoAperture || p_photAutoLimitMagnitude && !hasXPSDServer )
          {
             WCSKeywords wcs( properties, keywords );
             if ( !wcs.focallen.IsDefined() || !wcs.xpixsz.IsDefined() )
@@ -714,7 +789,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                   String( minAperture ) + " pixels." );
             }
 
-            if ( p_photAutoLimitMagnitude )
+            if ( p_photAutoLimitMagnitude && !hasXPSDServer )
             {
                Rect r = view.Image().Bounds();
                double h = Min( r.Width(), r.Height() )*wcs.xpixsz()/1000;
@@ -753,9 +828,10 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                           << StringKeyValue( "phot_filter", "Johnson V" )
                                           << StringKeyValue( "phot_filterKeyword", "FILTER" )
                                           << StringKeyValue( "phot_margin", "15" )
-                                          << StringKeyValue( "phot_catalogName", p_photCatalogName )
+                                          << StringKeyValue( "phot_catalogName", photCatalogName )
                                           << StringKeyValue( "phot_catalogFilter", "Vmag" )
                                           << StringKeyValue( "phot_vizierServer", p_serverURL )
+                                          << StringKeyValue( "phot_autoMagnitude", String( bool( p_photAutoLimitMagnitude ) ) )
                                           << StringKeyValue( "phot_useActive", "false" )
                                           << StringKeyValue( "phot_extractMode", "0" )
                                           << StringKeyValue( "phot_manualObjects", "[]" )
@@ -841,6 +917,11 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
          || indexOfImageBFlux  < 0 )
          throw Error( "Wrong or corrupted photometry data: <raw>" + fluxFilePath + "</raw>" );
 
+      size_type numberOfRequiredTokens = Max( Max( Max( Max( Max( indexOfCatalogRmag, indexOfCatalogGmag ),
+                                                             indexOfCatalogBmag ),
+                                                        indexOfImageRFlux ),
+                                                   indexOfImageGFlux ),
+                                              indexOfImageBFlux ) + 1;
       DVector W;
 
       if ( p_workingMode == PCCWorkingMode::Broadband )
@@ -848,50 +929,54 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
          Array<RG> rg;
          Array<BG> bg;
          for ( const IsoString& line : lines )
-            if ( IsoCharTraits::IsDigit( *line ) )
-            {
-               IsoStringList tokens;
-               line.Break( tokens, ';' );
+         {
+            IsoStringList tokens;
+            line.Break( tokens, ';' );
 
-               double imgMagG;
-               if ( !tokens[indexOfImageGFlux].TryToDouble( imgMagG ) )
-                  continue;
-               imgMagG = -2.5118 * Log( imgMagG );
-               if ( !IsFinite( imgMagG ) )
-                  continue;
+            if ( tokens.Length() >= numberOfRequiredTokens )
+               if ( !tokens[1].IsEmpty() )
+                  if ( IsoCharTraits::IsDigit( tokens[1][0]/*R.A.*/ ) ) // if this is a data line
+                  {
+                     double imgMagG;
+                     if ( !tokens[indexOfImageGFlux].TryToDouble( imgMagG ) )
+                        continue;
+                     imgMagG = -2.5118 * Log( imgMagG );
+                     if ( !IsFinite( imgMagG ) )
+                        continue;
 
-               double catMagG;
-               if ( !tokens[indexOfCatalogGmag].TryToDouble( catMagG ) )
-                  continue;
+                     double catMagG;
+                     if ( !tokens[indexOfCatalogGmag].TryToDouble( catMagG ) )
+                        continue;
 
-               double imgMagR;
-               bool haveImgMagR = tokens[indexOfImageRFlux].TryToDouble( imgMagR );
-               if ( haveImgMagR )
-                  imgMagR = -2.5118 * Log( imgMagR );
-               if ( !IsFinite( imgMagR ) )
-                  haveImgMagR = false;
+                     double imgMagR;
+                     bool haveImgMagR = tokens[indexOfImageRFlux].TryToDouble( imgMagR );
+                     if ( haveImgMagR )
+                        imgMagR = -2.5118 * Log( imgMagR );
+                     if ( !IsFinite( imgMagR ) )
+                        haveImgMagR = false;
 
-               double imgMagB;
-               bool haveImgMagB = tokens[indexOfImageBFlux].TryToDouble( imgMagB );
-               if ( haveImgMagB )
-                  imgMagB = -2.5118 * Log( imgMagB );
-               if ( !IsFinite( imgMagB ) )
-                  haveImgMagB = false;
+                     double imgMagB;
+                     bool haveImgMagB = tokens[indexOfImageBFlux].TryToDouble( imgMagB );
+                     if ( haveImgMagB )
+                        imgMagB = -2.5118 * Log( imgMagB );
+                     if ( !IsFinite( imgMagB ) )
+                        haveImgMagB = false;
 
-               if ( haveImgMagR )
-               {
-                  double catMagR;
-                  if ( tokens[indexOfCatalogRmag].TryToDouble( catMagR ) )
-                     rg << RG{ catMagR, catMagG, imgMagR, imgMagG };
-               }
+                     if ( haveImgMagR )
+                     {
+                        double catMagR;
+                        if ( tokens[indexOfCatalogRmag].TryToDouble( catMagR ) )
+                           rg << RG{ catMagR, catMagG, imgMagR, imgMagG };
+                     }
 
-               if ( haveImgMagB )
-               {
-                  double catMagB;
-                  if ( tokens[indexOfCatalogBmag].TryToDouble( catMagB ) )
-                     bg << BG{ catMagB, catMagG, imgMagB, imgMagG };
-               }
-            }
+                     if ( haveImgMagB )
+                     {
+                        double catMagB;
+                        if ( tokens[indexOfCatalogBmag].TryToDouble( catMagB ) )
+                           bg << BG{ catMagB, catMagG, imgMagB, imgMagG };
+                     }
+                  }
+         }
 
          /*
           * Fit color transformation functions.
@@ -936,7 +1021,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
          {
             if ( !ThePhotometricColorCalibrationGraphInterface->IsVisible() )
                ThePhotometricColorCalibrationGraphInterface->Launch();
-            ThePhotometricColorCalibrationGraphInterface->UpdateGraphs( view.FullId(), p_photCatalogName, "r'", "V", "B",
+            ThePhotometricColorCalibrationGraphInterface->UpdateGraphs( view.FullId(), photCatalogName, "r'", "V", "B",
                                                                         catIndexRG, imgIndexRG, LRG,
                                                                         catIndexBG, imgIndexBG, LBG );
          }
@@ -993,55 +1078,62 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
 
          Array<double> ZR, ZG, ZB;
          for ( const IsoString& line : lines )
-            if ( IsoCharTraits::IsDigit( *line ) )
-            {
-               IsoStringList tokens;
-               line.Break( tokens, ';' );
+         {
+            IsoStringList tokens;
+            line.Break( tokens, ';' );
 
-               /*
-                * Catalog magnitudes.
-                */
-               double r, g, b;
-               if ( !tokens[indexOfCatalogRmag].TryToDouble( r ) ||
-                    !tokens[indexOfCatalogGmag].TryToDouble( g ) ||
-                    !tokens[indexOfCatalogBmag].TryToDouble( b ) )
-                  continue;
-               /*
-                * Star fluxes measured on the image.
-                */
-               double ir, ig, ib;
-               if ( !tokens[indexOfImageRFlux].TryToDouble( ir ) ||
-                    !tokens[indexOfImageGFlux].TryToDouble( ig ) ||
-                    !tokens[indexOfImageBFlux].TryToDouble( ib ) )
-                  continue;
+            if ( tokens.Length() >= numberOfRequiredTokens )
+               if ( !tokens[1].IsEmpty() )
+                  if ( IsoCharTraits::IsDigit( tokens[1][0]/*R.A.*/ ) ) // if this is a data line
+                  {
+                     IsoStringList tokens;
+                     line.Break( tokens, ';' );
 
-               /*
-                * Catalog fluxes at catalog filter effective wavelengths.
-                * (APASS photometric system)
-                */
-               double yr = 0.14 * 4490 / Pow( 2.5118, r );
-               double yg = 0.16 * 3640 / Pow( 2.5118, g );
-               double yb = 0.22 * 4260 / Pow( 2.5118, b );
+                     /*
+                      * Catalog magnitudes.
+                      */
+                     double r, g, b;
+                     if ( !tokens[indexOfCatalogRmag].TryToDouble( r ) ||
+                        !tokens[indexOfCatalogGmag].TryToDouble( g ) ||
+                        !tokens[indexOfCatalogBmag].TryToDouble( b ) )
+                        continue;
+                     /*
+                      * Star fluxes measured on the image.
+                      */
+                     double ir, ig, ib;
+                     if ( !tokens[indexOfImageRFlux].TryToDouble( ir ) ||
+                        !tokens[indexOfImageGFlux].TryToDouble( ig ) ||
+                        !tokens[indexOfImageBFlux].TryToDouble( ib ) )
+                        continue;
 
-               /*
-                * Catalog fluxes at user filter effective wavelengths.
-                */
-               double fr = (XR - G)*(XR - R)/(B - G)/(B - R) * yb
-                         + (XR - R)*(XR - B)/(G - R)/(G - B) * yg
-                         + (XR - B)*(XR - G)/(R - B)/(R - G) * yr;
+                     /*
+                      * Catalog fluxes at catalog filter effective wavelengths.
+                      * (APASS photometric system)
+                      */
+                     double yr = 0.14 * 4490 / Pow( 2.5118, r );
+                     double yg = 0.16 * 3640 / Pow( 2.5118, g );
+                     double yb = 0.22 * 4260 / Pow( 2.5118, b );
 
-               double fg = (XG - G)*(XG - R)/(B - G)/(B - R) * yb
-                         + (XG - R)*(XG - B)/(G - R)/(G - B) * yg
-                         + (XG - B)*(XG - G)/(R - B)/(R - G) * yr;
+                     /*
+                      * Catalog fluxes at user filter effective wavelengths.
+                      */
+                     double fr = (XR - G)*(XR - R)/(B - G)/(B - R) * yb
+                               + (XR - R)*(XR - B)/(G - R)/(G - B) * yg
+                               + (XR - B)*(XR - G)/(R - B)/(R - G) * yr;
 
-               double fb = (XB - G)*(XB - R)/(B - G)/(B - R) * yb
-                         + (XB - R)*(XB - B)/(G - R)/(G - B) * yg
-                         + (XB - B)*(XB - G)/(R - B)/(R - G) * yr;
+                     double fg = (XG - G)*(XG - R)/(B - G)/(B - R) * yb
+                               + (XG - R)*(XG - B)/(G - R)/(G - B) * yg
+                               + (XG - B)*(XG - G)/(R - B)/(R - G) * yr;
 
-               ZR << ir / fr;
-               ZG << ig / fg;
-               ZB << ib / fb;
-            }
+                     double fb = (XB - G)*(XB - R)/(B - G)/(B - R) * yb
+                               + (XB - R)*(XB - B)/(G - R)/(G - B) * yg
+                               + (XB - B)*(XB - G)/(R - B)/(R - G) * yr;
+
+                     ZR << ir / fr;
+                     ZG << ig / fg;
+                     ZB << ib / fb;
+                  }
+         }
 
          double zr = RobustMean( ZR );
          double zg = RobustMean( ZG );
@@ -1285,6 +1377,8 @@ void* PhotometricColorCalibrationInstance::LockParameter( const MetaParameter* p
       return &p_solverProjection;
    if ( p == ThePCCPhotCatalogNameParameter )
       return p_photCatalogName.Begin();
+   if ( p == ThePCCPhotAutoCatalogParameter )
+      return &p_photAutoCatalog;
    if ( p == ThePCCPhotLimitMagnitudeParameter )
       return &p_photLimitMagnitude;
    if ( p == ThePCCPhotAutoLimitMagnitudeParameter )
@@ -1398,4 +1492,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-11-27T11:02:58Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-12-12T20:51:40Z

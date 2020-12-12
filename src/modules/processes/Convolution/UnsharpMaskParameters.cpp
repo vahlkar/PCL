@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskParameters.cpp - Released 2020-11-27T11:02:59Z
+// UnsharpMaskParameters.cpp - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -333,4 +333,4 @@ double USMRangeHigh::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskParameters.cpp - Released 2020-11-27T11:02:59Z
+// EOF UnsharpMaskParameters.cpp - Released 2020-12-12T20:51:40Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// IndigoClient.h - Released 2020-11-27T11:02:59Z
+// IndigoClient.h - Released 2020-12-12T20:51:41Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -131,4 +131,4 @@ private:
 #endif // INDIGOCLIENT_H
 
 // ----------------------------------------------------------------------------
-// EOF IndigoClient.h - Released 2020-11-27T11:02:59Z
+// EOF IndigoClient.h - Released 2020-12-12T20:51:41Z

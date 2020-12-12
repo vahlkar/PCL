@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// FlowControl.h - Released 2020-11-27T11:02:59Z
+// FlowControl.h - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -313,4 +313,4 @@ private:
 #endif   // __FlowControl_h
 
 // ----------------------------------------------------------------------------
-// EOF FlowControl.h - Released 2020-11-27T11:02:59Z
+// EOF FlowControl.h - Released 2020-12-12T20:51:40Z

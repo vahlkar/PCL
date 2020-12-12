@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.2.8
+// Standard Global Process Module Version 1.2.9
 // ----------------------------------------------------------------------------
-// ColorManagementSetupParameters.cpp - Released 2020-11-27T11:02:59Z
+// ColorManagementSetupParameters.cpp - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -405,4 +405,4 @@ double CMSGamutWarningColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupParameters.cpp - Released 2020-11-27T11:02:59Z
+// EOF ColorManagementSetupParameters.cpp - Released 2020-12-12T20:51:40Z

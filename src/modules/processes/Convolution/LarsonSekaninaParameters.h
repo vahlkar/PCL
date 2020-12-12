@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaParameters.h - Released 2020-11-27T11:02:59Z
+// LarsonSekaninaParameters.h - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -288,4 +288,4 @@ PCL_END_LOCAL
 #endif   // __ShapernParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaParameters.h - Released 2020-11-27T11:02:59Z
+// EOF LarsonSekaninaParameters.h - Released 2020-12-12T20:51:40Z

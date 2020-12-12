@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.5
+// Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.h - Released 2020-11-27T11:02:58Z
+// PhotometricColorCalibrationInstance.h - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -131,6 +131,7 @@ private:
     * Photometry parameters.
     */
    String   p_photCatalogName;
+   pcl_bool p_photAutoCatalog;
    int32    p_photLimitMagnitude;
    pcl_bool p_photAutoLimitMagnitude;
    float    p_photAutoLimitMagnitudeFactor;
@@ -163,4 +164,4 @@ private:
 #endif   // __PhotometricColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.h - Released 2020-11-27T11:02:58Z
+// EOF PhotometricColorCalibrationInstance.h - Released 2020-12-12T20:51:40Z

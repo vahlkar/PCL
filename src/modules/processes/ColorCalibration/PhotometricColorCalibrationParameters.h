@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.3
+// /_/     \____//_____/   PCL 2.4.5
 // ----------------------------------------------------------------------------
-// Standard ColorCalibration Process Module Version 1.4.5
+// Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationParameters.h - Released 2020-11-27T11:02:58Z
+// PhotometricColorCalibrationParameters.h - Released 2020-12-12T20:51:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -606,6 +606,20 @@ extern PCCPhotCatalogName* ThePCCPhotCatalogNameParameter;
 
 // ----------------------------------------------------------------------------
 
+class PCCPhotAutoCatalog : public MetaBoolean
+{
+public:
+
+   PCCPhotAutoCatalog( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern PCCPhotAutoCatalog* ThePCCPhotAutoCatalogParameter;
+
+// ----------------------------------------------------------------------------
+
 class PCCPhotLimitMagnitude : public MetaInt32
 {
 public:
@@ -902,4 +916,4 @@ PCL_END_LOCAL
 #endif   // __PhotometricColorCalibrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationParameters.h - Released 2020-11-27T11:02:58Z
+// EOF PhotometricColorCalibrationParameters.h - Released 2020-12-12T20:51:40Z
