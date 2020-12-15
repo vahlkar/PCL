@@ -499,8 +499,8 @@ void GaiaInstance::GenerateTextOutput() const
                                  "\nTotal sources ............ " + IsoString( p_searchData.stars.Length() ) +
                                  "\nCenter Right Ascension ... " + sa + " (hms)"
 #ifdef _MSC_VER
-                                 "\nCenter Declination ....... " + sd + "  (\xc2\xb0\xe2\x80\xb2\xe2\x80\xb3)"
-                                 "\nSearch radius ............ " + sr + "  (\xc2\xb0\xe2\x80\xb2\xe2\x80\xb3)"
+                                 "\nCenter Declination ....... " + sd + "  (\xc2\xb0\xe2\x80\xb2\xe2\x80\xb3)" +
+                                 "\nSearch radius ............ " + sr + "  (\xc2\xb0\xe2\x80\xb2\xe2\x80\xb3)" +
 #else
                                  "\nCenter Declination ....... " + sd + String( u"  (°′″)" ).ToUTF8() +
                                  "\nSearch radius ............ " + sr + String( u"  (°′″)" ).ToUTF8() +
