@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.12
 // ----------------------------------------------------------------------------
-// XISFInstance.h - Released 2020-12-12T20:51:52Z
+// XISFInstance.h - Released 2020-12-15T18:51:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -90,9 +90,9 @@ public:
    ColorFilterArray ReadColorFilterArray() override;
    UInt8Image ReadThumbnail() override;
    FITSKeywordArray ReadFITSKeywords() override;
-   PropertyDescriptionArray Properties() override;
+   PropertyDescriptionArray PropertyDescriptions() override;
    Variant ReadProperty( const IsoString& property ) override;
-   PropertyDescriptionArray ImageProperties() override;
+   PropertyDescriptionArray ImagePropertyDescriptions() override;
    Variant ReadImageProperty( const IsoString& property ) override;
 
    void ReadImage( Image& ) override;
@@ -170,4 +170,4 @@ private:
 #endif   // __XISFInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.h - Released 2020-12-12T20:51:52Z
+// EOF XISFInstance.h - Released 2020-12-15T18:51:24Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFPreferencesDialog.cpp - Released 2020-12-12T20:51:52Z
+// TIFFPreferencesDialog.cpp - Released 2020-12-15T18:51:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -386,4 +386,4 @@ void TIFFPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFPreferencesDialog.cpp - Released 2020-12-12T20:51:52Z
+// EOF TIFFPreferencesDialog.cpp - Released 2020-12-15T18:51:24Z

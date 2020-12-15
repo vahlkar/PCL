@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/FileFormatImplementation.cpp - Released 2020-12-12T20:51:19Z
+// pcl/FileFormatImplementation.cpp - Released 2020-12-15T18:51:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -242,7 +242,7 @@ FITSKeywordArray FileFormatImplementation::ReadFITSKeywords()
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray FileFormatImplementation::Properties()
+PropertyDescriptionArray FileFormatImplementation::PropertyDescriptions()
 {
    MANDATORY( "Properties" );
    return PropertyDescriptionArray();
@@ -258,7 +258,7 @@ Variant FileFormatImplementation::ReadProperty( const IsoString& property )
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray FileFormatImplementation::ImageProperties()
+PropertyDescriptionArray FileFormatImplementation::ImagePropertyDescriptions()
 {
    MANDATORY( "ImageProperties" );
    return PropertyDescriptionArray();
@@ -854,4 +854,4 @@ void FileFormatImplementation::EndImagePropertyEmbedding()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormatImplementation.cpp - Released 2020-12-12T20:51:19Z
+// EOF pcl/FileFormatImplementation.cpp - Released 2020-12-15T18:51:12Z

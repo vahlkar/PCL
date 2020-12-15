@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard ImageCalibration Process Module Version 1.5.0
+// Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationInstance.cpp - Released 2020-12-12T20:51:40Z
+// ImageCalibrationInstance.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -2131,11 +2131,14 @@ bool ImageCalibrationInstance::ExecuteGlobal()
                console.WriteLn( String().Format( "<end><cbr>Td%d = %.8f (%llu px = %.3f%%)",
                                                    c, t, N, 100.0*N/optimizingDark->NumberOfPixels() ) );
                if ( N < DARK_COUNT_LOW*optimizingDark->NumberOfPixels() )
-                  console.WarningLn( String().Format( "** Warning: The dark frame optimization threshold is probably too high (channel %d).", c ) );
+                  console.WarningLn( "** Warning: The dark frame optimization threshold is probably too high (channel " + String( c ) + "), "
+                                     "or the master dark frame is not valid or is not being calibrated correctly." );
                if ( N < DARK_COUNT_SMALL )
                {
-                  console.WarningLn( String().Format( "** Warning: The selected pixel set for dark frame optimization is too small - disabling dark frame optimization for channel %d.", c ) );
+                  console.WarningLn( "** Warning: The selected pixel set for dark frame optimization is too small "
+                                     "- disabling dark frame optimization for channel " + String( c ) + "." );
                   optimizingDark.Destroy();
+                  break;
                }
             }
 
@@ -2556,9 +2559,9 @@ bool ImageCalibrationInstance::ExecuteGlobal()
    {
       console.NoteLn( "<end><cbr><br>* Waiting for running tasks to terminate..." );
       for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
-         if ( *i != 0 ) (*i)->Abort();
+         if ( *i != nullptr ) (*i)->Abort();
       for ( thread_list::iterator i = runningThreads.Begin(); i != runningThreads.End(); ++i )
-         if ( *i != 0 ) (*i)->Wait();
+         if ( *i != nullptr ) (*i)->Wait();
       runningThreads.Destroy();
       waitingThreads.Destroy();
       throw;
@@ -2896,4 +2899,4 @@ size_type ImageCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationInstance.cpp - Released 2020-12-12T20:51:40Z
+// EOF ImageCalibrationInstance.cpp - Released 2020-12-15T18:51:35Z

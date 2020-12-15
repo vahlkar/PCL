@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.2.9
+// Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInstance.cpp - Released 2020-12-12T20:51:40Z
+// ColorManagementSetupInstance.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -63,20 +63,24 @@ namespace pcl
 
 ColorManagementSetupInstance::ColorManagementSetupInstance( const MetaProcess* p )
    : ProcessImplementation( p )
-   , enabled( TheCMSEnabledParameter->DefaultValue() )
-   , defaultRenderingIntent( CMSRenderingIntent::DefaultForScreen )
-   , onProfileMismatch( CMSOnProfileMismatch::Default )
-   , onMissingProfile( CMSOnMissingProfile::Default )
-   , defaultEmbedProfilesInRGBImages( TheCMSDefaultEmbedProfilesInRGBImagesParameter->DefaultValue() )
-   , defaultEmbedProfilesInGrayscaleImages( TheCMSDefaultEmbedProfilesInGrayscaleImagesParameter->DefaultValue() )
-   , useLowResolutionCLUTs( TheCMSUseLowResolutionCLUTsParameter->DefaultValue() )
-   , proofingIntent( CMSRenderingIntent::DefaultForProofing )
-   , useProofingBPC( TheCMSUseProofingBPCParameter->DefaultValue() )
-   , defaultProofingEnabled( TheCMSDefaultProofingEnabledParameter->DefaultValue() )
-   , defaultGamutCheckEnabled( TheCMSDefaultGamutCheckEnabledParameter->DefaultValue() )
-   , gamutWarningColor( TheCMSGamutWarningColorParameter->DefaultValue() )
+   , p_enabled( TheCMSEnabledParameter->DefaultValue() )
+   , p_detectMonitorProfile( TheCMSDetectMonitorProfileParameter->DefaultValue() )
+   , p_defaultRenderingIntent( CMSRenderingIntent::DefaultForScreen )
+   , p_onProfileMismatch( CMSOnProfileMismatch::Default )
+   , p_onMissingProfile( CMSOnMissingProfile::Default )
+   , p_defaultEmbedProfilesInRGBImages( TheCMSDefaultEmbedProfilesInRGBImagesParameter->DefaultValue() )
+   , p_defaultEmbedProfilesInGrayscaleImages( TheCMSDefaultEmbedProfilesInGrayscaleImagesParameter->DefaultValue() )
+   , p_useLowResolutionCLUTs( TheCMSUseLowResolutionCLUTsParameter->DefaultValue() )
+   , p_proofingIntent( CMSRenderingIntent::DefaultForProofing )
+   , p_useProofingBPC( TheCMSUseProofingBPCParameter->DefaultValue() )
+   , p_defaultProofingEnabled( TheCMSDefaultProofingEnabledParameter->DefaultValue() )
+   , p_defaultGamutCheckEnabled( TheCMSDefaultGamutCheckEnabledParameter->DefaultValue() )
+   , p_gamutWarningColor( TheCMSGamutWarningColorParameter->DefaultValue() )
 {
    /*
+    * The default sRGB profile is system/platform dependent. It is detected
+    * automatically upon application startup.
+    *
     * N.B.: We cannot call PixInsightSettings::GlobalString() if the module has
     * not been installed, because it requires communication with the core
     * application. The interface class will have to initialize its instance
@@ -84,20 +88,12 @@ ColorManagementSetupInstance::ColorManagementSetupInstance( const MetaProcess* p
     */
    if ( Module->IsInstalled() )
    {
-      String profilePath = PixInsightSettings::GlobalString( "ColorManagement/MonitorProfilePath" );
-      if ( !profilePath.IsEmpty() )
+      String sRGBProfilePath = PixInsightSettings::GlobalString( "ColorManagement/SRGBProfilePath" );
+      if ( !sRGBProfilePath.IsEmpty() )
       {
-         ICCProfile icc( profilePath );
+         ICCProfile icc( sRGBProfilePath );
          if ( icc.IsProfile() )
-            defaultRGBProfile = defaultGrayProfile = icc.Description();
-      }
-
-      profilePath = PixInsightSettings::GlobalString( "ColorManagement/ProofingProfilePath" );
-      if ( !profilePath.IsEmpty() )
-      {
-         ICCProfile icc( profilePath );
-         if ( icc.IsProfile() )
-            proofingProfile = icc.Description();
+            p_defaultRGBProfile = p_defaultGrayscaleProfile = p_proofingProfile = icc.Description();
       }
    }
 }
@@ -117,22 +113,23 @@ void ColorManagementSetupInstance::Assign( const ProcessImplementation& p )
    const ColorManagementSetupInstance* x = dynamic_cast<const ColorManagementSetupInstance*>( &p );
    if ( x != nullptr )
    {
-      enabled                               = x->enabled;
-      updateMonitorProfile                  = x->updateMonitorProfile;
-      defaultRGBProfile                     = x->defaultRGBProfile;
-      defaultGrayProfile                    = x->defaultGrayProfile;
-      defaultRenderingIntent                = x->defaultRenderingIntent;
-      onProfileMismatch                     = x->onProfileMismatch;
-      onMissingProfile                      = x->onMissingProfile;
-      defaultEmbedProfilesInRGBImages       = x->defaultEmbedProfilesInRGBImages;
-      defaultEmbedProfilesInGrayscaleImages = x->defaultEmbedProfilesInGrayscaleImages;
-      useLowResolutionCLUTs                 = x->useLowResolutionCLUTs;
-      proofingProfile                       = x->proofingProfile;
-      proofingIntent                        = x->proofingIntent;
-      useProofingBPC                        = x->useProofingBPC;
-      defaultProofingEnabled                = x->defaultProofingEnabled;
-      defaultGamutCheckEnabled              = x->defaultGamutCheckEnabled;
-      gamutWarningColor                     = x->gamutWarningColor;
+      p_enabled                               = x->p_enabled;
+      p_detectMonitorProfile                  = x->p_detectMonitorProfile;
+      p_updateMonitorProfile                  = x->p_updateMonitorProfile;
+      p_defaultRGBProfile                     = x->p_defaultRGBProfile;
+      p_defaultGrayscaleProfile               = x->p_defaultGrayscaleProfile;
+      p_defaultRenderingIntent                = x->p_defaultRenderingIntent;
+      p_onProfileMismatch                     = x->p_onProfileMismatch;
+      p_onMissingProfile                      = x->p_onMissingProfile;
+      p_defaultEmbedProfilesInRGBImages       = x->p_defaultEmbedProfilesInRGBImages;
+      p_defaultEmbedProfilesInGrayscaleImages = x->p_defaultEmbedProfilesInGrayscaleImages;
+      p_useLowResolutionCLUTs                 = x->p_useLowResolutionCLUTs;
+      p_proofingProfile                       = x->p_proofingProfile;
+      p_proofingIntent                        = x->p_proofingIntent;
+      p_useProofingBPC                        = x->p_useProofingBPC;
+      p_defaultProofingEnabled                = x->p_defaultProofingEnabled;
+      p_defaultGamutCheckEnabled              = x->p_defaultGamutCheckEnabled;
+      p_gamutWarningColor                     = x->p_gamutWarningColor;
    }
 }
 
@@ -170,9 +167,9 @@ bool ColorManagementSetupInstance::ExecuteGlobal()
                                    all,
                                    ICCColorSpace::RGB );
 
-   StringList::const_iterator i = descriptions.Search( defaultRGBProfile );
+   StringList::const_iterator i = descriptions.Search( p_defaultRGBProfile );
    if ( i == descriptions.End() )
-      throw Error( "Couldn't find the '" + defaultRGBProfile + "' profile.\n"
+      throw Error( "Couldn't find the '" + p_defaultRGBProfile + "' profile.\n"
                    "Either it has not been installed, it is not a valid RGB profile,\n"
                    "or the corresponding disk file has been removed." );
 
@@ -188,9 +185,9 @@ bool ColorManagementSetupInstance::ExecuteGlobal()
                                    all,
                                    ICCColorSpace::RGB|ICCColorSpace::Gray );
 
-   i = descriptions.Search( defaultGrayProfile );
+   i = descriptions.Search( p_defaultGrayscaleProfile );
    if ( i == descriptions.End() )
-      throw Error( "Couldn't find the '" + defaultGrayProfile + "' profile.\n"
+      throw Error( "Couldn't find the '" + p_defaultGrayscaleProfile + "' profile.\n"
                    "Either it has not been installed, or the corresponding disk file has been removed." );
 
    String grayPath = paths[i - descriptions.Begin()];
@@ -204,9 +201,9 @@ bool ColorManagementSetupInstance::ExecuteGlobal()
                                    paths,
                                    all ); // all color spaces are valid for proofing
 
-   i = descriptions.Search( proofingProfile );
+   i = descriptions.Search( p_proofingProfile );
    if ( i == descriptions.End() )
-      throw Error( "Couldn't find the '" + proofingProfile + "' profile.\n"
+      throw Error( "Couldn't find the '" + p_proofingProfile + "' profile.\n"
                    "Either it has not been installed, or the corresponding disk file has been removed." );
 
    String proofingPath = paths[i - descriptions.Begin()];
@@ -218,23 +215,24 @@ bool ColorManagementSetupInstance::ExecuteGlobal()
 
    try
    {
-      PixInsightSettings::SetGlobalFlag( "ColorManagement/IsEnabled", enabled );
-      if ( !updateMonitorProfile.IsEmpty() )
-         PixInsightSettings::SetGlobalString( "ColorManagement/UpdateMonitorProfile", updateMonitorProfile );
+      PixInsightSettings::SetGlobalFlag( "ColorManagement/IsEnabled", p_enabled );
+      PixInsightSettings::SetGlobalFlag( "ColorManagement/DetectMonitorProfile", p_detectMonitorProfile );
+      if ( !p_updateMonitorProfile.IsEmpty() )
+         PixInsightSettings::SetGlobalString( "ColorManagement/UpdateMonitorProfile", p_updateMonitorProfile );
       PixInsightSettings::SetGlobalString( "ColorManagement/DefaultRGBProfilePath", rgbPath );
       PixInsightSettings::SetGlobalString( "ColorManagement/DefaultGrayscaleProfilePath", grayPath );
-      PixInsightSettings::SetGlobalInteger( "ColorManagement/DefaultRenderingIntent", defaultRenderingIntent );
-      PixInsightSettings::SetGlobalInteger( "ColorManagement/OnProfileMismatch", onProfileMismatch );
-      PixInsightSettings::SetGlobalInteger( "ColorManagement/OnMissingProfile", onMissingProfile );
-      PixInsightSettings::SetGlobalFlag( "ColorManagement/DefaultEmbedProfilesInRGBImages", defaultEmbedProfilesInRGBImages );
-      PixInsightSettings::SetGlobalFlag( "ColorManagement/DefaultEmbedProfilesInGrayscaleImages", defaultEmbedProfilesInGrayscaleImages );
-      PixInsightSettings::SetGlobalFlag( "ColorManagement/UseLowResolutionCLUTs", useLowResolutionCLUTs );
+      PixInsightSettings::SetGlobalInteger( "ColorManagement/DefaultRenderingIntent", p_defaultRenderingIntent );
+      PixInsightSettings::SetGlobalInteger( "ColorManagement/OnProfileMismatch", p_onProfileMismatch );
+      PixInsightSettings::SetGlobalInteger( "ColorManagement/OnMissingProfile", p_onMissingProfile );
+      PixInsightSettings::SetGlobalFlag( "ColorManagement/DefaultEmbedProfilesInRGBImages", p_defaultEmbedProfilesInRGBImages );
+      PixInsightSettings::SetGlobalFlag( "ColorManagement/DefaultEmbedProfilesInGrayscaleImages", p_defaultEmbedProfilesInGrayscaleImages );
+      PixInsightSettings::SetGlobalFlag( "ColorManagement/UseLowResolutionCLUTs", p_useLowResolutionCLUTs );
       PixInsightSettings::SetGlobalString( "ColorManagement/ProofingProfilePath", proofingPath );
-      PixInsightSettings::SetGlobalInteger( "ColorManagement/ProofingIntent", proofingIntent );
-      PixInsightSettings::SetGlobalFlag( "ColorManagement/UseProofingBPC", useProofingBPC );
-      PixInsightSettings::SetGlobalFlag( "ColorManagement/DefaultProofingEnabled", defaultProofingEnabled );
-      PixInsightSettings::SetGlobalFlag( "ColorManagement/DefaultGamutCheckEnabled", defaultGamutCheckEnabled );
-      PixInsightSettings::SetGlobalColor( "ColorManagement/GamutWarningColor", gamutWarningColor );
+      PixInsightSettings::SetGlobalInteger( "ColorManagement/ProofingIntent", p_proofingIntent );
+      PixInsightSettings::SetGlobalFlag( "ColorManagement/UseProofingBPC", p_useProofingBPC );
+      PixInsightSettings::SetGlobalFlag( "ColorManagement/DefaultProofingEnabled", p_defaultProofingEnabled );
+      PixInsightSettings::SetGlobalFlag( "ColorManagement/DefaultGamutCheckEnabled", p_defaultGamutCheckEnabled );
+      PixInsightSettings::SetGlobalColor( "ColorManagement/GamutWarningColor", p_gamutWarningColor );
 
       PixInsightSettings::EndUpdate();
       return true;
@@ -252,37 +250,39 @@ bool ColorManagementSetupInstance::ExecuteGlobal()
 void* ColorManagementSetupInstance::LockParameter( const MetaParameter* p, size_type /*tableRow*/ )
 {
    if ( p == TheCMSEnabledParameter )
-      return &enabled;
+      return &p_enabled;
+   if ( p == TheCMSDetectMonitorProfileParameter )
+      return &p_detectMonitorProfile;
    if ( p == TheCMSUpdateMonitorProfileParameter )
-      return updateMonitorProfile.Begin();
+      return p_updateMonitorProfile.Begin();
    if ( p == TheCMSDefaultRGBProfileParameter )
-      return defaultRGBProfile.Begin();
+      return p_defaultRGBProfile.Begin();
    if ( p == TheCMSDefaultGrayProfileParameter )
-      return defaultGrayProfile.Begin();
+      return p_defaultGrayscaleProfile.Begin();
    if ( p == TheCMSDefaultRenderingIntentParameter )
-      return &defaultRenderingIntent;
+      return &p_defaultRenderingIntent;
    if ( p == TheCMSOnProfileMismatchParameter )
-      return &onProfileMismatch;
+      return &p_onProfileMismatch;
    if ( p == TheCMSOnMissingProfileParameter )
-      return &onMissingProfile;
+      return &p_onMissingProfile;
    if ( p == TheCMSDefaultEmbedProfilesInRGBImagesParameter )
-      return &defaultEmbedProfilesInRGBImages;
+      return &p_defaultEmbedProfilesInRGBImages;
    if ( p == TheCMSDefaultEmbedProfilesInGrayscaleImagesParameter )
-      return &defaultEmbedProfilesInGrayscaleImages;
+      return &p_defaultEmbedProfilesInGrayscaleImages;
    if ( p == TheCMSUseLowResolutionCLUTsParameter )
-      return &useLowResolutionCLUTs;
+      return &p_useLowResolutionCLUTs;
    if ( p == TheCMSProofingProfileParameter )
-      return proofingProfile.Begin();
+      return p_proofingProfile.Begin();
    if ( p == TheCMSProofingIntentParameter )
-      return &proofingIntent;
+      return &p_proofingIntent;
    if ( p == TheCMSUseProofingBPCParameter )
-      return &useProofingBPC;
+      return &p_useProofingBPC;
    if ( p == TheCMSDefaultProofingEnabledParameter )
-      return &defaultProofingEnabled;
+      return &p_defaultProofingEnabled;
    if ( p == TheCMSDefaultGamutCheckEnabledParameter )
-      return &defaultGamutCheckEnabled;
+      return &p_defaultGamutCheckEnabled;
    if ( p == TheCMSGamutWarningColorParameter )
-      return &gamutWarningColor;
+      return &p_gamutWarningColor;
 
    return nullptr;
 }
@@ -293,27 +293,27 @@ bool ColorManagementSetupInstance::AllocateParameter( size_type sizeOrLength, co
 {
    if ( p == TheCMSDefaultRGBProfileParameter )
    {
-      defaultRGBProfile.Clear();
+      p_defaultRGBProfile.Clear();
       if ( sizeOrLength != 0 )
-         defaultRGBProfile.SetLength( sizeOrLength );
+         p_defaultRGBProfile.SetLength( sizeOrLength );
    }
    else if ( p == TheCMSDefaultGrayProfileParameter )
    {
-      defaultGrayProfile.Clear();
+      p_defaultGrayscaleProfile.Clear();
       if ( sizeOrLength != 0 )
-         defaultGrayProfile.SetLength( sizeOrLength );
+         p_defaultGrayscaleProfile.SetLength( sizeOrLength );
    }
    else if ( p == TheCMSProofingProfileParameter )
    {
-      proofingProfile.Clear();
+      p_proofingProfile.Clear();
       if ( sizeOrLength != 0 )
-         proofingProfile.SetLength( sizeOrLength );
+         p_proofingProfile.SetLength( sizeOrLength );
    }
    else if ( p == TheCMSUpdateMonitorProfileParameter )
    {
-      updateMonitorProfile.Clear();
+      p_updateMonitorProfile.Clear();
       if ( sizeOrLength != 0 )
-         updateMonitorProfile.SetLength( sizeOrLength );
+         p_updateMonitorProfile.SetLength( sizeOrLength );
    }
    else
       return false;
@@ -326,13 +326,13 @@ bool ColorManagementSetupInstance::AllocateParameter( size_type sizeOrLength, co
 size_type ColorManagementSetupInstance::ParameterLength( const MetaParameter* p, size_type /*tableRow*/ ) const
 {
    if ( p == TheCMSDefaultRGBProfileParameter )
-      return defaultRGBProfile.Length();
+      return p_defaultRGBProfile.Length();
    if ( p == TheCMSDefaultGrayProfileParameter )
-      return defaultGrayProfile.Length();
+      return p_defaultGrayscaleProfile.Length();
    if ( p == TheCMSProofingProfileParameter )
-      return proofingProfile.Length();
+      return p_proofingProfile.Length();
    if ( p == TheCMSUpdateMonitorProfileParameter )
-      return updateMonitorProfile.Length();
+      return p_updateMonitorProfile.Length();
 
    return 0;
 }
@@ -341,23 +341,22 @@ size_type ColorManagementSetupInstance::ParameterLength( const MetaParameter* p,
 
 void ColorManagementSetupInstance::LoadCurrentSettings()
 {
-   enabled                  = PixInsightSettings::GlobalFlag( "ColorManagement/IsEnabled" );
-   defaultRGBProfile        = ICCProfile( PixInsightSettings::GlobalString( "ColorManagement/DefaultRGBProfilePath" ) ).Description();
-   defaultGrayProfile       = ICCProfile( PixInsightSettings::GlobalString( "ColorManagement/DefaultGrayscaleProfilePath" ) ).Description();
-   defaultRenderingIntent   = PixInsightSettings::GlobalInteger( "ColorManagement/DefaultRenderingIntent" );
-   onProfileMismatch        = PixInsightSettings::GlobalInteger( "ColorManagement/OnProfileMismatch" );
-   onMissingProfile         = PixInsightSettings::GlobalInteger( "ColorManagement/OnMissingProfile" );
-   defaultEmbedProfilesInRGBImages
-                            = PixInsightSettings::GlobalFlag( "ColorManagement/DefaultEmbedProfilesInRGBImages" );
-   defaultEmbedProfilesInGrayscaleImages
-                            = PixInsightSettings::GlobalFlag( "ColorManagement/DefaultEmbedProfilesInGrayscaleImages" );
-   useLowResolutionCLUTs    = PixInsightSettings::GlobalFlag( "ColorManagement/UseLowResolutionCLUTs" );
-   proofingProfile          = ICCProfile( PixInsightSettings::GlobalString( "ColorManagement/ProofingProfilePath" ) ).Description();
-   proofingIntent           = PixInsightSettings::GlobalInteger( "ColorManagement/ProofingIntent" );
-   useProofingBPC           = PixInsightSettings::GlobalFlag( "ColorManagement/UseProofingBPC" );
-   defaultProofingEnabled   = PixInsightSettings::GlobalFlag( "ColorManagement/DefaultProofingEnabled" );
-   defaultGamutCheckEnabled = PixInsightSettings::GlobalFlag( "ColorManagement/DefaultGamutCheckEnabled" );
-   gamutWarningColor        = PixInsightSettings::GlobalColor( "ColorManagement/GamutWarningColor" );
+   p_enabled                  = PixInsightSettings::GlobalFlag( "ColorManagement/IsEnabled" );
+   p_detectMonitorProfile     = PixInsightSettings::GlobalFlag( "ColorManagement/DetectMonitorProfile" );
+   p_defaultRGBProfile        = ICCProfile( PixInsightSettings::GlobalString( "ColorManagement/DefaultRGBProfilePath" ) ).Description();
+   p_defaultGrayscaleProfile  = ICCProfile( PixInsightSettings::GlobalString( "ColorManagement/DefaultGrayscaleProfilePath" ) ).Description();
+   p_defaultRenderingIntent   = PixInsightSettings::GlobalInteger( "ColorManagement/DefaultRenderingIntent" );
+   p_onProfileMismatch        = PixInsightSettings::GlobalInteger( "ColorManagement/OnProfileMismatch" );
+   p_onMissingProfile         = PixInsightSettings::GlobalInteger( "ColorManagement/OnMissingProfile" );
+   p_defaultEmbedProfilesInRGBImages = PixInsightSettings::GlobalFlag( "ColorManagement/DefaultEmbedProfilesInRGBImages" );
+   p_defaultEmbedProfilesInGrayscaleImages = PixInsightSettings::GlobalFlag( "ColorManagement/DefaultEmbedProfilesInGrayscaleImages" );
+   p_useLowResolutionCLUTs    = PixInsightSettings::GlobalFlag( "ColorManagement/UseLowResolutionCLUTs" );
+   p_proofingProfile          = ICCProfile( PixInsightSettings::GlobalString( "ColorManagement/ProofingProfilePath" ) ).Description();
+   p_proofingIntent           = PixInsightSettings::GlobalInteger( "ColorManagement/ProofingIntent" );
+   p_useProofingBPC           = PixInsightSettings::GlobalFlag( "ColorManagement/UseProofingBPC" );
+   p_defaultProofingEnabled   = PixInsightSettings::GlobalFlag( "ColorManagement/DefaultProofingEnabled" );
+   p_defaultGamutCheckEnabled = PixInsightSettings::GlobalFlag( "ColorManagement/DefaultGamutCheckEnabled" );
+   p_gamutWarningColor        = PixInsightSettings::GlobalColor( "ColorManagement/GamutWarningColor" );
 }
 
 // ----------------------------------------------------------------------------
@@ -365,4 +364,4 @@ void ColorManagementSetupInstance::LoadCurrentSettings()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInstance.cpp - Released 2020-12-12T20:51:40Z
+// EOF ColorManagementSetupInstance.cpp - Released 2020-12-15T18:51:35Z

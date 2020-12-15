@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/MetaFileFormat.cpp - Released 2020-12-12T20:51:19Z
+// pcl/MetaFileFormat.cpp - Released 2020-12-15T18:51:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -623,7 +623,7 @@ public:
          if ( len == nullptr )
             return api_false;
 
-         PropertyDescriptionArray properties = instance->Properties();
+         PropertyDescriptionArray properties = instance->PropertyDescriptions();
          size_type n = 0;
          for ( const PropertyDescription& d : properties )
             if ( d.id.Length() > n )
@@ -752,7 +752,7 @@ public:
          if ( len == nullptr )
             return api_false;
 
-         PropertyDescriptionArray properties = instance->ImageProperties();
+         PropertyDescriptionArray properties = instance->ImagePropertyDescriptions();
          size_type n = 0;
          for ( const PropertyDescription& d : properties )
             if ( d.id.Length() > n )
@@ -1882,4 +1882,4 @@ void MetaFileFormat::PerformAPIDefinitions() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/MetaFileFormat.cpp - Released 2020-12-12T20:51:19Z
+// EOF pcl/MetaFileFormat.cpp - Released 2020-12-15T18:51:12Z

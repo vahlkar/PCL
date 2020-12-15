@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/AstrometricMetadata.cpp - Released 2020-12-12T20:51:19Z
+// pcl/AstrometricMetadata.cpp - Released 2020-12-15T18:51:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -155,7 +155,7 @@ AstrometricMetadata::AstrometricMetadata( const ImageWindow& window )
    if ( v.IsValid() )
       controlPoints = v.ToByteArray();
 
-   Build( view.GetProperties(), window.Keywords(), controlPoints, width, height );
+   Build( view.Properties(), window.Keywords(), controlPoints, width, height );
 }
 
 // ----------------------------------------------------------------------------
@@ -1023,4 +1023,4 @@ void AstrometricMetadata::UpdateDescription() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/AstrometricMetadata.cpp - Released 2020-12-12T20:51:19Z
+// EOF pcl/AstrometricMetadata.cpp - Released 2020-12-15T18:51:12Z

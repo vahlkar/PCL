@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/XISF.h - Released 2020-12-12T20:51:09Z
+// pcl/XISF.h - Released 2020-12-15T18:51:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1080,7 +1080,7 @@ public:
     * returned list can be empty if no image is available, or if the current
     * image has no properties.
     */
-   PropertyDescriptionArray ImageProperties() const;
+   PropertyDescriptionArray ImagePropertyDescriptions() const;
 
    /*!
     * Extracts a \a property from the current image with the specified
@@ -1106,7 +1106,7 @@ public:
     * of properties associated with the %XISF unit. The returned list can be
     * empty if no file has been opened, or if the %XISF unit has no properties.
     */
-   PropertyDescriptionArray Properties() const;
+   PropertyDescriptionArray PropertyDescriptions() const;
 
    /*!
     * Extracts a \a property associated with the %XISF unit with the specified
@@ -1626,4 +1626,4 @@ private:
 #endif   // __PCL_XISF_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISF.h - Released 2020-12-12T20:51:09Z
+// EOF pcl/XISF.h - Released 2020-12-15T18:51:06Z

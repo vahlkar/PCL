@@ -906,9 +906,9 @@ FITSKeywordArray RawInstance::ReadFITSKeywords()
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray RawInstance::ImageProperties()
+PropertyDescriptionArray RawInstance::ImagePropertyDescriptions()
 {
-   CheckOpenStream( "ImageProperties" );
+   CheckOpenStream( "ImagePropertyDescriptions" );
 
    PropertyDescriptionArray descriptions;
    if ( !m_cfaPattern.IsEmpty() )

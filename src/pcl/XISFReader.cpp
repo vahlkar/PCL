@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/XISFReader.cpp - Released 2020-12-12T20:51:19Z
+// pcl/XISFReader.cpp - Released 2020-12-15T18:51:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -1164,7 +1164,7 @@ public:
     * Returns a descriptive list of the properties associated with the current
     * image.
     */
-   PropertyDescriptionArray ImageProperties() const
+   PropertyDescriptionArray ImagePropertyDescriptions() const
    {
       ValidateImageAccess( m_currentImage );
       return MakePropertyDescriptions( m_images[m_currentImage].properties );
@@ -1183,7 +1183,7 @@ public:
     * Returns a descriptive list of the properties associated with this XISF
     * unit.
     */
-   PropertyDescriptionArray Properties() const
+   PropertyDescriptionArray PropertyDescriptions() const
    {
       return MakePropertyDescriptions( m_properties );
    }
@@ -2864,10 +2864,10 @@ ColorFilterArray XISFReader::ReadColorFilterArray()
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray XISFReader::ImageProperties() const
+PropertyDescriptionArray XISFReader::ImagePropertyDescriptions() const
 {
-   CheckOpenStream( "ImageProperties" );
-   return m_engine->ImageProperties();
+   CheckOpenStream( "ImagePropertyDescriptions" );
+   return m_engine->ImagePropertyDescriptions();
 }
 
 Variant XISFReader::ReadImageProperty( const IsoString& identifier )
@@ -2878,7 +2878,7 @@ Variant XISFReader::ReadImageProperty( const IsoString& identifier )
 
 PropertyArray XISFReader::ReadImageProperties()
 {
-   PropertyDescriptionArray descriptions = ImageProperties();
+   PropertyDescriptionArray descriptions = ImagePropertyDescriptions();
    PropertyArray properties;
    for ( const PropertyDescription& description : descriptions )
       properties << Property( description.id, m_engine->ReadImageProperty( description.id ) );
@@ -2887,10 +2887,10 @@ PropertyArray XISFReader::ReadImageProperties()
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray XISFReader::Properties() const
+PropertyDescriptionArray XISFReader::PropertyDescriptions() const
 {
-   CheckOpenStream( "Properties" );
-   return m_engine->Properties();
+   CheckOpenStream( "PropertyDescriptions" );
+   return m_engine->PropertyDescriptions();
 }
 
 Variant XISFReader::ReadProperty( const IsoString& identifier )
@@ -2901,7 +2901,7 @@ Variant XISFReader::ReadProperty( const IsoString& identifier )
 
 PropertyArray XISFReader::ReadProperties()
 {
-   PropertyDescriptionArray descriptions = Properties();
+   PropertyDescriptionArray descriptions = PropertyDescriptions();
    PropertyArray properties;
    for ( const PropertyDescription& description : descriptions )
       properties << Property( description.id, m_engine->ReadProperty( description.id ) );
@@ -3043,4 +3043,4 @@ XMLDocument* XISFReader::ExtractHeader( const String& path, XMLParserOptions opt
 } //pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISFReader.cpp - Released 2020-12-12T20:51:19Z
+// EOF pcl/XISFReader.cpp - Released 2020-12-15T18:51:12Z

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/FileFormatImplementation.h - Released 2020-12-12T20:51:09Z
+// pcl/FileFormatImplementation.h - Released 2020-12-15T18:51:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -305,12 +305,12 @@ public:
     * This member function will never be called if the underlying file format
     * does not support data properties. See FileFormat::CanStoreProperties().
     *
-    * \note Don't confuse this member function with ImageProperties(). This
+    * \note Don't confuse this member function with ImagePropertyDescriptions(). This
     * function returns information on the properties of the \e whole image
-    * file, while %ImageProperties() provides the properties of the currently
+    * file, while %ImagePropertyDescriptions() provides the properties of the currently
     * selected image.
     */
-   virtual PropertyDescriptionArray Properties();
+   virtual PropertyDescriptionArray PropertyDescriptions();
 
    /*!
     * Extraction of a data property with the specified unique identifier.
@@ -340,7 +340,7 @@ public:
     * does not support data properties for individual images. See
     * FileFormat::CanStoreImageProperties().
     */
-   virtual PropertyDescriptionArray ImageProperties();
+   virtual PropertyDescriptionArray ImagePropertyDescriptions();
 
    /*!
     * Extraction of a data property of the current image with the specified
@@ -900,4 +900,4 @@ private:
 #endif   // __PCL_FileFormat_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormatImplementation.h - Released 2020-12-12T20:51:09Z
+// EOF pcl/FileFormatImplementation.h - Released 2020-12-15T18:51:06Z

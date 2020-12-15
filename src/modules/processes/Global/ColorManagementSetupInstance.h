@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.2.9
+// Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInstance.h - Released 2020-12-12T20:51:40Z
+// ColorManagementSetupInstance.h - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -80,22 +80,23 @@ public:
 
 private:
 
-   pcl_bool enabled;
-   String   updateMonitorProfile;
-   String   defaultRGBProfile;
-   String   defaultGrayProfile;
-   pcl_enum defaultRenderingIntent;
-   pcl_enum onProfileMismatch;
-   pcl_enum onMissingProfile;
-   pcl_bool defaultEmbedProfilesInRGBImages;
-   pcl_bool defaultEmbedProfilesInGrayscaleImages;
-   pcl_bool useLowResolutionCLUTs;
-   String   proofingProfile;
-   pcl_enum proofingIntent;
-   pcl_bool useProofingBPC;
-   pcl_bool defaultProofingEnabled;
-   pcl_bool defaultGamutCheckEnabled;
-   uint32   gamutWarningColor;
+   pcl_bool p_enabled;
+   pcl_bool p_detectMonitorProfile;
+   String   p_updateMonitorProfile;
+   String   p_defaultRGBProfile;
+   String   p_defaultGrayscaleProfile;
+   pcl_enum p_defaultRenderingIntent;
+   pcl_enum p_onProfileMismatch;
+   pcl_enum p_onMissingProfile;
+   pcl_bool p_defaultEmbedProfilesInRGBImages;
+   pcl_bool p_defaultEmbedProfilesInGrayscaleImages;
+   pcl_bool p_useLowResolutionCLUTs;
+   String   p_proofingProfile;
+   pcl_enum p_proofingIntent;
+   pcl_bool p_useProofingBPC;
+   pcl_bool p_defaultProofingEnabled;
+   pcl_bool p_defaultGamutCheckEnabled;
+   uint32   p_gamutWarningColor;
 
    friend class ColorManagementSetupProcess;
    friend class ColorManagementSetupInterface;
@@ -108,4 +109,4 @@ private:
 #endif   // __ColorManagementSetupInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInstance.h - Released 2020-12-12T20:51:40Z
+// EOF ColorManagementSetupInstance.h - Released 2020-12-15T18:51:35Z

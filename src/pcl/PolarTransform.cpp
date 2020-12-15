@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/PolarTransform.cpp - Released 2020-12-12T20:51:19Z
+// pcl/PolarTransform.cpp - Released 2020-12-15T18:51:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -301,4 +301,4 @@ void LogPolarTransform::Apply( pcl::UInt32Image& image ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/PolarTransform.cpp - Released 2020-12-12T20:51:19Z
+// EOF pcl/PolarTransform.cpp - Released 2020-12-15T18:51:12Z

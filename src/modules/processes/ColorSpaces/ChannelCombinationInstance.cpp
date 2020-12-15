@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelCombinationInstance.cpp - Released 2020-12-12T20:51:40Z
+// ChannelCombinationInstance.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -471,7 +471,7 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
             throw Error( "ChannelCombination: Incompatible source image dimensions: " + id );
 
          if ( !view.IsPreview() )
-            sourceMetadata << IntegrationMetadata( sourceWindow[i].MainView().GetStorableProperties(),
+            sourceMetadata << IntegrationMetadata( sourceWindow[i].MainView().StorableProperties(),
                                                    sourceWindow[i].Keywords() );
          ++numberOfSources;
       }
@@ -534,13 +534,13 @@ bool ChannelCombinationInstance::ExecuteOn( View& view )
 
    if ( !view.IsPreview() )
    {
-      PropertyArray properties = view.GetStorableProperties();
+      PropertyArray properties;
       FITSKeywordArray keywords = view.Window().Keywords();
 
       IntegrationMetadata metadata = IntegrationMetadata::Summary( sourceMetadata );
       metadata.UpdatePropertiesAndKeywords( properties, keywords );
 
-      view.SetStorableProperties( properties );
+      view.SetStorablePermanentProperties( properties );
       view.Window().SetKeywords( keywords );
    }
 
@@ -599,7 +599,7 @@ bool ChannelCombinationInstance::ExecuteGlobal()
                throw Error( "ChannelCombination: Incompatible source image dimensions: " + p_channelId[i] );
          }
 
-         sourceMetadata << IntegrationMetadata( sourceWindow[i].MainView().GetStorableProperties(),
+         sourceMetadata << IntegrationMetadata( sourceWindow[i].MainView().StorableProperties(),
                                                 sourceWindow[i].Keywords() );
          ++numberOfSources;
       }
@@ -678,13 +678,13 @@ bool ChannelCombinationInstance::ExecuteGlobal()
             break;
          }
 
-      PropertyArray properties = outputView.GetStorableProperties();
+      PropertyArray properties;
       FITSKeywordArray keywords = outputWindow.Keywords();
 
       IntegrationMetadata metadata = IntegrationMetadata::Summary( sourceMetadata );
       metadata.UpdatePropertiesAndKeywords( properties, keywords );
 
-      outputView.SetStorableProperties( properties );
+      outputView.SetStorablePermanentProperties( properties );
       outputWindow.SetKeywords( keywords );
 
       outputWindow.Show();
@@ -747,4 +747,4 @@ size_type ChannelCombinationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationInstance.cpp - Released 2020-12-12T20:51:40Z
+// EOF ChannelCombinationInstance.cpp - Released 2020-12-15T18:51:35Z

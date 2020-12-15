@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelExtractionInstance.cpp - Released 2020-12-12T20:51:40Z
+// ChannelExtractionInstance.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -193,7 +193,7 @@ static void ExtractChannels( const GenericImage<P>& img, const View& view,
 
       FITSKeywordArray keywords = view.Window().Keywords();
 
-      PropertyArray properties = view.GetStorableProperties();
+      PropertyArray properties = view.StorablePermanentProperties();
 
       for ( int i = 0; i < 3; ++i )
          if ( E.IsChannelEnabled( i ) )
@@ -211,7 +211,7 @@ static void ExtractChannels( const GenericImage<P>& img, const View& view,
             targetWindow[i].SetRGBWS( rgbws );
             targetWindow[i].SetResolution( xRes, yRes, metric );
             targetWindow[i].SetKeywords( keywords );
-            targetWindow[i].MainView().SetStorableProperties( properties );
+            targetWindow[i].MainView().SetStorablePermanentProperties( properties );
 
             targetImage[i] = targetWindow[i].MainView().Image();
             if ( !targetImage[i] )
@@ -503,4 +503,4 @@ size_type ChannelExtractionInstance::ParameterLength( const MetaParameter* p, si
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInstance.cpp - Released 2020-12-12T20:51:40Z
+// EOF ChannelExtractionInstance.cpp - Released 2020-12-15T18:51:35Z

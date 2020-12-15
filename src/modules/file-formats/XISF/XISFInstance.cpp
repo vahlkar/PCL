@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard XISF File Format Module Version 1.0.12
 // ----------------------------------------------------------------------------
-// XISFInstance.cpp - Released 2020-12-12T20:51:52Z
+// XISFInstance.cpp - Released 2020-12-15T18:51:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard XISF PixInsight module.
 //
@@ -706,10 +706,10 @@ FITSKeywordArray XISFInstance::ReadFITSKeywords()
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray XISFInstance::Properties()
+PropertyDescriptionArray XISFInstance::PropertyDescriptions()
 {
-   CheckOpenStream( m_reader, "Properties" );
-   return m_reader->Properties();
+   CheckOpenStream( m_reader, "PropertyDescriptions" );
+   return m_reader->PropertyDescriptions();
 }
 
 // ----------------------------------------------------------------------------
@@ -722,10 +722,10 @@ Variant XISFInstance::ReadProperty( const IsoString& id )
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray XISFInstance::ImageProperties()
+PropertyDescriptionArray XISFInstance::ImagePropertyDescriptions()
 {
-   CheckOpenStream( m_reader, "ImageProperties" );
-   return m_reader->ImageProperties();
+   CheckOpenStream( m_reader, "ImagePropertyDescriptions" );
+   return m_reader->ImagePropertyDescriptions();
 }
 
 // ----------------------------------------------------------------------------
@@ -1149,4 +1149,4 @@ void XISFInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF XISFInstance.cpp - Released 2020-12-12T20:51:52Z
+// EOF XISFInstance.cpp - Released 2020-12-15T18:51:24Z

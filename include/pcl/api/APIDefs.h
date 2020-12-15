@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/APIDefs.h - Released 2020-12-12T20:51:09Z
+// pcl/APIDefs.h - Released 2020-12-15T18:51:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -443,6 +443,7 @@ struct api_pixtraits_lut
 #define VATTR_NOT_SERIALIZABLE      0x00000040
 #define VATTR_STORABLE              0x00000080
 #define VATTR_RESERVED              0x10000000
+#define VATTR_PROTECTED             0x20000000
 #define VATTR_NO_CHANGE             0x80000000
 
 /*
@@ -954,4 +955,4 @@ void PCL_FUNC PCLImageOptionsToAPI( api_image_options&, const ImageOptions& );
 #endif   // __PCL_API_APIDefs_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APIDefs.h - Released 2020-12-12T20:51:09Z
+// EOF pcl/APIDefs.h - Released 2020-12-15T18:51:06Z

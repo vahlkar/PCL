@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-12T20:53:46.592Z
+# Generated on .... 2020-12-15T20:12:58.370Z
 # Project id ...... GREYCstoration
 # Project type .... Module
 # Platform ........ Windows/vc16 (compatibility)
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E79142AE-7B1E-49DF-8BA5-5856AFF0B104}</ProjectGuid>
+    <ProjectGuid>{F5932B58-196D-4BFB-81FE-F0DE0A6687DF}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/FileFormatInstance.cpp - Released 2020-12-12T20:51:19Z
+// pcl/FileFormatInstance.cpp - Released 2020-12-15T18:51:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -476,7 +476,7 @@ static api_bool APIPropertyEnumerationCallback( const char* id, uint64 type, voi
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray FileFormatInstance::Properties()
+PropertyDescriptionArray FileFormatInstance::PropertyDescriptions()
 {
    PropertyDescriptionArray properties;
    IsoString id;
@@ -523,7 +523,7 @@ Variant FileFormatInstance::ReadProperty( const IsoString& property )
 
 PropertyArray FileFormatInstance::ReadProperties()
 {
-   PropertyDescriptionArray descriptions = Properties();
+   PropertyDescriptionArray descriptions = PropertyDescriptions();
    try
    {
       PropertyArray properties;
@@ -549,7 +549,7 @@ PropertyArray FileFormatInstance::ReadProperties()
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray FileFormatInstance::ImageProperties()
+PropertyDescriptionArray FileFormatInstance::ImagePropertyDescriptions()
 {
    PropertyDescriptionArray properties;
    IsoString id;
@@ -596,7 +596,7 @@ Variant FileFormatInstance::ReadImageProperty( const IsoString& property )
 
 PropertyArray FileFormatInstance::ReadImageProperties()
 {
-   PropertyDescriptionArray descriptions = ImageProperties();
+   PropertyDescriptionArray descriptions = ImagePropertyDescriptions();
    try
    {
       PropertyArray properties;
@@ -1207,4 +1207,4 @@ void* FileFormatInstance::CloneHandle() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormatInstance.cpp - Released 2020-12-12T20:51:19Z
+// EOF pcl/FileFormatInstance.cpp - Released 2020-12-15T18:51:12Z

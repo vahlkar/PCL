@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.cpp - Released 2020-12-12T20:51:40Z
+// PhotometricColorCalibrationInstance.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -215,9 +215,8 @@ void PhotometricColorCalibrationInstance::Assign( const ProcessImplementation& p
 
 UndoFlags PhotometricColorCalibrationInstance::UndoMode( const View& ) const
 {
-   return p_applyCalibration ? UndoFlag::Keywords
-                             | UndoFlag::PixelData
-                             | UndoFlag::AstrometricSolution : UndoFlag::Keywords;
+   return p_applyCalibration ? UndoFlag::Keywords | UndoFlag::PixelData | UndoFlag::AstrometricSolution
+                             : UndoFlag::Keywords;
 }
 
 // ----------------------------------------------------------------------------
@@ -604,7 +603,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
    try
    {
       FITSKeywordArray keywords;
-      PropertyArray properties;
+      PropertyArray properties, pccProperties;
       bool doPlateSolve;
 
       /*
@@ -612,7 +611,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
        */
       {
          FITSKeywordArray inputKeywords = view.Window().Keywords();
-         PropertyArray inputProperties = view.GetStorableProperties();
+         PropertyArray inputProperties = view.StorablePermanentProperties();
 
          WCSKeywords wcs( inputProperties, inputKeywords );
 
@@ -746,7 +745,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
             SaveImage( GPath, v, keywords, properties, 1 );
             SaveImage( BPath, v, keywords, properties, 2 );
          }
-      }
+      } // plate solve
 
       Module->ProcessEvents();
 
@@ -866,7 +865,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
          int successCount = result.ToInt();
          if ( successCount != 3 )
             throw Error( "Failure to calculate photometry: " + view.Id() );
-      }
+      } // photometry
 
       Module->ProcessEvents();
 
@@ -1037,13 +1036,13 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
             Z0[0] = p_zeroPointSr_JV;
             Z0[1] = p_zeroPointJB_JV;
 
-            properties << Property( "PCL:PCC:Fit_Sr_JV_R_G", DVector( LRG.a, LRG.b, LRG.adev ) )
-                       << Property( "PCL:PCC:Fit_JB_JV_B_G", DVector( LBG.a, LBG.b, LBG.adev ) )
-                       << Property( "PCL:PCC:White_Sr_JV", W0[0] )
-                       << Property( "PCL:PCC:White_JB_JV", W0[1] )
-                       << Property( "PCL:PCC:Zero_Sr_JV", Z0[0] )
-                       << Property( "PCL:PCC:Zero_JB_JV", Z0[1] )
-                       << Property( "PCL:PCC:Scale_Sr_JV_JB_JV", W );
+            pccProperties << Property( "PCL:PCC:Fit_Sr_JV_R_G", DVector( LRG.a, LRG.b, LRG.adev ) )
+                          << Property( "PCL:PCC:Fit_JB_JV_B_G", DVector( LBG.a, LBG.b, LBG.adev ) )
+                          << Property( "PCL:PCC:White_Sr_JV", W0[0] )
+                          << Property( "PCL:PCC:White_JB_JV", W0[1] )
+                          << Property( "PCL:PCC:Zero_Sr_JV", Z0[0] )
+                          << Property( "PCL:PCC:Zero_JB_JV", Z0[1] )
+                          << Property( "PCL:PCC:Scale_Sr_JV_JB_JV", W );
 
             keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Color calibration with "  + PixInsightVersion::AsString() )
                      << FITSHeaderKeyword( "HISTORY", IsoString(), "Color calibration with "  + Module->ReadableVersion() )
@@ -1154,13 +1153,13 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                           "W_G : %.4e\n"
                                           "W_B : %.4e", W[0], W[1], W[2] ) );
 
-         properties << Property( "PCL:PCC:BlueFilterWavelength", XB )
-                    << Property( "PCL:PCC:GreenFilterWavelength", XG )
-                    << Property( "PCL:PCC:RedFilterWavelength", XR )
-                    << Property( "PCL:PCC:BlueFilterBandwidth", WB )
-                    << Property( "PCL:PCC:GreenFilterBandwidth", WG )
-                    << Property( "PCL:PCC:RedFilterBandwidth", WR )
-                    << Property( "PCL:PCC:Scale_R_G_B", W );
+         pccProperties << Property( "PCL:PCC:BlueFilterWavelength", XB )
+                       << Property( "PCL:PCC:GreenFilterWavelength", XG )
+                       << Property( "PCL:PCC:RedFilterWavelength", XR )
+                       << Property( "PCL:PCC:BlueFilterBandwidth", WB )
+                       << Property( "PCL:PCC:GreenFilterBandwidth", WG )
+                       << Property( "PCL:PCC:RedFilterBandwidth", WR )
+                       << Property( "PCL:PCC:Scale_R_G_B", W );
 
          keywords << FITSHeaderKeyword( "COMMENT", IsoString(), "Photon calibration with "  + PixInsightVersion::AsString() )
                   << FITSHeaderKeyword( "HISTORY", IsoString(), "Photon calibration with "  + Module->ReadableVersion() )
@@ -1265,7 +1264,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
                                                 "B_G : %.5e\n"
                                                 "B_B : %.5e", B0[0], B0[1], B0[2] ) );
 
-               properties << Property( "PCL:PCC:BackgroundReference", B0 );
+               pccProperties << Property( "PCL:PCC:BackgroundReference", B0 );
 
                keywords << FITSHeaderKeyword( "HISTORY", IsoString(),
                               IsoString().Format( "PhotometricColorCalibration.backgroundReference: %.5e %.5e %.5e", B0[0], B0[1], B0[2] ) );
@@ -1276,6 +1275,7 @@ bool PhotometricColorCalibrationInstance::ExecuteOn( View& view )
 
          view.Window().SetKeywords( keywords );
          view.Window().MainView().SetStorableProperties( properties );
+         view.Window().MainView().SetStorablePermanentProperties( pccProperties );
 
          if ( doPlateSolve )
             view.Window().RegenerateAstrometricSolution( false/*allowGUIMessages*/ );
@@ -1492,4 +1492,4 @@ size_type PhotometricColorCalibrationInstance::ParameterLength( const MetaParame
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-12-12T20:51:40Z
+// EOF PhotometricColorCalibrationInstance.cpp - Released 2020-12-15T18:51:35Z

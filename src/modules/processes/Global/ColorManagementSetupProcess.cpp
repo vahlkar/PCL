@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.2.9
+// Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ColorManagementSetupProcess.cpp - Released 2020-12-12T20:51:40Z
+// ColorManagementSetupProcess.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -73,6 +73,7 @@ ColorManagementSetupProcess::ColorManagementSetupProcess()
    TheColorManagementSetupProcess = this;
 
    new CMSEnabled( this );
+   new CMSDetectMonitorProfile( this );
    new CMSUpdateMonitorProfile( this );
    new CMSDefaultRGBProfile( this );
    new CMSDefaultGrayProfile( this );
@@ -263,6 +264,18 @@ static void ShowHelp()
 "\n      format may have its own profile embedding preferences; these are only"
 "\n      default settings."
 "\n"
+"\n--detect-monitor-profile[+|-]"
+"\n"
+"\n      Enables or disables automatic detection of the primary monitor profile"
+"\n      upon application startup. (default=enabled)"
+"\n"
+"\n--update-monitor-profile=<profile_id>"
+"\n"
+"\n      <profile_id> is a manually selected monitor profile that will be"
+"\n      scheduled for installation upon application restart. It must"
+"\n      correspond to an installed RGB profile characterizing the primary"
+"\n      monitor device."
+"\n"
 "\n--load"
 "\n"
 "\n      Load the current color management settings."
@@ -296,24 +309,28 @@ int ColorManagementSetupProcess::ProcessCommandLine( const StringList& argv ) co
       {
          if ( arg.Id() == "r" | arg.Id() == "-rgb-profile" )
          {
-            instance.defaultRGBProfile = arg.StringValue();
-            instance.defaultRGBProfile.Trim();
-            if ( instance.defaultRGBProfile.IsEmpty() )
+            instance.p_defaultRGBProfile = arg.StringValue().Trimmed();
+            if ( instance.p_defaultRGBProfile.IsEmpty() )
                throw Error( "Empty RGB profile: " + arg.Token() );
          }
          else if ( arg.Id() == "g" || arg.Id() == "-grayscale-profile" )
          {
-            instance.defaultGrayProfile = arg.StringValue();
-            instance.defaultGrayProfile.Trim();
-            if ( instance.defaultGrayProfile.IsEmpty() )
+            instance.p_defaultGrayscaleProfile = arg.StringValue().Trimmed();
+            if ( instance.p_defaultGrayscaleProfile.IsEmpty() )
                throw Error( "Empty grayscale profile: " + arg.Token() );
          }
          else if ( arg.Id() == "-proofing-profile" )
          {
-            instance.proofingProfile = arg.StringValue();
-            instance.proofingProfile.Trim();
-            if ( instance.proofingProfile.IsEmpty() )
+            instance.p_proofingProfile = arg.StringValue().Trimmed();
+            if ( instance.p_proofingProfile.IsEmpty() )
                throw Error( "Empty proofing profile: " + arg.Token() );
+         }
+         else if ( arg.Id() == "-update-monitor-profile" )
+         {
+            instance.p_updateMonitorProfile = arg.StringValue().Trimmed();
+            if ( instance.p_updateMonitorProfile.IsEmpty() )
+               throw Error( "Empty monitor profile: " + arg.Token() );
+            instance.p_detectMonitorProfile = false;
          }
          else if ( arg.Id() == "ri" || arg.Id() == "-rendering-intent"
                 || arg.Id() == "pi" || arg.Id() == "-proofing-intent" )
@@ -331,41 +348,41 @@ int ColorManagementSetupProcess::ProcessCommandLine( const StringList& argv ) co
                throw Error( "Invalid rendering intent: " + arg.Token() );
 
             if ( arg.Id() == "ri" || arg.Id() == "-rendering-intent" )
-               instance.defaultRenderingIntent = intent;
+               instance.p_defaultRenderingIntent = intent;
             else
-               instance.proofingIntent = intent;
+               instance.p_proofingIntent = intent;
          }
          else if ( arg.Id() == "-on-profile-mismatch" )
          {
             if ( arg.StringValue() == "ask" )
-               instance.onProfileMismatch = CMSOnProfileMismatch::AskUser;
+               instance.p_onProfileMismatch = CMSOnProfileMismatch::AskUser;
             else if ( arg.StringValue() == "keep" )
-               instance.onProfileMismatch = CMSOnProfileMismatch::KeepEmbedded;
+               instance.p_onProfileMismatch = CMSOnProfileMismatch::KeepEmbedded;
             else if ( arg.StringValue() == "convert" )
-               instance.onProfileMismatch = CMSOnProfileMismatch::ConvertToDefault;
+               instance.p_onProfileMismatch = CMSOnProfileMismatch::ConvertToDefault;
             else if ( arg.StringValue() == "discard" )
-               instance.onProfileMismatch = CMSOnProfileMismatch::DiscardEmbedded;
+               instance.p_onProfileMismatch = CMSOnProfileMismatch::DiscardEmbedded;
             else if ( arg.StringValue() == "disable" )
-               instance.onProfileMismatch = CMSOnProfileMismatch::DisableCM;
+               instance.p_onProfileMismatch = CMSOnProfileMismatch::DisableCM;
             else
                throw Error( "Invalid profile mismatch policy: " + arg.Token() );
          }
          else if ( arg.Id() == "-on-missing-profile" )
          {
             if ( arg.StringValue() == "ask" )
-               instance.onMissingProfile = CMSOnMissingProfile::AskUser;
+               instance.p_onMissingProfile = CMSOnMissingProfile::AskUser;
             else if ( arg.StringValue() == "default" )
-               instance.onMissingProfile = CMSOnMissingProfile::AssignDefault;
+               instance.p_onMissingProfile = CMSOnMissingProfile::AssignDefault;
             else if ( arg.StringValue() == "ignore" )
-               instance.onMissingProfile = CMSOnMissingProfile::LeaveUntagged;
+               instance.p_onMissingProfile = CMSOnMissingProfile::LeaveUntagged;
             else if ( arg.StringValue() == "disable" )
-               instance.onMissingProfile = CMSOnMissingProfile::DisableCM;
+               instance.p_onMissingProfile = CMSOnMissingProfile::DisableCM;
             else
                throw Error( "Invalid missing profile policy: " + arg.Token() );
          }
          else if ( arg.Id() == "gw" || arg.Id() == "-gamut-warning-color" )
          {
-            instance.gamutWarningColor = RGBAColor( arg.StringValue() );
+            instance.p_gamutWarningColor = RGBAColor( arg.StringValue() );
          }
          else
             throw Error( "Unknown string argument: " + arg.Token() );
@@ -373,28 +390,32 @@ int ColorManagementSetupProcess::ProcessCommandLine( const StringList& argv ) co
       else if ( arg.IsSwitch() )
       {
          if ( arg.Id() == "-embed-rgb" )
-            instance.defaultEmbedProfilesInRGBImages = arg.SwitchState();
+            instance.p_defaultEmbedProfilesInRGBImages = arg.SwitchState();
          else if ( arg.Id() == "-embed-grayscale" )
-            instance.defaultEmbedProfilesInGrayscaleImages = arg.SwitchState();
+            instance.p_defaultEmbedProfilesInGrayscaleImages = arg.SwitchState();
          else if ( arg.Id() == "-proofing-bpc" )
-            instance.useProofingBPC = arg.SwitchState();
+            instance.p_useProofingBPC = arg.SwitchState();
          else if ( arg.Id() == "-default-proofing" )
-            instance.defaultProofingEnabled = arg.SwitchState();
+            instance.p_defaultProofingEnabled = arg.SwitchState();
          else if ( arg.Id() == "-default-gamut-check" )
-            instance.defaultGamutCheckEnabled = arg.SwitchState();
+            instance.p_defaultGamutCheckEnabled = arg.SwitchState();
+         else if ( arg.Id() == "-detect-monitor-profile" )
+            instance.p_detectMonitorProfile = arg.SwitchState();
          else
             throw Error( "Unknown switch argument: " + arg.Token() );
       }
       else if ( arg.IsLiteral() )
       {
          if ( arg.Id() == "e" || arg.Id() == "-enable" )
-            instance.enabled = true;
+            instance.p_enabled = true;
          else if ( arg.Id() == "d" || arg.Id() == "-disable" )
-            instance.enabled = false;
+            instance.p_enabled = false;
          if ( arg.Id() == "-embed-rgb" )
-            instance.defaultEmbedProfilesInRGBImages = true;
+            instance.p_defaultEmbedProfilesInRGBImages = true;
          else if ( arg.Id() == "-embed-grayscale" )
-            instance.defaultEmbedProfilesInGrayscaleImages = true;
+            instance.p_defaultEmbedProfilesInGrayscaleImages = true;
+         else if ( arg.Id() == "-detect-monitor-profile" )
+            instance.p_detectMonitorProfile = true;
          else if ( arg.Id() == "-load" )
             instance.LoadCurrentSettings();
          else if ( arg.Id() == "-interface" )
@@ -424,4 +445,4 @@ int ColorManagementSetupProcess::ProcessCommandLine( const StringList& argv ) co
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupProcess.cpp - Released 2020-12-12T20:51:40Z
+// EOF ColorManagementSetupProcess.cpp - Released 2020-12-15T18:51:35Z

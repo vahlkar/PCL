@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionParameters.h - Released 2020-12-12T20:51:40Z
+// ConvolutionParameters.h - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -201,4 +201,4 @@ PCL_END_LOCAL
 #endif   // __ConvolutionParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionParameters.h - Released 2020-12-12T20:51:40Z
+// EOF ConvolutionParameters.h - Released 2020-12-15T18:51:35Z

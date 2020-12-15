@@ -89,7 +89,7 @@ public:
    // We synthesize critical FITS keywords: TIME-OBS, EXPTIME, FOCALLEN, APTDIA
    FITSKeywordArray ReadFITSKeywords() override;
 
-   PropertyDescriptionArray ImageProperties() override;
+   PropertyDescriptionArray ImagePropertyDescriptions() override;
    Variant ReadImageProperty( const IsoString& property ) override;
 
    void ReadImage( Image& ) override;

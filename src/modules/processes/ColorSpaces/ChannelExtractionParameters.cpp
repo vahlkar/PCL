@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelExtractionParameters.cpp - Released 2020-12-12T20:51:40Z
+// ChannelExtractionParameters.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -68,4 +68,4 @@ ChannelSampleFormat* TheChannelSampleFormatExtractionParameter = nullptr;
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionParameters.cpp - Released 2020-12-12T20:51:40Z
+// EOF ChannelExtractionParameters.cpp - Released 2020-12-15T18:51:35Z

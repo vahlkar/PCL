@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/APASSDatabaseFile.h - Released 2020-12-12T20:51:09Z
+// pcl/APASSDatabaseFile.h - Released 2020-12-15T18:51:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -78,7 +78,7 @@ namespace pcl
  * <tr><td>APASSStarFlag::NoMag_i</td>      <td>No Sloan i' magnitude available.</td></tr>
  * <tr><td>APASSStarFlag::NoMag_z_s</td>    <td>No Sloan z_s magnitude available (APASS DR10 only).</td></tr>
  * <tr><td>APASSStarFlag::NoMag_Y</td>      <td>No Sloan Y magnitude available (APASS DR10 only).</td></tr>
- * <tr><td>APASSStarFlag::PosErrorHigh</td> <td>Uncertainty in right ascension or declination greater than 0.75 seconds of arc.</td></tr>
+ * <tr><td>APASSStarFlag::PosErrorHigh</td> <td>Uncertainty in right ascension or declination greater than 0.75 arcseconds.</td></tr>
  * </table>
  *
  * \ingroup point_source_databases
@@ -133,7 +133,7 @@ struct PCL_CLASS APASSStarData
 // ----------------------------------------------------------------------------
 
 /*!
- * \struct APASSSearchData
+ * \struct pcl::APASSSearchData
  * \brief Data items and parameters for APASS catalog search operations.
  *
  * \ingroup point_source_databases
@@ -159,8 +159,6 @@ typedef XPSD::SearchData<APASSStarData> APASSSearchData;
  * and DR10 catalogs:
  *
  * \li Source positions.
- * \li Parallaxes.
- * \li Proper motions.
  * \li Magnitudes on the Johnson V and B bands (Vega system) and Sloan u', g',
  * r', i', z_s and Y magnitudes (AB system).
  * \li Data availability and quality flags.
@@ -502,4 +500,4 @@ private:
 #endif  // __PCL_APASSDatabaseFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APASSDatabaseFile.h - Released 2020-12-12T20:51:09Z
+// EOF pcl/APASSDatabaseFile.h - Released 2020-12-15T18:51:06Z

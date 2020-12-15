@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFOptionsDialog.h - Released 2020-12-12T20:51:52Z
+// TIFFOptionsDialog.h - Released 2020-12-15T18:51:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -128,4 +128,4 @@ private:
 #endif   // __TIFFOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF TIFFOptionsDialog.h - Released 2020-12-12T20:51:52Z
+// EOF TIFFOptionsDialog.h - Released 2020-12-15T18:51:24Z

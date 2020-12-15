@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.2.9
+// Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInterface.cpp - Released 2020-12-12T20:51:40Z
+// ColorManagementSetupInterface.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -200,46 +200,50 @@ void ColorManagementSetupInterface::UpdateControls()
    GUI->MonitorProfile_Edit.SetText( ICCProfile( monitorProfilePath ).Description() );
    GUI->MonitorProfileFullPath_Edit.SetText( monitorProfilePath );
 
-   GUI->RenderingIntent_ComboBox.SetCurrentItem( m_instance.defaultRenderingIntent );
+   GUI->RenderingIntent_ComboBox.SetCurrentItem( m_instance.p_defaultRenderingIntent );
 
-   GUI->NewMonitorProfile_Edit.SetText( m_instance.updateMonitorProfile );
+   GUI->DetectMonitorProfile_CheckBox.SetChecked( m_instance.p_detectMonitorProfile );
+
+   GUI->NewMonitorProfile_GroupBox.Enable( !m_instance.p_detectMonitorProfile );
+
+   GUI->NewMonitorProfile_Edit.SetText( m_instance.p_updateMonitorProfile );
    GUI->NewMonitorProfile_ComboBox.SetCurrentItem( 0 );
 
-   GUI->RGBProfileId_Edit.SetText( m_instance.defaultRGBProfile );
+   GUI->RGBProfileId_Edit.SetText( m_instance.p_defaultRGBProfile );
    GUI->RGBProfile_ComboBox.SetCurrentItem( 0 );
 
-   GUI->GrayscaleProfileId_Edit.SetText( m_instance.defaultGrayProfile );
+   GUI->GrayscaleProfileId_Edit.SetText( m_instance.p_defaultGrayscaleProfile );
    GUI->GrayscaleProfile_ComboBox.SetCurrentItem( 0 );
 
-   GUI->OnProfileMismatch_Ask_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::AskUser );
-   GUI->OnProfileMismatch_Keep_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::KeepEmbedded );
-   GUI->OnProfileMismatch_Convert_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::ConvertToDefault );
-   GUI->OnProfileMismatch_Discard_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::DiscardEmbedded );
-   GUI->OnProfileMismatch_Disable_RadioButton.SetChecked( m_instance.onProfileMismatch == CMSOnProfileMismatch::DisableCM );
+   GUI->OnProfileMismatch_Ask_RadioButton.SetChecked( m_instance.p_onProfileMismatch == CMSOnProfileMismatch::AskUser );
+   GUI->OnProfileMismatch_Keep_RadioButton.SetChecked( m_instance.p_onProfileMismatch == CMSOnProfileMismatch::KeepEmbedded );
+   GUI->OnProfileMismatch_Convert_RadioButton.SetChecked( m_instance.p_onProfileMismatch == CMSOnProfileMismatch::ConvertToDefault );
+   GUI->OnProfileMismatch_Discard_RadioButton.SetChecked( m_instance.p_onProfileMismatch == CMSOnProfileMismatch::DiscardEmbedded );
+   GUI->OnProfileMismatch_Disable_RadioButton.SetChecked( m_instance.p_onProfileMismatch == CMSOnProfileMismatch::DisableCM );
 
-   GUI->OnMissingProfile_Ask_RadioButton.SetChecked( m_instance.onMissingProfile == CMSOnMissingProfile::AskUser );
-   GUI->OnMissingProfile_Assign_RadioButton.SetChecked( m_instance.onMissingProfile == CMSOnMissingProfile::AssignDefault );
-   GUI->OnMissingProfile_Leave_RadioButton.SetChecked( m_instance.onMissingProfile == CMSOnMissingProfile::LeaveUntagged );
-   GUI->OnMissingProfile_Disable_RadioButton.SetChecked( m_instance.onMissingProfile == CMSOnMissingProfile::DisableCM );
+   GUI->OnMissingProfile_Ask_RadioButton.SetChecked( m_instance.p_onMissingProfile == CMSOnMissingProfile::AskUser );
+   GUI->OnMissingProfile_Assign_RadioButton.SetChecked( m_instance.p_onMissingProfile == CMSOnMissingProfile::AssignDefault );
+   GUI->OnMissingProfile_Leave_RadioButton.SetChecked( m_instance.p_onMissingProfile == CMSOnMissingProfile::LeaveUntagged );
+   GUI->OnMissingProfile_Disable_RadioButton.SetChecked( m_instance.p_onMissingProfile == CMSOnMissingProfile::DisableCM );
 
-   GUI->ProofingProfileId_Edit.SetText( m_instance.proofingProfile );
+   GUI->ProofingProfileId_Edit.SetText( m_instance.p_proofingProfile );
    GUI->ProofingProfile_ComboBox.SetCurrentItem( 0 );
 
-   GUI->ProofingIntent_ComboBox.SetCurrentItem( m_instance.proofingIntent );
+   GUI->ProofingIntent_ComboBox.SetCurrentItem( m_instance.p_proofingIntent );
 
-   GUI->UseProofingBPC_CheckBox.SetChecked( m_instance.useProofingBPC );
+   GUI->UseProofingBPC_CheckBox.SetChecked( m_instance.p_useProofingBPC );
 
-   GUI->DefaultProofingEnabled_CheckBox.SetChecked( m_instance.defaultProofingEnabled );
-   GUI->DefaultGamutCheckEnabled_CheckBox.SetChecked( m_instance.defaultGamutCheckEnabled );
+   GUI->DefaultProofingEnabled_CheckBox.SetChecked( m_instance.p_defaultProofingEnabled );
+   GUI->DefaultGamutCheckEnabled_CheckBox.SetChecked( m_instance.p_defaultGamutCheckEnabled );
 
-   GUI->GamutWarningColor_ComboBox.SetCurrentColor( m_instance.gamutWarningColor );
+   GUI->GamutWarningColor_ComboBox.SetCurrentColor( m_instance.p_gamutWarningColor );
    GUI->GamutWarningColor_Control.Update();
 
-   GUI->EnableColorManagement_CheckBox.SetChecked( m_instance.enabled );
-   GUI->UseLowResolutionCLUTs_CheckBox.SetChecked( m_instance.useLowResolutionCLUTs );
+   GUI->EnableColorManagement_CheckBox.SetChecked( m_instance.p_enabled );
+   GUI->UseLowResolutionCLUTs_CheckBox.SetChecked( m_instance.p_useLowResolutionCLUTs );
 
-   GUI->EmbedProfilesInRGBImages_CheckBox.SetChecked( m_instance.defaultEmbedProfilesInRGBImages );
-   GUI->EmbedProfilesInGrayscaleImages_CheckBox.SetChecked( m_instance.defaultEmbedProfilesInGrayscaleImages );
+   GUI->EmbedProfilesInRGBImages_CheckBox.SetChecked( m_instance.p_defaultEmbedProfilesInRGBImages );
+   GUI->EmbedProfilesInGrayscaleImages_CheckBox.SetChecked( m_instance.p_defaultEmbedProfilesInGrayscaleImages );
 }
 
 // ----------------------------------------------------------------------------
@@ -252,7 +256,6 @@ void ColorManagementSetupInterface::RefreshProfiles()
    GUI->RGBProfile_ComboBox.AddItem( String().Format( "--> Available RGB ICC Profiles (%u) <--", rgbProfiles.Length() ) );
    GUI->NewMonitorProfile_ComboBox.Clear();
    GUI->NewMonitorProfile_ComboBox.AddItem( String().Format( "--> Available RGB ICC Profiles (%u) <--", rgbProfiles.Length() ) );
-   GUI->NewMonitorProfile_ComboBox.AddItem( "<reset-profiles>" );
    for ( ICCProfile::profile_list::const_iterator i = rgbProfiles.Begin(); i != rgbProfiles.End(); ++i )
    {
       GUI->RGBProfile_ComboBox.AddItem( i->description );
@@ -266,34 +269,26 @@ void ColorManagementSetupInterface::RefreshProfiles()
    for ( ICCProfile::profile_list::const_iterator i = grayProfiles.Begin(); i != grayProfiles.End(); ++i )
       GUI->GrayscaleProfile_ComboBox.AddItem( i->description );
 
-   proofingProfiles = ICCProfile::FindProfilesByColorSpace( ICCColorSpace::Any );
+   p_proofingProfiles = ICCProfile::FindProfilesByColorSpace( ICCColorSpace::Any );
 
    GUI->ProofingProfile_ComboBox.Clear();
-   GUI->ProofingProfile_ComboBox.AddItem( String().Format( "--> Available ICC Profiles (%u) <--", proofingProfiles.Length() ) );
-   for ( ICCProfile::profile_list::const_iterator i = proofingProfiles.Begin(); i != proofingProfiles.End(); ++i )
+   GUI->ProofingProfile_ComboBox.AddItem( String().Format( "--> Available ICC Profiles (%u) <--", p_proofingProfiles.Length() ) );
+   for ( ICCProfile::profile_list::const_iterator i = p_proofingProfiles.Begin(); i != p_proofingProfiles.End(); ++i )
       GUI->ProofingProfile_ComboBox.AddItem( i->description );
 }
 
 // ----------------------------------------------------------------------------
 
-void ColorManagementSetupInterface::__RenderingIntent_ItemSelected( ComboBox& sender, int itemIndex )
+void ColorManagementSetupInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
 {
    if ( sender == GUI->RenderingIntent_ComboBox )
-      m_instance.defaultRenderingIntent = itemIndex;
-   else if ( sender == GUI->ProofingIntent_ComboBox )
-      m_instance.proofingIntent = itemIndex;
-}
-
-// ----------------------------------------------------------------------------
-
-void ColorManagementSetupInterface::__Profile_ItemSelected( ComboBox& sender, int itemIndex )
-{
-   if ( sender == GUI->RGBProfile_ComboBox )
+      m_instance.p_defaultRenderingIntent = itemIndex;
+   else if ( sender == GUI->RGBProfile_ComboBox )
    {
       if ( itemIndex > 0 )
          if ( itemIndex <= int( rgbProfiles.Length() ) ) // first item is title
          {
-            m_instance.defaultRGBProfile = rgbProfiles[itemIndex-1].description; // skip the first title item
+            m_instance.p_defaultRGBProfile = rgbProfiles[itemIndex-1].description; // skip the first title item
             UpdateControls();
          }
    }
@@ -302,156 +297,140 @@ void ColorManagementSetupInterface::__Profile_ItemSelected( ComboBox& sender, in
       if ( itemIndex > 0 )
          if ( itemIndex <= int( grayProfiles.Length() ) ) // first item is title
          {
-            m_instance.defaultGrayProfile = grayProfiles[itemIndex-1].description; // skip the first title item
+            m_instance.p_defaultGrayscaleProfile = grayProfiles[itemIndex-1].description; // skip the first title item
             UpdateControls();
          }
    }
    else if ( sender == GUI->ProofingProfile_ComboBox )
    {
       if ( itemIndex > 0 )
-         if ( itemIndex <= int( proofingProfiles.Length() ) ) // first item is title
+         if ( itemIndex <= int( p_proofingProfiles.Length() ) ) // first item is title
          {
-            m_instance.proofingProfile = proofingProfiles[itemIndex-1].description; // skip the first title item
+            m_instance.p_proofingProfile = p_proofingProfiles[itemIndex-1].description; // skip the first title item
             UpdateControls();
          }
    }
    else if ( sender == GUI->NewMonitorProfile_ComboBox )
    {
       if ( itemIndex > 0 )
-         if ( itemIndex <= int( rgbProfiles.Length()+1 ) ) // first item is title, 2nd item is <reset-profiles>
+         if ( itemIndex <= int( rgbProfiles.Length() ) ) // first item is title
          {
-            if ( itemIndex > 1 )
-               m_instance.updateMonitorProfile = rgbProfiles[itemIndex-2].description; // skip the first two items
-            else
-               m_instance.updateMonitorProfile = sender.ItemText( itemIndex ).Trimmed(); // <reset-profiles>
+            m_instance.p_updateMonitorProfile = rgbProfiles[itemIndex-1].description; // skip the first title item
             UpdateControls();
          }
    }
+   else if ( sender == GUI->ProofingIntent_ComboBox )
+      m_instance.p_proofingIntent = itemIndex;
 }
 
 // ----------------------------------------------------------------------------
 
-void ColorManagementSetupInterface::__Profile_EditCompleted( Edit& sender )
+void ColorManagementSetupInterface::e_EditCompleted( Edit& sender )
 {
    String txt = sender.Text().Trimmed();
    if ( sender == GUI->RGBProfileId_Edit )
-      m_instance.defaultRGBProfile = txt;
+      m_instance.p_defaultRGBProfile = txt;
    else if ( sender == GUI->GrayscaleProfileId_Edit )
-      m_instance.defaultGrayProfile = txt;
+      m_instance.p_defaultGrayscaleProfile = txt;
    else if ( sender == GUI->ProofingProfileId_Edit )
-      m_instance.proofingProfile = txt;
+      m_instance.p_proofingProfile = txt;
    else if ( sender == GUI->NewMonitorProfile_Edit )
-      m_instance.updateMonitorProfile = txt;
+      m_instance.p_updateMonitorProfile = txt;
 
    UpdateControls();
 }
 
 // ----------------------------------------------------------------------------
 
-void ColorManagementSetupInterface::__OnProfileMismatch_ButtonClick( Button& sender, bool checked )
+void ColorManagementSetupInterface::e_ButtonClick( Button& sender, bool checked )
 {
-   if ( sender == GUI->OnProfileMismatch_Ask_RadioButton )
-      m_instance.onProfileMismatch = CMSOnProfileMismatch::AskUser;
-   else if ( sender == GUI->OnProfileMismatch_Keep_RadioButton )
-      m_instance.onProfileMismatch = CMSOnProfileMismatch::KeepEmbedded;
-   else if ( sender == GUI->OnProfileMismatch_Convert_RadioButton )
-      m_instance.onProfileMismatch = CMSOnProfileMismatch::ConvertToDefault;
-   else if ( sender == GUI->OnProfileMismatch_Discard_RadioButton )
-      m_instance.onProfileMismatch = CMSOnProfileMismatch::DiscardEmbedded;
-   else if ( sender == GUI->OnProfileMismatch_Disable_RadioButton )
-      m_instance.onProfileMismatch = CMSOnProfileMismatch::DisableCM;
-}
-
-// ----------------------------------------------------------------------------
-
-void ColorManagementSetupInterface::__OnMissingProfile_ButtonClick( Button& sender, bool checked )
-{
-   if ( sender == GUI->OnMissingProfile_Ask_RadioButton )
-      m_instance.onMissingProfile = CMSOnMissingProfile::AskUser;
-   else if ( sender == GUI->OnMissingProfile_Assign_RadioButton )
-      m_instance.onMissingProfile = CMSOnMissingProfile::AssignDefault;
-   else if ( sender == GUI->OnMissingProfile_Leave_RadioButton )
-      m_instance.onMissingProfile = CMSOnMissingProfile::LeaveUntagged;
-   else if ( sender == GUI->OnMissingProfile_Disable_RadioButton )
-      m_instance.onMissingProfile = CMSOnMissingProfile::DisableCM;
-}
-
-// ----------------------------------------------------------------------------
-
-void ColorManagementSetupInterface::__ProofingOptions_ButtonClick( Button& sender, bool checked )
-{
-   if ( sender == GUI->UseProofingBPC_CheckBox )
-      m_instance.useProofingBPC = checked;
-   else if ( sender == GUI->DefaultProofingEnabled_CheckBox )
-      m_instance.defaultProofingEnabled = checked;
-   else if ( sender == GUI->DefaultGamutCheckEnabled_CheckBox )
-      m_instance.defaultGamutCheckEnabled = checked;
-}
-
-// ----------------------------------------------------------------------------
-
-void ColorManagementSetupInterface::__ColorSelected( ColorComboBox& /*sender*/, RGBA color )
-{
-   m_instance.gamutWarningColor = uint32( color );
-   GUI->GamutWarningColor_Control.Update();
-}
-
-// ----------------------------------------------------------------------------
-
-void ColorManagementSetupInterface::__ColorSample_Paint( Control& sender, const Rect& /*updateRect*/ )
-{
-   Graphics g( sender );
-   g.EnableAntialiasing();
-   g.SetBrush( m_instance.gamutWarningColor );
-   g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
-   g.DrawRect( sender.BoundsRect() );
-}
-
-// ----------------------------------------------------------------------------
-
-void ColorManagementSetupInterface::__ColorSample_MouseRelease( Control& sender,
-                                             const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
-{
-   if ( sender.IsUnderMouse() )
+   if ( sender == GUI->DetectMonitorProfile_CheckBox )
    {
-      SimpleColorDialog dlg;
-      dlg.SetColor( m_instance.gamutWarningColor );
-      if ( dlg.Execute() == StdDialogCode::Ok )
-      {
-         m_instance.gamutWarningColor = dlg.Color();
-         GUI->GamutWarningColor_ComboBox.SetCurrentColor( m_instance.gamutWarningColor );
-         GUI->GamutWarningColor_Control.Update();
-      }
+      m_instance.p_detectMonitorProfile = checked;
+      UpdateControls();
+   }
+   else if ( sender == GUI->OnProfileMismatch_Ask_RadioButton )
+      m_instance.p_onProfileMismatch = CMSOnProfileMismatch::AskUser;
+   else if ( sender == GUI->OnProfileMismatch_Keep_RadioButton )
+      m_instance.p_onProfileMismatch = CMSOnProfileMismatch::KeepEmbedded;
+   else if ( sender == GUI->OnProfileMismatch_Convert_RadioButton )
+      m_instance.p_onProfileMismatch = CMSOnProfileMismatch::ConvertToDefault;
+   else if ( sender == GUI->OnProfileMismatch_Discard_RadioButton )
+      m_instance.p_onProfileMismatch = CMSOnProfileMismatch::DiscardEmbedded;
+   else if ( sender == GUI->OnProfileMismatch_Disable_RadioButton )
+      m_instance.p_onProfileMismatch = CMSOnProfileMismatch::DisableCM;
+   else if ( sender == GUI->OnMissingProfile_Ask_RadioButton )
+      m_instance.p_onMissingProfile = CMSOnMissingProfile::AskUser;
+   else if ( sender == GUI->OnMissingProfile_Assign_RadioButton )
+      m_instance.p_onMissingProfile = CMSOnMissingProfile::AssignDefault;
+   else if ( sender == GUI->OnMissingProfile_Leave_RadioButton )
+      m_instance.p_onMissingProfile = CMSOnMissingProfile::LeaveUntagged;
+   else if ( sender == GUI->OnMissingProfile_Disable_RadioButton )
+      m_instance.p_onMissingProfile = CMSOnMissingProfile::DisableCM;
+   else if ( sender == GUI->UseProofingBPC_CheckBox )
+      m_instance.p_useProofingBPC = checked;
+   else if ( sender == GUI->DefaultProofingEnabled_CheckBox )
+      m_instance.p_defaultProofingEnabled = checked;
+   else if ( sender == GUI->DefaultGamutCheckEnabled_CheckBox )
+      m_instance.p_defaultGamutCheckEnabled = checked;
+   else if ( sender == GUI->EnableColorManagement_CheckBox )
+      m_instance.p_enabled = checked;
+   else if ( sender == GUI->UseLowResolutionCLUTs_CheckBox )
+      m_instance.p_useLowResolutionCLUTs = checked;
+   else if ( sender == GUI->EmbedProfilesInRGBImages_CheckBox )
+      m_instance.p_defaultEmbedProfilesInRGBImages = checked;
+   else if ( sender == GUI->EmbedProfilesInGrayscaleImages_CheckBox )
+      m_instance.p_defaultEmbedProfilesInGrayscaleImages = checked;
+   else if ( sender == GUI->RefreshProfiles_PushButton )
+      RefreshProfiles();
+   else if ( sender == GUI->LoadCurrentSettings_PushButton )
+   {
+      m_instance.LoadCurrentSettings();
+      UpdateControls();
    }
 }
 
 // ----------------------------------------------------------------------------
 
-void ColorManagementSetupInterface::__GlobalOptions_ButtonClick( Button& sender, bool checked )
+void ColorManagementSetupInterface::e_ColorSelected( ColorComboBox& sender, RGBA color )
 {
-   if ( sender == GUI->EnableColorManagement_CheckBox )
-      m_instance.enabled = checked;
-   else if ( sender == GUI->UseLowResolutionCLUTs_CheckBox )
-      m_instance.useLowResolutionCLUTs = checked;
-   else if ( sender == GUI->EmbedProfilesInRGBImages_CheckBox )
-      m_instance.defaultEmbedProfilesInRGBImages = checked;
-   else if ( sender == GUI->EmbedProfilesInGrayscaleImages_CheckBox )
-      m_instance.defaultEmbedProfilesInGrayscaleImages = checked;
+   if ( sender == GUI->GamutWarningColor_Control )
+   {
+      m_instance.p_gamutWarningColor = uint32( color );
+      sender.Update();
+   }
 }
 
 // ----------------------------------------------------------------------------
 
-void ColorManagementSetupInterface::__RefreshProfiles_ButtonClick( Button& sender, bool checked )
+void ColorManagementSetupInterface::e_Paint( Control& sender, const Rect& /*updateRect*/ )
 {
-   RefreshProfiles();
+   if ( sender == GUI->GamutWarningColor_Control )
+   {
+      Graphics g( sender );
+      g.EnableAntialiasing();
+      g.SetBrush( m_instance.p_gamutWarningColor );
+      g.SetPen( 0xff000000, sender.DisplayPixelRatio() );
+      g.DrawRect( sender.BoundsRect() );
+   }
 }
 
 // ----------------------------------------------------------------------------
 
-void ColorManagementSetupInterface::__LoadCurrentSettings_ButtonClick( Button& sender, bool checked )
+void ColorManagementSetupInterface::e_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
 {
-   m_instance.LoadCurrentSettings();
-   UpdateControls();
+   if ( sender == GUI->GamutWarningColor_Control )
+      if ( sender.IsUnderMouse() )
+      {
+         SimpleColorDialog dlg;
+         dlg.SetColor( m_instance.p_gamutWarningColor );
+         if ( dlg.Execute() == StdDialogCode::Ok )
+         {
+            m_instance.p_gamutWarningColor = dlg.Color();
+            GUI->GamutWarningColor_ComboBox.SetCurrentColor( m_instance.p_gamutWarningColor );
+            GUI->GamutWarningColor_Control.Update();
+         }
+      }
 }
 
 // ----------------------------------------------------------------------------
@@ -469,7 +448,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    const char* renderingIntentTip =
       "<p>A <i>rendering intent</i> is a method to map out-of-gamut colors to the color space of the output "
       "device being used, such as a monitor or a printer/paper combination. Device gamuts are characterized "
-      "by the color profiles associated to each device involved in a color management transformation.</p>"
+      "by the color profiles associated with each device involved in a color management transformation.</p>"
 
       "<p>The <i>relative colorimetric</i> rendering intent is the default option for printers and proofing "
       "devices. It matches the white point in the image color space to the white point in the output device "
@@ -501,7 +480,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    //
 
    MonitorProfile_Edit.SetReadOnly();
-   MonitorProfile_Edit.SetToolTip( "<p>This is the ICC profile currently associated to the primary monitor.</p>" );
+   MonitorProfile_Edit.SetToolTip( "<p>This is the ICC profile currently associated with the primary monitor.</p>" );
 
    MonitorProfileFullPath_Edit.SetReadOnly();
    MonitorProfileFullPath_Edit.SetMinWidth( editWidth1 );
@@ -516,7 +495,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    RenderingIntent_ComboBox.AddItem( "Relative Colorimetric (match white points)" );
    RenderingIntent_ComboBox.AddItem( "Absolute Colorimetric (proofing)" );
    RenderingIntent_ComboBox.SetToolTip( renderingIntentTip );
-   RenderingIntent_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::__RenderingIntent_ItemSelected, w );
+   RenderingIntent_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::e_ItemSelected, w );
 
    RenderingIntent_Sizer.SetSpacing( 4 );
    RenderingIntent_Sizer.Add( RenderingIntent_Label );
@@ -538,22 +517,31 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 
    //
 
+   DetectMonitorProfile_CheckBox.SetText( "Detect monitor profile" );
+   DetectMonitorProfile_CheckBox.SetToolTip(
+      "<p>Enable this option to detect the system primary monitor profile automatically on all supported platforms. "
+      "Monitor profile detection is only performed upon application startup, so any change to this option will "
+      "take effect the next time you run the PixInsight core application.</p>" );
+   DetectMonitorProfile_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
+
+   DetectMonitorProfile_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   DetectMonitorProfile_Sizer.Add( DetectMonitorProfile_CheckBox, 100 );
+
+   //
+
    const char* newMonitorProfileTip =
       "<p>This section allows you to change the current monitor profile manually. If you change this item, "
       "a new monitor profile will be scheduled for installation upon application restart.</p>"
-      "<p>You can select the &lt;reset-profiles&gt; option to schedule a reset of all working color profiles. "
-      "This procedure is useful to detect and load a system monitor profile automatically on all supported "
-      "platforms.</p>"
       "<p><b>* Warning * An incorrect monitor profile will invalidate the results of the whole color management "
       "subsystem. Note that this can lead to much worse problems than not having color management at all. "
       "Change this setting only if you really know what you are doing.</b></p>";
 
    NewMonitorProfile_Edit.SetMinWidth( editWidth1 );
    NewMonitorProfile_Edit.SetToolTip( newMonitorProfileTip );
-   NewMonitorProfile_Edit.OnEditCompleted( (Edit::edit_event_handler)&ColorManagementSetupInterface::__Profile_EditCompleted, w );
+   NewMonitorProfile_Edit.OnEditCompleted( (Edit::edit_event_handler)&ColorManagementSetupInterface::e_EditCompleted, w );
 
    NewMonitorProfile_ComboBox.SetToolTip( newMonitorProfileTip );
-   NewMonitorProfile_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::__Profile_ItemSelected, w );
+   NewMonitorProfile_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::e_ItemSelected, w );
 
    NewMonitorProfile_Sizer.SetMargin( 6 );
    NewMonitorProfile_Sizer.SetSpacing( 4 );
@@ -565,6 +553,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    NewMonitorProfile_GroupBox.SetSizer( NewMonitorProfile_Sizer );
 
    SystemSettings_Sizer.SetSpacing( 4 );
+   SystemSettings_Sizer.Add( DetectMonitorProfile_Sizer );
    SystemSettings_Sizer.Add( NewMonitorProfile_GroupBox );
 
    SystemSettings_Control.SetSizer( SystemSettings_Sizer );
@@ -581,10 +570,10 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 
    RGBProfileId_Edit.SetMinWidth( editWidth1 );
    RGBProfileId_Edit.SetToolTip( rgbProfileTip );
-   RGBProfileId_Edit.OnEditCompleted( (Edit::edit_event_handler)&ColorManagementSetupInterface::__Profile_EditCompleted, w );
+   RGBProfileId_Edit.OnEditCompleted( (Edit::edit_event_handler)&ColorManagementSetupInterface::e_EditCompleted, w );
 
    RGBProfile_ComboBox.SetToolTip( rgbProfileTip );
-   RGBProfile_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::__Profile_ItemSelected, w );
+   RGBProfile_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::e_ItemSelected, w );
 
    RGBProfiles_Sizer.SetMargin( 6 );
    RGBProfiles_Sizer.SetSpacing( 4 );
@@ -602,10 +591,10 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 
    GrayscaleProfileId_Edit.SetMinWidth( editWidth1 );
    GrayscaleProfileId_Edit.SetToolTip( grayProfileTip );
-   GrayscaleProfileId_Edit.OnEditCompleted( (Edit::edit_event_handler)&ColorManagementSetupInterface::__Profile_EditCompleted, w );
+   GrayscaleProfileId_Edit.OnEditCompleted( (Edit::edit_event_handler)&ColorManagementSetupInterface::e_EditCompleted, w );
 
    GrayscaleProfile_ComboBox.SetToolTip( grayProfileTip );
-   GrayscaleProfile_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::__Profile_ItemSelected, w );
+   GrayscaleProfile_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::e_ItemSelected, w );
 
    GrayscaleProfiles_Sizer.SetMargin( 6 );
    GrayscaleProfiles_Sizer.SetSpacing( 4 );
@@ -634,28 +623,28 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    OnProfileMismatch_Ask_RadioButton.SetText( "Ask what to do" );
    OnProfileMismatch_Ask_RadioButton.SetToolTip(
       "<p>Lets you take a decision for each image that embeds a mismatching ICC profile.</p>" );
-   OnProfileMismatch_Ask_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__OnProfileMismatch_ButtonClick, w );
+   OnProfileMismatch_Ask_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    OnProfileMismatch_Keep_RadioButton.SetText( "Keep embedded profiles" );
    OnProfileMismatch_Keep_RadioButton.SetToolTip(
       "<p>Keep mismatching embedded profiles and use them to manage image renditions.</p>" );
-   OnProfileMismatch_Keep_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__OnProfileMismatch_ButtonClick, w );
+   OnProfileMismatch_Keep_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    OnProfileMismatch_Convert_RadioButton.SetText( "Convert to the default profile" );
    OnProfileMismatch_Convert_RadioButton.SetToolTip(
       "<p>Convert image data to the default ICC profile.</p>"
       "<p><b>WARNING: This option modifies pixel values.</b></p>" );
-   OnProfileMismatch_Convert_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__OnProfileMismatch_ButtonClick, w );
+   OnProfileMismatch_Convert_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    OnProfileMismatch_Discard_RadioButton.SetText( "Discard mismatching profiles" );
    OnProfileMismatch_Discard_RadioButton.SetToolTip(
       "<p>Ignore mismatching embedded profiles and use the default profile instead.</p>" );
-   OnProfileMismatch_Discard_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__OnProfileMismatch_ButtonClick, w );
+   OnProfileMismatch_Discard_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    OnProfileMismatch_Disable_RadioButton.SetText( "Disable color management" );
    OnProfileMismatch_Disable_RadioButton.SetToolTip(
       "<p>Do not manage color for images that embed a mismatching ICC profile.</p>" );
-   OnProfileMismatch_Disable_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__OnProfileMismatch_ButtonClick, w );
+   OnProfileMismatch_Disable_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    OnProfileMismatch_Sizer.SetMargin( 6 );
    OnProfileMismatch_Sizer.SetSpacing( 4 );
@@ -673,24 +662,24 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    OnMissingProfile_Ask_RadioButton.SetText( "Ask what to do" );
    OnMissingProfile_Ask_RadioButton.SetToolTip(
       "<p>Lets you take a decision for each image that does not embed an ICC profile.</p>" );
-   OnMissingProfile_Ask_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__OnMissingProfile_ButtonClick, w );
+   OnMissingProfile_Ask_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    OnMissingProfile_Assign_RadioButton.SetText( "Assign the default profile" );
    OnMissingProfile_Assign_RadioButton.SetToolTip(
       "<p>Assign the default profile to all images without an embedded ICC profile.</p>"
       "<p>This assumes that untagged images have their pixel values expressed in the default profile space.</p>" );
-   OnMissingProfile_Assign_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__OnMissingProfile_ButtonClick, w );
+   OnMissingProfile_Assign_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    OnMissingProfile_Leave_RadioButton.SetText( "Leave the image untagged" );
    OnMissingProfile_Leave_RadioButton.SetToolTip(
       "<p>Assume that all images without an embedded ICC profile have their pixel values expressed in "
       "the default profile space, but don't assign the default profile explicitly.</p>" );
-   OnMissingProfile_Leave_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__OnMissingProfile_ButtonClick, w );
+   OnMissingProfile_Leave_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    OnMissingProfile_Disable_RadioButton.SetText( "Disable color management" );
    OnMissingProfile_Disable_RadioButton.SetToolTip(
       "<p>Do not manage color for images that don't embed an ICC profile.</p>" );
-   OnMissingProfile_Disable_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__OnMissingProfile_ButtonClick, w );
+   OnMissingProfile_Disable_RadioButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    OnMissingProfile_Sizer.SetMargin( 6 );
    OnMissingProfile_Sizer.SetSpacing( 4 );
@@ -718,15 +707,15 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 
    //
 
-   const char* proofingProfileTip =
+   const char* p_proofingProfileTip =
       "<p>This is the ICC profile that will be used for color proofing.</p>";
 
    ProofingProfileId_Edit.SetMinWidth( editWidth1 );
-   ProofingProfileId_Edit.SetToolTip( proofingProfileTip );
-   ProofingProfileId_Edit.OnEditCompleted( (Edit::edit_event_handler)&ColorManagementSetupInterface::__Profile_EditCompleted, w );
+   ProofingProfileId_Edit.SetToolTip( p_proofingProfileTip );
+   ProofingProfileId_Edit.OnEditCompleted( (Edit::edit_event_handler)&ColorManagementSetupInterface::e_EditCompleted, w );
 
-   ProofingProfile_ComboBox.SetToolTip( proofingProfileTip );
-   ProofingProfile_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::__Profile_ItemSelected, w );
+   ProofingProfile_ComboBox.SetToolTip( p_proofingProfileTip );
+   ProofingProfile_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::e_ItemSelected, w );
 
    ProofingProfile_Sizer.SetMargin( 6 );
    ProofingProfile_Sizer.SetSpacing( 4 );
@@ -734,7 +723,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    ProofingProfile_Sizer.Add( ProofingProfile_ComboBox );
 
    ProofingProfile_GroupBox.SetTitle( "Proofing Profile" );
-   ProofingProfile_GroupBox.SetToolTip( proofingProfileTip );
+   ProofingProfile_GroupBox.SetToolTip( p_proofingProfileTip );
    ProofingProfile_GroupBox.SetSizer( ProofingProfile_Sizer );
 
    //
@@ -749,7 +738,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    ProofingIntent_ComboBox.AddItem( "Relative Colorimetric (match white points)" );
    ProofingIntent_ComboBox.AddItem( "Absolute Colorimetric (proofing)" );
    ProofingIntent_ComboBox.SetToolTip( renderingIntentTip );
-   ProofingIntent_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::__RenderingIntent_ItemSelected, w );
+   ProofingIntent_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&ColorManagementSetupInterface::e_ItemSelected, w );
 
    ProofingIntent_Sizer.SetSpacing( 4 );
    ProofingIntent_Sizer.Add( ProofingIntent_Label );
@@ -761,7 +750,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    UseProofingBPC_CheckBox.SetToolTip(
       "<p>Apply a black point compensation (BPC) algorithm to generate proofing renditions. "
       "Usually BPC helps in preserving shadow detail.</p>" );
-   UseProofingBPC_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__ProofingOptions_ButtonClick, w );
+   UseProofingBPC_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    UseProofingBPC_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    UseProofingBPC_Sizer.Add( UseProofingBPC_CheckBox, 100 );
@@ -772,7 +761,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    DefaultProofingEnabled_CheckBox.SetToolTip(
       "<p>When this option is selected, newly created and just opened images will have "
       "the <i>color proofing</i> feature enabled by default.</p>" );
-   DefaultProofingEnabled_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__ProofingOptions_ButtonClick, w );
+   DefaultProofingEnabled_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    DefaultProofingEnabled_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    DefaultProofingEnabled_Sizer.Add( DefaultProofingEnabled_CheckBox, 100 );
@@ -783,7 +772,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    DefaultGamutCheckEnabled_CheckBox.SetToolTip(
       "<p>When this option is selected, newly created and just opened images will have "
       "the <i>gamut check</i> feature enabled by default.</p>" );
-   DefaultGamutCheckEnabled_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__ProofingOptions_ButtonClick, w );
+   DefaultGamutCheckEnabled_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    DefaultGamutCheckEnabled_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    DefaultGamutCheckEnabled_Sizer.Add( DefaultGamutCheckEnabled_CheckBox, 100 );
@@ -799,14 +788,14 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    GamutWarningColor_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
    GamutWarningColor_Label.SetToolTip( gamutWarningTip );
 
-   GamutWarningColor_ComboBox.OnColorSelected( (ColorComboBox::color_event_handler)&ColorManagementSetupInterface::__ColorSelected, w );
+   GamutWarningColor_ComboBox.OnColorSelected( (ColorComboBox::color_event_handler)&ColorManagementSetupInterface::e_ColorSelected, w );
    GamutWarningColor_ComboBox.SetToolTip( gamutWarningTip );
 
    GamutWarningColor_Control.SetScaledMinWidth( 30 );
    GamutWarningColor_Control.SetCursor( StdCursor::UpArrow );
    GamutWarningColor_Control.SetToolTip(gamutWarningTip );
-   GamutWarningColor_Control.OnPaint( (Control::paint_event_handler)&ColorManagementSetupInterface::__ColorSample_Paint, w );
-   GamutWarningColor_Control.OnMouseRelease( (Control::mouse_button_event_handler)&ColorManagementSetupInterface::__ColorSample_MouseRelease, w );
+   GamutWarningColor_Control.OnPaint( (Control::paint_event_handler)&ColorManagementSetupInterface::e_Paint, w );
+   GamutWarningColor_Control.OnMouseRelease( (Control::mouse_button_event_handler)&ColorManagementSetupInterface::e_MouseRelease, w );
 
    GamutWarningColor_Sizer.SetSpacing( 4 );
    GamutWarningColor_Sizer.Add( GamutWarningColor_Label );
@@ -837,7 +826,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
       "<p>Globally enable or disable color management.</p>"
       "<p>Note that color management can also be enabled/disabled individually "
       "for each image window.</p>" );
-   EnableColorManagement_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__GlobalOptions_ButtonClick, w );
+   EnableColorManagement_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    UseLowResolutionCLUTs_CheckBox.SetText( "Use low-resolution CLUTs" );
    UseLowResolutionCLUTs_CheckBox.SetToolTip(
@@ -845,7 +834,7 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
       "<p>This option can improve screen rendering performance at the expense of accuracy. It can be useful "
       "on slow machines with large monitors, but is not recommended under normal conditions, unless you "
       "really need to speed up screen representations.</p>" );
-   UseLowResolutionCLUTs_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__GlobalOptions_ButtonClick, w );
+   UseLowResolutionCLUTs_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    MiscOptions_Sizer.SetSpacing( 4 );
    MiscOptions_Sizer.Add( EnableColorManagement_CheckBox );
@@ -859,11 +848,11 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 
    EmbedProfilesInRGBImages_CheckBox.SetText( "Embed ICC profiles in RGB images" );
    EmbedProfilesInRGBImages_CheckBox.SetToolTip( embedTip );
-   EmbedProfilesInRGBImages_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__GlobalOptions_ButtonClick, w );
+   EmbedProfilesInRGBImages_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    EmbedProfilesInGrayscaleImages_CheckBox.SetText( "Embed ICC profiles in grayscale images" );
    EmbedProfilesInGrayscaleImages_CheckBox.SetToolTip( embedTip );
-   EmbedProfilesInGrayscaleImages_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__GlobalOptions_ButtonClick, w );
+   EmbedProfilesInGrayscaleImages_CheckBox.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    EmbedProfiles_Sizer.SetSpacing( 4 );
    EmbedProfiles_Sizer.Add( EmbedProfilesInRGBImages_CheckBox );
@@ -881,12 +870,12 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
    RefreshProfiles_PushButton.SetText( "Refresh Profiles" );
    RefreshProfiles_PushButton.SetToolTip(
       "<p>Rescan the system color directory to find all installed ICC profiles.</p>" );
-   RefreshProfiles_PushButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__RefreshProfiles_ButtonClick, w );
+   RefreshProfiles_PushButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    LoadCurrentSettings_PushButton.SetText( "Load Current Settings" );
    LoadCurrentSettings_PushButton.SetToolTip(
       "<p>Load this window with the current global color management settings.</p>" );
-   LoadCurrentSettings_PushButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::__LoadCurrentSettings_ButtonClick, w );
+   LoadCurrentSettings_PushButton.OnClick( (Button::click_event_handler)&ColorManagementSetupInterface::e_ButtonClick, w );
 
    GlobalActions_Sizer.Add( RefreshProfiles_PushButton );
    GlobalActions_Sizer.AddStretch();
@@ -925,4 +914,4 @@ ColorManagementSetupInterface::GUIData::GUIData( ColorManagementSetupInterface& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInterface.cpp - Released 2020-12-12T20:51:40Z
+// EOF ColorManagementSetupInterface.cpp - Released 2020-12-15T18:51:35Z

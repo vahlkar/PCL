@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.8
 // ----------------------------------------------------------------------------
-// FITSInstance.h - Released 2020-12-12T20:51:52Z
+// FITSInstance.h - Released 2020-12-15T18:51:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -87,7 +87,7 @@ public:
    ICCProfile ReadICCProfile() override;
    UInt8Image ReadThumbnail() override;
    FITSKeywordArray ReadFITSKeywords() override;
-   PropertyDescriptionArray ImageProperties() override;
+   PropertyDescriptionArray ImagePropertyDescriptions() override;
    Variant ReadImageProperty( const IsoString& property ) override;
 
    void ReadImage( Image& ) override;
@@ -145,4 +145,4 @@ private:
 #endif   // __FITSInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.h - Released 2020-12-12T20:51:52Z
+// EOF FITSInstance.h - Released 2020-12-15T18:51:24Z

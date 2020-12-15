@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.8
 // ----------------------------------------------------------------------------
-// FITSInstance.cpp - Released 2020-12-12T20:51:52Z
+// FITSInstance.cpp - Released 2020-12-15T18:51:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -350,9 +350,9 @@ FITSKeywordArray FITSInstance::ReadFITSKeywords()
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray FITSInstance::ImageProperties()
+PropertyDescriptionArray FITSInstance::ImagePropertyDescriptions()
 {
-   CheckOpenStream( m_reader, "ImageProperties" );
+   CheckOpenStream( m_reader, "ImagePropertyDescriptions" );
    PropertyDescriptionArray properties;
    if ( !m_readHints || !m_readHints->noProperties )
    {
@@ -995,4 +995,4 @@ void FITSInstance::CloseImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITSInstance.cpp - Released 2020-12-12T20:51:52Z
+// EOF FITSInstance.cpp - Released 2020-12-15T18:51:24Z

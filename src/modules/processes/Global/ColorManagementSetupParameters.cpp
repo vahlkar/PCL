@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.2.9
+// Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ColorManagementSetupParameters.cpp - Released 2020-12-12T20:51:40Z
+// ColorManagementSetupParameters.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -57,22 +57,23 @@ namespace pcl
 
 // ----------------------------------------------------------------------------
 
-CMSEnabled*                               TheCMSEnabledParameter = 0;
-CMSUpdateMonitorProfile*                  TheCMSUpdateMonitorProfileParameter = 0;
-CMSDefaultRGBProfile*                     TheCMSDefaultRGBProfileParameter = 0;
-CMSDefaultGrayProfile*                    TheCMSDefaultGrayProfileParameter = 0;
-CMSDefaultRenderingIntent*                TheCMSDefaultRenderingIntentParameter = 0;
-CMSOnProfileMismatch*                     TheCMSOnProfileMismatchParameter = 0;
-CMSOnMissingProfile*                      TheCMSOnMissingProfileParameter = 0;
-CMSDefaultEmbedProfilesInRGBImages*       TheCMSDefaultEmbedProfilesInRGBImagesParameter = 0;
-CMSDefaultEmbedProfilesInGrayscaleImages* TheCMSDefaultEmbedProfilesInGrayscaleImagesParameter = 0;
-CMSUseLowResolutionCLUTs*                 TheCMSUseLowResolutionCLUTsParameter = 0;
-CMSProofingProfile*                       TheCMSProofingProfileParameter = 0;
-CMSProofingIntent*                        TheCMSProofingIntentParameter = 0;
-CMSUseProofingBPC*                        TheCMSUseProofingBPCParameter = 0;
-CMSDefaultProofingEnabled*                TheCMSDefaultProofingEnabledParameter = 0;
-CMSDefaultGamutCheckEnabled*              TheCMSDefaultGamutCheckEnabledParameter = 0;
-CMSGamutWarningColor*                     TheCMSGamutWarningColorParameter = 0;
+CMSEnabled*                               TheCMSEnabledParameter = nullptr;
+CMSDetectMonitorProfile*                  TheCMSDetectMonitorProfileParameter = nullptr;
+CMSUpdateMonitorProfile*                  TheCMSUpdateMonitorProfileParameter = nullptr;
+CMSDefaultRGBProfile*                     TheCMSDefaultRGBProfileParameter = nullptr;
+CMSDefaultGrayProfile*                    TheCMSDefaultGrayProfileParameter = nullptr;
+CMSDefaultRenderingIntent*                TheCMSDefaultRenderingIntentParameter = nullptr;
+CMSOnProfileMismatch*                     TheCMSOnProfileMismatchParameter = nullptr;
+CMSOnMissingProfile*                      TheCMSOnMissingProfileParameter = nullptr;
+CMSDefaultEmbedProfilesInRGBImages*       TheCMSDefaultEmbedProfilesInRGBImagesParameter = nullptr;
+CMSDefaultEmbedProfilesInGrayscaleImages* TheCMSDefaultEmbedProfilesInGrayscaleImagesParameter = nullptr;
+CMSUseLowResolutionCLUTs*                 TheCMSUseLowResolutionCLUTsParameter = nullptr;
+CMSProofingProfile*                       TheCMSProofingProfileParameter = nullptr;
+CMSProofingIntent*                        TheCMSProofingIntentParameter = nullptr;
+CMSUseProofingBPC*                        TheCMSUseProofingBPCParameter = nullptr;
+CMSDefaultProofingEnabled*                TheCMSDefaultProofingEnabledParameter = nullptr;
+CMSDefaultGamutCheckEnabled*              TheCMSDefaultGamutCheckEnabledParameter = nullptr;
+CMSGamutWarningColor*                     TheCMSGamutWarningColorParameter = nullptr;
 
 // ----------------------------------------------------------------------------
 
@@ -116,6 +117,23 @@ IsoString CMSEnabled::Id() const
 }
 
 bool CMSEnabled::DefaultValue() const
+{
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
+CMSDetectMonitorProfile::CMSDetectMonitorProfile( MetaProcess* P ) : MetaBoolean( P )
+{
+   TheCMSDetectMonitorProfileParameter = this;
+}
+
+IsoString CMSDetectMonitorProfile::Id() const
+{
+   return "detectMonitorProfile";
+}
+
+bool CMSDetectMonitorProfile::DefaultValue() const
 {
    return true;
 }
@@ -300,7 +318,7 @@ IsoString CMSUseLowResolutionCLUTs::Id() const
 
 bool CMSUseLowResolutionCLUTs::DefaultValue() const
 {
-   return true;
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -405,4 +423,4 @@ double CMSGamutWarningColor::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupParameters.cpp - Released 2020-12-12T20:51:40Z
+// EOF ColorManagementSetupParameters.cpp - Released 2020-12-15T18:51:35Z

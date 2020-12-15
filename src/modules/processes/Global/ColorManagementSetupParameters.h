@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.2.9
+// Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ColorManagementSetupParameters.h - Released 2020-12-12T20:51:40Z
+// ColorManagementSetupParameters.h - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -93,11 +93,24 @@ public:
    CMSEnabled( MetaProcess* );
 
    IsoString Id() const override;
-
    bool DefaultValue() const override;
 };
 
 extern CMSEnabled* TheCMSEnabledParameter;
+
+// ----------------------------------------------------------------------------
+
+class CMSDetectMonitorProfile : public MetaBoolean
+{
+public:
+
+   CMSDetectMonitorProfile( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern CMSDetectMonitorProfile* TheCMSDetectMonitorProfileParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -147,7 +160,6 @@ public:
    CMSDefaultRenderingIntent( MetaProcess* );
 
    IsoString Id() const override;
-
    size_type DefaultValueIndex() const override;
 };
 
@@ -170,7 +182,6 @@ public:
    CMSOnProfileMismatch( MetaProcess* );
 
    IsoString Id() const override;
-
    size_type NumberOfElements() const override;
    IsoString ElementId( size_type ) const override;
    int ElementValue( size_type ) const override;
@@ -195,7 +206,6 @@ public:
    CMSOnMissingProfile( MetaProcess* );
 
    IsoString Id() const override;
-
    size_type NumberOfElements() const override;
    IsoString ElementId( size_type ) const override;
    int ElementValue( size_type ) const override;
@@ -213,7 +223,6 @@ public:
    CMSDefaultEmbedProfilesInRGBImages( MetaProcess* );
 
    IsoString Id() const override;
-
    bool DefaultValue() const override;
 };
 
@@ -228,7 +237,6 @@ public:
    CMSDefaultEmbedProfilesInGrayscaleImages( MetaProcess* );
 
    IsoString Id() const override;
-
    bool DefaultValue() const override;
 };
 
@@ -243,7 +251,6 @@ public:
    CMSUseLowResolutionCLUTs( MetaProcess* );
 
    IsoString Id() const override;
-
    bool DefaultValue() const override;
 };
 
@@ -271,7 +278,6 @@ public:
    CMSProofingIntent( MetaProcess* );
 
    IsoString Id() const override;
-
    size_type DefaultValueIndex() const override;
 };
 
@@ -286,7 +292,6 @@ public:
    CMSUseProofingBPC( MetaProcess* );
 
    IsoString Id() const override;
-
    bool DefaultValue() const override;
 };
 
@@ -301,7 +306,6 @@ public:
    CMSDefaultProofingEnabled( MetaProcess* );
 
    IsoString Id() const override;
-
    bool DefaultValue() const override;
 };
 
@@ -316,7 +320,6 @@ public:
    CMSDefaultGamutCheckEnabled( MetaProcess* );
 
    IsoString Id() const override;
-
    bool DefaultValue() const override;
 };
 
@@ -331,7 +334,6 @@ public:
    CMSGamutWarningColor( MetaProcess* );
 
    IsoString Id() const override;
-
    double DefaultValue() const override;
 };
 
@@ -346,4 +348,4 @@ PCL_END_LOCAL
 #endif   // __ColorManagementSetupParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupParameters.h - Released 2020-12-12T20:51:40Z
+// EOF ColorManagementSetupParameters.h - Released 2020-12-15T18:51:35Z

@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// DynamicCropInstance.h - Released 2020-12-12T20:51:40Z
+// DynamicCropInstance.h - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -108,4 +108,4 @@ private:
 #endif   // __DynamicCropInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropInstance.h - Released 2020-12-12T20:51:40Z
+// EOF DynamicCropInstance.h - Released 2020-12-15T18:51:35Z

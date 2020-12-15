@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.6
 // ----------------------------------------------------------------------------
-// RawInstance.h - Released 2020-12-12T20:51:52Z
+// RawInstance.h - Released 2020-12-15T18:51:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -91,7 +91,7 @@ public:
    // We synthesize critical FITS keywords: TIME-OBS, EXPTIME, FOCALLEN, APTDIA
    FITSKeywordArray ReadFITSKeywords() override;
 
-   PropertyDescriptionArray ImageProperties() override;
+   PropertyDescriptionArray ImagePropertyDescriptions() override;
    Variant ReadImageProperty( const IsoString& property ) override;
 
    void ReadImage( Image& ) override;
@@ -147,4 +147,4 @@ private:
 #endif   // __RawInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.h - Released 2020-12-12T20:51:52Z
+// EOF RawInstance.h - Released 2020-12-15T18:51:24Z

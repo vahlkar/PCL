@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard Global Process Module Version 1.2.9
+// Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInterface.h - Released 2020-12-12T20:51:40Z
+// ColorManagementSetupInterface.h - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -100,7 +100,7 @@ private:
 
    ICCProfile::profile_list rgbProfiles;      // RGB only
    ICCProfile::profile_list grayProfiles;     // RGB and grayscale only
-   ICCProfile::profile_list proofingProfiles; // any color space
+   ICCProfile::profile_list p_proofingProfiles; // any color space
 
    struct GUIData
    {
@@ -120,6 +120,8 @@ private:
       SectionBar        SystemSettings_SectionBar;
       Control           SystemSettings_Control;
       VerticalSizer     SystemSettings_Sizer;
+         HorizontalSizer   DetectMonitorProfile_Sizer;
+            CheckBox          DetectMonitorProfile_CheckBox;
          GroupBox          NewMonitorProfile_GroupBox;
          VerticalSizer     NewMonitorProfile_Sizer;
             Edit              NewMonitorProfile_Edit;
@@ -195,18 +197,12 @@ private:
    void UpdateControls();
    void RefreshProfiles();
 
-   void __RenderingIntent_ItemSelected( ComboBox& sender, int itemIndex );
-   void __Profile_ItemSelected( ComboBox& sender, int itemIndex );
-   void __Profile_EditCompleted( Edit& );
-   void __OnProfileMismatch_ButtonClick( Button& sender, bool checked );
-   void __OnMissingProfile_ButtonClick( Button& sender, bool checked );
-   void __ProofingOptions_ButtonClick( Button& sender, bool checked );
-   void __ColorSelected( ColorComboBox& sender, RGBA color );
-   void __ColorSample_Paint( Control& sender, const Rect& updateRect );
-   void __ColorSample_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers );
-   void __GlobalOptions_ButtonClick( Button& sender, bool checked );
-   void __RefreshProfiles_ButtonClick( Button& sender, bool checked );
-   void __LoadCurrentSettings_ButtonClick( Button& sender, bool checked );
+   void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_EditCompleted( Edit& );
+   void e_ButtonClick( Button& sender, bool checked );
+   void e_ColorSelected( ColorComboBox& sender, RGBA color );
+   void e_Paint( Control& sender, const Rect& updateRect );
+   void e_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers );
 
    friend struct GUIData;
 };
@@ -224,4 +220,4 @@ PCL_END_LOCAL
 #endif   // __ColorManagementSetupInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInterface.h - Released 2020-12-12T20:51:40Z
+// EOF ColorManagementSetupInterface.h - Released 2020-12-15T18:51:35Z

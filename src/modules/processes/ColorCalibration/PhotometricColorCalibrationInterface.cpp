@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInterface.cpp - Released 2020-12-12T20:51:40Z
+// PhotometricColorCalibrationInterface.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -436,7 +436,7 @@ void PhotometricColorCalibrationInterface::AcquireMetadata( const ImageWindow& w
    if ( window.IsNull() )
       return;
 
-   WCSKeywords wcs( window.MainView().GetStorableProperties(), window.Keywords() );
+   WCSKeywords wcs( window.MainView().StorableProperties(), window.Keywords() );
 
    IsoStringList foundItems;
    if ( wcs.objctra.IsDefined() )
@@ -2093,4 +2093,4 @@ PhotometricColorCalibrationInterface::GUIData::GUIData( PhotometricColorCalibrat
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-12-12T20:51:40Z
+// EOF PhotometricColorCalibrationInterface.cpp - Released 2020-12-15T18:51:35Z

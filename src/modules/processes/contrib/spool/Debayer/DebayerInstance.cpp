@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2020-12-12T20:51:41Z
+// DebayerInstance.cpp - Released 2020-12-15T18:51:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -2659,15 +2659,15 @@ bool DebayerInstance::ExecuteOn( View& view )
       DebayerEngine( output, *this, bayerPattern ).Debayer( source );
    }
 
-   outputWindow.MainView().SetStorableProperties( view.GetStorableProperties(), false/*notify*/ );
+   outputWindow.MainView().SetStorablePermanentProperties( view.StorablePermanentProperties(), false/*notify*/ );
 
    String cfaSourceFilePath = p_cfaSourceFilePath.Trimmed();
    if ( cfaSourceFilePath.IsEmpty() )
       cfaSourceFilePath = view.Window().FilePath();
    if ( !cfaSourceFilePath.IsEmpty() )
-      outputWindow.MainView().SetStorablePropertyValue( "PCL:CFASourceFilePath", cfaSourceFilePath, false/*notify*/ );
-   outputWindow.MainView().SetStorablePropertyValue( "PCL:CFASourcePattern", patternId, false/*notify*/ );
-   outputWindow.MainView().SetStorablePropertyValue( "PCL:CFASourceInterpolation", methodId, false/*notify*/ );
+      outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourceFilePath", cfaSourceFilePath, false/*notify*/ );
+   outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourcePattern", patternId, false/*notify*/ );
+   outputWindow.MainView().SetStorablePermanentPropertyValue( "PCL:CFASourceInterpolation", methodId, false/*notify*/ );
 
    FITSKeywordArray keywords;
    view.Window().GetKeywords( keywords );
@@ -3626,4 +3626,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2020-12-12T20:51:41Z
+// EOF DebayerInstance.cpp - Released 2020-12-15T18:51:35Z

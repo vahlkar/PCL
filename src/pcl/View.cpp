@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/View.cpp - Released 2020-12-12T20:51:19Z
+// pcl/View.cpp - Released 2020-12-15T18:51:12Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -389,7 +389,7 @@ static api_bool APIPropertyEnumerationCallback( const char* id, uint64 type, voi
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray View::Properties() const
+PropertyDescriptionArray View::PropertyDescriptions() const
 {
    PropertyDescriptionArray properties;
    IsoString id;
@@ -407,9 +407,9 @@ PropertyDescriptionArray View::Properties() const
 
 // ----------------------------------------------------------------------------
 
-PropertyArray View::GetProperties() const
+PropertyArray View::Properties() const
 {
-   PropertyDescriptionArray descriptions = Properties();
+   PropertyDescriptionArray descriptions = PropertyDescriptions();
    PropertyArray properties;
    for ( const PropertyDescription& description : descriptions )
    {
@@ -423,9 +423,9 @@ PropertyArray View::GetProperties() const
 
 // ----------------------------------------------------------------------------
 
-PropertyArray View::GetStorableProperties() const
+PropertyArray View::StorableProperties() const
 {
-   PropertyDescriptionArray descriptions = Properties();
+   PropertyDescriptionArray descriptions = PropertyDescriptions();
    PropertyArray properties;
    for ( const PropertyDescription& description : descriptions )
    {
@@ -439,6 +439,51 @@ PropertyArray View::GetStorableProperties() const
             throw APIFunctionError( "GetViewPropertyValue" );
          properties << Property( description.id, VariantFromAPIPropertyValue( value ) );
       }
+   }
+   return properties;
+}
+
+// ----------------------------------------------------------------------------
+
+PropertyArray View::PermanentProperties() const
+{
+   PropertyDescriptionArray descriptions = PropertyDescriptions();
+   PropertyArray properties;
+   for ( const PropertyDescription& description : descriptions )
+   {
+      uint32 flags = 0;
+      if ( (*API->View->GetViewPropertyAttributes)( ModuleHandle(), handle, description.id.c_str(), &flags, 0/*type*/ ) == api_false )
+         throw APIFunctionError( "GetViewPropertyAttributes" );
+      if ( flags & ViewPropertyAttribute::Permanent )
+      {
+         api_property_value value;
+         if ( (*API->View->GetViewPropertyValue)( ModuleHandle(), handle, description.id.c_str(), &value ) == api_false )
+            throw APIFunctionError( "GetViewPropertyValue" );
+         properties << Property( description.id, VariantFromAPIPropertyValue( value ) );
+      }
+   }
+   return properties;
+}
+
+// ----------------------------------------------------------------------------
+
+PropertyArray View::StorablePermanentProperties() const
+{
+   PropertyDescriptionArray descriptions = PropertyDescriptions();
+   PropertyArray properties;
+   for ( const PropertyDescription& description : descriptions )
+   {
+      uint32 flags = 0;
+      if ( (*API->View->GetViewPropertyAttributes)( ModuleHandle(), handle, description.id.c_str(), &flags, 0/*type*/ ) == api_false )
+         throw APIFunctionError( "GetViewPropertyAttributes" );
+      if ( flags & ViewPropertyAttribute::Storable )
+         if ( flags & ViewPropertyAttribute::Permanent )
+         {
+            api_property_value value;
+            if ( (*API->View->GetViewPropertyValue)( ModuleHandle(), handle, description.id.c_str(), &value ) == api_false )
+               throw APIFunctionError( "GetViewPropertyValue" );
+            properties << Property( description.id, VariantFromAPIPropertyValue( value ) );
+         }
    }
    return properties;
 }
@@ -573,4 +618,4 @@ Array<View> View::AllPreviews()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/View.cpp - Released 2020-12-12T20:51:19Z
+// EOF pcl/View.cpp - Released 2020-12-15T18:51:12Z

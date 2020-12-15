@@ -2,11 +2,11 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.6
 // ----------------------------------------------------------------------------
-// RawInstance.cpp - Released 2020-12-12T20:51:52Z
+// RawInstance.cpp - Released 2020-12-15T18:51:24Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -1045,9 +1045,9 @@ FITSKeywordArray RawInstance::ReadFITSKeywords()
 
 // ----------------------------------------------------------------------------
 
-PropertyDescriptionArray RawInstance::ImageProperties()
+PropertyDescriptionArray RawInstance::ImagePropertyDescriptions()
 {
-   CheckOpenStream( "ImageProperties" );
+   CheckOpenStream( "ImagePropertyDescriptions" );
 
    PropertyDescriptionArray descriptions;
    if ( !m_cfaPattern.IsEmpty() )
@@ -1611,4 +1611,4 @@ UInt8Image RawInstance::ReadThumbnail()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawInstance.cpp - Released 2020-12-12T20:51:52Z
+// EOF RawInstance.cpp - Released 2020-12-15T18:51:24Z

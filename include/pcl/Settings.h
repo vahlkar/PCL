@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/Settings.h - Released 2020-12-12T20:51:09Z
+// pcl/Settings.h - Released 2020-12-15T18:51:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -893,4 +893,4 @@ public:
 #endif   // __PCL_Settings_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Settings.h - Released 2020-12-12T20:51:09Z
+// EOF pcl/Settings.h - Released 2020-12-15T18:51:06Z

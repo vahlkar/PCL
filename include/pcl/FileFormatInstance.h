@@ -2,9 +2,9 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 2.4.5
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/FileFormatInstance.h - Released 2020-12-12T20:51:09Z
+// pcl/FileFormatInstance.h - Released 2020-12-15T18:51:06Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -361,12 +361,12 @@ public:
     * instances of file formats supporting data properties. See
     * FileFormat::CanStoreProperties().
     *
-    * \note Don't confuse this member function with ImageProperties(). This
+    * \note Don't confuse this member function with ImagePropertyDescriptions(). This
     * function returns information on the properties of the \e whole file,
-    * while %ImageProperties() returns information on the properties of the
+    * while %ImagePropertyDescriptions() returns information on the properties of the
     * currently selected image.
     */
-   PropertyDescriptionArray Properties();
+   PropertyDescriptionArray PropertyDescriptions();
 
    /*!
     * Returns true iff the specified property exists associated with this file.
@@ -374,7 +374,7 @@ public:
     *
     * This is a convenience member function, equivalent to the following code:
     *
-    * \code Properties().Contains( property ); \endcode
+    * \code PropertyDescriptions().Contains( property ); \endcode
     *
     * To prevent runtime errors, you should only call this member function for
     * instances of file formats supporting data properties. See
@@ -387,7 +387,7 @@ public:
     */
    bool HasProperty( const IsoString& property )
    {
-      return Properties().Contains( property );
+      return PropertyDescriptions().Contains( property );
    }
 
    bool HasProperty( const IsoString::ustring_base& property )
@@ -412,7 +412,7 @@ public:
     */
    pcl::PropertyDescription PropertyDescription( const IsoString& property )
    {
-      PropertyDescriptionArray properties = Properties();
+      PropertyDescriptionArray properties = PropertyDescriptions();
       PropertyDescriptionArray::const_iterator i = properties.Search( property );
       if ( i == properties.End() )
          return pcl::PropertyDescription();
@@ -476,7 +476,7 @@ public:
     * instances of file formats supporting data properties for individual
     * images. See FileFormat::CanStoreImageProperties().
     */
-   PropertyDescriptionArray ImageProperties();
+   PropertyDescriptionArray ImagePropertyDescriptions();
 
    /*!
     * Returns true iff the specified property exists associated with the
@@ -484,7 +484,7 @@ public:
     *
     * This is a convenience member function, equivalent to the following code:
     *
-    * \code ImageProperties().Contains( property ); \endcode
+    * \code ImagePropertyDescriptions().Contains( property ); \endcode
     *
     * To prevent runtime errors, you should only call this member function for
     * instances of file formats supporting data properties for individual
@@ -492,7 +492,7 @@ public:
     */
    bool HasImageProperty( const IsoString& property )
    {
-      return ImageProperties().Contains( property );
+      return ImagePropertyDescriptions().Contains( property );
    }
 
    bool HasImageProperty( const IsoString::ustring_base& property )
@@ -512,7 +512,7 @@ public:
     */
    pcl::PropertyDescription ImagePropertyDescription( const IsoString& property )
    {
-      PropertyDescriptionArray properties = ImageProperties();
+      PropertyDescriptionArray properties = ImagePropertyDescriptions();
       PropertyDescriptionArray::const_iterator i = properties.Search( property );
       if ( i == properties.End() )
          return pcl::PropertyDescription();
@@ -1177,4 +1177,4 @@ private:
 #endif   // __PCL_FileFormatInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FileFormatInstance.h - Released 2020-12-12T20:51:09Z
+// EOF pcl/FileFormatInstance.h - Released 2020-12-15T18:51:06Z
