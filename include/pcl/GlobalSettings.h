@@ -231,6 +231,8 @@ namespace GlobalVariableType
  * <tr><td>Process/MaxConsoleLines</td><td>Maximum number of stored text lines on %Process %Console.</td></tr>
  * <tr><td>Process/MaxModuleThreadPriority</td><td>From 0=idle to 7=real-time.</td></tr>
  * <tr><td>Process/MaxProcessors</td><td>Maximum number of processor cores allowed for installed modules.</td></tr>
+ * <tr><td>Process/MaxFileReadThreads</td><td>Maximum number of concurrent file reading threads.</td></tr>
+ * <tr><td>Process/MaxFileWriteThreads</td><td>Maximum number of concurrent file writing threads.</td></tr>
  * <tr><td>Process/MaxUsageListLength</td><td>Maximum length of the <em>Recently Used</em> and <em>Most Used</em> lists on %Process %Explorer.</td></tr>
  * <tr><td>System/NumberOfProcessors</td><td>Total number of processor cores available. Read-only.</td></tr>
  * <tr><td>TransparencyBrush/Brush</td><td>See the pcl::BackgroundBrush namespace.</td></tr>
