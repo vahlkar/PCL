@@ -271,7 +271,15 @@ public:
       if ( Metadata().databaseIdentifier == "GaiaEDR3" )
          m_dr = "EDR3";
       else if ( Metadata().databaseIdentifier == "GaiaDR2" )
+      {
          m_dr = "DR2";
+         StringList tokens;
+         Metadata().databaseVersion.Break( tokens, '.' );
+         // Make sure we reject an unsupported DR2 version older than 1.0.2
+         if ( tokens.Length() < 3 || tokens[0].ToInt() < 1 || tokens[1].ToInt() < 0 || tokens[2].ToInt() < 2 )
+            throw Error( "Unsupported Gaia DR2 database version '"
+                        + Metadata().databaseVersion  + "': " + filePath );
+      }
       else
          throw Error( "Invalid or unsupported Gaia database file with unknown identifier '"
                      + Metadata().databaseIdentifier  + "': " + filePath );
