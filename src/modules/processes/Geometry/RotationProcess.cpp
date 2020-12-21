@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// RotationProcess.cpp - Released 2020-12-15T18:51:35Z
+// RotationProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -142,4 +142,4 @@ ProcessImplementation* RotationProcess::Clone( const ProcessImplementation& p ) 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF RotationProcess.cpp - Released 2020-12-17T15:46:55Z

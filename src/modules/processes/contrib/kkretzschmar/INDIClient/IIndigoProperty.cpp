@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// IIndigoProperty.cpp - Released 2020-12-15T18:51:35Z
+// IIndigoProperty.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -278,4 +278,4 @@ IProperty* PropertyFactory::Create( indigo_property* property )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF IIndigoProperty.cpp - Released 2020-12-15T18:51:35Z
+// EOF IIndigoProperty.cpp - Released 2020-12-17T15:46:56Z

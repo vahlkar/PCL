@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// DynamicCropProcess.cpp - Released 2020-12-15T18:51:35Z
+// DynamicCropProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -189,4 +189,4 @@ ProcessImplementation* DynamicCropProcess::Clone( const ProcessImplementation& p
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF DynamicCropProcess.cpp - Released 2020-12-17T15:46:55Z

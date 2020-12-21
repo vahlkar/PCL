@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// DynamicCropParameters.h - Released 2020-12-15T18:51:35Z
+// DynamicCropParameters.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -183,4 +183,4 @@ PCL_END_LOCAL
 #endif   // __DynamicCropParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicCropParameters.h - Released 2020-12-15T18:51:35Z
+// EOF DynamicCropParameters.h - Released 2020-12-17T15:46:55Z

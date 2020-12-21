@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Morphology Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StructureManagerDialog.h - Released 2020-12-15T18:51:35Z
+// StructureManagerDialog.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Morphology PixInsight module.
 //
@@ -121,4 +121,4 @@ private:
 #endif   // __StructureManagerDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF StructureManagerDialog.h - Released 2020-12-15T18:51:35Z
+// EOF StructureManagerDialog.h - Released 2020-12-17T15:46:55Z

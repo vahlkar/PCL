@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/FFTConvolution.h - Released 2020-12-15T18:51:06Z
+// pcl/FFTConvolution.h - Released 2020-12-17T15:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -341,7 +341,23 @@ public:
     */
    static constexpr int FasterThanNonseparableFilterSize( int numThreads )
    {
-#ifdef __PCL_AVX2
+#ifdef __PCL_COMPATIBILITY
+
+      // No vectorization
+
+      if ( numThreads >= 32 )
+         return 17;
+      if ( numThreads >= 24 )
+         return 15;
+      if ( numThreads >= 12 )
+         return 13;
+      if ( numThreads >= 8 )
+         return 11;
+      return 9;
+
+#else
+
+      // Vectorization with SSE4.2 / AVX2 and FMA instructions
 
       if ( numThreads >= 32 )
          return 29;
@@ -358,18 +374,6 @@ public:
       if ( numThreads >= 2 )
          return 15;
       return 13;
-
-#else
-
-      if ( numThreads >= 32 )
-         return 17;
-      if ( numThreads >= 24 )
-         return 15;
-      if ( numThreads >= 12 )
-         return 13;
-      if ( numThreads >= 8 )
-         return 11;
-      return 9;
 
 #endif
    }
@@ -388,17 +392,9 @@ public:
     */
    static constexpr int FasterThanSeparableFilterSize( int numThreads )
    {
-#ifdef __PCL_AVX2
+#ifdef __PCL_COMPATIBILITY
 
-      if ( numThreads >= 16 )
-         return 901;
-      if ( numThreads >= 12 )
-         return 831;
-      if ( numThreads >= 8 )
-         return 741;
-      return 395;
-
-#else
+      // No vectorization
 
       if ( numThreads >= 24 )
          return 191;
@@ -411,6 +407,18 @@ public:
       if ( numThreads >= 4 )
          return 75;
       return 61;
+
+#else
+
+      // Vectorization with SSE4.2 / AVX2 and FMA instructions
+
+      if ( numThreads >= 16 )
+         return 901;
+      if ( numThreads >= 12 )
+         return 831;
+      if ( numThreads >= 8 )
+         return 741;
+      return 395;
 
 #endif
    }
@@ -466,4 +474,4 @@ private:
 #endif   // __PCL_FFTConvolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/FFTConvolution.h - Released 2020-12-15T18:51:06Z
+// EOF pcl/FFTConvolution.h - Released 2020-12-17T15:46:29Z

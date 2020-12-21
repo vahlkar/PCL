@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesParameters.cpp - Released 2020-12-15T18:51:35Z
+// PreferencesParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -211,6 +211,8 @@ IMPLEMENT_BOOLEAN_METAPARAMETER ( Process, enableParallelModuleProcessing )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( Process, enableThreadCPUAffinity )
 IMPLEMENT_INT32_METAPARAMETER   ( Process, maxModuleThreadPriority )
 IMPLEMENT_INT32_METAPARAMETER   ( Process, maxProcessors )
+IMPLEMENT_INT32_METAPARAMETER   ( Process, maxFileReadThreads )
+IMPLEMENT_INT32_METAPARAMETER   ( Process, maxFileWriteThreads )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( Process, enableCUDAAcceleration )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( Process, initCUDARuntimeAtStartup )
 IMPLEMENT_BOOLEAN_METAPARAMETER ( Process, backupFiles )
@@ -227,4 +229,4 @@ IMPLEMENT_BOOLEAN_METAPARAMETER ( Process, enableLaunchStatistics )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF PreferencesParameters.cpp - Released 2020-12-17T15:46:55Z

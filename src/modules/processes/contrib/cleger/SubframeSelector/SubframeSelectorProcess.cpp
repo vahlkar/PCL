@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorProcess.cpp - Released 2020-12-15T18:51:35Z
+// SubframeSelectorProcess.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -210,4 +210,4 @@ ProcessImplementation* SubframeSelectorProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF SubframeSelectorProcess.cpp - Released 2020-12-17T15:46:56Z

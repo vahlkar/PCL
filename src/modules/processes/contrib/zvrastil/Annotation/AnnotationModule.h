@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Annotation Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AnnotationModule.h - Released 2020-12-15T18:51:35Z
+// AnnotationModule.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Annotation PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif // __AnnotationModule_h
 
 // ----------------------------------------------------------------------------
-// EOF AnnotationModule.h - Released 2020-12-15T18:51:35Z
+// EOF AnnotationModule.h - Released 2020-12-17T15:46:56Z

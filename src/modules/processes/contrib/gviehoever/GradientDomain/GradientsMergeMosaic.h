@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsMergeMosaic.h - Released 2020-12-15T18:51:35Z
+// GradientsMergeMosaic.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -157,4 +157,4 @@ private: // member functions
 #endif // __GradientsMergeMosaic_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsMergeMosaic.h - Released 2020-12-15T18:51:35Z
+// EOF GradientsMergeMosaic.h - Released 2020-12-17T15:46:56Z

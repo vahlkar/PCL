@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard BMP File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// BMPInstance.cpp - Released 2020-12-15T18:51:24Z
+// BMPInstance.cpp - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard BMP PixInsight module.
 //
@@ -284,4 +284,4 @@ void BitmapInstance::WriteImage( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BMPInstance.cpp - Released 2020-12-15T18:51:24Z
+// EOF BMPInstance.cpp - Released 2020-12-17T15:46:44Z

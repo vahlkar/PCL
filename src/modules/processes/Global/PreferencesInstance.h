@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesInstance.h - Released 2020-12-15T18:51:35Z
+// PreferencesInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -225,6 +225,8 @@ struct ProcessPreferences
    pcl_bool    enableThreadCPUAffinity;
    int32       maxModuleThreadPriority;
    int32       maxProcessors;
+   int32       maxFileReadThreads;
+   int32       maxFileWriteThreads;
    pcl_bool    enableCUDAAcceleration;
    pcl_bool    initCUDARuntimeAtStartup;
    pcl_bool    backupFiles; // for PSM files
@@ -295,4 +297,4 @@ private:
 #endif   // __PreferencesInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInstance.h - Released 2020-12-15T18:51:35Z
+// EOF PreferencesInstance.h - Released 2020-12-17T15:46:55Z

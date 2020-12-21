@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// Data.cpp - Released 2020-12-15T18:51:35Z
+// Data.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -259,4 +259,4 @@ void ImageReference::InitInterpolators( PixelInterpolation* interpolation )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Data.cpp - Released 2020-12-15T18:51:35Z
+// EOF Data.cpp - Released 2020-12-17T15:46:55Z

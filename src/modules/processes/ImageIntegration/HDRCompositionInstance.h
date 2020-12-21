@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// HDRCompositionInstance.h - Released 2020-12-15T18:51:35Z
+// HDRCompositionInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -140,4 +140,4 @@ private:
 #endif   // __HDRCompositionInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInstance.h - Released 2020-12-15T18:51:35Z
+// EOF HDRCompositionInstance.h - Released 2020-12-17T15:46:55Z

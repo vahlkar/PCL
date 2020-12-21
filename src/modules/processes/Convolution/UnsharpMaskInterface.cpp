@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInterface.cpp - Released 2020-12-15T18:51:35Z
+// UnsharpMaskInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -627,4 +627,4 @@ UnsharpMaskInterface::GUIData::GUIData( UnsharpMaskInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF UnsharpMaskInterface.cpp - Released 2020-12-17T15:46:55Z

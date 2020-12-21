@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// GnomonicProjection.h - Released 2020-12-15T18:51:35Z
+// GnomonicProjection.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -112,4 +112,4 @@ private:
 #endif   // __GnomonicProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF GnomonicProjection.h - Released 2020-12-15T18:51:35Z
+// EOF GnomonicProjection.h - Released 2020-12-17T15:46:56Z

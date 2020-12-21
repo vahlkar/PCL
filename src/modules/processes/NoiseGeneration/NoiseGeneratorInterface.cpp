@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorInterface.cpp - Released 2020-12-15T18:51:35Z
+// NoiseGeneratorInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -261,4 +261,4 @@ NoiseGeneratorInterface::GUIData::GUIData( NoiseGeneratorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF NoiseGeneratorInterface.cpp - Released 2020-12-17T15:46:55Z

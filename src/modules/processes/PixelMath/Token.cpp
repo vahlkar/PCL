@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// Token.cpp - Released 2020-12-15T18:51:35Z
+// Token.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -255,4 +255,4 @@ void Tokenize( token_set& t, const String& s )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Token.cpp - Released 2020-12-15T18:51:35Z
+// EOF Token.cpp - Released 2020-12-17T15:46:55Z

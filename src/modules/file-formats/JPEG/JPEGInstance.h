@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGInstance.h - Released 2020-12-15T18:51:24Z
+// JPEGInstance.h - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -118,4 +118,4 @@ private:
 #endif   // __JPEGInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEGInstance.h - Released 2020-12-15T18:51:24Z
+// EOF JPEGInstance.h - Released 2020-12-17T15:46:44Z

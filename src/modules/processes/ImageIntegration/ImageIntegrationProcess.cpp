@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationProcess.cpp - Released 2020-12-15T18:51:35Z
+// ImageIntegrationProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -251,4 +251,4 @@ ProcessImplementation* ImageIntegrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF ImageIntegrationProcess.cpp - Released 2020-12-17T15:46:55Z

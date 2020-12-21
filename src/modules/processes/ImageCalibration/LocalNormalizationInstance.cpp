@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.cpp - Released 2020-12-15T18:51:35Z
+// LocalNormalizationInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -1098,7 +1098,7 @@ private:
                                        false/*isComplex*/,
                                        images[0].options.bitsPerSample );
       {
-         volatile AutoLockCounter lock( mutex, count, m_instance.p_maxFileReadThreads );
+         volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileReadThreads );
          if ( !file.ReadImage( m_targetImage ) )
             throw CaughtException();
          m_fileData = OutputFileData( file, images[0].options );
@@ -1155,7 +1155,7 @@ private:
          data.SetReferenceDimensions( m_referenceImage.Width(), m_referenceImage.Height() );
          data.SetNormalizationMatrices( m_A1, m_A0 );
          {
-            volatile AutoLockCounter lock( mutex, count, m_instance.p_maxFileWriteThreads );
+            volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
             data.SerializeToFile( xnmlFilePath );
          }
       }
@@ -1244,7 +1244,7 @@ private:
          Module->ProcessEvents();
 
          {
-            volatile AutoLockCounter lock( mutex, count, m_instance.p_maxFileWriteThreads );
+            volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
             if ( !outputFile.WriteImage( m_targetImage ) || !outputFile.Close() )
                throw CaughtException();
          }
@@ -1342,6 +1342,14 @@ bool LocalNormalizationInstance::ExecuteOn( View& view )
          throw Error( why );
    }
 
+   m_maxFileReadThreads = p_maxFileReadThreads;
+   if ( m_maxFileReadThreads < 1 )
+      m_maxFileReadThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
+
+   m_maxFileWriteThreads = p_maxFileWriteThreads;
+   if ( m_maxFileWriteThreads < 1 )
+      m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
+
    Console console;
 
    View referenceView = View::Null();
@@ -1432,6 +1440,14 @@ bool LocalNormalizationInstance::ExecuteGlobal()
       if ( !CanExecuteGlobal( why ) )
          throw Error( why );
    }
+
+   m_maxFileReadThreads = p_maxFileReadThreads;
+   if ( m_maxFileReadThreads < 1 )
+      m_maxFileReadThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
+
+   m_maxFileWriteThreads = p_maxFileWriteThreads;
+   if ( m_maxFileWriteThreads < 1 )
+      m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
 //    o_output = Array<OutputData>( p_targets.Length() );
 
@@ -1874,4 +1890,4 @@ size_type LocalNormalizationInstance::ParameterLength( const MetaParameter* p, s
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF LocalNormalizationInstance.cpp - Released 2020-12-17T15:46:55Z

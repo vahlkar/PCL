@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// STFSliders.cpp - Released 2020-12-15T18:51:35Z
+// STFSliders.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -451,4 +451,4 @@ void STFSliders::__MouseWheel( Control& sender, const pcl::Point& pos, int delta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF STFSliders.cpp - Released 2020-12-15T18:51:35Z
+// EOF STFSliders.cpp - Released 2020-12-17T15:46:55Z

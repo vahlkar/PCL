@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFOptionsDialog.h - Released 2020-12-15T18:51:24Z
+// TIFFOptionsDialog.h - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -128,4 +128,4 @@ private:
 #endif   // __TIFFOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF TIFFOptionsDialog.h - Released 2020-12-15T18:51:24Z
+// EOF TIFFOptionsDialog.h - Released 2020-12-17T15:46:44Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// ChannelMatchParameters.cpp - Released 2020-12-15T18:51:35Z
+// ChannelMatchParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -188,4 +188,4 @@ double CMFactor::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF ChannelMatchParameters.cpp - Released 2020-12-17T15:46:55Z

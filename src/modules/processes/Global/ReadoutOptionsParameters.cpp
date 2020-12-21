@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ReadoutOptionsParameters.cpp - Released 2020-12-15T18:51:35Z
+// ReadoutOptionsParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -517,4 +517,4 @@ bool ReadoutReal::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ReadoutOptionsParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF ReadoutOptionsParameters.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// SplitCFAModule.h - Released 2020-12-15T18:51:35Z
+// SplitCFAModule.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif // __SplitCFAModule_h
 
 // ----------------------------------------------------------------------------
-// EOF SplitCFAModule.h - Released 2020-12-15T18:51:35Z
+// EOF SplitCFAModule.h - Released 2020-12-17T15:46:56Z

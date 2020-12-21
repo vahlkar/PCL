@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFFPreferencesDialog.cpp - Released 2020-12-15T18:51:24Z
+// TIFFPreferencesDialog.cpp - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -386,4 +386,4 @@ void TIFFPreferencesDialog::Dialog_Return( Dialog& sender, int retVal )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFFPreferencesDialog.cpp - Released 2020-12-15T18:51:24Z
+// EOF TIFFPreferencesDialog.cpp - Released 2020-12-17T15:46:44Z

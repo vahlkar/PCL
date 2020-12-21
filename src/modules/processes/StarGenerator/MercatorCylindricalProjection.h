@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// MercatorCylindricalProjection.h - Released 2020-12-15T18:51:35Z
+// MercatorCylindricalProjection.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -104,4 +104,4 @@ public:
 #endif   // __MercatorCylindricalProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF MercatorCylindricalProjection.h - Released 2020-12-15T18:51:35Z
+// EOF MercatorCylindricalProjection.h - Released 2020-12-17T15:46:56Z

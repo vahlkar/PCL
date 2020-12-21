@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesInterface.cpp - Released 2020-12-15T18:51:35Z
+// PreferencesInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -2449,6 +2449,38 @@ ParallelProcessingPreferencesPage::ParallelProcessingPreferencesPage( Preference
    UseAllAvailableProcessors_CheckBox.SetButtonColor( MaxProcessors_Integer.BackgroundColor() );
    MaxProcessors_Integer.sizer.Add( UseAllAvailableProcessors_CheckBox );
 
+   MaxFileReadThreads_Integer.label.SetText( "Maximum number of file reading threads" );
+   MaxFileReadThreads_Integer.spinBox.SetRange( 1, 1024 );
+   MaxFileReadThreads_Integer.item = &instance.process.maxFileReadThreads;
+   MaxFileReadThreads_Integer.SetToolTip(
+      "<p>This is the maximum number of threads allowed for concurrent file reading operations. Tasks that perform "
+      "heavy file I/O operations, such as ImageIntegration or StarAlignment for example, can work more efficiently on "
+      "solid-state drives (SSD) when parallel file access is allowed.</p>"
+      "<p>The default value of one thread is very conservative and is appropriate only for rotational hard disk "
+      "drives (HDD), where parallel file I/O operations may incur in severe performance penalties. If you are using "
+      "SSD devices, you should allow parallel file reading operations by increasing the value of this parameter. "
+      "The optimal value depends on several hardware and software conditions, but is usually in the range from 4 to 16 "
+      "threads.</p>"
+      "<p><b>* Warning *</b> Do not increase the value of this parameter if you are using rotational hard disk drives, "
+      "as doing so may lead to severe performance degradation and can even be dangerous for the integrity of the "
+      "physical devices. Set a value greater than one only if you use solid-state disk drives (SDD).</p>" );
+
+   MaxFileWriteThreads_Integer.label.SetText( "Maximum number of file writing threads" );
+   MaxFileWriteThreads_Integer.spinBox.SetRange( 1, 1024 );
+   MaxFileWriteThreads_Integer.item = &instance.process.maxFileWriteThreads;
+   MaxFileWriteThreads_Integer.SetToolTip(
+      "<p>This is the maximum number of threads allowed for concurrent file writing operations. Tasks that perform "
+      "heavy file I/O operations, such as ImageIntegration or StarAlignment for example, can work more efficiently on "
+      "solid-state drives (SSD) when parallel file access is allowed.</p>"
+      "<p>The default value of one thread is very conservative and is appropriate only for rotational hard disk "
+      "drives (HDD), where parallel file I/O operations may incur in severe performance penalties. If you are using "
+      "SSD devices, you should allow parallel file writing operations by increasing the value of this parameter. "
+      "The optimal value depends on several hardware and software conditions, but is usually in the range from 4 to 16 "
+      "threads.</p>"
+      "<p><b>* Warning *</b> Do not increase the value of this parameter if you are using rotational hard disk drives, "
+      "as doing so may lead to severe performance degradation and can even be dangerous for the integrity of the "
+      "physical devices. Set a value greater than one only if you use solid-state disk drives (SDD).</p>" );
+
    EnableCUDAAcceleration_Flag.checkBox.SetText( "Enable CUDA acceleration" );
    EnableCUDAAcceleration_Flag.item = &instance.process.enableCUDAAcceleration;
    EnableCUDAAcceleration_Flag.SetToolTip(
@@ -2456,7 +2488,8 @@ ParallelProcessingPreferencesPage::ParallelProcessingPreferencesPage( Preference
       "analysis, numerical computation and image rendition tasks performed by the PixInsight core application and "
       "all installed modules, as applicable.</p>"
       "<p>This option is only operational on Linux and Windows. It is always ignored on FreeBSD and macOS, where "
-      "CUDA acceleration is not available.</p>" );
+      "CUDA acceleration is not available.</p>"
+      "<p><b>Note: CUDA acceleration still not available - coming soon... stay tuned!</b></p>" );
 
    InitCUDARuntimeAtStartup_Flag.checkBox.SetText( "Initialize CUDA runtime at startup" );
    InitCUDARuntimeAtStartup_Flag.item = &instance.process.enableCUDAAcceleration;
@@ -2465,7 +2498,8 @@ ParallelProcessingPreferencesPage::ParallelProcessingPreferencesPage( Preference
       "all CUDA-capable GPU devices available, device selection based on performance criteria, and an initial device "
       "warm up kernel execution.</p>"
       "<p>This option is only operational on Linux and Windows. It is always ignored on FreeBSD and macOS, where "
-      "CUDA acceleration is not available.</p>" );
+      "CUDA acceleration is not available.</p>"
+      "<p><b>Note: CUDA acceleration still not available - coming soon... stay tuned!</b></p>" );
 
    Page_Sizer.SetSpacing( 4 );
    Page_Sizer.Add( EnableParallelProcessing_Flag );
@@ -2475,6 +2509,8 @@ ParallelProcessingPreferencesPage::ParallelProcessingPreferencesPage( Preference
    Page_Sizer.Add( EnableThreadCPUAffinity_Flag );
    Page_Sizer.Add( MaxModuleThreadPriority_Set );
    Page_Sizer.Add( MaxProcessors_Integer );
+   Page_Sizer.Add( MaxFileReadThreads_Integer );
+   Page_Sizer.Add( MaxFileWriteThreads_Integer );
    Page_Sizer.Add( EnableCUDAAcceleration_Flag );
    Page_Sizer.Add( InitCUDARuntimeAtStartup_Flag );
    Page_Sizer.AddStretch();
@@ -2491,6 +2527,8 @@ void ParallelProcessingPreferencesPage::TransferSettings( PreferencesInstance& t
    to.process.enableThreadCPUAffinity           = from.process.enableThreadCPUAffinity;
    to.process.maxModuleThreadPriority           = from.process.maxModuleThreadPriority;
    to.process.maxProcessors                     = from.process.maxProcessors;
+   to.process.maxFileReadThreads                = from.process.maxFileReadThreads;
+   to.process.maxFileWriteThreads               = from.process.maxFileWriteThreads;
    to.process.enableCUDAAcceleration            = from.process.enableCUDAAcceleration;
    to.process.initCUDARuntimeAtStartup          = from.process.initCUDARuntimeAtStartup;
 }
@@ -2794,4 +2832,4 @@ void PreferencesInterface::GUIData::InitializeCategories()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF PreferencesInterface.cpp - Released 2020-12-17T15:46:55Z

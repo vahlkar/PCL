@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// ChannelMatchInterface.cpp - Released 2020-12-15T18:51:35Z
+// ChannelMatchInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -613,4 +613,4 @@ ChannelMatchInterface::GUIData::GUIData( ChannelMatchInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF ChannelMatchInterface.cpp - Released 2020-12-17T15:46:55Z

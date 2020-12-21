@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard AssistedColorCalibration Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// AssistedColorCalibrationInterface.h - Released 2020-12-15T18:51:35Z
+// AssistedColorCalibrationInterface.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard AssistedColorCalibration PixInsight module.
 //
@@ -206,4 +206,4 @@ PCL_END_LOCAL
 #endif // __AssistedColorCalibrationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AssistedColorCalibrationInterface.h - Released 2020-12-15T18:51:35Z
+// EOF AssistedColorCalibrationInterface.h - Released 2020-12-17T15:46:56Z

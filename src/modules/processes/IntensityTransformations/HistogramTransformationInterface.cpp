@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// HistogramTransformationInterface.cpp - Released 2020-12-15T18:51:35Z
+// HistogramTransformationInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -3167,4 +3167,4 @@ HistogramTransformationInterface::GUIData::GUIData( HistogramTransformationInter
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF HistogramTransformationInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF HistogramTransformationInterface.cpp - Released 2020-12-17T15:46:55Z

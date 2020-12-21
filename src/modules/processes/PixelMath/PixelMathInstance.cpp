@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// PixelMathInstance.cpp - Released 2020-12-15T18:51:35Z
+// PixelMathInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1897,4 +1897,4 @@ size_type PixelMathInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF PixelMathInstance.cpp - Released 2020-12-17T15:46:55Z

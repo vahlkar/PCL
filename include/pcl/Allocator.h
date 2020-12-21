@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/Allocator.h - Released 2020-12-15T18:51:06Z
+// pcl/Allocator.h - Released 2020-12-17T15:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -406,4 +406,4 @@ inline void Destroy( long double**, long double** ) {}
 #endif  // __PCL_Allocator_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Allocator.h - Released 2020-12-15T18:51:06Z
+// EOF pcl/Allocator.h - Released 2020-12-17T15:46:29Z

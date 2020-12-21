@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// PixelMathProcess.cpp - Released 2020-12-15T18:51:35Z
+// PixelMathProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -459,4 +459,4 @@ int PixelMathProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF PixelMathProcess.cpp - Released 2020-12-17T15:46:55Z

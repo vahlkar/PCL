@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetProcess.cpp - Released 2020-12-15T18:51:35Z
+// StarNetProcess.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -188,4 +188,4 @@ void StarNetProcess::SavePreferences()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF StarNetProcess.cpp - Released 2020-12-17T15:46:56Z

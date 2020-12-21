@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetInterface.h - Released 2020-12-15T18:51:35Z
+// StarNetInterface.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -114,4 +114,4 @@ PCL_END_LOCAL
 #endif   // __StarNetInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInterface.h - Released 2020-12-15T18:51:35Z
+// EOF StarNetInterface.h - Released 2020-12-17T15:46:56Z

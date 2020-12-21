@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// RotationParameters.cpp - Released 2020-12-15T18:51:35Z
+// RotationParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -73,4 +73,4 @@ NoGUIMessages*          TheRTNoGUIMessagesParameter = nullptr;
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF RotationParameters.cpp - Released 2020-12-17T15:46:55Z

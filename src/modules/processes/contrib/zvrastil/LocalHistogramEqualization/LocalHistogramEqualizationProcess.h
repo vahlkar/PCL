@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard LocalHistogramEqualization Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// LocalHistogramEqualizationProcess.h - Released 2020-12-15T18:51:36Z
+// LocalHistogramEqualizationProcess.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard LocalHistogramEqualization PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif // __LocalHistogramEqualizationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalHistogramEqualizationProcess.h - Released 2020-12-15T18:51:36Z
+// EOF LocalHistogramEqualizationProcess.h - Released 2020-12-17T15:46:56Z

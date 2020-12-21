@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ColorManagementSetupInstance.cpp - Released 2020-12-15T18:51:35Z
+// ColorManagementSetupInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -364,4 +364,4 @@ void ColorManagementSetupInstance::LoadCurrentSettings()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF ColorManagementSetupInstance.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAInterface.cpp - Released 2020-12-15T18:51:35Z
+// MergeCFAInterface.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -293,4 +293,4 @@ MergeCFAInterface::GUIData::GUIData( MergeCFAInterface& w )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF MergeCFAInterface.cpp - Released 2020-12-17T15:46:56Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationRejectionEngine.h - Released 2020-12-15T18:51:35Z
+// IntegrationRejectionEngine.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -549,4 +549,4 @@ private:
 #endif   // __IntegrationRejectionEngine_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationRejectionEngine.h - Released 2020-12-15T18:51:35Z
+// EOF IntegrationRejectionEngine.h - Released 2020-12-17T15:46:55Z

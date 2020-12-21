@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramProcess.cpp - Released 2020-12-15T18:51:35Z
+// AutoHistogramProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -323,4 +323,4 @@ int AutoHistogramProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF AutoHistogramProcess.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// Functional.cpp - Released 2020-12-15T18:51:35Z
+// Functional.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -145,4 +145,4 @@ void Functional::CheckParsedGlobalVariables( const String& beingParsed ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Functional.cpp - Released 2020-12-15T18:51:35Z
+// EOF Functional.cpp - Released 2020-12-17T15:46:55Z

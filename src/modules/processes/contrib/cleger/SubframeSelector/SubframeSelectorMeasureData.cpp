@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorMeasureData.cpp - Released 2020-12-15T18:51:35Z
+// SubframeSelectorMeasureData.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -375,4 +375,4 @@ void MeasureUtils::MeasureProperties( const Array<MeasureItem>& measures, float 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorMeasureData.cpp - Released 2020-12-15T18:51:35Z
+// EOF SubframeSelectorMeasureData.cpp - Released 2020-12-17T15:46:56Z

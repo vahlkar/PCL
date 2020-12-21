@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.8
 // ----------------------------------------------------------------------------
-// FITS.cpp - Released 2020-12-15T18:51:24Z
+// FITS.cpp - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -2726,4 +2726,4 @@ void FITSWriter::WriteExtensionHDU( const FITSExtensionData& ext )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FITS.cpp - Released 2020-12-15T18:51:24Z
+// EOF FITS.cpp - Released 2020-12-17T15:46:44Z

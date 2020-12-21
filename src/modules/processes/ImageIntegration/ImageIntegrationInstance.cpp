@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.cpp - Released 2020-12-15T18:51:35Z
+// ImageIntegrationInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -65,6 +65,7 @@
 #include <pcl/DrizzleData.h>
 #include <pcl/ErrorHandler.h>
 #include <pcl/FITSHeaderKeyword.h>
+#include <pcl/GlobalSettings.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/MetaModule.h>
 #include <pcl/Settings.h>
@@ -269,6 +270,10 @@ bool ImageIntegrationInstance::CanExecuteGlobal( String& whyNot ) const
 bool ImageIntegrationInstance::ExecuteGlobal()
 {
    o_output = OutputData();
+
+   m_maxBufferThreads = p_maxBufferThreads;
+   if ( m_maxBufferThreads < 1 )
+      m_maxBufferThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
 
    ImageWindow resultWindow, lowRejectionMapWindow, highRejectionMapWindow, slopeMapWindow;
 
@@ -497,7 +502,7 @@ bool ImageIntegrationInstance::ExecuteGlobal()
             monitor.Initialize( String( doIntegrateAndReject ? "Integrating" : "Analyzing" ).AppendFormat(
                                                  " pixel rows: %5d -> %5d", y0, y0+numberOfRows-1 ), 5*numberOfRows );
 
-            IntegrationFile::UpdateBuffers( y0, c, p_useBufferThreads ? p_maxBufferThreads : 1 );
+            IntegrationFile::UpdateBuffers( y0, c, p_useBufferThreads ? m_maxBufferThreads : 1 );
 
             /*
              * Integrate pixels in the current strip of pixel rows.
@@ -716,7 +721,7 @@ bool ImageIntegrationInstance::ExecuteGlobal()
                   // Number of rows in this strip
                   numberOfRows = Min( IntegrationFile::BufferRows(), IntegrationFile::Height() - y0 );
 
-                  IntegrationFile::UpdateBuffers( y0, c, p_useBufferThreads ? p_maxBufferThreads : 1 );
+                  IntegrationFile::UpdateBuffers( y0, c, p_useBufferThreads ? m_maxBufferThreads : 1 );
 
                   monitor.Initialize( String().Format( "Integrating pixel rows: %5d -> %5d", y0, y0+numberOfRows-1 ), numberOfRows );
                   MapIntegrationEngine( *this, monitor, d, m, s, c, y0, numberOfRows, resultData32, resultData64 ).Integrate();
@@ -1778,4 +1783,4 @@ ImageWindow ImageIntegrationInstance::CreateImageWindow( const IsoString& id, in
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF ImageIntegrationInstance.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDICCDFrameParameters.cpp - Released 2020-12-15T18:51:35Z
+// INDICCDFrameParameters.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -782,4 +782,4 @@ DEFINE_INT32_PARAMETER_CLASS( ICFTelescopeFocalLength, "telescopeAperture", 0, 0
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDICCDFrameParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF INDICCDFrameParameters.cpp - Released 2020-12-17T15:46:56Z

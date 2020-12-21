@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEG.cpp - Released 2020-12-15T18:51:24Z
+// JPEG.cpp - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -894,4 +894,4 @@ void JPEGWriter::WriteImage( const UInt32Image& image )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEG.cpp - Released 2020-12-15T18:51:24Z
+// EOF JPEG.cpp - Released 2020-12-17T15:46:44Z

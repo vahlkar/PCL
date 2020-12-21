@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.6
 // ----------------------------------------------------------------------------
-// RawFormat.cpp - Released 2020-12-15T18:51:24Z
+// RawFormat.cpp - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -395,4 +395,4 @@ bool RawFormat::EditPreferences() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RawFormat.cpp - Released 2020-12-15T18:51:24Z
+// EOF RawFormat.cpp - Released 2020-12-17T15:46:44Z

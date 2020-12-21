@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsInstance.cpp - Released 2020-12-15T18:51:35Z
+// CreateAlphaChannelsInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -511,4 +511,4 @@ size_type CreateAlphaChannelsInstance::ParameterLength( const MetaParameter* p, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF CreateAlphaChannelsInstance.cpp - Released 2020-12-17T15:46:55Z

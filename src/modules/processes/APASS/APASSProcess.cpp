@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// APASSProcess.cpp - Released 2020-12-15T18:51:35Z
+// APASSProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -368,10 +368,17 @@ void APASSProcess::EnsureDatabasesInitialized( int dr, int verbosity )
                APASSDatabaseFile* file = new APASSDatabaseFile( filePath );
                data.databases.Add( file );
                if ( file->DataRelease() != DRIndexToDRName( dr ) )
-                  throw Error( "Invalid APASS " + file->DataRelease() + " database file; "
+                  throw Error( "Unexpected APASS " + file->DataRelease() + " database file; "
                                "expected a APASS " + DRIndexToDRName( dr ) + " file: <raw>" + file->FilePath() + "</raw>" );
                if ( verbosity > 1 )
                {
+                  if ( data.databases.Length() == 1 )
+                     console.WriteLn( "<end><cbr>"
+                        + file->Metadata().description.Trimmed()
+                        + "<br><br>"
+                        + file->Metadata().copyright.Trimmed()
+                        + "<br>" );
+
                   console.WriteLn( "<b><raw>" + file->FilePath() + "</raw></b>\n"
                      +  "Database version .... " + file->Metadata().databaseIdentifier + ' ' + file->Metadata().databaseVersion + '\n'
                      + String().Format(
@@ -384,6 +391,7 @@ void APASSProcess::EnsureDatabasesInitialized( int dr, int verbosity )
                         , file->Statistics().totalNodes )
                      + " (" + File::SizeAsString( file->Statistics().totalNodes * 48 ) + ")\n"
                   );
+
                   Module->ProcessEvents();
                }
             }
@@ -493,4 +501,4 @@ void APASSProcess::SavePreferences( int dr )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF APASSProcess.cpp - Released 2020-12-17T15:46:55Z

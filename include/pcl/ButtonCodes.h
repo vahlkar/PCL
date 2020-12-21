@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/ButtonCodes.h - Released 2020-12-15T18:51:06Z
+// pcl/ButtonCodes.h - Released 2020-12-17T15:46:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -132,4 +132,4 @@ typedef Flags<KeyModifier::mask_type>  KeyModifiers;
 #endif   // __PCL_ButtonCodes_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ButtonCodes.h - Released 2020-12-15T18:51:06Z
+// EOF pcl/ButtonCodes.h - Released 2020-12-17T15:46:28Z

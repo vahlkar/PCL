@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInterface.cpp - Released 2020-12-15T18:51:35Z
+// StarGeneratorInterface.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -760,4 +760,4 @@ StarGeneratorInterface::GUIData::GUIData( StarGeneratorInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF StarGeneratorInterface.cpp - Released 2020-12-17T15:46:56Z

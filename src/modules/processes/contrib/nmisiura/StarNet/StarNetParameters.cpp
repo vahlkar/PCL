@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetParameters.cpp - Released 2020-12-15T18:51:35Z
+// StarNetParameters.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -107,4 +107,4 @@ size_type SNStride::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF StarNetParameters.cpp - Released 2020-12-17T15:46:56Z

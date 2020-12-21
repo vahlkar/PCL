@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertAction.cpp - Released 2020-12-15T18:51:35Z
+// InvertAction.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -90,4 +90,4 @@ bool InvertAction::IsEnabled( ActionInfo info ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF InvertAction.cpp - Released 2020-12-15T18:51:35Z
+// EOF InvertAction.cpp - Released 2020-12-17T15:46:55Z

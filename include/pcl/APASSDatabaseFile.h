@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/APASSDatabaseFile.h - Released 2020-12-15T18:51:06Z
+// pcl/APASSDatabaseFile.h - Released 2020-12-17T15:46:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -168,7 +168,13 @@ typedef XPSD::SearchData<APASSStarData> APASSSearchData;
  * \li APASS: The AAVSO Photometric All-Sky Survey:
  * https://www.aavso.org/apass
  *
- * \sa StarDatabaseFile
+ * \b Credits
+ *
+ * This work makes use of data from the AAVSO Photometric All Sky Survey, whose
+ * funding has been provided by the Robert Martin Ayers Sciences Fund and from
+ * the NSF (AST-1412587).
+ *
+ * \sa StarDatabaseFile, GaiaDatabaseFile
  * \ingroup point_source_databases
  */
 class PCL_CLASS APASSDatabaseFile : public StarDatabaseFile
@@ -500,4 +506,4 @@ private:
 #endif  // __PCL_APASSDatabaseFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/APASSDatabaseFile.h - Released 2020-12-15T18:51:06Z
+// EOF pcl/APASSDatabaseFile.h - Released 2020-12-17T15:46:28Z

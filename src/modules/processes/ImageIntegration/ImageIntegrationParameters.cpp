@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.cpp - Released 2020-12-15T18:51:35Z
+// ImageIntegrationParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1881,12 +1881,12 @@ IsoString IIMaxBufferThreads::Id() const
 
 double IIMaxBufferThreads::DefaultValue() const
 {
-   return 8;
+   return 0;
 }
 
 double IIMaxBufferThreads::MinimumValue() const
 {
-   return 1;
+   return 0;
 }
 
 double IIMaxBufferThreads::MaximumValue() const
@@ -2870,4 +2870,4 @@ bool IIImageRejectedHighB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF ImageIntegrationParameters.cpp - Released 2020-12-17T15:46:55Z

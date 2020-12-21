@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIMountProcess.h - Released 2020-12-15T18:51:35Z
+// INDIMountProcess.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -92,4 +92,4 @@ PCL_END_LOCAL
 #endif // __INDIMountProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIMountProcess.h - Released 2020-12-15T18:51:35Z
+// EOF INDIMountProcess.h - Released 2020-12-17T15:46:56Z

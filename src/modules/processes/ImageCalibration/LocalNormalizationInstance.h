@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationInstance.h - Released 2020-12-15T18:51:35Z
+// LocalNormalizationInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -141,6 +141,8 @@ private:
    float       p_fileThreadOverload;
    int32       p_maxFileReadThreads;
    int32       p_maxFileWriteThreads;
+   int         m_maxFileReadThreads = 1;
+   int         m_maxFileWriteThreads = 1;
 
    // Graph options
    int32       p_graphSize;
@@ -162,4 +164,4 @@ private:
 #endif   // __LocalNormalizationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationInstance.h - Released 2020-12-15T18:51:35Z
+// EOF LocalNormalizationInstance.h - Released 2020-12-17T15:46:55Z

@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/Win32Exception.h - Released 2020-12-15T18:51:06Z
+// pcl/Win32Exception.h - Released 2020-12-17T15:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -314,4 +314,4 @@ DECLARE_WIN32_EXCEPTION( EWin32StackOverflow,
 #endif   // __PCL_Win32Exception_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/Win32Exception.h - Released 2020-12-15T18:51:06Z
+// EOF pcl/Win32Exception.h - Released 2020-12-17T15:46:29Z

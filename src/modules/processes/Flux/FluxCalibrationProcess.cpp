@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationProcess.cpp - Released 2020-12-15T18:51:35Z
+// FluxCalibrationProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -323,4 +323,4 @@ int FluxCalibrationProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF FluxCalibrationProcess.cpp - Released 2020-12-17T15:46:55Z

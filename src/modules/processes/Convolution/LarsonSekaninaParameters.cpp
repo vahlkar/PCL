@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// LarsonSekaninaParameters.cpp - Released 2020-12-15T18:51:35Z
+// LarsonSekaninaParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -454,4 +454,4 @@ bool LSDisableExtension::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LarsonSekaninaParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF LarsonSekaninaParameters.cpp - Released 2020-12-17T15:46:55Z

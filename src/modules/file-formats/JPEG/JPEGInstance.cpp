@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGInstance.cpp - Released 2020-12-15T18:51:24Z
+// JPEGInstance.cpp - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -436,4 +436,4 @@ bool JPEGInstance::WasLossyWrite() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF JPEGInstance.cpp - Released 2020-12-15T18:51:24Z
+// EOF JPEGInstance.cpp - Released 2020-12-17T15:46:44Z

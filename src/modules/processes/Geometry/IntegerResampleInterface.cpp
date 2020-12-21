@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// IntegerResampleInterface.cpp - Released 2020-12-15T18:51:35Z
+// IntegerResampleInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -685,4 +685,4 @@ IntegerResampleInterface::GUIData::GUIData( IntegerResampleInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF IntegerResampleInterface.cpp - Released 2020-12-17T15:46:55Z

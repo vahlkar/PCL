@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelSourceSelectionDialog.cpp - Released 2020-12-15T18:51:35Z
+// ChannelSourceSelectionDialog.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -147,4 +147,4 @@ void ChannelSourceSelectionDialog::__Button_Click( Button& sender, bool checked 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelSourceSelectionDialog.cpp - Released 2020-12-15T18:51:35Z
+// EOF ChannelSourceSelectionDialog.cpp - Released 2020-12-17T15:46:55Z

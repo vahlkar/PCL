@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// PixelMathModule.h - Released 2020-12-15T18:51:35Z
+// PixelMathModule.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __PixelMathModule_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathModule.h - Released 2020-12-15T18:51:35Z
+// EOF PixelMathModule.h - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AdaptiveStretchInterface.h - Released 2020-12-15T18:51:35Z
+// AdaptiveStretchInterface.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -178,4 +178,4 @@ PCL_END_LOCAL
 #endif   // __AdaptiveStretchInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AdaptiveStretchInterface.h - Released 2020-12-15T18:51:35Z
+// EOF AdaptiveStretchInterface.h - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesInterface.h - Released 2020-12-15T18:51:35Z
+// PreferencesInterface.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -792,6 +792,8 @@ public:
    GlobalSetControl           MaxModuleThreadPriority_Set;
    GlobalIntegerControl       MaxProcessors_Integer;
    CheckBox                   UseAllAvailableProcessors_CheckBox;
+   GlobalIntegerControl       MaxFileReadThreads_Integer;
+   GlobalIntegerControl       MaxFileWriteThreads_Integer;
    GlobalFlagControl          EnableCUDAAcceleration_Flag;
    GlobalFlagControl          InitCUDARuntimeAtStartup_Flag;
 
@@ -946,4 +948,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesInterface.h - Released 2020-12-15T18:51:35Z
+// EOF PreferencesInterface.h - Released 2020-12-17T15:46:55Z

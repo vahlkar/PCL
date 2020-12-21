@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// MaskedStretchInstance.cpp - Released 2020-12-15T18:51:35Z
+// MaskedStretchInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -495,4 +495,4 @@ size_type MaskedStretchInstance::ParameterLength( const MetaParameter* p, size_t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF MaskedStretchInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF MaskedStretchInstance.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// RotationInstance.cpp - Released 2020-12-15T18:51:35Z
+// RotationInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -255,4 +255,4 @@ void* RotationInstance::LockParameter( const MetaParameter* p, size_type /*table
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RotationInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF RotationInstance.cpp - Released 2020-12-17T15:46:55Z

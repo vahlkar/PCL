@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationParameters.h - Released 2020-12-15T18:51:35Z
+// ImageIntegrationParameters.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1886,4 +1886,4 @@ PCL_END_LOCAL
 #endif   // __ImageIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationParameters.h - Released 2020-12-15T18:51:35Z
+// EOF ImageIntegrationParameters.h - Released 2020-12-17T15:46:55Z

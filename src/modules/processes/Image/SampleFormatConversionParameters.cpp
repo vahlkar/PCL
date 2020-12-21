@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// SampleFormatConversionParameters.cpp - Released 2020-12-15T18:51:35Z
+// SampleFormatConversionParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -114,4 +114,4 @@ size_type SampleFormatConversion::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SampleFormatConversionParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF SampleFormatConversionParameters.cpp - Released 2020-12-17T15:46:55Z

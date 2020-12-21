@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EInterface.cpp - Released 2020-12-15T18:51:35Z
+// B3EInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -1089,4 +1089,4 @@ B3EInterface::GUIData::GUIData( B3EInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF B3EInterface.cpp - Released 2020-12-17T15:46:55Z

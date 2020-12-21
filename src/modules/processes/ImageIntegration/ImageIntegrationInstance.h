@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationInstance.h - Released 2020-12-15T18:51:35Z
+// ImageIntegrationInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -196,6 +196,7 @@ private:
    // Buffer input threads
    pcl_bool    p_useBufferThreads;
    int32       p_maxBufferThreads;
+   int         m_maxBufferThreads;
 
    /*
     * Read-only output properties
@@ -347,4 +348,4 @@ private:
 #endif   // __ImageIntegrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationInstance.h - Released 2020-12-15T18:51:35Z
+// EOF ImageIntegrationInstance.h - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchParameters.cpp - Released 2020-12-15T18:51:35Z
+// ArcsinhStretchParameters.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -183,4 +183,4 @@ bool ArcsinhStretchPreviewClipped::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF ArcsinhStretchParameters.cpp - Released 2020-12-17T15:46:56Z

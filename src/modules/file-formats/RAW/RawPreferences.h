@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard RAW File Format Module Version 1.5.6
 // ----------------------------------------------------------------------------
-// RawPreferences.h - Released 2020-12-15T18:51:24Z
+// RawPreferences.h - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard RAW PixInsight module.
 //
@@ -182,4 +182,4 @@ public :
 #endif   // __RawPreferences_h
 
 // ----------------------------------------------------------------------------
-// EOF RawPreferences.h - Released 2020-12-15T18:51:24Z
+// EOF RawPreferences.h - Released 2020-12-17T15:46:44Z

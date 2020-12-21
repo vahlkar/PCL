@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationInterface.cpp - Released 2020-12-15T18:51:35Z
+// CurvesTransformationInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -2348,4 +2348,4 @@ CurvesTransformationInterface::GUIData::GUIData( CurvesTransformationInterface& 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF CurvesTransformationInterface.cpp - Released 2020-12-17T15:46:55Z

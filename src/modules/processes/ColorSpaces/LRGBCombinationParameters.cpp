@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// LRGBCombinationParameters.cpp - Released 2020-12-15T18:51:35Z
+// LRGBCombinationParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -288,4 +288,4 @@ double LRGBLayersProtected::MaximumValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LRGBCombinationParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF LRGBCombinationParameters.cpp - Released 2020-12-17T15:46:55Z

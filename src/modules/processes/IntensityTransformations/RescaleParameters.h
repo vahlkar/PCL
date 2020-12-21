@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleParameters.h - Released 2020-12-15T18:51:35Z
+// RescaleParameters.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -93,4 +93,4 @@ PCL_END_LOCAL
 #endif   // __RescaleParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF RescaleParameters.h - Released 2020-12-15T18:51:35Z
+// EOF RescaleParameters.h - Released 2020-12-17T15:46:55Z

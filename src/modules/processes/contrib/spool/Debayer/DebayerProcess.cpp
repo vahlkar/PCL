@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerProcess.cpp - Released 2020-12-15T18:51:35Z
+// DebayerProcess.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -282,4 +282,4 @@ int DebayerProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF DebayerProcess.cpp - Released 2020-12-17T15:46:56Z

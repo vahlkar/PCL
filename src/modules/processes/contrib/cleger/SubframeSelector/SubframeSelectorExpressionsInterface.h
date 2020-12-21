@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorExpressionsInterface.h - Released 2020-12-15T18:51:35Z
+// SubframeSelectorExpressionsInterface.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -138,4 +138,4 @@ PCL_END_LOCAL
 #endif   // e_SubframeSelectorExpressionsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorExpressionsInterface.h - Released 2020-12-15T18:51:35Z
+// EOF SubframeSelectorExpressionsInterface.h - Released 2020-12-17T15:46:56Z

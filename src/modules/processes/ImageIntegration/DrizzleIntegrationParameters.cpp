@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationParameters.cpp - Released 2020-12-15T18:51:35Z
+// DrizzleIntegrationParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1461,4 +1461,4 @@ bool DZImageOutputData::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF DrizzleIntegrationParameters.cpp - Released 2020-12-17T15:46:55Z

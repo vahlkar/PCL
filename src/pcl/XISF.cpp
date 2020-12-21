@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/XISF.cpp - Released 2020-12-15T18:51:12Z
+// pcl/XISF.cpp - Released 2020-12-17T15:46:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -693,4 +693,4 @@ void XISF::EnsurePTLUTInitialized()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/XISF.cpp - Released 2020-12-15T18:51:12Z
+// EOF pcl/XISF.cpp - Released 2020-12-17T15:46:35Z

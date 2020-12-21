@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SubframeSelector Process Module Version 1.4.5
 // ----------------------------------------------------------------------------
-// SubframeSelectorModule.h - Released 2020-12-15T18:51:35Z
+// SubframeSelectorModule.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SubframeSelector PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __SubframeSelectorModule_h
 
 // ----------------------------------------------------------------------------
-// EOF SubframeSelectorModule.h - Released 2020-12-15T18:51:35Z
+// EOF SubframeSelectorModule.h - Released 2020-12-17T15:46:56Z

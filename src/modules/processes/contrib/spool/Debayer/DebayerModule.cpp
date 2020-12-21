@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerModule.cpp - Released 2020-12-15T18:51:35Z
+// DebayerModule.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       15
+#define MODULE_RELEASE_DAY       17
 
 #include "DebayerModule.h"
 #include "DebayerProcess.h"
@@ -173,4 +173,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF DebayerModule.cpp - Released 2020-12-15T18:51:35Z
+// EOF DebayerModule.cpp - Released 2020-12-17T15:46:56Z

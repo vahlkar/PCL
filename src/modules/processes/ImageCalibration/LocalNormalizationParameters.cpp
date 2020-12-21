@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationParameters.cpp - Released 2020-12-15T18:51:35Z
+// LocalNormalizationParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -700,7 +700,7 @@ int LNFileThreadOverload::Precision() const
 
 double LNFileThreadOverload::DefaultValue() const
 {
-   return 1.2;
+   return 1.0;
 }
 
 double LNFileThreadOverload::MinimumValue() const
@@ -727,12 +727,12 @@ IsoString LNMaxFileReadThreads::Id() const
 
 double LNMaxFileReadThreads::DefaultValue() const
 {
-   return 1;
+   return 0;
 }
 
 double LNMaxFileReadThreads::MinimumValue() const
 {
-   return 1;
+   return 0;
 }
 
 double LNMaxFileReadThreads::MaximumValue() const
@@ -754,12 +754,12 @@ IsoString LNMaxFileWriteThreads::Id() const
 
 double LNMaxFileWriteThreads::DefaultValue() const
 {
-   return 1;
+   return 0;
 }
 
 double LNMaxFileWriteThreads::MinimumValue() const
 {
-   return 1;
+   return 0;
 }
 
 double LNMaxFileWriteThreads::MaximumValue() const
@@ -887,4 +887,4 @@ String LNGraphOutputDirectory::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF LocalNormalizationParameters.cpp - Released 2020-12-17T15:46:55Z

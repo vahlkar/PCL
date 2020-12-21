@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationParameters.cpp - Released 2020-12-15T18:51:35Z
+// FluxCalibrationParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -672,4 +672,4 @@ String FCQuantumEfficiencyKeyword::AllowedCharacters() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF FluxCalibrationParameters.cpp - Released 2020-12-17T15:46:55Z

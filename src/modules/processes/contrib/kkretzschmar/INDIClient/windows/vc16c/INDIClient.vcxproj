@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2020 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-15T20:13:10.572Z
+# Generated on .... 2020-12-21T12:28:33.027Z
 # Project id ...... INDIClient
 # Project type .... Module
 # Platform ........ Windows/vc16 (compatibility)
@@ -42,7 +42,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F019A62E-BFFF-40D9-814F-02EEC187C55B}</ProjectGuid>
+    <ProjectGuid>{D9CCABAB-69C2-4545-959F-288473907CBF}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -87,13 +87,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(PCLBINDIR64)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(PCLBINDIR64C)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(PCLBINDIR32)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(PCLBINDIR32C)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(PCLBINDIR64)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(PCLBINDIR64C)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(PCLBINDIR32)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(PCLBINDIR32C)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">INDIClient-pxm</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">INDIClient-pxm</TargetName>
@@ -128,8 +128,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;indigo_client.lib;libpthreadVC3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(PCLBINDIR64)\INDIClient-pxm.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PCLLIBDIR64);$(INDIGODIR)\build\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(PCLBINDIR64C)\INDIClient-pxm.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(PCLLIBDIR64C);$(INDIGODIR)\build\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
@@ -167,8 +167,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;indigo_client.lib;libpthreadVC3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(PCLBINDIR32)\INDIClient-pxm.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PCLLIBDIR32);$(INDIGODIR)\build\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(PCLBINDIR32C)\INDIClient-pxm.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(PCLLIBDIR32C);$(INDIGODIR)\build\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
@@ -201,8 +201,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;indigo_client.lib;libpthreadVC3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(PCLBINDIR64)\INDIClient-pxm.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PCLLIBDIR64);$(INDIGODIR)\build\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(PCLBINDIR64C)\INDIClient-pxm.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(PCLLIBDIR64C);$(INDIGODIR)\build\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
@@ -230,8 +230,8 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>PCL-pxi.lib;lz4-pxi.lib;zlib-pxi.lib;RFC6234-pxi.lib;lcms-pxi.lib;cminpack-pxi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;userenv.lib;imm32.lib;shlwapi.lib;ws2_32.lib;wldap32.lib;mscms.lib;winmm.lib;crypt32.lib;normaliz.lib;indigo_client.lib;libpthreadVC3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(PCLBINDIR32)\INDIClient-pxm.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PCLLIBDIR32);$(INDIGODIR)\build\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OutputFile>$(PCLBINDIR32C)\INDIClient-pxm.dll</OutputFile>
+      <AdditionalLibraryDirectories>$(PCLLIBDIR32C);$(INDIGODIR)\build\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile></ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GaiaParameters.h - Released 2020-12-15T18:51:35Z
+// GaiaParameters.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -699,4 +699,4 @@ PCL_END_LOCAL
 #endif   // __GaiaParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF GaiaParameters.h - Released 2020-12-15T18:51:35Z
+// EOF GaiaParameters.h - Released 2020-12-17T15:46:55Z

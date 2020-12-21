@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard FITS File Format Module Version 1.1.8
 // ----------------------------------------------------------------------------
-// FITSModule.h - Released 2020-12-15T18:51:24Z
+// FITSModule.h - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard FITS PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __FITSModule_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSModule.h - Released 2020-12-15T18:51:24Z
+// EOF FITSModule.h - Released 2020-12-17T15:46:44Z

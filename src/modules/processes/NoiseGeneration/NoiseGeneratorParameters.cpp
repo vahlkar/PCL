@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard NoiseGeneration Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// NoiseGeneratorParameters.cpp - Released 2020-12-15T18:51:35Z
+// NoiseGeneratorParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard NoiseGeneration PixInsight module.
 //
@@ -189,4 +189,4 @@ size_type NGPreserveBrightness::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NoiseGeneratorParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF NoiseGeneratorParameters.cpp - Released 2020-12-17T15:46:55Z

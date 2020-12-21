@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.h - Released 2020-12-15T18:51:35Z
+// ExpressionEditorDialog.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -135,4 +135,4 @@ private:
 #endif   // __ExpressionEditorDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.h - Released 2020-12-15T18:51:35Z
+// EOF ExpressionEditorDialog.h - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.cpp - Released 2020-12-15T18:51:35Z
+// ExpressionEditorDialog.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -908,4 +908,4 @@ void ExpressionEditorDialog::e_KeyPress( Control& sender, int key, unsigned modi
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.cpp - Released 2020-12-15T18:51:35Z
+// EOF ExpressionEditorDialog.cpp - Released 2020-12-17T15:46:55Z

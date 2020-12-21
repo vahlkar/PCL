@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// Token.h - Released 2020-12-15T18:51:35Z
+// Token.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -168,4 +168,4 @@ void Tokenize( token_set&, const String& );
 #endif   // __Token_h
 
 // ----------------------------------------------------------------------------
-// EOF Token.h - Released 2020-12-15T18:51:35Z
+// EOF Token.h - Released 2020-12-17T15:46:55Z

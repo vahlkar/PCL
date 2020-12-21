@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramInterface.cpp - Released 2020-12-15T18:51:35Z
+// AutoHistogramInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -610,4 +610,4 @@ AutoHistogramInterface::GUIData::GUIData( AutoHistogramInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF AutoHistogramInterface.cpp - Released 2020-12-17T15:46:55Z

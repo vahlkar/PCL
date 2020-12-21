@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesProcess.cpp - Released 2020-12-15T18:51:35Z
+// PreferencesProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -224,6 +224,8 @@ PreferencesProcess::PreferencesProcess()
    new METAPARAMETER_ID( Process, enableThreadCPUAffinity )( this );
    new METAPARAMETER_ID( Process, maxModuleThreadPriority )( this );
    new METAPARAMETER_ID( Process, maxProcessors )( this );
+   new METAPARAMETER_ID( Process, maxFileReadThreads )( this );
+   new METAPARAMETER_ID( Process, maxFileWriteThreads )( this );
    new METAPARAMETER_ID( Process, enableCUDAAcceleration )( this );
    new METAPARAMETER_ID( Process, initCUDARuntimeAtStartup )( this );
    new METAPARAMETER_ID( Process, backupFiles )( this );
@@ -377,4 +379,4 @@ int PreferencesProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF PreferencesProcess.cpp - Released 2020-12-17T15:46:55Z

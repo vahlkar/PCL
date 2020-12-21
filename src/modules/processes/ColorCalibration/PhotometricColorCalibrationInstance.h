@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// PhotometricColorCalibrationInstance.h - Released 2020-12-15T18:51:35Z
+// PhotometricColorCalibrationInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -164,4 +164,4 @@ private:
 #endif   // __PhotometricColorCalibrationInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PhotometricColorCalibrationInstance.h - Released 2020-12-15T18:51:35Z
+// EOF PhotometricColorCalibrationInstance.h - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// CurvesTransformationInterface.h - Released 2020-12-15T18:51:35Z
+// CurvesTransformationInterface.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -380,4 +380,4 @@ PCL_END_LOCAL
 #endif   // __CurvesTransformationInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CurvesTransformationInterface.h - Released 2020-12-15T18:51:35Z
+// EOF CurvesTransformationInterface.h - Released 2020-12-17T15:46:55Z

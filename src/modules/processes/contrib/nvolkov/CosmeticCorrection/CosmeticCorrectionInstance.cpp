@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard CosmeticCorrection Process Module Version 1.2.5
 // ----------------------------------------------------------------------------
-// CosmeticCorrectionInstance.cpp - Released 2020-12-15T18:51:35Z
+// CosmeticCorrectionInstance.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard CosmeticCorrection PixInsight module.
 //
@@ -1308,4 +1308,4 @@ size_type CosmeticCorrectionInstance::ParameterLength( const MetaParameter* p, s
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF CosmeticCorrectionInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF CosmeticCorrectionInstance.cpp - Released 2020-12-17T15:46:56Z

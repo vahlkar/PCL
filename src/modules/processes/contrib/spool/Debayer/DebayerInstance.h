@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerInstance.h - Released 2020-12-15T18:51:35Z
+// DebayerInstance.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -130,6 +130,8 @@ private:
    float       p_fileThreadOverload;
    int32       p_maxFileReadThreads;
    int32       p_maxFileWriteThreads;
+   int         m_maxFileReadThreads = 1;
+   int         m_maxFileWriteThreads = 1;
 
    // Read-only output properties, view execution.
    String     o_imageId;
@@ -186,4 +188,4 @@ private:
 #endif   // __DebayerInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.h - Released 2020-12-15T18:51:35Z
+// EOF DebayerInstance.h - Released 2020-12-17T15:46:56Z

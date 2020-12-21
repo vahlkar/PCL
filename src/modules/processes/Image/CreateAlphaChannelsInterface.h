@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// CreateAlphaChannelsInterface.h - Released 2020-12-15T18:51:35Z
+// CreateAlphaChannelsInterface.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -140,4 +140,4 @@ PCL_END_LOCAL
 #endif   // __CreateAlphaChannelsInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF CreateAlphaChannelsInterface.h - Released 2020-12-15T18:51:35Z
+// EOF CreateAlphaChannelsInterface.h - Released 2020-12-17T15:46:55Z

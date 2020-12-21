@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// PreferencesParameters.h - Released 2020-12-15T18:51:35Z
+// PreferencesParameters.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -384,6 +384,8 @@ DECLARE_BOOLEAN_METAPARAMETER ( Process, enableParallelModuleProcessing,       t
 DECLARE_BOOLEAN_METAPARAMETER ( Process, enableThreadCPUAffinity,              true )
 DECLARE_INT32_METAPARAMETER   ( Process, maxModuleThreadPriority,              ThreadPriority::TimeCritical, ThreadPriority::Lowest, ThreadPriority::TimeCritical ) // ### Warning: DO NOT change these numbers
 DECLARE_INT32_METAPARAMETER   ( Process, maxProcessors,                        int_max, 1, int_max )
+DECLARE_INT32_METAPARAMETER   ( Process, maxFileReadThreads,                   1, 1, 1024 )
+DECLARE_INT32_METAPARAMETER   ( Process, maxFileWriteThreads,                  1, 1, 1024 )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, enableCUDAAcceleration,               true )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, initCUDARuntimeAtStartup,             true )
 DECLARE_BOOLEAN_METAPARAMETER ( Process, backupFiles,                          false )
@@ -404,4 +406,4 @@ PCL_END_LOCAL
 #endif   // __PreferencesParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PreferencesParameters.h - Released 2020-12-15T18:51:35Z
+// EOF PreferencesParameters.h - Released 2020-12-17T15:46:55Z

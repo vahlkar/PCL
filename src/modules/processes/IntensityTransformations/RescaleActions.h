@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleActions.h - Released 2020-12-15T18:51:35Z
+// RescaleActions.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -113,4 +113,4 @@ public:
 #endif   // __RescaleActions_h
 
 // ----------------------------------------------------------------------------
-// EOF RescaleActions.h - Released 2020-12-15T18:51:35Z
+// EOF RescaleActions.h - Released 2020-12-17T15:46:55Z

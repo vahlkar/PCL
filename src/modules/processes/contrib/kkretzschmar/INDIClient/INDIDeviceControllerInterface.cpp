@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerInterface.cpp - Released 2020-12-15T18:51:35Z
+// INDIDeviceControllerInterface.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -1127,4 +1127,4 @@ void INDIDeviceControllerInterface::e_Timer( Timer& sender )
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF INDIDeviceControllerInterface.cpp - Released 2020-12-17T15:46:56Z

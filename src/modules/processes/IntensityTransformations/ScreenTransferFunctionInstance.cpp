@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ScreenTransferFunctionInstance.cpp - Released 2020-12-15T18:51:35Z
+// ScreenTransferFunctionInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -196,4 +196,4 @@ void ScreenTransferFunctionInstance::ApplyTo( View& view ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ScreenTransferFunctionInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF ScreenTransferFunctionInstance.cpp - Released 2020-12-17T15:46:55Z

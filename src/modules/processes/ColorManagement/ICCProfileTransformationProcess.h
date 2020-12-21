@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorManagement Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// ICCProfileTransformationProcess.h - Released 2020-12-15T18:51:35Z
+// ICCProfileTransformationProcess.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorManagement PixInsight module.
 //
@@ -91,4 +91,4 @@ PCL_END_LOCAL
 #endif   // __ICCProfileTransformationProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF ICCProfileTransformationProcess.h - Released 2020-12-15T18:51:35Z
+// EOF ICCProfileTransformationProcess.h - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// APASSInterface.h - Released 2020-12-15T18:51:35Z
+// APASSInterface.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -198,4 +198,4 @@ PCL_END_LOCAL
 #endif   // __APASSInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF APASSInterface.h - Released 2020-12-15T18:51:35Z
+// EOF APASSInterface.h - Released 2020-12-17T15:46:55Z

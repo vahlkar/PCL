@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard APASS Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// APASSParameters.cpp - Released 2020-12-15T18:51:35Z
+// APASSParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard APASS PixInsight module.
 //
@@ -1150,4 +1150,4 @@ bool ADatabaseMagnitudeHigh::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF APASSParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF APASSParameters.cpp - Released 2020-12-17T15:46:55Z

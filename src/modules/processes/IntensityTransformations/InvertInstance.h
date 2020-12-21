@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// InvertInstance.h - Released 2020-12-15T18:51:35Z
+// InvertInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -80,4 +80,4 @@ public:
 #endif   // __InvertInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF InvertInstance.h - Released 2020-12-15T18:51:35Z
+// EOF InvertInstance.h - Released 2020-12-17T15:46:55Z

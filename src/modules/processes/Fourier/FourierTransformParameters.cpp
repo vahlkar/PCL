@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformParameters.cpp - Released 2020-12-15T18:51:35Z
+// FourierTransformParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -99,4 +99,4 @@ bool FTCentered::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF FourierTransformParameters.cpp - Released 2020-12-17T15:46:55Z

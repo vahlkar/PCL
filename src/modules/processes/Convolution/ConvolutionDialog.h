@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// ConvolutionDialog.h - Released 2020-12-15T18:51:35Z
+// ConvolutionDialog.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -105,4 +105,4 @@ private:
 #endif   // __ConvolutionDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF ConvolutionDialog.h - Released 2020-12-15T18:51:35Z
+// EOF ConvolutionDialog.h - Released 2020-12-17T15:46:55Z

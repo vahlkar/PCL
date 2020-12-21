@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageModule.cpp - Released 2020-12-15T18:51:35Z
+// ImageModule.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -58,7 +58,7 @@
 
 #define MODULE_RELEASE_YEAR      2020
 #define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       15
+#define MODULE_RELEASE_DAY       17
 
 #include "CreateAlphaChannelsInterface.h"
 #include "CreateAlphaChannelsProcess.h"
@@ -205,4 +205,4 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
 }
 
 // ----------------------------------------------------------------------------
-// EOF ImageModule.cpp - Released 2020-12-15T18:51:35Z
+// EOF ImageModule.cpp - Released 2020-12-17T15:46:55Z

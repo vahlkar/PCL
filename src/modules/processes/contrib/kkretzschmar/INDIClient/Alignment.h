@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// Alignment.h - Released 2020-12-15T18:51:35Z
+// Alignment.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -295,4 +295,4 @@ private:
 #endif // __Alignment_h
 
 // ----------------------------------------------------------------------------
-// EOF Alignment.h - Released 2020-12-15T18:51:35Z
+// EOF Alignment.h - Released 2020-12-17T15:46:56Z

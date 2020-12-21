@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// FourierTransformInstance.h - Released 2020-12-15T18:51:35Z
+// FourierTransformInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -92,4 +92,4 @@ private:
 #endif   // __FourierTransformInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF FourierTransformInstance.h - Released 2020-12-15T18:51:35Z
+// EOF FourierTransformInstance.h - Released 2020-12-17T15:46:55Z

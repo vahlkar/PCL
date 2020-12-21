@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/ImageSelections.h - Released 2020-12-15T18:51:06Z
+// pcl/ImageSelections.h - Released 2020-12-17T15:46:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -119,4 +119,4 @@ struct PCL_CLASS ImageSelections
 #endif   // __PCL_ImageSelections_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/ImageSelections.h - Released 2020-12-15T18:51:06Z
+// EOF pcl/ImageSelections.h - Released 2020-12-17T15:46:28Z

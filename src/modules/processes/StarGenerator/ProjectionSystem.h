@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// ProjectionSystem.h - Released 2020-12-15T18:51:35Z
+// ProjectionSystem.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -152,4 +152,4 @@ protected:
 #endif   // __ProjectionSystem_h
 
 // ----------------------------------------------------------------------------
-// EOF ProjectionSystem.h - Released 2020-12-15T18:51:35Z
+// EOF ProjectionSystem.h - Released 2020-12-17T15:46:56Z

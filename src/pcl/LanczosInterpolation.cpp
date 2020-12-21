@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/LanczosInterpolation.cpp - Released 2020-12-15T18:51:12Z
+// pcl/LanczosInterpolation.cpp - Released 2020-12-17T15:46:35Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -148,4 +148,4 @@ const float* PCL_FUNC PCL_InitializeLanczosIntLUT( int n )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF pcl/LanczosInterpolation.cpp - Released 2020-12-15T18:51:12Z
+// EOF pcl/LanczosInterpolation.cpp - Released 2020-12-17T15:46:35Z

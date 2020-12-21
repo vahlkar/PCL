@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// ChannelMatchInstance.cpp - Released 2020-12-15T18:51:35Z
+// ChannelMatchInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -298,4 +298,4 @@ size_type ChannelMatchInstance::ParameterLength( const MetaParameter* p, size_ty
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelMatchInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF ChannelMatchInstance.cpp - Released 2020-12-17T15:46:55Z

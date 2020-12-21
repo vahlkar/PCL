@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerInstance.cpp - Released 2020-12-15T18:51:35Z
+// DebayerInstance.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -60,6 +60,7 @@
 #include <pcl/ErrorHandler.h>
 #include <pcl/FileFormat.h>
 #include <pcl/FileFormatInstance.h>
+#include <pcl/GlobalSettings.h>
 #include <pcl/ICCProfile.h>
 #include <pcl/MessageBox.h>
 #include <pcl/MetaModule.h>
@@ -2411,7 +2412,7 @@ private:
       {
          static Mutex mutex;
          static AtomicInt count;
-         volatile AutoLockCounter lock( mutex, count, m_instance.p_maxFileReadThreads );
+         volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileReadThreads );
          if ( !file.ReadImage( m_targetImage ) )
             throw CaughtException();
          m_fileData = OutputFileData( file, images[0].options );
@@ -2559,7 +2560,7 @@ private:
       {
          static Mutex mutex;
          static AtomicInt count;
-         volatile AutoLockCounter lock( mutex, count, m_instance.p_maxFileWriteThreads );
+         volatile AutoLockCounter lock( mutex, count, m_instance.m_maxFileWriteThreads );
          if ( !outputFile.WriteImage( m_outputImage ) || !outputFile.Close() )
             throw CaughtException();
       }
@@ -2616,6 +2617,14 @@ bool DebayerInstance::ExecuteOn( View& view )
       if ( !CanExecuteOn( view, why ) )
          throw Error( why );
    }
+
+   m_maxFileReadThreads = p_maxFileReadThreads;
+   if ( m_maxFileReadThreads < 1 )
+      m_maxFileReadThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
+
+   m_maxFileWriteThreads = p_maxFileWriteThreads;
+   if ( m_maxFileWriteThreads < 1 )
+      m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
    AutoViewLock lock( view, false/*lock*/ );
    lock.LockForWrite();
@@ -2743,6 +2752,14 @@ bool DebayerInstance::ExecuteGlobal()
       if ( !CanExecuteGlobal( why ) )
          throw Error( why );
    }
+
+   m_maxFileReadThreads = p_maxFileReadThreads;
+   if ( m_maxFileReadThreads < 1 )
+      m_maxFileReadThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileReadThreads" ) );
+
+   m_maxFileWriteThreads = p_maxFileWriteThreads;
+   if ( m_maxFileWriteThreads < 1 )
+      m_maxFileWriteThreads = Max( 1, PixInsightSettings::GlobalInteger( "Process/MaxFileWriteThreads" ) );
 
    Console console;
    console.EnableAbort();
@@ -3626,4 +3643,4 @@ size_type DebayerInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF DebayerInstance.cpp - Released 2020-12-17T15:46:56Z

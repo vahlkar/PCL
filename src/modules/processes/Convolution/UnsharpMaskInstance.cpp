@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Convolution Process Module Version 1.1.3
 // ----------------------------------------------------------------------------
-// UnsharpMaskInstance.cpp - Released 2020-12-15T18:51:35Z
+// UnsharpMaskInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Convolution PixInsight module.
 //
@@ -511,4 +511,4 @@ void* UnsharpMaskInstance::LockParameter( const MetaParameter* p, size_type /*ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF UnsharpMaskInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF UnsharpMaskInstance.cpp - Released 2020-12-17T15:46:55Z

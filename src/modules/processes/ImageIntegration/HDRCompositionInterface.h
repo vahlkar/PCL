@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// HDRCompositionInterface.h - Released 2020-12-15T18:51:35Z
+// HDRCompositionInterface.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -207,4 +207,4 @@ PCL_END_LOCAL
 #endif   // __HDRCompositionInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF HDRCompositionInterface.h - Released 2020-12-15T18:51:35Z
+// EOF HDRCompositionInterface.h - Released 2020-12-17T15:46:55Z

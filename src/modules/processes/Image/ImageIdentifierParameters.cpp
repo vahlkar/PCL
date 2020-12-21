@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageIdentifierParameters.cpp - Released 2020-12-15T18:51:35Z
+// ImageIdentifierParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -92,4 +92,4 @@ String ImageIdentifier::AllowedCharacters() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageIdentifierParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF ImageIdentifierParameters.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// RescaleParameters.cpp - Released 2020-12-15T18:51:35Z
+// RescaleParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -103,4 +103,4 @@ size_type RescalingMode::DefaultValueIndex() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF RescaleParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF RescaleParameters.cpp - Released 2020-12-17T15:46:55Z

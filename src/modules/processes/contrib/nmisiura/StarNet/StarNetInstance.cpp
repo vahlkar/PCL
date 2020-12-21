@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarNet Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// StarNetInstance.cpp - Released 2020-12-15T18:51:35Z
+// StarNetInstance.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarNet PixInsight module.
 //
@@ -625,4 +625,4 @@ size_type StarNetInstance::ParameterLength( const MetaParameter* p, size_type ta
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarNetInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF StarNetInstance.cpp - Released 2020-12-17T15:46:56Z

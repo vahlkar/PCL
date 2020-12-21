@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// BackgroundNeutralizationInterface.cpp - Released 2020-12-15T18:51:35Z
+// BackgroundNeutralizationInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -571,4 +571,4 @@ BackgroundNeutralizationInterface::GUIData::GUIData( BackgroundNeutralizationInt
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF BackgroundNeutralizationInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF BackgroundNeutralizationInterface.cpp - Released 2020-12-17T15:46:55Z

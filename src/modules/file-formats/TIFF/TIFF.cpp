@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard TIFF File Format Module Version 1.0.8
 // ----------------------------------------------------------------------------
-// TIFF.cpp - Released 2020-12-15T18:51:24Z
+// TIFF.cpp - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard TIFF PixInsight module.
 //
@@ -1550,4 +1550,4 @@ void TIFFWriter::WriteImage( const UInt32Image& image )
 }  // pcl
 
 // ----------------------------------------------------------------------------
-// EOF TIFF.cpp - Released 2020-12-15T18:51:24Z
+// EOF TIFF.cpp - Released 2020-12-17T15:46:44Z

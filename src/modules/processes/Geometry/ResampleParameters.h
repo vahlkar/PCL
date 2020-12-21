@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// ResampleParameters.h - Released 2020-12-15T18:51:35Z
+// ResampleParameters.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -160,4 +160,4 @@ PCL_END_LOCAL
 #endif   // __ResampleParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ResampleParameters.h - Released 2020-12-15T18:51:35Z
+// EOF ResampleParameters.h - Released 2020-12-17T15:46:55Z

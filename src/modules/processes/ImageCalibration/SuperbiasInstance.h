@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// SuperbiasInstance.h - Released 2020-12-15T18:51:35Z
+// SuperbiasInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -100,4 +100,4 @@ private:
 #endif   // __SuperbiasInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasInstance.h - Released 2020-12-15T18:51:35Z
+// EOF SuperbiasInstance.h - Released 2020-12-17T15:46:55Z

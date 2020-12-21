@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// IntegrationDataLoaderEngine.h - Released 2020-12-15T18:51:35Z
+// IntegrationDataLoaderEngine.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -115,4 +115,4 @@ private:
 #endif   // __IntegrationDataLoaderEngine_h
 
 // ----------------------------------------------------------------------------
-// EOF IntegrationDataLoaderEngine.h - Released 2020-12-15T18:51:35Z
+// EOF IntegrationDataLoaderEngine.h - Released 2020-12-17T15:46:55Z

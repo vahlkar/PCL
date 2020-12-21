@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// SuperbiasParameters.cpp - Released 2020-12-15T18:51:35Z
+// SuperbiasParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -232,4 +232,4 @@ bool SBSuperbiasViewId1::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF SuperbiasParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF SuperbiasParameters.cpp - Released 2020-12-17T15:46:55Z

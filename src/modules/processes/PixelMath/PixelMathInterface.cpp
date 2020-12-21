@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// PixelMathInterface.cpp - Released 2020-12-15T18:51:35Z
+// PixelMathInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -898,4 +898,4 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF PixelMathInterface.cpp - Released 2020-12-17T15:46:55Z

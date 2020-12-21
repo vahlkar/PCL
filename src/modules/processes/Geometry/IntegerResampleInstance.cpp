@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// IntegerResampleInstance.cpp - Released 2020-12-15T18:51:35Z
+// IntegerResampleInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -234,4 +234,4 @@ void* IntegerResampleInstance::LockParameter( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF IntegerResampleInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF IntegerResampleInstance.cpp - Released 2020-12-17T15:46:55Z

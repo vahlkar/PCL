@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EProcess.cpp - Released 2020-12-15T18:51:35Z
+// B3EProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -276,4 +276,4 @@ int B3EProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF B3EProcess.cpp - Released 2020-12-17T15:46:55Z

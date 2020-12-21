@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerParameters.cpp - Released 2020-12-15T18:51:35Z
+// DebayerParameters.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -576,12 +576,12 @@ IsoString DebayerMaxFileReadThreads::Id() const
 
 double DebayerMaxFileReadThreads::DefaultValue() const
 {
-   return 1;
+   return 0;
 }
 
 double DebayerMaxFileReadThreads::MinimumValue() const
 {
-   return 1;
+   return 0;
 }
 
 double DebayerMaxFileReadThreads::MaximumValue() const
@@ -603,12 +603,12 @@ IsoString DebayerMaxFileWriteThreads::Id() const
 
 double DebayerMaxFileWriteThreads::DefaultValue() const
 {
-   return 1;
+   return 0;
 }
 
 double DebayerMaxFileWriteThreads::MinimumValue() const
 {
-   return 1;
+   return 0;
 }
 
 double DebayerMaxFileWriteThreads::MaximumValue() const
@@ -1082,4 +1082,4 @@ bool DebayerOutputFileNoiseAlgorithmB::IsReadOnly() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DebayerParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF DebayerParameters.cpp - Released 2020-12-17T15:46:56Z

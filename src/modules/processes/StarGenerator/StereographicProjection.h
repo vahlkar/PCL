@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StereographicProjection.h - Released 2020-12-15T18:51:35Z
+// StereographicProjection.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -121,4 +121,4 @@ private:
 #endif   // __StereographicProjection_h
 
 // ----------------------------------------------------------------------------
-// EOF StereographicProjection.h - Released 2020-12-15T18:51:35Z
+// EOF StereographicProjection.h - Released 2020-12-17T15:46:56Z

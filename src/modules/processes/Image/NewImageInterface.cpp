@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageInterface.cpp - Released 2020-12-15T18:51:35Z
+// NewImageInterface.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -691,4 +691,4 @@ NewImageInterface::GUIData::GUIData( NewImageInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInterface.cpp - Released 2020-12-15T18:51:35Z
+// EOF NewImageInterface.cpp - Released 2020-12-17T15:46:55Z

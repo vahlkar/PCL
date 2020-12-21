@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/BilinearInterpolation.h - Released 2020-12-15T18:51:06Z
+// pcl/BilinearInterpolation.h - Released 2020-12-17T15:46:29Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -161,4 +161,4 @@ __1:
 #endif   // __PCL_BilinearInterpolation_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/BilinearInterpolation.h - Released 2020-12-15T18:51:06Z
+// EOF pcl/BilinearInterpolation.h - Released 2020-12-17T15:46:29Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelExtractionInstance.cpp - Released 2020-12-15T18:51:35Z
+// ChannelExtractionInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -503,4 +503,4 @@ size_type ChannelExtractionInstance::ParameterLength( const MetaParameter* p, si
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelExtractionInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF ChannelExtractionInstance.cpp - Released 2020-12-17T15:46:55Z

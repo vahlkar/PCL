@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// AutoHistogramInterface.h - Released 2020-12-15T18:51:35Z
+// AutoHistogramInterface.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -166,4 +166,4 @@ PCL_END_LOCAL
 #endif   // __AutoHistogramInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF AutoHistogramInterface.h - Released 2020-12-15T18:51:35Z
+// EOF AutoHistogramInterface.h - Released 2020-12-17T15:46:55Z

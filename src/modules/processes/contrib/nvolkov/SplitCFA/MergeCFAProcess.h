@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard SplitCFA Process Module Version 1.0.6
 // ----------------------------------------------------------------------------
-// MergeCFAProcess.h - Released 2020-12-15T18:51:35Z
+// MergeCFAProcess.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard SplitCFA PixInsight module.
 //
@@ -89,4 +89,4 @@ PCL_END_LOCAL
 #endif // __MergeCFAProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF MergeCFAProcess.h - Released 2020-12-15T18:51:35Z
+// EOF MergeCFAProcess.h - Released 2020-12-17T15:46:56Z

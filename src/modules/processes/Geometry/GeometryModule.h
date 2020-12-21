@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Geometry Process Module Version 1.2.3
 // ----------------------------------------------------------------------------
-// GeometryModule.h - Released 2020-12-15T18:51:35Z
+// GeometryModule.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Geometry PixInsight module.
 //
@@ -93,4 +93,4 @@ void DeleteAstrometryMetadataAndPreviews( ImageWindow&,
 #endif   // __GeometryModule_h
 
 // ----------------------------------------------------------------------------
-// EOF GeometryModule.h - Released 2020-12-15T18:51:35Z
+// EOF GeometryModule.h - Released 2020-12-17T15:46:55Z

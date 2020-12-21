@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.5.0
 // ----------------------------------------------------------------------------
-// PixelMathParameters.h - Released 2020-12-15T18:51:35Z
+// PixelMathParameters.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -508,4 +508,4 @@ PCL_END_LOCAL
 #endif   // __PixelMathParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathParameters.h - Released 2020-12-15T18:51:35Z
+// EOF PixelMathParameters.h - Released 2020-12-17T15:46:55Z

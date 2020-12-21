@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIClient.cpp - Released 2020-12-15T18:51:35Z
+// INDIClient.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -580,4 +580,4 @@ void INDIClient::ApplyToPropertyList( indigo_property* p, const PropertyListMuta
 } // namespace pcl
 
 // ----------------------------------------------------------------------------
-// EOF INDIClient.cpp - Released 2020-12-15T18:51:35Z
+// EOF INDIClient.cpp - Released 2020-12-17T15:46:56Z

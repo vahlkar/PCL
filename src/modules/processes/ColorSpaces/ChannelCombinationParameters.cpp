@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorSpaces Process Module Version 1.1.2
 // ----------------------------------------------------------------------------
-// ChannelCombinationParameters.cpp - Released 2020-12-15T18:51:35Z
+// ChannelCombinationParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorSpaces PixInsight module.
 //
@@ -67,4 +67,4 @@ ChannelId*      TheChannelIdCombinationParameter = nullptr;
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ChannelCombinationParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF ChannelCombinationParameters.cpp - Released 2020-12-17T15:46:55Z

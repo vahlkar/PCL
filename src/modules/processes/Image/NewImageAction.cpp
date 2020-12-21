@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageAction.cpp - Released 2020-12-15T18:51:35Z
+// NewImageAction.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -87,4 +87,4 @@ void NewImageAction::Execute()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF NewImageAction.cpp - Released 2020-12-15T18:51:35Z
+// EOF NewImageAction.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ArcsinhStretch Process Module Version 1.0.0
 // ----------------------------------------------------------------------------
-// ArcsinhStretchModule.h - Released 2020-12-15T18:51:35Z
+// ArcsinhStretchModule.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ArcsinhStretch PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __ArcsinhStretchModule_h
 
 // ----------------------------------------------------------------------------
-// EOF ArcsinhStretchModule.h - Released 2020-12-15T18:51:35Z
+// EOF ArcsinhStretchModule.h - Released 2020-12-17T15:46:56Z

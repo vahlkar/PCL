@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/GaiaDatabaseFile.h - Released 2020-12-15T18:51:06Z
+// pcl/GaiaDatabaseFile.h - Released 2020-12-17T15:46:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -240,7 +240,27 @@ typedef XPSD::SearchData<GaiaStarData> GaiaSearchData;
  * \li Gaia Data Release 2. Documentation release 1.2:
  * https://gea.esac.esa.int/archive/documentation/GDR2/index.html
  *
- * \sa StarDatabaseFile
+ * \li Gaia Early Data Release 3 - online resources:
+ * https://www.cosmos.esa.int/web/gaia/early-data-release-3
+ *
+ * \li <em>Gaia Early Data Release 3. Summary of the contents and survey
+ * properties.</em> Gaia Collaboration, A.G.A. Brown, A. Vallenari, T. Prusti,
+ * J.H.J. de Bruijne, et al.:
+ * https://www.aanda.org/articles/aa/pdf/forth/aa39657-20.pdf
+ *
+ * \li Gaia Early Data Release 3. Documentation release 1.0:
+ * https://gea.esac.esa.int/archive/documentation/GEDR3/index.html
+ *
+ * \b Credits
+ *
+ * This work has made use of data from the European Space Agency (ESA) mission
+ * Gaia (https://www.cosmos.esa.int/gaia), processed by the Gaia Data
+ * Processing and Analysis Consortium (DPAC,
+ * https://www.cosmos.esa.int/web/gaia/dpac/consortium). Funding for the DPAC
+ * has been provided by national institutions, in particular the institutions
+ * participating in the Gaia Multilateral Agreement.
+ *
+ * \sa StarDatabaseFile, APASSDatabaseFile
  * \ingroup point_source_databases
  */
 class PCL_CLASS GaiaDatabaseFile : public StarDatabaseFile
@@ -460,4 +480,4 @@ private:
 #endif  // __PCL_GaiaDatabaseFile_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/GaiaDatabaseFile.h - Released 2020-12-15T18:51:06Z
+// EOF pcl/GaiaDatabaseFile.h - Released 2020-12-17T15:46:28Z

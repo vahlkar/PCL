@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// DrizzleIntegrationParameters.h - Released 2020-12-15T18:51:35Z
+// DrizzleIntegrationParameters.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -1010,4 +1010,4 @@ PCL_END_LOCAL
 #endif   // __DrizzleIntegrationParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF DrizzleIntegrationParameters.h - Released 2020-12-15T18:51:35Z
+// EOF DrizzleIntegrationParameters.h - Released 2020-12-17T15:46:55Z

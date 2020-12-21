@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard IntensityTransformations Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExponentialTransformationInstance.cpp - Released 2020-12-15T18:51:35Z
+// ExponentialTransformationInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard IntensityTransformations PixInsight module.
 //
@@ -383,4 +383,4 @@ String ExponentialTransformationInstance::TypeAsString() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExponentialTransformationInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF ExponentialTransformationInstance.cpp - Released 2020-12-17T15:46:55Z

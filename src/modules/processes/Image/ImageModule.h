@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// ImageModule.h - Released 2020-12-15T18:51:35Z
+// ImageModule.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __ImageModule_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageModule.h - Released 2020-12-15T18:51:35Z
+// EOF ImageModule.h - Released 2020-12-17T15:46:55Z

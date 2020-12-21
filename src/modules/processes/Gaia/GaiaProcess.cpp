@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Gaia Process Module Version 1.0.2
 // ----------------------------------------------------------------------------
-// GaiaProcess.cpp - Released 2020-12-15T18:51:35Z
+// GaiaProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Gaia PixInsight module.
 //
@@ -362,10 +362,17 @@ void GaiaProcess::EnsureDatabasesInitialized( int dr, int verbosity )
                GaiaDatabaseFile* file = new GaiaDatabaseFile( filePath );
                data.databases.Add( file );
                if ( file->DataRelease() != DRIndexToDRName( dr ) )
-                  throw Error( "Invalid Gaia " + file->DataRelease() + " database file; "
+                  throw Error( "Unexpected Gaia " + file->DataRelease() + " database file; "
                                "expected a Gaia " + DRIndexToDRName( dr ) + " file: <raw>" + file->FilePath() + "</raw>" );
                if ( verbosity > 1 )
                {
+                  if ( data.databases.Length() == 1 )
+                     console.WriteLn( "<end><cbr>"
+                        + file->Metadata().description.Trimmed()
+                        + "<br><br>"
+                        + file->Metadata().copyright.Trimmed()
+                        + "<br>" );
+
                   console.WriteLn( "<b><raw>" + file->FilePath() + "</raw></b>\n"
                      +  "Database version .... " + file->Metadata().databaseIdentifier + ' ' + file->Metadata().databaseVersion + '\n'
                      + String().Format(
@@ -487,4 +494,4 @@ void GaiaProcess::SavePreferences( int dr )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF GaiaProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF GaiaProcess.cpp - Released 2020-12-17T15:46:55Z

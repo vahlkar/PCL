@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// DefectMapInstance.cpp - Released 2020-12-15T18:51:35Z
+// DefectMapInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -541,4 +541,4 @@ size_type DefectMapInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF DefectMapInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF DefectMapInstance.cpp - Released 2020-12-17T15:46:55Z

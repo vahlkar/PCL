@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorProcess.cpp - Released 2020-12-15T18:51:35Z
+// StarGeneratorProcess.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -224,4 +224,4 @@ int StarGeneratorProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF StarGeneratorProcess.cpp - Released 2020-12-17T15:46:56Z

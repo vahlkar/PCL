@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// LocalNormalizationProcess.cpp - Released 2020-12-15T18:51:35Z
+// LocalNormalizationProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -167,4 +167,4 @@ ProcessImplementation* LocalNormalizationProcess::Clone( const ProcessImplementa
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF LocalNormalizationProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF LocalNormalizationProcess.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// FluxCalibrationInstance.cpp - Released 2020-12-15T18:51:35Z
+// FluxCalibrationInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -500,4 +500,4 @@ size_type FluxCalibrationInstance::ParameterLength( const MetaParameter* p, size
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF FluxCalibrationInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF FluxCalibrationInstance.cpp - Released 2020-12-17T15:46:55Z

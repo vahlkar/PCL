@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// GlobalModule.h - Released 2020-12-15T18:51:35Z
+// GlobalModule.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __GlobalModule_h
 
 // ----------------------------------------------------------------------------
-// EOF GlobalModule.h - Released 2020-12-15T18:51:35Z
+// EOF GlobalModule.h - Released 2020-12-17T15:46:55Z

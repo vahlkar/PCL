@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard JPEG File Format Module Version 1.0.5
 // ----------------------------------------------------------------------------
-// JPEGOptionsDialog.h - Released 2020-12-15T18:51:24Z
+// JPEGOptionsDialog.h - Released 2020-12-17T15:46:44Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard JPEG PixInsight module.
 //
@@ -116,4 +116,4 @@ protected:
 #endif   // __JPEGOptionsDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF JPEGOptionsDialog.h - Released 2020-12-15T18:51:24Z
+// EOF JPEGOptionsDialog.h - Released 2020-12-17T15:46:44Z

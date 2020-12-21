@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ImageCalibrationProcess.cpp - Released 2020-12-15T18:51:35Z
+// ImageCalibrationProcess.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageCalibration PixInsight module.
 //
@@ -200,4 +200,4 @@ ProcessImplementation* ImageCalibrationProcess::Clone( const ProcessImplementati
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCalibrationProcess.cpp - Released 2020-12-15T18:51:35Z
+// EOF ImageCalibrationProcess.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// Projection.cpp - Released 2020-12-15T18:51:35Z
+// Projection.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -179,4 +179,4 @@ void Projection::Initialize( double lon, double lat, double fov, double w, doubl
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Projection.cpp - Released 2020-12-15T18:51:35Z
+// EOF Projection.cpp - Released 2020-12-17T15:46:56Z

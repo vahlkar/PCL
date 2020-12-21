@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// MapIntegrationEngine.h - Released 2020-12-15T18:51:35Z
+// MapIntegrationEngine.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -119,4 +119,4 @@ private:
 #endif   // __MapIntegrationEngine_h
 
 // ----------------------------------------------------------------------------
-// EOF MapIntegrationEngine.h - Released 2020-12-15T18:51:35Z
+// EOF MapIntegrationEngine.h - Released 2020-12-17T15:46:55Z

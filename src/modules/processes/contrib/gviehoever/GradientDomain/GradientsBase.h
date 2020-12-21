@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsBase.h - Released 2020-12-15T18:51:35Z
+// GradientsBase.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -223,4 +223,4 @@ protected: // member functions
 #endif // __GradientsBase_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsBase.h - Released 2020-12-15T18:51:35Z
+// EOF GradientsBase.h - Released 2020-12-17T15:46:56Z

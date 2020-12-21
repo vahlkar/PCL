@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// DynamicPSFInstance.h - Released 2020-12-15T18:51:35Z
+// DynamicPSFInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -220,4 +220,4 @@ private:
 #endif   // __DynamicPSFInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF DynamicPSFInstance.h - Released 2020-12-15T18:51:35Z
+// EOF DynamicPSFInstance.h - Released 2020-12-17T15:46:55Z

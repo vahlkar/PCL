@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard StarGenerator Process Module Version 1.1.0
 // ----------------------------------------------------------------------------
-// StarGeneratorInstance.cpp - Released 2020-12-15T18:51:35Z
+// StarGeneratorInstance.cpp - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard StarGenerator PixInsight module.
 //
@@ -571,4 +571,4 @@ size_type StarGeneratorInstance::ParameterLength( const MetaParameter* p, size_t
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF StarGeneratorInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF StarGeneratorInstance.cpp - Released 2020-12-17T15:46:56Z

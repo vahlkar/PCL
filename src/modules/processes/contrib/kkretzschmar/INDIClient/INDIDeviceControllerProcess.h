@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// INDIDeviceControllerProcess.h - Released 2020-12-15T18:51:35Z
+// INDIDeviceControllerProcess.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -92,4 +92,4 @@ PCL_END_LOCAL
 #endif // __INDIDeviceControllerProcess_h
 
 // ----------------------------------------------------------------------------
-// EOF INDIDeviceControllerProcess.h - Released 2020-12-15T18:51:35Z
+// EOF INDIDeviceControllerProcess.h - Released 2020-12-17T15:46:56Z

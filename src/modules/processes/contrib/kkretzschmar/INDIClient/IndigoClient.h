@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard INDIClient Process Module Version 1.2.1
 // ----------------------------------------------------------------------------
-// IndigoClient.h - Released 2020-12-15T18:51:35Z
+// IndigoClient.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard INDIClient PixInsight module.
 //
@@ -131,4 +131,4 @@ private:
 #endif // INDIGOCLIENT_H
 
 // ----------------------------------------------------------------------------
-// EOF IndigoClient.h - Released 2020-12-15T18:51:35Z
+// EOF IndigoClient.h - Released 2020-12-17T15:46:56Z

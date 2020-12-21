@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// FITSHeaderAction.h - Released 2020-12-15T18:51:35Z
+// FITSHeaderAction.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -77,4 +77,4 @@ public:
 #endif   // __FITSHeaderActions_h
 
 // ----------------------------------------------------------------------------
-// EOF FITSHeaderAction.h - Released 2020-12-15T18:51:35Z
+// EOF FITSHeaderAction.h - Released 2020-12-17T15:46:55Z

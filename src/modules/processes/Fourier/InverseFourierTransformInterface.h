@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Fourier Process Module Version 1.0.4
 // ----------------------------------------------------------------------------
-// InverseFourierTransformInterface.h - Released 2020-12-15T18:51:35Z
+// InverseFourierTransformInterface.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Fourier PixInsight module.
 //
@@ -132,4 +132,4 @@ extern InverseFourierTransformInterface* TheInverseFourierTransformInterface;
 #endif   // __InverseFourierTransformInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF InverseFourierTransformInterface.h - Released 2020-12-15T18:51:35Z
+// EOF InverseFourierTransformInterface.h - Released 2020-12-17T15:46:55Z

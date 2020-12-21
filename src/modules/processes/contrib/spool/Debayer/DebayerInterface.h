@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Debayer Process Module Version 1.8.2
 // ----------------------------------------------------------------------------
-// DebayerInterface.h - Released 2020-12-15T18:51:35Z
+// DebayerInterface.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Debayer PixInsight module.
 //
@@ -195,4 +195,4 @@ PCL_END_LOCAL
 #endif   // __DebayerInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF DebayerInterface.h - Released 2020-12-15T18:51:35Z
+// EOF DebayerInterface.h - Released 2020-12-17T15:46:56Z

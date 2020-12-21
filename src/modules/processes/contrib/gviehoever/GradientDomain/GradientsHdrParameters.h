@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard GradientDomain Process Module Version 0.6.4
 // ----------------------------------------------------------------------------
-// GradientsHdrParameters.h - Released 2020-12-15T18:51:35Z
+// GradientsHdrParameters.h - Released 2020-12-17T15:46:56Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard GradientDomain PixInsight module.
 //
@@ -126,4 +126,4 @@ PCL_END_LOCAL
 #endif // __GradientsHdrParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF GradientsHdrParameters.h - Released 2020-12-15T18:51:35Z
+// EOF GradientsHdrParameters.h - Released 2020-12-17T15:46:56Z

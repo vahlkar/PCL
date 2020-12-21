@@ -4,7 +4,7 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// pcl/SeparableConvolution.h - Released 2020-12-15T18:51:06Z
+// pcl/SeparableConvolution.h - Released 2020-12-17T15:46:28Z
 // ----------------------------------------------------------------------------
 // This file is part of the PixInsight Class Library (PCL).
 // PCL is a multiplatform C++ framework for development of PixInsight modules.
@@ -395,7 +395,23 @@ public:
     */
    static constexpr int FasterThanNonseparableFilterSize( int numThreads )
    {
-#ifdef __PCL_AVX2
+#ifdef __PCL_COMPATIBILITY
+
+      // No vectorization
+
+      if ( numThreads >= 32 )
+         return 15;
+      if ( numThreads >= 16 )
+         return 11;
+      if ( numThreads >= 8 )
+         return 9;
+      if ( numThreads >= 4 )
+         return 7;
+      return 5;
+
+#else
+
+      // Vectorization with SSE4.2 / AVX2 and FMA instructions
 
       if ( numThreads >= 32 )
          return 29;
@@ -412,18 +428,6 @@ public:
       if ( numThreads >= 2 )
          return 9;
       return 7;
-
-#else
-
-      if ( numThreads >= 32 )
-         return 15;
-      if ( numThreads >= 16 )
-         return 11;
-      if ( numThreads >= 8 )
-         return 9;
-      if ( numThreads >= 4 )
-         return 7;
-      return 5;
 
 #endif
    }
@@ -481,4 +485,4 @@ private:
 #endif   // __PCL_SeparableConvolution_h
 
 // ----------------------------------------------------------------------------
-// EOF pcl/SeparableConvolution.h - Released 2020-12-15T18:51:06Z
+// EOF pcl/SeparableConvolution.h - Released 2020-12-17T15:46:28Z

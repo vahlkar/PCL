@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Flux Process Module Version 1.0.1
 // ----------------------------------------------------------------------------
-// B3EParameters.cpp - Released 2020-12-15T18:51:35Z
+// B3EParameters.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Flux PixInsight module.
 //
@@ -862,4 +862,4 @@ bool B3EOutputBackgroundReferenceMask2::DefaultValue() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF B3EParameters.cpp - Released 2020-12-15T18:51:35Z
+// EOF B3EParameters.cpp - Released 2020-12-17T15:46:55Z

@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Global Process Module Version 1.3.0
 // ----------------------------------------------------------------------------
-// ColorManagementSetupParameters.h - Released 2020-12-15T18:51:35Z
+// ColorManagementSetupParameters.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Global PixInsight module.
 //
@@ -348,4 +348,4 @@ PCL_END_LOCAL
 #endif   // __ColorManagementSetupParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF ColorManagementSetupParameters.h - Released 2020-12-15T18:51:35Z
+// EOF ColorManagementSetupParameters.h - Released 2020-12-17T15:46:55Z

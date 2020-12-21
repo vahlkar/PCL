@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ImageIntegration Process Module Version 1.2.33
 // ----------------------------------------------------------------------------
-// ImageIntegrationModule.h - Released 2020-12-15T18:51:35Z
+// ImageIntegrationModule.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ImageIntegration PixInsight module.
 //
@@ -85,4 +85,4 @@ public:
 #endif   // __ImageIntegrationModule_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageIntegrationModule.h - Released 2020-12-15T18:51:35Z
+// EOF ImageIntegrationModule.h - Released 2020-12-17T15:46:55Z

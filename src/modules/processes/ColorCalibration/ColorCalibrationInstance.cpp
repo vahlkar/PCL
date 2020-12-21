@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard ColorCalibration Process Module Version 1.5.1
 // ----------------------------------------------------------------------------
-// ColorCalibrationInstance.cpp - Released 2020-12-15T18:51:35Z
+// ColorCalibrationInstance.cpp - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard ColorCalibration PixInsight module.
 //
@@ -718,4 +718,4 @@ size_type ColorCalibrationInstance::ParameterLength( const MetaParameter* p, siz
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ColorCalibrationInstance.cpp - Released 2020-12-15T18:51:35Z
+// EOF ColorCalibrationInstance.cpp - Released 2020-12-17T15:46:55Z

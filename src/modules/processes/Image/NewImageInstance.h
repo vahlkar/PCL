@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard Image Process Module Version 1.3.2
 // ----------------------------------------------------------------------------
-// NewImageInstance.h - Released 2020-12-15T18:51:35Z
+// NewImageInstance.h - Released 2020-12-17T15:46:55Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard Image PixInsight module.
 //
@@ -103,4 +103,4 @@ private:
 #endif   // __NewImageInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF NewImageInstance.h - Released 2020-12-15T18:51:35Z
+// EOF NewImageInstance.h - Released 2020-12-17T15:46:55Z
