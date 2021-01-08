@@ -90,42 +90,55 @@ IndigoClient::~IndigoClient()
 #endif // !_PCL_WINDOWS
 }
 
-bool IndigoClient::connectServer( std::ostream& errMessage )
+IndigoClient::ReturnCode IndigoClient::connectServer(std::ostream& errMessage , uint32_t interfaceIndex)
 {
-   indigo_server_entry* serverEntry = nullptr;
-   indigo_result rc = indigo_connect_server( m_serverHost.c_str(), m_serverHost.c_str(), m_port, &serverEntry );
-   if ( rc != INDIGO_OK && rc != INDIGO_DUPLICATED )
+   indigo_result rc = indigo_connect_server_id( m_serverHost.c_str(), m_serverHost.c_str(), m_port, interfaceIndex , &m_serverEntry);
+   if (rc == INDIGO_OK)
    {
-      errMessage << "Internal error: Server connection failed: rc = " << rc << " -- " << __FILE__ << ":" << __LINE__;
-      return false;
+      return ReturnCode::INDIGO_OK;
+   } else if ( rc == INDIGO_DUPLICATED )
+   {
+      errMessage << "Warning: Duplicate server connection : rc = " << rc << " -- " << __FILE__ << ":" << __LINE__;
+      return ReturnCode::INDIGO_DUPLICATED;
+   } else
+   {
+       errMessage << "Internal error: Server connection failed : rc = " << rc << " -- " << __FILE__ << ":" << __LINE__;
+       return ReturnCode::INDIGO_ERROR;
    }
-   return true;
+   return ReturnCode::INDIGO_OK;
 }
 
-bool IndigoClient::disconnectServer()
+bool IndigoClient::disconnectServer(uint32_t interfaceIndex)
 {
-   indigo_server_entry* server = getServerEntry( m_serverHost.c_str(), static_cast<uint32_t>( m_port ) );
-   if ( server != nullptr )
+   char errMsg[256];
+   bool isConnected = indigo_connection_status(m_serverEntry, errMsg);
+   if ( isConnected )
    {
-      indigo_result rc = indigo_disconnect_server( server );
+      indigo_result rc = indigo_disconnect_server( m_serverEntry );
       if ( rc != INDIGO_OK )
          return false;
    }
    return true;
 }
 
-bool IndigoClient::serverIsConnected( std::ostream& errMessage ) const
+bool IndigoClient::serverIsConnected(std::ostream& errMessage , uint32_t interfaceIndex) const
 {
-   indigo_server_entry* server = getServerEntry( m_serverHost.c_str(), static_cast<uint32_t>( m_port ) );
-   if ( server == nullptr )
-      return false;
-   if ( server->socket <= 0 )
-   {
-      if ( strlen( server->last_error ) != 0 )
-         errMessage << "Error: " << server->last_error;
-      return false;
-   }
-   return true;
+   char errMsg[256];
+   bool isConnected = indigo_connection_status(m_serverEntry, errMsg);
+   if (!isConnected)
+       errMessage << "Error: " << errMsg;   
+   return isConnected;
+}
+
+void IndigoClient::attach()
+{
+  indigo_attach_client( &m_indigoClient );
+  clientAttach(&m_indigoClient);
+}
+
+void IndigoClient::detach()
+{
+  indigo_detach_client(&m_indigoClient);
 }
 
 bool IndigoClient::sendNewProperty( indigo_property* property )
@@ -205,7 +218,7 @@ indigo_result IndigoClient::clientAttach( indigo_client* client )
 }
 
 indigo_result IndigoClient::defineProperty( indigo_client* client, indigo_device* device,
-   indigo_property* property, const char* message )
+                                            indigo_property* property, const char* message )
 {
    IndigoClient* indigoClient = reinterpret_cast<IndigoClient*>( client->client_context );
    if ( property == nullptr )
@@ -222,7 +235,14 @@ indigo_result IndigoClient::defineProperty( indigo_client* client, indigo_device
    }
    else if ( property->type == INDIGO_BLOB_VECTOR )
    {
-      indigo_enable_blob( client, property, INDIGO_ENABLE_BLOB_ALSO );
+      if (device->version >= INDIGO_VERSION_2_0) 
+      {
+        indigo_enable_blob( client, property, INDIGO_ENABLE_BLOB_URL);
+      } 
+      else
+      {
+        indigo_enable_blob(client, property, INDIGO_ENABLE_BLOB_ALSO);  
+      }
    }
    return INDIGO_OK;
 }
@@ -278,14 +298,6 @@ indigo_result IndigoClient::getMessage( indigo_client* client, indigo_device* de
       return INDIGO_OK;
    }
    return INDIGO_FAILED;
-}
-
-indigo_server_entry* IndigoClient::getServerEntry( const char* host, int32_t port ) const
-{
-   for ( int dc = 0; dc < INDIGO_MAX_SERVERS; dc++ )
-      if ( !strcmp( indigo_available_servers[dc].host, host ) && indigo_available_servers[dc].port == port )
-         return &indigo_available_servers[dc];
-   return nullptr;
 }
 
 bool IndigoClient::loadDeviceDriver( const std::string& driver )

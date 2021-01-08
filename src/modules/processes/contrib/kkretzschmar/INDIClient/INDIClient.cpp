@@ -63,34 +63,81 @@
    if ( p == nullptr )     \
       throw Error( "Internal error: INDIClient: Null pointer argument in " + String( PCL_FUNCTION_NAME ) );
 
+#define MAX_INTERFACES_NUMBER 255
+
+#define CHECK_INTERFACE_INDEX(index) \
+  if (index >= MAX_INTERFACES_NUMBER) \
+     throw Error( "Internal error: INDIClient: Interface index out of bounds in " + String( PCL_FUNCTION_NAME ) );
+
+
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-static INDIClient* s_indiClient = nullptr;
+static INDIClient** s_indiClient = INDIClient::initializeINDIClients();
+static size_t s_networkInterfaceIndex = 0;
+static bool s_interfaceHasChanged = false;
+
+void INDIClient::SetInterfaceChanged(bool value)
+{
+  s_interfaceHasChanged = value;
+}
+
+bool INDIClient::HasInterfaceChanged()
+{
+  return s_interfaceHasChanged;
+}
+void INDIClient::setInterfaceIndex(size_t index)
+{
+  CHECK_INTERFACE_INDEX(index);
+  s_networkInterfaceIndex = index;
+}
+
+
+INDIClient** INDIClient::initializeINDIClients()
+{
+  INDIClient** clients = new INDIClient*[MAX_INTERFACES_NUMBER];
+  for (size_t count = 0;  count < MAX_INTERFACES_NUMBER; count++)
+  {
+    clients[count] = nullptr;
+  }
+  return clients;
+}
+
+uint32_t INDIClient::TheInterfaceIndex()
+{
+  return s_networkInterfaceIndex;
+}
 
 INDIClient* INDIClient::TheClient()
 {
-   return s_indiClient;
+   return s_indiClient[s_networkInterfaceIndex];
+}
+
+INDIClient* INDIClient::TheClient(uint32_t interfaceIndex)
+{
+   CHECK_INTERFACE_INDEX(interfaceIndex);
+   return s_indiClient[interfaceIndex];
 }
 
 INDIClient* INDIClient::TheClientOrDie()
 {
    if ( s_indiClient == nullptr )
       throw Error( "The Indigo device controller has not been initialized" );
-   return s_indiClient;
+   return s_indiClient[s_networkInterfaceIndex];
 }
 
 INDIClient* INDIClient::NewClient( const IsoString& hostname, unsigned port )
 {
-   return s_indiClient = new INDIClient( hostname, port );
+   return s_indiClient[s_networkInterfaceIndex] = new INDIClient( hostname, port );
 }
 
-void INDIClient::DestroyClient()
+void INDIClient::DestroyClients()
 {
-   if ( s_indiClient != nullptr )
-      delete s_indiClient, s_indiClient = nullptr;
+   for (size_t count = 0;  count < MAX_INTERFACES_NUMBER; count++)
+      if ( s_indiClient[count] != nullptr )
+         delete s_indiClient[count], s_indiClient[count] = nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -424,6 +471,18 @@ void INDIClient::registerNewPropertyCallback()
       [this]( indigo_property* property )
       {
          CHECK_POINTER( property );
+                 
+         {
+            // avoid duplicate entries produced by reconnects
+            ExclPropertyList y = PropertyList();
+            INDIPropertyListItemArray& properties( y );
+            for ( auto propertyItem : properties )
+            {
+               AutoPointer<IProperty> ip( PropertyFactory::Create( property ) );
+               if ( ip->getDeviceName() == propertyItem.Device && ip->getName() == propertyItem.Property )
+                  return;
+            }                  
+         }
          ApplyToPropertyList( property, PropertyListGenerator() );
       };
 }
@@ -496,6 +555,10 @@ void INDIClient::registerNewBlobCallback()
          String dir = PixInsightSettings::GlobalString( "ImageWindow/DownloadsDirectory" );
          if ( dir.IsEmpty() ) // this cannot happen
             dir = File::SystemTempDirectory();
+         if (*property->items[0].blob.url)
+         {
+            indigo_populate_http_blob_item(&property->items[0]);
+         }
          String filePath = dir + '/' + blobProperty->getElementLabel( 0 ) + blobProperty->getBlobFormat( 0 );
          File myfile = File::CreateFileForWriting( filePath );
          myfile.Write( blobProperty->getBlob( 0 ), blobProperty->getBlobSize( 0 ) );

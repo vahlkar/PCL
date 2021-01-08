@@ -212,7 +212,7 @@ bool INDICCDFrameInstance::ValidateDevice( bool throwErrors ) const
    return false;
 }
 
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------- -------------------
 
 void INDICCDFrameInstance::SetTelescopeAlignmentModelParameter( bool throwErrors )
 {

@@ -53,75 +53,15 @@
 #ifndef __INDIClient_h
 #define __INDIClient_h
 
+#include "ExclusiveAccess.h"
 #include "IIndigoProperty.h"
 #include "INDIParamListTypes.h"
 #include "IndigoClient.h"
 
-#include <pcl/AutoLock.h>
-
-#include <sstream>
+#include<sstream>
 
 namespace pcl
 {
-
-// ----------------------------------------------------------------------------
-
-template <class T>
-class ExclusiveAccess
-{
-public:
-
-   typedef T item_type;
-
-   ExclusiveAccess( Mutex& mutex, item_type& item )
-      : m_lock( mutex )
-      , m_item( item )
-   {
-   }
-
-   operator item_type&()
-   {
-      return m_item;
-   }
-
-   operator const item_type&() const
-   {
-      return m_item;
-   }
-
-private:
-
-   AutoLock m_lock;
-   item_type& m_item;
-};
-
-// ----------------------------------------------------------------------------
-
-template <class T>
-class ExclusiveConstAccess
-{
-public:
-
-   typedef T item_type;
-
-   ExclusiveConstAccess( Mutex& mutex, const item_type& item )
-      : m_lock( mutex )
-      , m_item( item )
-   {
-   }
-
-   operator const item_type&() const
-   {
-      return m_item;
-   }
-
-private:
-
-   AutoLock m_lock;
-   const item_type& m_item;
-};
-
-// ----------------------------------------------------------------------------
 
 class ExclPropertyList : public ExclusiveAccess<INDIPropertyListItemArray>
 {
@@ -201,13 +141,12 @@ public:
 
    virtual ~INDIClient()
    {
+     disconnectServer();
    }
 
-   bool connectServer( std::ostream& errorMessage )
+   IndigoClient::ReturnCode connectServer( std::ostream& errorMessage )
    {
-      if ( !m_indigoClient.connectServer( errorMessage ) )
-         return false;
-      return true;
+      return m_indigoClient.connectServer( errorMessage, INDIClient::TheInterfaceIndex());
    }
 
    bool disconnectServer()
@@ -215,7 +154,7 @@ public:
       if ( IsServerConnected() )
       {
          reset();
-         return m_indigoClient.disconnectServer();
+         return m_indigoClient.disconnectServer(INDIClient::TheInterfaceIndex());
       }
       return true;
    }
@@ -223,12 +162,23 @@ public:
    bool IsServerConnected() const
    {
       std::ostringstream errorMessage;
-      return m_indigoClient.serverIsConnected( errorMessage );
+      return m_indigoClient.serverIsConnected( errorMessage, INDIClient::TheInterfaceIndex() );
    }
 
    bool IsServerConnected( std::ostream& errorMessage ) const
    {
-      return m_indigoClient.serverIsConnected( errorMessage );
+      return m_indigoClient.serverIsConnected( errorMessage, INDIClient::TheInterfaceIndex()  );
+   }
+
+   void attach()
+   {
+    m_indigoClient.attach();
+   }
+
+   void detach()
+   {
+     reset();
+     m_indigoClient.detach();
    }
 
    bool connectDevice( const IsoString& deviceName )
@@ -420,12 +370,20 @@ public:
       return TheClient() != nullptr;
    }
 
+   static bool HasInterfaceChanged();
+   static void SetInterfaceChanged(bool value);
+   static uint32_t TheInterfaceIndex();
+
    void reset();
 
+   static INDIClient** initializeINDIClients();
+
+   static void setInterfaceIndex(size_t index);
    static INDIClient* TheClient();
+   static INDIClient* TheClient(uint32_t interfaceIndex);
    static INDIClient* TheClientOrDie();
    static INDIClient* NewClient( const IsoString& hostName = "localhost", uint32 port = 7624 );
-   static void DestroyClient();
+   static void DestroyClients();
 
 private:
 

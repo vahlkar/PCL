@@ -66,6 +66,12 @@
 class IndigoClient
 {
 public:
+  enum class ReturnCode
+  {
+    INDIGO_OK,
+    INDIGO_DUPLICATED,
+    INDIGO_ERROR
+  };
 
    explicit IndigoClient( const char* clientName );
    IndigoClient( const char* clientName, const char* host, int32_t port );
@@ -74,9 +80,12 @@ public:
 
    ~IndigoClient(); // do not make it virtual, no vtable allowed
 
-   bool connectServer( std::ostream& errMessage );
-   bool disconnectServer();
-   bool serverIsConnected( std::ostream& errMessage ) const;
+   ReturnCode connectServer( std::ostream& errMessage, uint32_t interfaceIndex );
+   bool disconnectServer(uint32_t interfaceIndex);
+   bool serverIsConnected( std::ostream& errMessage, uint32_t interfaceIndex ) const;
+   void attach();
+   void detach();
+
    bool connectDevice( const std::string& deviceName );
    bool disconnectDevice( const std::string& deviceName );
    bool sendNewProperty( indigo_property* property );
@@ -116,11 +125,11 @@ private:
 
    std::string                    m_serverHost;
    uint32_t                       m_port;
+   indigo_server_entry*           m_serverEntry = nullptr;
 #ifndef __PCL_WINDOWS
    std::set<indigo_driver_entry*> m_devices;
 #endif
 
-   indigo_server_entry* getServerEntry( const char* host, int32_t port ) const;
    static indigo_result clientAttach( indigo_client* client );
    static indigo_result defineProperty( indigo_client* client, indigo_device* device, indigo_property* property, const char* message );
    static indigo_result deleteProperty( indigo_client* client, indigo_device* device, indigo_property* property, const char* message );

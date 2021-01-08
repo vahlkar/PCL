@@ -53,6 +53,7 @@
 #ifndef __INDIDeviceControllerInterface_h
 #define __INDIDeviceControllerInterface_h
 
+#include <pcl/CheckBox.h>
 #include <pcl/Edit.h>
 #include <pcl/Label.h>
 #include <pcl/ProcessInterface.h>
@@ -64,6 +65,7 @@
 #include <pcl/TreeBox.h>
 
 #include "INDIDeviceControllerInstance.h"
+#include "ZeroconfServiceDetection.h"
 
 namespace pcl
 {
@@ -96,11 +98,15 @@ public:
       VerticalSizer Global_Sizer;
       SectionBar Server_SectionBar;
       Control Server_Control;
-      HorizontalSizer Server_Sizer;
+      HorizontalSizer Server_HSizer;
+      VerticalSizer ServerName_VSizer;
+      HorizontalSizer ServerName_HSizer;
+      HorizontalSizer ServiceDetection_HSizer;
       Label HostName_Label;
       Edit HostName_Edit;
       Label Port_Label;
       SpinBox Port_SpinBox;
+      CheckBox EnableServerDetection_CheckBox;
       VerticalSizer ServerAction_Sizer;
       PushButton Connect_PushButton;
       PushButton Disconnect_PushButton;
@@ -113,6 +119,10 @@ public:
       Label ServerMessage_Label;
 
       Timer SynchronizeWithServer_Timer;
+#ifdef WITH_ZEROCONF
+      ZeroConfServiceBrowser ZeroconfServiceBrowser_Thread;
+      bool m_isIndigoServiceChanged = false;
+#endif
    };
 
 private:
