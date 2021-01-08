@@ -43,3 +43,5 @@ __private
 Debug
 .gitignore
 bin
+# IDEs
+.vscode
