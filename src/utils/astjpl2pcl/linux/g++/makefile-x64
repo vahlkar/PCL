@@ -1,0 +1,63 @@
+######################################################################
+# PixInsight Makefile Generator Script v1.121
+# Copyright (C) 2009-2021 Pleiades Astrophoto
+######################################################################
+# Generated on .... 2021-01-09T12:05:32.081Z
+# Project id ...... astjpl2pcl
+# Project type .... Executable
+# Platform ........ Linux/g++
+# Configuration ... Release/x64
+# --------------------------------------------------------------------
+# Additional libraries:
+# /PixInsight/src/utils/cspice/lib/libcspice.a
+# /PixInsight/src/utils/cspice/lib/libcsupport.a
+######################################################################
+
+OBJ_DIR="$(PCLSRCDIR)/utils/astjpl2pcl/linux/g++/x64/Release"
+
+.PHONY: all
+all: $(OBJ_DIR)/astjpl2pcl
+
+#
+# Source files
+#
+
+SRC_FILES= \
+../../astjpl2pcl.cpp
+
+#
+# Object files
+#
+
+OBJ_FILES= \
+./x64/Release/astjpl2pcl.o
+
+#
+# Dependency files
+#
+
+DEP_FILES= \
+./x64/Release/astjpl2pcl.d
+
+#
+# Rules
+#
+
+-include $(DEP_FILES)
+
+$(OBJ_DIR)/astjpl2pcl: $(OBJ_FILES)
+	g++ -m64 -fPIC -pthread -Wl,-fuse-ld=gold -Wl,--enable-new-dtags -Wl,-z,noexecstack -Wl,-O1 -Wl,--gc-sections -s -L"$(PCLLIBDIR64)" -L"$(PCLBINDIR64)/lib" -o $(OBJ_DIR)/astjpl2pcl $(OBJ_FILES) -lpthread -lPCL-pxi -llz4-pxi -lzlib-pxi -lRFC6234-pxi -llcms-pxi -lcminpack-pxi -l/PixInsight/src/utils/cspice/lib/libcspice.a -l/PixInsight/src/utils/cspice/lib/libcsupport.a
+	$(MAKE) -f ./makefile-x64 --no-print-directory post-build
+
+.PHONY: clean
+clean:
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(OBJ_DIR)/astjpl2pcl
+
+.PHONY: post-build
+post-build:
+	cp $(OBJ_DIR)/astjpl2pcl $(PCLBINDIR64)
+
+./x64/Release/%.o: ../../%.cpp
+	g++ -c -pipe -pthread -m64 -fPIC -D_REENTRANT -D__PCL_LINUX -D__PCL_AVX2 -D__PCL_FMA -D__PCL_CUDA -I"$(PCLINCDIR)" -I"$(PCLSRCDIR)/3rdparty" -I"$(CUDA_HOME)/include" -march=haswell -mtune=znver2 -mfpmath=sse -msse4.2 -mavx2 -mfma -minline-all-stringops -O3 -fomit-frame-pointer -ffunction-sections -fdata-sections -ffast-math -fnon-call-exceptions -std=c++17 -Wall -Wno-parentheses -MMD -MP -MF"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo ' '
+

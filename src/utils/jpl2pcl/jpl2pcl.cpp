@@ -2,12 +2,12 @@
 //    / __ \ / ____// /
 //   / /_/ // /    / /
 //  / ____// /___ / /___   PixInsight Class Library
-// /_/     \____//_____/   PCL 02.01.08.0895
+// /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
 //
 // This file is part of the jpl2pcl ephemeris generation and testing utility.
 //
-// Copyright (c) 2017-2018 Pleiades Astrophoto S.L.
+// Copyright (c) 2017-2021 Pleiades Astrophoto S.L.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 //    and/or other materials provided with the product:
 //
 //    "This product is based on software from the PixInsight project, developed
-//    by Pleiades Astrophoto and its contributors (http://pixinsight.com/)."
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
 //
 //    Alternatively, if that is where third-party acknowledgments normally
 //    appear, this acknowledgment must be reproduced in the product itself.
@@ -52,7 +52,7 @@
  * ASCII format to PixInsight/PCL ephemeris data files in XEPH format.
  *
  * Written by Juan Conejero, PTeam.
- * Copyright (c) 2016-2018, Pleiades Astrophoto S.L.
+ * Copyright (c) 2016-2021, Pleiades Astrophoto S.L.
  */
 
 #include <pcl/EphemerisFile.h>
@@ -67,8 +67,8 @@ using namespace pcl;
 // ----------------------------------------------------------------------------
 
 #define PROGRAM_NAME    "jpl2pcl"
-#define PROGRAM_VERSION "1.01"
-#define PROGRAM_YEAR    "2018"
+#define PROGRAM_VERSION "1.10"
+#define PROGRAM_YEAR    "2021"
 
 #define TESTS_PER_DAY   4
 
@@ -733,18 +733,18 @@ int main( int argc, const char* argv[] )
 
          // Mandatory objects
          objects << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Mercury, true/*withDerivative*/ )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Venus, true )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::EarthMoonBarycenter, true )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Mars, true )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Jupiter )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Saturn )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Uranus )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Neptune )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Pluto )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Moon )
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Sun, true )
-               // Earth is synthesized from EMB and Moon
-               << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Earth, true );
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Venus, true )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::EarthMoonBarycenter, true )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Mars, true )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Jupiter )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Saturn )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Uranus )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Neptune )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Pluto )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Moon )
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Sun, true )
+                 // Earth is synthesized from EMB and Moon
+                 << MakeObject( ephem, startJDI, endJDI, JPLEphemerisItem::Earth, true );
 
          // Optional nutations
          if ( withNutations )
@@ -767,13 +767,13 @@ int main( int argc, const char* argv[] )
          metadata.description = String().Format( "PixInsight Fundamental Solar System Ephemerides / JPL DE%d/LE%d", ephem.DENumber(), ephem.LENumber() );
          metadata.organizationName = "Pleiades Astrophoto S.L.";
          metadata.authors = "PTeam";
-         metadata.copyright = String().Format( "Copyright (C) %d, Pleiades Astrophoto S.L.", TimePoint::Now().Year() );
+         metadata.copyright = String().Format( "Copyright (C) 2018-%d, Pleiades Astrophoto S.L.", TimePoint::Now().Year() );
 
          EphemerisConstantList constants = ephem.Constants();
 
          EphemerisFile::Serialize( ephFilePath,
-                                 TimePoint( startJDI, 0.5 ), TimePoint( endJDI, 0.5 ),
-                                 objects, metadata, constants );
+                                   TimePoint( startJDI, 0.5 ), TimePoint( endJDI, 0.5 ),
+                                   objects, metadata, constants );
       }
 
       TestEphemerisFile( ephFilePath, ephem, testsPerDay );
@@ -789,4 +789,4 @@ int main( int argc, const char* argv[] )
 }
 
 // ----------------------------------------------------------------------------
-// EOF pcl/jpl2pcl.cpp - Released 2018-09-26T12:29:40Z
+// EOF pcl/jpl2pcl.cpp - Released 2021-01-09T19:36:56Z
