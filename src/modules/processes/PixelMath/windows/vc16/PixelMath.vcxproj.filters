@@ -2,9 +2,9 @@
 <!--
 ######################################################################
 # PixInsight Makefile Generator Script v1.121
-# Copyright (C) 2009-2020 Pleiades Astrophoto
+# Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-21T12:28:29.101Z
+# Generated on .... 2021-01-16T20:28:25.331Z
 # Project id ...... PixelMath
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>24553749-d9ea-420b-98d9-b242fe1a93d8</UniqueIdentifier>
+      <UniqueIdentifier>530b108b-ccfc-423c-9b66-07b59afb22ca</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>1e34dd54-dd19-4a54-9261-230f31d5d4b6</UniqueIdentifier>
+      <UniqueIdentifier>58faa2ff-2a8b-42ce-a529-adff01228e0c</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>8365de91-8c7e-4807-aeb0-1d8cdaeefbe0</UniqueIdentifier>
+      <UniqueIdentifier>bcc5099e-902d-4b33-8fc1-29c1f9f44797</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,6 +39,9 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Functional.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Generators.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Operator.cpp">

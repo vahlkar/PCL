@@ -51,7 +51,9 @@
 // ----------------------------------------------------------------------------
 
 #include "Data.h"
+#include "PixelMathInstance.h"
 
+#include <pcl/Image.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/PixelInterpolation.h>
 
@@ -136,26 +138,27 @@ static SortedArray<ReferencedWindow> s_referencedWindows;
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-ImageReference::ImageReference( const String& id, int p )
+ImageReference::ImageReference( const String& id, int p, bool isWindow )
    : ObjectReference( XPR_IMAGEREF, p, id )
+   , m_isWindow( isWindow )
 {
-   interpolators[0] = interpolators[1] = interpolators[2] = nullptr;
 }
 
 // ----------------------------------------------------------------------------
 
 ImageReference::ImageReference( const ImageReference& x )
    : ObjectReference( x )
-   , image( (x.image != nullptr) ? new ImageVariant( *x.image ) : nullptr )
-   , byReference( x.byReference )
+   , m_image( (x.m_image != nullptr) ? new ImageVariant( *x.m_image ) : nullptr )
+   , m_byReference( x.m_byReference )
+   , m_isWindow( x.m_isWindow )
 {
-   interpolators[0] = interpolators[1] = interpolators[2] = nullptr;
-   if ( image != nullptr )
-   {
-      SortedArray<ReferencedWindow>::const_iterator r = s_referencedWindows.Search( Id() );
-      if ( r != s_referencedWindows.End() )
-         r->Attach();
-   }
+   if ( m_isWindow )
+      if ( m_image != nullptr )
+      {
+         SortedArray<ReferencedWindow>::const_iterator r = s_referencedWindows.Search( Id() );
+         if ( r != s_referencedWindows.End() )
+            r->Attach();
+      }
 }
 
 // ----------------------------------------------------------------------------
@@ -188,19 +191,22 @@ void DestroyInterpolators( void** interpolators, const ImageVariant& v )
 
 ImageReference::~ImageReference()
 {
-   if ( image != nullptr )
+   if ( m_image != nullptr )
    {
-      SortedArray<ReferencedWindow>::const_iterator r = s_referencedWindows.Search( Id() );
-      if ( r != s_referencedWindows.End() )
+      if ( m_isWindow )
       {
-         r->Detach();
-         if ( r->IsGarbage() )
-            s_referencedWindows.Remove( s_referencedWindows.MutableIterator( r ) );
+         SortedArray<ReferencedWindow>::const_iterator r = s_referencedWindows.Search( Id() );
+         if ( r != s_referencedWindows.End() )
+         {
+            r->Detach();
+            if ( r->IsGarbage() )
+               s_referencedWindows.Remove( s_referencedWindows.MutableIterator( r ) );
+         }
       }
 
-      DestroyInterpolators( interpolators, *image );
+      DestroyInterpolators( m_interpolators, *m_image );
 
-      delete image, image = nullptr;
+      delete m_image, m_image = nullptr;
    }
 }
 
@@ -208,18 +214,21 @@ ImageReference::~ImageReference()
 
 bool ImageReference::FindImage()
 {
-   if ( image != nullptr )
-      delete image, image = nullptr;
+   if ( m_image != nullptr )
+      delete m_image, m_image = nullptr;
 
-   SortedArray<ReferencedWindow>::const_iterator r = s_referencedWindows.Search( Id() );
-   if ( r == s_referencedWindows.End() )
+   if ( m_isWindow )
    {
-      s_referencedWindows << Id();
-      r = s_referencedWindows.Search( Id() );
+      SortedArray<ReferencedWindow>::const_iterator r = s_referencedWindows.Search( Id() );
+      if ( r == s_referencedWindows.End() )
+      {
+         s_referencedWindows << Id();
+         r = s_referencedWindows.Search( Id() );
+      }
+      m_image = r->NewImage();
    }
 
-   image = r->NewImage();
-   return image != nullptr;
+   return m_image != nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -251,7 +260,24 @@ void InitImageInterpolators( void** interpolators, PixelInterpolation* interpola
 
 void ImageReference::InitInterpolators( PixelInterpolation* interpolation )
 {
-   InitImageInterpolators( interpolators, interpolation, image );
+   InitImageInterpolators( m_interpolators, interpolation, m_image );
+}
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+bool InternalImageReference::FindImage()
+{
+   if ( m_image != nullptr )
+      delete m_image, m_image = nullptr;
+
+   ImageVariant internal = PixelMathInstance::InternalImage( IsoString( Id() ) );
+   if ( internal )
+   {
+      m_image = new ImageVariant( internal );
+      return true;
+   }
+   return false;
 }
 
 // ----------------------------------------------------------------------------

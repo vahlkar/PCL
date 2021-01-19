@@ -51,14 +51,14 @@
 // ----------------------------------------------------------------------------
 
 #define MODULE_VERSION_MAJOR     1
-#define MODULE_VERSION_MINOR     5
+#define MODULE_VERSION_MINOR     7
 #define MODULE_VERSION_REVISION  0
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
-#define MODULE_RELEASE_YEAR      2020
-#define MODULE_RELEASE_MONTH     12
-#define MODULE_RELEASE_DAY       17
+#define MODULE_RELEASE_YEAR      2021
+#define MODULE_RELEASE_MONTH     1
+#define MODULE_RELEASE_DAY       19
 
 #include "PixelMathInterface.h"
 #include "PixelMathModule.h"

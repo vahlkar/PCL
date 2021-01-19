@@ -89,7 +89,7 @@ public:
 
    ObjectReference( unsigned t, int p, const String& id )
       : Data( t, p )
-      , objectId( id )
+      , m_objectId( id )
    {
    }
 
@@ -97,38 +97,38 @@ public:
 
    String Id() const
    {
-      return objectId;
+      return m_objectId;
    }
 
    bool IsChannelIndex() const
    {
-      return channelIndex >= 0;
+      return m_channelIndex >= 0;
    }
 
    int ChannelIndex() const
    {
-      return channelIndex;
+      return m_channelIndex;
    }
 
    void SetChannelIndex( int c )
    {
-      channelIndex = c;
+      m_channelIndex = c;
    }
 
    virtual Expression* Clone() const = 0;
 
    String ToString() const override
    {
-      String id = objectId;
-      if ( channelIndex >= 0 )
-         id.AppendFormat( "[%d]", channelIndex );
+      String id = m_objectId;
+      if ( m_channelIndex >= 0 )
+         id.AppendFormat( "[%d]", m_channelIndex );
       return id;
    }
 
 private:
 
-   String objectId;
-   int    channelIndex = -1;
+   String m_objectId;
+   int    m_channelIndex = -1;
 };
 
 // ----------------------------------------------------------------------------
@@ -140,36 +140,36 @@ class ImageReference : public ObjectReference
 {
 public:
 
-   ImageReference( const String& id, int p );
+   ImageReference( const String& id, int p, bool isWindow = true );
    ImageReference( const ImageReference& );
 
    virtual ~ImageReference();
 
    const ImageVariant* Image() const
    {
-      return image;
+      return m_image;
    }
 
-   bool FindImage();
+   virtual bool FindImage();
 
    bool ByReference() const
    {
-      return byReference;
+      return m_byReference;
    }
 
    void SetByReference() const
    {
-      byReference = true; // mutable byReference
+      m_byReference = true; // mutable m_byReference
    }
 
    bool IsInterpolated() const
    {
-      return *interpolators != nullptr;
+      return *m_interpolators != nullptr;
    }
 
    void** Interpolators() const
    {
-      return interpolators;
+      return m_interpolators;
    }
 
    void InitInterpolators( PixelInterpolation* );
@@ -179,11 +179,15 @@ public:
       return new ImageReference( *this );
    }
 
+protected:
+
+   ImageVariant* m_image = nullptr;
+
 private:
 
-           ImageVariant* image = nullptr;
-   mutable void*         interpolators[ 3 ] = {};
-   mutable bool          byReference = false; // true -> will be passed by reference instead of by value
+   mutable void* m_interpolators[ 3 ] = {};
+   mutable bool  m_byReference = false; // true -> will be passed by reference instead of by value
+           bool  m_isWindow = true; // true -> this represents an existing image window
 };
 
 // ----------------------------------------------------------------------------
@@ -197,7 +201,7 @@ public:
 
    VariableReference( Variable* v, int p )
       : ObjectReference( XPR_VARREF, p, v->Id() )
-      , variable( v )
+      , m_variable( v )
    {
    }
 
@@ -205,7 +209,7 @@ public:
 
    Variable& Reference() const
    {
-      return *variable;
+      return *m_variable;
    }
 
    virtual bool IsLValue() const
@@ -220,7 +224,7 @@ public:
 
 private:
 
-   Variable* variable = nullptr;
+   Variable* m_variable = nullptr;
 };
 
 // ----------------------------------------------------------------------------
@@ -234,7 +238,7 @@ public:
 
    ConstantReference( Constant* c, int p )
       : ObjectReference( XPR_CONSTREF, p, c->Id() )
-      , constant( c )
+      , m_constant( c )
    {
    }
 
@@ -242,7 +246,7 @@ public:
 
    Constant& Reference() const
    {
-      return *constant;
+      return *m_constant;
    }
 
    Expression* Clone() const override
@@ -252,7 +256,7 @@ public:
 
 private:
 
-   Constant* constant = nullptr;
+   Constant* m_constant = nullptr;
 };
 
 // ----------------------------------------------------------------------------
@@ -266,7 +270,7 @@ public:
 
    PixelData( const Pixel& px, int p )
       : Data( XPR_PIXEL, p )
-      , pixel( px )
+      , m_pixel( px )
    {
    }
 
@@ -274,7 +278,7 @@ public:
 
    const Pixel& PixelValue() const
    {
-      return pixel;
+      return m_pixel;
    }
 
    Expression* Clone() const override
@@ -284,12 +288,12 @@ public:
 
    String ToString() const override
    {
-      return pixel.ToString();
+      return m_pixel.ToString();
    }
 
 private:
 
-   Pixel pixel;
+   Pixel m_pixel;
 };
 
 // ----------------------------------------------------------------------------
@@ -303,7 +307,7 @@ public:
 
    Sample( double v, int p )
       : Data( XPR_SAMPLE, p )
-      , value( v )
+      , m_value( v )
    {
    }
 
@@ -311,7 +315,7 @@ public:
 
    double Value() const
    {
-      return value;
+      return m_value;
    }
 
    Expression* Clone() const override
@@ -321,12 +325,12 @@ public:
 
    String ToString() const override
    {
-      return String( value );
+      return String( m_value );
    }
 
 private:
 
-   double value;
+   double m_value;
 };
 
 // ----------------------------------------------------------------------------
@@ -356,6 +360,30 @@ public:
       if ( ChannelIndex() >= 0 )
          s.AppendFormat( "[%d]", ChannelIndex() );
       return s;
+   }
+};
+
+// ----------------------------------------------------------------------------
+
+/*
+ * Reference to an internal image.
+ */
+class InternalImageReference : public ImageReference
+{
+public:
+
+   InternalImageReference( const String& id, int p )
+      : ImageReference( id, p, false/*isWindow*/ )
+   {
+   }
+
+   InternalImageReference( const InternalImageReference& ) = default;
+
+   bool FindImage() override;
+
+   Expression* Clone() const override
+   {
+      return new InternalImageReference( *this );
    }
 };
 

@@ -62,7 +62,7 @@ namespace pcl
 
 /*
  * Representation of a flow control operation in an optimized PixelMath
- * expression representation.
+ * expression.
  */
 class Branch : public Expression
 {

@@ -229,9 +229,9 @@ public:
    Expression* Generate( int p ) const override { return new InvOperator( p ); }
 
    String Meta() const override               { return "~x"; }
-   String Id() const override                 { return "Pixel inversion.\n"
-                                                       "Evaluates to 1 &minus; <i>x</i>, where <i>x</i> is "
-                                                       "in the normalized [0,1] range (0=black, 1=white)."; }
+   String Id() const override                 { return "<p>Pixel Inversion operator.</p>"
+                                                       "<p>Evaluates to 1 &minus; <i>x</i>, where <i>x</i> is "
+                                                       "in the normalized [0,1] range (0=black, 1=white).</p>"; }
    String Token() const override              { return "~"; }
    int    Precedence() const override         { return PRECEDENCE_INV; }
    bool   IsLeftAssociative() const override  { return false; }
@@ -255,9 +255,9 @@ public:
    Expression* Generate( int p ) const override { return new ChsOperator( p ); }
 
    String Meta() const override               { return "-x"; }
-   String Id() const override                 { return "Unary minus (sign change).\n"
-                                                       "Evaluates to <i>x</i> negative if <i>x</i> &gt; 0; "
-                                                       "to <i>x</i> positive if <i>x</i> &le; 0."; }
+   String Id() const override                 { return "<p>Unary Minus operator (sign change).</p>"
+                                                       "<p>Evaluates to <i>x</i> negative if <i>x</i> &gt; 0; "
+                                                       "to <i>x</i> positive if <i>x</i> &le; 0.</p>"; }
    String Token() const override              { return "-"; }
    int    Precedence() const override         { return PRECEDENCE_INV; }
    bool   IsLeftAssociative() const override  { return false; }
@@ -281,8 +281,8 @@ public:
    Expression* Generate( int p ) const override { return new PlusOperator( p ); }
 
    String Meta() const override               { return "+x"; }
-   String Id() const override                 { return "Unary plus (no change).\n"
-                                                       "Evaluates to <i>x</i>."; }
+   String Id() const override                 { return "<p>Unary Plus operator.</p>"
+                                                       "<p>Evaluates to <i>x</i>.</p>"; }
    String Token() const override              { return "+"; }
    int    Precedence() const override         { return PRECEDENCE_INV; }
    bool   IsLeftAssociative() const override  { return false; }
@@ -306,8 +306,8 @@ public:
    Expression* Generate( int p ) const override { return new LogicalNotOperator( p ); }
 
    String Meta() const override               { return "!x"; }
-   String Id() const override                 { return "Logical NOT.\n"
-                                                       "Evaluates to 0 if <i>x</i> &ne; 0; to 1 if <i>x</i> = 0."; }
+   String Id() const override                 { return "<p>Logical NOT operator.</p>"
+                                                       "<p>Evaluates to 0 if <i>x</i> &ne; 0; to 1 if <i>x</i> = 0.</p>"; }
    String Token() const override              { return "!"; }
    int    Precedence() const override         { return PRECEDENCE_INV; }
    bool   IsLeftAssociative() const override  { return false; }
@@ -331,8 +331,8 @@ public:
    Expression* Generate( int p ) const override { return new PowOperator( p ); }
 
    String Meta() const override               { return "x ^ y"; }
-   String Id() const override                 { return "Exponentiation.\n"
-                                                       "Evaluates to <i>x</i> raised to <i>y</i>."; }
+   String Id() const override                 { return "<p>Exponentiation operator.</p>"
+                                                       "<p>Evaluates to <i>x</i> raised to <i>y</i>.</p>"; }
    String Token() const override              { return "^"; }
    int    Precedence() const override         { return PRECEDENCE_POW; }
    bool   IsCommutative() const override      { return false; }
@@ -356,8 +356,8 @@ public:
    Expression* Generate( int p ) const override { return new MulOperator( p ); }
 
    String Meta() const override               { return "x * y"; }
-   String Id() const override                 { return "Multiplication.\n"
-                                                       "Evaluates to <i>x</i> multiplied by <i>y</i>."; }
+   String Id() const override                 { return "<p>Multiplication operator.</p>"
+                                                       "<p>Evaluates to <i>x</i> multiplied by <i>y</i>.</p>"; }
    String Token() const override              { return "*"; }
    int    Precedence() const override         { return PRECEDENCE_MUL; }
    bool   IsArithmetic() const override       { return true; }
@@ -381,11 +381,11 @@ public:
    Expression* Generate( int p ) const override { return new DivOperator( p ); }
 
    String Meta() const override               { return "x / y"; }
-   String Id() const override                 { return "Division.\n"
-                                                       "Evaluates to <i>x</i> divided by <i>y</i>. If "
-                                                       "<i>y</i> is zero or insignificant, then the result is the "
-                                                       "maximum representable finite 64-bit floating-point value, "
-                                                       "with the same sign as the numerator."; }
+   String Id() const override                 { return "<p>Division operator.</p>"
+                                                       "<p>Evaluates to <i>x</i> divided by <i>y</i>.</p>"
+                                                       "<p>If <i>y</i> is zero or insignificant, then the result is conventionally "
+                                                       "the maximum representable finite 64-bit floating-point value, "
+                                                       "with the same sign as the numerator.</p>"; }
    String Token() const override              { return "/"; }
    int    Precedence() const override         { return PRECEDENCE_MUL; }
    bool   IsCommutative() const override      { return false; }
@@ -410,15 +410,15 @@ public:
    Expression* Generate( int p ) const override { return new ModOperator( p ); }
 
    String Meta() const override               { return "x % y"; }
-   String Id() const override                 { return "Modulus.\n"
-                                                       "Evaluates to the floating-point remainder of the "
+   String Id() const override                 { return "<p>Modulus operator.</p>"
+                                                       "<p>Evaluates to the floating-point remainder of the "
                                                        "<i>x</i>/<i>y</i> division, such that "
                                                        "<i>x</i> = <i>i</i>&times;<i>y</i> + <i>f</i>, "
                                                        "where <i>i</i> is an integer, <i>f</i> has the same "
                                                        "sign as <i>x</i>, and the absolute value of <i>f</i> "
-                                                       "is less than the absolute value of <i>y</i>.\n"
-                                                       "If <i>y</i> evaluates to zero or to an insignificant value, "
-                                                       "the result is zero conventionally."; }
+                                                       "is less than the absolute value of <i>y</i>.</p>"
+                                                       "<p>If <i>y</i> evaluates to zero or to an insignificant value, "
+                                                       "the result is zero conventionally.</p>"; }
    String Token() const override              { return "%"; }
    int    Precedence() const override         { return PRECEDENCE_MUL; }
    bool   IsCommutative() const override      { return false; }
@@ -442,8 +442,8 @@ public:
    Expression* Generate( int p ) const override { return new AddOperator( p ); }
 
    String Meta() const override               { return "x + y"; }
-   String Id() const override                 { return "Addition.\n"
-                                                       "Evaluates to <i>x</i> added to <i>y</i>."; }
+   String Id() const override                 { return "<p>Addition operator.</p>"
+                                                       "<p>Evaluates to <i>x</i> added to <i>y</i>.</p>"; }
    String Token() const override              { return "+"; }
    int    Precedence() const override         { return PRECEDENCE_ADD; }
    bool   IsArithmetic() const override       { return true; }
@@ -467,8 +467,8 @@ public:
    Expression* Generate( int p ) const override { return new SubOperator( p ); }
 
    String Meta() const override               { return "x - y"; }
-   String Id() const override                 { return "Subtraction.\n"
-                                                       "Evaluates to <i>y</i> subtracted from <i>x</i>."; }
+   String Id() const override                 { return "<p>Subtraction operator.</p>"
+                                                       "<p>Evaluates to <i>y</i> subtracted from <i>x</i>.</p>"; }
    String Token() const override              { return "-"; }
    int    Precedence() const override         { return PRECEDENCE_ADD; }
    bool   IsCommutative() const override      { return false; }
@@ -493,8 +493,8 @@ public:
    Expression* Generate( int p ) const override { return new DifOperator( p ); }
 
    String Meta() const override               { return "x -- y"; }
-   String Id() const override                 { return "Absolute Difference.\n"
-                                                       "Evaluates to the absolute value of <i>x</i>&minus;<i>y</i>."; }
+   String Id() const override                 { return "<p>Absolute Difference operator.</p>"
+                                                       "<p>Evaluates to the absolute value of <i>x</i>&minus;<i>y</i>.</p>"; }
    String Token() const override              { return "--"; }
    int    Precedence() const override         { return PRECEDENCE_ADD; }
    bool   IsCommutative() const override      { return false; }
@@ -519,9 +519,9 @@ public:
    Expression* Generate( int p ) const override { return new LessThanOperator( p ); }
 
    String Meta() const override               { return "x < y"; }
-   String Id() const override                 { return "Less Than relational operator\n"
-                                                       "Evaluates to 1 if <i>x</i> &lt; <i>y</i>; "
-                                                       "to 0 if <i>x</i> &ge; <i>y</i>."; }
+   String Id() const override                 { return "<p>Less Than relational operator.</p>"
+                                                       "<p>Evaluates to 1 if <i>x</i> &lt; <i>y</i>; "
+                                                       "to 0 if <i>x</i> &ge; <i>y</i>.</p>"; }
    String Token() const override              { return "<"; }
    int    Precedence() const override         { return PRECEDENCE_INEQUALITY; }
    bool   IsRelational() const override       { return true; }
@@ -544,9 +544,9 @@ public:
    Expression* Generate( int p ) const override { return new LessThanOrEqualOperator( p ); }
 
    String Meta() const override               { return "x <= y"; }
-   String Id() const override                 { return "Less Than Or Equal relational operator.\n"
-                                                       "Evaluates to 1 if <i>x</i> &le; <i>y</i>; "
-                                                       "to 0 if <i>x</i> &gt; <i>y</i>."; }
+   String Id() const override                 { return "<p>Less Than Or Equal relational operator.</p>"
+                                                       "<p>Evaluates to 1 if <i>x</i> &le; <i>y</i>; "
+                                                       "to 0 if <i>x</i> &gt; <i>y</i>.</p>"; }
    String Token() const override              { return "<="; }
    int    Precedence() const override         { return PRECEDENCE_INEQUALITY; }
    bool   IsRelational() const override       { return true; }
@@ -569,9 +569,9 @@ public:
    Expression* Generate( int p ) const override { return new GreaterThanOperator( p ); }
 
    String Meta() const override               { return "x > y"; }
-   String Id() const override                 { return "Greater Than relational operator.\n"
-                                                       "Evaluates to 1 if <i>x</i> &gt; <i>y</i>; "
-                                                       "to 0 if <i>x</i> &le; <i>y</i>."; }
+   String Id() const override                 { return "<p>Greater Than relational operator.</p>"
+                                                       "<p>Evaluates to 1 if <i>x</i> &gt; <i>y</i>; "
+                                                       "to 0 if <i>x</i> &le; <i>y</i>.</p>"; }
    String Token() const override              { return ">"; }
    int    Precedence() const override         { return PRECEDENCE_INEQUALITY; }
    bool   IsRelational() const override       { return true; }
@@ -594,9 +594,9 @@ public:
    Expression* Generate( int p ) const override { return new GreaterThanOrEqualOperator( p ); }
 
    String Meta() const override               { return "x >= y"; }
-   String Id() const override                 { return "Greater Than Or Equal relational operator.\n"
-                                                       "Evaluates to 1 if <i>x</i> &ge; <i>y</i>; "
-                                                       "to 0 if <i>x</i> &lt; <i>y</i>."; }
+   String Id() const override                 { return "<p>Greater Than Or Equal relational operator.</p>"
+                                                       "<p>Evaluates to 1 if <i>x</i> &ge; <i>y</i>; "
+                                                       "to 0 if <i>x</i> &lt; <i>y</i>.</p>"; }
    String Token() const override              { return ">="; }
    int    Precedence() const override         { return PRECEDENCE_INEQUALITY; }
    bool   IsRelational() const override       { return true; }
@@ -619,9 +619,9 @@ public:
    Expression* Generate( int p ) const override { return new EqualToOperator( p ); }
 
    String Meta() const override               { return "x == y"; }
-   String Id() const override                 { return "Equal To relational operator.\n"
-                                                       "Evaluates to 1 if <i>x</i> = <i>y</i>; "
-                                                       "to 0 if <i>x</i> &ne; <i>y</i>."; }
+   String Id() const override                 { return "<p>Equal To relational operator.</p>"
+                                                       "<p>Evaluates to 1 if <i>x</i> = <i>y</i>; "
+                                                       "to 0 if <i>x</i> &ne; <i>y</i>.</p>"; }
    String Token() const override              { return "=="; }
    int    Precedence() const override         { return PRECEDENCE_EQUALITY; }
    bool   IsRelational() const override       { return true; }
@@ -644,9 +644,9 @@ public:
    Expression* Generate( int p ) const override { return new NotEqualToOperator( p ); }
 
    String Meta() const override               { return "x != y"; }
-   String Id() const override                 { return "Not Equal To relational operator.\n"
-                                                       "Evaluates to 1 if <i>x</i> &ne; <i>y</i>; "
-                                                       "to 0 if <i>x</i> = <i>y</i>."; }
+   String Id() const override                 { return "<p>Not Equal To relational operator.</p>"
+                                                       "<p>Evaluates to 1 if <i>x</i> &ne; <i>y</i>; "
+                                                       "to 0 if <i>x</i> = <i>y</i>.</p>"; }
    String Token() const override              { return "!="; }
    int    Precedence() const override         { return PRECEDENCE_EQUALITY; }
    bool   IsRelational() const override       { return true; }
@@ -669,11 +669,11 @@ public:
    Expression* Generate( int p ) const override { return new AndOperator( p ); }
 
    String Meta() const override               { return "x & y"; }
-   String Id() const override                 { return "Bitwise AND.\n"
-                                                       "Evaluates to the bitwise AND operation applied to both "
+   String Id() const override                 { return "<p>Bitwise AND operator.</p>"
+                                                       "<p>Evaluates to the bitwise AND operation applied to both "
                                                        "operands truncated to integer values. For each pair of "
                                                        "corresponding bits in both operands, the result is 1 if "
-                                                       "both bits are 1; 0 otherwise."; }
+                                                       "both bits are equal to 1, or 0 otherwise.</p>"; }
    String Token() const override              { return "&"; }
    int    Precedence() const override         { return PRECEDENCE_AND; }
    bool   IsBitwise() const override          { return true; }
@@ -696,11 +696,11 @@ public:
    Expression* Generate( int p ) const override { return new NandOperator( p ); }
 
    String Meta() const override               { return "x !& y"; }
-   String Id() const override                 { return "Bitwise NAND.\n"
-                                                       "Evaluates to the bitwise NAND operation applied to both "
+   String Id() const override                 { return "<p>Bitwise NAND operator.</p>"
+                                                       "<p>Evaluates to the bitwise NAND operation applied to both "
                                                        "operands truncated to integer values. For each pair of "
                                                        "corresponding bits in both operands, the result is 0 if "
-                                                       "both bits are 1; 1 otherwise."; }
+                                                       "both bits are equal to 1, or 1 otherwise.</p>"; }
    String Token() const override              { return "!&"; }
    int    Precedence() const override         { return PRECEDENCE_AND; }
    bool   IsBitwise() const override          { return true; }
@@ -723,11 +723,11 @@ public:
    Expression* Generate( int p ) const override { return new XorOperator( p ); }
 
    String Meta() const override               { return "x &| y"; }
-   String Id() const override                 { return "Bitwise XOR.\n"
-                                                       "Evaluates to the bitwise XOR operation applied to both "
+   String Id() const override                 { return "<p>Bitwise XOR operator.</p>"
+                                                       "<p>Evaluates to the bitwise XOR operation applied to both "
                                                        "operands truncated to integer values. For each pair of "
                                                        "corresponding bits in both operands, the result is 0 if "
-                                                       "both bits are equal; 1 otherwise."; }
+                                                       "both bits have equal values, or 1 otherwise.</p>"; }
    String Token() const override              { return "&|"; }
    int    Precedence() const override         { return PRECEDENCE_XOR; }
    bool   IsBitwise() const override          { return true; }
@@ -750,11 +750,11 @@ public:
    Expression* Generate( int p ) const override { return new XnorOperator( p ); }
 
    String Meta() const override               { return "x !&| y"; }
-   String Id() const override                 { return "Bitwise XNOR.\n"
-                                                       "Evaluates to the bitwise XNOR operation applied to both "
+   String Id() const override                 { return "<p>Bitwise XNOR operator.</p>"
+                                                       "<p>Evaluates to the bitwise XNOR operation applied to both "
                                                        "operands truncated to integer values. For each pair of "
                                                        "corresponding bits in both operands, the result is 1 if "
-                                                       "both bits are equal; 0 otherwise."; }
+                                                       "both bits have equal values, or 0 otherwise.</p>"; }
    String Token() const override              { return "!&|"; }
    int    Precedence() const override         { return PRECEDENCE_XOR; }
    bool   IsBitwise() const override          { return true; }
@@ -777,11 +777,11 @@ public:
    Expression* Generate( int p ) const override { return new OrOperator( p ); }
 
    String Meta() const override               { return "x | y"; }
-   String Id() const override                 { return "Bitwise OR.\n"
-                                                       "Evaluates to the bitwise OR operation applied to both "
+   String Id() const override                 { return "<p>Bitwise OR operator.</p>"
+                                                       "<p>Evaluates to the bitwise OR operation applied to both "
                                                        "operands truncated to integer values. For each pair of "
                                                        "corresponding bits in both operands, the result is 0 if "
-                                                       "both bits are 0; 1 otherwise."; }
+                                                       "both bits are equal to 0, or 1 otherwise.</p>"; }
    String Token() const override              { return "|"; }
    int    Precedence() const override         { return PRECEDENCE_OR; }
    bool   IsBitwise() const override          { return true; }
@@ -804,11 +804,11 @@ public:
    Expression* Generate( int p ) const override { return new NorOperator( p ); }
 
    String Meta() const override               { return "x !| y"; }
-   String Id() const override                 { return "Bitwise NOR.\n"
-                                                       "Evaluates to the bitwise NOR operation applied to both "
+   String Id() const override                 { return "<p>Bitwise NOR operator.</p>"
+                                                       "<p>Evaluates to the bitwise NOR operation applied to both "
                                                        "operands truncated to integer values. For each pair of "
                                                        "corresponding bits in both operands, the result is 1 if "
-                                                       "both bits are 0; 0 otherwise."; }
+                                                       "both bits are equal to 0, or 0 otherwise.</p>"; }
    String Token() const override              { return "!|"; }
    int    Precedence() const override         { return PRECEDENCE_OR; }
    bool   IsBitwise() const override          { return true; }
@@ -831,9 +831,9 @@ public:
    Expression* Generate( int p ) const override { return new LogicalAndOperator( p ); }
 
    String Meta() const override               { return "x && y"; }
-   String Id() const override                 { return "Logical AND.\n"
-                                                       "Evaluates to 1 if both operands are nonzero; "
-                                                       "to 0 if any of the operands is zero."; }
+   String Id() const override                 { return "<p>Logical AND operator.</p>"
+                                                       "<p>Evaluates to 1 if both operands are nonzero; "
+                                                       "to 0 if any of the operands is zero.</p>"; }
    String Token() const override              { return "&&"; }
    int    Precedence() const override         { return PRECEDENCE_LOGICAL_AND; }
    bool   IsLogical() const override          { return true; }
@@ -859,9 +859,9 @@ public:
    Expression* Generate( int p ) const override { return new LogicalOrOperator( p ); }
 
    String Meta() const override               { return "x || y"; }
-   String Id() const override                 { return "Logical OR.\n"
-                                                       "Evaluates to 0 if both operands are zero; "
-                                                       "to 1 if any of the operands is nonzero."; }
+   String Id() const override                 { return "<p>Logical OR operator.</p>"
+                                                       "<p>Evaluates to 0 if both operands are zero; "
+                                                       "to 1 if any of the operands is nonzero.</p>"; }
    String Token() const override              { return "||"; }
    int    Precedence() const override         { return PRECEDENCE_LOGICAL_OR; }
    bool   IsLogical() const override          { return true; }
@@ -887,9 +887,9 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentOperator( p ); }
 
    String Meta() const override               { return "var = expr"; }
-   String Id() const override                 { return "Assignment.\n"
-                                                       "The expression <i>expr</i> is evaluated, and its "
-                                                       "resulting value is assigned to the variable <i>var</i>."; }
+   String Id() const override                 { return "<p>Assignment operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, and its "
+                                                       "resulting value is assigned to the variable <i>var</i>.</p>"; }
    String Token() const override              { return "="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -910,11 +910,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentAddOperator( p ); }
 
    String Meta() const override               { return "var += expr"; }
-   String Id() const override                 { return "Assignment / Addition.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Addition operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then added to the current value of the variable "
                                                        "<i>var</i>, and the result of the addition is assigned to "
-                                                       "<i>var</i>."; }
+                                                       "<i>var</i>.</p>"; }
    String Token() const override              { return "+="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -936,11 +936,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentSubOperator( p ); }
 
    String Meta() const override               { return "var -= expr"; }
-   String Id() const override                 { return "Assignment / Subtraction.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Subtraction operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then subtracted from the current value of the variable "
                                                        "<i>var</i>, and the result of the subtraction is assigned to "
-                                                       "<i>var</i>."; }
+                                                       "<i>var</i>.</p>"; }
    String Token() const override              { return "-="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -962,11 +962,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentMulOperator( p ); }
 
    String Meta() const override               { return "var *= expr"; }
-   String Id() const override                 { return "Assignment / Multiplication.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Multiplication operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then multiplied by the current value of the variable "
                                                        "<i>var</i>, and the result of the multiplication is assigned to "
-                                                       "<i>var</i>."; }
+                                                       "<i>var</i>.</p>"; }
    String Token() const override              { return "*="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -988,14 +988,15 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentDivOperator( p ); }
 
    String Meta() const override               { return "var /= expr"; }
-   String Id() const override                 { return "Assignment / Division.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Division operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then divided by the current value of the variable "
                                                        "<i>var</i>, and the result of the division is assigned to "
-                                                       "<i>var</i>. If <i>expr</i> evaluates to zero or to an "
-                                                       "insignificant value, <i>var</i> is assigned with the maximum "
+                                                       "<i>var</i>.</p>"
+                                                       "<p>If <i>expr</i> evaluates to zero or to an insignificant "
+                                                       "value, <i>var</i> is assigned conventionally with the maximum "
                                                        "representable finite 64-bit floating-point value, with the same "
-                                                       "sign as <i>var</i>."; }
+                                                       "sign as <i>var</i>.</p>"; }
    String Token() const override              { return "/="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1017,11 +1018,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentPowOperator( p ); }
 
    String Meta() const override               { return "var ^= expr"; }
-   String Id() const override                 { return "Assignment / Exponentiation.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Exponentiation operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then raised to the current value of the variable "
                                                        "<i>var</i>, and the result of the exponentiation is assigned to "
-                                                       "<i>var</i>."; }
+                                                       "<i>var</i>.</p>"; }
    String Token() const override              { return "^="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1042,13 +1043,13 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentModOperator( p ); }
 
    String Meta() const override               { return "var %= expr"; }
-   String Id() const override                 { return "Assignment / Modulus.\n"
-                                                       "The expression <i>expr</i> is evaluated, the remainder of its "
+   String Id() const override                 { return "<p>Assignment / Modulus operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, the remainder of its "
                                                        "resulting value divided by the current value of the variable "
-                                                       "<i>var</i> is then calculated and assigned to <i>var</i>. "
-                                                       "If <i>expr</i> evaluates to zero or to an insignificant value, "
-                                                       "<i>var</i> is assigned with zero conventionally.\n"
-                                                       "See also the modulus arithmetic operator."; }
+                                                       "<i>var</i> is then calculated and assigned to <i>var</i>.</p>"
+                                                       "<p>If <i>expr</i> evaluates to zero or to an insignificant value, "
+                                                       "<i>var</i> is assigned with zero conventionally.</p>"
+                                                       "<p>See also the modulus arithmetic operator.</p>"; }
    String Token() const override              { return "%="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1069,11 +1070,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentDifOperator( p ); }
 
    String Meta() const override               { return "var --= expr"; }
-   String Id() const override                 { return "Assignment / Absolute Difference.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Absolute Difference operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then subtracted from the current value of the variable "
                                                        "<i>var</i>, and the absolute value of the difference is "
-                                                       "assigned to <i>var</i>."; }
+                                                       "assigned to <i>var</i>.</p>"; }
    String Token() const override              { return "--="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1095,11 +1096,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentAndOperator( p ); }
 
    String Meta() const override               { return "var &= expr"; }
-   String Id() const override                 { return "Assignment / Bitwise AND.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Bitwise AND operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then bitwise-ANDed with the current value of the "
                                                        "variable <i>var</i>, and the result of the bitwise AND is "
-                                                       "assigned to <i>var</i>."; }
+                                                       "assigned to <i>var</i>.</p>"; }
    String Token() const override              { return "&="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1120,11 +1121,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentNandOperator( p ); }
 
    String Meta() const override               { return "var !&= expr"; }
-   String Id() const override                 { return "Assignment / Bitwise NAND.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Bitwise NAND operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then bitwise-NANDed with the current value of the "
                                                        "variable <i>var</i>, and the result of the bitwise NAND is "
-                                                       "assigned to <i>var</i>."; }
+                                                       "assigned to <i>var</i>.</p>"; }
    String Token() const override              { return "!&="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1145,11 +1146,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentOrOperator( p ); }
 
    String Meta() const override               { return "var |= expr"; }
-   String Id() const override                 { return "Assignment / Bitwise OR.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Bitwise OR operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then bitwise-ORed with the current value of the "
                                                        "variable <i>var</i>, and the result of the bitwise OR is "
-                                                       "assigned to <i>var</i>."; }
+                                                       "assigned to <i>var</i>.</p>"; }
    String Token() const override              { return "|="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1170,11 +1171,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentNorOperator( p ); }
 
    String Meta() const override               { return "var !|= expr"; }
-   String Id() const override                 { return "Assignment / Bitwise NOR.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Bitwise NOR operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then bitwise-NORed with the current value of the "
                                                        "variable <i>var</i>, and the result of the bitwise NOR is "
-                                                       "assigned to <i>var</i>."; }
+                                                       "assigned to <i>var</i>.</p>"; }
    String Token() const override              { return "!|="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1195,11 +1196,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentXorOperator( p ); }
 
    String Meta() const override               { return "var &|= expr"; }
-   String Id() const override                 { return "Assignment / Bitwise XOR.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Bitwise XOR operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then bitwise-XORed with the current value of the "
                                                        "variable <i>var</i>, and the result of the bitwise XOR is "
-                                                       "assigned to <i>var</i>."; }
+                                                       "assigned to <i>var</i>.</p>"; }
    String Token() const override              { return "&|="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1220,11 +1221,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentXnorOperator( p ); }
 
    String Meta() const override               { return "var !&|= expr"; }
-   String Id() const override                 { return "Assignment / Bitwise XNOR.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Bitwise XNOR operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then bitwise-XNORed with the current value of the "
                                                        "variable <i>var</i>, and the result of the bitwise XNOR is "
-                                                       "assigned to <i>var</i>."; }
+                                                       "assigned to <i>var</i>.</p>"; }
    String Token() const override              { return "!&|="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1245,11 +1246,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentLogicalAndOperator( p ); }
 
    String Meta() const override               { return "var &&= expr"; }
-   String Id() const override                 { return "Assignment / Logical AND.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Logical AND operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then logically-ANDed with the current value of the "
                                                        "variable <i>var</i>, and the result of the logical AND "
-                                                       "(either 1 or 0) is assigned to <i>var</i>."; }
+                                                       "(either 1 or 0) is assigned to <i>var</i>.</p>"; }
    String Token() const override              { return "&&="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }
@@ -1270,11 +1271,11 @@ public:
    Expression* Generate( int p ) const override { return new AssignmentLogicalOrOperator( p ); }
 
    String Meta() const override               { return "var ||= expr"; }
-   String Id() const override                 { return "Assignment / Logical OR.\n"
-                                                       "The expression <i>expr</i> is evaluated, its resulting "
+   String Id() const override                 { return "<p>Assignment / Logical OR operator.</p>"
+                                                       "<p>The expression <i>expr</i> is evaluated, its resulting "
                                                        "value is then logically-ORed with the current value of the "
                                                        "variable <i>var</i>, and the result of the logical OR "
-                                                       "(either 1 or 0) is assigned to <i>var</i>."; }
+                                                       "(either 1 or 0) is assigned to <i>var</i>.</p>"; }
    String Token() const override              { return "||="; }
    int    Precedence() const override         { return PRECEDENCE_ASSIGNMENT; }
    bool   IsCommutative() const override      { return false; }

@@ -2,9 +2,9 @@
 <!--
 ######################################################################
 # PixInsight Makefile Generator Script v1.121
-# Copyright (C) 2009-2020 Pleiades Astrophoto
+# Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-21T12:28:29.100Z
+# Generated on .... 2021-01-16T20:28:25.330Z
 # Project id ...... PixelMath
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6520BACF-87EB-4AA6-9504-491ABB1A9C2E}</ProjectGuid>
+    <ProjectGuid>{14305ECB-FF5C-49B1-9C50-8B3A9F733589}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -237,6 +237,7 @@
     <ClCompile Include="..\..\ExpressionEditorDialog.cpp"/>
     <ClCompile Include="..\..\Function.cpp"/>
     <ClCompile Include="..\..\Functional.cpp"/>
+    <ClCompile Include="..\..\Generators.cpp"/>
     <ClCompile Include="..\..\Operator.cpp"/>
     <ClCompile Include="..\..\PixelMathInstance.cpp"/>
     <ClCompile Include="..\..\PixelMathInterface.cpp"/>

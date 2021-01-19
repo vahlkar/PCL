@@ -150,111 +150,119 @@ static void InitializeSyntaxItems()
     * Punctuators
     */
    s_syntaxItems << SyntaxItem( "(expr)", "()",
-                        "Parentheses. The expression <i>expr</i> is evaluated with the highest precedence." )
+                        "<p>Parentheses.</p>"
+                        "<p>The expression <i>expr</i> is evaluated with the highest precedence.</p>" )
 
                  << SyntaxItem( "func( [expr1[, expr2[, ...]]] )", "()",
-                        "Function Call. The optional expressions <i>expr1</i>[, <i>expr2</i>[, ...]] are evaluated "
-                        "in sequence from left to right and passed as arguments in a call to function <i>func</i>. "
-                        "The resulting expression evaluates to the return value of <i>func</i>." )
+                        "<p>Function Call.</p>"
+                        "<p>The optional expressions <i>expr1</i>[, <i>expr2</i>[, ...]] are evaluated in "
+                        "sequence from left to right and passed as arguments in a call to function <i>func</i>. "
+                        "The resulting expression evaluates to the return value of <i>func</i>.</p>" )
 
                  << SyntaxItem( "image[c]", "[]",
-                        "Channel Selector. A channel of an image, whose index is <i>c</i>, is referenced. The "
-                        "channel index <i>c</i> must be an integer literal &ge; 0. If the specified channel does "
-                        "not exist in the image, a runtime error occurs." )
+                        "<p>Channel Selector.</p>"
+                        "<p>A channel of the specified image, whose index is <i>c</i>, is referenced. The "
+                        "channel index <i>c</i> must be an integer literal &ge; 0.</p>"
+                        "<p>If the specified channel does not exist in the specified image, a runtime error occurs.</p>" )
 
                  << SyntaxItem( "expr, expr", ",",
-                        "Comma Operator. Used mainly to separate function arguments. Also used in C-style "
-                        "<i>comma expressions</i>, where the result is the last evaluated expression (i.e. the "
-                        "rightmost expression)." )
+                        "<p>Comma Operator.</p>"
+                        "<p>Used mainly to separate function arguments.</p>"
+                        "<p>Also used in C-style <i>comma expressions</i>, where the result is the last evaluated "
+                        "expression (i.e. the rightmost expression).</p>" )
 
                  << SyntaxItem( "expr; expr", ";",
-                        "Expression Separator. Used to separate multiple PixelMath expressions." )
+                        "<p>Expression Separator.</p>"
+                        "<p>Used to separate multiple PixelMath expressions.</p>" )
    /*
     * Symbol definition functions
     */
                  << SyntaxItem( "symbol = keyword_value( [image=$T,] keyword )", "keyword_value",
-                        "The value of a numeric or Boolean FITS header keyword in the specified image. Boolean "
-                        "keywords generate 0 (false) or 1 (true) symbol values. FITS keyword names are case-insensitive." )
+                        "<p>The value of a numeric or Boolean FITS header keyword in the specified image.</p>"
+                        "</p>Boolean keywords generate 0 (false) or 1 (true) symbol values. FITS keyword names are "
+                        "case-insensitive.</p>" )
 
                  << SyntaxItem( "symbol = keyword_defined( [image=$T,] keyword )", "keyword_defined",
-                        "The symbol value will be either one, if the specified FITS header keyword is defined "
-                        "in the image, or zero if the keyword is not defined. FITS keyword names are case-insensitive." )
+                        "<p>The symbol value will be either one, if the specified FITS header keyword is defined "
+                        "in the image, or zero if the keyword is not defined. FITS keyword names are case-insensitive.</p>" )
 
                  << SyntaxItem( "symbol = property_value( [image=$T,] property )", "property_value",
-                        "The value of a vector or scalar property in the specified image. Image property names are case-sensitive." )
+                        "<p>The value of a vector or scalar XISF image property in the specified image. "
+                        "XISF property names are case-sensitive.</p>" )
 
                  << SyntaxItem( "symbol = property_defined( [image=$T,] property )", "property_defined",
-                        "The symbol value will be either one, if the specified property is defined in the image, "
-                        "or zero if the property is not defined. Image property names are case-sensitive." )
+                        "<p>The symbol value will be either one, if the specified XISF property is defined in the image, "
+                        "or zero if the property is not defined. XISF property names are case-sensitive.</p>" )
 
                  << SyntaxItem( "symbol = width( [image=$T] )", "width",
-                        "The width in pixels of the specified image." )
+                        "<p>The width in pixels of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = height( [image=$T] )", "height",
-                        "The width in pixels of the specified image." )
+                        "<p>The width in pixels of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = area( [image=$T] )", "area",
-                        "The area in square pixels of the specified image." )
+                        "<p>The area in square pixels of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = invarea( [image=$T] )", "invarea",
-                        "The reciprocal of the area in square pixels of the specified image." )
+                        "<p>The reciprocal of the area in square pixels of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = iscolor( [image=$T] )", "iscolor",
-                        "The result is one if the specified image is in the RGB color space; zero if it is "
-                        "a grayscale monochrome image." )
+                        "<p>The result is one if the specified image is in the RGB color space; zero if it is "
+                        "a grayscale monochrome image.</p>" )
 
                  << SyntaxItem( "symbol = maximum( [image=$T[, channel]] )", "maximum",
-                        "The maximum pixel value in the specified image." )
+                        "<p>The maximum pixel value in the specified image.</p>" )
 
                  << SyntaxItem( "symbol = minimum( [image=$T[, channel]] )", "minimum",
-                        "The minimum pixel value in the specified image." )
+                        "<p>The minimum pixel value in the specified image.</p>" )
 
                  << SyntaxItem( "symbol = median( [image=$T[, channel]] )", "median",
-                        "The median pixel value in the specified image." )
+                        "<p>The median pixel value in the specified image.</p>" )
 
                  << SyntaxItem( "symbol = mdev( [image=$T[, channel]] )", "mdev",
-                        "The median absolute deviation from the median (MAD) of the specified image." )
+                        "<p>The median absolute deviation from the median (MAD) of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = adev( [image=$T[, channel]] )", "adev",
-                        "The average absolute deviation from the median of the specified image." )
+                        "<p>The average absolute deviation from the median of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = sdev( [image=$T[, channel]] )", "sdev",
-                        "The standard deviation from the mean of the specified image." )
+                        "<p>The standard deviation from the mean of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = mean( [image=$T[, channel]] )", "mean",
-                        "The arithmetic mean of pixel values in the specified image." )
+                        "<p>The arithmetic mean of pixel values in the specified image.</p>" )
 
                  << SyntaxItem( "symbol = modulus( [image=$T[, channel]] )", "modulus",
-                        "The modulus (sum of absolute values) of the specified image." )
+                        "<p>The modulus (sum of absolute values) of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = ssqr( [image=$T[, channel]] )", "ssqr",
-                        "The sum of square pixel values of the specified image." )
+                        "<p>The sum of square pixel values of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = asqr( [image=$T[, channel]] )", "asqr",
-                        "The mean of square pixel values of the specified image." )
+                        "<p>The mean of square pixel values of the specified image.</p>" )
 
                  << SyntaxItem( "symbol = pixel( [image=$T,] x, y )\n"
-                                 "symbol = pixel( image, x, y, channel )", "pixel",
-                        "The pixel or pixel sample of an image at the specified coordinates. Out-of-range "
-                        "coordinates generate zero symbol values." )
+                                "symbol = pixel( image, x, y, channel )", "pixel",
+                        "<p>The pixel or pixel sample of an image at the specified coordinates. Out-of-range image "
+                        "coordinates generate zero symbol values.</p>" )
 
-                 << SyntaxItem( "symbol = init( value )", "init",
-                        "Variable initialization. The symbol will be declared as a thread-local variable with the specified initial value. "
-                        "By default (if no explicit initial value is specified), thread-local variables are initialized to zero." )
+                 << SyntaxItem( "symbol = init( [value=0] )", "init",
+                        "<p>Variable initialization.</p>"
+                        "<p>The symbol will be declared as a thread-local variable with the specified initial value.</p>"
+                        "<p>If no explicit initial value is specified, thread-local variables are initialized to zero by default.</p>" )
 
                  << SyntaxItem( "symbol = global( op[, value] )", "global",
-                        "Global variable initialization. The symbol will be declared as a global variable with the specified "
-                        "global operator and initial value. The 'op' global operator specification can be one of '+' or '*'. "
-                        "For example, 'n=global(+)' will declare a global additive variable <i>n</i> with a default initial zero "
-                        "value.\n\n"
-                        "Global variables can only play lvalue roles in expressions. In practice this means that they can only occur at "
+                        "<p>Global variable initialization.</p>"
+                        "<p>The symbol will be declared as a global variable with the specified global operator and initial value.</p>"
+                        "<p>The 'op' global operator specification can be one of '+' and '*'. For example, 'n=global(+)' will declare a "
+                        "global additive variable <i>n</i> with a default zero initial value.</p>"
+                        "<p>Global variables can only play lvalue roles in expressions. In practice this means that they can only occur at "
                         "the left hand of an assignment operator. For example, if a global variable <i>n</i> has been declared, then an "
                         "expression such as 'x = $T + n' is illegal. Furthermore, global variables are always specialized for additive or "
                         "multiplicative operations. For example, if <i>n</i> has been declared as additive with 'n=global(+)', then "
-                        "'n *= $T' is illegal, but 'n -= $T &lt; 0.01' is valid.\n\n"
-                        "By default (if no explicit initial value is specified), additive global variables are initialized to zero and "
+                        "'n *= $T' is illegal, but 'n -= $T &lt; 0.01' is valid.</p>"
+                        "<p>If no explicit initial value is specified, additive global variables are initialized to zero and "
                         "multiplicative global variables are initialized to one. The final values of all global variables are reported on "
-                        "the process console after PixelMath execution." )
+                        "the process console after PixelMath execution.</p>" )
                  ;
 }
 
@@ -341,7 +349,7 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    Symbols_Sizer.Add( Symbols_CodeEditor );
    Symbols_Control.SetSizer( Symbols_Sizer );
 
-   Editors_TabBox.SetScaledMinSize( 600, 250 );
+   Editors_TabBox.SetScaledMinHeight( 250 );
    Editors_TabBox.AddPage( RK_Control, "RGB/K" );
    Editors_TabBox.AddPage( G_Control, "G" );
    Editors_TabBox.AddPage( B_Control, "B" );
@@ -354,6 +362,14 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    Editors_TabBox.SetPageIcon( 3, ScaledResource( ":/toolbar/image-display-alpha.png" ) );
    Editors_TabBox.SetPageIcon( 4, ScaledResource( ":/icons/table.png" ) );
 
+   VertSplitter_Control.SetScaledFixedHeight( 4 );
+   VertSplitter_Control.EnableExpansion( true/*horzEnable*/, false/*vertEnable*/ );
+   VertSplitter_Control.SetCursor( StdCursor::VerticalSplit );
+   HorzSplitter_Control.EnableMouseTracking();
+   VertSplitter_Control.OnMousePress( (Control::mouse_button_event_handler)&ExpressionEditorDialog::e_MousePress, *this );
+   VertSplitter_Control.OnMouseRelease( (Control::mouse_button_event_handler)&ExpressionEditorDialog::e_MouseRelease, *this );
+   VertSplitter_Control.SetStyleSheet( ScaledStyleSheet( "QWidget { border: 1px solid darkgray; }" ) );
+
    String codeStyleSheet = ScaledStyleSheet(
          "QWidget {"
             "font-family: Hack, DejaVu Sans Mono, Monospace;"
@@ -362,7 +378,7 @@ ExpressionEditorDialog::ExpressionEditorDialog()
       );
 
    Syntax_TextBox.SetReadOnly();
-   Syntax_TextBox.SetScaledFixedHeight( 150 );
+   Syntax_TextBox.SetScaledMinHeight( 150 );
    Syntax_TextBox.SetStyleSheet( codeStyleSheet );
    Syntax_TextBox.SetText( NO_ITEM_TEXT );
 
@@ -370,10 +386,24 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    Parser_TextBox.SetScaledFixedHeight( 150 );
    Parser_TextBox.SetStyleSheet( codeStyleSheet );
 
-   TopLeft_Sizer.SetSpacing( 4 );
    TopLeft_Sizer.Add( Editors_TabBox, 100 );
+   TopLeft_Sizer.AddSpacing( 4 );
+   TopLeft_Sizer.Add( VertSplitter_Control );
+   TopLeft_Sizer.AddSpacing( 4 );
    TopLeft_Sizer.Add( Syntax_TextBox );
+   TopLeft_Sizer.AddSpacing( 4 );
    TopLeft_Sizer.Add( Parser_TextBox );
+
+   TopLeft_Control.SetSizer( TopLeft_Sizer );
+   TopLeft_Control.SetScaledMinWidth( 600 );
+
+   HorzSplitter_Control.SetScaledFixedWidth( 4 );
+   HorzSplitter_Control.EnableExpansion( false/*horzEnable*/, true/*vertEnable*/ );
+   HorzSplitter_Control.SetCursor( StdCursor::HorizontalSplit );
+   HorzSplitter_Control.EnableMouseTracking();
+   HorzSplitter_Control.OnMousePress( (Control::mouse_button_event_handler)&ExpressionEditorDialog::e_MousePress, *this );
+   HorzSplitter_Control.OnMouseRelease( (Control::mouse_button_event_handler)&ExpressionEditorDialog::e_MouseRelease, *this );
+   HorzSplitter_Control.SetStyleSheet( ScaledStyleSheet( "QWidget { border: 1px solid darkgray; }" ) );
 
    Images_Label.SetText( "Images" );
 
@@ -423,9 +453,14 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    TopRight_Sizer.AddSpacing( 2 );
    TopRight_Sizer.Add( Syntax_TreeBox, 50 );
 
-   Top_Sizer.SetSpacing( 4 );
-   Top_Sizer.Add( TopLeft_Sizer, 70 );
-   Top_Sizer.Add( TopRight_Sizer, 30 );
+   TopRight_Control.SetSizer( TopRight_Sizer );
+   TopRight_Control.SetScaledMinWidth( 250 );
+
+   Top_Sizer.Add( TopLeft_Control, 100 );
+   Top_Sizer.AddSpacing( 4 );
+   Top_Sizer.Add( HorzSplitter_Control );
+   Top_Sizer.AddSpacing( 4 );
+   Top_Sizer.Add( TopRight_Control );
 
    Parse_PushButton.SetText( "Parse" );
    Parse_PushButton.OnClick( (Button::click_event_handler)&ExpressionEditorDialog::e_Click, *this );
@@ -449,6 +484,10 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    Global_Sizer.Add( Top_Sizer, 100 );
    Global_Sizer.Add( Buttons_Sizer );
 
+   // Splitter actions
+   EnableMouseTracking();
+   OnMouseMove( (Control::mouse_event_handler)&ExpressionEditorDialog::e_MouseMove, *this );
+
    SetWindowTitle( "PixelMath Expression Editor" );
 
    SetSizer( Global_Sizer );
@@ -456,7 +495,8 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    EnsureLayoutUpdated();
    AdjustToContents();
 
-   OnKeyPress( (pcl::Control::keyboard_event_handler)&ExpressionEditorDialog::e_KeyPress, *this );
+   OnKeyPress( (Control::keyboard_event_handler)&ExpressionEditorDialog::e_KeyPress, *this );
+   OnShow( (Control::event_handler)&ExpressionEditorDialog::e_Show, *this );
 }
 
 // ----------------------------------------------------------------------------
@@ -585,6 +625,9 @@ void ExpressionEditorDialog::RebuildSyntaxTree()
    TreeBox::Node* functionsNode = new TreeBox::Node( Syntax_TreeBox );
    functionsNode->SetText( 0, "Functions" );
 
+   TreeBox::Node* generatorsNode = new TreeBox::Node( Syntax_TreeBox );
+   generatorsNode->SetText( 0, "Generators" );
+
    TreeBox::Node* operatorsNode = new TreeBox::Node( Syntax_TreeBox );
    operatorsNode->SetText( 0, "Operators" );
 
@@ -595,14 +638,19 @@ void ExpressionEditorDialog::RebuildSyntaxTree()
    symDefFunctionsNode->SetText( 0, "Symbol Definition" );
 
    for ( const SyntaxItem& item : s_syntaxItems )
+   {
+      TreeBox::Node* node;
       if ( item.op != nullptr )
-         new SyntaxNode( *operatorsNode, operatorsNode->NumberOfChildren(), &item );
+         node = operatorsNode;
       else if ( item.fn != nullptr )
-         new SyntaxNode( *functionsNode, functionsNode->NumberOfChildren(), &item );
+         node = item.fn->function->IsImageGenerator() ? generatorsNode : functionsNode;
       else if ( item.meta.StartsWith( "symbol =" ) )
-         new SyntaxNode( *symDefFunctionsNode, symDefFunctionsNode->NumberOfChildren(), &item );
+         node = symDefFunctionsNode;
       else
-         new SyntaxNode( *punctuatorsNode, punctuatorsNode->NumberOfChildren(), &item );
+         node = punctuatorsNode;
+
+      new SyntaxNode( *node, node->NumberOfChildren(), &item );
+   }
 
    Syntax_TreeBox.EnableUpdates();
 }
@@ -819,7 +867,7 @@ void ExpressionEditorDialog::e_CurrentNodeUpdated( TreeBox& sender, TreeBox::Nod
       if ( node != nullptr )
       {
          const SyntaxItem* item = node->Item();
-         text = "<b><noentities><notags>" + item->meta + "</notags></noentities></b>\n\n" + item->info;
+         text = "<b><noentities><notags>" + item->meta + "</notags></noentities></b>\n\n<html>" + item->info + "</html>";
 //          if ( item->fn != nullptr )
 //          {
 //             String aliases = item->fn->function->Aliases();
@@ -901,6 +949,70 @@ void ExpressionEditorDialog::e_Click( Button& sender, bool checked )
 void ExpressionEditorDialog::e_KeyPress( Control& sender, int key, unsigned modifiers, bool& wantsKey )
 {
    wantsKey = key == KeyCode::Enter;
+}
+
+// ----------------------------------------------------------------------------
+
+void ExpressionEditorDialog::e_MousePress( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
+{
+   if ( sender == VertSplitter_Control )
+   {
+      m_splitterPressed = 1;
+      m_splitterPos = sender.LocalToParent( pos ).y;
+   }
+   else if ( sender == HorzSplitter_Control )
+   {
+      m_splitterPressed = 2;
+      m_splitterPos = sender.LocalToParent( pos ).x;
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void ExpressionEditorDialog::e_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers )
+{
+   m_splitterPressed = 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void ExpressionEditorDialog::e_MouseMove( Control& sender, const pcl::Point& pos, unsigned buttons, unsigned modifiers )
+{
+   switch ( m_splitterPressed )
+   {
+   case 0:
+      break;
+   case 1: // vertical
+      {
+         int dy = pos.y - m_splitterPos;
+         m_splitterPos = pos.y;
+         if ( dy < 0 )
+            if ( Editors_TabBox.Height() <= Editors_TabBox.MinHeight() )
+               return;
+         Syntax_TextBox.SetMinHeight( Max( LogicalPixelsToPhysical( 150 ), Syntax_TextBox.Height() - dy ) );
+         EnsureLayoutUpdated();
+      }
+      break;
+   case 2: // horizontal
+      {
+         int dx = pos.x - m_splitterPos;
+         m_splitterPos = pos.x;
+         if ( dx < 0 )
+            if ( TopLeft_Control.Width() <= TopLeft_Control.MinWidth() )
+               return;
+         TopRight_Control.SetMinWidth( Max( LogicalPixelsToPhysical( 250 ), TopRight_Control.Width() - dx ) );
+         EnsureLayoutUpdated();
+      }
+      break;
+   }
+}
+
+// ----------------------------------------------------------------------------
+
+void ExpressionEditorDialog::e_Show( Control& sender )
+{
+   VertSplitter_Control.SetCursor( StdCursor::VerticalSplit );
+   HorzSplitter_Control.SetCursor( StdCursor::HorizontalSplit );
 }
 
 // ----------------------------------------------------------------------------

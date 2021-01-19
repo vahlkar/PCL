@@ -873,6 +873,62 @@ void PixelMathInstance::SolveBranchTargets( rpn_set RPN[] )
 // ----------------------------------------------------------------------------
 
 static
+void RunImageGenerators( PixelMathInstance::rpn_set RPN[], AutoPointer<BicubicPixelInterpolation>& interpolation )
+{
+   int genTotal = 0;
+
+   for ( int c = 0; c < 4; ++c )
+      for ( Expression::component_list& rpn : RPN[c] )
+         for ( ;; )
+         {
+            int genFound = 0;
+
+            for ( Expression::component_list::iterator i = rpn.Begin(); i != rpn.End(); ++i )
+               if ( (*i)->IsFunction() )
+               {
+                  const Function* F = dynamic_cast<Function*>( *i );
+                  if ( F != nullptr )
+                     if ( F->IsImageGenerator() )
+                     {
+                        ++genFound;
+
+                        int n = F->NumberOfArguments();
+                        int pos = F->TokenPosition();
+
+                        IsoString key = F->GenerateImage( i-n, i );
+                        InternalImageReference* ref = new InternalImageReference( key, pos );
+
+                        rpn.Delete( i );
+                        *i = ref;
+                        rpn.Destroy( i-n, i );
+
+                        if ( !ref->FindImage() )
+                           throw ParseError( "Internal parser error: Invalid internal image reference." );
+
+                        if ( ref->Image()->Width() != PixelMathInstance::s_targetWidth || ref->Image()->Height() != PixelMathInstance::s_targetHeight )
+                        {
+                           if ( interpolation.IsNull() )
+                              interpolation = new BicubicPixelInterpolation;
+                           ref->InitInterpolators( interpolation );
+                        }
+
+                        break;
+                     }
+               }
+
+            if ( genFound == 0 )
+               break;
+
+            genTotal += genFound;
+         }
+
+   if ( genTotal > 0 )
+      Console().WriteLn( "<end><cbr>Executed " + String( genTotal ) + " image generator(s)." );
+}
+
+// ----------------------------------------------------------------------------
+
+static
 void ReportGlobalVariables()
 {
    String globals = Symbol::GlobalVariablesReport();
@@ -1007,6 +1063,8 @@ bool PixelMathInstance::ExecuteOn( View& view )
    ImageWindow destinationWindow;
 
    o_outputData.Clear();
+
+   ClearInternalImages();
 
    try
    {
@@ -1209,10 +1267,19 @@ bool PixelMathInstance::ExecuteOn( View& view )
          }
 
       /*
-       * Solve invariant subexpressions and, if we are optimizing, compute
-       * branch target offsets.
+       * Solve invariant subexpressions.
        */
       SolveInvariants( RPN, view.Window() );
+
+      /*
+       * Execute image generators. Each generator replaces its entire
+       * expression (function and arguments) with an internal image reference.
+       */
+      RunImageGenerators( RPN, interpolation );
+
+      /*
+       * If we are optimizing, compute branch target offsets.
+       */
       if ( optimize )
          SolveBranchTargets( RPN );
 
@@ -1393,6 +1460,8 @@ bool PixelMathInstance::ExecuteOn( View& view )
 
       Symbol::DestroyAll();
 
+      ClearInternalImages();
+
       /*
        * If we have used a temporary working image, copy the result to the
        * target view.
@@ -1428,6 +1497,8 @@ bool PixelMathInstance::ExecuteOn( View& view )
       }
 
       Symbol::DestroyAll();
+
+      ClearInternalImages();
 
       workingImage.Free();
 
@@ -1468,6 +1539,8 @@ bool PixelMathInstance::ExecuteGlobal()
    ImageWindow destinationWindow;
 
    o_outputData.Clear();
+
+   ClearInternalImages();
 
    try
    {
@@ -1598,10 +1671,19 @@ bool PixelMathInstance::ExecuteGlobal()
          }
 
       /*
-       * Solve invariant subexpressions and, if we are optimizing, compute
-       * branch target offsets.
+       * Solve invariant subexpressions.
        */
       SolveInvariants( RPN );
+
+      /*
+       * Execute image generators. Each generator replaces its entire
+       * expression (function and arguments) with an internal image reference.
+       */
+      RunImageGenerators( RPN, interpolation );
+
+      /*
+       * If we are optimizing, compute branch target offsets.
+       */
       if ( optimize )
          SolveBranchTargets( RPN );
 
@@ -1693,6 +1775,8 @@ bool PixelMathInstance::ExecuteGlobal()
 
       Symbol::DestroyAll();
 
+      ClearInternalImages();
+
       /*
        * If we have used a temporary working image, copy the result to the
        * target view.
@@ -1722,6 +1806,8 @@ bool PixelMathInstance::ExecuteGlobal()
       }
 
       Symbol::DestroyAll();
+
+      ClearInternalImages();
 
       workingImage.Free();
 
@@ -1890,6 +1976,61 @@ size_type PixelMathInstance::ParameterLength( const MetaParameter* p, size_type 
    if ( p == ThePMOutputGlobalVariableIdParameter )
       return o_outputData[tableRow].id.Length();
    return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+static Array<ImageVariant> s_internalImages;
+
+struct InternalImageIndexItem
+{
+   IsoString    key;
+   ImageVariant internalImage;
+
+   InternalImageIndexItem( const IsoString& k, const ImageVariant& i = ImageVariant() )
+      : key( k )
+      , internalImage( i )
+   {
+   }
+
+   InternalImageIndexItem( const InternalImageIndexItem& ) = default;
+
+   bool operator ==( const InternalImageIndexItem& x ) const
+   {
+      return key == x.key;
+   }
+
+   bool operator <( const InternalImageIndexItem& x ) const
+   {
+      return key < x.key;
+   }
+};
+
+static SortedArray<InternalImageIndexItem> s_internalImageIndex;
+
+bool PixelMathInstance::HasInternalImage( const IsoString& key )
+{
+   return s_internalImageIndex.Contains( key );
+}
+
+ImageVariant PixelMathInstance::InternalImage( const IsoString& key )
+{
+   SortedArray<InternalImageIndexItem>::const_iterator i = s_internalImageIndex.Search( key );
+   if ( i != s_internalImageIndex.End() )
+      return i->internalImage;
+   return ImageVariant();
+}
+
+void PixelMathInstance::AddInternalImage( const IsoString& key, const ImageVariant& image )
+{
+   s_internalImages << image;
+   s_internalImageIndex << InternalImageIndexItem( key, image );
+}
+
+void PixelMathInstance::ClearInternalImages()
+{
+   s_internalImages.Clear();
+   s_internalImageIndex.Clear();
 }
 
 // ----------------------------------------------------------------------------

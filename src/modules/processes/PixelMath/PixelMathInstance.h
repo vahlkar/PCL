@@ -86,6 +86,11 @@ public:
    bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
    size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
+   static bool HasInternalImage( const IsoString& key );
+   static ImageVariant InternalImage( const IsoString& key );
+   static void AddInternalImage( const IsoString& key, const ImageVariant& image );
+   static void ClearInternalImages();
+
 public:
 
    static int s_targetWidth, s_targetHeight, s_targetNumberOfChannels;
@@ -94,27 +99,27 @@ public:
 
 private:
 
-   String      p_expression[ 4 ];      // R/K/RGB, G, B, Alpha
-   pcl_bool    p_useSingleExpression;  // Use expression[0] for all channels
-   String      p_symbols;              // comma-delimited list of symbol definitions
-   pcl_bool    p_generateOutput;       // Generate an output image
-   pcl_bool    p_singleThreaded;       // Use a single thread
-   pcl_bool    p_optimization;         // Use code optimization
-   pcl_bool    p_use64BitWorkingImage; // Use 64-bit floating point data for intermediate calculation
-   pcl_bool    p_rescaleResult;        // Rescale result after execution
-   double      p_rescaleLower;         // Rescaling range, lower bound
-   double      p_rescaleUpper;         // Rescaling range, upper bound
-   pcl_bool    p_truncateResult;       // Truncate result after execution, if not rescaled
-   double      p_truncateLower;        // Truncation range, lower bound
-   double      p_truncateUpper;        // Truncation range, upper bound
-   pcl_bool    p_createNewImage;       // Destination: new image or replace target
-   pcl_bool    p_showNewImage;         // (Scripting only) Show newly created image windows
-   String      p_newImageId;           // Image identifier (empty = auto)
-   int32       p_newImageWidth;        // Width in pixels (< 0 = same as target)
-   int32       p_newImageHeight;       // Height in pixels (< 0 = same as target)
-   pcl_bool    p_newImageAlpha;        // Create an alpha channel
-   pcl_enum    p_newImageColorSpace;   // RGB or grayscale (can be same as target)
-   pcl_enum    p_newImageSampleFormat; // Integer/real, bit count (can be same as target)
+   String    p_expression[ 4 ];      // R/K/RGB, G, B, Alpha
+   pcl_bool  p_useSingleExpression;  // Use expression[0] for all channels
+   String    p_symbols;              // comma-delimited list of symbol definitions
+   pcl_bool  p_generateOutput;       // Generate an output image
+   pcl_bool  p_singleThreaded;       // Use a single thread
+   pcl_bool  p_optimization;         // Use code optimization
+   pcl_bool  p_use64BitWorkingImage; // Use 64-bit floating point data for intermediate calculation
+   pcl_bool  p_rescaleResult;        // Rescale result after execution
+   double    p_rescaleLower;         // Rescaling range, lower bound
+   double    p_rescaleUpper;         // Rescaling range, upper bound
+   pcl_bool  p_truncateResult;       // Truncate result after execution, if not rescaled
+   double    p_truncateLower;        // Truncation range, lower bound
+   double    p_truncateUpper;        // Truncation range, upper bound
+   pcl_bool  p_createNewImage;       // Destination: new image or replace target
+   pcl_bool  p_showNewImage;         // (Scripting only) Show newly created image windows
+   String    p_newImageId;           // Image identifier (empty = auto)
+   int32     p_newImageWidth;        // Width in pixels (< 0 = same as target)
+   int32     p_newImageHeight;       // Height in pixels (< 0 = same as target)
+   pcl_bool  p_newImageAlpha;        // Create an alpha channel
+   pcl_enum  p_newImageColorSpace;   // RGB or grayscale (can be same as target)
+   pcl_enum  p_newImageSampleFormat; // Integer/real, bit count (can be same as target)
 
    Array<Symbol::OutputData> o_outputData;
 

@@ -58,7 +58,6 @@
 #include <pcl/HistogramTransformation.h>
 #include <pcl/ImageWindow.h>
 #include <pcl/Math.h>
-#include <pcl/Selection.h>
 
 #define S   (static_cast<Sample*>( *i ))
 #define P   (static_cast<PixelData*>( *i ))
@@ -99,7 +98,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new ArcTanhFunction
              << new AvgDevFunction
              << new BWMVFunction
-             << new ChiSquareFunction
+             << new BoxConvolutionFunction
              << new CIELFunction
              << new CIEXFunction
              << new CIEYFunction
@@ -111,15 +110,19 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new CIEhdFunction
              << new CIEhrFunction
              << new CeilFunction
+             << new ChiSquareFunction
              << new CosFunction
              << new CoshFunction
+             << new DilationFilterFunction
              << new DistToLineFunction
              << new DistToSegmentFunction
+             << new ErosionFilterFunction
              << new ExpFunction
              << new FloorFunction
              << new FracFunction
              << new GammaFunction
              << new GaussFunction
+             << new GaussianConvolutionFunction
              << new HFunction
              << new HdFunction
              << new HeightFunction
@@ -130,7 +133,9 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new InlineIfFunction
              << new InlineSwitchFunction
              << new IsColorFunction
+             << new KernelConvolutionFunction
              << new LnFunction
+             << new LocalVarianceFunction
              << new Log2Function
              << new LogFunction
              << new MADFunction
@@ -142,11 +147,15 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new MeanFunction
              << new MeanOfSquaresFunction
              << new MedFunction
+             << new MedianFilterFunction
              << new MinDistRectFunction
              << new MinFunction
              << new MinSampleFunction
+             << new MirrorHorzFunction
+             << new MirrorVertFunction
              << new ModFunction
              << new NormFunction
+             << new NormalizationFunction
              << new NumberOfChannelsFunction
              << new PAngleFunction
              << new PBMVFunction
@@ -159,6 +168,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new RangeFunction
              << new RescaleFunction
              << new RndSelectFunction
+             << new RotationFunction
              << new RoundFunction
              << new SiFunction
              << new SignFunction
@@ -167,12 +177,19 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new SnFunction
              << new SqrtFunction
              << new StdDevFunction
+             << new StrCircularFunction
+             << new StrDiagonalFunction
+             << new StrOrthogonalFunction
+             << new StrSquareFunction
+             << new StrStarFunction
+             << new StrThreeWayFunction
              << new StudentTFunction
              << new SumFunction
              << new SumOfSquaresFunction
              << new SvFunction
              << new TanFunction
              << new TanhFunction
+             << new TranslationFunction
              << new TruncFunction
              << new VFunction
              << new VarFunction
@@ -419,12 +436,79 @@ void ArcTanhFunction::operator()( Pixel& r, component_list::const_iterator i, co
 
 // ----------------------------------------------------------------------------
 
+static Rect GetStatisticalFunctionROIArguments( const String& functionName,
+                                                Expression::component_list::const_iterator i,
+                                                Expression::component_list::const_iterator j )
+{
+   Rect r = 0;
+
+   if ( (*i)->IsSample() )
+      r.x0 = int( S->Value() );
+   else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+      r.x0 = int( P->PixelValue()[0] );
+   else
+      throw ParseError( functionName + "() argument #2: The ROI left coordinate (x0) must be an invariant scalar subexpression." );
+
+   if ( ++i < j )
+   {
+      if ( (*i)->IsSample() )
+         r.y0 = int( S->Value() );
+      else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+         r.y0 = int( P->PixelValue()[0] );
+      else
+         throw ParseError( functionName + "() argument #3: The ROI top coordinate (y0) must be an invariant scalar subexpression." );
+
+      if ( ++i < j )
+      {
+         if ( (*i)->IsSample() )
+            r.x1 = r.x0 + int( S->Value() );
+         else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+            r.x1 = r.x0 + int( P->PixelValue()[0] );
+         else
+            throw ParseError( functionName + "() argument #4: The ROI width must be an invariant scalar subexpression." );
+
+         if ( ++i < j )
+         {
+            if ( (*i)->IsSample() )
+               r.y1 = r.y0 + int( S->Value() );
+            else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+               r.y1 = r.y0 + int( P->PixelValue()[0] );
+            else
+               throw ParseError( functionName + "() argument #5: The ROI height must be an invariant scalar subexpression." );
+         }
+      }
+   }
+
+   return r;
+}
+
+static bool ValidateStatisticalFunctionArguments( const String& functionName, String& info,
+                                                  Expression::component_list::const_iterator i,
+                                                  Expression::component_list::const_iterator j )
+{
+   if ( (*i)->IsImageReference() )
+   {
+      if ( Distance( i, j ) != 1 )
+         if ( Distance( i, j ) != 5 )
+         {
+            info = functionName + "( image[, x0, y0, w, h] ) takes an image reference argument plus 4 optional ROI coordinates";
+            return false;
+         }
+   }
+   else if ( Distance( i, j ) < 2 )
+   {
+      info = functionName + "( a, b[, ...] ) takes a set of two or more scalar arguments";
+      return false;
+   }
+
+   return true;
+}
+
+// ----------------------------------------------------------------------------
+
 bool MeanFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || (*i)->IsImageReference() )
-      return true;
-   info = "mean() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "mean", info, i, j );
 }
 
 void MeanFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -441,31 +525,57 @@ void MeanFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 bool MeanFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void MeanFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "mean(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector mean = view.ComputeOrFetchProperty( "Mean", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( mean.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( mean[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "mean(): Internal parser error" );
+      View view = window.MainView();
+      DVector mean = view.ComputeOrFetchProperty( "Mean", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= mean.Length() )
+            throw ParseError( ("mean(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( mean[c] );
+      }
+      else
+      {
+         if ( mean.Length() < 3 )
+            r.SetSamples( mean[0] );
+         else
+            r.SetSamples( mean[0], mean[1], mean[2] );
+      }
    }
    else
    {
-      if ( mean.Length() < 3 )
-         r.SetSamples( mean[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "mean", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("mean(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->Mean( rect, c, c ) );
+      }
       else
-         r.SetSamples( mean[0], mean[1], mean[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->Mean( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->Mean( rect, 0, 0 ),
+                          ref->Image()->Mean( rect, 1, 1 ),
+                          ref->Image()->Mean( rect, 2, 2 ) );
+      }
    }
 }
 
@@ -473,10 +583,7 @@ void MeanFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 bool AvgDevFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "adev() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "adev", info, i, j );
 }
 
 void AvgDevFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -487,37 +594,63 @@ void AvgDevFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_se
       DVector::iterator a = v.Begin();
       for ( pixel_set::const_iterator k = i; k < j; ++k, ++a )
          *a = (*k)[c];
-      r[c] = v.AvgDev()*1.2533;
+      r[c] = v.AvgDev() * 1.2533;
    }
 }
 
 bool AvgDevFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void AvgDevFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "adev(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector avgDev = view.ComputeOrFetchProperty( "AvgDev", false/*notify*/ ).ToDVector() * 1.2533;
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( avgDev.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( avgDev[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "adev(): Internal parser error" );
+      View view = window.MainView();
+      DVector adev = view.ComputeOrFetchProperty( "AvgDev", false/*notify*/ ).ToDVector() * 1.2533;
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= adev.Length() )
+            throw ParseError( ("adev(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( adev[c] );
+      }
+      else
+      {
+         if ( adev.Length() < 3 )
+            r.SetSamples( adev[0] );
+         else
+            r.SetSamples( adev[0], adev[1], adev[2] );
+      }
    }
    else
    {
-      if ( avgDev.Length() < 3 )
-         r.SetSamples( avgDev[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "adev", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("adev(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->AvgDev( ref->Image()->Median( rect, c, c ), rect, c, c ) * 1.2533 );
+      }
       else
-         r.SetSamples( avgDev[0], avgDev[1], avgDev[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->AvgDev( ref->Image()->Median( rect, 0, 0 ), rect, 0, 0 ) * 1.2533 );
+         else
+            r.SetSamples( ref->Image()->AvgDev( ref->Image()->Median( rect, 0, 0 ), rect, 0, 0 ) * 1.2533,
+                          ref->Image()->AvgDev( ref->Image()->Median( rect, 1, 1 ), rect, 1, 1 ) * 1.2533,
+                          ref->Image()->AvgDev( ref->Image()->Median( rect, 2, 2 ), rect, 2, 2 ) * 1.2533 );
+      }
    }
 }
 
@@ -525,10 +658,7 @@ void AvgDevFunction::operator()( Pixel& r, component_list::const_iterator i, com
 
 bool MADFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "mdev() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "mdev", info, i, j );
 }
 
 void MADFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -539,37 +669,63 @@ void MADFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
       DVector::iterator a = v.Begin();
       for ( pixel_set::const_iterator k = i; k < j; ++k, ++a )
          *a = (*k)[c];
-      r[c] = v.MAD()*1.4826;
+      r[c] = v.MAD() * 1.4826;
    }
 }
 
 bool MADFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void MADFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "mdev(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector MAD = view.ComputeOrFetchProperty( "MAD", false/*notify*/ ).ToDVector() * 1.4826;
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( MAD.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( MAD[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "mdev(): Internal parser error" );
+      View view = window.MainView();
+      DVector mdev = view.ComputeOrFetchProperty( "MAD", false/*notify*/ ).ToDVector() * 1.4826;
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= mdev.Length() )
+            throw ParseError( ("mdev(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( mdev[c] );
+      }
+      else
+      {
+         if ( mdev.Length() < 3 )
+            r.SetSamples( mdev[0] );
+         else
+            r.SetSamples( mdev[0], mdev[1], mdev[2] );
+      }
    }
    else
    {
-      if ( MAD.Length() < 3 )
-         r.SetSamples( MAD[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "mdev", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("mdev(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->MAD( ref->Image()->Median( rect, c, c ), rect, c, c ) * 1.4826 );
+      }
       else
-         r.SetSamples( MAD[0], MAD[1], MAD[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->MAD( ref->Image()->Median( rect, 0, 0 ), rect, 0, 0 ) * 1.4826 );
+         else
+            r.SetSamples( ref->Image()->MAD( ref->Image()->Median( rect, 0, 0 ), rect, 0, 0 ) * 1.4826,
+                          ref->Image()->MAD( ref->Image()->Median( rect, 1, 1 ), rect, 1, 1 ) * 1.4826,
+                          ref->Image()->MAD( ref->Image()->Median( rect, 2, 2 ), rect, 2, 2 ) * 1.4826 );
+      }
    }
 }
 
@@ -577,10 +733,7 @@ void MADFunction::operator()( Pixel& r, component_list::const_iterator i, compon
 
 bool BWMVFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "BWMV() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "bwmv", info, i, j );
 }
 
 void BWMVFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -597,31 +750,67 @@ void BWMVFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 bool BWMVFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void BWMVFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "bwmv(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector BWMV = view.ComputeOrFetchProperty( "BWMV", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( BWMV.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( BWMV[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "bwmv(): Internal parser error" );
+      View view = window.MainView();
+      DVector bwmv = view.ComputeOrFetchProperty( "BWMV", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= bwmv.Length() )
+            throw ParseError( ("bwmv(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( bwmv[c] );
+      }
+      else
+      {
+         if ( bwmv.Length() < 3 )
+            r.SetSamples( bwmv[0] );
+         else
+            r.SetSamples( bwmv[0], bwmv[1], bwmv[2] );
+      }
    }
    else
    {
-      if ( BWMV.Length() < 3 )
-         r.SetSamples( BWMV[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "bwmv", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("bwmv(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         double cc = ref->Image()->Median( rect, c, c );
+         double sc = ref->Image()->MAD( cc, rect, c, c );
+         r.SetSamples( ref->Image()->BiweightMidvariance( cc, sc, 9/*k*/, false/*reducedLength*/, rect, c, c ) );
+      }
       else
-         r.SetSamples( BWMV[0], BWMV[1], BWMV[2] );
+      {
+         double c0 = ref->Image()->Median( rect, 0, 0 );
+         double s0 = ref->Image()->MAD( c0, rect, 0, 0 );
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->BiweightMidvariance( c0, s0, 9/*k*/, false/*reducedLength*/, rect, 0, 0 ) );
+         else
+         {
+            double c1 = ref->Image()->Median( rect, 1, 1 );
+            double c2 = ref->Image()->Median( rect, 2, 2 );
+            double s1 = ref->Image()->MAD( c1, rect, 1, 1 );
+            double s2 = ref->Image()->MAD( c2, rect, 2, 2 );
+            r.SetSamples( ref->Image()->BiweightMidvariance( c0, s0, 9, false, rect, 0, 0 ),
+                          ref->Image()->BiweightMidvariance( c1, s1, 9, false, rect, 1, 1 ),
+                          ref->Image()->BiweightMidvariance( c2, s2, 9, false, rect, 2, 2 ) );
+         }
+      }
    }
 }
 
@@ -629,10 +818,7 @@ void BWMVFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 bool PBMVFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "PBMV() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "pbmv", info, i, j );
 }
 
 void PBMVFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -649,31 +835,63 @@ void PBMVFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 bool PBMVFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void PBMVFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "pbmv(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector PBMV = view.ComputeOrFetchProperty( "PBMV", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( PBMV.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( PBMV[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "pbmv(): Internal parser error" );
+      View view = window.MainView();
+      DVector pbmv = view.ComputeOrFetchProperty( "PBMV", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= pbmv.Length() )
+            throw ParseError( ("pbmv(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( pbmv[c] );
+      }
+      else
+      {
+         if ( pbmv.Length() < 3 )
+            r.SetSamples( pbmv[0] );
+         else
+            r.SetSamples( pbmv[0], pbmv[1], pbmv[2] );
+      }
    }
    else
    {
-      if ( PBMV.Length() < 3 )
-         r.SetSamples( PBMV[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "pbmv", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("pbmv(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         double cc = ref->Image()->Median( rect, c, c );
+         r.SetSamples( ref->Image()->BendMidvariance( cc, 0.2/*beta*/, rect, c, c ) );
+      }
       else
-         r.SetSamples( PBMV[0], PBMV[1], PBMV[2] );
+      {
+         double c0 = ref->Image()->Median( rect, 0, 0 );
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->BendMidvariance( c0, 0.2/*beta*/, rect, 0, 0 ) );
+         else
+         {
+            double c1 = ref->Image()->Median( rect, 1, 1 );
+            double c2 = ref->Image()->Median( rect, 2, 2 );
+            r.SetSamples( ref->Image()->BendMidvariance( c0, 0.2, rect, 0, 0 ),
+                          ref->Image()->BendMidvariance( c1, 0.2, rect, 1, 1 ),
+                          ref->Image()->BendMidvariance( c2, 0.2, rect, 2, 2 ) );
+         }
+      }
    }
 }
 
@@ -681,10 +899,7 @@ void PBMVFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 bool SnFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "Sn() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "Sn", info, i, j );
 }
 
 void SnFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -695,37 +910,63 @@ void SnFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::c
       DVector::iterator a = v.Begin();
       for ( pixel_set::const_iterator k = i; k < j; ++k, ++a )
          *a = (*k)[c];
-      r[c] = v.Sn()*1.1926;
+      r[c] = v.Sn() * 1.1926;
    }
 }
 
 bool SnFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void SnFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "Sn(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector Sn = view.ComputeOrFetchProperty( "Sn", false/*notify*/ ).ToDVector() * 1.1926;
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( Sn.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( Sn[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "Sn(): Internal parser error" );
+      View view = window.MainView();
+      DVector Sn = view.ComputeOrFetchProperty( "Sn", false/*notify*/ ).ToDVector() * 1.1926;
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= Sn.Length() )
+            throw ParseError( ("Sn(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( Sn[c] );
+      }
+      else
+      {
+         if ( Sn.Length() < 3 )
+            r.SetSamples( Sn[0] );
+         else
+            r.SetSamples( Sn[0], Sn[1], Sn[2] );
+      }
    }
    else
    {
-      if ( Sn.Length() < 3 )
-         r.SetSamples( Sn[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "Sn", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("Sn(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->Sn( rect, c, c ) * 1.1926 );
+      }
       else
-         r.SetSamples( Sn[0], Sn[1], Sn[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->Sn( rect, 0, 0 ) * 1.1926 );
+         else
+            r.SetSamples( ref->Image()->Sn( rect, 0, 0 ) * 1.1926,
+                          ref->Image()->Sn( rect, 1, 1 ) * 1.1926,
+                          ref->Image()->Sn( rect, 2, 2 ) * 1.1926 );
+      }
    }
 }
 
@@ -733,10 +974,7 @@ void SnFunction::operator()( Pixel& r, component_list::const_iterator i, compone
 
 bool QnFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "Qn() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "Qn", info, i, j );
 }
 
 void QnFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -747,37 +985,63 @@ void QnFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::c
       DVector::iterator a = v.Begin();
       for ( pixel_set::const_iterator k = i; k < j; ++k, ++a )
          *a = (*k)[c];
-      r[c] = v.Qn()*2.2191;
+      r[c] = v.Qn() * 2.2191;
    }
 }
 
 bool QnFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void QnFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "Qn(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector Qn = view.ComputeOrFetchProperty( "Qn", false/*notify*/ ).ToDVector() * 2.2191;
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( Qn.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( Qn[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "Qn(): Internal parser error" );
+      View view = window.MainView();
+      DVector Qn = view.ComputeOrFetchProperty( "Qn", false/*notify*/ ).ToDVector() * 2.2191;
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= Qn.Length() )
+            throw ParseError( ("Qn(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( Qn[c] );
+      }
+      else
+      {
+         if ( Qn.Length() < 3 )
+            r.SetSamples( Qn[0] );
+         else
+            r.SetSamples( Qn[0], Qn[1], Qn[2] );
+      }
    }
    else
    {
-      if ( Qn.Length() < 3 )
-         r.SetSamples( Qn[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "Qn", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("Qn(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->Qn( rect, c, c ) * 2.2191 );
+      }
       else
-         r.SetSamples( Qn[0], Qn[1], Qn[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->Qn( rect, 0, 0 ) * 2.2191 );
+         else
+            r.SetSamples( ref->Image()->Qn( rect, 0, 0 ) * 2.2191,
+                          ref->Image()->Qn( rect, 1, 1 ) * 2.2191,
+                          ref->Image()->Qn( rect, 2, 2 ) * 2.2191 );
+      }
    }
 }
 
@@ -785,10 +1049,7 @@ void QnFunction::operator()( Pixel& r, component_list::const_iterator i, compone
 
 bool ModFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "mod() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "mod", info, i, j );
 }
 
 void ModFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -805,31 +1066,57 @@ void ModFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool ModFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void ModFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "mod(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector mod = view.ComputeOrFetchProperty( "Modulus", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( mod.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( mod[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "mod(): Internal parser error" );
+      View view = window.MainView();
+      DVector mod = view.ComputeOrFetchProperty( "Modulus", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= mod.Length() )
+            throw ParseError( ("mod(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( mod[c] );
+      }
+      else
+      {
+         if ( mod.Length() < 3 )
+            r.SetSamples( mod[0] );
+         else
+            r.SetSamples( mod[0], mod[1], mod[2] );
+      }
    }
    else
    {
-      if ( mod.Length() < 3 )
-         r.SetSamples( mod[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "mod", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("mod(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->Modulus( rect, c, c ) );
+      }
       else
-         r.SetSamples( mod[0], mod[1], mod[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->Modulus( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->Modulus( rect, 0, 0 ),
+                          ref->Image()->Modulus( rect, 1, 1 ),
+                          ref->Image()->Modulus( rect, 2, 2 ) );
+      }
    }
 }
 
@@ -837,10 +1124,7 @@ void ModFunction::operator()( Pixel& r, component_list::const_iterator i, compon
 
 bool NormFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "norm() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "norm", info, i, j );
 }
 
 void NormFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -857,31 +1141,57 @@ void NormFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 bool NormFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void NormFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "norm(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector norm = view.ComputeOrFetchProperty( "Norm", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( norm.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( norm[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "norm(): Internal parser error" );
+      View view = window.MainView();
+      DVector norm = view.ComputeOrFetchProperty( "Norm", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= norm.Length() )
+            throw ParseError( ("norm(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( norm[c] );
+      }
+      else
+      {
+         if ( norm.Length() < 3 )
+            r.SetSamples( norm[0] );
+         else
+            r.SetSamples( norm[0], norm[1], norm[2] );
+      }
    }
    else
    {
-      if ( norm.Length() < 3 )
-         r.SetSamples( norm[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "norm", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("norm(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->Norm( rect, c, c ) );
+      }
       else
-         r.SetSamples( norm[0], norm[1], norm[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->Norm( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->Norm( rect, 0, 0 ),
+                          ref->Image()->Norm( rect, 1, 1 ),
+                          ref->Image()->Norm( rect, 2, 2 ) );
+      }
    }
 }
 
@@ -889,10 +1199,7 @@ void NormFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 bool SumOfSquaresFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "ssqr() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "ssqr", info, i, j );
 }
 
 void SumOfSquaresFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -909,31 +1216,57 @@ void SumOfSquaresFunction::operator()( Pixel& r, pixel_set::const_iterator i, pi
 
 bool SumOfSquaresFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void SumOfSquaresFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "ssqr(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector s2 = view.ComputeOrFetchProperty( "SumOfSquares", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( s2.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( s2[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "ssqr(): Internal parser error" );
+      View view = window.MainView();
+      DVector ssqr = view.ComputeOrFetchProperty( "SumOfSquares", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ssqr.Length() )
+            throw ParseError( ("ssqr(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ssqr[c] );
+      }
+      else
+      {
+         if ( ssqr.Length() < 3 )
+            r.SetSamples( ssqr[0] );
+         else
+            r.SetSamples( ssqr[0], ssqr[1], ssqr[2] );
+      }
    }
    else
    {
-      if ( s2.Length() < 3 )
-         r.SetSamples( s2[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "ssqr", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("ssqr(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->SumOfSquares( rect, c, c ) );
+      }
       else
-         r.SetSamples( s2[0], s2[1], s2[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->SumOfSquares( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->SumOfSquares( rect, 0, 0 ),
+                          ref->Image()->SumOfSquares( rect, 1, 1 ),
+                          ref->Image()->SumOfSquares( rect, 2, 2 ) );
+      }
    }
 }
 
@@ -941,10 +1274,7 @@ void SumOfSquaresFunction::operator()( Pixel& r, component_list::const_iterator 
 
 bool MeanOfSquaresFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "asqr() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "asqr", info, i, j );
 }
 
 void MeanOfSquaresFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -961,31 +1291,57 @@ void MeanOfSquaresFunction::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 bool MeanOfSquaresFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void MeanOfSquaresFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "asqr(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector m2 = view.ComputeOrFetchProperty( "MeanOfSquares", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( m2.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( m2[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "asqr(): Internal parser error" );
+      View view = window.MainView();
+      DVector asqr = view.ComputeOrFetchProperty( "MeanOfSquares", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= asqr.Length() )
+            throw ParseError( ("asqr(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( asqr[c] );
+      }
+      else
+      {
+         if ( asqr.Length() < 3 )
+            r.SetSamples( asqr[0] );
+         else
+            r.SetSamples( asqr[0], asqr[1], asqr[2] );
+      }
    }
    else
    {
-      if ( m2.Length() < 3 )
-         r.SetSamples( m2[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "asqr", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("asqr(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->MeanOfSquares( rect, c, c ) );
+      }
       else
-         r.SetSamples( m2[0], m2[1], m2[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->MeanOfSquares( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->MeanOfSquares( rect, 0, 0 ),
+                          ref->Image()->MeanOfSquares( rect, 1, 1 ),
+                          ref->Image()->MeanOfSquares( rect, 2, 2 ) );
+      }
    }
 }
 
@@ -1481,10 +1837,7 @@ void Log2Function::operator()( Pixel& r, component_list::const_iterator i, compo
 
 bool MaxFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || (*i)->IsImageReference() )
-      return true;
-   info = "max() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "max", info, i, j );
 }
 
 void MaxFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -1504,31 +1857,57 @@ void MaxFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool MaxFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void MaxFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "max(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector maximum = view.ComputeOrFetchProperty( "Maximum", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( maximum.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( maximum[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "max(): Internal parser error" );
+      View view = window.MainView();
+      DVector maximum = view.ComputeOrFetchProperty( "Maximum", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= maximum.Length() )
+            throw ParseError( ("max(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( maximum[c] );
+      }
+      else
+      {
+         if ( maximum.Length() < 3 )
+            r.SetSamples( maximum[0] );
+         else
+            r.SetSamples( maximum[0], maximum[1], maximum[2] );
+      }
    }
    else
    {
-      if ( maximum.Length() < 3 )
-         r.SetSamples( maximum[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "max", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("max(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->MaximumSampleValue( rect, c, c ) );
+      }
       else
-         r.SetSamples( maximum[0], maximum[1], maximum[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->MaximumSampleValue( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->MaximumSampleValue( rect, 0, 0 ),
+                          ref->Image()->MaximumSampleValue( rect, 1, 1 ),
+                          ref->Image()->MaximumSampleValue( rect, 2, 2 ) );
+      }
    }
 }
 
@@ -1569,10 +1948,7 @@ void MaxSampleFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel
 
 bool MedFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 2 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "med() takes either a single image reference argument or a set of three or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "med", info, i, j );
 }
 
 void MedFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -1589,31 +1965,57 @@ void MedFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool MedFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void MedFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "med(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector median = view.ComputeOrFetchProperty( "Median", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( median.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( median[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "med(): Internal parser error" );
+      View view = window.MainView();
+      DVector med = view.ComputeOrFetchProperty( "Median", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= med.Length() )
+            throw ParseError( ("med(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( med[c] );
+      }
+      else
+      {
+         if ( med.Length() < 3 )
+            r.SetSamples( med[0] );
+         else
+            r.SetSamples( med[0], med[1], med[2] );
+      }
    }
    else
    {
-      if ( median.Length() < 3 )
-         r.SetSamples( median[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "med", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("med(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->Median( rect, c, c ) );
+      }
       else
-         r.SetSamples( median[0], median[1], median[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->Median( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->Median( rect, 0, 0 ),
+                          ref->Image()->Median( rect, 1, 1 ),
+                          ref->Image()->Median( rect, 2, 2 ) );
+      }
    }
 }
 
@@ -1621,10 +2023,7 @@ void MedFunction::operator()( Pixel& r, component_list::const_iterator i, compon
 
 bool MinFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || (*i)->IsImageReference() )
-      return true;
-   info = "min() takes either a single image reference argument or a set of two or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "min", info, i, j );
 }
 
 void MinFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -1644,31 +2043,57 @@ void MinFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool MinFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void MinFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "min(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector minimum = view.ComputeOrFetchProperty( "Minimum", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( minimum.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( minimum[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "min(): Internal parser error" );
+      View view = window.MainView();
+      DVector minimum = view.ComputeOrFetchProperty( "Minimum", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= minimum.Length() )
+            throw ParseError( ("min(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( minimum[c] );
+      }
+      else
+      {
+         if ( minimum.Length() < 3 )
+            r.SetSamples( minimum[0] );
+         else
+            r.SetSamples( minimum[0], minimum[1], minimum[2] );
+      }
    }
    else
    {
-      if ( minimum.Length() < 3 )
-         r.SetSamples( minimum[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "min", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("min(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->MinimumSampleValue( rect, c, c ) );
+      }
       else
-         r.SetSamples( minimum[0], minimum[1], minimum[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->MinimumSampleValue( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->MinimumSampleValue( rect, 0, 0 ),
+                          ref->Image()->MinimumSampleValue( rect, 1, 1 ),
+                          ref->Image()->MinimumSampleValue( rect, 2, 2 ) );
+      }
    }
 }
 
@@ -2171,10 +2596,7 @@ void SqrtFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 bool StdDevFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 || Distance( i, j ) == 1 && (*i)->IsImageReference() )
-      return true;
-   info = "sdev() takes either a single image reference argument or a set of three or more arguments";
-   return false;
+   return ValidateStatisticalFunctionArguments( "sdev", info, i, j );
 }
 
 void StdDevFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -2191,31 +2613,57 @@ void StdDevFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_se
 
 bool StdDevFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return Distance( i, j ) == 1;
+   return (*i)->IsImageReference();
 }
 
 void StdDevFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "sdev(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector stdDev = view.ComputeOrFetchProperty( "StdDev", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( stdDev.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( stdDev[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "sdev(): Internal parser error" );
+      View view = window.MainView();
+      DVector sdev = view.ComputeOrFetchProperty( "StdDev", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= sdev.Length() )
+            throw ParseError( ("sdev(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( sdev[c] );
+      }
+      else
+      {
+         if ( sdev.Length() < 3 )
+            r.SetSamples( sdev[0] );
+         else
+            r.SetSamples( sdev[0], sdev[1], sdev[2] );
+      }
    }
    else
    {
-      if ( stdDev.Length() < 3 )
-         r.SetSamples( stdDev[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "sdev", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("sdev(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->StdDev( rect, c, c ) );
+      }
       else
-         r.SetSamples( stdDev[0], stdDev[1], stdDev[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->StdDev( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->StdDev( rect, 0, 0 ),
+                          ref->Image()->StdDev( rect, 1, 1 ),
+                          ref->Image()->StdDev( rect, 2, 2 ) );
+      }
    }
 }
 
@@ -2310,44 +2758,74 @@ void TruncFunction::operator()( Pixel& r, component_list::const_iterator i, comp
 
 bool VarFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
-      return true;
-   info = "var() takes a single image reference argument";
-   return false;
+   return ValidateStatisticalFunctionArguments( "var", info, i, j );
 }
 
-void VarFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+void VarFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
 {
-   throw Error( "var(): Internal parser error" );
+   DVector v( Distance( i, j ) );
+   for ( int c = 0; c < r.Length(); ++c )
+   {
+      DVector::iterator a = v.Begin();
+      for ( pixel_set::const_iterator k = i; k < j; ++k, ++a )
+         *a = (*k)[c];
+      r[c] = v.Variance();
+   }
 }
 
 bool VarFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return true;
+   return (*i)->IsImageReference();
 }
 
 void VarFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   ImageWindow window = ImageWindow::WindowById( I->Id() );
-   if ( window.IsNull() )
-      return;
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   if ( ref == nullptr )
+      throw ParseError( "var(): Internal parser error" );
 
-   View view = window.MainView();
-   DVector variance = view.ComputeOrFetchProperty( "Variance", false/*notify*/ ).ToDVector();
-
-   int c = I->ChannelIndex();
-   if ( c >= 0 )
+   if ( ++i == j )
    {
-      if ( c >= int( variance.Length() ) )
-         throw ParseError( ("Channel index out of range: " + I->Id()).AppendFormat( "[%d]", c ) );
-      r.SetSamples( variance[c] );
+      ImageWindow window = ImageWindow::WindowById( ref->Id() );
+      if ( window.IsNull() )
+         throw ParseError( "var(): Internal parser error" );
+      View view = window.MainView();
+      DVector var = view.ComputeOrFetchProperty( "Variance", false/*notify*/ ).ToDVector();
+
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= var.Length() )
+            throw ParseError( ("var(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( var[c] );
+      }
+      else
+      {
+         if ( var.Length() < 3 )
+            r.SetSamples( var[0] );
+         else
+            r.SetSamples( var[0], var[1], var[2] );
+      }
    }
    else
    {
-      if ( variance.Length() < 3 )
-         r.SetSamples( variance[0] );
+      Rect rect = GetStatisticalFunctionROIArguments( "var", i, j );
+      int c = ref->ChannelIndex();
+      if ( c >= 0 )
+      {
+         if ( c >= ref->Image()->NumberOfChannels() )
+            throw ParseError( ("var(): Channel index out of range: " + ref->Id()).AppendFormat( "[%d]", c ) );
+         r.SetSamples( ref->Image()->Variance( rect, c, c ) );
+      }
       else
-         r.SetSamples( variance[0], variance[1], variance[2] );
+      {
+         if ( ref->Image()->NumberOfChannels() < 3 )
+            r.SetSamples( ref->Image()->Variance( rect, 0, 0 ) );
+         else
+            r.SetSamples( ref->Image()->Variance( rect, 0, 0 ),
+                          ref->Image()->Variance( rect, 1, 1 ),
+                          ref->Image()->Variance( rect, 2, 2 ) );
+      }
    }
 }
 

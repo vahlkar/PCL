@@ -1,8 +1,8 @@
 ######################################################################
 # PixInsight Makefile Generator Script v1.121
-# Copyright (C) 2009-2020 Pleiades Astrophoto
+# Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2020-12-21T12:28:28.940Z
+# Generated on .... 2021-01-16T20:28:25.171Z
 # Project id ...... PixelMath
 # Project type .... Module
 # Platform ........ FreeBSD/g++
@@ -24,6 +24,7 @@ SRC_FILES= \
 ../../ExpressionEditorDialog.cpp \
 ../../Function.cpp \
 ../../Functional.cpp \
+../../Generators.cpp \
 ../../Operator.cpp \
 ../../PixelMathInstance.cpp \
 ../../PixelMathInterface.cpp \
@@ -43,6 +44,7 @@ OBJ_FILES= \
 ./x64/Release/ExpressionEditorDialog.o \
 ./x64/Release/Function.o \
 ./x64/Release/Functional.o \
+./x64/Release/Generators.o \
 ./x64/Release/Operator.o \
 ./x64/Release/PixelMathInstance.o \
 ./x64/Release/PixelMathInterface.o \
@@ -62,6 +64,7 @@ DEP_FILES= \
 ./x64/Release/ExpressionEditorDialog.d \
 ./x64/Release/Function.d \
 ./x64/Release/Functional.d \
+./x64/Release/Generators.d \
 ./x64/Release/Operator.d \
 ./x64/Release/PixelMathInstance.d \
 ./x64/Release/PixelMathInterface.d \

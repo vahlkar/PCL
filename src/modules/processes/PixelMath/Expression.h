@@ -97,8 +97,8 @@ public:
    typedef IndirectArray<Expression>   component_list;
 
    Expression( unsigned t, int p )
-      : type( t )
-      , pos( p )
+      : m_type( t )
+      , m_pos( p )
    {
    }
 
@@ -110,82 +110,82 @@ public:
 
    int TokenPosition() const
    {
-      return pos;
+      return m_pos;
    }
 
    unsigned Type() const
    {
-      return type;
+      return m_type;
    }
 
    bool IsFunctional() const
    {
-      return (type & XPR_FUNCTIONAL) != 0;
+      return (m_type & XPR_FUNCTIONAL) != 0;
    }
 
    bool IsOperator() const
    {
-      return (type & XPR_OPERATOR) != 0;
+      return (m_type & XPR_OPERATOR) != 0;
    }
 
    bool IsFunction() const
    {
-      return (type & XPR_FUNCTION) != 0;
+      return (m_type & XPR_FUNCTION) != 0;
    }
 
    bool IsData() const
    {
-      return (type & XPR_DATA) != 0;
+      return (m_type & XPR_DATA) != 0;
    }
 
    bool IsImageReference() const
    {
-      return (type & XPR_IMAGEREF) != 0;
+      return (m_type & XPR_IMAGEREF) != 0;
    }
 
    bool IsVariableReference() const
    {
-      return (type & XPR_VARREF) != 0;
+      return (m_type & XPR_VARREF) != 0;
    }
 
    bool IsConstantReference() const
    {
-      return (type & XPR_CONSTREF) != 0;
+      return (m_type & XPR_CONSTREF) != 0;
    }
 
    bool IsPixel() const
    {
-      return (type & XPR_PIXEL) != 0;
+      return (m_type & XPR_PIXEL) != 0;
    }
 
    bool IsSample() const
    {
-      return (type & XPR_SAMPLE) != 0;
+      return (m_type & XPR_SAMPLE) != 0;
    }
 
    bool IsArgumentList() const
    {
-      return (type & XPR_ARGLIST) != 0;
+      return (m_type & XPR_ARGLIST) != 0;
    }
 
    bool IsBranch() const
    {
-      return (type & XPR_BRANCH) != 0;
+      return (m_type & XPR_BRANCH) != 0;
    }
 
    bool IsPointer() const
    {
-      return (type & XPR_POINTER) != 0;
+      return (m_type & XPR_POINTER) != 0;
    }
 
    bool HasLValueRole() const
    {
-      return lvalue;
+      return m_isLvalue;
    }
 
    void SetLValueRole( bool set = true )
    {
-      lvalue = set;
+      m_isLvalue = set;
    }
 
    virtual bool IsLValue() const
@@ -201,9 +201,9 @@ public:
 
 private:
 
-   unsigned type;           // component type
-   int      pos;            // token position
-   bool     lvalue = false; // lvalue role set by the parser
+   unsigned m_type;             // component type
+   int      m_pos;              // token position
+   bool     m_isLvalue = false; // lvalue role set by the parser
 
    static Expression* Parse( token_list& );     // parser stage 1
    static Expression* Parse( component_list& ); // parser stage 2
