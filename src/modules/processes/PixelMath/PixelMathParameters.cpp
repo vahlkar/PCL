@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// PixelMathParameters.cpp - Released 2020-12-17T15:46:55Z
+// PixelMathParameters.cpp - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -63,6 +63,7 @@ PMExpression2*            ThePMExpression2Parameter = nullptr;
 PMExpression3*            ThePMExpression3Parameter = nullptr;
 PMUseSingleExpression*    ThePMUseSingleExpressionParameter = nullptr;
 PMSymbols*                ThePMSymbolsParameter = nullptr;
+PMCacheGeneratedImages*   ThePMCacheGeneratedImagesParameter = nullptr;
 PMGenerateOutput*         ThePMGenerateOutputParameter = nullptr;
 PMSingleThreaded*         ThePMSingleThreadedParameter = nullptr;
 PMOptimization*           ThePMOptimizationParameter = nullptr;
@@ -165,7 +166,24 @@ IsoString PMSymbols::Id() const
 
 IsoString PMSymbols::Aliases() const
 {
-   return "variables";
+   return "variables"; // Be compatible with very old versions - TODO: remove
+}
+
+// ----------------------------------------------------------------------------
+
+PMCacheGeneratedImages::PMCacheGeneratedImages( MetaProcess* P ) : MetaBoolean( P )
+{
+   ThePMCacheGeneratedImagesParameter = this;
+}
+
+IsoString PMCacheGeneratedImages::Id() const
+{
+   return "cacheGeneratedImages";
+}
+
+bool PMCacheGeneratedImages::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -679,4 +697,4 @@ int PMOutputGlobalVariableB::Precision() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathParameters.cpp - Released 2020-12-17T15:46:55Z
+// EOF PixelMathParameters.cpp - Released 2021-01-20T20:18:40Z

@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-01-16T20:28:25.330Z
+# Generated on .... 2021-01-20T20:18:06.542Z
 # Project id ...... PixelMath
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -33,7 +33,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{14305ECB-FF5C-49B1-9C50-8B3A9F733589}</ProjectGuid>
+    <ProjectGuid>{5EC11959-193D-46A9-AAD6-713BFF1BF432}</ProjectGuid>
     <RootNamespace>PixInsight</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -238,6 +238,7 @@
     <ClCompile Include="..\..\Function.cpp"/>
     <ClCompile Include="..\..\Functional.cpp"/>
     <ClCompile Include="..\..\Generators.cpp"/>
+    <ClCompile Include="..\..\ImageCache.cpp"/>
     <ClCompile Include="..\..\Operator.cpp"/>
     <ClCompile Include="..\..\PixelMathInstance.cpp"/>
     <ClCompile Include="..\..\PixelMathInterface.cpp"/>
@@ -254,6 +255,7 @@
     <ClInclude Include="..\..\FlowControl.h"/>
     <ClInclude Include="..\..\Function.h"/>
     <ClInclude Include="..\..\Functional.h"/>
+    <ClInclude Include="..\..\ImageCache.h"/>
     <ClInclude Include="..\..\Operator.h"/>
     <ClInclude Include="..\..\Pixel.h"/>
     <ClInclude Include="..\..\PixelMathInstance.h"/>

@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// Data.cpp - Released 2020-12-17T15:46:55Z
+// Data.cpp - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -51,6 +51,7 @@
 // ----------------------------------------------------------------------------
 
 #include "Data.h"
+#include "ImageCache.h"
 #include "PixelMathInstance.h"
 
 #include <pcl/Image.h>
@@ -271,10 +272,10 @@ bool InternalImageReference::FindImage()
    if ( m_image != nullptr )
       delete m_image, m_image = nullptr;
 
-   ImageVariant internal = PixelMathInstance::InternalImage( IsoString( Id() ) );
-   if ( internal )
+   ImageVariant image = TheImageCache->Image( IsoString( Id() ) );
+   if ( image )
    {
-      m_image = new ImageVariant( internal );
+      m_image = new ImageVariant( image );
       return true;
    }
    return false;
@@ -285,4 +286,4 @@ bool InternalImageReference::FindImage()
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Data.cpp - Released 2020-12-17T15:46:55Z
+// EOF Data.cpp - Released 2021-01-20T20:18:40Z

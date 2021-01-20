@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// PixelMathInterface.h - Released 2020-12-17T15:46:55Z
+// PixelMathInterface.h - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -132,41 +132,46 @@ private:
 
       SectionBar        Destination_SectionBar;
       Control           Destination_Control;
-      VerticalSizer     Destination_Sizer;
-         HorizontalSizer   GenerateOutput_Sizer;
-            CheckBox          GenerateOutput_CheckBox;
-         HorizontalSizer   SingleThreaded_Sizer;
-            CheckBox          SingleThreaded_CheckBox;
-         HorizontalSizer   Optimization_Sizer;
-            CheckBox          Optimization_CheckBox;
-         HorizontalSizer   Use64BitWorkingImage_Sizer;
-            CheckBox          Use64BitWorkingImage_CheckBox;
-         HorizontalSizer   Rescale_Sizer;
-            CheckBox          Rescale_CheckBox;
-         NumericEdit       RescaleLower_NumericEdit;
-         NumericEdit       RescaleUpper_NumericEdit;
-         HorizontalSizer   ReplaceTarget_Sizer;
-            RadioButton       ReplaceTarget_RadioButton;
-         HorizontalSizer   CreateNewImage_Sizer;
-            RadioButton       CreateNewImage_RadioButton;
-         HorizontalSizer   ImageId_Sizer;
-            Label             ImageId_Label;
-            Edit              ImageId_Edit;
-            ToolButton        ImageId_Button;
-         HorizontalSizer   Width_Sizer;
-            Label             Width_Label;
-            SpinBox           Width_SpinBox;
-         HorizontalSizer   Height_Sizer;
-            Label             Height_Label;
-            SpinBox           Height_SpinBox;
-         HorizontalSizer   ColorSpace_Sizer;
-            Label             ColorSpace_Label;
-            ComboBox          ColorSpace_ComboBox;
-         HorizontalSizer   CreateAlpha_Sizer;
-            CheckBox          CreateAlpha_CheckBox;
-         HorizontalSizer   SampleFormat_Sizer;
-            Label             SampleFormat_Label;
-            ComboBox          SampleFormat_ComboBox;
+      HorizontalSizer   Destination_Sizer;
+         VerticalSizer     DestinationLeft_Sizer;
+            HorizontalSizer   GenerateOutput_Sizer;
+               CheckBox          GenerateOutput_CheckBox;
+            HorizontalSizer   CacheGeneratedImages_Sizer;
+               CheckBox          CacheGeneratedImages_CheckBox;
+            HorizontalSizer   SingleThreaded_Sizer;
+               CheckBox          SingleThreaded_CheckBox;
+            HorizontalSizer   Optimization_Sizer;
+               CheckBox          Optimization_CheckBox;
+            HorizontalSizer   Use64BitWorkingImage_Sizer;
+               CheckBox          Use64BitWorkingImage_CheckBox;
+            HorizontalSizer   Rescale_Sizer;
+               CheckBox          Rescale_CheckBox;
+            NumericEdit       RescaleLower_NumericEdit;
+            NumericEdit       RescaleUpper_NumericEdit;
+            HorizontalSizer   ReplaceTarget_Sizer;
+               RadioButton       ReplaceTarget_RadioButton;
+            HorizontalSizer   CreateNewImage_Sizer;
+               RadioButton       CreateNewImage_RadioButton;
+            HorizontalSizer   ImageId_Sizer;
+               Label             ImageId_Label;
+               Edit              ImageId_Edit;
+               ToolButton        ImageId_Button;
+            HorizontalSizer   Width_Sizer;
+               Label             Width_Label;
+               SpinBox           Width_SpinBox;
+            HorizontalSizer   Height_Sizer;
+               Label             Height_Label;
+               SpinBox           Height_SpinBox;
+            HorizontalSizer   ColorSpace_Sizer;
+               Label             ColorSpace_Label;
+               ComboBox          ColorSpace_ComboBox;
+            HorizontalSizer   CreateAlpha_Sizer;
+               CheckBox          CreateAlpha_CheckBox;
+            HorizontalSizer   SampleFormat_Sizer;
+               Label             SampleFormat_Label;
+               ComboBox          SampleFormat_ComboBox;
+         VerticalSizer     DestinationRight_Sizer;
+            PushButton        ClearGeneratedImages_Button;
    };
 
    GUIData* GUI = nullptr;
@@ -202,4 +207,4 @@ PCL_END_LOCAL
 #endif   // __PixelMathInterface_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInterface.h - Released 2020-12-17T15:46:55Z
+// EOF PixelMathInterface.h - Released 2021-01-20T20:18:40Z

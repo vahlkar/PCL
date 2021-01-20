@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// Functional.cpp - Released 2020-12-17T15:46:55Z
+// Functional.cpp - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -135,7 +135,11 @@ void Functional::CheckParsedGlobalVariables( const String& beingParsed ) const
          const Variable& v = static_cast<const VariableReference*>( arg )->Reference();
          if ( v.IsGlobalVariable() )
             if ( !arg->HasLValueRole() )
-               throw ParseError( "Illegal rvalue role of global variable '" + static_cast<const GlobalVariable&>( v ).QualifiedId() + "'", beingParsed, arg->TokenPosition() );
+               throw ParseError( "Illegal rvalue role of global variable '"
+                                 + static_cast<const GlobalVariable&>( v ).QualifiedId()
+                                 + "'"
+                                 , beingParsed
+                                 , arg->TokenPosition() );
       }
    }
 }
@@ -145,4 +149,4 @@ void Functional::CheckParsedGlobalVariables( const String& beingParsed ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Functional.cpp - Released 2020-12-17T15:46:55Z
+// EOF Functional.cpp - Released 2021-01-20T20:18:40Z

@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// Function.h - Released 2020-12-17T15:46:55Z
+// Function.h - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -1619,7 +1619,7 @@ public:
    Expression* Generate( int p ) const override { return new PiFunction( p ); }
 
    String Meta() const override            { return "pi()"; }
-   String Id() const override              { return "<p>The constant &pi;=3.141592...</p>"
+   String Id() const override              { return "<p>The constant &pi; = 3.141592...</p>"
                                                     "<p>Invariant subexpression: Always.</p>"; }
    String Token() const override           { return "pi"; }
    String Aliases() const override         { return "Pi,PI"; }
@@ -3332,10 +3332,86 @@ public:
 
    String Meta() const override            { return "normalize( image[, a=0, b=1] )"; }
    String Id() const override              { return "<p>The specified image with its pixel sample values scaled linearly "
-                                                    "to the range [<i>a</i>,<i>b</i>].</p>"; }
+                                                    "to the range [<i>a</i>,<i>b</i>].</p>"
+                                                    "<p>For each pixel sample <i>v</i>, the corresponding normalized value <i>v</i>' is given by:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   <i>v</i>' = <i>a</i> + (<i>b</i> - <i>a</i>)&times;(<i>v</i> - <i>m</i>)/(<i>M</i> - <i>m</i>)</p>"
+                                                    "<p>where <i>m</i> and <i>M</i> are, respectively, the minimum and maximum pixel sample values in the image before normalization.</p>"
+                                                    ; }
    String Token() const override           { return "normalize"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
+
+   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+
+   bool IsImageGenerator() const override
+   {
+      return true;
+   }
+
+   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class TruncationFunction : public Function
+{
+public:
+
+   TruncationFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new TruncationFunction( *this ); }
+   Expression* Generate( int p ) const override { return new TruncationFunction( p ); }
+
+   String Meta() const override            { return "truncate( image[, a=0, b=1] )"; }
+   String Id() const override              { return "<p>The specified image with its pixel sample values truncated "
+                                                    "to the range [<i>a</i>,<i>b</i>].</p>"
+                                                    "<p>For each pixel sample <i>v</i>, the corresponding truncated sample value <i>v'</i> "
+                                                    "is given by:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   <i>v'</i> = <i>a</i> if <i>v</i> &lt; <i>a</i><br/>"
+                                                    "   <i>v'</i> = <i>b</i> if <i>v</i> &gt; <i>b</i><br/>"
+                                                    "   <i>v'</i> = <i>v</i> if <i>a</i> &le; <i>v</i> &le; <i>b</i></p>"; }
+   String Token() const override           { return "truncate"; }
+   int RequiredArguments() const override  { return 1; }
+   int MaximumArguments() const override   { return 3; }
+
+   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+
+   bool IsImageGenerator() const override
+   {
+      return true;
+   }
+
+   IsoString GenerateImage( component_list::const_iterator, component_list::const_iterator ) const override;
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class BinarizationFunction : public Function
+{
+public:
+
+   BinarizationFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new BinarizationFunction( *this ); }
+   Expression* Generate( int p ) const override { return new BinarizationFunction( p ); }
+
+   String Meta() const override            { return "binarize( image[, t=0.5] )"; }
+   String Id() const override              { return "<p>The specified image with its pixel sample values binarized "
+                                                    "with respect to the threshold value <i>t</i>."
+                                                    "<p>For each pixel sample <i>v</i>, the corresponding binarized sample value <i>v'</i> "
+                                                    "is given by:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   <i>v'</i> = 0 if <i>v</i> &lt; <i>t</i><br/>"
+                                                    "   <i>v'</i> = 1 if <i>v</i> &ge; <i>t</i></p>"; }
+   String Token() const override           { return "binarize"; }
+   int RequiredArguments() const override  { return 1; }
+   int MaximumArguments() const override   { return 2; }
 
    bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
 
@@ -3385,4 +3461,4 @@ public:
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2020-12-17T15:46:55Z
+// EOF Function.h - Released 2021-01-20T20:18:40Z

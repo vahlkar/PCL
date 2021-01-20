@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// Functional.h - Released 2021-01-20T20:18:40Z
+// ImageCache.cpp - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -50,128 +50,32 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#ifndef __Functional_h
-#define __Functional_h
-
-#include "Expression.h"
+#include "ImageCache.h"
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-/*
- * Abstract base class of all PixelMath functional expression components.
- */
-class Functional : public Expression
+ImageCache* TheImageCache = nullptr;
+
+// ----------------------------------------------------------------------------
+
+ImageCache::ImageCache()
 {
-public:
+   if ( TheImageCache == nullptr )
+      TheImageCache = this;
+}
 
-   typedef component_list  argument_list;
-
-   Functional( unsigned t, int p )
-      : Expression( t, p )
-   {
-   }
-
-   Functional( const Functional& x )
-      : Expression( x )
-   {
-      for ( const Expression* arg : x.arguments )
-         arguments << arg->Clone();
-   }
-
-   virtual ~Functional()
-   {
-      DestroyArguments();
-   }
-
-   virtual Expression* Clone() const = 0;
-   virtual Expression* Generate( int ) const = 0;
-
-   virtual String Meta() const = 0;
-   virtual String Id() const = 0;
-   virtual String Token() const = 0;
-
-   virtual String ToString() const = 0;
-
-   virtual void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const = 0;
-
-   virtual bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
-   {
-      return false;
-   }
-
-   // Invariant function call
-   virtual void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const
-   {
-   }
-
-   virtual int NumberOfArguments() const
-   {
-      return int( arguments.Length() );
-   }
-
-   virtual bool CanOptimize() const
-   {
-      return false;
-   }
-
-   virtual component_list Optimized() const
-   {
-      return component_list();
-   }
-
-   bool IsParsed() const
-   {
-      return !arguments.IsEmpty();
-   }
-
-   const Expression& operator []( int i ) const
-   {
-      return *arguments[i];
-   }
-
-   void AddArgument( Expression* x )
-   {
-      arguments.Add( x );
-   }
-
-   void DestroyArguments()
-   {
-      arguments.Destroy();
-   }
-
-   bool operator ==( const Functional& x ) const
-   {
-      return Token() == x.Token();
-   }
-
-   bool operator <( const Functional& x ) const
-   {
-      return Token() < x.Token();
-   }
-
-   String PostOrder() const;
-
-   void PostOrder( component_list&, bool optimize = true ) const;
-
-   void CheckParsedGlobalVariables( const String& beingParsed ) const;
-
-protected:
-
-   argument_list arguments;
-
-private:
-
-   void PostOrderRecursive( component_list&, bool optimize ) const;
-};
+ImageCache::~ImageCache()
+{
+   if ( this == TheImageCache )
+      TheImageCache = nullptr;
+}
 
 // ----------------------------------------------------------------------------
 
 } // pcl
 
-#endif   // __Functional_h
-
 // ----------------------------------------------------------------------------
-// EOF Functional.h - Released 2021-01-20T20:18:40Z
+// EOF ImageCache.cpp - Released 2021-01-20T20:18:40Z

@@ -4,7 +4,7 @@
 # PixInsight Makefile Generator Script v1.121
 # Copyright (C) 2009-2021 Pleiades Astrophoto
 ######################################################################
-# Generated on .... 2021-01-16T20:28:25.331Z
+# Generated on .... 2021-01-20T20:18:06.543Z
 # Project id ...... PixelMath
 # Project type .... Module
 # Platform ........ Windows/vc16
@@ -16,13 +16,13 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>530b108b-ccfc-423c-9b66-07b59afb22ca</UniqueIdentifier>
+      <UniqueIdentifier>8c851a85-9b4c-49df-9d0a-ec7d737a5610</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>58faa2ff-2a8b-42ce-a529-adff01228e0c</UniqueIdentifier>
+      <UniqueIdentifier>abc3a21e-62f5-445e-8a6f-e28b79067acb</UniqueIdentifier>
     </Filter>
     <Filter Include="Image Files">
-      <UniqueIdentifier>bcc5099e-902d-4b33-8fc1-29c1f9f44797</UniqueIdentifier>
+      <UniqueIdentifier>039f50b6-0441-4cd2-a720-cc7f4febb9c1</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +42,9 @@
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Generators.cpp">
+        <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ImageCache.cpp">
         <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Operator.cpp">
@@ -86,6 +89,9 @@
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Functional.h">
+        <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ImageCache.h">
         <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Operator.h">

@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.cpp - Released 2020-12-17T15:46:55Z
+// ExpressionEditorDialog.cpp - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -61,6 +61,10 @@
 
 #define NO_ITEM_TEXT "<i>Select an image, a symbol, or a PixelMath function or operator.</i>"
 
+#define MIN_WIDTH_LEFT_PANEL      600
+#define MIN_WIDTH_RIGHT_PANEL     250
+#define MIN_HEIGHT_SYNTAX_TEXTBOX 150
+
 namespace pcl
 {
 
@@ -101,12 +105,12 @@ struct SyntaxItem
 
    bool operator ==( const SyntaxItem& x ) const
    {
-      return token == x.token;
+      return token.CompareIC( x.token ) == 0;
    }
 
    bool operator <( const SyntaxItem& x ) const
    {
-      return token < x.token;
+      return token.CompareIC( x.token ) < 0;
    }
 };
 
@@ -365,10 +369,11 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    VertSplitter_Control.SetScaledFixedHeight( 4 );
    VertSplitter_Control.EnableExpansion( true/*horzEnable*/, false/*vertEnable*/ );
    VertSplitter_Control.SetCursor( StdCursor::VerticalSplit );
-   HorzSplitter_Control.EnableMouseTracking();
+   VertSplitter_Control.EnableMouseTracking();
    VertSplitter_Control.OnMousePress( (Control::mouse_button_event_handler)&ExpressionEditorDialog::e_MousePress, *this );
    VertSplitter_Control.OnMouseRelease( (Control::mouse_button_event_handler)&ExpressionEditorDialog::e_MouseRelease, *this );
    VertSplitter_Control.SetStyleSheet( ScaledStyleSheet( "QWidget { border: 1px solid darkgray; }" ) );
+   VertSplitter_Control.BringToFront();
 
    String codeStyleSheet = ScaledStyleSheet(
          "QWidget {"
@@ -378,7 +383,7 @@ ExpressionEditorDialog::ExpressionEditorDialog()
       );
 
    Syntax_TextBox.SetReadOnly();
-   Syntax_TextBox.SetScaledMinHeight( 150 );
+   Syntax_TextBox.SetScaledMinHeight( MIN_HEIGHT_SYNTAX_TEXTBOX );
    Syntax_TextBox.SetStyleSheet( codeStyleSheet );
    Syntax_TextBox.SetText( NO_ITEM_TEXT );
 
@@ -395,7 +400,7 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    TopLeft_Sizer.Add( Parser_TextBox );
 
    TopLeft_Control.SetSizer( TopLeft_Sizer );
-   TopLeft_Control.SetScaledMinWidth( 600 );
+   TopLeft_Control.SetScaledMinWidth( MIN_WIDTH_LEFT_PANEL );
 
    HorzSplitter_Control.SetScaledFixedWidth( 4 );
    HorzSplitter_Control.EnableExpansion( false/*horzEnable*/, true/*vertEnable*/ );
@@ -404,10 +409,10 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    HorzSplitter_Control.OnMousePress( (Control::mouse_button_event_handler)&ExpressionEditorDialog::e_MousePress, *this );
    HorzSplitter_Control.OnMouseRelease( (Control::mouse_button_event_handler)&ExpressionEditorDialog::e_MouseRelease, *this );
    HorzSplitter_Control.SetStyleSheet( ScaledStyleSheet( "QWidget { border: 1px solid darkgray; }" ) );
+   HorzSplitter_Control.BringToFront();
 
    Images_Label.SetText( "Images" );
 
-   Images_TreeBox.SetScaledMinWidth( 200 );
    Images_TreeBox.HideHeader();
    Images_TreeBox.SetNumberOfColumns( 1 );
    Images_TreeBox.EnableRootDecoration();
@@ -419,7 +424,6 @@ ExpressionEditorDialog::ExpressionEditorDialog()
 
    Symbols_Label.SetText( "Symbols" );
 
-   Symbols_TreeBox.SetScaledMinWidth( 200 );
    Symbols_TreeBox.HideHeader();
    Symbols_TreeBox.SetNumberOfColumns( 1 );
    Symbols_TreeBox.EnableRootDecoration();
@@ -431,7 +435,6 @@ ExpressionEditorDialog::ExpressionEditorDialog()
 
    Syntax_Label.SetText( "Syntax" );
 
-   Syntax_TreeBox.SetScaledMinWidth( 200 );
    Syntax_TreeBox.HideHeader();
    Syntax_TreeBox.SetNumberOfColumns( 1 );
    Syntax_TreeBox.EnableRootDecoration();
@@ -454,7 +457,7 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    TopRight_Sizer.Add( Syntax_TreeBox, 50 );
 
    TopRight_Control.SetSizer( TopRight_Sizer );
-   TopRight_Control.SetScaledMinWidth( 250 );
+   TopRight_Control.SetScaledMinWidth( MIN_WIDTH_RIGHT_PANEL );
 
    Top_Sizer.Add( TopLeft_Control, 100 );
    Top_Sizer.AddSpacing( 4 );
@@ -484,19 +487,22 @@ ExpressionEditorDialog::ExpressionEditorDialog()
    Global_Sizer.Add( Top_Sizer, 100 );
    Global_Sizer.Add( Buttons_Sizer );
 
-   // Splitter actions
-   EnableMouseTracking();
-   OnMouseMove( (Control::mouse_event_handler)&ExpressionEditorDialog::e_MouseMove, *this );
-
-   SetWindowTitle( "PixelMath Expression Editor" );
-
    SetSizer( Global_Sizer );
 
    EnsureLayoutUpdated();
    AdjustToContents();
 
+   // Let the splitters be operational by default
+   Resize( Width() + LogicalPixelsToPhysical( 40 ), Height() + LogicalPixelsToPhysical( 40 ) );
+
+   // Splitter actions
+   EnableMouseTracking();
+   OnMouseMove( (Control::mouse_event_handler)&ExpressionEditorDialog::e_MouseMove, *this );
+
+   // Manage Enter/Return keys pressed in code editors
    OnKeyPress( (Control::keyboard_event_handler)&ExpressionEditorDialog::e_KeyPress, *this );
-   OnShow( (Control::event_handler)&ExpressionEditorDialog::e_Show, *this );
+
+   SetWindowTitle( "PixelMath Expression Editor" );
 }
 
 // ----------------------------------------------------------------------------
@@ -958,12 +964,12 @@ void ExpressionEditorDialog::e_MousePress( Control& sender, const pcl::Point& po
    if ( sender == VertSplitter_Control )
    {
       m_splitterPressed = 1;
-      m_splitterPos = sender.LocalToParent( pos ).y;
+      m_splitterPos = sender.LocalToControl( *this, pos ).y;
    }
    else if ( sender == HorzSplitter_Control )
    {
       m_splitterPressed = 2;
-      m_splitterPos = sender.LocalToParent( pos ).x;
+      m_splitterPos = sender.LocalToControl( *this, pos ).x;
    }
 }
 
@@ -985,23 +991,31 @@ void ExpressionEditorDialog::e_MouseMove( Control& sender, const pcl::Point& pos
    case 1: // vertical
       {
          int dy = pos.y - m_splitterPos;
-         m_splitterPos = pos.y;
          if ( dy < 0 )
             if ( Editors_TabBox.Height() <= Editors_TabBox.MinHeight() )
                return;
-         Syntax_TextBox.SetMinHeight( Max( LogicalPixelsToPhysical( 150 ), Syntax_TextBox.Height() - dy ) );
-         EnsureLayoutUpdated();
+         int newHeight = Max( LogicalPixelsToPhysical( MIN_HEIGHT_SYNTAX_TEXTBOX ), Syntax_TextBox.Height() - dy );
+         if ( newHeight != Syntax_TextBox.Height() )
+         {
+            Syntax_TextBox.SetMinHeight( newHeight );
+            EnsureLayoutUpdated();
+            m_splitterPos = pos.y;
+         }
       }
       break;
    case 2: // horizontal
       {
          int dx = pos.x - m_splitterPos;
-         m_splitterPos = pos.x;
          if ( dx < 0 )
             if ( TopLeft_Control.Width() <= TopLeft_Control.MinWidth() )
                return;
-         TopRight_Control.SetMinWidth( Max( LogicalPixelsToPhysical( 250 ), TopRight_Control.Width() - dx ) );
-         EnsureLayoutUpdated();
+         int newWidth = Max( LogicalPixelsToPhysical( MIN_WIDTH_RIGHT_PANEL ), TopRight_Control.Width() - dx );
+         if ( newWidth != TopRight_Control.Width() )
+         {
+            TopRight_Control.SetMinWidth( newWidth );
+            EnsureLayoutUpdated();
+            m_splitterPos = pos.x;
+         }
       }
       break;
    }
@@ -1009,15 +1023,7 @@ void ExpressionEditorDialog::e_MouseMove( Control& sender, const pcl::Point& pos
 
 // ----------------------------------------------------------------------------
 
-void ExpressionEditorDialog::e_Show( Control& sender )
-{
-   VertSplitter_Control.SetCursor( StdCursor::VerticalSplit );
-   HorzSplitter_Control.SetCursor( StdCursor::HorizontalSplit );
-}
-
-// ----------------------------------------------------------------------------
-
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.cpp - Released 2020-12-17T15:46:55Z
+// EOF ExpressionEditorDialog.cpp - Released 2021-01-20T20:18:40Z

@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// PixelMathProcess.cpp - Released 2020-12-17T15:46:55Z
+// PixelMathProcess.cpp - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -79,6 +79,7 @@ PixelMathProcess::PixelMathProcess()
    new PMExpression3( this );
    new PMUseSingleExpression( this );
    new PMSymbols( this );
+   new PMCacheGeneratedImages( this );
    new PMGenerateOutput( this );
    new PMSingleThreaded( this );
    new PMOptimization( this );
@@ -208,7 +209,7 @@ static void ShowHelp()
 "\n"
 "\n-r[+|-] | -rescale[+|-]"
 "\n"
-"\n      Enable/disable rescaling of the resulting image. (default=enabled)"
+"\n      Enable/disable rescaling of the resulting image. (default=disabled)"
 "\n"
 "\n-r0=<n> | -rescale-lower=<n>"
 "\n-r1=<n> | -rescale-upper=<n>"
@@ -459,4 +460,4 @@ int PixelMathProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathProcess.cpp - Released 2020-12-17T15:46:55Z
+// EOF PixelMathProcess.cpp - Released 2021-01-20T20:18:40Z

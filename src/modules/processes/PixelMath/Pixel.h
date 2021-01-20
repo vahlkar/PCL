@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// Pixel.h - Released 2020-12-17T15:46:55Z
+// Pixel.h - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -426,4 +426,4 @@ typedef Array<Pixel> pixel_set;
 #endif   // __Pixel_h
 
 // ----------------------------------------------------------------------------
-// EOF Pixel.h - Released 2020-12-17T15:46:55Z
+// EOF Pixel.h - Released 2021-01-20T20:18:40Z

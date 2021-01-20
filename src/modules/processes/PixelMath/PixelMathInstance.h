@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// PixelMathInstance.h - Released 2020-12-17T15:46:55Z
+// PixelMathInstance.h - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -86,11 +86,6 @@ public:
    bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
    size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
-   static bool HasInternalImage( const IsoString& key );
-   static ImageVariant InternalImage( const IsoString& key );
-   static void AddInternalImage( const IsoString& key, const ImageVariant& image );
-   static void ClearInternalImages();
-
 public:
 
    static int s_targetWidth, s_targetHeight, s_targetNumberOfChannels;
@@ -102,6 +97,7 @@ private:
    String    p_expression[ 4 ];      // R/K/RGB, G, B, Alpha
    pcl_bool  p_useSingleExpression;  // Use expression[0] for all channels
    String    p_symbols;              // comma-delimited list of symbol definitions
+   pcl_bool  p_cacheGeneratedImages; // Preserve generated images before/after execution
    pcl_bool  p_generateOutput;       // Generate an output image
    pcl_bool  p_singleThreaded;       // Use a single thread
    pcl_bool  p_optimization;         // Use code optimization
@@ -141,4 +137,4 @@ private:
 #endif   // __PixelMathInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.h - Released 2020-12-17T15:46:55Z
+// EOF PixelMathInstance.h - Released 2021-01-20T20:18:40Z

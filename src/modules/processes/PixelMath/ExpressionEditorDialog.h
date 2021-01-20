@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.h - Released 2020-12-17T15:46:55Z
+// ExpressionEditorDialog.h - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -136,7 +136,6 @@ private:
    void e_MousePress( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers );
    void e_MouseRelease( Control& sender, const pcl::Point& pos, int button, unsigned buttons, unsigned modifiers );
    void e_MouseMove( Control& sender, const pcl::Point& pos, unsigned buttons, unsigned modifiers );
-   void e_Show( Control& sender );
 };
 
 // ----------------------------------------------------------------------------
@@ -146,4 +145,4 @@ private:
 #endif   // __ExpressionEditorDialog_h
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.h - Released 2020-12-17T15:46:55Z
+// EOF ExpressionEditorDialog.h - Released 2021-01-20T20:18:40Z

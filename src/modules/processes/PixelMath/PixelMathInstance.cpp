@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// PixelMathInstance.cpp - Released 2020-12-17T15:46:55Z
+// PixelMathInstance.cpp - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -53,6 +53,7 @@
 #include "Data.h"
 #include "FlowControl.h"
 #include "Function.h"
+#include "ImageCache.h"
 #include "PixelMathInstance.h"
 
 #include <pcl/AutoLock.h>
@@ -80,6 +81,7 @@ RGBColorSystem* PixelMathInstance::s_targetRGBWS = nullptr;
 PixelMathInstance::PixelMathInstance( const MetaProcess* P )
    : ProcessImplementation( P )
    , p_useSingleExpression( ThePMUseSingleExpressionParameter->DefaultValue() )
+   , p_cacheGeneratedImages( ThePMCacheGeneratedImagesParameter->DefaultValue() )
    , p_generateOutput( ThePMGenerateOutputParameter->DefaultValue() )
    , p_singleThreaded( ThePMSingleThreadedParameter->DefaultValue() )
    , p_optimization( ThePMOptimizationParameter->DefaultValue() )
@@ -122,6 +124,7 @@ void PixelMathInstance::Assign( const ProcessImplementation& p )
       p_expression[3]        = x->p_expression[3];
       p_useSingleExpression  = x->p_useSingleExpression;
       p_symbols              = x->p_symbols;
+      p_cacheGeneratedImages = x->p_cacheGeneratedImages;
       p_generateOutput       = x->p_generateOutput;
       p_singleThreaded       = x->p_singleThreaded;
       p_optimization         = x->p_optimization;
@@ -936,6 +939,14 @@ void ReportGlobalVariables()
       Console().WriteLn( "<end><cbr><br>* Global variables:<br>" + globals );
 }
 
+static
+void ReportCachedImages()
+{
+   if ( TheImageCache->NumberOfImages() > 0 )
+      Console().NoteLn( "<end><cbr>* " + String( TheImageCache->NumberOfImages() ) + " generated image(s)"
+                        ", cache size: " + File::SizeAsString( TheImageCache->TotalImageSize() ) );
+}
+
 // ----------------------------------------------------------------------------
 
 void PixelMathInstance::Execute( ImageVariant& image, int x0, int y0, int w0, int h0, const rpn_set RPN[] )
@@ -1064,7 +1075,8 @@ bool PixelMathInstance::ExecuteOn( View& view )
 
    o_outputData.Clear();
 
-   ClearInternalImages();
+   if ( !p_cacheGeneratedImages )
+      TheImageCache->ClearImages();
 
    try
    {
@@ -1460,7 +1472,10 @@ bool PixelMathInstance::ExecuteOn( View& view )
 
       Symbol::DestroyAll();
 
-      ClearInternalImages();
+      if ( p_cacheGeneratedImages )
+         ReportCachedImages();
+      else
+         TheImageCache->ClearImages();
 
       /*
        * If we have used a temporary working image, copy the result to the
@@ -1498,7 +1513,8 @@ bool PixelMathInstance::ExecuteOn( View& view )
 
       Symbol::DestroyAll();
 
-      ClearInternalImages();
+      if ( !p_cacheGeneratedImages )
+         TheImageCache->ClearImages();
 
       workingImage.Free();
 
@@ -1540,7 +1556,8 @@ bool PixelMathInstance::ExecuteGlobal()
 
    o_outputData.Clear();
 
-   ClearInternalImages();
+   if ( !p_cacheGeneratedImages )
+      TheImageCache->ClearImages();
 
    try
    {
@@ -1775,7 +1792,10 @@ bool PixelMathInstance::ExecuteGlobal()
 
       Symbol::DestroyAll();
 
-      ClearInternalImages();
+      if ( p_cacheGeneratedImages )
+         ReportCachedImages();
+      else
+         TheImageCache->ClearImages();
 
       /*
        * If we have used a temporary working image, copy the result to the
@@ -1807,7 +1827,8 @@ bool PixelMathInstance::ExecuteGlobal()
 
       Symbol::DestroyAll();
 
-      ClearInternalImages();
+      if ( !p_cacheGeneratedImages )
+         TheImageCache->ClearImages();
 
       workingImage.Free();
 
@@ -1849,6 +1870,8 @@ void* PixelMathInstance::LockParameter( const MetaParameter* p, size_type tableR
       return &p_useSingleExpression;
    if ( p == ThePMSymbolsParameter )
       return p_symbols.Begin();
+   if ( p == ThePMCacheGeneratedImagesParameter )
+      return &p_cacheGeneratedImages;
    if ( p == ThePMGenerateOutputParameter )
       return &p_generateOutput;
    if ( p == ThePMSingleThreadedParameter )
@@ -1980,62 +2003,7 @@ size_type PixelMathInstance::ParameterLength( const MetaParameter* p, size_type 
 
 // ----------------------------------------------------------------------------
 
-static Array<ImageVariant> s_internalImages;
-
-struct InternalImageIndexItem
-{
-   IsoString    key;
-   ImageVariant internalImage;
-
-   InternalImageIndexItem( const IsoString& k, const ImageVariant& i = ImageVariant() )
-      : key( k )
-      , internalImage( i )
-   {
-   }
-
-   InternalImageIndexItem( const InternalImageIndexItem& ) = default;
-
-   bool operator ==( const InternalImageIndexItem& x ) const
-   {
-      return key == x.key;
-   }
-
-   bool operator <( const InternalImageIndexItem& x ) const
-   {
-      return key < x.key;
-   }
-};
-
-static SortedArray<InternalImageIndexItem> s_internalImageIndex;
-
-bool PixelMathInstance::HasInternalImage( const IsoString& key )
-{
-   return s_internalImageIndex.Contains( key );
-}
-
-ImageVariant PixelMathInstance::InternalImage( const IsoString& key )
-{
-   SortedArray<InternalImageIndexItem>::const_iterator i = s_internalImageIndex.Search( key );
-   if ( i != s_internalImageIndex.End() )
-      return i->internalImage;
-   return ImageVariant();
-}
-
-void PixelMathInstance::AddInternalImage( const IsoString& key, const ImageVariant& image )
-{
-   s_internalImages << image;
-   s_internalImageIndex << InternalImageIndexItem( key, image );
-}
-
-void PixelMathInstance::ClearInternalImages()
-{
-   s_internalImages.Clear();
-   s_internalImageIndex.Clear();
-}
-
-// ----------------------------------------------------------------------------
-
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.cpp - Released 2020-12-17T15:46:55Z
+// EOF PixelMathInstance.cpp - Released 2021-01-20T20:18:40Z

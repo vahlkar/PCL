@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2020-12-17T15:46:55Z
+// Function.cpp - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -97,6 +97,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new ArcTanFunction
              << new ArcTanhFunction
              << new AvgDevFunction
+             << new BinarizationFunction
              << new BWMVFunction
              << new BoxConvolutionFunction
              << new CIELFunction
@@ -190,6 +191,7 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new TanFunction
              << new TanhFunction
              << new TranslationFunction
+             << new TruncationFunction
              << new TruncFunction
              << new VFunction
              << new VarFunction
@@ -4017,4 +4019,4 @@ Expression::component_list InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2020-12-17T15:46:55Z
+// EOF Function.cpp - Released 2021-01-20T20:18:40Z

@@ -4,13 +4,13 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.5.0
+// Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// PixelMathInterface.cpp - Released 2020-12-17T15:46:55Z
+// PixelMathInterface.cpp - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
-// Copyright (c) 2003-2020 Pleiades Astrophoto S.L. All Rights Reserved.
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
 //
 // Redistribution and use in both source and binary forms, with or without
 // modification, is permitted provided that the following conditions are met:
@@ -51,10 +51,12 @@
 // ----------------------------------------------------------------------------
 
 #include "ExpressionEditorDialog.h"
+#include "ImageCache.h"
 #include "PixelMathInterface.h"
 #include "PixelMathProcess.h"
 
 #include <pcl/ErrorHandler.h>
+#include <pcl/MessageBox.h>
 
 #define AUTO_ID            "<Auto>"
 #define EDITOR_MIN_WIDTH   600
@@ -215,6 +217,8 @@ void PixelMathInterface::UpdateControls()
    GUI->UseSingleExpression_CheckBox.SetChecked( m_instance.p_useSingleExpression );
 
    GUI->GenerateOutput_CheckBox.SetChecked( m_instance.p_generateOutput );
+
+   GUI->CacheGeneratedImages_CheckBox.SetChecked( m_instance.p_cacheGeneratedImages );
 
    GUI->SingleThreaded_CheckBox.SetChecked( m_instance.p_singleThreaded );
 
@@ -437,6 +441,10 @@ void PixelMathInterface::e_ButtonClick( Button& sender, bool checked )
       m_instance.p_generateOutput = checked;
       UpdateControls();
    }
+   else if ( sender == GUI->CacheGeneratedImages_CheckBox )
+   {
+      m_instance.p_cacheGeneratedImages = checked;
+   }
    else if ( sender == GUI->SingleThreaded_CheckBox )
    {
       m_instance.p_singleThreaded = checked;
@@ -468,6 +476,17 @@ void PixelMathInterface::e_ButtonClick( Button& sender, bool checked )
    {
       m_instance.p_newImageId.Clear();
       GUI->ImageId_Edit.SetText( AUTO_ID );
+   }
+   else if ( sender == GUI->ClearGeneratedImages_Button )
+   {
+      size_type totalCount = TheImageCache->NumberOfImages();
+      size_type totalSize = TheImageCache->TotalImageSize();
+      TheImageCache->ClearImages();
+      MessageBox( "<p>" + String( totalCount ) + " cached image(s) destroyed.</p>"
+                  "<p>" + File::SizeAsString( totalSize ) + " of memory freed up.</p>",
+                  "PixelMath",
+                  StdIcon::Information,
+                  StdButton::Ok ).Execute();
    }
 }
 
@@ -627,6 +646,23 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
    GenerateOutput_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
    GenerateOutput_Sizer.Add( GenerateOutput_CheckBox );
    GenerateOutput_Sizer.AddStretch();
+
+   //
+
+   CacheGeneratedImages_CheckBox.SetText( "Cache generated images" );
+   CacheGeneratedImages_CheckBox.SetToolTip(
+      "<p>Preserve generated images before and after PixelMath execution. This option is useful to speed up "
+      "calculations when PixelMath expressions using generators are being executed repeatedly (for example, "
+      "on a preview to fine tune expressions by trial/error work). Note that this uses memory resources, which "
+      "may become significant, especially after many executions of PixelMath expressions with varying "
+      "generator function parameters.</p>"
+      "<p>If this option is disabled, existing generated images will be destroyed before and after PixelMath "
+      "execution, so they'll have to be recalculated in successive executions of the same expressions.</p>" );
+   CacheGeneratedImages_CheckBox.OnClick( (Button::click_event_handler)&PixelMathInterface::e_ButtonClick, w );
+
+   CacheGeneratedImages_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   CacheGeneratedImages_Sizer.Add( CacheGeneratedImages_CheckBox );
+   CacheGeneratedImages_Sizer.AddStretch();
 
    //
 
@@ -856,22 +892,42 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
 
    //
 
-   Destination_Sizer.SetSpacing( 4 );
-   Destination_Sizer.Add( GenerateOutput_Sizer );
-   Destination_Sizer.Add( SingleThreaded_Sizer );
-   Destination_Sizer.Add( Optimization_Sizer );
-   Destination_Sizer.Add( Use64BitWorkingImage_Sizer );
-   Destination_Sizer.Add( Rescale_Sizer );
-   Destination_Sizer.Add( RescaleLower_NumericEdit );
-   Destination_Sizer.Add( RescaleUpper_NumericEdit );
-   Destination_Sizer.Add( ReplaceTarget_Sizer );
-   Destination_Sizer.Add( CreateNewImage_Sizer );
-   Destination_Sizer.Add( ImageId_Sizer );
-   Destination_Sizer.Add( Width_Sizer );
-   Destination_Sizer.Add( Height_Sizer );
-   Destination_Sizer.Add( ColorSpace_Sizer );
-   Destination_Sizer.Add( CreateAlpha_Sizer );
-   Destination_Sizer.Add( SampleFormat_Sizer );
+   DestinationLeft_Sizer.SetSpacing( 4 );
+   DestinationLeft_Sizer.Add( GenerateOutput_Sizer );
+   DestinationLeft_Sizer.Add( CacheGeneratedImages_Sizer );
+   DestinationLeft_Sizer.Add( SingleThreaded_Sizer );
+   DestinationLeft_Sizer.Add( Optimization_Sizer );
+   DestinationLeft_Sizer.Add( Use64BitWorkingImage_Sizer );
+   DestinationLeft_Sizer.Add( Rescale_Sizer );
+   DestinationLeft_Sizer.Add( RescaleLower_NumericEdit );
+   DestinationLeft_Sizer.Add( RescaleUpper_NumericEdit );
+   DestinationLeft_Sizer.Add( ReplaceTarget_Sizer );
+   DestinationLeft_Sizer.Add( CreateNewImage_Sizer );
+   DestinationLeft_Sizer.Add( ImageId_Sizer );
+   DestinationLeft_Sizer.Add( Width_Sizer );
+   DestinationLeft_Sizer.Add( Height_Sizer );
+   DestinationLeft_Sizer.Add( ColorSpace_Sizer );
+   DestinationLeft_Sizer.Add( CreateAlpha_Sizer );
+   DestinationLeft_Sizer.Add( SampleFormat_Sizer );
+
+   //
+
+   ClearGeneratedImages_Button.SetText( "Clear Image Cache" );
+   ClearGeneratedImages_Button.SetToolTip( "<p>Destroy all cached images that have been created by generators "
+      "in executed PixelMath expressions.</p>" );
+   ClearGeneratedImages_Button.OnClick( (Button::click_event_handler)&PixelMathInterface::e_ButtonClick, w );
+
+   //
+
+   DestinationRight_Sizer.SetSpacing( 4 );
+   DestinationRight_Sizer.Add( ClearGeneratedImages_Button );
+   DestinationRight_Sizer.AddStretch();
+
+   //
+
+   Destination_Sizer.SetSpacing( 16 );
+   Destination_Sizer.Add( DestinationLeft_Sizer, 100 );
+   Destination_Sizer.Add( DestinationRight_Sizer );
 
    Destination_Control.SetSizer( Destination_Sizer );
 
@@ -898,4 +954,4 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInterface.cpp - Released 2020-12-17T15:46:55Z
+// EOF PixelMathInterface.cpp - Released 2021-01-20T20:18:40Z

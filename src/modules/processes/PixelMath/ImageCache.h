@@ -6,7 +6,7 @@
 // ----------------------------------------------------------------------------
 // Standard PixelMath Process Module Version 1.7.1
 // ----------------------------------------------------------------------------
-// Functional.h - Released 2021-01-20T20:18:40Z
+// ImageCache.h - Released 2021-01-20T20:18:40Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -50,128 +50,104 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#ifndef __Functional_h
-#define __Functional_h
+#ifndef __ImageCache_h
+#define __ImageCache_h
 
-#include "Expression.h"
+#include <pcl/ImageVariant.h>
+#include <pcl/SortedArray.h>
+#include <pcl/String.h>
 
 namespace pcl
 {
 
 // ----------------------------------------------------------------------------
 
-/*
- * Abstract base class of all PixelMath functional expression components.
- */
-class Functional : public Expression
+class ImageCache
 {
 public:
 
-   typedef component_list  argument_list;
+   ImageCache();
+   virtual ~ImageCache();
 
-   Functional( unsigned t, int p )
-      : Expression( t, p )
+   bool HasImage( const IsoString& key ) const
    {
+      return m_imageIndex.Contains( key );
    }
 
-   Functional( const Functional& x )
-      : Expression( x )
+   ImageVariant Image( const IsoString& key ) const
    {
-      for ( const Expression* arg : x.arguments )
-         arguments << arg->Clone();
+      SortedArray<ImageIndexItem>::const_iterator i = m_imageIndex.Search( key );
+      if ( i != m_imageIndex.End() )
+         return i->image;
+      return ImageVariant();
    }
 
-   virtual ~Functional()
+   void AddImage( const IsoString& key, const ImageVariant& image )
    {
-      DestroyArguments();
+      m_images << image;
+      m_imageIndex << ImageIndexItem( key, image );
    }
 
-   virtual Expression* Clone() const = 0;
-   virtual Expression* Generate( int ) const = 0;
-
-   virtual String Meta() const = 0;
-   virtual String Id() const = 0;
-   virtual String Token() const = 0;
-
-   virtual String ToString() const = 0;
-
-   virtual void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const = 0;
-
-   virtual bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+   void ClearImages()
    {
-      return false;
+      m_images.Clear();
+      m_imageIndex.Clear();
    }
 
-   // Invariant function call
-   virtual void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const
+   size_type NumberOfImages() const
    {
+      return m_images.Length();
    }
 
-   virtual int NumberOfArguments() const
+   size_type TotalImageSize() const
    {
-      return int( arguments.Length() );
+      size_type sz = 0;
+      for ( const ImageVariant& image : m_images )
+         sz += image.ImageSize();
+      return sz;
    }
-
-   virtual bool CanOptimize() const
-   {
-      return false;
-   }
-
-   virtual component_list Optimized() const
-   {
-      return component_list();
-   }
-
-   bool IsParsed() const
-   {
-      return !arguments.IsEmpty();
-   }
-
-   const Expression& operator []( int i ) const
-   {
-      return *arguments[i];
-   }
-
-   void AddArgument( Expression* x )
-   {
-      arguments.Add( x );
-   }
-
-   void DestroyArguments()
-   {
-      arguments.Destroy();
-   }
-
-   bool operator ==( const Functional& x ) const
-   {
-      return Token() == x.Token();
-   }
-
-   bool operator <( const Functional& x ) const
-   {
-      return Token() < x.Token();
-   }
-
-   String PostOrder() const;
-
-   void PostOrder( component_list&, bool optimize = true ) const;
-
-   void CheckParsedGlobalVariables( const String& beingParsed ) const;
-
-protected:
-
-   argument_list arguments;
 
 private:
 
-   void PostOrderRecursive( component_list&, bool optimize ) const;
+   struct ImageIndexItem
+   {
+      IsoString    key;
+      ImageVariant image;
+
+      ImageIndexItem( const IsoString& k, const ImageVariant& i = ImageVariant() )
+         : key( k )
+         , image( i )
+      {
+      }
+
+      ImageIndexItem( const ImageIndexItem& ) = default;
+
+      bool operator ==( const ImageIndexItem& x ) const
+      {
+         return key == x.key;
+      }
+
+      bool operator <( const ImageIndexItem& x ) const
+      {
+         return key < x.key;
+      }
+   };
+
+   Array<ImageVariant>         m_images;
+   SortedArray<ImageIndexItem> m_imageIndex;
 };
+
+// ----------------------------------------------------------------------------
+
+PCL_BEGIN_LOCAL
+extern ImageCache* TheImageCache;
+PCL_END_LOCAL
 
 // ----------------------------------------------------------------------------
 
 } // pcl
 
-#endif   // __Functional_h
+#endif   // __ImageCache_h
 
 // ----------------------------------------------------------------------------
-// EOF Functional.h - Released 2021-01-20T20:18:40Z
+// EOF ImageCache.h - Released 2021-01-20T20:18:40Z

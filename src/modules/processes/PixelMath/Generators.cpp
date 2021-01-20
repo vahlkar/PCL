@@ -1,6 +1,58 @@
+//     ____   ______ __
+//    / __ \ / ____// /
+//   / /_/ // /    / /
+//  / ____// /___ / /___   PixInsight Class Library
+// /_/     \____//_____/   PCL 2.4.7
+// ----------------------------------------------------------------------------
+// Standard PixelMath Process Module Version 1.7.1
+// ----------------------------------------------------------------------------
+// Generators.cpp - Released 2021-01-20T20:18:40Z
+// ----------------------------------------------------------------------------
+// This file is part of the standard PixelMath PixInsight module.
+//
+// Copyright (c) 2003-2021 Pleiades Astrophoto S.L. All Rights Reserved.
+//
+// Redistribution and use in both source and binary forms, with or without
+// modification, is permitted provided that the following conditions are met:
+//
+// 1. All redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+//
+// 2. All redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+//
+// 3. Neither the names "PixInsight" and "Pleiades Astrophoto", nor the names
+//    of their contributors, may be used to endorse or promote products derived
+//    from this software without specific prior written permission. For written
+//    permission, please contact info@pixinsight.com.
+//
+// 4. All products derived from this software, in any form whatsoever, must
+//    reproduce the following acknowledgment in the end-user documentation
+//    and/or other materials provided with the product:
+//
+//    "This product is based on software from the PixInsight project, developed
+//    by Pleiades Astrophoto and its contributors (https://pixinsight.com/)."
+//
+//    Alternatively, if that is where third-party acknowledgments normally
+//    appear, this acknowledgment must be reproduced in the product itself.
+//
+// THIS SOFTWARE IS PROVIDED BY PLEIADES ASTROPHOTO AND ITS CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+// PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL PLEIADES ASTROPHOTO OR ITS
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, BUSINESS
+// INTERRUPTION; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; AND LOSS OF USE,
+// DATA OR PROFITS) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+// ----------------------------------------------------------------------------
 
 #include "Data.h"
 #include "Function.h"
+#include "ImageCache.h"
 #include "PixelMathInstance.h"
 
 #include <pcl/Convolution.h>
@@ -199,7 +251,7 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_gconv_%.4f_%.4f_%.4f_%.4f", sigma, rho, theta, eps );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
 
@@ -221,7 +273,7 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
          Convolution( H ) >> result;
       }
 
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -309,7 +361,7 @@ IsoString BoxConvolutionFunction::GenerateImage( component_list::const_iterator 
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_bconv_%d", n );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
 
@@ -332,7 +384,7 @@ IsoString BoxConvolutionFunction::GenerateImage( component_list::const_iterator 
          Convolution( H ) >> result;
       }
 
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -401,7 +453,7 @@ IsoString KernelConvolutionFunction::GenerateImage( component_list::const_iterat
 
    IsoString key = IsoString( ref->Id() ) + "_kconv_" + IsoString::ToHex( MD5().Hash( K ) );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
 
@@ -420,7 +472,7 @@ IsoString KernelConvolutionFunction::GenerateImage( component_list::const_iterat
          FFTConvolution( H ) >> result;
       }
 
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -579,14 +631,14 @@ IsoString MedianFilterFunction::GenerateImage( component_list::const_iterator i,
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_medfilt_%d_%d", n, s );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
 
       AutoPointer<StructuringElement> str = NewPMStructuringElement( n, s );
       MorphologicalTransformation( MedianFilter(), *str ) >> result;
 
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -622,14 +674,14 @@ IsoString ErosionFilterFunction::GenerateImage( component_list::const_iterator i
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_erosion_%d_%d", n, s );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
 
       AutoPointer<StructuringElement> str = NewPMStructuringElement( n, s );
       MorphologicalTransformation( ErosionFilter(), *str ) >> result;
 
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -665,14 +717,14 @@ IsoString DilationFilterFunction::GenerateImage( component_list::const_iterator 
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_dilation_%d_%d", n, s );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
 
       AutoPointer<StructuringElement> str = NewPMStructuringElement( n, s );
       MorphologicalTransformation( DilationFilter(), *str ) >> result;
 
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -841,14 +893,14 @@ IsoString TranslationFunction::GenerateImage( component_list::const_iterator i, 
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_translate_%.4f_%.4f", dx, dy );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
 
       BicubicPixelInterpolation interpolation;
       Translation( interpolation, dx, dy ) >> result;
 
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -929,7 +981,7 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_rotate_%.6f_%.4f_%.4f", angle, cx, cy );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
 
@@ -941,7 +993,7 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
       int dy1 = dy0 + (((result->Height() - ref->Image()->Height()) & 1) ? 1 : 0);
       result.CropBy( -dx0, -dy0, -dx1, -dy1 );
 
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -985,11 +1037,11 @@ IsoString MirrorHorzFunction::GenerateImage( component_list::const_iterator i, c
 
    IsoString key = IsoString( ref->Id() ) + "_hmirror";
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
       HorizontalMirror() >> result;
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -1033,11 +1085,11 @@ IsoString MirrorVertFunction::GenerateImage( component_list::const_iterator i, c
 
    IsoString key = IsoString( ref->Id() ) + "_vmirror";
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref );
       VerticalMirror() >> result;
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -1123,7 +1175,7 @@ IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_normalize_%.15e_%.15e", a, b );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       int bps = Max( 32, ref->Image()->BitsPerSample() );
       if ( bps == 32 )
@@ -1132,7 +1184,7 @@ IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i
                bps = 64;
       ImageVariant result = NewGeneratorResult( ref, bps );
       result.Rescale( a, b );
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -1141,6 +1193,178 @@ IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i
 void NormalizationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
    throw ParseError( "normalize(): Internal execution error." );
+}
+
+// ----------------------------------------------------------------------------
+
+bool TruncationFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   // truncate( image[, a=0, b=1] )
+
+   if ( Distance( i, j ) != 1 )
+      if ( Distance( i, j ) != 3 )
+      {
+         info = "truncate() takes 1 or 3 arguments";
+         return false;
+      }
+
+   if ( !(*i)->IsImageReference() )
+      if ( !(*i)->IsFunctional() )
+      {
+         info = "truncate() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         return false;
+      }
+
+   if ( ++i < j )
+   {
+      if ( (*i)->IsImageReference() )
+      {
+         info = "truncate() argument #2: The truncation lower bound must be an invariant scalar subexpression";
+         return false;
+      }
+
+      if ( ++i < j )
+      {
+         if ( (*i)->IsImageReference() )
+         {
+            info = "truncate() argument #3: The truncation upper bound must be an invariant scalar subexpression";
+            return false;
+         }
+      }
+   }
+
+   return true;
+}
+
+IsoString TruncationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   // truncate( image[, a=0, b=1] )
+
+   if ( !(*i)->IsImageReference() )
+      throw ParseError( "truncate() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   double a = 0, b = 1;
+   if ( ++i < j )
+   {
+      if ( (*i)->IsSample() )
+         a = S->Value();
+      else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+         a = P->PixelValue()[0];
+      else
+         throw ParseError( "truncate() argument #2: The truncation lower bound must be an invariant scalar subexpression." );
+
+      if ( ++i < j )
+      {
+         if ( (*i)->IsSample() )
+            b = S->Value();
+         else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+            b = P->PixelValue()[0];
+         else
+            throw ParseError( "truncate() argument #3: The truncation upper bound must be an invariant scalar subexpression." );
+      }
+
+      if ( b < a )
+         Swap( a, b );
+   }
+
+   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_truncate_%.15e_%.15e", a, b );
+
+   if ( !TheImageCache->HasImage( key ) )
+   {
+      int bps = Max( 32, ref->Image()->BitsPerSample() );
+      if ( bps == 32 )
+         if ( !ref->Image()->IsFloatSample() )
+            if ( !ref->Image()->IsComplexSample() )
+               bps = 64;
+      ImageVariant result = NewGeneratorResult( ref, bps );
+      result.Truncate( a, b );
+      TheImageCache->AddImage( key, result );
+   }
+
+   return key;
+}
+
+void TruncationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw ParseError( "truncate(): Internal execution error." );
+}
+
+// ----------------------------------------------------------------------------
+
+bool BinarizationFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   // binarize( image[, t=0.5] )
+
+   if ( Distance( i, j ) != 1 )
+      if ( Distance( i, j ) != 2 )
+      {
+         info = "binarize() takes 1 or 2 arguments";
+         return false;
+      }
+
+   if ( !(*i)->IsImageReference() )
+      if ( !(*i)->IsFunctional() )
+      {
+         info = "binarize() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         return false;
+      }
+
+   if ( ++i < j )
+      if ( (*i)->IsImageReference() )
+      {
+         info = "binarize() argument #2: The binarization threshold must be an invariant scalar subexpression";
+         return false;
+      }
+
+   return true;
+}
+
+IsoString BinarizationFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
+{
+   // binarize( image[, t=0.5] )
+
+   if ( !(*i)->IsImageReference() )
+      throw ParseError( "binarize() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+
+   const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
+   double t;
+   if ( ++i < j )
+   {
+      if ( (*i)->IsSample() )
+         t = S->Value();
+      else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+         t = P->PixelValue()[0];
+      else
+         throw ParseError( "binarize() argument #2: The binarization threshold must be an invariant scalar subexpression." );
+   }
+   else
+   {
+      double m, M;
+      ref->Image()->GetExtremeSampleValues( m, M );
+      t = (m + M)/2;
+   }
+
+   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_binarize_%.15e", t );
+
+   if ( !TheImageCache->HasImage( key ) )
+   {
+      int bps = Max( 32, ref->Image()->BitsPerSample() );
+      if ( bps == 32 )
+         if ( !ref->Image()->IsFloatSample() )
+            if ( !ref->Image()->IsComplexSample() )
+               bps = 64;
+      ImageVariant result = NewGeneratorResult( ref, bps );
+      result.Binarize( t );
+      TheImageCache->AddImage( key, result );
+   }
+
+   return key;
+}
+
+void BinarizationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw ParseError( "binarize(): Internal execution error." );
 }
 
 // ----------------------------------------------------------------------------
@@ -1220,7 +1444,7 @@ IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_lvar_%d", d );
 
-   if ( !PixelMathInstance::HasInternalImage( key ) )
+   if ( !TheImageCache->HasImage( key ) )
    {
       ImageVariant result = NewGeneratorResult( ref, 64 );
 
@@ -1255,7 +1479,7 @@ IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i
       X.Raise( 2.0 );
       result.Subtract( X );
 
-      PixelMathInstance::AddInternalImage( key, result );
+      TheImageCache->AddImage( key, result );
    }
 
    return key;
@@ -1269,3 +1493,6 @@ void LocalVarianceFunction::operator()( Pixel&, pixel_set::const_iterator, pixel
 // ----------------------------------------------------------------------------
 
 } // pcl
+
+// ----------------------------------------------------------------------------
+// EOF Generators.cpp - Released 2021-01-20T20:18:40Z
