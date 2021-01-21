@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// Function.h - Released 2021-01-20T20:18:40Z
+// Function.h - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1620,7 +1620,7 @@ public:
 
    String Meta() const override            { return "pi()"; }
    String Id() const override              { return "<p>The constant &pi; = 3.141592...</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "pi"; }
    String Aliases() const override         { return "Pi,PI"; }
    int RequiredArguments() const override  { return 0; }
@@ -2146,7 +2146,7 @@ public:
    String Meta() const override            { return "width( [image=$T] )\n"
                                                     "w( [image=$T] )"; }
    String Id() const override              { return "<p>Width in pixels of the specified image.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "width"; }
    String Aliases() const override         { return "w,Width"; }
    int RequiredArguments() const override  { return 0; }
@@ -2174,7 +2174,7 @@ public:
    String Meta() const override            { return "height( [image=$T] )\n"
                                                     "h( [image=$T] )"; }
    String Id() const override              { return "<p>Height in pixels of the specified image.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "height"; }
    String Aliases() const override         { return "h,Height"; }
    int RequiredArguments() const override  { return 0; }
@@ -2201,7 +2201,7 @@ public:
 
    String Meta() const override            { return "area( [image=$T] )"; }
    String Id() const override              { return "<p>Area of the specified image in square pixels.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "area"; }
    String Aliases() const override         { return "Area"; }
    int RequiredArguments() const override  { return 0; }
@@ -2230,7 +2230,7 @@ public:
                                                     "n( [image=$T] )"; }
    String Id() const override              { return "<p>Number of channels in the specified image, including nominal and alpha "
                                                     "channels.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "channels"; }
    String Aliases() const override         { return "n,numberOfChannels,NumberOfChannels"; }
    int RequiredArguments() const override  { return 0; }
@@ -2258,7 +2258,7 @@ public:
    String Meta() const override            { return "iscolor( [image=$T] )"; }
    String Id() const override              { return "<p>Returns one if the specified image is in the RGB color space. "
                                                     "Returns zero for a grayscale image.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "iscolor"; }
    String Aliases() const override         { return "isColor,IsColor"; }
    int RequiredArguments() const override  { return 0; }
@@ -2998,7 +2998,8 @@ public:
    String Meta() const override            { return "str_square()"; }
    String Id() const override              { return "<p>Represents a square structuring element in a morphological transformation, "
                                                     "such as the medfilt(), erosion() or dilation() generators.</p>"
-                                                    "<p>A square defines all of its elements. For example, a square structure of size 5 is:</p>"
+                                                    "<p>A square structure defines all of its elements. For example, a square structure "
+                                                    "of size 5 is:</p>"
                                                     "<p style=\"white-space: pre;\">"
                                                     "   x x x x x<br/>"
                                                     "   x x x x x<br/>"
@@ -3007,7 +3008,7 @@ public:
                                                     "   x x x x x"
                                                     "</p>"
                                                     "<p>where existing elements are marked as 'x'.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "str_square"; }
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
@@ -3043,7 +3044,7 @@ public:
                                                     "   . . x x x . ."
                                                     "</p>"
                                                     "<p>where existing elements are marked as 'x' and nonexisting elements are denoted as '.'.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "str_circular"; }
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
@@ -3077,7 +3078,7 @@ public:
                                                     "   . . x . ."
                                                     "</p>"
                                                     "<p>where existing elements are marked as 'x' and nonexisting elements are denoted as '.'.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "str_orthogonal"; }
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
@@ -3111,7 +3112,7 @@ public:
                                                     "   x . . . x"
                                                     "</p>"
                                                     "<p>where existing elements are marked as 'x' and nonexisting elements are denoted as '.'.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "str_diagonal"; }
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
@@ -3147,7 +3148,7 @@ public:
                                                     "   . . . x . . ."
                                                     "</p>"
                                                     "<p>where existing elements are marked as 'x' and nonexisting elements are denoted as '.'.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "str_star"; }
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
@@ -3183,11 +3184,11 @@ public:
                                                     "   . . x . .    x . . . x    . . . . ."
                                                     "</p>"
                                                     "<p>where existing elements are marked as 'x' and nonexisting elements are denoted as '.'.</p>"
-                                                    "<p>The standard three-way structure leads to ranking operations where data "
-                                                    "from different spatial directions are ranked separately. When used to apply "
+                                                    "<p>Three-way structures lead to ranking operations where data from "
+                                                    "different spatial directions are ranked separately. When used to apply "
                                                     "morphological operators, standard three-way structures can preserve edges "
                                                     "better than box structures, especially when applied recursively.</p>"
-                                                    "<p>Invariant subexpression: Always.</p>"; }
+                                                    "<p>Invariant subexpression: always.</p>"; }
    String Token() const override           { return "str_threeway"; }
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 0; }
@@ -3273,7 +3274,7 @@ public:
    Expression* Generate( int p ) const override { return new MirrorHorzFunction( p ); }
 
    String Meta() const override            { return "hmirror( image )"; }
-   String Id() const override              { return "<p>Horizontal mirror (or reflection) of the specified image.</p>"; }
+   String Id() const override              { return "<p>Horizontal mirror (or horizontal reflection) of the specified image.</p>"; }
    String Token() const override           { return "hmirror"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
@@ -3302,7 +3303,7 @@ public:
    Expression* Generate( int p ) const override { return new MirrorVertFunction( p ); }
 
    String Meta() const override            { return "vmirror( image )"; }
-   String Id() const override              { return "<p>Vertical mirror (or reflection) of the specified image.</p>"; }
+   String Id() const override              { return "<p>Vertical mirror (or vertical reflection) of the specified image.</p>"; }
    String Token() const override           { return "vmirror"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
@@ -3436,11 +3437,27 @@ public:
    Expression* Clone() const override { return new LocalVarianceFunction( *this ); }
    Expression* Generate( int p ) const override { return new LocalVarianceFunction( p ); }
 
-   String Meta() const override            { return "lvar( image[, d=3] )"; }
-   String Id() const override              { return "<p>Local variance of the specified image with odd window size <i>d</i> &ge; 3 pixels.</p>"; }
+   String Meta() const override            { return "lvar( image[, d=3[, k=krn_flat()]] )"; }
+   String Id() const override              { return "<p>Local variance map of the specified image with odd window size <i>d</i> &ge; 3 pixels "
+                                                    "and kernel function <i>k</i>.</p>"
+                                                    "<p>A local variance map is a sensitive analysis tool to explore the distribution of "
+                                                    "pixel intensity variations at small scales. This allows for the implementation of "
+                                                    "subtle adaptive procedures with PixelMath. For example, the following expression:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   iif( lvar( $T, 7, krn_gauss() ) &lt; t<br/>"
+                                                    "        , medfilt( $T, 5, str_circular() )<br/>"
+                                                    "        , $T )</p>"
+                                                    "<p>applies a median filter selectively to pixels where the local variance is below a prescribed "
+                                                    "threshold <i>t</i>, which depends on the target image and must be found experimentally. "
+                                                    "For example, <i>t</i>=1e-8 can be a good starting value for a linear deep-sky image. The "
+                                                    "expression above implements a powerful noise reduction procedure. More sophisticated, adaptive "
+                                                    "noise filtering processes based on the same technique can be designed with iswitch() constructs.</p>"
+                                                    "<p>Local variance maps are always generated as 64-bit floating point images. This ensures that "
+                                                    "no truncation or roundoff errors will degrade their ability to represent subtle intensity "
+                                                    "variations, which is especially important for linear images.</p>"; }
    String Token() const override           { return "lvar"; }
    int RequiredArguments() const override  { return 1; }
-   int MaximumArguments() const override   { return 2; }
+   int MaximumArguments() const override   { return 3; }
 
    bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
 
@@ -3456,9 +3473,81 @@ public:
 
 // ----------------------------------------------------------------------------
 
+class KrnFlatFunction : public Function
+{
+public:
+
+   KrnFlatFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new KrnFlatFunction( *this ); }
+   Expression* Generate( int p ) const override { return new KrnFlatFunction( p ); }
+
+   String Meta() const override            { return "krn_flat()"; }
+   String Id() const override              { return "<p>Represents a flat kernel function for local variance calculation with the lvar() generator.</p>"
+                                                    "<p>A flat function has identical kernel elements. For example, the flat kernel of size 5 is:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   1/25 1/25 1/25 1/25 1/25<br/>"
+                                                    "   1/25 1/25 1/25 1/25 1/25<br/>"
+                                                    "   1/25 1/25 1/25 1/25 1/25<br/>"
+                                                    "   1/25 1/25 1/25 1/25 1/25<br/>"
+                                                    "   1/25 1/25 1/25 1/25 1/25"
+                                                    "</p>"
+                                                    "<p>When applied by convolution, a flat kernel function of size <i>n</i> computes the "
+                                                    "arithmetic mean of a neighborhood of n&times;n pixels.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "krn_flat"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
+class KrnGaussianFunction : public Function
+{
+public:
+
+   KrnGaussianFunction( int p = 0, int n = 0 ) : Function( p, n ) {}
+
+   Expression* Clone() const override { return new KrnGaussianFunction( *this ); }
+   Expression* Generate( int p ) const override { return new KrnGaussianFunction( p ); }
+
+   String Meta() const override            { return "krn_gauss()"; }
+   String Id() const override              { return "<p>Represents a Gaussian kernel function for local variance calculation with the lvar() generator.</p>"
+                                                    "<p>A Gaussian kernel is a discrete representation of a normal distribution in two dimensions. "
+                                                    "For example, the Gaussian kernel of size 5 is:</p>"
+                                                    "<p style=\"white-space: pre;\">"
+                                                    "   0.000100  0.003162  0.010000  0.003162  0.000100<br/>"
+                                                    "   0.003162  0.100000  0.316228  0.100000  0.003162<br/>"
+                                                    "   0.010000  0.316228  1.000000  0.316228  0.010000<br/>"
+                                                    "   0.003162  0.100000  0.316228  0.100000  0.003162<br/>"
+                                                    "   0.000100  0.003162  0.010000  0.003162  0.000100"
+                                                    "</p>"
+                                                    "<p>For local variance calculation, a Gaussian kernel helps to isolate pixel variations at "
+                                                    "smaller scales, compared with a flat kernel, since the normal distribution concentrates "
+                                                    "more energy around the center of the 2-D distribution. It also tends to generate more isotropic "
+                                                    "variance maps, since the flat kernel tends to reproduce a square structure while the Gaussian "
+                                                    "kernel approximates to a more circular distribution.</p>"
+                                                    "<p>Invariant subexpression: always.</p>"; }
+   String Token() const override           { return "krn_gauss"; }
+   int RequiredArguments() const override  { return 0; }
+   int MaximumArguments() const override   { return 0; }
+
+   void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
+
+   bool IsInvariant( component_list::const_iterator, component_list::const_iterator ) const override;
+   void operator()( Pixel&, component_list::const_iterator, component_list::const_iterator ) const override;
+};
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2021-01-20T20:18:40Z
+// EOF Function.h - Released 2021-01-21T15:55:53Z

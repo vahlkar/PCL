@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.cpp - Released 2021-01-20T20:18:40Z
+// ExpressionEditorDialog.cpp - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -267,6 +267,31 @@ static void InitializeSyntaxItems()
                         "<p>If no explicit initial value is specified, additive global variables are initialized to zero and "
                         "multiplicative global variables are initialized to one. The final values of all global variables are reported on "
                         "the process console after PixelMath execution.</p>" )
+
+         /* Metasymbols */
+
+                 << SyntaxItem( "$T\n"
+                                "$target", "$T",
+                        "<p>Target image.</p>"
+                        "<p>The $T (or $target) metasymbol represents the target image when PixelMath is being executed in a view context.</p>"
+                        "<p>$T is illegal when PixelMath is executed as a global process, i.e. when a new image is being generated instead of "
+                        "replacing an existing one, since in these cases no target image exists.</p>" )
+
+                 << SyntaxItem( "$M\n"
+                                "$mask", "$M",
+                        "<p>Target mask image.</p>"
+                        "<p>The $M (or $mask) metasymbol represents the mask image currently selected for the target image, when PixelMath "
+                        "is being executed in a view context.</p>"
+                        "<p>$M is illegal when PixelMath is being executed as a global process, for the same reason $T is also illegal in "
+                        "this case: no target image exists for execution in the global context.</p>" )
+
+                 << SyntaxItem( "$A\n"
+                                "$active", "$A",
+                        "<p>Active image.</p>"
+                        "<p>The $A (or $active) metasymbol represents the active image in the current workspace, that is, the image in the "
+                        "main view that has the keyboard focus when the instance of PixelMath is executed.</p>"
+                        "<p>$A can always be used, in both the view and global execution contexts. If there is no active image in the current "
+                        "workspace, a runtime error will occur if $A is used.</p>" )
                  ;
 }
 
@@ -643,6 +668,9 @@ void ExpressionEditorDialog::RebuildSyntaxTree()
    TreeBox::Node* symDefFunctionsNode = new TreeBox::Node( Syntax_TreeBox );
    symDefFunctionsNode->SetText( 0, "Symbol Definition" );
 
+   TreeBox::Node* metasymbolsNode = new TreeBox::Node( Syntax_TreeBox );
+   metasymbolsNode->SetText( 0, "Metasymbols" );
+
    for ( const SyntaxItem& item : s_syntaxItems )
    {
       TreeBox::Node* node;
@@ -652,6 +680,8 @@ void ExpressionEditorDialog::RebuildSyntaxTree()
          node = item.fn->function->IsImageGenerator() ? generatorsNode : functionsNode;
       else if ( item.meta.StartsWith( "symbol =" ) )
          node = symDefFunctionsNode;
+      else if ( item.meta.StartsWith( "$" ) )
+         node = metasymbolsNode;
       else
          node = punctuatorsNode;
 
@@ -1026,4 +1056,4 @@ void ExpressionEditorDialog::e_MouseMove( Control& sender, const pcl::Point& pos
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.cpp - Released 2021-01-20T20:18:40Z
+// EOF ExpressionEditorDialog.cpp - Released 2021-01-21T15:55:53Z

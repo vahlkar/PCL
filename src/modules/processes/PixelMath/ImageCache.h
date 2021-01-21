@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// ImageCache.h - Released 2021-01-20T20:18:40Z
+// ImageCache.h - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -94,6 +94,14 @@ public:
       m_imageIndex.Clear();
    }
 
+   bool ClearImages( size_type& count, size_type& size )
+   {
+      count = NumberOfImages();
+      size = TotalImageSize();
+      ClearImages();
+      return count > 0;
+   }
+
    size_type NumberOfImages() const
    {
       return m_images.Length();
@@ -150,4 +158,4 @@ PCL_END_LOCAL
 #endif   // __ImageCache_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCache.h - Released 2021-01-20T20:18:40Z
+// EOF ImageCache.h - Released 2021-01-21T15:55:53Z

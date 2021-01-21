@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// PixelMathParameters.cpp - Released 2021-01-20T20:18:40Z
+// PixelMathParameters.cpp - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -63,6 +63,7 @@ PMExpression2*            ThePMExpression2Parameter = nullptr;
 PMExpression3*            ThePMExpression3Parameter = nullptr;
 PMUseSingleExpression*    ThePMUseSingleExpressionParameter = nullptr;
 PMSymbols*                ThePMSymbolsParameter = nullptr;
+PMClearImageCacheAndExit* ThePMClearImageCacheAndExitParameter = nullptr;
 PMCacheGeneratedImages*   ThePMCacheGeneratedImagesParameter = nullptr;
 PMGenerateOutput*         ThePMGenerateOutputParameter = nullptr;
 PMSingleThreaded*         ThePMSingleThreadedParameter = nullptr;
@@ -167,6 +168,23 @@ IsoString PMSymbols::Id() const
 IsoString PMSymbols::Aliases() const
 {
    return "variables"; // Be compatible with very old versions - TODO: remove
+}
+
+// ----------------------------------------------------------------------------
+
+PMClearImageCacheAndExit::PMClearImageCacheAndExit( MetaProcess* P ) : MetaBoolean( P )
+{
+   ThePMClearImageCacheAndExitParameter = this;
+}
+
+IsoString PMClearImageCacheAndExit::Id() const
+{
+   return "clearImageCacheAndExit";
+}
+
+bool PMClearImageCacheAndExit::DefaultValue() const
+{
+   return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -697,4 +715,4 @@ int PMOutputGlobalVariableB::Precision() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathParameters.cpp - Released 2021-01-20T20:18:40Z
+// EOF PixelMathParameters.cpp - Released 2021-01-21T15:55:53Z

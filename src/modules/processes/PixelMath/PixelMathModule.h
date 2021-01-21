@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// PixelMathModule.h - Released 2021-01-20T20:18:40Z
+// PixelMathModule.h - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -84,4 +84,4 @@ public:
 #endif   // __PixelMathModule_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathModule.h - Released 2021-01-20T20:18:40Z
+// EOF PixelMathModule.h - Released 2021-01-21T15:55:53Z

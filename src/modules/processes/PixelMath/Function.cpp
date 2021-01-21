@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2021-01-20T20:18:40Z
+// Function.cpp - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -135,6 +135,8 @@ void Function::InitializeList( function_set& functions, function_index& index )
              << new InlineSwitchFunction
              << new IsColorFunction
              << new KernelConvolutionFunction
+             << new KrnFlatFunction
+             << new KrnGaussianFunction
              << new LnFunction
              << new LocalVarianceFunction
              << new Log2Function
@@ -449,7 +451,7 @@ static Rect GetStatisticalFunctionROIArguments( const String& functionName,
    else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
       r.x0 = int( P->PixelValue()[0] );
    else
-      throw ParseError( functionName + "() argument #2: The ROI left coordinate (x0) must be an invariant scalar subexpression." );
+      throw ParseError( functionName + "() argument #2: The ROI left coordinate (x0) must be an invariant scalar subexpression" );
 
    if ( ++i < j )
    {
@@ -458,7 +460,7 @@ static Rect GetStatisticalFunctionROIArguments( const String& functionName,
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          r.y0 = int( P->PixelValue()[0] );
       else
-         throw ParseError( functionName + "() argument #3: The ROI top coordinate (y0) must be an invariant scalar subexpression." );
+         throw ParseError( functionName + "() argument #3: The ROI top coordinate (y0) must be an invariant scalar subexpression" );
 
       if ( ++i < j )
       {
@@ -467,7 +469,7 @@ static Rect GetStatisticalFunctionROIArguments( const String& functionName,
          else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
             r.x1 = r.x0 + int( P->PixelValue()[0] );
          else
-            throw ParseError( functionName + "() argument #4: The ROI width must be an invariant scalar subexpression." );
+            throw ParseError( functionName + "() argument #4: The ROI width must be an invariant scalar subexpression" );
 
          if ( ++i < j )
          {
@@ -476,7 +478,7 @@ static Rect GetStatisticalFunctionROIArguments( const String& functionName,
             else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
                r.y1 = r.y0 + int( P->PixelValue()[0] );
             else
-               throw ParseError( functionName + "() argument #5: The ROI height must be an invariant scalar subexpression." );
+               throw ParseError( functionName + "() argument #5: The ROI height must be an invariant scalar subexpression" );
          }
       }
    }
@@ -1359,8 +1361,8 @@ bool CIELFunction::ValidateArguments( String& info, component_list::const_iterat
 
 void CIELFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEL( (*i)[0], (*i)[1], (*i)[2] ) :
-                              PixelMathInstance::s_targetRGBWS->CIEL( (*i)[0], (*i)[0], (*i)[0] ) );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().CIEL( (*i)[0], (*i)[1], (*i)[2] ) :
+                              PixelMathInstance::TargetRGBWS().CIEL( (*i)[0], (*i)[0], (*i)[0] ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -1375,8 +1377,8 @@ bool CIEaFunction::ValidateArguments( String& info, component_list::const_iterat
 
 void CIEaFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEa( (*i)[0], (*i)[1], (*i)[2] ) :
-                              PixelMathInstance::s_targetRGBWS->CIEa( (*i)[0], (*i)[0], (*i)[0] ) );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().CIEa( (*i)[0], (*i)[1], (*i)[2] ) :
+                              PixelMathInstance::TargetRGBWS().CIEa( (*i)[0], (*i)[0], (*i)[0] ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -1391,8 +1393,8 @@ bool CIEbFunction::ValidateArguments( String& info, component_list::const_iterat
 
 void CIEbFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEb( (*i)[0], (*i)[1], (*i)[2] ) :
-                              PixelMathInstance::s_targetRGBWS->CIEb( (*i)[0], (*i)[0], (*i)[0] ) );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().CIEb( (*i)[0], (*i)[1], (*i)[2] ) :
+                              PixelMathInstance::TargetRGBWS().CIEb( (*i)[0], (*i)[0], (*i)[0] ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -1407,8 +1409,8 @@ bool CIEcFunction::ValidateArguments( String& info, component_list::const_iterat
 
 void CIEcFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEc( (*i)[0], (*i)[1], (*i)[2] ) :
-                              PixelMathInstance::s_targetRGBWS->CIEc( (*i)[0], (*i)[0], (*i)[0] ) );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().CIEc( (*i)[0], (*i)[1], (*i)[2] ) :
+                              PixelMathInstance::TargetRGBWS().CIEc( (*i)[0], (*i)[0], (*i)[0] ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -1423,7 +1425,7 @@ bool CIEhFunction::ValidateArguments( String& info, component_list::const_iterat
 
 void CIEhFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEh( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().CIEh( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1438,7 +1440,7 @@ bool CIEhrFunction::ValidateArguments( String& info, component_list::const_itera
 
 void CIEhrFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEhr( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().CIEhr( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1453,7 +1455,7 @@ bool CIEhdFunction::ValidateArguments( String& info, component_list::const_itera
 
 void CIEhdFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? Deg( PixelMathInstance::s_targetRGBWS->CIEhr( (*i)[0], (*i)[1], (*i)[2] ) ) : 0.0 );
+   r.SetSamples( i->IsRGB() ? Deg( PixelMathInstance::TargetRGBWS().CIEhr( (*i)[0], (*i)[1], (*i)[2] ) ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1468,8 +1470,8 @@ bool CIEXFunction::ValidateArguments( String& info, component_list::const_iterat
 
 void CIEXFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEX( (*i)[0], (*i)[1], (*i)[2] ) :
-                              PixelMathInstance::s_targetRGBWS->CIEX( (*i)[0], (*i)[0], (*i)[0] ) );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().CIEX( (*i)[0], (*i)[1], (*i)[2] ) :
+                              PixelMathInstance::TargetRGBWS().CIEX( (*i)[0], (*i)[0], (*i)[0] ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -1484,8 +1486,8 @@ bool CIEYFunction::ValidateArguments( String& info, component_list::const_iterat
 
 void CIEYFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEY( (*i)[0], (*i)[1], (*i)[2] ) :
-                              PixelMathInstance::s_targetRGBWS->CIEY( (*i)[0], (*i)[0], (*i)[0] ) );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().CIEY( (*i)[0], (*i)[1], (*i)[2] ) :
+                              PixelMathInstance::TargetRGBWS().CIEY( (*i)[0], (*i)[0], (*i)[0] ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -1500,8 +1502,8 @@ bool CIEZFunction::ValidateArguments( String& info, component_list::const_iterat
 
 void CIEZFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->CIEZ( (*i)[0], (*i)[1], (*i)[2] ) :
-                              PixelMathInstance::s_targetRGBWS->CIEZ( (*i)[0], (*i)[0], (*i)[0] ) );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().CIEZ( (*i)[0], (*i)[1], (*i)[2] ) :
+                              PixelMathInstance::TargetRGBWS().CIEZ( (*i)[0], (*i)[0], (*i)[0] ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -1666,7 +1668,7 @@ bool HFunction::ValidateArguments( String& info, component_list::const_iterator 
 
 void HFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->Hue( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().Hue( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1681,7 +1683,7 @@ bool HrFunction::ValidateArguments( String& info, component_list::const_iterator
 
 void HrFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? Const<double>::_2pi()*PixelMathInstance::s_targetRGBWS->Hue( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
+   r.SetSamples( i->IsRGB() ? Const<double>::_2pi()*PixelMathInstance::TargetRGBWS().Hue( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1696,7 +1698,7 @@ bool HdFunction::ValidateArguments( String& info, component_list::const_iterator
 
 void HdFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? 360*PixelMathInstance::s_targetRGBWS->Hue( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
+   r.SetSamples( i->IsRGB() ? 360*PixelMathInstance::TargetRGBWS().Hue( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1711,7 +1713,7 @@ bool SvFunction::ValidateArguments( String& info, component_list::const_iterator
 
 void SvFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->HSVSaturation( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().HSVSaturation( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1726,7 +1728,7 @@ bool SiFunction::ValidateArguments( String& info, component_list::const_iterator
 
 void SiFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->HSISaturation( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().HSISaturation( (*i)[0], (*i)[1], (*i)[2] ) : 0.0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -1741,7 +1743,7 @@ bool VFunction::ValidateArguments( String& info, component_list::const_iterator 
 
 void VFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->Value( (*i)[0], (*i)[1], (*i)[2] ) : (*i)[0] );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().Value( (*i)[0], (*i)[1], (*i)[2] ) : (*i)[0] );
 }
 
 // ----------------------------------------------------------------------------
@@ -1756,8 +1758,8 @@ bool IFunction::ValidateArguments( String& info, component_list::const_iterator 
 
 void IFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
 {
-   r.SetSamples( i->IsRGB() ? PixelMathInstance::s_targetRGBWS->Intensity( (*i)[0], (*i)[1], (*i)[2] ) :
-                              PixelMathInstance::s_targetRGBWS->Intensity( (*i)[0], (*i)[0], (*i)[0] ) );
+   r.SetSamples( i->IsRGB() ? PixelMathInstance::TargetRGBWS().Intensity( (*i)[0], (*i)[1], (*i)[2] ) :
+                              PixelMathInstance::TargetRGBWS().Intensity( (*i)[0], (*i)[0], (*i)[0] ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -2286,9 +2288,9 @@ static double GammaRandomDeviate( const Pixel& r, double shape, double scale )
     * Software Vol 26, No 3, September 2000, pages 363-372.
     */
    if ( shape <= 0 )
-      throw ParseError( "gamma() argument #1: the function shape parameter must be > 0; got " + String( shape ) + '.' );
+      throw ParseError( "gamma() argument #1: the function shape parameter must be > 0; got " + String( shape ) );
    if ( scale <= 0 )
-      throw ParseError( "gamma() argument #1: the scale parameter must be > 0; got " + String( scale ) + '.' );
+      throw ParseError( "gamma() argument #1: the scale parameter must be > 0; got " + String( scale ) );
    if ( shape >= 1 )
    {
       double d = shape - 1.0/3.0;
@@ -2374,7 +2376,7 @@ void ChiSquareFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel
 {
    double hnu = (*i)[0]/2;
    if ( hnu <= 0 )
-      throw ParseError( "chisq(): the degrees of freedom parameter must be > 0; got " + String( hnu*2 ) + '.' );
+      throw ParseError( "chisq(): the degrees of freedom parameter must be > 0; got " + String( hnu*2 ) );
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = GammaRandomDeviate( r, hnu, 2 );
 }
@@ -2402,7 +2404,7 @@ void StudentTFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_
 {
    double nu = (*i)[0];
    if ( nu <= 0 )
-      throw ParseError( "studentt(): the degrees of freedom parameter must be > 0; got " + String( nu ) + '.' );
+      throw ParseError( "studentt(): the degrees of freedom parameter must be > 0; got " + String( nu ) );
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = Normal( r )/Sqrt( GammaRandomDeviate( r, nu/2, 2 )/nu );
 }
@@ -2854,7 +2856,7 @@ bool WidthFunction::IsInvariant( component_list::const_iterator, component_list:
 void WidthFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) == 0 )
-      r.SetSamples( PixelMathInstance::s_targetWidth );
+      r.SetSamples( PixelMathInstance::TargetWidth() );
    else
       r.SetSamples( I->Image()->Width() );
 }
@@ -2882,7 +2884,7 @@ bool HeightFunction::IsInvariant( component_list::const_iterator, component_list
 void HeightFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) == 0 )
-      r.SetSamples( PixelMathInstance::s_targetHeight );
+      r.SetSamples( PixelMathInstance::TargetHeight() );
    else
       r.SetSamples( I->Image()->Height() );
 }
@@ -2910,7 +2912,7 @@ bool AreaFunction::IsInvariant( component_list::const_iterator, component_list::
 void AreaFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) == 0 )
-      r.SetSamples( double( uint64( PixelMathInstance::s_targetWidth ) * uint64( PixelMathInstance::s_targetHeight ) ) );
+      r.SetSamples( double( uint64( PixelMathInstance::TargetWidth() ) * uint64( PixelMathInstance::TargetHeight() ) ) );
    else
       r.SetSamples( double( I->Image()->NumberOfPixels() ) );
 }
@@ -2938,7 +2940,7 @@ bool NumberOfChannelsFunction::IsInvariant( component_list::const_iterator, comp
 void NumberOfChannelsFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) == 0 )
-      r.SetSamples( PixelMathInstance::s_targetNumberOfChannels );
+      r.SetSamples( PixelMathInstance::TargetNumberOfChannels() );
    else
       r.SetSamples( I->Image()->NumberOfChannels() );
 }
@@ -2966,7 +2968,7 @@ bool IsColorFunction::IsInvariant( component_list::const_iterator, component_lis
 void IsColorFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) == 0 )
-      r.SetSamples( PixelMathInstance::s_targetIsColor ? 1 : 0 );
+      r.SetSamples( PixelMathInstance::TargetIsColor() ? 1 : 0 );
    else
       r.SetSamples( I->Image()->IsColor() ? 1 : 0 );
 }
@@ -2988,14 +2990,14 @@ void XPosFunction::operator()( Pixel& r, component_list::const_iterator, compone
 
 void XFunction::operator()( Pixel& r, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   double x = double( r.X() )/(PixelMathInstance::s_targetWidth - 1);
+   double x = double( r.X() )/(PixelMathInstance::TargetWidth() - 1);
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = x;
 }
 
 void XFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
 {
-   r.SetSamples( double( r.X() )/(PixelMathInstance::s_targetWidth - 1) );
+   r.SetSamples( double( r.X() )/(PixelMathInstance::TargetWidth() - 1) );
 }
 
 // ----------------------------------------------------------------------------
@@ -3015,14 +3017,14 @@ void YPosFunction::operator()( Pixel& r, component_list::const_iterator, compone
 
 void YFunction::operator()( Pixel& r, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   double x = double( r.Y() )/(PixelMathInstance::s_targetHeight - 1);
+   double x = double( r.Y() )/(PixelMathInstance::TargetHeight() - 1);
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = x;
 }
 
 void YFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
 {
-   r.SetSamples( double( r.Y() )/(PixelMathInstance::s_targetHeight - 1) );
+   r.SetSamples( double( r.Y() )/(PixelMathInstance::TargetHeight() - 1) );
 }
 
 // ----------------------------------------------------------------------------
@@ -3455,8 +3457,8 @@ void RDistFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set
    }
    else
    {
-      xc = 0.5*PixelMathInstance::s_targetWidth;
-      yc = 0.5*PixelMathInstance::s_targetHeight;
+      xc = 0.5*PixelMathInstance::TargetWidth();
+      yc = 0.5*PixelMathInstance::TargetHeight();
    }
 
    double dx = r.X() - xc;
@@ -3500,8 +3502,8 @@ void PAngleFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_se
    }
    else
    {
-      xc = 0.5*PixelMathInstance::s_targetWidth;
-      yc = 0.5*PixelMathInstance::s_targetHeight;
+      xc = 0.5*PixelMathInstance::TargetWidth();
+      yc = 0.5*PixelMathInstance::TargetHeight();
    }
 
    double theta = ArcTan( r.Y() - yc, r.X() - xc );
@@ -4019,4 +4021,4 @@ Expression::component_list InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2021-01-20T20:18:40Z
+// EOF Function.cpp - Released 2021-01-21T15:55:53Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// Generators.cpp - Released 2021-01-20T20:18:40Z
+// Generators.cpp - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -193,7 +193,7 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
    // gconv( image[, sigma=2[, rho=1[, theta=0[, eps=0.01]]]] )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "gconv() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "gconv() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
    float sigma = 2;
@@ -208,9 +208,9 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          sigma = P->PixelValue()[0];
       else
-         throw ParseError( "gconv() argument #2: The filter standard deviation must be an invariant scalar subexpression." );
+         throw ParseError( "gconv() argument #2: The filter standard deviation must be an invariant scalar subexpression" );
       if ( sigma < 0 || sigma + 1 == 1 )
-         throw ParseError( "gconv() argument #2: The filter standard deviation must be > 0 px; got " + String( sigma ) + '.' );
+         throw ParseError( "gconv() argument #2: The filter standard deviation must be > 0 px; got " + String( sigma ) );
 
       if ( Distance( ++i, j ) > 0 )
       {
@@ -219,9 +219,9 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
          else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
             rho = P->PixelValue()[0];
          else
-            throw ParseError( "gconv() argument #3: The filter aspect ratio must be an invariant scalar subexpression." );
+            throw ParseError( "gconv() argument #3: The filter aspect ratio must be an invariant scalar subexpression" );
          if ( rho < 0 || rho + 1 == 1 || rho > 1 )
-            throw ParseError( "gconv() argument #3: The filter aspect ratio must be in the (0,1] range; got " + String( rho ) + '.' );
+            throw ParseError( "gconv() argument #3: The filter aspect ratio must be in the (0,1] range; got " + String( rho ) );
 
          if ( Distance( ++i, j ) > 0 )
          {
@@ -230,9 +230,9 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
             else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
                theta = P->PixelValue()[0];
             else
-               throw ParseError( "gconv() argument #4: The filter rotation angle must be an invariant scalar subexpression." );
+               throw ParseError( "gconv() argument #4: The filter rotation angle must be an invariant scalar subexpression" );
             if ( theta < -180 || theta > 180 )
-               throw ParseError( "gconv() argument #4: The filter rotation angle must be in the range [-180,+180] degrees; got " +  + '.' );
+               throw ParseError( "gconv() argument #4: The filter rotation angle must be in the range [-180,+180] degrees; got " + String( theta ) );
 
             if ( Distance( ++i, j ) > 0 )
             {
@@ -241,9 +241,9 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
                else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
                   eps = P->PixelValue()[0];
                else
-                  throw ParseError( "gconv() argument #5: The filter truncation error must be an invariant scalar subexpression." );
+                  throw ParseError( "gconv() argument #5: The filter truncation error must be an invariant scalar subexpression" );
                if ( eps < 0 || eps + 1 == 1 )
-                  throw ParseError( "gconv() argument #5: The filter truncation error must be > 0; got " + String( eps ) + '.' );
+                  throw ParseError( "gconv() argument #5: The filter truncation error must be > 0; got " + String( eps ) );
             }
          }
       }
@@ -281,7 +281,7 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
 
 void GaussianConvolutionFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "gconv(): Internal execution error." );
+   throw ParseError( "gconv(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -340,7 +340,7 @@ IsoString BoxConvolutionFunction::GenerateImage( component_list::const_iterator 
    // bconv( image[, n=3] )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "bconv() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "bconv() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
    int n = 3;
@@ -351,12 +351,12 @@ IsoString BoxConvolutionFunction::GenerateImage( component_list::const_iterator 
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          n = int( P->PixelValue()[0] );
       else
-         throw ParseError( "bconv() argument #2: The filter size must be an invariant scalar subexpression." );
+         throw ParseError( "bconv() argument #2: The filter size must be an invariant scalar subexpression" );
 
       if ( n < 3 )
-         throw ParseError( "bconv() argument #2: The smallest valid filter size is 3 px." );
+         throw ParseError( "bconv() argument #2: The smallest valid filter size is 3 pixels" );
       if ( (n & 1) == 0 )
-         throw ParseError( "bconv() argument #2: The filter size must be an odd integer." );
+         throw ParseError( "bconv() argument #2: The filter size must be an odd integer" );
    }
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_bconv_%d", n );
@@ -392,7 +392,7 @@ IsoString BoxConvolutionFunction::GenerateImage( component_list::const_iterator 
 
 void BoxConvolutionFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "bconv(): Internal execution error." );
+   throw ParseError( "bconv(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -436,7 +436,7 @@ IsoString KernelConvolutionFunction::GenerateImage( component_list::const_iterat
    // kconv( image, k11, k12, k13, k21, k22, k23, k31, k32, k33[, ...] )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "kconv() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "kconv() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
    int n = int( Sqrt( Distance( i, j ) - 1 ) );
@@ -448,7 +448,7 @@ IsoString KernelConvolutionFunction::GenerateImage( component_list::const_iterat
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          K[k] = P->PixelValue()[0];
       else
-         throw ParseError( "kconv() argument #" + String( 2+k ) + ": Kernel filter elements must be invariant scalar subexpressions." );
+         throw ParseError( "kconv() argument #" + String( 2+k ) + ": Kernel filter elements must be invariant scalar subexpressions" );
    }
 
    IsoString key = IsoString( ref->Id() ) + "_kconv_" + IsoString::ToHex( MD5().Hash( K ) );
@@ -480,14 +480,14 @@ IsoString KernelConvolutionFunction::GenerateImage( component_list::const_iterat
 
 void KernelConvolutionFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "kconv(): Internal execution error." );
+   throw ParseError( "kconv(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
-enum PMStructuringElement
+enum
 {
-   Square, Circular, Orthogonal, Diagonal, Star, ThreeWay, count
+   StrSquare, StrCircular, StrOrthogonal, StrDiagonal, StrStar, StrThreeWay, StrCount
 };
 
 static bool ValidateMorphologicalTransformationGeneratorParameters( const String& functionName, String& info,
@@ -542,7 +542,7 @@ static bool ValidateMorphologicalTransformationGeneratorParameters( const String
                info = functionName + "() argument #3: The structuring element selector must be an integer value";
                return false;
             }
-            if ( S->Value() < 0 || S->Value() >= PMStructuringElement::count )
+            if ( S->Value() < 0 || S->Value() >= StrCount )
             {
                info = functionName + "() argument #3: Unknown or unsupported structuring element selector '" + String( int( S->Value() ) ) + "'";
                return false;
@@ -558,11 +558,11 @@ static void GetMorphologicalTransformationGeneratorParameters( const String& fun
                                        Expression::component_list::const_iterator i, Expression::component_list::const_iterator j )
 {
    if ( !(*i)->IsImageReference() )
-      throw ParseError( functionName + "() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( functionName + "() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    ref = dynamic_cast<ImageReference*>( *i );
    n = 3;
-   s = PMStructuringElement::Square;
+   s = StrSquare;
    if ( ++i < j )
    {
       if ( (*i)->IsSample() )
@@ -570,12 +570,12 @@ static void GetMorphologicalTransformationGeneratorParameters( const String& fun
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          n = int( P->PixelValue()[0] );
       else
-         throw ParseError( functionName + "() argument #2: The filter size must be an invariant scalar subexpression." );
+         throw ParseError( functionName + "() argument #2: The filter size must be an invariant scalar subexpression" );
 
       if ( n < 3 )
-         throw ParseError( functionName + "() argument #2: The smallest valid filter size is 3 pixels." );
+         throw ParseError( functionName + "() argument #2: The smallest valid filter size is 3 pixels" );
       if ( (n & 1) == 0 )
-         throw ParseError( functionName + "() argument #2: The filter size must be an odd integer." );
+         throw ParseError( functionName + "() argument #2: The filter size must be an odd integer" );
 
       if ( ++i < j )
       {
@@ -584,25 +584,25 @@ static void GetMorphologicalTransformationGeneratorParameters( const String& fun
          else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
             s = int( P->PixelValue()[0] );
          else
-            throw ParseError( functionName + "() argument #3: The structuring element selector must be an invariant scalar subexpression." );
+            throw ParseError( functionName + "() argument #3: The structuring element selector must be an invariant scalar subexpression" );
 
-         if ( s < 0 || s >= PMStructuringElement::count )
-            throw ParseError( functionName + "() argument #3: Unknown or unsupported structuring element selector '" + String( s ) + "'." );
+         if ( s < 0 || s >= StrCount )
+            throw ParseError( functionName + "() argument #3: Unknown or unsupported structuring element selector '" + String( s ) + '\'' );
       }
    }
 }
 
-static StructuringElement* NewPMStructuringElement( int n, int s )
+static StructuringElement* NewStructuringElement( int n, int s )
 {
    switch ( s )
    {
    default: // ?!
-   case PMStructuringElement::Square:     return new BoxStructure( n );
-   case PMStructuringElement::Circular:   return new CircularStructure( n );
-   case PMStructuringElement::Orthogonal: return new OrthogonalStructure( n );
-   case PMStructuringElement::Diagonal:   return new DiagonalStructure( n );
-   case PMStructuringElement::Star:       return new StarStructure( n );
-   case PMStructuringElement::ThreeWay:   return new ThreeWayStructure( n );
+   case StrSquare:     return new BoxStructure( n );
+   case StrCircular:   return new CircularStructure( n );
+   case StrOrthogonal: return new OrthogonalStructure( n );
+   case StrDiagonal:   return new DiagonalStructure( n );
+   case StrStar:       return new StarStructure( n );
+   case StrThreeWay:   return new ThreeWayStructure( n );
    }
 }
 
@@ -635,7 +635,7 @@ IsoString MedianFilterFunction::GenerateImage( component_list::const_iterator i,
    {
       ImageVariant result = NewGeneratorResult( ref );
 
-      AutoPointer<StructuringElement> str = NewPMStructuringElement( n, s );
+      AutoPointer<StructuringElement> str = NewStructuringElement( n, s );
       MorphologicalTransformation( MedianFilter(), *str ) >> result;
 
       TheImageCache->AddImage( key, result );
@@ -646,7 +646,7 @@ IsoString MedianFilterFunction::GenerateImage( component_list::const_iterator i,
 
 void MedianFilterFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "medfilt(): Internal execution error." );
+   throw ParseError( "medfilt(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -678,7 +678,7 @@ IsoString ErosionFilterFunction::GenerateImage( component_list::const_iterator i
    {
       ImageVariant result = NewGeneratorResult( ref );
 
-      AutoPointer<StructuringElement> str = NewPMStructuringElement( n, s );
+      AutoPointer<StructuringElement> str = NewStructuringElement( n, s );
       MorphologicalTransformation( ErosionFilter(), *str ) >> result;
 
       TheImageCache->AddImage( key, result );
@@ -689,7 +689,7 @@ IsoString ErosionFilterFunction::GenerateImage( component_list::const_iterator i
 
 void ErosionFilterFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "erosion(): Internal execution error." );
+   throw ParseError( "erosion(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -721,7 +721,7 @@ IsoString DilationFilterFunction::GenerateImage( component_list::const_iterator 
    {
       ImageVariant result = NewGeneratorResult( ref );
 
-      AutoPointer<StructuringElement> str = NewPMStructuringElement( n, s );
+      AutoPointer<StructuringElement> str = NewStructuringElement( n, s );
       MorphologicalTransformation( DilationFilter(), *str ) >> result;
 
       TheImageCache->AddImage( key, result );
@@ -732,7 +732,7 @@ IsoString DilationFilterFunction::GenerateImage( component_list::const_iterator 
 
 void DilationFilterFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "dilation(): Internal execution error." );
+   throw ParseError( "dilation(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -749,7 +749,7 @@ bool StrSquareFunction::IsInvariant( component_list::const_iterator, component_l
 
 void StrSquareFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
 {
-   r.SetSamples( PMStructuringElement::Square );
+   r.SetSamples( StrSquare );
 }
 
 // ----------------------------------------------------------------------------
@@ -766,7 +766,7 @@ bool StrCircularFunction::IsInvariant( component_list::const_iterator, component
 
 void StrCircularFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
 {
-   r.SetSamples( PMStructuringElement::Circular );
+   r.SetSamples( StrCircular );
 }
 
 // ----------------------------------------------------------------------------
@@ -783,7 +783,7 @@ bool StrOrthogonalFunction::IsInvariant( component_list::const_iterator, compone
 
 void StrOrthogonalFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
 {
-   r.SetSamples( PMStructuringElement::Orthogonal );
+   r.SetSamples( StrOrthogonal );
 }
 
 // ----------------------------------------------------------------------------
@@ -800,7 +800,7 @@ bool StrDiagonalFunction::IsInvariant( component_list::const_iterator, component
 
 void StrDiagonalFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
 {
-   r.SetSamples( PMStructuringElement::Diagonal );
+   r.SetSamples( StrDiagonal );
 }
 
 // ----------------------------------------------------------------------------
@@ -817,7 +817,7 @@ bool StrStarFunction::IsInvariant( component_list::const_iterator, component_lis
 
 void StrStarFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
 {
-   r.SetSamples( PMStructuringElement::Star );
+   r.SetSamples( StrStar );
 }
 
 // ----------------------------------------------------------------------------
@@ -834,7 +834,7 @@ bool StrThreeWayFunction::IsInvariant( component_list::const_iterator, component
 
 void StrThreeWayFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
 {
-   r.SetSamples( PMStructuringElement::ThreeWay );
+   r.SetSamples( StrThreeWay );
 }
 
 // ----------------------------------------------------------------------------
@@ -871,7 +871,7 @@ IsoString TranslationFunction::GenerateImage( component_list::const_iterator i, 
    // translate( image, dx, dy )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "translate() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "translate() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
 
@@ -881,7 +881,7 @@ IsoString TranslationFunction::GenerateImage( component_list::const_iterator i, 
    else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
       dx = P->PixelValue()[0];
    else
-      throw ParseError( "translate() argument #2: The X-axis increment must be an invariant scalar subexpression." );
+      throw ParseError( "translate() argument #2: The X-axis increment must be an invariant scalar subexpression" );
 
    double dy;
    if ( (*++i)->IsSample() )
@@ -889,7 +889,7 @@ IsoString TranslationFunction::GenerateImage( component_list::const_iterator i, 
    else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
       dy = P->PixelValue()[0];
    else
-      throw ParseError( "translate() argument #3: The Y-axis increment must be an invariant scalar subexpression." );
+      throw ParseError( "translate() argument #3: The Y-axis increment must be an invariant scalar subexpression" );
 
    IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_translate_%.4f_%.4f", dx, dy );
 
@@ -908,7 +908,7 @@ IsoString TranslationFunction::GenerateImage( component_list::const_iterator i, 
 
 void TranslationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "translate(): Internal execution error." );
+   throw ParseError( "translate(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -946,7 +946,7 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
    // rotate( image, angle[, cx, cy] )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "rotate() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "rotate() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
 
@@ -956,7 +956,7 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
    else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
       angle = P->PixelValue()[0];
    else
-      throw ParseError( "rotate() argument #2: The rotation angle must be an invariant scalar subexpression." );
+      throw ParseError( "rotate() argument #2: The rotation angle must be an invariant scalar subexpression" );
 
    double cx = 0, cy = 0;
    if ( ++i < j )
@@ -966,7 +966,7 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          cx = P->PixelValue()[0];
       else
-         throw ParseError( "rotate() argument #3: The center x coordinate must be an invariant scalar subexpression." );
+         throw ParseError( "rotate() argument #3: The center x coordinate must be an invariant scalar subexpression" );
 
       if ( ++i < j )
       {
@@ -975,7 +975,7 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
          else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
             cy = P->PixelValue()[0];
          else
-            throw ParseError( "rotate() argument #4: The center y coordinate must be an invariant scalar subexpression." );
+            throw ParseError( "rotate() argument #4: The center y coordinate must be an invariant scalar subexpression" );
       }
    }
 
@@ -1001,7 +1001,7 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
 
 void RotationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "rotate(): Internal execution error." );
+   throw ParseError( "rotate(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -1031,7 +1031,7 @@ IsoString MirrorHorzFunction::GenerateImage( component_list::const_iterator i, c
    // hmirror( image )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "hmirror() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "hmirror() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
 
@@ -1049,7 +1049,7 @@ IsoString MirrorHorzFunction::GenerateImage( component_list::const_iterator i, c
 
 void MirrorHorzFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "hmirror(): Internal execution error." );
+   throw ParseError( "hmirror(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -1079,7 +1079,7 @@ IsoString MirrorVertFunction::GenerateImage( component_list::const_iterator i, c
    // vmirror( image )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "vmirror() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "vmirror() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
 
@@ -1097,7 +1097,7 @@ IsoString MirrorVertFunction::GenerateImage( component_list::const_iterator i, c
 
 void MirrorVertFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "vmirror(): Internal execution error." );
+   throw ParseError( "vmirror(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -1146,7 +1146,7 @@ IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i
    // normalize( image[, a=0, b=1] )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "normalize() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "normalize() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
    double a = 0, b = 1;
@@ -1157,7 +1157,7 @@ IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          a = P->PixelValue()[0];
       else
-         throw ParseError( "normalize() argument #2: The normalization lower bound must be an invariant scalar subexpression." );
+         throw ParseError( "normalize() argument #2: The normalization lower bound must be an invariant scalar subexpression" );
 
       if ( ++i < j )
       {
@@ -1166,7 +1166,7 @@ IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i
          else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
             b = P->PixelValue()[0];
          else
-            throw ParseError( "normalize() argument #3: The normalization upper bound must be an invariant scalar subexpression." );
+            throw ParseError( "normalize() argument #3: The normalization upper bound must be an invariant scalar subexpression" );
       }
 
       if ( b < a )
@@ -1192,7 +1192,7 @@ IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i
 
 void NormalizationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "normalize(): Internal execution error." );
+   throw ParseError( "normalize(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -1241,7 +1241,7 @@ IsoString TruncationFunction::GenerateImage( component_list::const_iterator i, c
    // truncate( image[, a=0, b=1] )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "truncate() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "truncate() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
    double a = 0, b = 1;
@@ -1252,7 +1252,7 @@ IsoString TruncationFunction::GenerateImage( component_list::const_iterator i, c
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          a = P->PixelValue()[0];
       else
-         throw ParseError( "truncate() argument #2: The truncation lower bound must be an invariant scalar subexpression." );
+         throw ParseError( "truncate() argument #2: The truncation lower bound must be an invariant scalar subexpression" );
 
       if ( ++i < j )
       {
@@ -1261,7 +1261,7 @@ IsoString TruncationFunction::GenerateImage( component_list::const_iterator i, c
          else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
             b = P->PixelValue()[0];
          else
-            throw ParseError( "truncate() argument #3: The truncation upper bound must be an invariant scalar subexpression." );
+            throw ParseError( "truncate() argument #3: The truncation upper bound must be an invariant scalar subexpression" );
       }
 
       if ( b < a )
@@ -1287,7 +1287,7 @@ IsoString TruncationFunction::GenerateImage( component_list::const_iterator i, c
 
 void TruncationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "truncate(): Internal execution error." );
+   throw ParseError( "truncate(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
@@ -1325,7 +1325,7 @@ IsoString BinarizationFunction::GenerateImage( component_list::const_iterator i,
    // binarize( image[, t=0.5] )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "binarize() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "binarize() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
    double t;
@@ -1336,7 +1336,7 @@ IsoString BinarizationFunction::GenerateImage( component_list::const_iterator i,
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          t = P->PixelValue()[0];
       else
-         throw ParseError( "binarize() argument #2: The binarization threshold must be an invariant scalar subexpression." );
+         throw ParseError( "binarize() argument #2: The binarization threshold must be an invariant scalar subexpression" );
    }
    else
    {
@@ -1364,19 +1364,47 @@ IsoString BinarizationFunction::GenerateImage( component_list::const_iterator i,
 
 void BinarizationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "binarize(): Internal execution error." );
+   throw ParseError( "binarize(): Internal execution error" );
 }
 
 // ----------------------------------------------------------------------------
 
+enum
+{
+   KrnFlat, KrnGaussian, KrnCount
+};
+
+KernelFilter LVarKernelFunction( int d, int k )
+{
+   switch( k )
+   {
+   default:
+   case KrnFlat:
+      return KernelFilter( d, 1.0 );
+   case KrnGaussian:
+      return GaussianFilter( d );
+   }
+}
+
+SeparableFilter LVarKernelFunctionSeparable( int d, int k )
+{
+   switch( k )
+   {
+   default:
+   case KrnFlat:
+      return SeparableFilter( d, 1.0 );
+   case KrnGaussian:
+      return GaussianFilter( d ).AsSeparableFilter();
+   }
+}
+
 bool LocalVarianceFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   // lvar( image[, d=3] )
+   // lvar( image[, d=3[, k=krn_flat()]] )
 
-   if ( Distance( i, j ) != 1 )
-      if ( Distance( i, j ) != 2 )
+   if ( Distance( i, j ) < 1 || Distance( i, j ) > 3 )
       {
-         info = "lvar() takes 1 or 2 arguments";
+         info = "lvar() takes from 1 to 3 arguments";
          return false;
       }
 
@@ -1413,6 +1441,29 @@ bool LocalVarianceFunction::ValidateArguments( String& info, component_list::con
             return false;
          }
       }
+
+      if ( ++i < j )
+      {
+         if ( (*i)->IsImageReference() )
+         {
+            info = "lvar() argument #3: The local variance kernel function must be an invariant scalar subexpression";
+            return false;
+         }
+
+         if ( (*i)->IsSample() )
+         {
+            if ( Frac( S->Value() ) != 0 )
+            {
+               info = "lvar() argument #3: The local variance kernel function must be an integer value";
+               return false;
+            }
+            if ( S->Value() < 0 || S->Value() >= KrnCount )
+            {
+               info = "lvar() argument #3: Unknown or unsupported kernel function '" + String( int( S->Value() ) ) + "'";
+               return false;
+            }
+         }
+      }
    }
 
    return true;
@@ -1420,13 +1471,14 @@ bool LocalVarianceFunction::ValidateArguments( String& info, component_list::con
 
 IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   // lvar( image[, d=3] )
+   // lvar( image[, d=3[, k=krn_flat()]] )
 
    if ( !(*i)->IsImageReference() )
-      throw ParseError( "lvar() argument #1: Must be an image reference or a functional subexpression evaluating to an image." );
+      throw ParseError( "lvar() argument #1: Must be an image reference or a functional subexpression evaluating to an image" );
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
    int d = 3;
+   int k = KrnFlat;
    if ( ++i < j )
    {
       if ( (*i)->IsSample() )
@@ -1434,15 +1486,28 @@ IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i
       else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
          d = int( P->PixelValue()[0] );
       else
-         throw ParseError( "lvar() argument #2: The local variance window size must be an invariant scalar subexpression." );
+         throw ParseError( "lvar() argument #2: The local variance window size must be an invariant scalar subexpression" );
 
       if ( d < 3 )
-         throw ParseError( "lvar() argument #2: The smallest valid local variance window size is 3 pixels." );
+         throw ParseError( "lvar() argument #2: The smallest valid local variance window size is 3 pixels" );
       if ( (d & 1) == 0 )
-         throw ParseError( "lvar() argument #2: The local variance window size must be an odd integer." );
+         throw ParseError( "lvar() argument #2: The local variance window size must be an odd integer" );
+
+      if ( ++i < j )
+      {
+         if ( (*i)->IsSample() )
+            k = int( S->Value() );
+         else if ( (*i)->IsPixel() && P->PixelValue().Length() == 1 )
+            k = int( P->PixelValue()[0] );
+         else
+            throw ParseError( "lvar() argument #3: The local variance kernel function must be an integer value" );
+
+         if ( k < 0 || k >= KrnCount )
+            throw ParseError( "lvar() argument #3: Unknown or unsupported kernel function '" + String( k ) + '\'' );
+      }
    }
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_lvar_%d", d );
+   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_lvar_%d_%d", d, k );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -1456,21 +1521,21 @@ IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i
          || d > ref->Image()->Width()
          || d > ref->Image()->Height() )
       {
-         KernelFilter H( d, 1.0 );
+         KernelFilter H = LVarKernelFunction( d, k );
          FFTConvolution Z( H );
          Z >> result;
          Z >> X;
       }
       else if ( d >= SeparableConvolution::FasterThanNonseparableFilterSize( nofThreads ) )
       {
-         SeparableFilter H( d, 1.0 );
+         SeparableFilter H = LVarKernelFunctionSeparable( d, k );
          SeparableConvolution C( H );
          C >> result;
          C >> X;
       }
       else
       {
-         KernelFilter H( d, 1.0 );
+         KernelFilter H = LVarKernelFunction( d, k );
          Convolution C( H );
          C >> result;
          C >> X;
@@ -1487,7 +1552,41 @@ IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i
 
 void LocalVarianceFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw ParseError( "lvar(): Internal execution error." );
+   throw ParseError( "lvar(): Internal execution error" );
+}
+
+// ----------------------------------------------------------------------------
+
+void KrnFlatFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "krn_flat(): Internal parser error" );
+}
+
+bool KrnFlatFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void KrnFlatFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( KrnFlat );
+}
+
+// ----------------------------------------------------------------------------
+
+void KrnGaussianFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
+{
+   throw Error( "krn_gauss(): Internal parser error" );
+}
+
+bool KrnGaussianFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
+{
+   return true;
+}
+
+void KrnGaussianFunction::operator()( Pixel& r, component_list::const_iterator, component_list::const_iterator ) const
+{
+   r.SetSamples( KrnGaussian );
 }
 
 // ----------------------------------------------------------------------------
@@ -1495,4 +1594,4 @@ void LocalVarianceFunction::operator()( Pixel&, pixel_set::const_iterator, pixel
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Generators.cpp - Released 2021-01-20T20:18:40Z
+// EOF Generators.cpp - Released 2021-01-21T15:55:53Z

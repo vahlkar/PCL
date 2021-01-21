@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// PixelMathInstance.cpp - Released 2021-01-20T20:18:40Z
+// PixelMathInstance.cpp - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -81,6 +81,7 @@ RGBColorSystem* PixelMathInstance::s_targetRGBWS = nullptr;
 PixelMathInstance::PixelMathInstance( const MetaProcess* P )
    : ProcessImplementation( P )
    , p_useSingleExpression( ThePMUseSingleExpressionParameter->DefaultValue() )
+   , p_clearImageCacheAndExit( ThePMClearImageCacheAndExitParameter->DefaultValue() )
    , p_cacheGeneratedImages( ThePMCacheGeneratedImagesParameter->DefaultValue() )
    , p_generateOutput( ThePMGenerateOutputParameter->DefaultValue() )
    , p_singleThreaded( ThePMSingleThreadedParameter->DefaultValue() )
@@ -118,32 +119,33 @@ void PixelMathInstance::Assign( const ProcessImplementation& p )
    const PixelMathInstance* x = dynamic_cast<const PixelMathInstance*>( &p );
    if ( x != nullptr )
    {
-      p_expression[0]        = x->p_expression[0];
-      p_expression[1]        = x->p_expression[1];
-      p_expression[2]        = x->p_expression[2];
-      p_expression[3]        = x->p_expression[3];
-      p_useSingleExpression  = x->p_useSingleExpression;
-      p_symbols              = x->p_symbols;
-      p_cacheGeneratedImages = x->p_cacheGeneratedImages;
-      p_generateOutput       = x->p_generateOutput;
-      p_singleThreaded       = x->p_singleThreaded;
-      p_optimization         = x->p_optimization;
-      p_use64BitWorkingImage = x->p_use64BitWorkingImage;
-      p_rescaleResult        = x->p_rescaleResult;
-      p_rescaleLower         = x->p_rescaleLower;
-      p_rescaleUpper         = x->p_rescaleUpper;
-      p_truncateResult       = x->p_truncateResult;
-      p_truncateLower        = x->p_truncateLower;
-      p_truncateUpper        = x->p_truncateUpper;
-      p_createNewImage       = x->p_createNewImage;
-      p_showNewImage         = x->p_showNewImage;
-      p_newImageId           = x->p_newImageId;
-      p_newImageWidth        = x->p_newImageWidth;
-      p_newImageHeight       = x->p_newImageHeight;
-      p_newImageAlpha        = x->p_newImageAlpha;
-      p_newImageColorSpace   = x->p_newImageColorSpace;
-      p_newImageSampleFormat = x->p_newImageSampleFormat;
-      o_outputData           = x->o_outputData;
+      p_expression[0]          = x->p_expression[0];
+      p_expression[1]          = x->p_expression[1];
+      p_expression[2]          = x->p_expression[2];
+      p_expression[3]          = x->p_expression[3];
+      p_useSingleExpression    = x->p_useSingleExpression;
+      p_symbols                = x->p_symbols;
+      p_clearImageCacheAndExit = x->p_clearImageCacheAndExit;
+      p_cacheGeneratedImages   = x->p_cacheGeneratedImages;
+      p_generateOutput         = x->p_generateOutput;
+      p_singleThreaded         = x->p_singleThreaded;
+      p_optimization           = x->p_optimization;
+      p_use64BitWorkingImage   = x->p_use64BitWorkingImage;
+      p_rescaleResult          = x->p_rescaleResult;
+      p_rescaleLower           = x->p_rescaleLower;
+      p_rescaleUpper           = x->p_rescaleUpper;
+      p_truncateResult         = x->p_truncateResult;
+      p_truncateLower          = x->p_truncateLower;
+      p_truncateUpper          = x->p_truncateUpper;
+      p_createNewImage         = x->p_createNewImage;
+      p_showNewImage           = x->p_showNewImage;
+      p_newImageId             = x->p_newImageId;
+      p_newImageWidth          = x->p_newImageWidth;
+      p_newImageHeight         = x->p_newImageHeight;
+      p_newImageAlpha          = x->p_newImageAlpha;
+      p_newImageColorSpace     = x->p_newImageColorSpace;
+      p_newImageSampleFormat   = x->p_newImageSampleFormat;
+      o_outputData             = x->o_outputData;
    }
 }
 
@@ -151,7 +153,9 @@ void PixelMathInstance::Assign( const ProcessImplementation& p )
 
 bool PixelMathInstance::IsHistoryUpdater( const View& view ) const
 {
-   return p_generateOutput && (!p_createNewImage || view.IsPreview());
+   return !p_clearImageCacheAndExit
+       && p_generateOutput
+       && (!p_createNewImage || view.IsPreview());
 }
 
 // ----------------------------------------------------------------------------
@@ -908,7 +912,7 @@ void RunImageGenerators( PixelMathInstance::rpn_set RPN[], AutoPointer<BicubicPi
                         if ( !ref->FindImage() )
                            throw ParseError( "Internal parser error: Invalid internal image reference." );
 
-                        if ( ref->Image()->Width() != PixelMathInstance::s_targetWidth || ref->Image()->Height() != PixelMathInstance::s_targetHeight )
+                        if ( ref->Image()->Width() != PixelMathInstance::TargetWidth() || ref->Image()->Height() != PixelMathInstance::TargetHeight() )
                         {
                            if ( interpolation.IsNull() )
                               interpolation = new BicubicPixelInterpolation;
@@ -926,7 +930,8 @@ void RunImageGenerators( PixelMathInstance::rpn_set RPN[], AutoPointer<BicubicPi
          }
 
    if ( genTotal > 0 )
-      Console().WriteLn( "<end><cbr>Executed " + String( genTotal ) + " image generator(s)." );
+      Console().WriteLn( "<end><cbr>Executed " + String( genTotal ) + " image generator(s), "
+                        + File::SizeAsString( TheImageCache->TotalImageSize() ) );
 }
 
 // ----------------------------------------------------------------------------
@@ -945,6 +950,15 @@ void ReportCachedImages()
    if ( TheImageCache->NumberOfImages() > 0 )
       Console().NoteLn( "<end><cbr>* " + String( TheImageCache->NumberOfImages() ) + " generated image(s)"
                         ", cache size: " + File::SizeAsString( TheImageCache->TotalImageSize() ) );
+}
+
+static
+void ClearImageCache()
+{
+   size_type count, size;
+   if ( TheImageCache->ClearImages( count, size ) )
+      Console().NoteLn( "<end><cbr>* " + String( count ) + " cached image(s) removed"
+                        ", " + File::SizeAsString( size ) + " freed up." );
 }
 
 // ----------------------------------------------------------------------------
@@ -975,12 +989,12 @@ void PixelMathInstance::Execute( ImageVariant& image, int x0, int y0, int w0, in
 
       if ( !RPN[i].IsEmpty() )
       {
-         String statusStr = "Executing PixelMath expression: ";
+         String statusStr = "Executing PixelMath expression:";
+         statusStr << "<br><raw>" << p_expression[i] << "</raw><br>";
          if ( c < 0 )
-            statusStr << "combined RGB/K channels:";
+            statusStr << "combined RGB/K channels";
          else
-            statusStr.AppendFormat( "channel #%d:", c );
-         statusStr << " <raw>" << p_expression[i] << "</raw>";
+            statusStr.AppendFormat( "channel #%d", c );
 
          image->Status().Initialize( statusStr, image->NumberOfPixels() );
 
@@ -1041,12 +1055,12 @@ void PixelMathInstance::Execute( int width, int height, int numberOfChannels, co
 
       if ( !RPN[i].IsEmpty() )
       {
-         String statusStr = "Executing PixelMath expression: ";
+         String statusStr = "Executing PixelMath expression:";
+         statusStr << "<br><raw>" << p_expression[i] << "</raw><br>";
          if ( c < 0 )
-            statusStr << "combined RGB/K channels:";
+            statusStr << "combined RGB/K channels";
          else
-            statusStr.AppendFormat( "channel #%d:", c );
-         statusStr << " <raw>" << p_expression[i] << "</raw>";
+            statusStr.AppendFormat( "channel #%d", c );
 
          StandardStatus status;
          StatusMonitor monitor;
@@ -1066,17 +1080,21 @@ void PixelMathInstance::Execute( int width, int height, int numberOfChannels, co
 
 bool PixelMathInstance::ExecuteOn( View& view )
 {
+   o_outputData.Clear();
+
+   if ( !p_cacheGeneratedImages || p_clearImageCacheAndExit )
+   {
+      ClearImageCache();
+      if ( p_clearImageCacheAndExit )
+         return true;
+   }
+
    Expression::component_list L[ 4 ];
    rpn_set RPN[ 4 ];
 
    AutoPointer<BicubicPixelInterpolation> interpolation;
    ImageVariant workingImage;
    ImageWindow destinationWindow;
-
-   o_outputData.Clear();
-
-   if ( !p_cacheGeneratedImages )
-      TheImageCache->ClearImages();
 
    try
    {
@@ -1220,18 +1238,18 @@ bool PixelMathInstance::ExecuteOn( View& view )
                      {
                         I = new ImageReference( targetId, M->TokenPosition() );
                      }
-                     else if ( M->Id() == "mask" || M->Id() == "M" )
+                     else if ( M->Id() == "M" || M->Id() == "mask" )
                      {
                         const ImageWindow m = view.Window().Mask();
                         if ( m.IsNull() )
-                           throw ParseError( "No image available for $mask metasymbol", p_expression[c], M->TokenPosition() );
+                           throw ParseError( "No image available for $M metasymbol", p_expression[c], M->TokenPosition() );
                         I = new ImageReference( m.MainView().Id(), M->TokenPosition() );
                      }
-                     else if ( M->Id() == "active" || M->Id() == "A" )
+                     else if ( M->Id() == "A" || M->Id() == "active" )
                      {
                         const ImageWindow a = ImageWindow::ActiveWindow();
                         if ( a.IsNull() )
-                           throw ParseError( "No image available for $active metasymbol", p_expression[c], M->TokenPosition() );
+                           throw ParseError( "No image available for $A metasymbol", p_expression[c], M->TokenPosition() );
                         I = new ImageReference( a.MainView().Id(), M->TokenPosition() );
                      }
                      else
@@ -1544,6 +1562,15 @@ bool PixelMathInstance::ExecuteOn( View& view )
 
 bool PixelMathInstance::ExecuteGlobal()
 {
+   o_outputData.Clear();
+
+   if ( !p_cacheGeneratedImages || p_clearImageCacheAndExit )
+   {
+      ClearImageCache();
+      if ( p_clearImageCacheAndExit )
+         return true;
+   }
+
    Expression::component_list L[ 4 ];
    rpn_set RPN[ 4 ];
 
@@ -1553,11 +1580,6 @@ bool PixelMathInstance::ExecuteGlobal()
    bool isLocalWorkingImage = false;
 
    ImageWindow destinationWindow;
-
-   o_outputData.Clear();
-
-   if ( !p_cacheGeneratedImages )
-      TheImageCache->ClearImages();
 
    try
    {
@@ -1636,14 +1658,14 @@ bool PixelMathInstance::ExecuteGlobal()
                   if ( M != nullptr )
                   {
                      if ( M->Id().StartsWith( 'T' ) || M->Id() == "target" )
-                        throw ParseError( "Illegal $target metasymbol for global PixelMath execution", p_expression[c], M->TokenPosition() );
-                     else if ( M->Id() == "mask" || M->Id() == "M" )
-                        throw ParseError( "Illegal $mask metasymbol for global PixelMath execution", p_expression[c], M->TokenPosition() );
-                     else if ( M->Id() == "active" || M->Id() == "A" )
+                        throw ParseError( "Illegal $T metasymbol for global PixelMath execution", p_expression[c], M->TokenPosition() );
+                     else if ( M->Id() == "M" || M->Id() == "mask" )
+                        throw ParseError( "Illegal $M metasymbol for global PixelMath execution", p_expression[c], M->TokenPosition() );
+                     else if ( M->Id() == "A" || M->Id() == "active" )
                      {
                         const ImageWindow a = ImageWindow::ActiveWindow();
                         if ( a.IsNull() )
-                           throw ParseError( "No image available for $active metasymbol", p_expression[c], M->TokenPosition() );
+                           throw ParseError( "No image available for $A metasymbol", p_expression[c], M->TokenPosition() );
                         I = new ImageReference( a.MainView().Id(), M->TokenPosition() );
                      }
                      else
@@ -1870,6 +1892,8 @@ void* PixelMathInstance::LockParameter( const MetaParameter* p, size_type tableR
       return &p_useSingleExpression;
    if ( p == ThePMSymbolsParameter )
       return p_symbols.Begin();
+   if ( p == ThePMClearImageCacheAndExitParameter )
+      return &p_clearImageCacheAndExit;
    if ( p == ThePMCacheGeneratedImagesParameter )
       return &p_cacheGeneratedImages;
    if ( p == ThePMGenerateOutputParameter )
@@ -2006,4 +2030,4 @@ size_type PixelMathInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.cpp - Released 2021-01-20T20:18:40Z
+// EOF PixelMathInstance.cpp - Released 2021-01-21T15:55:53Z

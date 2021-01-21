@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// PixelMathInterface.cpp - Released 2021-01-20T20:18:40Z
+// PixelMathInterface.cpp - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -479,12 +479,15 @@ void PixelMathInterface::e_ButtonClick( Button& sender, bool checked )
    }
    else if ( sender == GUI->ClearGeneratedImages_Button )
    {
-      size_type totalCount = TheImageCache->NumberOfImages();
-      size_type totalSize = TheImageCache->TotalImageSize();
-      TheImageCache->ClearImages();
-      MessageBox( "<p>" + String( totalCount ) + " cached image(s) destroyed.</p>"
-                  "<p>" + File::SizeAsString( totalSize ) + " of memory freed up.</p>",
-                  "PixelMath",
+      size_type count, size;
+      String text;
+      if ( TheImageCache->ClearImages( count, size ) )
+         text << String( count ) << " cached image(s) removed, "
+              << File::SizeAsString( size ) << " freed up.";
+      else
+         text << "The image cache is empty.";
+
+      MessageBox( "<p style=\"white-space: pre;\">" + text + "</p>", "PixelMath",
                   StdIcon::Information,
                   StdButton::Ok ).Execute();
    }
@@ -914,7 +917,7 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
 
    ClearGeneratedImages_Button.SetText( "Clear Image Cache" );
    ClearGeneratedImages_Button.SetToolTip( "<p>Destroy all cached images that have been created by generators "
-      "in executed PixelMath expressions.</p>" );
+      "in previously executed PixelMath expressions.</p>" );
    ClearGeneratedImages_Button.OnClick( (Button::click_event_handler)&PixelMathInterface::e_ButtonClick, w );
 
    //
@@ -936,7 +939,7 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 8 );
    Global_Sizer.Add( Expression_SectionBar );
-   Global_Sizer.Add( Expression_Control );
+   Global_Sizer.Add( Expression_Control, 100 );
    Global_Sizer.Add( Destination_SectionBar );
    Global_Sizer.Add( Destination_Control );
 
@@ -954,4 +957,4 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInterface.cpp - Released 2021-01-20T20:18:40Z
+// EOF PixelMathInterface.cpp - Released 2021-01-21T15:55:53Z

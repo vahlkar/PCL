@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// PixelMathProcess.cpp - Released 2021-01-20T20:18:40Z
+// PixelMathProcess.cpp - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -50,10 +50,11 @@
 // POSSIBILITY OF SUCH DAMAGE.
 // ----------------------------------------------------------------------------
 
-#include "PixelMathProcess.h"
-#include "PixelMathParameters.h"
+#include "ImageCache.h"
 #include "PixelMathInstance.h"
 #include "PixelMathInterface.h"
+#include "PixelMathParameters.h"
+#include "PixelMathProcess.h"
 
 #include <pcl/Console.h>
 #include <pcl/Arguments.h>
@@ -79,6 +80,7 @@ PixelMathProcess::PixelMathProcess()
    new PMExpression3( this );
    new PMUseSingleExpression( this );
    new PMSymbols( this );
+   new PMClearImageCacheAndExit( this );
    new PMCacheGeneratedImages( this );
    new PMGenerateOutput( this );
    new PMSingleThreaded( this );
@@ -103,6 +105,8 @@ PixelMathProcess::PixelMathProcess()
    new PMOutputGlobalVariableRK( ThePMOutputDataParameter );
    new PMOutputGlobalVariableG( ThePMOutputDataParameter );
    new PMOutputGlobalVariableB( ThePMOutputDataParameter );
+
+   new pcl::ImageCache;
 }
 
 // ----------------------------------------------------------------------------
@@ -460,4 +464,4 @@ int PixelMathProcess::ProcessCommandLine( const StringList& argv ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathProcess.cpp - Released 2021-01-20T20:18:40Z
+// EOF PixelMathProcess.cpp - Released 2021-01-21T15:55:53Z

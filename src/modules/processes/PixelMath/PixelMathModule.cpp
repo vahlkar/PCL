@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// PixelMathModule.cpp - Released 2021-01-20T20:18:40Z
+// PixelMathModule.cpp - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -52,15 +52,14 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     7
-#define MODULE_VERSION_REVISION  1
+#define MODULE_VERSION_REVISION  3
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       20
+#define MODULE_RELEASE_DAY       21
 
-#include "ImageCache.h"
 #include "PixelMathInterface.h"
 #include "PixelMathModule.h"
 #include "PixelMathProcess.h"
@@ -168,11 +167,10 @@ PCL_MODULE_EXPORT int InstallPixInsightModule( int mode )
    {
       new pcl::PixelMathProcess;
       new pcl::PixelMathInterface;
-      new pcl::ImageCache;
    }
 
    return 0;
 }
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathModule.cpp - Released 2021-01-20T20:18:40Z
+// EOF PixelMathModule.cpp - Released 2021-01-21T15:55:53Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// PixelMathParameters.h - Released 2021-01-20T20:18:40Z
+// PixelMathParameters.h - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -141,6 +141,20 @@ public:
 };
 
 extern PMSymbols* ThePMSymbolsParameter;
+
+// ----------------------------------------------------------------------------
+
+class PMClearImageCacheAndExit : public MetaBoolean
+{
+public:
+
+   PMClearImageCacheAndExit( MetaProcess* );
+
+   IsoString Id() const override;
+   bool DefaultValue() const override;
+};
+
+extern PMClearImageCacheAndExit* ThePMClearImageCacheAndExitParameter;
 
 // ----------------------------------------------------------------------------
 
@@ -522,4 +536,4 @@ PCL_END_LOCAL
 #endif   // __PixelMathParameters_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathParameters.h - Released 2021-01-20T20:18:40Z
+// EOF PixelMathParameters.h - Released 2021-01-21T15:55:53Z

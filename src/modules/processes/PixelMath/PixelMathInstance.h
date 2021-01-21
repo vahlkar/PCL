@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.1
+// Standard PixelMath Process Module Version 1.7.3
 // ----------------------------------------------------------------------------
-// PixelMathInstance.h - Released 2021-01-20T20:18:40Z
+// PixelMathInstance.h - Released 2021-01-21T15:55:53Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -86,38 +86,66 @@ public:
    bool AllocateParameter( size_type sizeOrLength, const MetaParameter* p, size_type tableRow ) override;
    size_type ParameterLength( const MetaParameter* p, size_type tableRow ) const override;
 
-public:
+   /*
+    * Properties of the current target image.
+    */
+
+   static int TargetWidth()
+   {
+      return s_targetWidth;
+   }
+
+   static int TargetHeight()
+   {
+      return s_targetHeight;
+   }
+
+   static int TargetNumberOfChannels()
+   {
+      return s_targetNumberOfChannels;
+   }
+
+   static bool TargetIsColor()
+   {
+      return s_targetIsColor;
+   }
+
+   static const RGBColorSystem& TargetRGBWS()
+   {
+      return *s_targetRGBWS;
+   }
+
+private:
+
+   String    p_expression[ 4 ];        // R/K/RGB, G, B, Alpha
+   pcl_bool  p_useSingleExpression;    // Use expression[0] for all channels
+   String    p_symbols;                // comma-delimited list of symbol definitions
+   pcl_bool  p_clearImageCacheAndExit; // Special execution mode to clear the image cache
+   pcl_bool  p_cacheGeneratedImages;   // Preserve generated images before/after execution
+   pcl_bool  p_generateOutput;         // Generate an output image
+   pcl_bool  p_singleThreaded;         // Use a single thread
+   pcl_bool  p_optimization;           // Use code optimization
+   pcl_bool  p_use64BitWorkingImage;   // Use 64-bit floating point data for intermediate calculation
+   pcl_bool  p_rescaleResult;          // Rescale result after execution
+   double    p_rescaleLower;           // Rescaling range, lower bound
+   double    p_rescaleUpper;           // Rescaling range, upper bound
+   pcl_bool  p_truncateResult;         // Truncate result after execution, if not rescaled
+   double    p_truncateLower;          // Truncation range, lower bound
+   double    p_truncateUpper;          // Truncation range, upper bound
+   pcl_bool  p_createNewImage;         // Destination: new image or replace target
+   pcl_bool  p_showNewImage;           // (Scripting only) Show newly created image windows
+   String    p_newImageId;             // Image identifier (empty = auto)
+   int32     p_newImageWidth;          // Width in pixels (< 0 = same as target)
+   int32     p_newImageHeight;         // Height in pixels (< 0 = same as target)
+   pcl_bool  p_newImageAlpha;          // Create an alpha channel
+   pcl_enum  p_newImageColorSpace;     // RGB or grayscale (can be same as target)
+   pcl_enum  p_newImageSampleFormat;   // Integer/real, bit count (can be same as target)
+
+   Array<Symbol::OutputData> o_outputData;
 
    static int s_targetWidth, s_targetHeight, s_targetNumberOfChannels;
    static bool s_targetIsColor;
    static RGBColorSystem* s_targetRGBWS;
-
-private:
-
-   String    p_expression[ 4 ];      // R/K/RGB, G, B, Alpha
-   pcl_bool  p_useSingleExpression;  // Use expression[0] for all channels
-   String    p_symbols;              // comma-delimited list of symbol definitions
-   pcl_bool  p_cacheGeneratedImages; // Preserve generated images before/after execution
-   pcl_bool  p_generateOutput;       // Generate an output image
-   pcl_bool  p_singleThreaded;       // Use a single thread
-   pcl_bool  p_optimization;         // Use code optimization
-   pcl_bool  p_use64BitWorkingImage; // Use 64-bit floating point data for intermediate calculation
-   pcl_bool  p_rescaleResult;        // Rescale result after execution
-   double    p_rescaleLower;         // Rescaling range, lower bound
-   double    p_rescaleUpper;         // Rescaling range, upper bound
-   pcl_bool  p_truncateResult;       // Truncate result after execution, if not rescaled
-   double    p_truncateLower;        // Truncation range, lower bound
-   double    p_truncateUpper;        // Truncation range, upper bound
-   pcl_bool  p_createNewImage;       // Destination: new image or replace target
-   pcl_bool  p_showNewImage;         // (Scripting only) Show newly created image windows
-   String    p_newImageId;           // Image identifier (empty = auto)
-   int32     p_newImageWidth;        // Width in pixels (< 0 = same as target)
-   int32     p_newImageHeight;       // Height in pixels (< 0 = same as target)
-   pcl_bool  p_newImageAlpha;        // Create an alpha channel
-   pcl_enum  p_newImageColorSpace;   // RGB or grayscale (can be same as target)
-   pcl_enum  p_newImageSampleFormat; // Integer/real, bit count (can be same as target)
-
-   Array<Symbol::OutputData> o_outputData;
 
    void SolveInvariants( rpn_set [], const ImageWindow& targetWindow = ImageWindow::Null() );
    void SolveBranchTargets( rpn_set [] );
@@ -137,4 +165,4 @@ private:
 #endif   // __PixelMathInstance_h
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.h - Released 2021-01-20T20:18:40Z
+// EOF PixelMathInstance.h - Released 2021-01-21T15:55:53Z
