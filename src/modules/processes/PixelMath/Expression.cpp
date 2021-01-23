@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// Expression.cpp - Released 2021-01-21T15:55:53Z
+// Expression.cpp - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -398,9 +398,10 @@ Expression* Expression::Parse( token_list& tokens )
                   if ( x != nullptr )
                   {
                      String info;
-                     if ( !f->ValidateArguments( info, (a != nullptr) ? a->arguments.Begin() : &x,
-                                                       (a != nullptr) ? a->arguments.End()   : (&x)+1 ) )
-                        throw ParseError( info, s_beingParsed, x->TokenPosition() );
+                     Expression* arg = nullptr;
+                     if ( !f->ValidateArguments( info, arg, (a != nullptr) ? a->arguments.Begin() : &x,
+                                                            (a != nullptr) ? a->arguments.End()   : (&x)+1 ) )
+                        throw ParseError( info, s_beingParsed, (arg != nullptr) ? arg->TokenPosition() : x->TokenPosition() );
                   }
 
                   Function* fn = reinterpret_cast<Function*>( f->Generate( r->TokenPosition() ) );
@@ -663,4 +664,4 @@ Expression* Expression::Parse( component_list& components )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Expression.cpp - Released 2021-01-21T15:55:53Z
+// EOF Expression.cpp - Released 2021-01-23T18:24:14Z

@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// ImageCache.cpp - Released 2021-01-21T15:55:53Z
+// ImageCache.cpp - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -75,7 +75,35 @@ ImageCache::~ImageCache()
 
 // ----------------------------------------------------------------------------
 
+void ImageCache::InvalidateImage( const IsoString& imageId )
+{
+   IsoString prefix = imageId + '#';
+
+   /*
+    * InsertionPoint() will find the first cache item whose identifier starts
+    * with imageId, if at least one exists. This is because all cache items
+    * have identifiers with a "#<params>" suffix.
+    */
+   SortedArray<CacheItem>::const_iterator i =
+         InsertionPoint( m_cache.Begin(), m_cache.End(), CacheItem( prefix ) );
+   if ( i != m_cache.End() )
+      if ( i->key.StartsWith( prefix ) )
+      {
+         /*
+          * Remove a contiguous sequence of cache items with the same image
+          * identifier prefix.
+          */
+         SortedArray<CacheItem>::const_iterator j = i;
+         while ( ++j != m_cache.End() )
+            if ( !j->key.StartsWith( prefix ) )
+               break;
+         m_cache.Remove( i, j );
+      }
+}
+
+// ----------------------------------------------------------------------------
+
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ImageCache.cpp - Released 2021-01-21T15:55:53Z
+// EOF ImageCache.cpp - Released 2021-01-23T18:24:14Z

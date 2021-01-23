@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// PixelMathInterface.cpp - Released 2021-01-21T15:55:53Z
+// PixelMathInterface.cpp - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -191,6 +191,59 @@ bool PixelMathInterface::ImportProcess( const ProcessImplementation& p )
    ImportSourceCode();
    UpdateControls();
    return true;
+}
+
+// ----------------------------------------------------------------------------
+
+/*
+ * We use image notifications to keep the image cache consistent when images
+ * are modified, renamed or deleted.
+ */
+
+bool PixelMathInterface::WantsImageNotifications() const
+{
+   return true;
+}
+
+void PixelMathInterface::ImageUpdated( const View& view )
+{
+   if ( !TheImageCache->IsEmpty() )
+      if ( view.IsMainView() )
+         TheImageCache->InvalidateImage( view.Id() );
+}
+
+void PixelMathInterface::ImageRenamed( const View& view )
+{
+/*
+ * ### TODO - CRITICAL
+ *
+ * We should have a notification where we can know the old and new image
+ * identifiers in the same function call. We cannot rely on View references in
+ * this case because we can have nested generators, hence cached images
+ * generated from generated images ... and so on.
+ *
+ * We have a serious limitation here because we cannot invalidate cache items
+ * for renamed images. For example, suppose that I execute:
+ *
+ * generator( A )
+ *
+ * Then I rename A -> B. The cached images for A (now B) cannot be invalidated
+ * because they cannot be tracked by this function. Now I have a different
+ * image C, which I rename C -> A. The cached images for the old A (now B) will
+ * be used as if they had been generated for C (now A) - not nice, although
+ * very unlikely to happen, fortunately.
+ */
+
+//    if ( !TheImageCache->IsEmpty() )
+//       if ( view.IsMainView() )
+//          TheImageCache->InvalidateImage( view.Id() );
+}
+
+void PixelMathInterface::ImageDeleted( const View& view )
+{
+   if ( !TheImageCache->IsEmpty() )
+      if ( view.IsMainView() )
+         TheImageCache->InvalidateImage( view.Id() );
 }
 
 // ----------------------------------------------------------------------------
@@ -957,4 +1010,4 @@ PixelMathInterface::GUIData::GUIData( PixelMathInterface& w )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInterface.cpp - Released 2021-01-21T15:55:53Z
+// EOF PixelMathInterface.cpp - Released 2021-01-23T18:24:14Z

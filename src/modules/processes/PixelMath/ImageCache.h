@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// ImageCache.h - Released 2021-01-21T15:55:53Z
+// ImageCache.h - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -71,27 +71,25 @@ public:
 
    bool HasImage( const IsoString& key ) const
    {
-      return m_imageIndex.Contains( key );
+      return m_cache.Contains( key );
    }
 
    ImageVariant Image( const IsoString& key ) const
    {
-      SortedArray<ImageIndexItem>::const_iterator i = m_imageIndex.Search( key );
-      if ( i != m_imageIndex.End() )
+      SortedArray<CacheItem>::const_iterator i = m_cache.Search( key );
+      if ( i != m_cache.End() )
          return i->image;
       return ImageVariant();
    }
 
    void AddImage( const IsoString& key, const ImageVariant& image )
    {
-      m_images << image;
-      m_imageIndex << ImageIndexItem( key, image );
+      m_cache << CacheItem( key, image );
    }
 
    void ClearImages()
    {
-      m_images.Clear();
-      m_imageIndex.Clear();
+      m_cache.Clear();
    }
 
    bool ClearImages( size_type& count, size_type& size )
@@ -102,47 +100,59 @@ public:
       return count > 0;
    }
 
+   bool IsEmpty() const
+   {
+      return m_cache.IsEmpty();
+   }
+
    size_type NumberOfImages() const
    {
-      return m_images.Length();
+      return m_cache.Length();
    }
 
    size_type TotalImageSize() const
    {
       size_type sz = 0;
-      for ( const ImageVariant& image : m_images )
-         sz += image.ImageSize();
+      for ( const CacheItem& item : m_cache )
+         sz += item.image.ImageSize();
       return sz;
    }
 
+   template <class S1, class S2>
+   static IsoString MakeKey( const S1& imageId, const S2& keyData )
+   {
+      return IsoString( imageId ) + '#' + IsoString( keyData );
+   }
+
+   void InvalidateImage( const IsoString& imageId );
+
 private:
 
-   struct ImageIndexItem
+   struct CacheItem
    {
       IsoString    key;
       ImageVariant image;
 
-      ImageIndexItem( const IsoString& k, const ImageVariant& i = ImageVariant() )
+      CacheItem( const IsoString& k, const ImageVariant& i = ImageVariant() )
          : key( k )
          , image( i )
       {
       }
 
-      ImageIndexItem( const ImageIndexItem& ) = default;
+      CacheItem( const CacheItem& ) = default;
 
-      bool operator ==( const ImageIndexItem& x ) const
+      bool operator ==( const CacheItem& x ) const
       {
          return key == x.key;
       }
 
-      bool operator <( const ImageIndexItem& x ) const
+      bool operator <( const CacheItem& x ) const
       {
          return key < x.key;
       }
    };
 
-   Array<ImageVariant>         m_images;
-   SortedArray<ImageIndexItem> m_imageIndex;
+   SortedArray<CacheItem> m_cache;
 };
 
 // ----------------------------------------------------------------------------
@@ -158,4 +168,4 @@ PCL_END_LOCAL
 #endif   // __ImageCache_h
 
 // ----------------------------------------------------------------------------
-// EOF ImageCache.h - Released 2021-01-21T15:55:53Z
+// EOF ImageCache.h - Released 2021-01-23T18:24:14Z

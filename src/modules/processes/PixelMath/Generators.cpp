@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// Generators.cpp - Released 2021-01-21T15:55:53Z
+// Generators.cpp - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -96,11 +96,12 @@ static ImageVariant NewGeneratorResult( const ImageReference* ref, int bitsPerSa
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-bool GaussianConvolutionFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool GaussianConvolutionFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // gconv( image[, sigma=2[, rho=1[, theta=0[, eps=0.01]]]] )
 
-   if ( Distance( i, j ) == 0 )
+   distance_type n = Distance( i, j );
+   if ( n < 1 || n > 5 )
    {
       info = "gconv() takes from 1 to 5 arguments";
       return false;
@@ -110,33 +111,33 @@ bool GaussianConvolutionFunction::ValidateArguments( String& info, component_lis
       if ( !(*i)->IsFunctional() )
       {
          info = "gconv() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
-   if ( Distance( i, j ) > 1 )
+   if ( ++i < j )
    {
-      ++i;
-
       if ( (*i)->IsImageReference() )
       {
          info = "gconv() argument #2: The filter standard deviation must be an invariant scalar subexpression";
+         arg = *i;
          return false;
       }
 
       if ( (*i)->IsSample() )
          if ( S->Value() < 0 || S->Value() + 1 == 1 )
          {
-            info = "gconv() argument #2: The filter standard deviation must be > 0 px";
+            info = "gconv() argument #2: The filter standard deviation must be > 0";
+            arg = *i;
             return false;
          }
 
-      if ( Distance( i, j ) > 2 )
+      if ( ++i < j )
       {
-         ++i;
-
          if ( (*i)->IsImageReference() )
          {
             info = "gconv() argument #3: The filter aspect ratio must be an invariant scalar subexpression";
+            arg = *i;
             return false;
          }
 
@@ -144,16 +145,16 @@ bool GaussianConvolutionFunction::ValidateArguments( String& info, component_lis
             if ( S->Value() < 0 || S->Value() + 1 == 1 || S->Value() > 1 )
             {
                info = "gconv() argument #3: The filter aspect ratio must be in the (0,1] range";
+               arg = *i;
                return false;
             }
 
-         if ( Distance( i, j ) > 3 )
+         if ( ++i < j )
          {
-            ++i;
-
             if ( (*i)->IsImageReference() )
             {
                info = "gconv() argument #4: The filter rotation angle must be an invariant scalar subexpression";
+               arg = *i;
                return false;
             }
 
@@ -161,16 +162,16 @@ bool GaussianConvolutionFunction::ValidateArguments( String& info, component_lis
                if ( S->Value() < -180 || S->Value() > 180 )
                {
                   info = "gconv() argument #4: The filter rotation angle must be in the range [-180,+180] degrees";
+                  arg = *i;
                   return false;
                }
 
-            if ( Distance( i, j ) > 4 )
+            if ( ++i < j )
             {
-               ++i;
-
                if ( (*i)->IsImageReference() )
                {
                   info = "gconv() argument #5: The filter truncation error must be an invariant scalar subexpression";
+                  arg = *i;
                   return false;
                }
 
@@ -178,6 +179,7 @@ bool GaussianConvolutionFunction::ValidateArguments( String& info, component_lis
                   if ( S->Value() < 0 || S->Value() + 1 == 1 )
                   {
                      info = "gconv() argument #5: The filter truncation error must be > 0";
+                     arg = *i;
                      return false;
                   }
             }
@@ -201,7 +203,7 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
    float theta = 0;
    float eps = 0.01;
 
-   if ( Distance( ++i, j ) > 0 )
+   if ( ++i < j )
    {
       if ( (*i)->IsSample() )
          sigma = S->Value();
@@ -210,9 +212,9 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
       else
          throw ParseError( "gconv() argument #2: The filter standard deviation must be an invariant scalar subexpression" );
       if ( sigma < 0 || sigma + 1 == 1 )
-         throw ParseError( "gconv() argument #2: The filter standard deviation must be > 0 px; got " + String( sigma ) );
+         throw ParseError( "gconv() argument #2: The filter standard deviation must be > 0; got " + String( sigma ) );
 
-      if ( Distance( ++i, j ) > 0 )
+      if ( ++i < j )
       {
          if ( (*i)->IsSample() )
             rho = S->Value();
@@ -223,7 +225,7 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
          if ( rho < 0 || rho + 1 == 1 || rho > 1 )
             throw ParseError( "gconv() argument #3: The filter aspect ratio must be in the (0,1] range; got " + String( rho ) );
 
-         if ( Distance( ++i, j ) > 0 )
+         if ( ++i < j )
          {
             if ( (*i)->IsSample() )
                theta = S->Value();
@@ -234,7 +236,7 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
             if ( theta < -180 || theta > 180 )
                throw ParseError( "gconv() argument #4: The filter rotation angle must be in the range [-180,+180] degrees; got " + String( theta ) );
 
-            if ( Distance( ++i, j ) > 0 )
+            if ( ++i < j )
             {
                if ( (*i)->IsSample() )
                   eps = S->Value();
@@ -249,7 +251,7 @@ IsoString GaussianConvolutionFunction::GenerateImage( component_list::const_iter
       }
    }
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_gconv_%.4f_%.4f_%.4f_%.4f", sigma, rho, theta, eps );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_gconv_%.4f_%.4f_%.4f_%.4f", sigma, rho, theta, eps ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -286,14 +288,15 @@ void GaussianConvolutionFunction::operator()( Pixel&, pixel_set::const_iterator,
 
 // ----------------------------------------------------------------------------
 
-bool BoxConvolutionFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool BoxConvolutionFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // bconv( image[, n=3] )
 
-   if ( Distance( i, j ) != 1 )
-      if ( Distance( i, j ) != 2 )
+   distance_type n = Distance( i, j );
+   if ( n != 1 )
+      if ( n != 2 )
       {
-         info = "bconv() takes 1 or 2 arguments";
+         info = "bconv() can only take 1 or 2 arguments";
          return false;
       }
 
@@ -301,6 +304,7 @@ bool BoxConvolutionFunction::ValidateArguments( String& info, component_list::co
       if ( !(*i)->IsFunctional() )
       {
          info = "bconv() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -309,6 +313,7 @@ bool BoxConvolutionFunction::ValidateArguments( String& info, component_list::co
       if ( (*i)->IsImageReference() )
       {
          info = "bconv() argument #2: The filter size must be an invariant scalar subexpression";
+         arg = *i;
          return false;
       }
 
@@ -317,16 +322,19 @@ bool BoxConvolutionFunction::ValidateArguments( String& info, component_list::co
          if ( Frac( S->Value() ) != 0 )
          {
             info = "bconv() argument #2: The filter size must be an integer value";
+            arg = *i;
             return false;
          }
          if ( S->Value() < 3 )
          {
-            info = "bconv() argument #2: The smallest valid filter size is 3 px";
+            info = "bconv() argument #2: The filter size must be >= 3";
+            arg = *i;
             return false;
          }
          if ( (int( S->Value() ) & 1) == 0 )
          {
             info = "bconv() argument #2: The filter size must be an odd integer";
+            arg = *i;
             return false;
          }
       }
@@ -354,12 +362,12 @@ IsoString BoxConvolutionFunction::GenerateImage( component_list::const_iterator 
          throw ParseError( "bconv() argument #2: The filter size must be an invariant scalar subexpression" );
 
       if ( n < 3 )
-         throw ParseError( "bconv() argument #2: The smallest valid filter size is 3 pixels" );
+         throw ParseError( "bconv() argument #2: The filter size must be >= 3" );
       if ( (n & 1) == 0 )
          throw ParseError( "bconv() argument #2: The filter size must be an odd integer" );
    }
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_bconv_%d", n );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_bconv_%d", n ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -397,20 +405,31 @@ void BoxConvolutionFunction::operator()( Pixel&, pixel_set::const_iterator, pixe
 
 // ----------------------------------------------------------------------------
 
-bool KernelConvolutionFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool KernelConvolutionFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // kconv( image, k11, k12, k13, k21, k22, k23, k31, k32, k33[, ...] )
 
-   if ( Distance( i, j ) < 10 )
+   distance_type n = Distance( i, j );
+   if ( n < 10 )
    {
       info = "kconv() takes at least 10 arguments";
       return false;
    }
 
-   size_type n = Distance( i, j ) - 1;
+   --n;
+
    if ( (n & 1) == 0 )
    {
       info = "kconv() requires an odd number of kernel filter element arguments";
+      arg = *(i+n);
+      return false;
+   }
+
+   int sz = int( Sqrt( n ) );
+   if ( sz*sz != n )
+   {
+      info = "kconv() requires a square kernel filter. The number of specified elements (" + String( n ) + ") does not have an integer square root";
+      arg = *(i+n);
       return false;
    }
 
@@ -418,6 +437,7 @@ bool KernelConvolutionFunction::ValidateArguments( String& info, component_list:
       if ( !(*i)->IsFunctional() )
       {
          info = "kconv() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -425,6 +445,7 @@ bool KernelConvolutionFunction::ValidateArguments( String& info, component_list:
       if ( (*i)->IsImageReference() )
       {
          info = "kconv() argument #" + String( k ) + ": Kernel filter elements must be invariant scalar subexpressions";
+         arg = *i;
          return false;
       }
 
@@ -451,7 +472,7 @@ IsoString KernelConvolutionFunction::GenerateImage( component_list::const_iterat
          throw ParseError( "kconv() argument #" + String( 2+k ) + ": Kernel filter elements must be invariant scalar subexpressions" );
    }
 
-   IsoString key = IsoString( ref->Id() ) + "_kconv_" + IsoString::ToHex( MD5().Hash( K ) );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), "_kconv_" + IsoString::ToHex( MD5().Hash( K ) ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -490,13 +511,14 @@ enum
    StrSquare, StrCircular, StrOrthogonal, StrDiagonal, StrStar, StrThreeWay, StrCount
 };
 
-static bool ValidateMorphologicalTransformationGeneratorParameters( const String& functionName, String& info,
+static bool ValidateMorphologicalTransformationGeneratorParameters( const String& functionName, String& info, Expression*& arg,
                                        Expression::component_list::const_iterator i, Expression::component_list::const_iterator j )
 {
    if ( !(*i)->IsImageReference() )
       if ( !(*i)->IsFunctional() )
       {
          info = functionName + "() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -505,6 +527,7 @@ static bool ValidateMorphologicalTransformationGeneratorParameters( const String
       if ( (*i)->IsImageReference() )
       {
          info = functionName + "() argument #2: The filter size must be an invariant scalar subexpression";
+         arg = *i;
          return false;
       }
 
@@ -513,16 +536,19 @@ static bool ValidateMorphologicalTransformationGeneratorParameters( const String
          if ( Frac( S->Value() ) != 0 )
          {
             info = functionName + "() argument #2: The filter size must be an integer value";
+            arg = *i;
             return false;
          }
          if ( S->Value() < 3 )
          {
-            info = functionName + "() argument #2: The smallest valid filter size is 3 pixels";
+            info = functionName + "() argument #2: The filter size must be >= 3";
+            arg = *i;
             return false;
          }
          if ( (int( S->Value() ) & 1) == 0 )
          {
             info = functionName + "() argument #2: The filter size must be an odd integer";
+            arg = *i;
             return false;
          }
       }
@@ -532,6 +558,7 @@ static bool ValidateMorphologicalTransformationGeneratorParameters( const String
          if ( (*i)->IsImageReference() )
          {
             info = functionName + "() argument #3: The structuring element selector must be an invariant scalar subexpression";
+            arg = *i;
             return false;
          }
 
@@ -540,11 +567,13 @@ static bool ValidateMorphologicalTransformationGeneratorParameters( const String
             if ( Frac( S->Value() ) != 0 )
             {
                info = functionName + "() argument #3: The structuring element selector must be an integer value";
+               arg = *i;
                return false;
             }
             if ( S->Value() < 0 || S->Value() >= StrCount )
             {
                info = functionName + "() argument #3: Unknown or unsupported structuring element selector '" + String( int( S->Value() ) ) + "'";
+               arg = *i;
                return false;
             }
          }
@@ -573,7 +602,7 @@ static void GetMorphologicalTransformationGeneratorParameters( const String& fun
          throw ParseError( functionName + "() argument #2: The filter size must be an invariant scalar subexpression" );
 
       if ( n < 3 )
-         throw ParseError( functionName + "() argument #2: The smallest valid filter size is 3 pixels" );
+         throw ParseError( functionName + "() argument #2: The filter size must be >= 3" );
       if ( (n & 1) == 0 )
          throw ParseError( functionName + "() argument #2: The filter size must be an odd integer" );
 
@@ -608,17 +637,18 @@ static StructuringElement* NewStructuringElement( int n, int s )
 
 // ----------------------------------------------------------------------------
 
-bool MedianFilterFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MedianFilterFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // medfilt( image[, n=3[, str=str_square()]] )
 
-   if ( Distance( i, j ) < 1 || Distance( i, j ) > 3 )
+   distance_type n = Distance( i, j );
+   if ( n < 1 || n > 3 )
    {
       info = "medfilt() takes from 1 to 3 arguments";
       return false;
    }
 
-   return ValidateMorphologicalTransformationGeneratorParameters( "medfilt", info, i, j );
+   return ValidateMorphologicalTransformationGeneratorParameters( "medfilt", info, arg, i, j );
 }
 
 IsoString MedianFilterFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
@@ -629,7 +659,7 @@ IsoString MedianFilterFunction::GenerateImage( component_list::const_iterator i,
    int n, s;
    GetMorphologicalTransformationGeneratorParameters( "medfilt", ref, n, s, i, j );
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_medfilt_%d_%d", n, s );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_medfilt_%d_%d", n, s ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -651,17 +681,18 @@ void MedianFilterFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_
 
 // ----------------------------------------------------------------------------
 
-bool ErosionFilterFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool ErosionFilterFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // erosion( image[, n=3[, str=str_square()]] )
 
-   if ( Distance( i, j ) < 1 || Distance( i, j ) > 3 )
+   distance_type n = Distance( i, j );
+   if ( n < 1 || n > 3 )
    {
       info = "erosion() takes from 1 to 3 arguments";
       return false;
    }
 
-   return ValidateMorphologicalTransformationGeneratorParameters( "erosion", info, i, j );
+   return ValidateMorphologicalTransformationGeneratorParameters( "erosion", info, arg, i, j );
 }
 
 IsoString ErosionFilterFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
@@ -672,7 +703,7 @@ IsoString ErosionFilterFunction::GenerateImage( component_list::const_iterator i
    int n, s;
    GetMorphologicalTransformationGeneratorParameters( "erosion", ref, n, s, i, j );
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_erosion_%d_%d", n, s );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_erosion_%d_%d", n, s ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -694,17 +725,18 @@ void ErosionFilterFunction::operator()( Pixel&, pixel_set::const_iterator, pixel
 
 // ----------------------------------------------------------------------------
 
-bool DilationFilterFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool DilationFilterFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // dilation( image[, n=3[, str=str_square()]] )
 
-   if ( Distance( i, j ) < 1 || Distance( i, j ) > 3 )
+   distance_type n = Distance( i, j );
+   if ( n < 1 || n > 3 )
    {
       info = "dilation() takes from 1 to 3 arguments";
       return false;
    }
 
-   return ValidateMorphologicalTransformationGeneratorParameters( "dilation", info, i, j );
+   return ValidateMorphologicalTransformationGeneratorParameters( "dilation", info, arg, i, j );
 }
 
 IsoString DilationFilterFunction::GenerateImage( component_list::const_iterator i, component_list::const_iterator j ) const
@@ -715,7 +747,7 @@ IsoString DilationFilterFunction::GenerateImage( component_list::const_iterator 
    int n, s;
    GetMorphologicalTransformationGeneratorParameters( "dilation", ref, n, s, i, j );
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_dilation_%d_%d", n, s );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_dilation_%d_%d", n, s ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -839,7 +871,7 @@ void StrThreeWayFunction::operator()( Pixel& r, component_list::const_iterator, 
 
 // ----------------------------------------------------------------------------
 
-bool TranslationFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool TranslationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // translate( image, dx, dy )
 
@@ -853,6 +885,7 @@ bool TranslationFunction::ValidateArguments( String& info, component_list::const
       if ( !(*i)->IsFunctional() )
       {
          info = "translate() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -860,6 +893,7 @@ bool TranslationFunction::ValidateArguments( String& info, component_list::const
       if ( (*i)->IsImageReference() )
       {
          info = "translate() argument #" + String( k ) + ": translation increments must be invariant scalar subexpressions";
+         arg = *i;
          return false;
       }
 
@@ -891,7 +925,7 @@ IsoString TranslationFunction::GenerateImage( component_list::const_iterator i, 
    else
       throw ParseError( "translate() argument #3: The Y-axis increment must be an invariant scalar subexpression" );
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_translate_%.4f_%.4f", dx, dy );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_translate_%.4f_%.4f", dx, dy ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -913,14 +947,15 @@ void TranslationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_s
 
 // ----------------------------------------------------------------------------
 
-bool RotationFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool RotationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // rotate( image, angle[, cx, cy] )
 
-   if ( Distance( i, j ) != 2 )
-      if ( Distance( i, j ) != 4 )
+   distance_type n = Distance( i, j );
+   if ( n != 2 )
+      if ( n != 4 )
       {
-         info = "rotate() takes 2 or 4 arguments";
+         info = "rotate() can only take 2 or 4 arguments";
          return false;
       }
 
@@ -928,6 +963,7 @@ bool RotationFunction::ValidateArguments( String& info, component_list::const_it
       if ( !(*i)->IsFunctional() )
       {
          info = "rotate() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -935,6 +971,7 @@ bool RotationFunction::ValidateArguments( String& info, component_list::const_it
       if ( (*i)->IsImageReference() )
       {
          info = "rotate() argument #" + String( k ) + ": rotation angles and center coordinates must be invariant scalar subexpressions";
+         arg = *i;
          return false;
       }
 
@@ -979,7 +1016,7 @@ IsoString RotationFunction::GenerateImage( component_list::const_iterator i, com
       }
    }
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_rotate_%.6f_%.4f_%.4f", angle, cx, cy );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_rotate_%.6f_%.4f_%.4f", angle, cx, cy ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -1006,13 +1043,13 @@ void RotationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set:
 
 // ----------------------------------------------------------------------------
 
-bool MirrorHorzFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MirrorHorzFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // hmirror( image )
 
    if ( Distance( i, j ) != 1 )
    {
-      info = "hmirror() takes 1 argument";
+      info = "hmirror() takes a single argument";
       return false;
    }
 
@@ -1020,6 +1057,7 @@ bool MirrorHorzFunction::ValidateArguments( String& info, component_list::const_
       if ( !(*i)->IsFunctional() )
       {
          info = "hmirror() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -1035,7 +1073,7 @@ IsoString MirrorHorzFunction::GenerateImage( component_list::const_iterator i, c
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
 
-   IsoString key = IsoString( ref->Id() ) + "_hmirror";
+   IsoString key = TheImageCache->MakeKey( ref->Id(), "_hmirror" );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -1054,13 +1092,13 @@ void MirrorHorzFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_se
 
 // ----------------------------------------------------------------------------
 
-bool MirrorVertFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MirrorVertFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // vmirror( image )
 
    if ( Distance( i, j ) != 1 )
    {
-      info = "vmirror() takes 1 argument";
+      info = "vmirror() takes a single argument";
       return false;
    }
 
@@ -1068,6 +1106,7 @@ bool MirrorVertFunction::ValidateArguments( String& info, component_list::const_
       if ( !(*i)->IsFunctional() )
       {
          info = "vmirror() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -1083,7 +1122,7 @@ IsoString MirrorVertFunction::GenerateImage( component_list::const_iterator i, c
 
    const ImageReference* ref = dynamic_cast<ImageReference*>( *i );
 
-   IsoString key = IsoString( ref->Id() ) + "_vmirror";
+   IsoString key = TheImageCache->MakeKey( ref->Id(), "_vmirror" );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -1102,14 +1141,15 @@ void MirrorVertFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_se
 
 // ----------------------------------------------------------------------------
 
-bool NormalizationFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool NormalizationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // normalize( image[, a=0, b=1] )
 
-   if ( Distance( i, j ) != 1 )
-      if ( Distance( i, j ) != 3 )
+   distance_type n = Distance( i, j );
+   if ( n != 1 )
+      if ( n != 3 )
       {
-         info = "normalize() takes 1 or 3 arguments";
+         info = "normalize() can only take 1 or 3 arguments";
          return false;
       }
 
@@ -1117,6 +1157,7 @@ bool NormalizationFunction::ValidateArguments( String& info, component_list::con
       if ( !(*i)->IsFunctional() )
       {
          info = "normalize() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -1125,6 +1166,7 @@ bool NormalizationFunction::ValidateArguments( String& info, component_list::con
       if ( (*i)->IsImageReference() )
       {
          info = "normalize() argument #2: The normalization lower bound must be an invariant scalar subexpression";
+         arg = *i;
          return false;
       }
 
@@ -1133,6 +1175,7 @@ bool NormalizationFunction::ValidateArguments( String& info, component_list::con
          if ( (*i)->IsImageReference() )
          {
             info = "normalize() argument #3: The normalization upper bound must be an invariant scalar subexpression";
+            arg = *i;
             return false;
          }
       }
@@ -1173,7 +1216,7 @@ IsoString NormalizationFunction::GenerateImage( component_list::const_iterator i
          Swap( a, b );
    }
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_normalize_%.15e_%.15e", a, b );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_normalize_%.16e_%.16e", a, b ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -1197,14 +1240,15 @@ void NormalizationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel
 
 // ----------------------------------------------------------------------------
 
-bool TruncationFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool TruncationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // truncate( image[, a=0, b=1] )
 
-   if ( Distance( i, j ) != 1 )
-      if ( Distance( i, j ) != 3 )
+   distance_type n = Distance( i, j );
+   if ( n != 1 )
+      if ( n != 3 )
       {
-         info = "truncate() takes 1 or 3 arguments";
+         info = "truncate() can only take 1 or 3 arguments";
          return false;
       }
 
@@ -1212,6 +1256,7 @@ bool TruncationFunction::ValidateArguments( String& info, component_list::const_
       if ( !(*i)->IsFunctional() )
       {
          info = "truncate() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -1220,6 +1265,7 @@ bool TruncationFunction::ValidateArguments( String& info, component_list::const_
       if ( (*i)->IsImageReference() )
       {
          info = "truncate() argument #2: The truncation lower bound must be an invariant scalar subexpression";
+         arg = *i;
          return false;
       }
 
@@ -1228,6 +1274,7 @@ bool TruncationFunction::ValidateArguments( String& info, component_list::const_
          if ( (*i)->IsImageReference() )
          {
             info = "truncate() argument #3: The truncation upper bound must be an invariant scalar subexpression";
+            arg = *i;
             return false;
          }
       }
@@ -1268,7 +1315,7 @@ IsoString TruncationFunction::GenerateImage( component_list::const_iterator i, c
          Swap( a, b );
    }
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_truncate_%.15e_%.15e", a, b );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_truncate_%.16e_%.16e", a, b ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -1292,14 +1339,15 @@ void TruncationFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_se
 
 // ----------------------------------------------------------------------------
 
-bool BinarizationFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool BinarizationFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // binarize( image[, t=0.5] )
 
-   if ( Distance( i, j ) != 1 )
-      if ( Distance( i, j ) != 2 )
+   distance_type n = Distance( i, j );
+   if ( n != 1 )
+      if ( n != 2 )
       {
-         info = "binarize() takes 1 or 2 arguments";
+         info = "binarize() can only take 1 or 2 arguments";
          return false;
       }
 
@@ -1307,6 +1355,7 @@ bool BinarizationFunction::ValidateArguments( String& info, component_list::cons
       if ( !(*i)->IsFunctional() )
       {
          info = "binarize() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -1314,6 +1363,7 @@ bool BinarizationFunction::ValidateArguments( String& info, component_list::cons
       if ( (*i)->IsImageReference() )
       {
          info = "binarize() argument #2: The binarization threshold must be an invariant scalar subexpression";
+         arg = *i;
          return false;
       }
 
@@ -1345,7 +1395,7 @@ IsoString BinarizationFunction::GenerateImage( component_list::const_iterator i,
       t = (m + M)/2;
    }
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_binarize_%.15e", t );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_binarize_%.16e", t ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -1398,20 +1448,22 @@ SeparableFilter LVarKernelFunctionSeparable( int d, int k )
    }
 }
 
-bool LocalVarianceFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool LocalVarianceFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    // lvar( image[, d=3[, k=krn_flat()]] )
 
-   if ( Distance( i, j ) < 1 || Distance( i, j ) > 3 )
-      {
-         info = "lvar() takes from 1 to 3 arguments";
-         return false;
-      }
+   distance_type n = Distance( i, j );
+   if ( n < 1 || n > 3 )
+   {
+      info = "lvar() takes from 1 to 3 arguments";
+      return false;
+   }
 
    if ( !(*i)->IsImageReference() )
       if ( !(*i)->IsFunctional() )
       {
          info = "lvar() argument #1: Must be an image reference or a functional subexpression evaluating to an image";
+         arg = *i;
          return false;
       }
 
@@ -1420,6 +1472,7 @@ bool LocalVarianceFunction::ValidateArguments( String& info, component_list::con
       if ( (*i)->IsImageReference() )
       {
          info = "lvar() argument #2: The local variance window size must be an invariant scalar subexpression";
+         arg = *i;
          return false;
       }
 
@@ -1428,16 +1481,19 @@ bool LocalVarianceFunction::ValidateArguments( String& info, component_list::con
          if ( Frac( S->Value() ) != 0 )
          {
             info = "lvar() argument #2: The local variance window size must be an integer value";
+            arg = *i;
             return false;
          }
          if ( S->Value() < 3 )
          {
-            info = "lvar() argument #2: The smallest valid local variance window size is 3 pixels";
+            info = "lvar() argument #2: The local variance window size must be >= 3";
+            arg = *i;
             return false;
          }
          if ( (int( S->Value() ) & 1) == 0 )
          {
             info = "lvar() argument #2: The local variance window size must be an odd integer";
+            arg = *i;
             return false;
          }
       }
@@ -1447,6 +1503,7 @@ bool LocalVarianceFunction::ValidateArguments( String& info, component_list::con
          if ( (*i)->IsImageReference() )
          {
             info = "lvar() argument #3: The local variance kernel function must be an invariant scalar subexpression";
+            arg = *i;
             return false;
          }
 
@@ -1455,11 +1512,13 @@ bool LocalVarianceFunction::ValidateArguments( String& info, component_list::con
             if ( Frac( S->Value() ) != 0 )
             {
                info = "lvar() argument #3: The local variance kernel function must be an integer value";
+               arg = *i;
                return false;
             }
             if ( S->Value() < 0 || S->Value() >= KrnCount )
             {
                info = "lvar() argument #3: Unknown or unsupported kernel function '" + String( int( S->Value() ) ) + "'";
+               arg = *i;
                return false;
             }
          }
@@ -1489,7 +1548,7 @@ IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i
          throw ParseError( "lvar() argument #2: The local variance window size must be an invariant scalar subexpression" );
 
       if ( d < 3 )
-         throw ParseError( "lvar() argument #2: The smallest valid local variance window size is 3 pixels" );
+         throw ParseError( "lvar() argument #2: The local variance window size must be >= 3" );
       if ( (d & 1) == 0 )
          throw ParseError( "lvar() argument #2: The local variance window size must be an odd integer" );
 
@@ -1507,7 +1566,7 @@ IsoString LocalVarianceFunction::GenerateImage( component_list::const_iterator i
       }
    }
 
-   IsoString key = IsoString( ref->Id() ) + IsoString().Format( "_lvar_%d_%d", d, k );
+   IsoString key = TheImageCache->MakeKey( ref->Id(), IsoString().Format( "_lvar_%d_%d", d, k ) );
 
    if ( !TheImageCache->HasImage( key ) )
    {
@@ -1594,4 +1653,4 @@ void KrnGaussianFunction::operator()( Pixel& r, component_list::const_iterator, 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Generators.cpp - Released 2021-01-21T15:55:53Z
+// EOF Generators.cpp - Released 2021-01-23T18:24:14Z

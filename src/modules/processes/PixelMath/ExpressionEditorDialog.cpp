@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// ExpressionEditorDialog.cpp - Released 2021-01-21T15:55:53Z
+// ExpressionEditorDialog.cpp - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -178,25 +178,53 @@ static void InitializeSyntaxItems()
                  << SyntaxItem( "expr; expr", ";",
                         "<p>Expression Separator.</p>"
                         "<p>Used to separate multiple PixelMath expressions.</p>" )
+
+                 << SyntaxItem( "/* <comment> */", "/**/",
+                        "<p>Block comment.</p>"
+                        "<p>Comments are ignored by the PixelMath compiler. They can be used to document PixelMath "
+                        "source code, providing human-readable information on the purpose of a PixelMath expression "
+                        "and its implementation.</p>"
+                        "<p>A block comment consists of the pair of tokens '/*' and '*/' and any text in between. "
+                        "Unlike line comments, block comments can span across multiple text lines.</p>" )
+
+                 << SyntaxItem( "// <comment>", "//",
+                        "<p>Line comment.</p>"
+                        "<p>Comments are ignored by the PixelMath compiler. They can be used to document PixelMath "
+                        "source code, providing human-readable information on the purpose of a PixelMath expression "
+                        "and its implementation.</p>"
+                        "<p>A line comment consists of the token '//' and all the subsequent text up to either "
+                        "the end of the current line, or to the end of the source code, whichever happens first.</p>" )
+
    /*
     * Symbol definition functions
     */
                  << SyntaxItem( "symbol = keyword_value( [image=$T,] keyword )", "keyword_value",
-                        "<p>The value of a numeric or Boolean FITS header keyword in the specified image.</p>"
-                        "</p>Boolean keywords generate 0 (false) or 1 (true) symbol values. FITS keyword names are "
-                        "case-insensitive.</p>" )
+                        "<p>The value of a numeric or Boolean FITS header keyword in the specified image. "
+                        "Boolean keywords generate 0 (false) or 1 (true) symbol values.</p>"
+                        "<p>FITS keyword names are case-insensitive.</p>" )
 
                  << SyntaxItem( "symbol = keyword_defined( [image=$T,] keyword )", "keyword_defined",
                         "<p>The symbol value will be either one, if the specified FITS header keyword is defined "
-                        "in the image, or zero if the keyword is not defined. FITS keyword names are case-insensitive.</p>" )
+                        "in the image, or zero if the keyword is not defined.</p>"
+                        "<p>FITS keyword names are case-insensitive.</p>" )
 
                  << SyntaxItem( "symbol = property_value( [image=$T,] property )", "property_value",
-                        "<p>The value of a vector or scalar XISF image property in the specified image. "
-                        "XISF property names are case-sensitive.</p>" )
+                        "<p>The value of a vector or scalar XISF image property in the specified image.</p>"
+                        "<p>XISF property names are case-sensitive.</p>" )
 
                  << SyntaxItem( "symbol = property_defined( [image=$T,] property )", "property_defined",
                         "<p>The symbol value will be either one, if the specified XISF property is defined in the image, "
-                        "or zero if the property is not defined. XISF property names are case-sensitive.</p>" )
+                        "or zero if the property is not defined.</p>"
+                        "<p>XISF property names are case-sensitive.</p>" )
+
+                 << SyntaxItem( "symbol = envvar_value( var )", "envvar_value",
+                        "<p>The value of the specified environment variable with name <i>var</i> converted to a scalar.</p>"
+                        "<p>Environment variable names are case-sensitive on Linux/UNIX platforms, case-insensitive on Windows.</p>" )
+
+                 << SyntaxItem( "symbol = envvar_defined( var )", "envvar_defined",
+                        "<p>The symbol value will be either one, if the specified environment variable is currently defined "
+                        "for the running process with a non-empty value, or zero otherwise.</p>"
+                        "<p>Environment variable names are case-sensitive on Linux/UNIX platforms, case-insensitive on Windows.</p>" )
 
                  << SyntaxItem( "symbol = width( [image=$T] )", "width",
                         "<p>The width in pixels of the specified image.</p>" )
@@ -1056,4 +1084,4 @@ void ExpressionEditorDialog::e_MouseMove( Control& sender, const pcl::Point& pos
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF ExpressionEditorDialog.cpp - Released 2021-01-21T15:55:53Z
+// EOF ExpressionEditorDialog.cpp - Released 2021-01-23T18:24:14Z

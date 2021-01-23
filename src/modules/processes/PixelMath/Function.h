@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// Function.h - Released 2021-01-21T15:55:53Z
+// Function.h - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -108,7 +108,7 @@ public:
       return arguments.IsEmpty() ? m_numberOfArguments : int( arguments.Length() );
    }
 
-   virtual bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const
+   virtual bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const
    {
       return true;
    }
@@ -363,7 +363,7 @@ public:
                                                     "mean( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Arithmetic mean function:</p>"
                                                     "<ol>"
-                                                    "<li>Arithmetic mean of a set of two or more scalar arguments.</li>"
+                                                    "<li>Arithmetic mean of a set of two or more arguments.</li>"
                                                     "<li>Arithmetic mean of the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -374,13 +374,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "arithmetic mean will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "mean"; }
    String Aliases() const override         { return "avg,Avg"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -403,7 +404,7 @@ public:
                                                     "adev( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Average absolute deviation from the median (ADEV):</p>"
                                                     "<ol>"
-                                                    "<li>ADEV of a set of two or more scalar arguments.</li>"
+                                                    "<li>ADEV of a set of two or more arguments.</li>"
                                                     "<li>ADEV of the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -413,14 +414,17 @@ public:
                                                     "the ADEV will be computed exclusively for pixel samples within the "
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "ADEV will be computed for the entire image.</p>"
+                                                    "<p>The returned value is the ADEV multiplied by 1.2533 in order to make the scale "
+                                                    "estimate consistent with the standard deviation of a normal distribution.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "adev"; }
    String Aliases() const override         { return "avgDev,AvgDev"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -443,7 +447,7 @@ public:
                                                     "mdev( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Median absolute deviation from the median (MAD):</p>"
                                                     "<ol>"
-                                                    "<li>MAD of a set of two or more scalar arguments.</li>"
+                                                    "<li>MAD of a set of two or more arguments.</li>"
                                                     "<li>MAD of the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -453,14 +457,17 @@ public:
                                                     "the MAD will be computed exclusively for pixel samples within the "
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "MAD will be computed for the entire image.</p>"
+                                                    "<p>The returned value is the MAD multiplied by 1.4826 in order to make the scale "
+                                                    "estimate consistent with the standard deviation of a normal distribution.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "mdev"; }
    String Aliases() const override         { return "MAD,medDev,MedDev"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -483,7 +490,7 @@ public:
                                                     "bwmv( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Biweight midvariance (BWMV):</p>"
                                                     "<ol>"
-                                                    "<li>BWMV of a set of two or more scalar arguments.</li>"
+                                                    "<li>BWMV of a set of two or more arguments.</li>"
                                                     "<li>BWMV of the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -494,13 +501,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "BWMV will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "bwmv"; }
    String Aliases() const override         { return "BWMV,biweightMidvariance"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -523,7 +531,7 @@ public:
                                                     "pbmv( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Percentage bend midvariance (PBMV):</p>"
                                                     "<ol>"
-                                                    "<li>PBMV of a set of two or more scalar arguments.</li>"
+                                                    "<li>PBMV of a set of two or more arguments.</li>"
                                                     "<li>PBMV of the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -534,13 +542,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "PBMV will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "pbmv"; }
    String Aliases() const override         { return "PBMV,bendMidvariance"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -563,7 +572,7 @@ public:
                                                     "Sn( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>S<sub>n</sub> scale estimate of Rousseeuw and Croux:</p>"
                                                     "<ol>"
-                                                    "<li>S<sub>n</sub> scale estimate for a set of two or more scalar arguments.</li>"
+                                                    "<li>S<sub>n</sub> scale estimate for a set of two or more arguments.</li>"
                                                     "<li>S<sub>n</sub> scale estimate for the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -573,13 +582,16 @@ public:
                                                     "the S<sub>n</sub> estimate will be computed exclusively for pixel samples within the "
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "S<sub>n</sub> estimate will be computed for the entire image.</p>"
+                                                    "<p>The returned value is S<sub>n</sub> multiplied by 1.1926 in order to make the scale "
+                                                    "estimate consistent with the standard deviation of a normal distribution.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "Sn"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -602,7 +614,7 @@ public:
                                                     "Qn( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Q<sub>n</sub> scale estimate of Rousseeuw and Croux:</p>"
                                                     "<ol>"
-                                                    "<li>Q<sub>n</sub> scale estimate for a set of two or more scalar arguments.</li>"
+                                                    "<li>Q<sub>n</sub> scale estimate for a set of two or more arguments.</li>"
                                                     "<li>Q<sub>n</sub> scale estimate for the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -612,13 +624,16 @@ public:
                                                     "the Q<sub>n</sub> estimate will be computed exclusively for pixel samples within the "
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "Q<sub>n</sub> estimate will be computed for the entire image.</p>"
+                                                    "<p>The returned value is Q<sub>n</sub> multiplied by 2.2191 in order to make the scale "
+                                                    "estimate consistent with the standard deviation of a normal distribution.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "Qn"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -641,7 +656,7 @@ public:
                                                     "mod( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Modulus, or the sum of absolute values:</p>"
                                                     "<ol>"
-                                                    "<li>Modulus of a set of two or more scalar arguments.</li>"
+                                                    "<li>Modulus of a set of two or more arguments.</li>"
                                                     "<li>Modulus of the pixel samples in the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -652,13 +667,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "modulus will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "mod"; }
    String Aliases() const override         { return "modulus,Mod,Modulus"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -681,7 +697,7 @@ public:
                                                     "norm( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Norm, or the sum of values:</p>"
                                                     "<ol>"
-                                                    "<li>Norm of a set of two or more scalar arguments.</li>"
+                                                    "<li>Norm of a set of two or more arguments.</li>"
                                                     "<li>Norm of the pixel samples in the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -692,13 +708,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "norm will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "norm"; }
    String Aliases() const override         { return "Norm"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -721,7 +738,7 @@ public:
                                                     "ssqr( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Sum of squares:</p>"
                                                     "<ol>"
-                                                    "<li>Sum of the squares of a set of two or more scalar arguments.</li>"
+                                                    "<li>Sum of the squares of a set of two or more arguments.</li>"
                                                     "<li>Sum of the squared pixel sample values in the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -732,13 +749,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "sum of squares will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "ssqr"; }
    String Aliases() const override         { return "sumOfSquares,SumOfSquares"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -761,7 +779,7 @@ public:
                                                     "asqr( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Mean of squares:</p>"
                                                     "<ol>"
-                                                    "<li>Mean of the squares of a set of two or more scalar arguments.</li>"
+                                                    "<li>Mean of the squares of a set of two or more arguments.</li>"
                                                     "<li>Mean of the squared pixel sample values in the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -772,13 +790,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "mean of squares will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "asqr"; }
    String Aliases() const override         { return "meanOfSquares,MeanOfSquares"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -804,7 +823,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -825,7 +844,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -846,7 +865,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -867,7 +886,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -888,7 +907,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -909,7 +928,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -930,7 +949,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -950,7 +969,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -970,7 +989,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -990,7 +1009,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1175,7 +1194,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1196,7 +1215,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1217,7 +1236,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1239,7 +1258,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1261,7 +1280,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1283,7 +1302,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1305,7 +1324,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1407,7 +1426,7 @@ public:
                                                     "max( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Maximum function:</p>"
                                                     "<ol>"
-                                                    "<li>Maximum value of a set of two or more scalar arguments.</li>"
+                                                    "<li>Maximum value of a set of two or more arguments.</li>"
                                                     "<li>Maximum pixel sample value in the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -1418,13 +1437,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "maximum pixel sample value will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "max"; }
    String Aliases() const override         { return "Max,maximum"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -1471,7 +1491,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1502,13 +1522,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "median pixel sample value will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "med"; }
    String Aliases() const override         { return "Med,median"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -1531,7 +1552,7 @@ public:
                                                     "min( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Minimum function:</p>"
                                                     "<ol>"
-                                                    "<li>Minimum value of a set of two or more scalar arguments.</li>"
+                                                    "<li>Minimum value of a set of two or more arguments.</li>"
                                                     "<li>Minimum pixel sample value in the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -1542,13 +1563,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "minimum pixel sample value will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "min"; }
    String Aliases() const override         { return "Min,minimum"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -1574,7 +1596,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1706,7 +1728,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1731,7 +1753,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1755,7 +1777,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1779,7 +1801,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1803,7 +1825,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -1829,7 +1851,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -1965,7 +1987,7 @@ public:
                                                     "sdev( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Standard deviation:</p>"
                                                     "<ol>"
-                                                    "<li>Standard deviation of a set of two or more scalar arguments.</li>"
+                                                    "<li>Standard deviation of a set of two or more arguments.</li>"
                                                     "<li>Standard deviation of the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -1976,13 +1998,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "standard deviation will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "sdev"; }
    String Aliases() const override         { return "stdDev,StdDev"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -2002,7 +2025,7 @@ public:
    Expression* Generate( int p ) const override { return new SumFunction( p ); }
 
    String Meta() const override            { return "sum( a, b[, ...] )"; }
-   String Id() const override              { return "<p>Summatory of a set of two or more scalar arguments.</p>"; }
+   String Id() const override              { return "<p>Summatory of a set of two or more arguments.</p>"; }
    String Token() const override           { return "sum"; }
    String Aliases() const override         { return "Sum"; }
    int RequiredArguments() const override  { return 2; }
@@ -2107,7 +2130,7 @@ public:
                                                     "var( image[, x0, y0, w, h] )"; }
    String Id() const override              { return "<p>Variance:</p>"
                                                     "<ol>"
-                                                    "<li>Variance of a set of two or more scalar arguments.</li>"
+                                                    "<li>Variance of a set of two or more arguments.</li>"
                                                     "<li>Variance of the specified image.</li>"
                                                     "</ol>"
                                                     "<p>In the second form, the optional <i>x0</i>, <i>y0</i>, <i>w</i>, and <i>h</i> "
@@ -2118,13 +2141,14 @@ public:
                                                     "intersection between the ROI and the image bounds. If no ROI is specified, the "
                                                     "variance will be computed for the entire image.</p>"
                                                     "<p>Invariant subexpression: "
-                                                    "When the first argument is an image reference.</p>"; }
+                                                    "When the first argument is an image reference with optional scalar ROI coordinates "
+                                                    "(second form).</p>"; }
    String Token() const override           { return "var"; }
    String Aliases() const override         { return "variance,Var"; }
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -2152,7 +2176,7 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -2180,7 +2204,7 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -2207,7 +2231,7 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -2236,7 +2260,7 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -2264,7 +2288,7 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -2381,7 +2405,7 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2405,7 +2429,7 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2430,7 +2454,7 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2455,7 +2479,7 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2480,7 +2504,7 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2507,7 +2531,7 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2534,7 +2558,7 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2559,7 +2583,7 @@ public:
    int RequiredArguments() const override  { return 4; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2586,7 +2610,7 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2613,7 +2637,7 @@ public:
    int RequiredArguments() const override  { return 0; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 };
@@ -2640,7 +2664,7 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -2772,7 +2796,7 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    void operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const override;
 
@@ -2810,7 +2834,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 5; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -2839,7 +2863,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -2877,7 +2901,7 @@ public:
    int RequiredArguments() const override  { return 10; }
    int MaximumArguments() const override   { return int_max; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -2908,7 +2932,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -2940,7 +2964,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -2972,7 +2996,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -3217,7 +3241,7 @@ public:
    int RequiredArguments() const override  { return 3; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -3250,7 +3274,7 @@ public:
    int RequiredArguments() const override  { return 2; }
    int MaximumArguments() const override   { return 4; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -3279,7 +3303,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -3308,7 +3332,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 1; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -3343,7 +3367,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -3379,7 +3403,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -3414,7 +3438,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 2; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -3459,7 +3483,7 @@ public:
    int RequiredArguments() const override  { return 1; }
    int MaximumArguments() const override   { return 3; }
 
-   bool ValidateArguments( String&, component_list::const_iterator, component_list::const_iterator ) const override;
+   bool ValidateArguments( String&, Expression*&, component_list::const_iterator, component_list::const_iterator ) const override;
 
    bool IsImageGenerator() const override
    {
@@ -3550,4 +3574,4 @@ public:
 #endif   // __Function_h
 
 // ----------------------------------------------------------------------------
-// EOF Function.h - Released 2021-01-21T15:55:53Z
+// EOF Function.h - Released 2021-01-23T18:24:14Z

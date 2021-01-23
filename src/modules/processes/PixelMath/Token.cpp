@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// Token.cpp - Released 2021-01-21T15:55:53Z
+// Token.cpp - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -94,17 +94,30 @@ void Tokenize( token_set& t, const String& s )
       for ( String::const_iterator i = s.Begin(); i != s.End(); )
       {
          /*
-          * Block comment
+          * Comments
           */
          if ( *i == '/' )
             if ( i+1 < s.End() )
                if ( i[1] == '*' )
                {
+                  /*
+                   * Block comment
+                   */
                   size_type c = s.Find( "*/", (i-s.Begin())+1 );
                   if ( c == String::notFound )
                      throw ParseError( "Unmatched block comment delimiter", s, i-s.Begin() );
                   if ( (i = s.At( c+2 )) == s.End() )
                      break;
+               }
+               else if ( i[1] == '/' )
+               {
+                  /*
+                   * Line comment
+                   */
+                  size_type e = s.Find( '\n', (i-s.Begin())+1 );
+                  if ( e == String::notFound || (i = s.At( e+1 )) == s.End() )
+                     break;
+                  continue;
                }
 
          // Next token start
@@ -130,7 +143,9 @@ void Tokenize( token_set& t, const String& s )
             for ( ; ++j != s.End() && IsoCharTraits::IsSymbolDigit( *j ); ) {}
             tokens << new Token( String( i+1, j ), i-s.Begin(), true );
          }
-         else if ( IsoCharTraits::IsDigit( *i ) || IsoCharTraits::IsDecimalSeparator( *i ) )
+         else if ( IsoCharTraits::IsDigit( *i )
+                || IsoCharTraits::IsDecimalSeparator( *i )
+                || IsoCharTraits::IsSign( *i ) && i+1 < s.End() && IsoCharTraits::IsDigit( *(i+1) ) )
          {
             /*
              * Numeric literal
@@ -159,7 +174,7 @@ void Tokenize( token_set& t, const String& s )
                      if ( j != exponentPos+1 )
                         PARSE_ERROR( "Misplaced exponent sign" );
                   }
-                  else
+                  else if ( j != i )
                      break;
                }
                else if ( IsoCharTraits::IsExponentDelimiter( *j ) )
@@ -255,4 +270,4 @@ void Tokenize( token_set& t, const String& s )
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Token.cpp - Released 2021-01-21T15:55:53Z
+// EOF Token.cpp - Released 2021-01-23T18:24:14Z

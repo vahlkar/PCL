@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// Symbol.cpp - Released 2021-01-21T15:55:53Z
+// Symbol.cpp - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -71,6 +71,8 @@ enum
    SF_KEYWORD_DEFINED,
    SF_PROPERTY_VALUE,
    SF_PROPERTY_DEFINED,
+   SF_ENVVAR_VALUE,
+   SF_ENVVAR_DEFINED,
    SF_WIDTH,
    SF_HEIGHT,
    SF_AREA,
@@ -89,35 +91,32 @@ enum
    SF_PIXEL
 };
 
-static
-String ValueFunctionName( int id )
+static const char* s_functionName[] =
 {
-   switch ( id )
-   {
-   case SF_KEYWORD_VALUE:    return "keyword_value";
-   case SF_KEYWORD_DEFINED:  return "keyword_defined";
-   case SF_PROPERTY_VALUE:   return "property_value";
-   case SF_PROPERTY_DEFINED: return "property_defined";
-   case SF_WIDTH:            return "width";
-   case SF_HEIGHT:           return "height";
-   case SF_AREA:             return "area";
-   case SF_INVAREA:          return "invarea";
-   case SF_ISCOLOR:          return "iscolor";
-   case SF_MAXIMUM:          return "maximum";
-   case SF_MINIMUM:          return "minimum";
-   case SF_MEDIAN:           return "median";
-   case SF_MEAN:             return "mean";
-   case SF_MDEV:             return "mdev";
-   case SF_ADEV:             return "adev";
-   case SF_SDEV:             return "sdev";
-   case SF_MODULUS:          return "modulus";
-   case SF_SSQR:             return "ssqr";
-   case SF_ASQR:             return "asqr";
-   case SF_PIXEL:            return "pixel";
-   default:
-      throw ParseError( "Constant::ValueFunctionName(): Internal error" );
-   }
-}
+   "keyword_value",
+   "keyword_defined",
+   "property_value",
+   "property_defined",
+   "envvar_value",
+   "envvar_defined",
+   "width",
+   "height",
+   "area",
+   "invarea",
+   "iscolor",
+   "maximum",
+   "minimum",
+   "median",
+   "mean",
+   "mdev",
+   "adev",
+   "sdev",
+   "modulus",
+   "ssqr",
+   "asqr",
+   "pixel",
+   nullptr
+};
 
 // ----------------------------------------------------------------------------
 
@@ -187,7 +186,7 @@ void NewConstantForImageStatistics( const String& id, int functionId, const Stri
    case 0:
       break;
    default:
-      throw ParseError( "The " + ValueFunctionName( functionId ) + " symbol function takes zero, one or two argument(s): " + symDef );
+      throw ParseError( "The " + String( s_functionName[functionId] ) + " symbol function takes zero, one or two argument(s): " + symDef );
    }
 
    new Constant( id, functionId, imageId, channel );
@@ -366,6 +365,42 @@ void Symbol::Create( const String& defList )
                   throw ParseError( "In property_defined() symbol function specification: Missing property name: " + def );
 
                new Constant( id, SF_PROPERTY_DEFINED, imageId, propertyName );
+            }
+            else if ( functionId == "envvar_value" )
+            {
+               String varName;
+               switch ( valueTokens.Length() )
+               {
+               case 1:
+                  varName = StripValueTokenQuotes( valueTokens[0] );
+                  break;
+               case 0:
+                  throw ParseError( "In envvar_value() symbol function specification: Missing symbol function arguments: " + def );
+               default:
+                  throw ParseError( "The envvar_value() symbol function takes a single argument: " + def );
+               }
+               if ( varName.IsEmpty() )
+                  throw ParseError( "In envvar_value() symbol function specification: Missing environment variable name: " + def );
+
+               new Constant( id, SF_ENVVAR_VALUE, String()/*imageId*/, varName );
+            }
+            else if ( functionId == "envvar_defined" )
+            {
+               String varName;
+               switch ( valueTokens.Length() )
+               {
+               case 1:
+                  varName = StripValueTokenQuotes( valueTokens[0] );
+                  break;
+               case 0:
+                  throw ParseError( "In envvar_defined() symbol function specification: Missing symbol function arguments: " + def );
+               default:
+                  throw ParseError( "The envvar_defined() symbol function takes a single argument: " + def );
+               }
+               if ( varName.IsEmpty() )
+                  throw ParseError( "In envvar_defined() symbol function specification: Missing environment variable name: " + def );
+
+               new Constant( id, SF_ENVVAR_DEFINED, String()/*imageId*/, varName );
             }
             else if ( functionId == "width" )
             {
@@ -656,7 +691,7 @@ String Constant::ToString() const
    if ( !IsValueFunction() )
       return Pixel::ToString();
 
-   String s = ValueFunctionName( m_functionId ) + "(";
+   String s = String( s_functionName[m_functionId] ) + '(';
    if ( !m_imageId.IsEmpty() )
       s += m_imageId;
    if ( !m_arguments.IsEmpty() )
@@ -684,7 +719,7 @@ Expression* Constant::FunctionValue( int tokenPos, const ImageWindow& targetWind
    {
       window = targetWindow;
       if ( window.IsNull() )
-         throw ParseError( "In symbol '" + Id() + "' definition: The " + ValueFunctionName( m_functionId ) + " function needs an explicit image identifier" );
+         throw ParseError( "In symbol '" + Id() + "' definition: The " + String( s_functionName[m_functionId] ) + " function needs an explicit image identifier" );
       imageId = window.MainView().Id();
    }
    else
@@ -774,6 +809,23 @@ Expression* Constant::FunctionValue( int tokenPos, const ImageWindow& targetWind
       {
          View view = window.MainView();
          return new Sample( view.HasProperty( m_arguments[0] ) ? 1.0 : 0.0, tokenPos );
+      }
+   case SF_ENVVAR_VALUE:
+      {
+         IsoString varName( m_arguments[0] );
+         IsoString varValue( ::getenv( varName.c_str() ) );
+         if ( varValue.IsEmpty() )
+            throw ParseError( "In symbol '" + Id() + "' definition: No '" + varName + "' environment variable has been defined for the running process" );
+         double value;
+         if ( !varValue.TryToDouble( value ) )
+            throw ParseError( "In symbol '" + Id() + "' definition: The value of the '" + varName + "' environment variable cannot be converted to a scalar type" );
+
+         return new Sample( value, tokenPos );
+      }
+   case SF_ENVVAR_DEFINED:
+      {
+         IsoString varName( m_arguments[0] );
+         return new Sample( IsoString( ::getenv( varName.c_str() ) ).Trimmed().IsEmpty() ? 0.0 : 1.0, tokenPos );
       }
    case SF_WIDTH:
       return new Sample( window.MainView().Image().Width(), tokenPos );
@@ -875,7 +927,7 @@ Expression* Constant::FunctionValue( int tokenPos, const ImageWindow& targetWind
          return new Sample( 0, tokenPos );
       }
    default:
-      throw ParseError( "Constant::ValueFunctionName(): Internal error" );
+      throw ParseError( "Constant::FunctionValue(): Internal error" );
    }
 }
 
@@ -904,4 +956,4 @@ Expression* Constant::FunctionValue( const DVector& data, int tokenPos ) const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Symbol.cpp - Released 2021-01-21T15:55:53Z
+// EOF Symbol.cpp - Released 2021-01-23T18:24:14Z

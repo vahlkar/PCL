@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// Function.cpp - Released 2021-01-21T15:55:53Z
+// Function.cpp - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -440,9 +440,49 @@ void ArcTanhFunction::operator()( Pixel& r, component_list::const_iterator i, co
 
 // ----------------------------------------------------------------------------
 
-static Rect GetStatisticalFunctionROIArguments( const String& functionName,
-                                                Expression::component_list::const_iterator i,
-                                                Expression::component_list::const_iterator j )
+static
+bool ValidateStatisticalFunctionArguments( const String& functionName, String& info, Expression*& arg,
+                                           Expression::component_list::const_iterator i,
+                                           Expression::component_list::const_iterator j )
+{
+   distance_type n = Distance( i, j );
+   if ( n == 0 || n == 1 && !(*i)->IsImageReference() )
+   {
+      info = functionName + "() takes either a single image reference argument or a set of 2 or more arguments";
+      if ( n > 0 )
+         arg = *i;
+      return false;
+   }
+
+   return true;
+}
+
+static
+bool CheckInvariantStatisticalFunction( Expression::component_list::const_iterator i,
+                                        Expression::component_list::const_iterator j )
+{
+   distance_type n = Distance( i, j );
+   // Check for invariant f( image )
+   if ( n == 1 )
+      return true;
+   // Check for invariant f( image, x0, y0, w, h )
+   if ( n == 5 )
+      if ( (*i)->IsImageReference() )
+      {
+         // Check for scalar ROI coordinates
+         for ( ; ++i != j; )
+            if ( (*i)->IsImageReference() || !(*i)->IsSample() && (!(*i)->IsPixel() || P->PixelValue().Length() != 1) )
+               return false;
+         return true;
+      }
+
+   return false;
+}
+
+static
+Rect GetStatisticalFunctionROIArguments( const String& functionName,
+                                         Expression::component_list::const_iterator i,
+                                         Expression::component_list::const_iterator j )
 {
    Rect r = 0;
 
@@ -486,33 +526,11 @@ static Rect GetStatisticalFunctionROIArguments( const String& functionName,
    return r;
 }
 
-static bool ValidateStatisticalFunctionArguments( const String& functionName, String& info,
-                                                  Expression::component_list::const_iterator i,
-                                                  Expression::component_list::const_iterator j )
-{
-   if ( (*i)->IsImageReference() )
-   {
-      if ( Distance( i, j ) != 1 )
-         if ( Distance( i, j ) != 5 )
-         {
-            info = functionName + "( image[, x0, y0, w, h] ) takes an image reference argument plus 4 optional ROI coordinates";
-            return false;
-         }
-   }
-   else if ( Distance( i, j ) < 2 )
-   {
-      info = functionName + "( a, b[, ...] ) takes a set of two or more scalar arguments";
-      return false;
-   }
-
-   return true;
-}
-
 // ----------------------------------------------------------------------------
 
-bool MeanFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MeanFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "mean", info, i, j );
+   return ValidateStatisticalFunctionArguments( "mean", info, arg, i, j );
 }
 
 void MeanFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -529,7 +547,7 @@ void MeanFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 bool MeanFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void MeanFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -585,9 +603,9 @@ void MeanFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-bool AvgDevFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool AvgDevFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "adev", info, i, j );
+   return ValidateStatisticalFunctionArguments( "adev", info, arg, i, j );
 }
 
 void AvgDevFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -604,7 +622,7 @@ void AvgDevFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_se
 
 bool AvgDevFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void AvgDevFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -660,9 +678,9 @@ void AvgDevFunction::operator()( Pixel& r, component_list::const_iterator i, com
 
 // ----------------------------------------------------------------------------
 
-bool MADFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MADFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "mdev", info, i, j );
+   return ValidateStatisticalFunctionArguments( "mdev", info, arg, i, j );
 }
 
 void MADFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -679,7 +697,7 @@ void MADFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool MADFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void MADFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -735,9 +753,9 @@ void MADFunction::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-bool BWMVFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool BWMVFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "bwmv", info, i, j );
+   return ValidateStatisticalFunctionArguments( "bwmv", info, arg, i, j );
 }
 
 void BWMVFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -754,7 +772,7 @@ void BWMVFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 bool BWMVFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void BWMVFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -820,9 +838,9 @@ void BWMVFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-bool PBMVFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool PBMVFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "pbmv", info, i, j );
+   return ValidateStatisticalFunctionArguments( "pbmv", info, arg, i, j );
 }
 
 void PBMVFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -839,7 +857,7 @@ void PBMVFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 bool PBMVFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void PBMVFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -901,9 +919,9 @@ void PBMVFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-bool SnFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool SnFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "Sn", info, i, j );
+   return ValidateStatisticalFunctionArguments( "Sn", info, arg, i, j );
 }
 
 void SnFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -920,7 +938,7 @@ void SnFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::c
 
 bool SnFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void SnFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -976,9 +994,9 @@ void SnFunction::operator()( Pixel& r, component_list::const_iterator i, compone
 
 // ----------------------------------------------------------------------------
 
-bool QnFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool QnFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "Qn", info, i, j );
+   return ValidateStatisticalFunctionArguments( "Qn", info, arg, i, j );
 }
 
 void QnFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -995,7 +1013,7 @@ void QnFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::c
 
 bool QnFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void QnFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -1051,9 +1069,9 @@ void QnFunction::operator()( Pixel& r, component_list::const_iterator i, compone
 
 // ----------------------------------------------------------------------------
 
-bool ModFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool ModFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "mod", info, i, j );
+   return ValidateStatisticalFunctionArguments( "mod", info, arg, i, j );
 }
 
 void ModFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -1070,7 +1088,7 @@ void ModFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool ModFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void ModFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -1126,9 +1144,9 @@ void ModFunction::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-bool NormFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool NormFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "norm", info, i, j );
+   return ValidateStatisticalFunctionArguments( "norm", info, arg, i, j );
 }
 
 void NormFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -1145,7 +1163,7 @@ void NormFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 bool NormFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void NormFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -1201,9 +1219,9 @@ void NormFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-bool SumOfSquaresFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool SumOfSquaresFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "ssqr", info, i, j );
+   return ValidateStatisticalFunctionArguments( "ssqr", info, arg, i, j );
 }
 
 void SumOfSquaresFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -1220,7 +1238,7 @@ void SumOfSquaresFunction::operator()( Pixel& r, pixel_set::const_iterator i, pi
 
 bool SumOfSquaresFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void SumOfSquaresFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -1276,9 +1294,9 @@ void SumOfSquaresFunction::operator()( Pixel& r, component_list::const_iterator 
 
 // ----------------------------------------------------------------------------
 
-bool MeanOfSquaresFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MeanOfSquaresFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "asqr", info, i, j );
+   return ValidateStatisticalFunctionArguments( "asqr", info, arg, i, j );
 }
 
 void MeanOfSquaresFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -1295,7 +1313,7 @@ void MeanOfSquaresFunction::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 bool MeanOfSquaresFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void MeanOfSquaresFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -1351,11 +1369,12 @@ void MeanOfSquaresFunction::operator()( Pixel& r, component_list::const_iterator
 
 // ----------------------------------------------------------------------------
 
-bool CIELFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIELFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEL() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1367,11 +1386,12 @@ void CIELFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 // ----------------------------------------------------------------------------
 
-bool CIEaFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIEaFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEa() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1383,11 +1403,12 @@ void CIEaFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 // ----------------------------------------------------------------------------
 
-bool CIEbFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIEbFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEb() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1399,11 +1420,12 @@ void CIEbFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 // ----------------------------------------------------------------------------
 
-bool CIEcFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIEcFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEc() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1415,11 +1437,12 @@ void CIEcFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 // ----------------------------------------------------------------------------
 
-bool CIEhFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIEhFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEh() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1430,11 +1453,12 @@ void CIEhFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 // ----------------------------------------------------------------------------
 
-bool CIEhrFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIEhrFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEhr() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1445,11 +1469,12 @@ void CIEhrFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set
 
 // ----------------------------------------------------------------------------
 
-bool CIEhdFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIEhdFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEhd() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1460,11 +1485,12 @@ void CIEhdFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set
 
 // ----------------------------------------------------------------------------
 
-bool CIEXFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIEXFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEX() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1476,11 +1502,12 @@ void CIEXFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 // ----------------------------------------------------------------------------
 
-bool CIEYFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIEYFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEY() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1492,11 +1519,12 @@ void CIEYFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set:
 
 // ----------------------------------------------------------------------------
 
-bool CIEZFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool CIEZFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "CIEZ() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1658,11 +1686,12 @@ void FracFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-bool HFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool HFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "H() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1673,11 +1702,12 @@ void HFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::co
 
 // ----------------------------------------------------------------------------
 
-bool HrFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool HrFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "Hr() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1688,11 +1718,12 @@ void HrFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::c
 
 // ----------------------------------------------------------------------------
 
-bool HdFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool HdFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "Hd() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1703,11 +1734,12 @@ void HdFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::c
 
 // ----------------------------------------------------------------------------
 
-bool SvFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool SvFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "Sv() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1718,11 +1750,12 @@ void SvFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::c
 
 // ----------------------------------------------------------------------------
 
-bool SiFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool SiFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "Si() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1733,11 +1766,12 @@ void SiFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::c
 
 // ----------------------------------------------------------------------------
 
-bool VFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool VFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
-   info = "I() takes a single image or pixel reference argument";
+   info = "V() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1748,11 +1782,12 @@ void VFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::co
 
 // ----------------------------------------------------------------------------
 
-bool IFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool IFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "I() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1839,9 +1874,9 @@ void Log2Function::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-bool MaxFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MaxFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "max", info, i, j );
+   return ValidateStatisticalFunctionArguments( "max", info, arg, i, j );
 }
 
 void MaxFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -1861,7 +1896,7 @@ void MaxFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool MaxFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void MaxFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -1935,11 +1970,12 @@ void MaxDevFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_se
 
 // ----------------------------------------------------------------------------
 
-bool MaxSampleFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MaxSampleFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "maxsample() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -1950,9 +1986,9 @@ void MaxSampleFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel
 
 // ----------------------------------------------------------------------------
 
-bool MedFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MedFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "med", info, i, j );
+   return ValidateStatisticalFunctionArguments( "med", info, arg, i, j );
 }
 
 void MedFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -1969,7 +2005,7 @@ void MedFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool MedFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void MedFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -2025,9 +2061,9 @@ void MedFunction::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-bool MinFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MinFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "min", info, i, j );
+   return ValidateStatisticalFunctionArguments( "min", info, arg, i, j );
 }
 
 void MinFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -2047,7 +2083,7 @@ void MinFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool MinFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void MinFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -2103,11 +2139,12 @@ void MinFunction::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-bool MinSampleFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MinSampleFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "minsample() takes a single image or pixel reference argument";
+   arg = *i;
    return false;
 }
 
@@ -2261,12 +2298,14 @@ static int PoissonRandomDeviate( const Pixel& r, double value )
    }
 }
 
-bool PoissonFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool PoissonFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 1 )
-      return true;
-   info = "poisson() takes a single argument";
-   return false;
+   if ( Distance( i, j ) != 1 )
+   {
+      info = "poisson() takes a single argument";
+      return false;
+   }
+   return true;
 }
 
 void PoissonFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator ) const
@@ -2319,29 +2358,30 @@ static double GammaRandomDeviate( const Pixel& r, double shape, double scale )
    }
 }
 
-bool GammaFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool GammaFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) < 1 || Distance( i, j ) > 2 )
-   {
-      info = "gamma() takes one or two arguments";
-      return false;
-   }
+   distance_type n = Distance( i, j );
+   if ( n != 1 )
+      if ( n != 2 )
+      {
+         info = "gamma() can only take 1 or 2 arguments";
+         return false;
+      }
 
    if ( (*i)->IsSample() && S->Value() <= 0 )
    {
       info = "gamma() argument #1: the function shape parameter must be > 0";
+      arg = *i;
       return false;
    }
 
-   if ( Distance( i, j ) > 1 )
-   {
-      ++i;
+   if ( ++i < j )
       if ( (*i)->IsSample() && S->Value() <= 0 )
       {
          info = "gamma() argument #2: the scale parameter must be > 0";
+         arg = *i;
          return false;
       }
-   }
 
    return true;
 }
@@ -2355,7 +2395,7 @@ void GammaFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set
 
 // ----------------------------------------------------------------------------
 
-bool ChiSquareFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool ChiSquareFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 1 )
    {
@@ -2366,6 +2406,7 @@ bool ChiSquareFunction::ValidateArguments( String& info, component_list::const_i
    if ( (*i)->IsSample() && S->Value() <= 0 )
    {
       info = "chisq(): the degrees of freedom parameter must be > 0";
+      arg = *i;
       return false;
    }
 
@@ -2383,7 +2424,7 @@ void ChiSquareFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel
 
 // ----------------------------------------------------------------------------
 
-bool StudentTFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool StudentTFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 1 )
    {
@@ -2394,6 +2435,7 @@ bool StudentTFunction::ValidateArguments( String& info, component_list::const_it
    if ( (*i)->IsSample() && S->Value() <= 0 )
    {
       info = "studentt(): the degrees of freedom parameter must be > 0";
+      arg = *i;
       return false;
    }
 
@@ -2411,34 +2453,32 @@ void StudentTFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_
 
 // ----------------------------------------------------------------------------
 
-bool RndSelectFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool RndSelectFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) > 1 )
       return true;
-   info = "rndselect() takes a set of two or more arguments";
+   info = "rndselect() takes a set of 2 or more arguments";
    return false;
 }
 
 void RndSelectFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
 {
-   unsigned n = Distance( i, j );
+   distance_type n = Distance( i, j );
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = i[r.TLS()->random.UIN( n )][c];
 }
 
 // ----------------------------------------------------------------------------
 
-bool RoundFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool RoundFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 1 )
-   {
-      ++i;
+   if ( ++i < j )
       if ( !(*i)->IsSample() || Frac( S->Value() ) != 0 )
       {
          info = "round() argument #2: the number of decimal digits must be a literal of integral type";
+         arg = *i;
          return false;
       }
-   }
    return true;
 }
 
@@ -2477,15 +2517,11 @@ void RoundFunction::operator()( Pixel& r, component_list::const_iterator i, comp
 
    r.SetAs( x );
 
-   if ( Distance( i, j ) > 1 )
+   if ( ++i < j )
    {
       int n = 0;
-
-      ++i;
-
       if ( (*i)->IsSample() )
          n = TruncInt( S->Value() );
-
       for ( int c = 0; c < r.Length(); ++c )
          r[c] = Round( x[c], n );
    }
@@ -2598,9 +2634,9 @@ void SqrtFunction::operator()( Pixel& r, component_list::const_iterator i, compo
 
 // ----------------------------------------------------------------------------
 
-bool StdDevFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool StdDevFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "sdev", info, i, j );
+   return ValidateStatisticalFunctionArguments( "sdev", info, arg, i, j );
 }
 
 void StdDevFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -2617,7 +2653,7 @@ void StdDevFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_se
 
 bool StdDevFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void StdDevFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -2760,9 +2796,9 @@ void TruncFunction::operator()( Pixel& r, component_list::const_iterator i, comp
 
 // ----------------------------------------------------------------------------
 
-bool VarFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool VarFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return ValidateStatisticalFunctionArguments( "var", info, i, j );
+   return ValidateStatisticalFunctionArguments( "var", info, arg, i, j );
 }
 
 void VarFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
@@ -2779,7 +2815,7 @@ void VarFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::
 
 bool VarFunction::IsInvariant( component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   return (*i)->IsImageReference();
+   return CheckInvariantStatisticalFunction( i, j );
 }
 
 void VarFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
@@ -2835,11 +2871,12 @@ void VarFunction::operator()( Pixel& r, component_list::const_iterator i, compon
 
 // ----------------------------------------------------------------------------
 
-bool WidthFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool WidthFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 || (*i)->IsImageReference() && !I->IsChannelIndex() )
+   if ( i == j || (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "width() takes either no argument or a single image reference argument";
+   arg = *i;
    return false;
 }
 
@@ -2855,19 +2892,17 @@ bool WidthFunction::IsInvariant( component_list::const_iterator, component_list:
 
 void WidthFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 )
-      r.SetSamples( PixelMathInstance::TargetWidth() );
-   else
-      r.SetSamples( I->Image()->Width() );
+   r.SetSamples( (i == j) ? PixelMathInstance::TargetWidth() : I->Image()->Width() );
 }
 
 // ----------------------------------------------------------------------------
 
-bool HeightFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool HeightFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 || (*i)->IsImageReference() && !I->IsChannelIndex() )
+   if ( i == j || (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "height() takes either no argument or a single image reference argument";
+   arg = *i;
    return false;
 }
 
@@ -2883,19 +2918,17 @@ bool HeightFunction::IsInvariant( component_list::const_iterator, component_list
 
 void HeightFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 )
-      r.SetSamples( PixelMathInstance::TargetHeight() );
-   else
-      r.SetSamples( I->Image()->Height() );
+   r.SetSamples( (i == j) ? PixelMathInstance::TargetHeight() : I->Image()->Height() );
 }
 
 // ----------------------------------------------------------------------------
 
-bool AreaFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool AreaFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 || (*i)->IsImageReference() && !I->IsChannelIndex() )
+   if ( i == j || (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "area() takes either no argument or a single image reference argument";
+   arg = *i;
    return false;
 }
 
@@ -2911,25 +2944,24 @@ bool AreaFunction::IsInvariant( component_list::const_iterator, component_list::
 
 void AreaFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 )
-      r.SetSamples( double( uint64( PixelMathInstance::TargetWidth() ) * uint64( PixelMathInstance::TargetHeight() ) ) );
-   else
-      r.SetSamples( double( I->Image()->NumberOfPixels() ) );
+   r.SetSamples( double( (i == j) ? size_type( PixelMathInstance::TargetWidth() ) * size_type( PixelMathInstance::TargetHeight() )
+                                  : I->Image()->NumberOfPixels() ) );
 }
 
 // ----------------------------------------------------------------------------
 
-bool NumberOfChannelsFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool NumberOfChannelsFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 || (*i)->IsImageReference() && !I->IsChannelIndex() )
+   if ( i == j || (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
-   info = "n() takes either no argument or a single image reference argument";
+   info = "channels() takes either no argument or a single image reference argument";
+   arg = *i;
    return false;
 }
 
 void NumberOfChannelsFunction::operator()( Pixel&, pixel_set::const_iterator, pixel_set::const_iterator ) const
 {
-   throw Error( "n(): Internal parser error" );
+   throw Error( "channels(): Internal parser error" );
 }
 
 bool NumberOfChannelsFunction::IsInvariant( component_list::const_iterator, component_list::const_iterator ) const
@@ -2939,19 +2971,17 @@ bool NumberOfChannelsFunction::IsInvariant( component_list::const_iterator, comp
 
 void NumberOfChannelsFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 )
-      r.SetSamples( PixelMathInstance::TargetNumberOfChannels() );
-   else
-      r.SetSamples( I->Image()->NumberOfChannels() );
+   r.SetSamples( (i == j) ? PixelMathInstance::TargetNumberOfChannels() : I->Image()->NumberOfChannels() );
 }
 
 // ----------------------------------------------------------------------------
 
-bool IsColorFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool IsColorFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 || (*i)->IsImageReference() && !I->IsChannelIndex() )
+   if ( i == j || (*i)->IsImageReference() && !I->IsChannelIndex() )
       return true;
    info = "iscolor() takes either no argument or a single image reference argument";
+   arg = *i;
    return false;
 }
 
@@ -2967,10 +2997,7 @@ bool IsColorFunction::IsInvariant( component_list::const_iterator, component_lis
 
 void IsColorFunction::operator()( Pixel& r, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) == 0 )
-      r.SetSamples( PixelMathInstance::TargetIsColor() ? 1 : 0 );
-   else
-      r.SetSamples( I->Image()->IsColor() ? 1 : 0 );
+   r.SetSamples( ((i == j) ? PixelMathInstance::TargetIsColor() : I->Image()->IsColor()) ? 1 : 0 );
 }
 
 // ----------------------------------------------------------------------------
@@ -3029,11 +3056,11 @@ void YFunction::operator()( Pixel& r, component_list::const_iterator, component_
 
 // ----------------------------------------------------------------------------
 
-bool DistToLineFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool DistToLineFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 4 )
    {
-      info = "d2line() takes four variable or immediate numeric arguments";
+      info = "d2line() takes 4 variable or immediate numeric arguments";
       return false;
    }
 
@@ -3041,6 +3068,7 @@ bool DistToLineFunction::ValidateArguments( String& info, component_list::const_
       if ( (*i)->IsImageReference() )
       {
          info = "d2line(): Point coordinates must be variables or literal numeric values";
+         arg = *i;
          return false;
       }
 
@@ -3080,11 +3108,11 @@ void DistToLineFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixe
 
 // ----------------------------------------------------------------------------
 
-bool XPerpToLineFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool XPerpToLineFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 4 )
    {
-      info = "xperp2line() takes four variable or immediate numeric arguments";
+      info = "xperp2line() takes 4 variable or immediate numeric arguments";
       return false;
    }
 
@@ -3092,6 +3120,7 @@ bool XPerpToLineFunction::ValidateArguments( String& info, component_list::const
       if ( (*i)->IsImageReference() )
       {
          info = "xperp2line(): Point coordinates must be variables or literal numeric values";
+         arg = *i;
          return false;
       }
 
@@ -3127,11 +3156,11 @@ void XPerpToLineFunction::operator()( Pixel& r, pixel_set::const_iterator i, pix
 
 // ----------------------------------------------------------------------------
 
-bool YPerpToLineFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool YPerpToLineFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 4 )
    {
-      info = "yperp2line() takes four variable or immediate numeric arguments";
+      info = "yperp2line() takes 4 variable or immediate numeric arguments";
       return false;
    }
 
@@ -3139,6 +3168,7 @@ bool YPerpToLineFunction::ValidateArguments( String& info, component_list::const
       if ( (*i)->IsImageReference() )
       {
          info = "yperp2line(): Point coordinates must be variables or literal numeric values";
+         arg = *i;
          return false;
       }
 
@@ -3174,11 +3204,11 @@ void YPerpToLineFunction::operator()( Pixel& r, pixel_set::const_iterator i, pix
 
 // ----------------------------------------------------------------------------
 
-bool DistToSegmentFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool DistToSegmentFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 4 )
    {
-      info = "d2seg() takes four variable or immediate numeric arguments";
+      info = "d2seg() takes 4 variable or immediate numeric arguments";
       return false;
    }
 
@@ -3186,6 +3216,7 @@ bool DistToSegmentFunction::ValidateArguments( String& info, component_list::con
       if ( (*i)->IsImageReference() )
       {
          info = "d2seg(): Point coordinates must be variables or literal numeric values";
+         arg = *i;
          return false;
       }
 
@@ -3228,11 +3259,11 @@ void DistToSegmentFunction::operator()( Pixel& r, pixel_set::const_iterator i, p
 
 // ----------------------------------------------------------------------------
 
-bool InRectFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool InRectFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 4 )
    {
-      info = "inrect() takes four variable or immediate numeric arguments";
+      info = "inrect() takes 4 variable or immediate numeric arguments";
       return false;
    }
 
@@ -3241,6 +3272,7 @@ bool InRectFunction::ValidateArguments( String& info, component_list::const_iter
       if ( (*i)->IsImageReference() )
       {
          info = "inrect(): Rectangle coordinates must be variables or literal numeric values";
+         arg = *i;
          return false;
       }
 
@@ -3248,6 +3280,7 @@ bool InRectFunction::ValidateArguments( String& info, component_list::const_iter
          if ( Frac( S->Value() ) != 0 )
          {
             info = "inrect(): Literal rectangle coordinates must be of integral type";
+            arg = *i;
             return false;
          }
    }
@@ -3284,11 +3317,11 @@ void InRectFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_se
 
 // ----------------------------------------------------------------------------
 
-bool MinDistRectFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MinDistRectFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 4 )
    {
-      info = "mind2rect() takes four immediate or variable numeric arguments";
+      info = "mind2rect() takes 4 immediate or variable numeric arguments";
       return false;
    }
 
@@ -3296,6 +3329,7 @@ bool MinDistRectFunction::ValidateArguments( String& info, component_list::const
       if ( (*i)->IsImageReference() )
       {
          info = "mind2rect(): Rectangle coordinates must be variables or literal numeric values";
+         arg = *i;
          return false;
       }
 
@@ -3332,11 +3366,11 @@ void MinDistRectFunction::operator()( Pixel& r, pixel_set::const_iterator i, pix
 
 // ----------------------------------------------------------------------------
 
-bool MaxDistRectFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool MaxDistRectFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 4 )
    {
-      info = "maxd2rect() takes four immediate or variable numeric arguments";
+      info = "maxd2rect() takes 4 immediate or variable numeric arguments";
       return false;
    }
 
@@ -3344,6 +3378,7 @@ bool MaxDistRectFunction::ValidateArguments( String& info, component_list::const
       if ( (*i)->IsImageReference() )
       {
          info = "maxd2rect(): Rectangle coordinates must be variables or literal numeric values";
+         arg = *i;
          return false;
       }
 
@@ -3380,11 +3415,11 @@ void MaxDistRectFunction::operator()( Pixel& r, pixel_set::const_iterator i, pix
 
 // ----------------------------------------------------------------------------
 
-bool InEllipseFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool InEllipseFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( Distance( i, j ) != 4 )
    {
-      info = "inellipse() takes four immediate or variable numeric arguments";
+      info = "inellipse() takes 4 immediate or variable numeric arguments";
       return false;
    }
 
@@ -3392,6 +3427,7 @@ bool InEllipseFunction::ValidateArguments( String& info, component_list::const_i
       if ( (*i)->IsImageReference() )
       {
          info = "inellipse(): Ellipse parameters must be variables or literal numeric values";
+         arg = *i;
          return false;
       }
 
@@ -3426,13 +3462,14 @@ void InEllipseFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel
 
 // ----------------------------------------------------------------------------
 
-bool RDistFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool RDistFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 0 )
+   distance_type n = Distance( i, j );
+   if ( n > 0 )
    {
-      if ( Distance( i, j ) != 2 )
+      if ( n != 2 )
       {
-         info = "rdist() takes either no argument or two center coordinates";
+         info = "rdist() takes either no argument or 2 center coordinates";
          return false;
       }
 
@@ -3440,6 +3477,7 @@ bool RDistFunction::ValidateArguments( String& info, component_list::const_itera
       if ( (*i)->IsImageReference() || (*j)->IsImageReference() )
       {
          info = "rdist(): The coordinates of the center point must be variables or literal numeric values";
+         arg = *j;
          return false;
       }
    }
@@ -3449,7 +3487,6 @@ bool RDistFunction::ValidateArguments( String& info, component_list::const_itera
 void RDistFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
 {
    double xc, yc;
-
    if ( Distance( i, j ) > 0 )
    {
       xc = (*i)[0];
@@ -3464,20 +3501,20 @@ void RDistFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set
    double dx = r.X() - xc;
    double dy = r.Y() - yc;
    double rd = Sqrt( dx*dx + dy*dy );
-
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = rd;
 }
 
 // ----------------------------------------------------------------------------
 
-bool PAngleFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool PAngleFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) > 0 )
+   distance_type n = Distance( i, j );
+   if ( n > 0 )
    {
-      if ( Distance( i, j ) != 2 )
+      if ( n != 2 )
       {
-         info = "pangle() takes either no argument or two center coordinates";
+         info = "pangle() takes either no argument or 2 center coordinates";
          return false;
       }
 
@@ -3485,6 +3522,7 @@ bool PAngleFunction::ValidateArguments( String& info, component_list::const_iter
       if ( (*i)->IsImageReference() || (*j)->IsImageReference() )
       {
          info = "pangle(): The coordinates of the center point must be variables or literal numeric values";
+         arg = *j;
          return false;
       }
    }
@@ -3494,7 +3532,6 @@ bool PAngleFunction::ValidateArguments( String& info, component_list::const_iter
 void PAngleFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_set::const_iterator j ) const
 {
    double xc, yc;
-
    if ( Distance( i, j ) > 0 )
    {
       xc = (*i)[0];
@@ -3507,35 +3544,45 @@ void PAngleFunction::operator()( Pixel& r, pixel_set::const_iterator i, pixel_se
    }
 
    double theta = ArcTan( r.Y() - yc, r.X() - xc );
-
    for ( int c = 0; c < r.Length(); ++c )
       r[c] = theta;
 }
 
 // ----------------------------------------------------------------------------
 
-bool PixelFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool PixelFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
    if ( !(*i)->IsImageReference() )
    {
       info = "pixel() argument #1: Must be an image reference";
+      arg = *i;
       return false;
    }
 
    if ( I->IsChannelIndex() )
    {
       info = "pixel() argument #1: Invalid image channel index";
+      arg = *i;
       return false;
    }
 
    I->SetByReference();
 
    component_list::const_iterator x = i; ++x;
+
+   if ( (*x)->IsImageReference() )
+   {
+      info = "pixel() argument #2: Pixel coordinates must be either immediate integrals, variable references, or expressions";
+      arg = *x;
+      return false;
+   }
+
    component_list::const_iterator y = x; ++y;
 
-   if ( (*x)->IsImageReference() || (*y)->IsImageReference() )
+   if ( (*y)->IsImageReference() )
    {
-      info = "pixel() arguments #2,3: Pixel coordinates must be either immediate integrals, variable references, or expressions";
+      info = "pixel() argument #3: Pixel coordinates must be either immediate integrals, variable references, or expressions";
+      arg = *y;
       return false;
    }
 
@@ -3545,6 +3592,7 @@ bool PixelFunction::ValidateArguments( String& info, component_list::const_itera
       if ( Frac( S->Value() ) != 0 )
       {
          info = "pixel() argument #2: Immediate X-coordinates must be of integral type";
+         arg = *x;
          return false;
       }
    }
@@ -3555,6 +3603,7 @@ bool PixelFunction::ValidateArguments( String& info, component_list::const_itera
       if ( Frac( S->Value() ) != 0 )
       {
          info = "pixel() argument #3: Immediate Y-coordinates must be of integral type";
+         arg = *y;
          return false;
       }
    }
@@ -3566,6 +3615,7 @@ bool PixelFunction::ValidateArguments( String& info, component_list::const_itera
       if ( (*c)->IsImageReference() )
       {
          info = "pixel() argument #4: Channel indexes must be either immediate integrals, variable references, or expressions";
+         arg = *c;
          return false;
       }
 
@@ -3575,12 +3625,14 @@ bool PixelFunction::ValidateArguments( String& info, component_list::const_itera
          if ( Frac( S->Value() ) != 0 )
          {
             info = "pixel() argument #4: Immediate channel indexes must be of integral type";
+            arg = *c;
             return false;
          }
 
          if ( S->Value() < 0 )
          {
             info = "pixel() argument #4: Immediate channel indexes must be integers greater than zero";
+            arg = *c;
             return false;
          }
       }
@@ -3912,9 +3964,10 @@ Expression::component_list InlineIfFunction::Optimized() const
 
 // ----------------------------------------------------------------------------
 
-bool InlineSwitchFunction::ValidateArguments( String& info, component_list::const_iterator i, component_list::const_iterator j ) const
+bool InlineSwitchFunction::ValidateArguments( String& info, Expression*& arg, component_list::const_iterator i, component_list::const_iterator j ) const
 {
-   if ( Distance( i, j ) < 3 || (Distance( i, j ) & 1) == 0 )
+   distance_type n = Distance( i, j );
+   if ( n < 3 || (n & 1) == 0 )
    {
       info = "iswitch() takes an odd number n >= 3 of arguments";
       return false;
@@ -4021,4 +4074,4 @@ Expression::component_list InlineSwitchFunction::Optimized() const
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF Function.cpp - Released 2021-01-21T15:55:53Z
+// EOF Function.cpp - Released 2021-01-23T18:24:14Z

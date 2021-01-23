@@ -4,9 +4,9 @@
 //  / ____// /___ / /___   PixInsight Class Library
 // /_/     \____//_____/   PCL 2.4.7
 // ----------------------------------------------------------------------------
-// Standard PixelMath Process Module Version 1.7.3
+// Standard PixelMath Process Module Version 1.8.0
 // ----------------------------------------------------------------------------
-// PixelMathInstance.cpp - Released 2021-01-21T15:55:53Z
+// PixelMathInstance.cpp - Released 2021-01-23T18:24:14Z
 // ----------------------------------------------------------------------------
 // This file is part of the standard PixelMath PixInsight module.
 //
@@ -1272,7 +1272,7 @@ bool PixelMathInstance::ExecuteOn( View& view )
                   if ( I != nullptr )
                   {
                      if ( !I->FindImage() )
-                        throw ParseError( "Image not found", p_expression[c], I->TokenPosition() );
+                        throw ParseError( "No such image", p_expression[c], I->TokenPosition() );
 
                      if ( I->Id() == targetId )
                         isTargetReferenced = true;
@@ -1688,7 +1688,7 @@ bool PixelMathInstance::ExecuteGlobal()
                   if ( I != nullptr )
                   {
                      if ( !I->FindImage() )
-                        throw ParseError( "Image not found", p_expression[c], I->TokenPosition() );
+                        throw ParseError( "No such image", p_expression[c], I->TokenPosition() );
 
                      if ( I->Image()->Width() != p_newImageWidth || I->Image()->Height() != p_newImageHeight )
                      {
@@ -2030,4 +2030,4 @@ size_type PixelMathInstance::ParameterLength( const MetaParameter* p, size_type 
 } // pcl
 
 // ----------------------------------------------------------------------------
-// EOF PixelMathInstance.cpp - Released 2021-01-21T15:55:53Z
+// EOF PixelMathInstance.cpp - Released 2021-01-23T18:24:14Z
