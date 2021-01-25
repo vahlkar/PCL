@@ -144,8 +144,7 @@ void Tokenize( token_set& t, const String& s )
             tokens << new Token( String( i+1, j ), i-s.Begin(), true );
          }
          else if ( IsoCharTraits::IsDigit( *i )
-                || IsoCharTraits::IsDecimalSeparator( *i )
-                || IsoCharTraits::IsSign( *i ) && i+1 < s.End() && IsoCharTraits::IsDigit( *(i+1) ) )
+                || IsoCharTraits::IsDecimalSeparator( *i ) )
          {
             /*
              * Numeric literal

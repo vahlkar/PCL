@@ -52,13 +52,13 @@
 
 #define MODULE_VERSION_MAJOR     1
 #define MODULE_VERSION_MINOR     8
-#define MODULE_VERSION_REVISION  0
+#define MODULE_VERSION_REVISION  1
 #define MODULE_VERSION_BUILD     0
 #define MODULE_VERSION_LANGUAGE  eng
 
 #define MODULE_RELEASE_YEAR      2021
 #define MODULE_RELEASE_MONTH     1
-#define MODULE_RELEASE_DAY       23
+#define MODULE_RELEASE_DAY       24
 
 #include "PixelMathInterface.h"
 #include "PixelMathModule.h"
