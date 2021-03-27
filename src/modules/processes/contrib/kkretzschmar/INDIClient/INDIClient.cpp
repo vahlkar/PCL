@@ -123,7 +123,7 @@ INDIClient* INDIClient::TheClient(uint32_t interfaceIndex)
 
 INDIClient* INDIClient::TheClientOrDie()
 {
-   if ( s_indiClient == nullptr )
+   if ( s_indiClient[s_networkInterfaceIndex] == nullptr )
       throw Error( "The Indigo device controller has not been initialized" );
    return s_indiClient[s_networkInterfaceIndex];
 }

@@ -352,110 +352,7 @@ bool INDIMountInstance::ExecuteGlobal()
 
 bool INDIMountInstance::ExecuteOn( View& view )
 {
-   double telescopePointingRA, telescopePointingDec;
-   double observationCenterRA = -1, observationCenterDec = -91;
-   {
-      AutoViewLock lock( view );
-      // Instrument:Telescope:Pointing coordinates represent the coordinates the mount/telescope is pointing at
-      // given w.r.t epoch J2000.
-      Variant ra = view.PropertyValue( "Instrument:Telescope:Pointing:RA" );
-      Variant dec = view.PropertyValue( "Instrument:Telescope:Pointing:Dec" );
-      if ( !ra.IsValid() || !dec.IsValid() )
-         throw Error( "The view does not define valid telescope pointing coordinates." );
-      telescopePointingRA = ra.ToDouble() / 15;
-      telescopePointingDec = dec.ToDouble();
-
-      if ( view.HasProperty( "Observation:Center:RA" ) && view.HasProperty( "Observation:Center:Dec" ) )
-      {
-         // Observation:Center coordinates represent the coordinates of the image center
-         // and must be given w.r.t epoch J2000. Due to pointing error sources, like bad alignment, these coordinates
-         // are usually different from the Telescope:Pointing coordinates.  These coordinates can be determined in plate solving algorithms, e.g. with the PixInsight ImageSolver script.
-         ra = view.PropertyValue( "Observation:Center:RA" );
-         dec = view.PropertyValue( "Observation:Center:Dec" );
-         if ( !ra.IsValid() || !dec.IsValid() )
-            throw Error( "The view does not define valid observation center coordinates." );
-         observationCenterRA = ra.ToDouble() / 15;
-         observationCenterDec = dec.ToDouble();
-      }
-      else
-      {
-         // OBJCTRA, OBJCTDEC must be given w.r.t epoch J2000
-         FITSKeywordArray keywords;
-         view.Window().GetKeywords( keywords );
-         for ( auto k : keywords )
-            if ( k.name == "OBJCTRA" )
-               k.StripValueDelimiters().TrySexagesimalToDouble( observationCenterRA, ' ' );
-            else if ( k.name == "OBJCTDEC" )
-               k.StripValueDelimiters().TrySexagesimalToDouble( observationCenterDec, ' ' );
-         if ( observationCenterRA < 0 || observationCenterDec < -90 )
-            throw Error( "The view does not define image center coordinates." );
-         Console().WarningLn( "<end><cbr>Warning: Retrieved image center coordinates from obsolete FITS keywords 'OBJCTRA' and 'OBJCTDEC'" );
-      }
-   }
-
-   // Current coordinates are given JNow coordinates
-   GetCurrentCoordinates();
-
-   // delta coordinates are independent to epoch
-   double deltaRA = telescopePointingRA - observationCenterRA;
-   double deltaDec = telescopePointingDec - observationCenterDec;
-
-   if ( o_currentLST >= 0 ) // ### N.B.: o_currentLST < 0 if LST property could not be retrieved
-   {
-      double currentHourAngle = AlignmentModel::RangeShiftHourAngle( o_currentLST - o_currentRA );
-      double newHourAngle = currentHourAngle - deltaRA;
-      if ( ( currentHourAngle < 0 ) != ( newHourAngle < 0 ) )
-         if ( MessageBox( "<p>New center right ascension coordinate crosses the meridian, and will possibly trigger a meridian flip.</p>"
-                          "<p><b>Continue?</b></p>",
-                          Meta()->Id(),
-                          StdIcon::Warning,
-                          StdButton::Yes, StdButton::No ).Execute() != StdButton::Yes )
-         {
-            return false;
-         }
-   }
-
-   // Save original parameter values
-   pcl_enum storedCommand = p_command;
-   double storedTargetRA = p_targetRA;
-   double storedTargetDec = p_targetDec;
-   bool stored_alignmentMode = this->p_enableAlignmentCorrection;
-   pcl_bool storedEnableAlignmentCorrection = p_enableAlignmentCorrection;
-
-   try
-   {
-      p_command = IMCCommand::GoTo;
-      // target coordinates already consider mount epoch here, since an ExecuteOn operation
-      // only makes sense if the mount did a goto operation before. TODO: check that
-      p_targetRA = AlignmentModel::RangeShiftRightAscension( p_targetRA + deltaRA );
-      p_targetDec = p_targetDec + deltaDec;
-      p_enableAlignmentCorrection = false;
-
-      Console().WriteLn( "<end><cbr>Applying differential correction: dRA = "
-         + String::ToSexagesimal( deltaRA,
-            SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
-         + ", dDec = "
-         + String::ToSexagesimal( deltaDec,
-            SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) ) );
-
-      INDIMountInstanceExecution( *this ).Perform();
-
-      // Restore original parameter values
-      p_command = storedCommand;
-      p_targetRA = storedTargetRA;
-      p_targetDec = storedTargetDec;
-      p_enableAlignmentCorrection = stored_alignmentMode;
-      p_enableAlignmentCorrection = storedEnableAlignmentCorrection;
-      return true;
-   }
-   catch ( ... )
-   {
-      p_command = storedCommand;
-      p_targetRA = storedTargetRA;
-      p_targetDec = storedTargetDec;
-      p_enableAlignmentCorrection = storedEnableAlignmentCorrection;
-      throw;
-   }
+   return INDIMountInstanceExecution( *this ).Perform(view);
 }
 
 // ----------------------------------------------------------------------------
@@ -1235,6 +1132,109 @@ void AbstractINDIMountExecution::Perform()
 }
 
 // ----------------------------------------------------------------------------
+
+
+bool AbstractINDIMountExecution::Perform(View& view)
+{
+   double telescopePointingRA, telescopePointingDec;
+   double observationCenterRA = -1, observationCenterDec = -91;
+   {
+      AutoViewLock lock( view );
+      // Instrument:Telescope:Pointing coordinates represent the coordinates the mount/telescope is pointing at
+      // given w.r.t epoch J2000.
+      Variant ra = view.PropertyValue( "Instrument:Telescope:Pointing:RA" );
+      Variant dec = view.PropertyValue( "Instrument:Telescope:Pointing:Dec" );
+      if ( !ra.IsValid() || !dec.IsValid() )
+         throw Error( "The view does not define valid telescope pointing coordinates." );
+      telescopePointingRA = ra.ToDouble() / 15;
+      telescopePointingDec = dec.ToDouble();
+
+      if ( view.HasProperty( "Observation:Center:RA" ) && view.HasProperty( "Observation:Center:Dec" ) )
+      {
+         // Observation:Center coordinates represent the coordinates of the image center
+         // and must be given w.r.t epoch J2000. Due to pointing error sources, like bad alignment, these coordinates
+         // are usually different from the Telescope:Pointing coordinates.  These coordinates can be determined in plate solving algorithms, e.g. with the PixInsight ImageSolver script.
+         ra = view.PropertyValue( "Observation:Center:RA" );
+         dec = view.PropertyValue( "Observation:Center:Dec" );
+         if ( !ra.IsValid() || !dec.IsValid() )
+            throw Error( "The view does not define valid observation center coordinates." );
+         observationCenterRA = ra.ToDouble() / 15;
+         observationCenterDec = dec.ToDouble();
+      }
+      else
+      {
+         // OBJCTRA, OBJCTDEC must be given w.r.t epoch J2000
+         FITSKeywordArray keywords;
+         view.Window().GetKeywords( keywords );
+         for ( auto k : keywords )
+            if ( k.name == "OBJCTRA" )
+               k.StripValueDelimiters().TrySexagesimalToDouble( observationCenterRA, ' ' );
+            else if ( k.name == "OBJCTDEC" )
+               k.StripValueDelimiters().TrySexagesimalToDouble( observationCenterDec, ' ' );
+         if ( observationCenterRA < 0 || observationCenterDec < -90 )
+            throw Error( "The view does not define image center coordinates." );
+         Console().WarningLn( "<end><cbr>Warning: Retrieved image center coordinates from obsolete FITS keywords 'OBJCTRA' and 'OBJCTDEC'" );
+      }
+   }
+
+   // Current coordinates are given JNow coordinates
+   m_instance.GetCurrentCoordinates();
+
+   // delta coordinates are independent to epoch
+   double deltaRA = telescopePointingRA - observationCenterRA;
+   double deltaDec = telescopePointingDec - observationCenterDec;
+
+   if ( m_instance.o_currentLST >= 0 ) // ### N.B.: o_currentLST < 0 if LST property could not be retrieved
+   {
+      double currentHourAngle = AlignmentModel::RangeShiftHourAngle( m_instance.o_currentLST - m_instance.o_currentRA );
+      double newHourAngle = currentHourAngle - deltaRA;
+      if ( ( currentHourAngle < 0 ) != ( newHourAngle < 0 ) )
+         if ( MessageBox( "<p>New center right ascension coordinate crosses the meridian, and will possibly trigger a meridian flip.</p>"
+                          "<p><b>Continue?</b></p>",
+                          view.Id(),
+                          StdIcon::Warning,
+                          StdButton::Yes, StdButton::No ).Execute() != StdButton::Yes )
+         {
+            return false;
+         }
+   }
+
+   // Save original parameter values
+   pcl_enum storedCommand = m_instance.p_command;
+   double storedTargetRA = m_instance.p_targetRA;
+   double storedTargetDec = m_instance.p_targetDec;
+
+   try
+   {
+      m_instance.p_command = IMCCommand::GoTo;
+      // target coordinates already consider mount epoch here, since an ExecuteOn operation
+      // only makes sense if the mount did a goto operation before. TODO: check that
+      m_instance.p_targetRA = AlignmentModel::RangeShiftRightAscension( m_instance.p_targetRA + deltaRA );
+      m_instance.p_targetDec = m_instance.p_targetDec + deltaDec;
+
+      Console().WriteLn( "<end><cbr>Applying differential correction: dRA = "
+         + String::ToSexagesimal( deltaRA,
+            SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
+         + ", dDec = "
+         + String::ToSexagesimal( deltaDec,
+            SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) ) );
+
+      Perform();
+
+      // Restore original parameter values
+      m_instance.p_command = storedCommand;
+      m_instance.p_targetRA = storedTargetRA;
+      m_instance.p_targetDec = storedTargetDec;
+      return true;
+   }
+   catch ( ... )
+   {
+      m_instance.p_command = storedCommand;
+      m_instance.p_targetRA = storedTargetRA;
+      m_instance.p_targetDec = storedTargetDec;
+      throw;
+   }
+}
 
 void AbstractINDIMountExecution::Abort()
 {

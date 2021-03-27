@@ -91,6 +91,19 @@ REGISTER_MODULE_PARAMETER( ICFExternalFilterWheelDeviceName );
 REGISTER_MODULE_PARAMETER( ICFEnableAlignmentCorrection );
 REGISTER_MODULE_PARAMETER( ICFAlignmentFile );
 REGISTER_MODULE_PARAMETER( ICFTelescopeFocalLength );
+REGISTER_MODULE_PARAMETER( ICFServerURL );
+REGISTER_MODULE_PARAMETER( ICFApplyPlateSolver );
+REGISTER_MODULE_PARAMETER( ICFCenterTarget );
+REGISTER_MODULE_PARAMETER( ICFSolverCatalogName );
+REGISTER_MODULE_PARAMETER( ICFSolverAutoCatalog );
+REGISTER_MODULE_PARAMETER( ICFSolverLimitMagnitude );
+REGISTER_MODULE_PARAMETER( ICFSolverAutoLimitMagnitude );
+REGISTER_MODULE_PARAMETER( ICFSolverStarSensitivity ); 
+REGISTER_MODULE_PARAMETER( ICFSolverNoiseLayers ); 
+REGISTER_MODULE_PARAMETER( ICFSolverAlignmentDevice );
+REGISTER_MODULE_PARAMETER( ICFSolverDistortionCorrection );
+REGISTER_MODULE_PARAMETER( ICFSolverSplineSmoothing ); 
+REGISTER_MODULE_PARAMETER( ICFSolverProjection );
 
 // ----------------------------------------------------------------------------
 
@@ -778,6 +791,30 @@ DEFINE_STRING_PARAMETER_CLASS( ICFAlignmentFile, "alignmentModelFile" );
 // ----------------------------------------------------------------------------
 
 DEFINE_INT32_PARAMETER_CLASS( ICFTelescopeFocalLength, "telescopeAperture", 0, 0, int32_max );
+
+// ----------------------------------------------------------------------------
+
+DEFINE_BOOLEAN_PARAMETER_CLASS( ICFApplyPlateSolver, "applyPlateSolver", false );
+DEFINE_BOOLEAN_PARAMETER_CLASS( ICFCenterTarget, "centerTarget", false );
+DEFINE_STRING_PARAMETER_WITH_DEFAULT_CLASS( ICFServerURL,  "serverURL",  "http://cdsarc.u-strasbg.fr/");
+DEFINE_STRING_PARAMETER_WITH_DEFAULT_CLASS( ICFSolverCatalogName , "solverCatalogName", "GaiaDR2");
+DEFINE_BOOLEAN_PARAMETER_CLASS( ICFSolverAutoCatalog, "solverAutoCatalog", true );
+DEFINE_INT32_PARAMETER_CLASS( ICFSolverLimitMagnitude, "solverLimitMagnitude", 0, 30, 12 );
+DEFINE_BOOLEAN_PARAMETER_CLASS( ICFSolverAutoLimitMagnitude, "solverAutoLimitMagnitude", true );
+DEFINE_FLOAT_PARAMETER_CLASS(ICFSolverStarSensitivity, "solverStarSensitivity", 2, -3, 3, -1); 
+DEFINE_INT32_PARAMETER_CLASS(ICFSolverNoiseLayers, "solverNoiseLayers", 0, 5, 0); 
+#undef ENUM_ITEM
+#define ENUM_ITEM( X ) \
+   case X:             \
+      return "AlignmentDevice_" #X;
+DEFINE_ENUM_PARAMETER_CLASS(ICFSolverAlignmentDevice, "solverAlignmentDevice", ENUM_ITEM(TriangleSimilarity) ENUM_ITEM(PolygonMatching), TriangleSimilarity);
+DEFINE_BOOLEAN_PARAMETER_CLASS( ICFSolverDistortionCorrection, "solverDistortionCorrection", false );
+DEFINE_FLOAT_PARAMETER_CLASS(ICFSolverSplineSmoothing, "solverSplineSmoothing", 3, 0, 0.5, 0.015); 
+#undef ENUM_ITEM
+#define ENUM_ITEM( X ) \
+   case X:             \
+      return "Projection_" #X;
+DEFINE_ENUM_PARAMETER_CLASS(ICFSolverProjection, "solverProjection", ENUM_ITEM(Gnomonic) ENUM_ITEM(Stereographic) ENUM_ITEM(PlateCarree) ENUM_ITEM(Mercator) ENUM_ITEM(HammerAitoff) ENUM_ITEM(ZenithalEqualArea) ENUM_ITEM(Orthographic), Gnomonic);
 
 } // namespace pcl
 

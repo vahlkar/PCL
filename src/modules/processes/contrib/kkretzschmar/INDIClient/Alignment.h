@@ -117,6 +117,8 @@ struct SyncDataPoint
  */
 class AlignmentModel
 {
+protected:
+   static constexpr double c_illformed_condition_bound = 1000;
 public:
 
    AlignmentModel() = default;
@@ -179,7 +181,7 @@ public:
    }
 
    // static methods
-   static Matrix PseudoInverse( const Matrix& );
+   static Matrix PseudoInverse( const Matrix&, double& conditionNumber );
 
    static double RangeShiftHourAngle( double hourAngle )
    {

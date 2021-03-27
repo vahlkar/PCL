@@ -105,13 +105,26 @@ INDICCDFrameProcess::INDICCDFrameProcess()
    new ICFExternalFilterWheelDeviceName( this );
    new ICFEnableAlignmentCorrection( this );
    new ICFAlignmentFile( this );
-
    new ICFClientFrames( this );
    new ICFClientViewId( TheICFClientFramesParameter );
    new ICFClientFilePath( TheICFClientFramesParameter );
    new ICFServerFrames( this );
    new ICFServerFrame( TheICFServerFramesParameter );
    new ICFTelescopeFocalLength( this );
+   new ICFApplyPlateSolver( this );
+   new ICFCenterTarget( this );
+   new ICFServerURL( this );
+   new ICFSolverCatalogName( this );
+   new ICFSolverAutoCatalog( this );
+   new ICFSolverLimitMagnitude( this );
+   new ICFSolverAutoLimitMagnitude( this );
+   new ICFSolverStarSensitivity( this); 
+   new ICFSolverNoiseLayers( this); 
+   new ICFSolverAlignmentDevice( this);
+   new ICFSolverDistortionCorrection( this );
+   new ICFSolverSplineSmoothing( this); 
+   new ICFSolverProjection( this);
+
 }
 
 // ----------------------------------------------------------------------------

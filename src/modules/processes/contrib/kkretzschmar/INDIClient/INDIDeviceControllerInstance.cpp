@@ -162,7 +162,7 @@ bool INDIDeviceControllerInstance::ExecuteGlobal()
             indi = INDIClient::NewClient( p_serverHostName.ToUTF8(), p_serverPort );
             if ( p_verbosity > 0 )
             {
-               console.NoteLn( "<end><cbr>Indigo Control Client --- (C) Klaus Kretzschmar, 2014-2016" );
+               console.NoteLn( "<end><cbr>Indigo Control Client --- (C) Klaus Kretzschmar, 2014-2021" );
                console.Flush();
             }
          }

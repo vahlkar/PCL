@@ -548,6 +548,20 @@ DECLARE_INT32_PARAMETER_CLASS( ICFTelescopeFocalLength );
 
 // ----------------------------------------------------------------------------
 
+DECLARE_BOOLEAN_PARAMETER_CLASS( ICFApplyPlateSolver );
+DECLARE_BOOLEAN_PARAMETER_CLASS( ICFCenterTarget );
+DECLARE_STRING_PARAMETER_WITH_DEFAULT_CLASS( ICFServerURL );
+DECLARE_STRING_PARAMETER_WITH_DEFAULT_CLASS( ICFSolverCatalogName );
+DECLARE_BOOLEAN_PARAMETER_CLASS( ICFSolverAutoCatalog );
+DECLARE_INT32_PARAMETER_CLASS( ICFSolverLimitMagnitude );
+DECLARE_BOOLEAN_PARAMETER_CLASS( ICFSolverAutoLimitMagnitude );
+DECLARE_FLOAT_PARAMETER_CLASS(ICFSolverStarSensitivity); 
+DECLARE_INT32_PARAMETER_CLASS(ICFSolverNoiseLayers); 
+DECLARE_ENUM_PARAMETER(ICFSolverAlignmentDevice, ENUM_ITEM(TriangleSimilarity) ENUM_ITEM(PolygonMatching), TriangleSimilarity);
+DECLARE_BOOLEAN_PARAMETER_CLASS( ICFSolverDistortionCorrection );
+DECLARE_FLOAT_PARAMETER_CLASS(ICFSolverSplineSmoothing); 
+DECLARE_ENUM_PARAMETER(ICFSolverProjection, ENUM_ITEM(Gnomonic) ENUM_ITEM(Stereographic) ENUM_ITEM(PlateCarree) ENUM_ITEM(Mercator) ENUM_ITEM(HammerAitoff) ENUM_ITEM(ZenithalEqualArea) ENUM_ITEM(Orthographic), Gnomonic);
+
 PCL_END_LOCAL
 
 } // namespace pcl

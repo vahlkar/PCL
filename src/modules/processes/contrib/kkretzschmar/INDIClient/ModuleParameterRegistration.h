@@ -110,6 +110,20 @@
       return PARAMETER_NAME;                                       \
    }
 
+#define DEFINE_STRING_PARAMETER_WITH_DEFAULT_CLASS( PARAMETER, PARAMETER_NAME , DEFAULT) \
+   PARAMETER::PARAMETER( MetaProcess* P ) : MetaString( P )                              \
+   {                                                                                     \
+      The##PARAMETER##Parameter = this;                                                  \
+   }                                                                                     \
+   IsoString PARAMETER::Id() const                                                       \
+   {                                                                                     \
+      return PARAMETER_NAME;                                                             \
+   }                                                                                     \
+   String PARAMETER::DefaultValue() const                                                \
+   {                                                                                     \
+      return DEFAULT;                                                                    \
+   }
+
 #define DEFINE_DOUBLE_PARAMETER_CLASS( PARAMETER, PARAMETER_NAME, PRECISION, DEFAULT, MIN, MAX ) \
    PARAMETER::PARAMETER( MetaProcess* P ) : MetaDouble( P )                                      \
    {                                                                                             \
@@ -138,6 +152,62 @@
 
 #define DEFINE_DOUBLE_READ_ONLY_PARAMETER_CLASS( PARAMETER, PARAMETER_NAME, PRECISION, DEFAULT, MIN, MAX ) \
    PARAMETER::PARAMETER( MetaProcess* P ) : MetaDouble( P )                                                \
+   {                                                                                                       \
+      The##PARAMETER##Parameter = this;                                                                    \
+   }                                                                                                       \
+   IsoString PARAMETER::Id() const                                                                         \
+   {                                                                                                       \
+      return PARAMETER_NAME;                                                                               \
+   }                                                                                                       \
+   int PARAMETER::Precision() const                                                                        \
+   {                                                                                                       \
+      return PRECISION;                                                                                    \
+   }                                                                                                       \
+   double PARAMETER::DefaultValue() const                                                                  \
+   {                                                                                                       \
+      return DEFAULT;                                                                                      \
+   }                                                                                                       \
+   double PARAMETER::MinimumValue() const                                                                  \
+   {                                                                                                       \
+      return MIN;                                                                                          \
+   }                                                                                                       \
+   double PARAMETER::MaximumValue() const                                                                  \
+   {                                                                                                       \
+      return MAX;                                                                                          \
+   }                                                                                                       \
+   bool PARAMETER::IsReadOnly() const                                                                      \
+   {                                                                                                       \
+      return true;                                                                                         \
+   }
+
+#define DEFINE_FLOAT_PARAMETER_CLASS( PARAMETER, PARAMETER_NAME, PRECISION, DEFAULT, MIN, MAX ) \
+   PARAMETER::PARAMETER( MetaProcess* P ) : MetaFloat( P )                                      \
+   {                                                                                             \
+      The##PARAMETER##Parameter = this;                                                          \
+   }                                                                                             \
+   IsoString PARAMETER::Id() const                                                               \
+   {                                                                                             \
+      return PARAMETER_NAME;                                                                     \
+   }                                                                                             \
+   int PARAMETER::Precision() const                                                              \
+   {                                                                                             \
+      return PRECISION;                                                                          \
+   }                                                                                             \
+   double PARAMETER::DefaultValue() const                                                        \
+   {                                                                                             \
+      return DEFAULT;                                                                            \
+   }                                                                                             \
+   double PARAMETER::MinimumValue() const                                                        \
+   {                                                                                             \
+      return MIN;                                                                                \
+   }                                                                                             \
+   double PARAMETER::MaximumValue() const                                                        \
+   {                                                                                             \
+      return MAX;                                                                                \
+   }
+
+#define DEFINE_FLOAT_READ_ONLY_PARAMETER_CLASS( PARAMETER, PARAMETER_NAME, PRECISION, DEFAULT, MIN, MAX ) \
+   PARAMETER::PARAMETER( MetaProcess* P ) : MetaFloat( P )                                                \
    {                                                                                                       \
       The##PARAMETER##Parameter = this;                                                                    \
    }                                                                                                       \
@@ -246,6 +316,17 @@
    };                                               \
    extern PARAMETER* The##PARAMETER##Parameter
 
+#define DECLARE_STRING_PARAMETER_WITH_DEFAULT_CLASS( PARAMETER ) \
+   class PARAMETER : public MetaString                           \
+   {                                                             \
+   public:                                                       \
+      PARAMETER( MetaProcess* );                                 \
+      virtual IsoString Id() const;                              \
+      virtual String DefaultValue() const;                       \
+   };                                                            \
+   extern PARAMETER* The##PARAMETER##Parameter
+
+
 #define DECLARE_DOUBLE_PARAMETER_CLASS( PARAMETER ) \
    class PARAMETER : public MetaDouble              \
    {                                                \
@@ -261,6 +342,33 @@
 
 #define DECLARE_DOUBLE_READ_ONLY_PARAMETER_CLASS( PARAMETER ) \
    class PARAMETER : public MetaDouble                        \
+   {                                                          \
+   public:                                                    \
+      PARAMETER( MetaProcess* );                              \
+      virtual IsoString Id() const;                           \
+      virtual int Precision() const;                          \
+      virtual double DefaultValue() const;                    \
+      virtual double MinimumValue() const;                    \
+      virtual double MaximumValue() const;                    \
+      virtual bool IsReadOnly() const;                        \
+   };                                                         \
+   extern PARAMETER* The##PARAMETER##Parameter
+
+#define DECLARE_FLOAT_PARAMETER_CLASS( PARAMETER )  \
+   class PARAMETER : public MetaFloat               \
+   {                                                \
+   public:                                          \
+      PARAMETER( MetaProcess* );                    \
+      virtual IsoString Id() const;                 \
+      virtual int Precision() const;                \
+      virtual double DefaultValue() const;          \
+      virtual double MinimumValue() const;          \
+      virtual double MaximumValue() const;          \
+   };                                               \
+   extern PARAMETER* The##PARAMETER##Parameter
+
+#define DECLARE_FLOAT_READ_ONLY_PARAMETER_CLASS( PARAMETER )  \
+   class PARAMETER : public MetaFloat                         \
    {                                                          \
    public:                                                    \
       PARAMETER( MetaProcess* );                              \
