@@ -54,6 +54,7 @@
 #include "INDICCDFrameParameters.h"
 #include "INDIClient.h"
 #include "INDIMountInterface.h"
+#include "INDIMountInstance.h"
 
 #undef J2000 // #defined in INDI/indicom.h
 
@@ -107,6 +108,19 @@ INDICCDFrameInstance::INDICCDFrameInstance( const MetaProcess* m )
    , p_enableAlignmentCorrection( TheICFEnableAlignmentCorrectionParameter->DefaultValue() )
    , p_alignmentFile( TheICFAlignmentFileParameter->DefaultValue() )
    , p_telescopeFocalLength( TheICFTelescopeFocalLengthParameter->DefaultValue() )
+   , p_applyPlateSolver(TheICFApplyPlateSolverParameter->DefaultValue())
+   , p_centerTarget(TheICFCenterTargetParameter->DefaultValue())
+   , p_serverURL( TheICFServerURLParameter->DefaultValue() )
+   , p_solverCatalogName( TheICFSolverCatalogNameParameter->DefaultValue() )
+   , p_solverAutoCatalog( TheICFSolverAutoCatalogParameter->DefaultValue() )
+   , p_solverLimitMagnitude( TheICFSolverLimitMagnitudeParameter->DefaultValue() )
+   , p_solverAutoLimitMagnitude( TheICFSolverAutoLimitMagnitudeParameter->DefaultValue() )
+   , p_solverStarSensitivity( TheICFSolverStarSensitivityParameter->DefaultValue() )
+   , p_solverNoiseLayers( TheICFSolverNoiseLayersParameter->DefaultValue() )
+   , p_solverAlignmentDevice( TheICFSolverAlignmentDeviceParameter->DefaultValueIndex() )
+   , p_solverDistortionCorrection( TheICFSolverDistortionCorrectionParameter->DefaultValue() )
+   , p_solverSplineSmoothing( TheICFSolverSplineSmoothingParameter->DefaultValue())
+   , p_solverProjection( TheICFSolverProjectionParameter->DefaultValueIndex()) 
 {
 }
 
@@ -154,6 +168,19 @@ void INDICCDFrameInstance::Assign( const ProcessImplementation& p )
       p_enableAlignmentCorrection = x->p_enableAlignmentCorrection;
       p_alignmentFile = x->p_alignmentFile;
       p_telescopeFocalLength = x->p_telescopeFocalLength;
+      p_applyPlateSolver = x->p_applyPlateSolver;
+      p_centerTarget = x->p_centerTarget;
+      p_serverURL = x->p_serverURL;
+      p_solverCatalogName = x->p_solverCatalogName; 
+      p_solverAutoCatalog = x->p_solverAutoCatalog; 
+      p_solverLimitMagnitude = x->p_solverLimitMagnitude;
+      p_solverAutoLimitMagnitude = x->p_solverAutoLimitMagnitude;
+      p_solverStarSensitivity = x->p_solverStarSensitivity;
+      p_solverNoiseLayers = x->p_solverNoiseLayers;
+      p_solverAlignmentDevice = x->p_solverAlignmentDevice;
+      p_solverDistortionCorrection = x->p_solverDistortionCorrection;
+      p_solverSplineSmoothing = x->p_solverSplineSmoothing;
+      p_solverProjection = x->p_solverProjection;
 
       o_clientViewIds = x->o_clientViewIds;
       o_clientFilePaths = x->o_clientFilePaths;
@@ -556,6 +583,156 @@ private:
 
 // ----------------------------------------------------------------------------
 
+class INDIMountInplaceExecution : public AbstractINDIMountExecution
+{
+public:
+
+   INDIMountInplaceExecution( INDIMountInterface* iface )
+      : AbstractINDIMountExecution( *dynamic_cast<INDIMountInstance*>( iface->NewProcess() ) )
+      , m_iface( iface )
+      , m_instanceAuto( &m_instance )
+   {
+   }
+
+   void Abort() override
+   {
+      m_abortRequested = true;
+   }
+
+private:
+
+   INDIMountInterface* m_iface = nullptr;
+   AutoPointer<INDIMountInstance> m_instanceAuto;
+   bool m_abortRequested = false;
+   StandardStatus m_status;
+   StatusMonitor m_monitor;
+   pcl_enum m_command = IMCCommand::Default;
+
+   static size_type TargetDistance( double targetRA, double currentRA, double targetDec, double currentDec )
+   {
+      return RoundInt64( ( Abs( targetRA - currentRA ) + Abs( targetDec - currentDec ) ) * 1e6 );
+   }
+
+   void StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command ) override
+   {
+      //m_iface->m_execution = this;
+      m_command = command;
+
+      switch ( m_command )
+      {
+      case IMCCommand::GoTo:
+      case IMCCommand::Park:
+      case IMCCommand::ParkDefault:
+      case IMCCommand::TestSync:
+      case IMCCommand::Sync:
+      {
+         String targetPosText =
+            "RA = "
+            + String::ToSexagesimal( targetRA,
+               SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, false /*sign*/ ) )
+            + ", Dec = "
+            + String::ToSexagesimal( targetDec,
+               SexagesimalConversionOptions( 3 /*items*/, 2 /*precision*/, true /*sign*/ ) )
+            + ' ';
+
+         switch ( m_command )
+         {
+         case IMCCommand::GoTo:
+            m_monitor.Clear();
+            m_monitor.SetCallback( &m_status );
+            m_monitor.Initialize( "Slewing to " + targetPosText, TargetDistance( targetRA, currentRA, targetDec, currentDec ) );
+            break;
+         case IMCCommand::Park:
+         case IMCCommand::ParkDefault:
+            m_monitor.Clear();
+            m_monitor.SetCallback( &m_status );
+            m_monitor.Initialize( "Parking telescope to " + targetPosText, TargetDistance( targetRA, currentRA, targetDec, currentDec ) );
+            break;
+         case IMCCommand::Sync:
+         case IMCCommand::TestSync:
+            Console().WriteLn( "<end><cbr>Syncing mount: dRA = "
+               + String::ToSexagesimal( targetRA - currentRA,
+                  SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
+               + ", dDec = "
+               + String::ToSexagesimal( targetDec - currentDec,
+                  SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
+               + ", Position: "
+               + targetPosText );
+            break;
+         }
+      }
+      break;
+
+      case IMCCommand::MoveNorthStart:
+         Console().WriteLn( "<end><cbr>Start slewing toward North..." );
+         break;
+      case IMCCommand::MoveSouthStart:
+         Console().WriteLn( "<end><cbr>Start slewing toward South..." );
+         break;
+      case IMCCommand::MoveWestStart:
+         Console().WriteLn( "<end><cbr>Start slewing toward West..." );
+         break;
+      case IMCCommand::MoveEastStart:
+         Console().WriteLn( "<end><cbr>Start slewing toward East..." );
+         break;
+
+      case IMCCommand::MoveNorthStop:
+      case IMCCommand::MoveSouthStop:
+      case IMCCommand::MoveWestStop:
+      case IMCCommand::MoveEastStop:
+         Console().WriteLn( "<end><cbr>Stop slewing." );
+         break;
+
+      default: // ?!
+         break;
+      }
+
+      Module->ProcessEvents();
+   }
+
+   void MountEvent( double targetRA, double currentRA, double targetDec, double currentDec ) override
+   {
+      if ( m_abortRequested )
+         AbstractINDIMountExecution::Abort();
+      else
+      {
+         if ( m_monitor.IsInitialized() )
+         {
+            // Always make sure we have a valid monitor count available.
+            size_type distance = TargetDistance( targetRA, currentRA, targetDec, currentDec );
+            if ( m_monitor.Total() > distance )
+            {
+               size_type delta = m_monitor.Total() - distance;
+               if ( delta > m_monitor.Count() )
+                  m_monitor += delta - m_monitor.Count();
+            }
+         }
+         Module->ProcessEvents();
+      }
+   }
+
+   void EndMountEvent() override
+   {
+      //m_iface->m_execution = nullptr;
+      if ( m_monitor.IsInitialized() )
+         m_monitor.Complete();
+      Module->ProcessEvents();
+   }
+
+   void WaitEvent() override
+   {
+      Module->ProcessEvents();
+   }
+
+   void AbortEvent() override
+   {
+      EndMountEvent();
+   }
+};
+
+// ---------------------------------------------------------------------------
+
+
 bool INDICCDFrameInstance::ExecuteGlobal()
 {
    INDICCDFrameInstanceExecution( *this ).Perform();
@@ -624,6 +801,32 @@ void* INDICCDFrameInstance::LockParameter( const MetaParameter* p, size_type tab
       return p_alignmentFile.Begin();
    if ( p == TheICFTelescopeFocalLengthParameter )
       return &p_telescopeFocalLength;
+   if ( p == TheICFApplyPlateSolverParameter )
+      return &p_applyPlateSolver;
+   if ( p == TheICFCenterTargetParameter )
+      return &p_centerTarget;
+   if ( p == TheICFServerURLParameter )
+      return p_serverURL.Begin();
+   if ( p == TheICFSolverCatalogNameParameter )
+      return p_solverCatalogName.Begin();
+   if ( p == TheICFSolverAutoCatalogParameter )
+      return &p_solverAutoCatalog;
+   if ( p == TheICFSolverLimitMagnitudeParameter )
+      return &p_solverLimitMagnitude;
+   if ( p == TheICFSolverAutoLimitMagnitudeParameter )
+      return &p_solverAutoLimitMagnitude;
+   if ( p == TheICFSolverStarSensitivityParameter )
+      return &p_solverStarSensitivity;
+   if ( p == TheICFSolverNoiseLayersParameter )
+      return &p_solverNoiseLayers;
+   if ( p == TheICFSolverAlignmentDeviceParameter )
+      return &p_solverAlignmentDevice;
+   if ( p == TheICFSolverDistortionCorrectionParameter )
+      return &p_solverDistortionCorrection;
+   if ( p == TheICFSolverSplineSmoothingParameter )
+      return &p_solverSplineSmoothing;
+   if ( p == TheICFSolverProjectionParameter )
+      return &p_solverProjection;
 
    if ( p == TheICFClientViewIdParameter )
       return o_clientViewIds[tableRow].Begin();
@@ -699,7 +902,18 @@ bool INDICCDFrameInstance::AllocateParameter( size_type sizeOrLength, const Meta
       if ( sizeOrLength > 0 )
          p_extFilterWheelDeviceName.SetLength( sizeOrLength );
    }
-
+   else if ( p == TheICFServerURLParameter )
+   {
+      p_serverURL.Clear();
+      if ( sizeOrLength > 0 )
+         p_serverURL.SetLength( sizeOrLength );
+   }
+   else if ( p == TheICFSolverCatalogNameParameter )
+   {
+      p_solverCatalogName.Clear();
+      if ( sizeOrLength > 0 )
+         p_solverCatalogName.SetLength( sizeOrLength );
+   }
    else if ( p == TheICFClientFramesParameter )
    {
       o_clientViewIds.Clear();
@@ -768,6 +982,10 @@ size_type INDICCDFrameInstance::ParameterLength( const MetaParameter* p, size_ty
       return p_extFilterWheelDeviceName.Length();
    if ( p == TheICFAlignmentFileParameter )
       return p_alignmentFile.Length();
+   if ( p == TheICFServerURLParameter )
+      return p_serverURL.Length();
+   if ( p == TheICFSolverCatalogNameParameter )
+      return p_solverCatalogName.Length();
 
    if ( p == TheICFClientFramesParameter )
       return o_clientViewIds.Length();
@@ -980,7 +1198,10 @@ ImageMetadataFromFITSKeywords( const FITSKeywordArray& keywords )
       else if ( k.name == "EQUINOX" )
          data.equinox = value.ToDouble();
       else if ( k.name == "LOCALLST" )
-         data.localSiderealTime = value.SexagesimalToDouble( ' ' );
+         if (value.Contains(':'))
+            data.localSiderealTime = value.SexagesimalToDouble( ':' );
+         else
+            data.localSiderealTime = value.SexagesimalToDouble( ' ' );
       ;
    }
    if ( !data.equinox.IsDefined() )
@@ -1106,7 +1327,6 @@ void AbstractINDICCDFrameExecution::Perform()
       String telescopeName = m_instance.TelescopeDeviceName();
 
       m_instance.SetTelescopeAlignmentModelParameter();
-      m_instance.SetTelescopeFocalLength();
 
       m_instance.SendDeviceProperties( false /*async*/ );
 
@@ -1492,6 +1712,7 @@ void AbstractINDICCDFrameExecution::Perform()
             ImageWindow window;
             bool reusedWindow = false;
 
+            String outputFilePath = m_instance.p_clientDownloadDirectory.Trimmed();
             if ( m_instance.p_saveClientImages )
             {
                ImageVariant image;
@@ -1506,7 +1727,6 @@ void AbstractINDICCDFrameExecution::Perform()
                FileFormat outputFormat( ".xisf", false /*read*/, true /*write*/ );
                FileFormatInstance outputFile( outputFormat );
 
-               String outputFilePath = m_instance.p_clientDownloadDirectory.Trimmed();
                if ( outputFilePath.IsEmpty() )
                {
                   outputFilePath = PixInsightSettings::GlobalString( "ImageWindow/DownloadsDirectory" );
@@ -1666,6 +1886,63 @@ void AbstractINDICCDFrameExecution::Perform()
 
                NewFrameEvent( window, reusedWindow, geometryChanged );
             }
+            if ( m_instance.p_applyPlateSolver)
+               {
+                  
+                  String coreSrcDir = PixInsightSettings::GlobalString( "Application/SrcDirectory" );
+                  ImageMetadata data = ImageMetadataFromFITSKeywords( keywords );
+                  String scriptPath = coreSrcDir + "/scripts/AdP/ImageSolver.js";
+                  StringKeyValueList arguments = StringKeyValueList()
+                                                   << StringKeyValue( "metadata_focal", String( data.focalLength() ) )
+                                                   << StringKeyValue( "metadata_useFocal", "true" )
+                                                   << StringKeyValue( "metadata_xpixsz", String( data.xPixSize() ) )
+                                                   << StringKeyValue( "metadata_ra", String( data.ra() ) )
+                                                   << StringKeyValue( "metadata_dec", String( data.dec() ) )
+                                                   << StringKeyValue( "metadata_epoch", String( data.equinox() ) )
+                                                   << StringKeyValue( "solver_vizierServer", m_instance.p_serverURL )
+                                                   << StringKeyValue( "solver_catalog", m_instance.p_solverCatalogName )
+                                                   << StringKeyValue( "solver_catalogMode", m_instance.p_solverAutoCatalog ? "2" : "1" )
+                                                   << StringKeyValue( "solver_magnitude", String( m_instance.p_solverLimitMagnitude ) )
+                                                   << StringKeyValue( "solver_autoMagnitude", String( bool( m_instance.p_solverAutoLimitMagnitude ) ) )
+                                                   << StringKeyValue( "solver_sensitivity", String( m_instance.p_solverStarSensitivity ) )
+                                                   << StringKeyValue( "solver_noiseLayers", String( m_instance.p_solverNoiseLayers ) )
+                                                   << StringKeyValue( "solver_alignAlgorithm", String( m_instance.p_solverAlignmentDevice ) )
+                                                   << StringKeyValue( "solver_distortionCorrection", String( bool( m_instance.p_solverDistortionCorrection ) ) )
+                                                   << StringKeyValue( "solver_distortedCorners", "false" )
+                                                   << StringKeyValue( "solver_splineSmoothing", String( m_instance.p_solverSplineSmoothing ) )
+                                                   << StringKeyValue( "solver_enableSimplifier", "true" )
+                                                   << StringKeyValue( "solver_simplifierTolerance", "0.25" )
+                                                   << StringKeyValue( "solver_simplifierRejectFraction", "0.1" )
+                                                   << StringKeyValue( "solver_projection", String( m_instance.p_solverProjection ) )
+                                                   << StringKeyValue( "solver_showStars", "false" )
+                                                   << StringKeyValue( "solver_showSimplifiedSurfaces", "false" )
+                                                   << StringKeyValue( "solver_showDistortion", "false" )
+                                                   << StringKeyValue( "solver_generateErrorImg", "false" )
+                                                   << StringKeyValue( "solver_generateDistortModel", "false" )
+                                                   << StringKeyValue( "solver_useDistortionModel", "false" )
+                                                   << StringKeyValue( "solver_onlyOptimize", "false" )
+                                                   << StringKeyValue( "solver_outSuffix", String() )
+                                                   << StringKeyValue( "solver_projectionOriginMode", "0" )
+                                                   << StringKeyValue( "solver_useActive", m_instance.p_openClientImages ? "true" : "false" )
+                                                   << StringKeyValue( "solver_files", m_instance.p_saveClientImages ? outputFilePath : "" )
+                                                   << StringKeyValue( "non_interactive", "true" );
+                  Console().ExecuteScriptGlobal( scriptPath, arguments );
+                  Variant result = Module->EvaluateScript( "__PJSR_AdpImageSolver_SuccessCount" );
+                  if ( !result.IsValid() )
+                     throw Error( "Internal error: Invalid script execution: " + scriptPath );
+                  int successCount = result.ToInt();
+                  if ( successCount != 1 )
+                     throw Error( "Failure to plate solve image: " + window.MainView().Id() );
+
+                  if (m_instance.p_centerTarget)
+                  {
+                     if (TheINDIMountInterface == nullptr)
+                        throw Error( "No mount interface running." );
+
+                     View view = window.MainView();
+                     INDIMountInplaceExecution(TheINDIMountInterface).Perform(view);
+                  }
+               }
          }
       }
 

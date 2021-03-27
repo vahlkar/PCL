@@ -54,6 +54,7 @@
 #include "INDICCDFrameInstance.h"
 #include "INDICCDFrameParameters.h"
 #include "INDICCDFrameProcess.h"
+#include "INDIMountInterface.h"
 #include "INDIDeviceControllerInstance.h"
 
 #include <pcl/Console.h>
@@ -62,6 +63,52 @@
 
 namespace pcl
 {
+
+struct ServerData
+{
+   String name;
+   String url;
+};
+
+struct CatalogData
+{
+   String name;
+   String description;
+};
+
+static Array<ServerData>  s_vizierServers;
+static Array<CatalogData> s_solverCatalogs;
+static bool               s_dataInitialized = false;
+
+
+static void InitializeData()
+{
+   if ( !s_dataInitialized )
+   {
+      s_vizierServers.Clear();
+      s_vizierServers << ServerData{ "CDS Strasbourg, France", "http://cdsarc.u-strasbg.fr/" }
+                      << ServerData{ "ADAC Tokyo, Japan", "http://vizier.nao.ac.jp/" }
+                      << ServerData{ "CADC Victoria, Canada ", "http://vizier.hia.nrc.ca/" }
+                      << ServerData{ "CASU Cambridge, UK", "http://vizier.ast.cam.ac.uk/" }
+                      << ServerData{ "IUCAA Pune, India", "http://vizier.iucaa.ernet.in/" }
+                      << ServerData{ "NAOC Beijing, China", "http://VizieR.china-vo.org/" }
+                      << ServerData{ "INASAN Moscow, Russia", "http://vizier.inasan.ru/" }
+                      << ServerData{ "CFA Harvard, Cambridge, USA", "http://vizier.cfa.harvard.edu/" }
+                      << ServerData{ "JAC Hilo, Hawaii, USA", "http://www.ukirt.hawaii.edu/" }
+                      << ServerData{ "SAAO, South Africa", "http://viziersaao.chpc.ac.za/" };
+
+      s_solverCatalogs.Clear();
+      s_solverCatalogs << CatalogData{ "GaiaEDR3_XPSD", "Gaia Early Data Release 3 - Local XPSD Server (Gaia collaboration, 2020, 1,806,254,432 sources)" }
+                       << CatalogData{ "GaiaDR2_XPSD", "Gaia Data Release 2 - Local XPSD Server (Gaia collaboration, 2018, 1,692,919,135 sources)" }
+                       << CatalogData{ "GaiaDR2", "Gaia Data Release 2 - Online Vizier Service (Gaia collaboration, 2018, 1,692,919,135 sources)" }
+                       << CatalogData{ "PPMXL", "PPMXL catalog (910,469,430 objects)" }
+                       << CatalogData{ "UCAC3", "UCAC3 catalog (100,765,502 objects)" }
+                       << CatalogData{ "TYCHO-2", "Tycho-2 catalog (2,539,913 stars)" }
+                       << CatalogData{ "Bright Stars", "Bright Star Catalog, 5th ed. (Hoffleit+, 9110 stars)" };
+
+      s_dataInitialized = true;
+   }
+}
 
 // ----------------------------------------------------------------------------
 
@@ -320,6 +367,17 @@ ProcessImplementation* INDICCDFrameInterface::NewProcess() const
    instance->p_objectName = GUI->ObjectName_Edit.Text().Trimmed();
    instance->p_telescopeSelection = GUI->TelescopeDevice_Combo.CurrentItem();
    instance->p_extFilterWheelDeviceName = GUI->ExternalFilterDevice_Combo.ItemText( GUI->ExternalFilterDevice_Combo.CurrentItem() );
+   instance->p_applyPlateSolver = GUI->PlateSolving_CheckBox.IsChecked();
+   instance->p_telescopeFocalLength = TheINDIMountInterface != nullptr ? TheINDIMountInterface->TelescopeFocalLength() : 0;
+   instance->p_centerTarget = GUI->CenterTarget_CheckBox.IsChecked();
+   instance->p_solverAutoCatalog = GUI->SolverAutoCatalog_CheckBox.IsChecked();
+   instance->p_solverAutoLimitMagnitude = GUI->SolverAutoLimitMagnitude_CheckBox.IsChecked();
+   instance->p_solverCatalogName = s_solverCatalogs[GUI->SolverCatalog_ComboBox.CurrentItem()].name;
+   instance->p_solverDistortionCorrection = GUI->DistortionCorrection_CheckBox.IsChecked();
+   instance->p_solverNoiseLayers = GUI->NoiseReduction_SpinBox.Value();
+   instance->p_solverProjection = GUI->ProjectionSystem_ComboBox.CurrentItem();
+   instance->p_solverSplineSmoothing = GUI->SplineSmoothing_NumericControl.Value();
+   instance->p_solverStarSensitivity = GUI->StarSensitivity_NumericControl.Value();
    return instance;
 }
 
@@ -362,6 +420,16 @@ bool INDICCDFrameInterface::ImportProcess( const ProcessImplementation& p )
       GUI->ClientDownloadDir_Edit.SetText( instance->p_clientDownloadDirectory );
       GUI->ClientFileNameTemplate_Edit.SetText( instance->p_clientFileNameTemplate );
       GUI->ClientOutputFormatHints_Edit.SetText( instance->p_clientOutputFormatHints );
+      GUI->PlateSolving_CheckBox.SetChecked(instance->p_applyPlateSolver);
+      GUI->CenterTarget_CheckBox.SetChecked(instance->p_centerTarget);
+      GUI->SolverAutoCatalog_CheckBox.SetChecked(instance->p_solverAutoCatalog);
+      GUI->SolverAutoLimitMagnitude_CheckBox.SetChecked(instance->p_solverAutoLimitMagnitude);
+      //instance->p_solverCatalogName = s_solverCatalogs[GUI->SolverCatalog_ComboBox.CurrentItem()].name;
+      GUI->DistortionCorrection_CheckBox.SetChecked(instance->p_solverDistortionCorrection);
+      GUI->NoiseReduction_SpinBox.SetValue(instance->p_solverNoiseLayers);
+      GUI->ProjectionSystem_ComboBox.SetCurrentItem(instance->p_solverProjection);
+      GUI->SplineSmoothing_NumericControl.SetValue(instance->p_solverSplineSmoothing);
+      GUI->StarSensitivity_NumericControl.SetValue(instance->p_solverStarSensitivity);
 
       if ( instance->ValidateDevice( false /*throwErrors*/ ) )
       {
@@ -381,6 +449,8 @@ bool INDICCDFrameInterface::ImportProcess( const ProcessImplementation& p )
 
 INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 {
+   InitializeData();
+
    int emWidth = w.Font().Width( 'm' );
    int labelWidth1 = w.Font().Width( "Server file name template:" ) + emWidth;
    int editWidth1 = 5 * emWidth;
@@ -702,6 +772,24 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    LinkedAutoStretch_Sizer.Add( LinkedAutoStretch_CheckBox );
    LinkedAutoStretch_Sizer.AddStretch();
 
+   PlateSolving_CheckBox.SetText( "Apply astrometric solution" );
+   PlateSolving_CheckBox.Uncheck();
+   PlateSolving_CheckBox.SetToolTip( "<p>Apply astrometic solution to newly acquired frames.</p>" );
+
+   PlateSolving_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   PlateSolving_Sizer.Add( PlateSolving_CheckBox );
+   PlateSolving_Sizer.AddStretch();
+
+   CenterTarget_CheckBox.SetText( "Center target" );
+   CenterTarget_CheckBox.Uncheck();
+   CenterTarget_CheckBox.SetToolTip( "<p>If enabled, compute the distance of the target coordinates from the actual image center " 
+                                      "and apply a correction to compensate this deviation.</p>"
+                                      "<p>Requires an astrometric solution of the active image view. </p>" );
+   
+   CenterTarget_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   CenterTarget_Sizer.Add( CenterTarget_CheckBox );
+   CenterTarget_Sizer.AddStretch();
+
    SaveClientFrames_CheckBox.SetText( "Save client frames" );
    SaveClientFrames_CheckBox.SetToolTip( "<p>Save newly acquired frames to local image files in XISF format.</p>" );
 
@@ -788,7 +876,9 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    ClientParameters_Sizer.Add( OpenClientFrames_Sizer );
    ClientParameters_Sizer.Add( ReuseImageWindow_Sizer );
    ClientParameters_Sizer.Add( AutoStretch_Sizer );
-   ClientParameters_Sizer.Add( LinkedAutoStretch_Sizer );
+   ClientParameters_Sizer.Add( LinkedAutoStretch_Sizer );   
+   ClientParameters_Sizer.Add( PlateSolving_Sizer );
+   ClientParameters_Sizer.Add( CenterTarget_Sizer ) ; 
    ClientParameters_Sizer.Add( SaveClientFrames_Sizer );
    ClientParameters_Sizer.Add( OverwriteClientFrames_Sizer );
    ClientParameters_Sizer.Add( ClientDownloadDir_HSizer );
@@ -952,6 +1042,270 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
 
    //
 
+      //
+
+   PlateSolverParameters_SectionBar.SetTitle( "Plate Solving Parameters" );
+   PlateSolverParameters_SectionBar.SetSection( PlateSolverParameters_Control );
+
+   //
+
+   SolverAutoCatalog_CheckBox.SetText( "Automatic catalog" );
+   SolverAutoCatalog_CheckBox.SetToolTip( "<p>When this option is enabled, PhotometricColorCalibration will select an optimal "
+      "astrometric catalog for the field of view of the target image.</p>"
+      "<p>Enabling this option is recommended under normal working conditions.</p>" );
+   SolverAutoCatalog_CheckBox.Check();
+   SolverAutoCatalog_CheckBox.OnClick( (Button::click_event_handler)&INDICCDFrameInterface::e_Click, w );
+
+   SolverAutoCatalog_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   SolverAutoCatalog_Sizer.Add( SolverAutoCatalog_CheckBox );
+   SolverAutoCatalog_Sizer.AddStretch();
+
+   //
+
+   const char* solverCatalogToolTip = "<p>This is the catalog used to acquire positions and proper motions of stars for "
+      "plate solving the target image.</p>"
+      "<p>Under normal working conditions, you should select the <i>Automatic catalog</i> option to use an optimal catalog "
+      "selected as a function of the field of view of the image.</p>"
+      "<p>When using a manually selected catalog, you should select the appropriate catalog for your image. For example, for "
+      "very wide field images (focal lengths smaller than 25 mm), you should use the Bright Stars catalog because it provides "
+      "enough stars and the queries are fast for large fields. Gaia and PPMXL are useful for very deep images because they "
+      "include very dim stars; however, online queries in these two catalogs can be slow for relatively large fields.</p>"
+      "<p>If you have a Gaia XPSD server configured with local database files, you should use it in all cases except when the "
+      "Bright Stars catalog is applicable.</p>";
+
+   SolverCatalog_Label.SetText( "Astrometry catalog:" );
+   SolverCatalog_Label.SetFixedWidth( labelWidth1 );
+   SolverCatalog_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   SolverCatalog_Label.SetToolTip( solverCatalogToolTip );
+
+   for ( const CatalogData& catalog : s_solverCatalogs )
+      SolverCatalog_ComboBox.AddItem( catalog.name );
+   SolverCatalog_ComboBox.SetToolTip( solverCatalogToolTip );
+   SolverCatalog_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&INDICCDFrameInterface::e_ItemSelected, w );
+
+   SolverCatalog_Sizer.SetSpacing( 4 );
+   SolverCatalog_Sizer.Add( SolverCatalog_Label );
+   SolverCatalog_Sizer.Add( SolverCatalog_ComboBox );
+   SolverCatalog_Sizer.AddStretch();
+
+   //
+
+   SolverAutoLimitMagnitude_CheckBox.SetText( "Automatic limit magnitude" );
+   SolverAutoLimitMagnitude_CheckBox.Check();
+   SolverAutoLimitMagnitude_CheckBox.SetToolTip( "<p>When this option is enabled, PhotometricColorCalibration will select an optimal "
+      "limit magnitude for plate solving based on the field of view and center coordinates of the target image. Enabling this option "
+      "is recommended under normal working conditions.</p>" );
+   SolverAutoLimitMagnitude_CheckBox.OnClick( (Button::click_event_handler)&INDICCDFrameInterface::e_Click, w );
+
+   SolverAutoLimitMagnitude_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   SolverAutoLimitMagnitude_Sizer.Add( SolverAutoLimitMagnitude_CheckBox );
+   SolverAutoLimitMagnitude_Sizer.AddStretch();
+
+   //
+
+   const char* solverLimitMagnitudeToolTip = "<p>This parameter limits the number of stars extracted from the catalog to those "
+      "with magnitude smaller than this value. This limit magnitude should be similar to the magnitude of the dimmest stars in the image. "
+      "If this value is too low, the plate solving algorithm may not have enough stars to compare, but if the value is too high, it will "
+      "try to match catalog stars that are not visible on the image. This will slow down the process, and could prevent the algorithm "
+      "from finding a valid solution in extreme cases.</p>";
+
+   SolverLimitMagnitude_Label.SetText( "Limit magnitude:" );
+   SolverLimitMagnitude_Label.SetFixedWidth( labelWidth1 );
+   SolverLimitMagnitude_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   SolverLimitMagnitude_Label.SetToolTip( solverLimitMagnitudeToolTip );
+
+   SolverLimitMagnitude_SpinBox.SetRange( int( TheICFSolverLimitMagnitudeParameter->MinimumValue() ),
+                                          int( TheICFSolverLimitMagnitudeParameter->MaximumValue() ) );
+   SolverLimitMagnitude_SpinBox.SetToolTip( solverLimitMagnitudeToolTip );
+   SolverLimitMagnitude_SpinBox.SetValue(12);
+
+   SolverLimitMagnitude_Sizer.SetSpacing( 4 );
+   SolverLimitMagnitude_Sizer.Add( SolverLimitMagnitude_Label );
+   SolverLimitMagnitude_Sizer.Add( SolverLimitMagnitude_SpinBox );
+   SolverLimitMagnitude_Sizer.AddStretch();
+
+   //
+
+   DistortionCorrection_CheckBox.SetText( "Distortion correction" );
+   DistortionCorrection_CheckBox.SetToolTip( "<p>This option enables a distortion correction algorithm based on 2-D surface splines, "
+      "also known as <i>thin plates</i>. This option should always be selected when the target image suffers from significant "
+      "distortions, or if it deviates significantly from an ideal projected image, which usually happens in images taken with focal "
+      "lengths shorter than 400 mm.</p>" );
+   DistortionCorrection_CheckBox.OnClick( (Button::click_event_handler)&INDICCDFrameInterface::e_Click, w );
+
+   DistortionCorrection_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   DistortionCorrection_Sizer.Add( DistortionCorrection_CheckBox );
+   DistortionCorrection_Sizer.AddStretch();
+
+   //
+
+   ForcePlateSolve_CheckBox.SetText( "Force plate solving" );
+   ForcePlateSolve_CheckBox.SetToolTip( "<p>If enabled, the target image will be solved even if it contains a valid astrometric "
+      "solution, which will be replaced with a newly computed one. See also the <i>Ignore existing metadata</i> option.</p>" );
+   ForcePlateSolve_CheckBox.OnClick( (Button::click_event_handler)&INDICCDFrameInterface::e_Click, w );
+
+   ForcePlateSolve_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   ForcePlateSolve_Sizer.Add( ForcePlateSolve_CheckBox );
+   ForcePlateSolve_Sizer.AddStretch();
+
+   //
+
+   IgnorePositionAndScale_CheckBox.SetText( "Ignore existing metadata" );
+   IgnorePositionAndScale_CheckBox.SetToolTip( "<p>If enabled, existing metadata will be ignored and the values set by the "
+      "running instance, that is, on this interface, will be used instead. This includes the right ascension and declination "
+      "coordinates of the center of the image, the focal length, pixel size and observation date. If disabled, existing metadata "
+      "will take precedence over the values defined by this instance.</p>"
+      "<p>Note that for this option to take effect the image must be solved astrometrically, either because the <i>Force plate "
+      "solving</i> option is enabled, or because the image has no valid astrometric solution.</p>" );
+   IgnorePositionAndScale_CheckBox.OnClick( (Button::click_event_handler)&INDICCDFrameInterface::e_Click, w );
+
+   //
+
+   const char* resetSolverToolTip = "<p>Reset configuration settings for the ImageSolver script.</p>"
+      "<p>This is normally not necessary, since scripts manage their own configuration settings internally. However, "
+      "sometimes there are configuration parameters that may become wrong or corrupted for a variety of reasons. Use this "
+      "option to initialize all working parameters of the ImageSolver script to factory-default values.</p>";
+
+   ResetSolverConfiguration_ToolButton.SetIcon( Bitmap( w.ScaledResource( ":/icons/reload.png" ) ) );
+   ResetSolverConfiguration_ToolButton.SetScaledFixedSize( 22, 22 );
+   ResetSolverConfiguration_ToolButton.SetToolTip( resetSolverToolTip );
+   ResetSolverConfiguration_ToolButton.OnClick( (Button::click_event_handler)&INDICCDFrameInterface::e_Click, w );
+
+   //
+
+   IgnorePositionAndScale_Sizer.AddUnscaledSpacing( labelWidth1 + ui4 );
+   IgnorePositionAndScale_Sizer.Add( IgnorePositionAndScale_CheckBox );
+   IgnorePositionAndScale_Sizer.AddStretch();
+   IgnorePositionAndScale_Sizer.Add( ResetSolverConfiguration_ToolButton );
+
+   //
+
+   PlateSolverParameters_Sizer.SetSpacing( 4 );
+   PlateSolverParameters_Sizer.Add( SolverAutoCatalog_Sizer );
+   PlateSolverParameters_Sizer.Add( SolverCatalog_Sizer );
+   PlateSolverParameters_Sizer.Add( SolverAutoLimitMagnitude_Sizer );
+   PlateSolverParameters_Sizer.Add( SolverLimitMagnitude_Sizer );
+   PlateSolverParameters_Sizer.Add( DistortionCorrection_Sizer );
+   PlateSolverParameters_Sizer.Add( ForcePlateSolve_Sizer );
+   PlateSolverParameters_Sizer.Add( IgnorePositionAndScale_Sizer );
+
+   PlateSolverParameters_Control.SetSizer( PlateSolverParameters_Sizer );
+
+   //
+
+   AdvancedPlateSolverParameters_SectionBar.SetTitle( "Advanced Plate Solving Parameters" );
+   AdvancedPlateSolverParameters_SectionBar.SetSection( AdvancedPlateSolverParameters_Control );
+
+   //
+
+   const char* projectionSystemToolTip = "<p>Most images can be solved using the default Gnomonic projection, since it can "
+      "approximate how most optical systems project an image on the focal plane. However, some images, especially very "
+      "wide-field images (focal lengths less than 10-15 mm), usually require different projections to find a consistent solution. "
+      "Several projections are provided besides Gnomonic, which can be more suitable for wide angle images.</p>";
+
+   ProjectionSystem_Label.SetText( "Projection system:" );
+   ProjectionSystem_Label.SetFixedWidth( labelWidth1 );
+   ProjectionSystem_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   ProjectionSystem_Label.SetToolTip( projectionSystemToolTip );
+
+   // N.B.: Items must be coherent with the ImageSolver script.
+   ProjectionSystem_ComboBox.AddItem( "Gnomonic" );
+   ProjectionSystem_ComboBox.AddItem( "Stereographic" );
+   ProjectionSystem_ComboBox.AddItem( u"Plate carrée" );
+   ProjectionSystem_ComboBox.AddItem( "Mercator" );
+   ProjectionSystem_ComboBox.AddItem( "Hammer-Aitoff" );
+   ProjectionSystem_ComboBox.AddItem( "Zenithal equal area" );
+   ProjectionSystem_ComboBox.AddItem( "Orthographic" );
+   ProjectionSystem_ComboBox.SetToolTip( projectionSystemToolTip );
+   ProjectionSystem_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&INDICCDFrameInterface::e_ItemSelected, w );
+
+   ProjectionSystem_Sizer.SetSpacing( 4 );
+   ProjectionSystem_Sizer.Add( ProjectionSystem_Label );
+   ProjectionSystem_Sizer.Add( ProjectionSystem_ComboBox );
+   ProjectionSystem_Sizer.AddStretch();
+
+   //
+
+   StarSensitivity_NumericControl.label.SetText( "Log(sensitivity):" );
+   StarSensitivity_NumericControl.label.SetFixedWidth( labelWidth1 );
+   StarSensitivity_NumericControl.slider.SetRange( 0, 50 );
+   StarSensitivity_NumericControl.slider.SetScaledMinWidth( 250 );
+   StarSensitivity_NumericControl.SetReal();
+   StarSensitivity_NumericControl.SetRange( TheICFSolverStarSensitivityParameter->MinimumValue(), TheICFSolverStarSensitivityParameter->MaximumValue() );
+   StarSensitivity_NumericControl.SetPrecision( TheICFSolverStarSensitivityParameter->Precision() );
+   StarSensitivity_NumericControl.SetToolTip( "<p>Logarithm of the star detection sensitivity. Increase this parameter to "
+      "detect less stars. The default value of -1 is normally appropriate for most linear images.</p>" );
+   
+   //
+
+   const char* noiseReductionToolTip = "<p>Some images have so much noise that the star detection algorithm can mistake "
+      "noise for stars. This parameter removes noise from the image in order to improve star detection. This value is the "
+      "number of wavelet layers that will be removed for noise reduction. Use 0 for no noise reduction.</p>";
+
+   NoiseReduction_Label.SetText( "Noise reduction:" );
+   NoiseReduction_Label.SetFixedWidth( labelWidth1 );
+   NoiseReduction_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   NoiseReduction_Label.SetToolTip( noiseReductionToolTip );
+
+   NoiseReduction_SpinBox.SetRange( int( TheICFSolverNoiseLayersParameter->MinimumValue() ),
+                                    int( TheICFSolverNoiseLayersParameter->MaximumValue() ) );
+   NoiseReduction_SpinBox.SetToolTip( noiseReductionToolTip );
+//    NoiseReduction_SpinBox.SetFixedWidth( editWidth1 );
+
+   NoiseReduction_Sizer.SetSpacing( 4 );
+   NoiseReduction_Sizer.Add( NoiseReduction_Label );
+   NoiseReduction_Sizer.Add( NoiseReduction_SpinBox );
+   NoiseReduction_Sizer.AddStretch();
+
+   //
+
+   const char* alignmentDeviceToolTip = "<p>The algorithmic device used for star matching during the initial image "
+      "registration step. Triangle similarity works for most images and supports specular transformations, that is, images "
+      "mirrored horizontally or vertically. Polygon matching is much more robust and tolerant of distortions, but does not "
+      "support mirrored images.</p>";
+
+   AlignmentDevice_Label.SetText( "Alignment device:" );
+   AlignmentDevice_Label.SetFixedWidth( labelWidth1 );
+   AlignmentDevice_Label.SetTextAlignment( TextAlign::Right|TextAlign::VertCenter );
+   AlignmentDevice_Label.SetToolTip( alignmentDeviceToolTip );
+
+   // N.B.: Items must be coherent with the ImageSolver script.
+   AlignmentDevice_ComboBox.AddItem( "Triangle similarity" );
+   AlignmentDevice_ComboBox.AddItem( "Polygon matching" );
+   AlignmentDevice_ComboBox.SetToolTip( alignmentDeviceToolTip );
+   AlignmentDevice_ComboBox.OnItemSelected( (ComboBox::item_event_handler)&INDICCDFrameInterface::e_ItemSelected, w );
+
+   AlignmentDevice_Sizer.SetSpacing( 4 );
+   AlignmentDevice_Sizer.Add( AlignmentDevice_Label );
+   AlignmentDevice_Sizer.Add( AlignmentDevice_ComboBox );
+   AlignmentDevice_Sizer.AddStretch();
+
+   //
+
+   SplineSmoothing_NumericControl.label.SetText( "Spline smoothing:" );
+   SplineSmoothing_NumericControl.label.SetFixedWidth( labelWidth1 );
+   SplineSmoothing_NumericControl.slider.SetRange( 0, 1000 );
+   SplineSmoothing_NumericControl.slider.SetScaledMinWidth( 250 );
+   SplineSmoothing_NumericControl.SetReal();
+   SplineSmoothing_NumericControl.SetRange( TheICFSolverSplineSmoothingParameter->MinimumValue(), TheICFSolverSplineSmoothingParameter->MaximumValue() );
+   SplineSmoothing_NumericControl.SetPrecision( TheICFSolverSplineSmoothingParameter->Precision() );
+   SplineSmoothing_NumericControl.SetToolTip( "<p>When nonzero, this parameter causes the distortion correction algorithm to "
+      "use approximating instead of interpolating surface splines (thin plates). Approximating surface splines are robust to "
+      "outliers in the distortion correction model, including uncertainty in star detection, moving asteroids and other varying "
+      "image features that can be accidentally interpreted and matched as stars.</p>" );
+   
+   //
+
+   AdvancedPlateSolverParameters_Sizer.SetSpacing( 4 );
+   AdvancedPlateSolverParameters_Sizer.Add( ProjectionSystem_Sizer );
+   AdvancedPlateSolverParameters_Sizer.Add( StarSensitivity_NumericControl );
+   AdvancedPlateSolverParameters_Sizer.Add( NoiseReduction_Sizer );
+   AdvancedPlateSolverParameters_Sizer.Add( AlignmentDevice_Sizer );
+   AdvancedPlateSolverParameters_Sizer.Add( SplineSmoothing_NumericControl );
+
+   AdvancedPlateSolverParameters_Control.SetSizer( AdvancedPlateSolverParameters_Sizer );
+
+
    Global_Sizer.SetMargin( 8 );
    Global_Sizer.SetSpacing( 6 );
    Global_Sizer.Add( ServerParameters_SectionBar );
@@ -960,8 +1314,17 @@ INDICCDFrameInterface::GUIData::GUIData( INDICCDFrameInterface& w )
    Global_Sizer.Add( ClientParameters_Control );
    Global_Sizer.Add( FrameAcquisition_SectionBar );
    Global_Sizer.Add( FrameAcquisition_Control );
+   Global_Sizer.Add( PlateSolverParameters_SectionBar );
+   Global_Sizer.Add( PlateSolverParameters_Control );
+   Global_Sizer.Add( AdvancedPlateSolverParameters_SectionBar );
+   Global_Sizer.Add( AdvancedPlateSolverParameters_Control );
 
    w.SetSizer( Global_Sizer );
+
+   PlateSolverParameters_SectionBar.Disable();
+   AdvancedPlateSolverParameters_SectionBar.Disable();
+   PlateSolverParameters_Control.Hide();
+   AdvancedPlateSolverParameters_Control.Hide();
 
    w.EnsureLayoutUpdated();
    w.AdjustToContents();
@@ -1002,6 +1365,7 @@ void INDICCDFrameInterface::UpdateControls()
       GUI->CCDProperties_Control.Enable();
       GUI->ClientParameters_Control.Enable();
       GUI->FrameAcquisition_Control.Enable();
+      
    }
 }
 
@@ -1171,6 +1535,9 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
                GUI->ReuseImageWindow_CheckBox.Enable( openClientFrames && !saveClientFrames );
                GUI->AutoStretch_CheckBox.Enable( openClientFrames || saveClientFrames );
                GUI->LinkedAutoStretch_CheckBox.Enable( ( openClientFrames || saveClientFrames ) && GUI->AutoStretch_CheckBox.IsChecked() );
+               GUI->PlateSolving_CheckBox.Enable(openClientFrames);
+               if (!openClientFrames)
+                  GUI->PlateSolving_CheckBox.SetChecked(false);
                GUI->SaveClientFrames_CheckBox.Enable();
                GUI->OverwriteClientFrames_CheckBox.Enable( saveClientFrames );
                GUI->ClientDownloadDir_Label.Enable( saveClientFrames );
@@ -1188,6 +1555,7 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
                GUI->AutoStretch_CheckBox.Disable();
                GUI->LinkedAutoStretch_CheckBox.Disable();
                GUI->SaveClientFrames_CheckBox.Disable();
+               GUI->PlateSolving_CheckBox.Disable();
                GUI->OverwriteClientFrames_CheckBox.Disable();
                GUI->ClientDownloadDir_Label.Disable();
                GUI->ClientDownloadDir_Edit.Disable();
@@ -1218,6 +1586,21 @@ void INDICCDFrameInterface::e_Timer( Timer& sender )
          GUI->UploadMode_Combo.Disable();
          GUI->UploadMode_Label.Disable();
       }
+
+      if (GUI->PlateSolving_CheckBox.IsChecked())
+      {
+         GUI->PlateSolverParameters_SectionBar.Enable();
+         GUI->AdvancedPlateSolverParameters_SectionBar.Enable();
+         GUI->CenterTarget_CheckBox.Enable();
+      } 
+      else
+      {
+         GUI->PlateSolverParameters_SectionBar.Disable();
+         GUI->AdvancedPlateSolverParameters_SectionBar.Disable();
+         GUI->CenterTarget_CheckBox.SetChecked(false);
+         GUI->CenterTarget_CheckBox.Disable();
+      }
+      
 
       {
          static const char* indiFrameTypes[] = { CCD_FRAME_TYPE_LIGHT_ITEM_NAME, CCD_FRAME_TYPE_BIAS_ITEM_NAME, CCD_FRAME_TYPE_DARK_ITEM_NAME, CCD_FRAME_TYPE_FLAT_ITEM_NAME };
@@ -1325,7 +1708,9 @@ void INDICCDFrameInterface::e_ItemSelected( ComboBox& sender, int itemIndex )
    }
 }
 
+
 // ----------------------------------------------------------------------------
+
 
 void INDICCDFrameInterface::e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles )
 {
@@ -1396,6 +1781,8 @@ private:
       m_iface->GUI->StartExposure_PushButton.Disable();
       m_iface->GUI->CancelExposure_PushButton.Enable();
       m_iface->GUI->ExposureInfo_Label.Clear();
+      m_iface->GUI->PlateSolving_CheckBox.Disable();
+      m_iface->GUI->CenterTarget_CheckBox.Disable();
    }
 
    virtual void NewExposureEvent( int expNum, int expCount )
@@ -1489,6 +1876,8 @@ private:
       m_iface->GUI->ExposureCount_Label.Enable();
       m_iface->GUI->ExposureCount_SpinBox.Enable();
       m_iface->GUI->StartExposure_PushButton.Enable();
+      m_iface->GUI->PlateSolving_CheckBox.Enable();
+      m_iface->GUI->CenterTarget_CheckBox.Enable();
       m_iface->GUI->CancelExposure_PushButton.Disable();
       m_iface->GUI->ExposureInfo_Label.Clear();
       m_iface->ProcessEvents();

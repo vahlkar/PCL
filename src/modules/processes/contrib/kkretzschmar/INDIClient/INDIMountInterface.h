@@ -323,7 +323,7 @@ public:
 
    MountConfigDialog( const String& deviceName,
       double geoLat, double geoLong, double geoHeight,
-      String utcTime, double utcOffset );
+      String utcTime, double utcOffset, double telescopeFocalLength );
 
    double getTelescopeFocalLength() const
    {
@@ -592,6 +592,42 @@ private:
    friend class AlignmentConfigDialog;
    friend class INDIMountInterfaceExecution;
 };
+
+class INDIMountInterfaceExecution : public AbstractINDIMountExecution
+{
+public:
+
+   INDIMountInterfaceExecution( INDIMountInterface* iface )
+      : AbstractINDIMountExecution( *dynamic_cast<INDIMountInstance*>( iface->NewProcess() ) )
+      , m_iface( iface )
+      , m_instanceAuto( &m_instance )
+   {
+   }
+
+   void Abort() override
+   {
+      m_abortRequested = true;
+   }
+
+private:
+
+   INDIMountInterface* m_iface = nullptr;
+   AutoPointer<INDIMountInstance> m_instanceAuto;
+   bool m_abortRequested = false;
+   pcl_enum m_command = IMCCommand::Default;
+
+   void StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command ) override;
+
+   void MountEvent( double targetRA, double currentRA, double targetDec, double currentDec ) override;
+
+   void EndMountEvent() override;
+
+   void WaitEvent() override;
+
+   void AbortEvent() override;
+};
+
+// ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
 

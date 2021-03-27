@@ -122,6 +122,20 @@ private:
    pcl_bool p_enableAlignmentCorrection;
    String p_alignmentFile;
    int32 p_telescopeFocalLength;
+   pcl_bool p_applyPlateSolver;
+   pcl_bool p_centerTarget;
+   String   p_serverURL;
+   String   p_solverCatalogName;
+   pcl_bool p_solverAutoCatalog;
+   int32    p_solverLimitMagnitude;
+   pcl_bool p_solverAutoLimitMagnitude;
+   float    p_solverStarSensitivity;
+   int32    p_solverNoiseLayers;
+   pcl_enum p_solverAlignmentDevice;
+   pcl_bool p_solverDistortionCorrection;
+   float    p_solverSplineSmoothing;
+   pcl_enum p_solverProjection;
+
 
    StringList o_clientViewIds;
    StringList o_clientFilePaths;
@@ -216,6 +230,7 @@ private:
    static int s_width;
    static int s_height;
    static int s_numberOfChannels;
+
 };
 
 // ----------------------------------------------------------------------------

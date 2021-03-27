@@ -197,9 +197,10 @@ static void WarnOnUnknownChildElement( const XMLElement& element, const String& 
 
 // ----------------------------------------------------------------------------
 
-Matrix AlignmentModel::PseudoInverse( const Matrix& matrix )
+Matrix AlignmentModel::PseudoInverse( const Matrix& matrix, double& conditionNumber )
 {
    SVD svd( matrix );
+   conditionNumber = svd.W[svd.IndexOfLargestSingularValue()] / svd.W[svd.IndexOfSmallestSingularValue()];
    Matrix WInverse( matrix.Columns(), matrix.Columns() );
    for ( int j = 0; j < matrix.Columns(); ++j )
       for ( int i = 0; i < matrix.Columns(); ++i )
@@ -782,8 +783,16 @@ void GeneralAnalyticalPointingModel::FitModelForPierSide( const Array<SyncDataPo
       counts++;
    }
 
+   double conditionNumber = 0;
    // compute pseudo inverse
-   Matrix pseudoInverse = PseudoInverse( *designMatrices );
+   Matrix pseudoInverse = PseudoInverse( *designMatrices, conditionNumber );
+
+   // if problem is ill-conditioned print a warning
+   if (conditionNumber >= c_illformed_condition_bound)
+   {
+      m_console.CriticalLn( String().Format("<end><cbr>** Critical: Pointing model fitting is ill-formed. Either increase the number of sync points or reduce the number of model parameters."
+                                            "<p>Make sure that the angular distance between each sync point is large enough. Sync point that are close together can lead to inaccurate pointing models.</p>"));
+   }
 
    // fit parameters
    if ( pierSide == IMCPierSide::None || pierSide == IMCPierSide::West )
@@ -894,7 +903,7 @@ void GeneralAnalyticalPointingModel::PrintParameterVector( Vector* parameters, d
    m_console.WriteLn( String().Format( "<end><cbr>"
                                        "* Fitting residual ................................................ %+.2f ",
       residual ) );
-   m_console.WriteLn( String().Format( "* Hour angle offset ............................................... %+.2f (arcmin)",  (*parameters)[ 0] * scaleArcmin ) );
+   m_console.WriteLn( String().Format( "* Hour angle offset ............................................... %+.2f (arcmin)",  (*parameters)[ 0] * scaleArcmin / factorHaToDeg ) );
    m_console.WriteLn( String().Format( "* Declination offset .............................................. %+.2f (arcmin)",  (*parameters)[ 1] * scaleArcmin ) );
    double poleSep = Sqrt( (*parameters)[4] * (*parameters)[4] + (*parameters)[5] * (*parameters)[5] );
    double poleAngle = ArcCos( -(*parameters)[4]/poleSep );

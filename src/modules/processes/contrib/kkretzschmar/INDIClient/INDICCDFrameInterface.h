@@ -196,6 +196,10 @@ private:
       CheckBox LinkedAutoStretch_CheckBox;
       HorizontalSizer SaveClientFrames_Sizer;
       CheckBox SaveClientFrames_CheckBox;
+      HorizontalSizer PlateSolving_Sizer;
+      CheckBox PlateSolving_CheckBox;
+      HorizontalSizer CenterTarget_Sizer;
+      CheckBox CenterTarget_CheckBox;
       HorizontalSizer OverwriteClientFrames_Sizer;
       CheckBox OverwriteClientFrames_CheckBox;
       HorizontalSizer ClientDownloadDir_HSizer;
@@ -234,6 +238,42 @@ private:
       HorizontalSizer ExternalFilterDevice_Sizer;
       Label ExternalFilterDevice_Label;
       ComboBox ExternalFilterDevice_Combo;
+
+      SectionBar        PlateSolverParameters_SectionBar;
+         Control           PlateSolverParameters_Control;
+         VerticalSizer     PlateSolverParameters_Sizer;
+            HorizontalSizer   SolverAutoCatalog_Sizer;
+               CheckBox          SolverAutoCatalog_CheckBox;
+            HorizontalSizer   SolverCatalog_Sizer;
+               Label             SolverCatalog_Label;
+               ComboBox          SolverCatalog_ComboBox;
+            HorizontalSizer   SolverAutoLimitMagnitude_Sizer;
+               CheckBox          SolverAutoLimitMagnitude_CheckBox;
+            HorizontalSizer   SolverLimitMagnitude_Sizer;
+               Label             SolverLimitMagnitude_Label;
+               SpinBox           SolverLimitMagnitude_SpinBox;
+            HorizontalSizer   DistortionCorrection_Sizer;
+               CheckBox          DistortionCorrection_CheckBox;
+            HorizontalSizer   ForcePlateSolve_Sizer;
+               CheckBox          ForcePlateSolve_CheckBox;
+            HorizontalSizer   IgnorePositionAndScale_Sizer;
+               CheckBox          IgnorePositionAndScale_CheckBox;
+               ToolButton        ResetSolverConfiguration_ToolButton;
+
+         SectionBar        AdvancedPlateSolverParameters_SectionBar;
+         Control           AdvancedPlateSolverParameters_Control;
+         VerticalSizer     AdvancedPlateSolverParameters_Sizer;
+            HorizontalSizer   ProjectionSystem_Sizer;
+               Label             ProjectionSystem_Label;
+               ComboBox          ProjectionSystem_ComboBox;
+            NumericControl    StarSensitivity_NumericControl;
+            HorizontalSizer   NoiseReduction_Sizer;
+               Label             NoiseReduction_Label;
+               SpinBox           NoiseReduction_SpinBox;
+            HorizontalSizer   AlignmentDevice_Sizer;
+               Label             AlignmentDevice_Label;
+               ComboBox          AlignmentDevice_ComboBox;
+            NumericControl    SplineSmoothing_NumericControl;
    };
 
    GUIData* GUI = nullptr;
@@ -247,6 +287,8 @@ private:
    void e_Timer( Timer& sender );
    void e_Click( Button& sender, bool checked );
    void e_ItemSelected( ComboBox& sender, int itemIndex );
+   void e_EditValueUpdated( NumericEdit& sender, double value );
+   void e_SpinValueUpdated( SpinBox& sender, int value );
    void e_FileDrag( Control& sender, const Point& pos, const StringList& files, unsigned modifiers, bool& wantsFiles );
    void e_FileDrop( Control& sender, const Point& pos, const StringList& files, unsigned modifiers );
 

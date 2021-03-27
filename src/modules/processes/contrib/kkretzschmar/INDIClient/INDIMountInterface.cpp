@@ -78,6 +78,111 @@ INDIMountInterface* TheINDIMountInterface = nullptr;
 
 // ----------------------------------------------------------------------------
 
+void INDIMountInterfaceExecution::StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command ) 
+   {
+      m_iface->m_execution = this;
+      m_command = command;
+      m_iface->GUI->TargetRA_H_SpinBox.Disable();
+      m_iface->GUI->TargetRA_M_SpinBox.Disable();
+      m_iface->GUI->TargetDec_H_SpinBox.Disable();
+      m_iface->GUI->TargetDec_M_SpinBox.Disable();
+      m_iface->GUI->TargetRA_S_NumericEdit.Disable();
+      m_iface->GUI->TargetDec_S_NumericEdit.Disable();
+      m_iface->GUI->MountTargetDECIsSouth_CheckBox.Disable();
+      m_iface->GUI->MountSearch_Button.Disable();
+      m_iface->GUI->MountPlanets_Button.Disable();
+      m_iface->GUI->MountAsteroids_Button.Disable();
+      m_iface->GUI->SlewLeft_Control.Disable();
+      m_iface->GUI->MountGoToStart_Button.Disable();
+      m_iface->GUI->MountSync_Button.Disable();
+      m_iface->GUI->MountPark_Button.Disable();
+      m_iface->GUI->MountGoToCancel_Button.Enable();
+      m_iface->GUI->MountGoToInfo_Label.Clear();
+      m_iface->GUI->AlignmentFile_Label.Disable();
+      m_iface->GUI->AlignmentFile_Edit.Disable();
+      m_iface->GUI->AlignmentFile_ToolButton.Disable();
+      m_iface->GUI->MountAligmentModelConfig_Button.Disable();
+      m_iface->GUI->MountAligmentModelFit_Button.Disable();
+      m_iface->GUI->MountAligmentModelConfig_Button.Disable();
+      m_iface->GUI->MountAlignmentCorrection_CheckBox.Disable();
+      Module->ProcessEvents();
+   }
+
+   void INDIMountInterfaceExecution::MountEvent( double targetRA, double currentRA, double targetDec, double currentDec ) 
+   {
+      if ( m_abortRequested )
+         AbstractINDIMountExecution::Abort();
+
+      switch ( m_command )
+      {
+      case IMCCommand::GoTo:
+         m_iface->GUI->MountGoToInfo_Label.SetText(
+            "Slewing: dRA = "
+            + String::ToSexagesimal( targetRA - currentRA,
+               SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
+            + ", dDec = "
+            + String::ToSexagesimal( targetDec - currentDec,
+               SexagesimalConversionOptions( 3 /*items*/, 2 /*precision*/, true /*sign*/ ) ) );
+         break;
+
+      case IMCCommand::Park:
+      case IMCCommand::ParkDefault:
+         m_iface->GUI->MountGoToInfo_Label.SetText( "Parking telescope..." );
+         break;
+
+      case IMCCommand::Sync:
+         break;
+
+      default:
+         break;
+      };
+
+      Module->ProcessEvents();
+   }
+
+   void INDIMountInterfaceExecution::EndMountEvent() 
+   {
+      m_iface->m_execution = nullptr;
+      m_iface->GUI->TargetRA_H_SpinBox.Enable();
+      m_iface->GUI->TargetRA_M_SpinBox.Enable();
+      m_iface->GUI->TargetDec_H_SpinBox.Enable();
+      m_iface->GUI->TargetDec_M_SpinBox.Enable();
+      m_iface->GUI->TargetRA_S_NumericEdit.Enable();
+      m_iface->GUI->TargetDec_S_NumericEdit.Enable();
+      m_iface->GUI->MountTargetDECIsSouth_CheckBox.Enable();
+      m_iface->GUI->MountSearch_Button.Enable();
+      m_iface->GUI->MountPlanets_Button.Enable();
+      m_iface->GUI->MountAsteroids_Button.Enable();
+      m_iface->GUI->SlewLeft_Control.Enable();
+      m_iface->GUI->MountGoToStart_Button.Enable();
+      m_iface->GUI->MountSync_Button.Enable();
+      m_iface->GUI->MountPark_Button.Enable();
+      m_iface->GUI->MountGoToCancel_Button.Disable();
+      m_iface->GUI->MountGoToInfo_Label.Clear();
+      m_iface->GUI->AlignmentFile_Label.Enable();
+      m_iface->GUI->AlignmentFile_Edit.Enable();
+      m_iface->GUI->AlignmentFile_ToolButton.Enable();
+      m_iface->GUI->MountAligmentModelConfig_Button.Enable();
+      m_iface->GUI->MountAligmentModelFit_Button.Enable();
+      m_iface->GUI->MountAligmentModelConfig_Button.Enable();
+      m_iface->GUI->MountAlignmentCorrection_CheckBox.Enable();
+
+      Module->ProcessEvents();
+   }
+
+   void INDIMountInterfaceExecution::WaitEvent() 
+   {
+      Module->ProcessEvents();
+   }
+
+   void INDIMountInterfaceExecution::AbortEvent() 
+   {
+      EndMountEvent();
+   }
+
+// ----------------------------------------------------------------------------
+
+
 CoordinateSearchDialog::CoordinateSearchDialog( INDIMountInterface& parent )
    : m_parent( parent )
 {
@@ -975,7 +1080,7 @@ void AlignmentConfigDialog::e_PageSelected( TabBox& sender, int tabIndex )
 
 MountConfigDialog::MountConfigDialog( const String& deviceName,
                                       double geoLat, double geoLong, double geoHeight,
-                                      String utcTime, double utcOffset )
+                                      String utcTime, double utcOffset, double telescopeFocalLength )
    : ConfigDialogBase( deviceName )
    , m_device( deviceName )
 {
@@ -1155,7 +1260,7 @@ MountConfigDialog::MountConfigDialog( const String& deviceName,
    TelescopeFocalLength_NumericEdit.SetRange( 0, 100000 );
    TelescopeFocalLength_NumericEdit.edit.SetFixedWidth( editWidth2 );
    TelescopeFocalLength_NumericEdit.sizer.AddStretch();
-   TelescopeFocalLength_NumericEdit.SetValue( 0 );
+   TelescopeFocalLength_NumericEdit.SetValue( telescopeFocalLength );
 
    Global_Sizer.SetSpacing( 8 );
    Global_Sizer.SetMargin( 8 );
@@ -2170,133 +2275,7 @@ __device_found:
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-class INDIMountInterfaceExecution : public AbstractINDIMountExecution
-{
-public:
 
-   INDIMountInterfaceExecution( INDIMountInterface* iface )
-      : AbstractINDIMountExecution( *dynamic_cast<INDIMountInstance*>( iface->NewProcess() ) )
-      , m_iface( iface )
-      , m_instanceAuto( &m_instance )
-   {
-   }
-
-   void Abort() override
-   {
-      m_abortRequested = true;
-   }
-
-private:
-
-   INDIMountInterface* m_iface = nullptr;
-   AutoPointer<INDIMountInstance> m_instanceAuto;
-   bool m_abortRequested = false;
-   pcl_enum m_command = IMCCommand::Default;
-
-   void StartMountEvent( double targetRA, double currentRA, double targetDec, double currentDec, pcl_enum command ) override
-   {
-      m_iface->m_execution = this;
-      m_command = command;
-      m_iface->GUI->TargetRA_H_SpinBox.Disable();
-      m_iface->GUI->TargetRA_M_SpinBox.Disable();
-      m_iface->GUI->TargetDec_H_SpinBox.Disable();
-      m_iface->GUI->TargetDec_M_SpinBox.Disable();
-      m_iface->GUI->TargetRA_S_NumericEdit.Disable();
-      m_iface->GUI->TargetDec_S_NumericEdit.Disable();
-      m_iface->GUI->MountTargetDECIsSouth_CheckBox.Disable();
-      m_iface->GUI->MountSearch_Button.Disable();
-      m_iface->GUI->MountPlanets_Button.Disable();
-      m_iface->GUI->MountAsteroids_Button.Disable();
-      m_iface->GUI->SlewLeft_Control.Disable();
-      m_iface->GUI->MountGoToStart_Button.Disable();
-      m_iface->GUI->MountSync_Button.Disable();
-      m_iface->GUI->MountPark_Button.Disable();
-      m_iface->GUI->MountGoToCancel_Button.Enable();
-      m_iface->GUI->MountGoToInfo_Label.Clear();
-      m_iface->GUI->AlignmentFile_Label.Disable();
-      m_iface->GUI->AlignmentFile_Edit.Disable();
-      m_iface->GUI->AlignmentFile_ToolButton.Disable();
-      m_iface->GUI->MountAligmentModelConfig_Button.Disable();
-      m_iface->GUI->MountAligmentModelFit_Button.Disable();
-      m_iface->GUI->MountAligmentModelConfig_Button.Disable();
-      m_iface->GUI->MountAlignmentCorrection_CheckBox.Disable();
-      Module->ProcessEvents();
-   }
-
-   void MountEvent( double targetRA, double currentRA, double targetDec, double currentDec ) override
-   {
-      if ( m_abortRequested )
-         AbstractINDIMountExecution::Abort();
-
-      switch ( m_command )
-      {
-      case IMCCommand::GoTo:
-         m_iface->GUI->MountGoToInfo_Label.SetText(
-            "Slewing: dRA = "
-            + String::ToSexagesimal( targetRA - currentRA,
-               SexagesimalConversionOptions( 3 /*items*/, 3 /*precision*/, true /*sign*/ ) )
-            + ", dDec = "
-            + String::ToSexagesimal( targetDec - currentDec,
-               SexagesimalConversionOptions( 3 /*items*/, 2 /*precision*/, true /*sign*/ ) ) );
-         break;
-
-      case IMCCommand::Park:
-      case IMCCommand::ParkDefault:
-         m_iface->GUI->MountGoToInfo_Label.SetText( "Parking telescope..." );
-         break;
-
-      case IMCCommand::Sync:
-         break;
-
-      default:
-         break;
-      };
-
-      Module->ProcessEvents();
-   }
-
-   void EndMountEvent() override
-   {
-      m_iface->m_execution = nullptr;
-      m_iface->GUI->TargetRA_H_SpinBox.Enable();
-      m_iface->GUI->TargetRA_M_SpinBox.Enable();
-      m_iface->GUI->TargetDec_H_SpinBox.Enable();
-      m_iface->GUI->TargetDec_M_SpinBox.Enable();
-      m_iface->GUI->TargetRA_S_NumericEdit.Enable();
-      m_iface->GUI->TargetDec_S_NumericEdit.Enable();
-      m_iface->GUI->MountTargetDECIsSouth_CheckBox.Enable();
-      m_iface->GUI->MountSearch_Button.Enable();
-      m_iface->GUI->MountPlanets_Button.Enable();
-      m_iface->GUI->MountAsteroids_Button.Enable();
-      m_iface->GUI->SlewLeft_Control.Enable();
-      m_iface->GUI->MountGoToStart_Button.Enable();
-      m_iface->GUI->MountSync_Button.Enable();
-      m_iface->GUI->MountPark_Button.Enable();
-      m_iface->GUI->MountGoToCancel_Button.Disable();
-      m_iface->GUI->MountGoToInfo_Label.Clear();
-      m_iface->GUI->AlignmentFile_Label.Enable();
-      m_iface->GUI->AlignmentFile_Edit.Enable();
-      m_iface->GUI->AlignmentFile_ToolButton.Enable();
-      m_iface->GUI->MountAligmentModelConfig_Button.Enable();
-      m_iface->GUI->MountAligmentModelFit_Button.Enable();
-      m_iface->GUI->MountAligmentModelConfig_Button.Enable();
-      m_iface->GUI->MountAlignmentCorrection_CheckBox.Enable();
-
-      Module->ProcessEvents();
-   }
-
-   void WaitEvent() override
-   {
-      Module->ProcessEvents();
-   }
-
-   void AbortEvent() override
-   {
-      EndMountEvent();
-   }
-};
-
-// ----------------------------------------------------------------------------
 
 void INDIMountInterface::e_Click( Button& sender, bool checked )
 {
@@ -2454,7 +2433,8 @@ void INDIMountInterface::e_Click( Button& sender, bool checked )
                                      GeographicLongitude(),
                                      GeographicHeight(),
                                      UtcTime(),
-                                     UtcOffset() );
+                                     UtcOffset(),
+                                     TelescopeFocalLength() );
       if ( mountConfig.Execute() && INDIClient::HasClient() )
       {
          m_telescopeFocalLength = mountConfig.getTelescopeFocalLength();

@@ -126,7 +126,7 @@ bool IndigoClient::serverIsConnected(std::ostream& errMessage , uint32_t interfa
    char errMsg[256];
    bool isConnected = indigo_connection_status(m_serverEntry, errMsg);
    if (!isConnected)
-       errMessage << "Error: " << errMsg;   
+       errMessage  << errMsg;   
    return isConnected;
 }
 

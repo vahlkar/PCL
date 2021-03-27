@@ -142,6 +142,7 @@ public:
    }
 
    virtual void Perform();
+   virtual bool Perform(View& view);
 
    void Perform( pcl_enum command )
    {
